@@ -1,15 +1,15 @@
 id: tenable-sc-test
-version: -1
+version: 9
 name: Tenable.sc Test
 description: Test playbook for Tenable.sc integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 473ea1be-95b8-47df-8f86-f16a49ac0abb
+    taskid: 5691276c-d891-4892-8ca0-02fc12461a8b
     type: start
     task:
-      id: 473ea1be-95b8-47df-8f86-f16a49ac0abb
+      id: 5691276c-d891-4892-8ca0-02fc12461a8b
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 7a037666-538e-4e5b-8e0b-50c3e769908a
+    taskid: 2b7ab018-6fc9-4604-89d0-75223ca20459
     type: title
     task:
-      id: 7a037666-538e-4e5b-8e0b-50c3e769908a
+      id: 2b7ab018-6fc9-4604-89d0-75223ca20459
       version: -1
       name: Create a scan and delete it
       type: title
@@ -53,10 +53,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: bbb84a11-f563-4476-8999-39d2893f409e
+    taskid: a7d26eaa-780b-40cd-82ac-39a48a63db8d
     type: regular
     task:
-      id: bbb84a11-f563-4476-8999-39d2893f409e
+      id: a7d26eaa-780b-40cd-82ac-39a48a63db8d
       version: -1
       name: Get manageable policies
       description: Get a list of Tenable.sc scan policies
@@ -82,10 +82,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 1c0aa1bc-2a78-406d-8d28-7f0f56fce1e0
+    taskid: 22d0eb99-3a75-41a0-8016-d5704ba449c1
     type: regular
     task:
-      id: 1c0aa1bc-2a78-406d-8d28-7f0f56fce1e0
+      id: 22d0eb99-3a75-41a0-8016-d5704ba449c1
       version: -1
       name: Get repositories
       description: Get a list of Tenable.sc scan repositories
@@ -108,10 +108,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 29dbfecf-5313-4ac2-8d97-c0585249e139
+    taskid: 98fbe789-e92e-4fc1-826b-bce33dafa3bf
     type: regular
     task:
-      id: 29dbfecf-5313-4ac2-8d97-c0585249e139
+      id: 98fbe789-e92e-4fc1-826b-bce33dafa3bf
       version: -1
       name: Get zones
       description: Get a list of Tenable.sc scan zones
@@ -134,10 +134,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 4fa0cf2b-6ae4-46ed-85d6-e9b044833e36
+    taskid: 1307b4d2-35fd-43e3-807c-6447b64da646
     type: regular
     task:
-      id: 4fa0cf2b-6ae4-46ed-85d6-e9b044833e36
+      id: 1307b4d2-35fd-43e3-807c-6447b64da646
       version: -1
       name: Get credentials
       description: Get a list of Tenable.sc credentials
@@ -162,10 +162,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 35e2e82f-9ad0-4367-83d7-e7f7bba4bfc2
+    taskid: a9c5c7b8-37de-4f0c-8c32-1217d46f1a08
     type: regular
     task:
-      id: 35e2e82f-9ad0-4367-83d7-e7f7bba4bfc2
+      id: a9c5c7b8-37de-4f0c-8c32-1217d46f1a08
       version: -1
       name: Get current time for name
       description: |
@@ -196,10 +196,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 54c77e6a-302a-4258-8f35-6667b789d160
+    taskid: 844d99bf-145d-42b3-84db-9c8fd7ea0fe7
     type: regular
     task:
-      id: 54c77e6a-302a-4258-8f35-6667b789d160
+      id: 844d99bf-145d-42b3-84db-9c8fd7ea0fe7
       version: -1
       name: Create scan
       description: Create a scan on Tenable.sc
@@ -316,10 +316,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 1d3cfc5c-63e6-42cc-8e6a-fd179c12f6b7
+    taskid: f020a588-07d3-49f4-866a-e1eafe3cf845
     type: regular
     task:
-      id: 1d3cfc5c-63e6-42cc-8e6a-fd179c12f6b7
+      id: f020a588-07d3-49f4-866a-e1eafe3cf845
       version: -1
       name: Get manageable report definitions
       description: Get a list of Tenable.sc report definitions
@@ -345,10 +345,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 7c8c122b-53ba-4706-89d0-85cb0abc3bda
+    taskid: de2133e3-615c-4370-8179-2748390f0c2c
     type: regular
     task:
-      id: 7c8c122b-53ba-4706-89d0-85cb0abc3bda
+      id: de2133e3-615c-4370-8179-2748390f0c2c
       version: -1
       name: Delete the scan
       description: Delete a scan in Tenable.sc
@@ -358,7 +358,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "26"
+      - "40"
     scriptarguments:
       scan_id:
         simple: ${TenableSC.Scan.ID}
@@ -374,10 +374,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 5f204e4a-db90-4932-82d1-4bdbd186f5ed
+    taskid: 77ec7ebe-eae2-407f-8d85-9543305733fb
     type: title
     task:
-      id: 5f204e4a-db90-4932-82d1-4bdbd186f5ed
+      id: 77ec7ebe-eae2-407f-8d85-9543305733fb
       version: -1
       name: Launch scan
       type: title
@@ -391,17 +391,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 3110
         }
       }
     note: false
     timertriggers: []
   "11":
     id: "11"
-    taskid: 7c095f1a-077f-43b3-8812-9b3c7c3ad1d5
+    taskid: e69245ab-4867-4519-8b9c-b0246720ebe5
     type: regular
     task:
-      id: 7c095f1a-077f-43b3-8812-9b3c7c3ad1d5
+      id: e69245ab-4867-4519-8b9c-b0246720ebe5
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -431,10 +431,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: e86ffa1a-e813-4e59-8d4a-db5eeee3b101
+    taskid: 180f6dae-bbea-4134-8ea1-739404fa3c77
     type: regular
     task:
-      id: e86ffa1a-e813-4e59-8d4a-db5eeee3b101
+      id: 180f6dae-bbea-4134-8ea1-739404fa3c77
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -457,17 +457,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
   "13":
     id: "13"
-    taskid: d263222f-d5f4-44b3-8d6b-5e7e9dc90f9a
+    taskid: 7654e6d0-69f4-40a7-8e1c-321dcaf37d7d
     type: regular
     task:
-      id: d263222f-d5f4-44b3-8d6b-5e7e9dc90f9a
+      id: 7654e6d0-69f4-40a7-8e1c-321dcaf37d7d
       version: -1
       name: List scans
       description: Get a list of Tenable.sc existing scans
@@ -486,17 +486,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3080
+          "y": 3255
         }
       }
     note: false
     timertriggers: []
   "14":
     id: "14"
-    taskid: 50ba360e-25e0-4550-87a4-d163dcdf9e69
+    taskid: 3ab60010-10a0-4f3b-8027-d34a54d05f11
     type: regular
     task:
-      id: 50ba360e-25e0-4550-87a4-d163dcdf9e69
+      id: 3ab60010-10a0-4f3b-8027-d34a54d05f11
       version: -1
       name: Launch my_test_scan
       description: Launch an existing scan from Tenable.sc
@@ -531,17 +531,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3255
+          "y": 3430
         }
       }
     note: false
     timertriggers: []
   "15":
     id: "15"
-    taskid: 0d284adc-2881-40e2-8abd-45272bb839e3
+    taskid: c1062f7f-0b70-4f38-82eb-cfc0aa8dfeaa
     type: regular
     task:
-      id: 0d284adc-2881-40e2-8abd-45272bb839e3
+      id: c1062f7f-0b70-4f38-82eb-cfc0aa8dfeaa
       version: -1
       name: Get scan status
       description: Get the status of a specific scan in Tenable.sc
@@ -560,17 +560,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3430
+          "y": 3605
         }
       }
     note: false
     timertriggers: []
   "16":
     id: "16"
-    taskid: 05a3e4a0-cf7e-41be-81b8-257a8e2d01ba
+    taskid: aab9f199-626c-4a2d-87b2-0528c4af001a
     type: regular
     task:
-      id: 05a3e4a0-cf7e-41be-81b8-257a8e2d01ba
+      id: aab9f199-626c-4a2d-87b2-0528c4af001a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -593,17 +593,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3605
+          "y": 3780
         }
       }
     note: false
     timertriggers: []
   "17":
     id: "17"
-    taskid: d72201a3-2317-4906-85d7-728dc511f62c
+    taskid: 53c95dab-c886-4e9a-8c4f-e0d8e0d8387e
     type: title
     task:
-      id: d72201a3-2317-4906-85d7-728dc511f62c
+      id: 53c95dab-c886-4e9a-8c4f-e0d8e0d8387e
       version: -1
       name: Get scan results
       type: title
@@ -617,17 +617,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3780
+          "y": 3955
         }
       }
     note: false
     timertriggers: []
   "18":
     id: "18"
-    taskid: 2f42b2b2-0ff0-4091-8d52-ddfbbedddb1e
+    taskid: 7552e240-e5c6-4909-8322-841546efdfaa
     type: regular
     task:
-      id: 2f42b2b2-0ff0-4091-8d52-ddfbbedddb1e
+      id: 7552e240-e5c6-4909-8322-841546efdfaa
       version: -1
       name: Get report from a complete scan
       description: Get a report with a Tenable.sc scan results
@@ -648,17 +648,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3925
+          "y": 4100
         }
       }
     note: false
     timertriggers: []
   "19":
     id: "19"
-    taskid: af8a268c-806c-4302-8333-4e5bdc419076
+    taskid: 76271369-11d5-4899-8968-1cc76e246fa2
     type: regular
     task:
-      id: af8a268c-806c-4302-8333-4e5bdc419076
+      id: 76271369-11d5-4899-8968-1cc76e246fa2
       version: -1
       name: tenable-sc-get-vulnerability
       description: 'Get details about a given vulnerability from a given Tenable.sc
@@ -694,17 +694,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4100
+          "y": 4275
         }
       }
     note: false
     timertriggers: []
   "20":
     id: "20"
-    taskid: bfa5cc8f-ae17-4b19-8f56-50f90adaccd1
+    taskid: 883894ae-d721-4d88-8f0f-f0650c5f4b7f
     type: regular
     task:
-      id: bfa5cc8f-ae17-4b19-8f56-50f90adaccd1
+      id: 883894ae-d721-4d88-8f0f-f0650c5f4b7f
       version: -1
       name: Verify CVE
       description: |-
@@ -731,17 +731,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4275
+          "y": 4450
         }
       }
     note: false
     timertriggers: []
   "21":
     id: "21"
-    taskid: 693c9c57-ff27-4b8e-825d-6f691ac909ab
+    taskid: bedbb03c-ee33-41ad-88f0-77797a542c26
     type: regular
     task:
-      id: 693c9c57-ff27-4b8e-825d-6f691ac909ab
+      id: bedbb03c-ee33-41ad-88f0-77797a542c26
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -764,17 +764,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4450
+          "y": 4625
         }
       }
     note: false
     timertriggers: []
   "22":
     id: "22"
-    taskid: 417f29e3-3c8c-4da7-817a-11bf5c86609b
+    taskid: e65c60b0-62cb-4576-8485-fa447939396b
     type: title
     task:
-      id: 417f29e3-3c8c-4da7-817a-11bf5c86609b
+      id: e65c60b0-62cb-4576-8485-fa447939396b
       version: -1
       name: Create asset
       type: title
@@ -795,10 +795,10 @@ tasks:
     timertriggers: []
   "23":
     id: "23"
-    taskid: 79a806f8-fa02-4c81-8039-21a391bdb2a2
+    taskid: 746cabfc-b219-4196-832f-75886f488b6a
     type: regular
     task:
-      id: 79a806f8-fa02-4c81-8039-21a391bdb2a2
+      id: 746cabfc-b219-4196-832f-75886f488b6a
       version: -1
       name: Get current time for name
       description: |
@@ -829,10 +829,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: de3e1786-48a1-4d32-812e-7b9c5ef5ad6e
+    taskid: ae18df33-87a9-4ad0-8a48-be46a0be0424
     type: regular
     task:
-      id: de3e1786-48a1-4d32-812e-7b9c5ef5ad6e
+      id: ae18df33-87a9-4ad0-8a48-be46a0be0424
       version: -1
       name: Create asset
       description: Create an Asset in Tenable.sc with provided IP addresses
@@ -865,10 +865,10 @@ tasks:
     timertriggers: []
   "25":
     id: "25"
-    taskid: 07e2b89d-afa6-47d6-8138-fc295b4a0192
+    taskid: 627694e8-b508-4ade-8031-90972ecd04c5
     type: regular
     task:
-      id: 07e2b89d-afa6-47d6-8138-fc295b4a0192
+      id: 627694e8-b508-4ade-8031-90972ecd04c5
       version: -1
       name: Get user
       description: List users in Tenable.sc
@@ -896,10 +896,10 @@ tasks:
     timertriggers: []
   "26":
     id: "26"
-    taskid: 4d6a4b63-3d85-42ff-8f6d-d6b1a4bb588a
+    taskid: 4188fcd5-f964-4fe5-8f8a-8288aab4b143
     type: regular
     task:
-      id: 4d6a4b63-3d85-42ff-8f6d-d6b1a4bb588a
+      id: 4188fcd5-f964-4fe5-8f8a-8288aab4b143
       version: -1
       name: Delete the asset
       description: Delete the Asset with the given ID from Tenable.sc
@@ -918,17 +918,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
     timertriggers: []
   "27":
     id: "27"
-    taskid: 1c990ad4-308d-4b7e-8572-d2ea54b24e59
+    taskid: 6aa9c88d-a37d-47bd-8f59-fd1427bee1f4
     type: title
     task:
-      id: 1c990ad4-308d-4b7e-8572-d2ea54b24e59
+      id: 6aa9c88d-a37d-47bd-8f59-fd1427bee1f4
       version: -1
       name: Alerts
       type: title
@@ -942,17 +942,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4625
+          "y": 4800
         }
       }
     note: false
     timertriggers: []
   "28":
     id: "28"
-    taskid: d565f54b-0ae0-4a53-8813-7757f504b74d
+    taskid: 615b50eb-6f59-4a0c-8d50-6c455b421463
     type: regular
     task:
-      id: d565f54b-0ae0-4a53-8813-7757f504b74d
+      id: 615b50eb-6f59-4a0c-8d50-6c455b421463
       version: -1
       name: Get manageable alerts
       description: List alerts from Tenable.sc
@@ -971,17 +971,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4770
+          "y": 4945
         }
       }
     note: false
     timertriggers: []
   "29":
     id: "29"
-    taskid: 276d57ad-963d-4553-844e-1e2fb7741774
+    taskid: 57391381-d653-477e-83dd-ad0194521eb6
     type: regular
     task:
-      id: 276d57ad-963d-4553-844e-1e2fb7741774
+      id: 57391381-d653-477e-83dd-ad0194521eb6
       version: -1
       name: Get alert
       description: Get information about a given alert in tenabel.sc
@@ -1014,17 +1014,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4945
+          "y": 5120
         }
       }
     note: false
     timertriggers: []
   "30":
     id: "30"
-    taskid: 668fe40b-717c-4980-8c82-b1ec7046ef03
+    taskid: 260820fc-595c-4e10-840f-ca47a57f4056
     type: regular
     task:
-      id: 668fe40b-717c-4980-8c82-b1ec7046ef03
+      id: 260820fc-595c-4e10-840f-ca47a57f4056
       version: -1
       name: FetchFromInstance
       scriptName: FetchFromInstance
@@ -1053,17 +1053,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5120
+          "y": 5295
         }
       }
     note: false
     timertriggers: []
   "31":
     id: "31"
-    taskid: cd731dca-8b61-4580-8fbb-16982e647ff8
+    taskid: 27bb5f92-c256-4df5-89ca-65dcb9b153a5
     type: title
     task:
-      id: cd731dca-8b61-4580-8fbb-16982e647ff8
+      id: 27bb5f92-c256-4df5-89ca-65dcb9b153a5
       version: -1
       name: List items
       type: title
@@ -1077,17 +1077,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5470
+          "y": 5645
         }
       }
     note: false
     timertriggers: []
   "32":
     id: "32"
-    taskid: d8d4c3a6-8ee2-4e8b-83a4-8e3dde140437
+    taskid: 271a52cd-6072-4aeb-87fa-6a46b0351ac0
     type: regular
     task:
-      id: d8d4c3a6-8ee2-4e8b-83a4-8e3dde140437
+      id: 271a52cd-6072-4aeb-87fa-6a46b0351ac0
       version: -1
       name: List assets
       description: Get a list of Tenable.sc Assets
@@ -1106,17 +1106,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5615
+          "y": 5790
         }
       }
     note: false
     timertriggers: []
   "33":
     id: "33"
-    taskid: c280eecd-20bc-499d-8cb8-570963de8110
+    taskid: f5431a1d-81dd-4f15-8991-3a8fb470ae3e
     type: regular
     task:
-      id: c280eecd-20bc-499d-8cb8-570963de8110
+      id: f5431a1d-81dd-4f15-8991-3a8fb470ae3e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1139,17 +1139,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5295
+          "y": 5470
         }
       }
     note: false
     timertriggers: []
   "35":
     id: "35"
-    taskid: 4847fee1-8e2f-4cca-85cd-8b187138e89f
+    taskid: 49591bab-fac9-4e2b-8bd9-3f7f8e408f52
     type: regular
     task:
-      id: 4847fee1-8e2f-4cca-85cd-8b187138e89f
+      id: 49591bab-fac9-4e2b-8bd9-3f7f8e408f52
       version: -1
       name: Get device
       description: Gets the device information from the current user in Tenable.sc
@@ -1162,23 +1162,24 @@ tasks:
       - "36"
     scriptarguments:
       dnsName: {}
-      ip: {}
+      ip:
+        simple: 10.0.0.4
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5790
+          "y": 5965
         }
       }
     note: false
     timertriggers: []
   "36":
     id: "36"
-    taskid: 44f5f278-2e42-4abd-8f18-1877d86cb7e8
+    taskid: 2adafc51-dd26-4b19-80a2-32b7c25690d9
     type: regular
     task:
-      id: 44f5f278-2e42-4abd-8f18-1877d86cb7e8
+      id: 2adafc51-dd26-4b19-80a2-32b7c25690d9
       version: -1
       name: Get licensing
       description: Retrieve licensing information from Tenable.sc
@@ -1194,17 +1195,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5965
+          "y": 6140
         }
       }
     note: false
     timertriggers: []
   "37":
     id: "37"
-    taskid: 9230985e-ff1e-4a28-8953-a9467c2ce74c
+    taskid: 2ced07ea-0e0a-4c5a-81a6-31a2d0f68c62
     type: regular
     task:
-      id: 9230985e-ff1e-4a28-8953-a9467c2ce74c
+      id: 2ced07ea-0e0a-4c5a-81a6-31a2d0f68c62
       version: -1
       name: Verify lists
       description: |-
@@ -1217,6 +1218,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -1228,7 +1232,70 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6140
+          "y": 6315
+        }
+      }
+    note: false
+    timertriggers: []
+  "38":
+    id: "38"
+    taskid: 0adeea67-7885-4a6e-88e2-f0e2246b704c
+    type: regular
+    task:
+      id: 0adeea67-7885-4a6e-88e2-f0e2246b704c
+      version: -1
+      name: Verify Endpoint
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: 10.0.0.4
+      fields: {}
+      path:
+        simple: Endpoint.IPAddress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6490
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: 58996b37-04cf-4409-82d0-c6f044c20f35
+    type: regular
+    task:
+      id: 58996b37-04cf-4409-82d0-c6f044c20f35
+      version: -1
+      name: Get the asset
+      description: Get details for a given asset in Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-asset
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      asset_id:
+        simple: ${TenableSC.Asset.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
         }
       }
     note: false
@@ -1238,7 +1305,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6185,
+        "height": 6535,
         "width": 380,
         "x": 50,
         "y": 50
