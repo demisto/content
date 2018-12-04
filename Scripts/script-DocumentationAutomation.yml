@@ -195,7 +195,7 @@ script: |-
 
   # Additional info
 
-  doc += '\n## Additional Information:\n'
+  doc += '\n## Additional Information\n'
   doc += '---\n'
 
   if 'addInfo' in demisto.args():
@@ -203,7 +203,7 @@ script: |-
 
   # Known limitations
 
-  doc += '\n## Known Limitations:\n'
+  doc += '\n## Known Limitations\n'
   doc += '---\n'
 
   if 'limit' in demisto.args():
@@ -211,7 +211,7 @@ script: |-
 
   # Troubleshooting
 
-  doc += '\n## Troubleshooting:\n'
+  doc += '\n## Troubleshooting\n'
   doc += '---\n'
 
   if 'troubleshooting' in demisto.args():
