@@ -28,7 +28,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |
     import requests
     import json
 
@@ -76,15 +76,39 @@ script:
 
 
     ''' Functions '''
+    # Build Markdown contextual data for human readable data in war room output
+    def build_md(jsondata, searchItem):
+        mdOutput = "## Symantec Deepsight Intelligence: " + str(searchItem)
+        for key in jsondata.keys():
+            if isinstance(jsondata[key],dict):
+                mdOutput += "\n### " + key
+                for k in jsondata[key]:
+                    mdOutput += "\n- " + str(k) + ": " + str(jsondata[key][k])
+            elif isinstance(jsondata[key], list):
+                mdOutput += "\n### " + key
+                for i in range(len(jsondata[key])):
+                    if isinstance(jsondata[key][i], dict):
+                        mdOutput += "\n- " + key + " " + str(i)
+                        for x in jsondata[key][i]:
+                            mdOutput += "\n - " + str(x) + ": " + str(jsondata[key][i][x])
+                    else:
+                        mdOutput += "\n- " + str(jsondata[key][i])
+            else:
+                mdOutput += "\n### " + key + ": " + str(jsondata[key])
+        return mdOutput
+
+
     # get results of request status - determine current limit usage of the api license
     def request_status():
         req_status = requests.get(USAGE_URL, headers=headers, verify=VERIFY)
         json_req_status = json.loads(req_status.content)
+        #md = build_md(json_req_status, "Request Status")
         output.append({
             'Type' : entrytype['note'],
             'Contents' : json_req_status,
             'ContentsFormat' : formats['json'],
             'ReadableContentsFormat' : formats['markdown'],
+            'HumanReadable' : md,
             'EntryContext' : json_req_status
         })
         return output
@@ -95,6 +119,7 @@ script:
     def request_domain_intel(domain):
         dom_req = requests.get(DOMAIN_URL + domain, headers=headers, verify=VERIFY)
         json_req_domain = json.loads(dom_req.content)
+        md = build_md(json_req_domain, domain)
         if 'reputationValues' in json_req_domain.keys():
             dom_rep = json_req_domain['reputationValues']['reputation']
             if dom_rep > 5:
@@ -115,7 +140,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_domain,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -134,7 +159,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_domain,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -146,6 +171,7 @@ script:
     def request_ip_intel(ip):
         req_ip = requests.get(IP_URL + ip, headers=headers, verify=VERIFY)
         json_req_ip = json.loads(req_ip.content)
+        md = build_md(json_req_ip, ip)
         if 'reputationValues' in json_req_ip.keys():
             rep_ip = json_req_ip['reputationValues']['reputation']
             if rep_ip > 5:
@@ -164,7 +190,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -183,7 +209,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -194,6 +220,7 @@ script:
     def request_file_intel(filehash):
         req_filehash = requests.get(FILE_URL + filehash, headers=headers, verify=VERIFY)
         json_req_filehash = json.loads(req_filehash.content)
+        md = build_md(json_req_filehash, filehash)
         if 'reputation' in json_req_filehash.keys():
             file_rep = json_req_filehash['reputation']
             if file_rep == "Unknown Reputation":
@@ -216,7 +243,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_filehash,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -234,7 +261,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_req_filehash,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -248,6 +275,7 @@ script:
     def request_url_intel(url):
         req_url = requests.get(URL_URL + url, headers=headers, verify=VERIFY)
         json_url = json.loads(req_url.content)
+        md = build_md(json_url, url)
         dbotscore = 0
         if 'behaviours' in json_url.keys():
             behaviours = json.url['behaviours']
@@ -275,7 +303,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_url,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
@@ -291,7 +319,7 @@ script:
                 'Type' : entryTypes['note'],
                 'Contents' : json_url,
                 'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'HumanReadable' : md, # not sure if need to build the md first?
                 'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
