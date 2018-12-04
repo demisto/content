@@ -332,7 +332,7 @@ script: |-
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
-      'FLTNCL': test_flatten_cell
+      'FLTNCL': test_flatten_cell,
       'TBLMD' : test_tbl_to_md,
       'HASH'  : test_hash_djb2,
       'CAMELIZE': test_camelize
