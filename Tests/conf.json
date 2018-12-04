@@ -31,7 +31,8 @@
         {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
-          "timeout": 240
+          "timeout": 240,
+          "nightly": true
         },
         {
             "integrations": "MimecastV2",
