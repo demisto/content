@@ -511,9 +511,6 @@ script:
     - contextPath: TenableIO.Scan.Policy
       description: The policy assigned for the scan.
       type: string
-    - contextPath: TenableIO.Scan.FolderId
-      description: The unique id of the folder where the scan has been stored.
-      type: string
     - contextPath: TenableIO.Vulnerabilities.Id
       description: The unique ID of the vulnerability.
       type: string
