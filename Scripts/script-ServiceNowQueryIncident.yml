@@ -184,3 +184,5 @@ outputs:
 scripttarget: 0
 runonce: false
 releaseNotes: "ServiceNow query table example"
+tests:
+  - No test - Hibernating instance

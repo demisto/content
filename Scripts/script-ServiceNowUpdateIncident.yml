@@ -244,3 +244,5 @@ outputs:
 scripttarget: 0
 runonce: false
 releaseNotes: "ServiceNow update record example"
+tests:
+  - No test - Hibernating instance

@@ -3390,4 +3390,4 @@ script:
   runonce: false
 releaseNotes: "Added command to retrieve table names, new ServiceNow logo"
 tests:
-- No test - No instance
+  - No test - Hibernating instance

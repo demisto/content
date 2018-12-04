@@ -213,3 +213,5 @@ outputs:
 scripttarget: 0
 runonce: false
 releaseNotes: "ServiceNow create record example"
+tests:
+  - No test - Hibernating instance
