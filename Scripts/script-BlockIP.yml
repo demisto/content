@@ -3,15 +3,22 @@ commonfields:
   version: 5
 name: BlockIP
 script: |-
-  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorame'})[0].Contents;
+  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorama'})[0].Contents;
   var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
-  switch (args['using-brand'].toLowerCase()) {
-      case 'panorama':
-          blockCP = false;
-          break;
-      case 'check point':
-          blockPanorama = false;
-          break;
+
+  if (args['using-brand']) {
+      switch (args['using-brand'].toLowerCase()) {
+          case 'panorama':
+              blockCP = false;
+              break;
+          case 'check point':
+              blockPanorama = false;
+              break;
+      }
+  }
+
+  if (!args.rulename) {
+      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
   }
 
   var entries = [];
@@ -20,25 +27,26 @@ script: |-
   }
 
   if (blockCP) {
-      entries.push(!args.ipname ?
-              'Failed adding to Check Point as ipname argument is missing':
-              executeCommand('CPBlockIP', args))
+      if (!args.ipname) {
+          args.ipname = + args.ip + ' . ' + args.direction;
+      }
+      entries.push(executeCommand('CPBlockIP', args));
   }
+
   return entries;
 type: javascript
-comment: Blocks IP in configured firewall
 tags:
 - firewall
 - checkpoint
 - panorama
-system: true
+comment: Blocks IP in configured firewall
+enabled: true
 args:
 - name: ip
   required: true
   default: true
   description: IP to block
 - name: rulename
-  required: true
   description: Rule name
 - name: direction
   required: true
@@ -51,8 +59,10 @@ args:
 - name: ipname
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
+runonce: false
 dependson:
   should:
   - panorama
   - checkpoint
-timeout: 0s
+tests:
+- blockip_test_playbook

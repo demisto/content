@@ -166,25 +166,24 @@ script:
             if (!(relayed_comm_set instanceof Array)){
                 relayed_comm_set = [relayed_comm_set];
             }
-        }
-        if (relayed_comm_set[0]) {
-            var relayed_keys = Object.keys(relayed_comm_set[0]);
-            relayed_keys.splice(relayed_keys.indexOf('url'), 1);
+            if (relayed_comm_set.length > 0 && relayed_comm_set[0]) {
+                var relayed_keys = Object.keys(relayed_comm_set[0]);
+                relayed_keys.splice(relayed_keys.indexOf('url'), 1);
 
-            md += '\n';
-            md += tblToMd('Relayed Comm Set',relayed_comm_set,relayed_keys);
+                md += '\n';
+                md += tblToMd('Relayed Comm Set',relayed_comm_set,relayed_keys);
+            }
         }
         if (summary){
             if (!(summary instanceof Array)){
                 summary = [summary];
             }
-        }
+            if (summary.length > 0 && summary[0]) {
+                var summary_keys = Object.keys(summary[0]);
 
-        if (summary[0]) {
-            var summary_keys = Object.keys(summary[0]);
-
-            md += '\n';
-            md += tblToMd('Summary',summary,summary_keys);
+                md += '\n';
+                md += tblToMd('Summary',summary,summary_keys);
+            }
         }
 
         var context = [];
@@ -925,3 +924,5 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
+tests:
+  - No test

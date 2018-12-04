@@ -66,7 +66,9 @@ script:
             }
             return 'something is wrong';
         case 'venafi-get-certificates':
+
             var raw = sendRequest('GET', '/vedsdk/certificates/' + encodeToURLQuery(args), undefined, auth.APIKey);
+
             var certs = [];
             for (var i in raw.Certificates) {
                 certs.push({
@@ -78,13 +80,35 @@ script:
                     ID: raw.Certificates[i].Guid.substring(1, raw.Certificates[i].Guid.length - 1),
                 });
             }
+            var ec = {
+                'Venafi.Certificats(val.ID==obj.ID)': certs,
+                'Venafi.Certificate(val.ID==obj.ID)': certs
+            };
             entry = {
                 Type: entryTypes.note,
                 Contents: raw,
                 ContentsFormat: formats.json,
                 ReadableContentsFormat: formats.markdown,
-                EntryContext: {'Venafi.Certificats(val.ID==obj.ID)': certs},
+                EntryContext: ec,
                 HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
+            };
+            return entry;
+        case 'venafi-get-details':
+
+            var raw = sendRequest('GET', '/vedsdk/certificates/' + args.guid, undefined, auth.APIKey);
+            raw.ParentDN = raw.ParentDn
+            raw.ID = raw.Guid.substring(1, raw.Guid.length - 1)
+            ec = {
+                'Venafi.Certificate(val.ID==obj.ID)': raw
+            }
+            return JSON.stringify(raw)
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: ec,
+                HumanReadable: tableToMarkdown('Venafi certificats details', raw),
             };
             return entry;
         default:
@@ -184,19 +208,93 @@ script:
       description: Certificates that expire after the specified date
     - name: ValidToLess
       description: Certificates that expire before the specified date
+    - name: guid
+      description: Certificate Guid
     outputs:
-    - contextPath: Venafi.Certificats.CreatedOn
+    - contextPath: Venafi.Certificate.CreatedOn
       description: Certificate creation date
-    - contextPath: Venafi.Certificats.DN
+      type: date
+    - contextPath: Venafi.Certificate.DN
       description: Certificate DN
-    - contextPath: Venafi.Certificats.Name
+      type: string
+    - contextPath: Venafi.Certificate.Name
       description: Certificate name
-    - contextPath: Venafi.Certificats.ParentDN
+      type: string
+    - contextPath: Venafi.Certificate.ParentDN
       description: Certificate parent DN
-    - contextPath: Venafi.Certificats.SchemaClass
+      type: string
+    - contextPath: Venafi.Certificate.SchemaClass
       description: Certificate schema
-    - contextPath: Venafi.Certificats.ID
+      type: string
+    - contextPath: Venafi.Certificate.ID
       description: Certificate ID (GUID)
+      type: string
     description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
       format. Additional fields can be used in the query by adding them in a key=value
       manner
+  - name: venafi-get-certificate-details
+    arguments:
+    - name: guid
+      required: true
+      description: Certificate GUID to get details of
+    outputs:
+    - contextPath: Venafi.Certificate.ID
+      description: Certificate ID (GUID)
+      type: string
+    - contextPath: Venafi.Certificate.ParentDN
+      description: Certificate parent DN
+      type: string
+    - contextPath: Venafi.Certificate.CreatedOn
+      description: Certificate creation date
+      type: date
+    - contextPath: Venafi.Certificate.DN
+      description: Certificate DN
+      type: string
+    - contextPath: Venafi.Certificate.Name
+      description: Certificate name
+      type: string
+    - contextPath: Venafi.Certificate.SchemaClass
+      description: Certificate schema
+      type: string
+    - contextPath: Venafi.Certificate.Approver
+      description: Certificate approver
+      type: string
+    - contextPath: Venafi.Certificate.CertificateAuthorityDN
+      description: Certificate authority DN
+      type: string
+    - contextPath: Venafi.Certificate.Contact
+      description: Certificate contacts
+      type: string
+    - contextPath: Venafi.Certificate.Description
+      description: Certificate description
+      type: string
+    - contextPath: Venafi.Certificate.ManagedBy
+      description: Certificate manager
+      type: string
+    - contextPath: Venafi.Certificate.ManagementType
+      description: Certificate management type
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.AIAKeyIdentifier
+      description: Certificate AIA key identifier
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.Issuer
+      description: Certificate issuer
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.Serial
+      description: Certificate serial
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.Subject
+      description: Certificate subject
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.Thumbprint
+      description: Certificate thumbprint
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.ValidFrom
+      description: Certificate validation start date
+      type: string
+    - contextPath: Venafi.Certificate.CertificateDetails.ValidTo
+      description: Certificate validation end time
+      type: string
+    description: Use a certificate guid to extract more details from the cert store.
+tests:
+- No test - no instance

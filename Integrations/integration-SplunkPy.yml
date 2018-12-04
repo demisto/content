@@ -64,8 +64,13 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
+- display: Use Splunk Clock Time For Fetch
+  name: useSplunkTime
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
-  script: |
+  script: |+
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -77,6 +82,24 @@ script:
     import requests
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+    def get_current_splunk_time(splunk_service):
+        t = datetime.utcnow() - timedelta(days=3)
+        time = t.strftime(SPLUNK_TIME_FORMAT)
+        kwargs_oneshot = {'count':1,'earliest_time':time}
+        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
+
+        oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            if isinstance(item, results.Message):
+                return item.message["clock"]
+            if isinstance(item, dict):
+                return item["clock"]
+        raise ValueError('Error: Could not fetch Splunk time')
 
     def rawToDict(raw):
         result = {}
@@ -253,7 +276,7 @@ script:
         sys.exit(0)
     if demisto.command() == 'splunk-search':
         t = datetime.utcnow() - timedelta(days=7)
-        time = t.strftime("%Y-%m-%dT%H:%M:%S")
+        time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"earliest_time":time}
         if demisto.get(demisto.args(), 'earliest_time'):
             kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
@@ -322,12 +345,16 @@ script:
         if demisto.get(demisto.params(), 'timezone'):
             timezone = demisto.params()['timezone']
             t = t + timedelta(minutes=int(timezone))
-        now = t.strftime("%Y-%m-%dT%H:%M:%S")
+
+        now = t.strftime(SPLUNK_TIME_FORMAT)
+        if demisto.get(demisto.params(), 'useSplunkTime'):
+            now = get_current_splunk_time(service)
+            t = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
-            lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
+            lastRun = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now}
+                      "index_latest": now, "count": 0}
         searchquery_oneshot = demisto.params()['fetchQuery']
 
         if demisto.get(demisto.params(), 'extractFields'):

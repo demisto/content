@@ -88,6 +88,25 @@ script:
 
     """
 
+    HELPERS
+
+    """
+    def dict_list_to_str(dict_list):
+        """
+
+        parses a list of dictionaries into a string representation
+
+        """
+        if not dict_list:
+            return ''
+        string_list = []
+        for dict in dict_list:
+            key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
+            string_list.append(', '.join(key_values))
+        return '\n'.join(string_list)
+
+    """
+
     AUTHENTICATION
 
     """
@@ -688,20 +707,6 @@ script:
 
     """
 
-
-    def dict_list_to_str(dict_list):
-        """
-
-        parses a list of dictionaries into a string representation
-
-        """
-        if not dict_list:
-            return ''
-        string_list = []
-        for dict in dict_list:
-            key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
-            string_list.append(', '.join(key_values))
-        return '\n'.join(string_list)
 
     def create_incident_md_table(incident):
 
@@ -1361,3 +1366,5 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
+tests:
+  - RSA NetWitness Test

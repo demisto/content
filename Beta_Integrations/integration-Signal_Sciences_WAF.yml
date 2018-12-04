@@ -253,7 +253,11 @@ script:
                 url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
                 res = http_request('DELETE', url)
 
-        human_readable = '### Signal Sciences - Removing an IP from Whitelist \n\n The IP has been successfully removed from Whitelist.'
+        if 'res' not in locals():
+            raise Exception("The IP {0} was not found on the WhiteList".format(IP))
+
+        else:
+            human_readable = '### Signal Sciences - Removing an IP from Whitelist \n\n The IP has been successfully removed from Whitelist.'
 
         return {
             'Type': entryTypes['note'],
@@ -278,7 +282,11 @@ script:
                 url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
                 res = http_request('DELETE', url)
 
-        human_readable = '### Signal Sciences - Removing an IP from Blacklist \n\n The IP has been successfully removed from Blacklist.'
+        if 'res' not in locals():
+            raise Exception("The IP {0} was not found on the BlackList".format(IP))
+
+        else:
+            human_readable = '### Signal Sciences - Removing an IP from Blacklist \n\n The IP has been successfully removed from Blacklist.'
 
         return {
             'Type': entryTypes['note'],
