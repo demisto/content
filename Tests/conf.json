@@ -784,7 +784,8 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileToIncident Test"
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
         }
     ],
     "skipped_tests": {
