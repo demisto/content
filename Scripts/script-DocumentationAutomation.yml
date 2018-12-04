@@ -163,9 +163,9 @@ script: |-
                   doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | '
                   doc += ('Required' if str(dataMap['script']['commands'][i]['arguments'][j].get('required')).lower() == 'true' else 'Optional')  + ' | \n'
           else:
-              doc += 'There are no input arguments for this command.\n\n'
+              doc += 'There are no input arguments for this command.'
           #Context output
-          doc += '##### Context Output\n\n'
+          doc += '\n\n##### Context Output\n\n'
           if 'outputs' in dataMap['script']['commands'][i]:
               doc += '| **Path** | **Type** | **Description** |\n'
               doc += '| --- | --- | --- |\n'
@@ -178,9 +178,9 @@ script: |-
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
           else:
-              doc += 'There is no context output for this command.\n\n'
+              doc += 'There is no context output for this command.'
           #Raw output:
-          doc += '##### Command Example\n'
+          doc += '\n\n##### Command Example\n'
           doc += '` `\n\n'
           doc += '##### Context Example\n'
           doc += '```\n\n```\n\n'
