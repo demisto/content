@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,6 +24,7 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 3c58da08-7839-4473-8319-bf44ec6db001
@@ -45,7 +45,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -54,6 +53,7 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
@@ -63,10 +63,10 @@ tasks:
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
-      script: jira|||jira-create-issue
+      script: '|||jira-create-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -76,18 +76,20 @@ tasks:
         simple: '"jira descriptions"'
       dueDate: {}
       issueJson: {}
-      issueTypeId: {}
+      issueTypeId:
+        simple: "10001"
       issueTypeName:
         simple: Incident
       labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
       priority: {}
       projectKey:
-        simple: SOC
+        simple: DEM
       projectName: {}
       reporter: {}
       summary:
         simple: '"jira playbook test"'
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -96,6 +98,7 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: de36e03d-39df-47f0-8770-3814fb47309d
@@ -105,10 +108,10 @@ tasks:
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
-      script: jira|||jira-get-issue
+      script: '|||jira-get-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -116,7 +119,6 @@ tasks:
       headers: {}
       issueId:
         simple: ${Ticket.Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -125,6 +127,7 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
@@ -153,7 +156,6 @@ tasks:
         simple: ${Ticket.Id}
       value3: {}
       value4: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -162,6 +164,7 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
@@ -171,10 +174,10 @@ tasks:
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
-      script: jira|||jira-issue-add-comment
+      script: '|||jira-issue-add-comment'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -184,7 +187,6 @@ tasks:
       issueId:
         simple: ${Ticket.Id}
       visibility: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -193,6 +195,7 @@ tasks:
           "y": 896
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
@@ -202,10 +205,10 @@ tasks:
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
-      script: jira|||jira-issue-add-link
+      script: '|||jira-issue-add-link'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -219,7 +222,6 @@ tasks:
         simple: Demisto
       url:
         simple: http://www.demisto.com
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -228,6 +230,7 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "9":
     id: "9"
     taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
@@ -237,10 +240,10 @@ tasks:
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
-      script: jira|||jira-issue-upload-file
+      script: '|||jira-issue-upload-file'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -249,7 +252,6 @@ tasks:
         simple: ${Ticket.Id}
       upload:
         simple: ${File.EntryID}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -258,6 +260,7 @@ tasks:
           "y": 1420
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
@@ -286,7 +289,6 @@ tasks:
         simple: ${Ticket.Id}
       value3: {}
       value4: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -295,6 +297,7 @@ tasks:
           "y": 1770
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
@@ -304,10 +307,10 @@ tasks:
       version: -1
       name: jira-issue-query
       description: Query Jira issues
-      script: jira|||jira-issue-query
+      script: '|||jira-issue-query'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -317,7 +320,6 @@ tasks:
       query:
         simple: id = ${Ticket.[0].Id}
       startAt: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -326,6 +328,7 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "13":
     id: "13"
     taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
@@ -348,7 +351,6 @@ tasks:
         simple: Hello Demisto
       filename:
         simple: Ho
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -357,6 +359,7 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "14":
     id: "14"
     taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
@@ -365,10 +368,10 @@ tasks:
       id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
       version: -1
       name: jira-edit-issue
-      script: jira|||jira-edit-issue
+      script: '|||jira-edit-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -382,10 +385,9 @@ tasks:
       labels: {}
       priority: {}
       status:
-        simple: Resolve this issue
+        simple: done
       summary:
         simple: Edited
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -394,6 +396,7 @@ tasks:
           "y": 1944
         }
       }
+    note: false
   "18":
     id: "18"
     taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
@@ -415,7 +418,6 @@ tasks:
       fields: {}
       path:
         simple: Ticket.[0].Summary
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -424,6 +426,7 @@ tasks:
           "y": 2179
         }
       }
+    note: false
   "21":
     id: "21"
     taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
@@ -441,11 +444,10 @@ tasks:
       - "22"
     scriptarguments:
       expectedValue:
-        simple: Resolved
+        simple: Done
       fields: {}
       path:
         simple: Ticket.[0].Status
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -454,6 +456,7 @@ tasks:
           "y": 2421
         }
       }
+    note: false
   "22":
     id: "22"
     taskid: 178e2167-e603-4868-8920-20489b8227e4
@@ -462,10 +465,10 @@ tasks:
       id: 178e2167-e603-4868-8920-20489b8227e4
       version: -1
       name: jira-get-comments
-      script: jira|||jira-get-comments
+      script: '|||jira-get-comments'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -481,6 +484,7 @@ tasks:
           "y": 2596
         }
       }
+    note: false
   "23":
     id: "23"
     taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
@@ -499,7 +503,6 @@ tasks:
       fields: {}
       path:
         simple: Ticket.Comment.Comment
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -508,6 +511,7 @@ tasks:
           "y": 2800
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},

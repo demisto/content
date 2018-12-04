@@ -9,7 +9,11 @@ script: |-
 
   offense_id = demisto.get(d_args, 'offenseID')
   start_time = demisto.get(d_args, 'startTime')
-
+  # Try converting from date string to timestamp
+  try:
+      start_time = date_to_timestamp(str(start_time), '%Y-%m-%dT%H:%M:%S.%f000Z')
+  except:
+      pass
   d_args["query_expression"] = QUERY.format(offense_id,start_time)
 
   resp = demisto.executeCommand('QRadarFullSearch',d_args)
@@ -122,3 +126,4 @@ dependson:
   - qradar-searches
 tests:
 - No test
+releaseNotes: "QRadarGetOffenseCorrelations start_time field can now be either epoch time or date string"

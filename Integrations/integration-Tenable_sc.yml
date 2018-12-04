@@ -174,7 +174,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scans", mapped_scans, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
+                  'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scans, removeNull=True)
             }
         })
 
@@ -225,7 +225,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scan Policies", mapped_policies, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.ScanPolicy(val.ID==obj.ID)': createContext(mapped_policies, removeNull=True)
+                  'TenableSC.ScanPolicy(val.ID===obj.ID)': createContext(mapped_policies, removeNull=True)
             }
         })
 
@@ -268,7 +268,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scan Repositories", mapped_repositories, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.ScanRepository(val.ID==obj.ID)': createContext(mapped_repositories, removeNull=True)
+                  'TenableSC.ScanRepository(val.ID===obj.ID)': createContext(mapped_repositories, removeNull=True)
             }
         })
 
@@ -312,7 +312,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Credentials", mapped_credentials, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Credential(val.ID==obj.ID)': createContext(mapped_credentials, removeNull=True)
+                  'TenableSC.Credential(val.ID===obj.ID)': createContext(mapped_credentials, removeNull=True)
             }
         })
 
@@ -370,7 +370,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Assets", mapped_assets, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_assets, removeNull=True)
+                  'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_assets, removeNull=True)
             }
         })
 
@@ -427,7 +427,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Asset", mapped_asset, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_asset, removeNull=True)
+                  'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_asset, removeNull=True)
             }
         })
 
@@ -477,7 +477,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Asset created successfully', mapped_asset, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_asset, removeNull=True)
+                  'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_asset, removeNull=True)
             }
         })
 
@@ -564,7 +564,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                  'TenableSC.ReportDefinition(val.ID==obj.ID)': createContext(mapped_reports, removeNull=True)
+                  'TenableSC.ReportDefinition(val.ID===obj.ID)': createContext(mapped_reports, removeNull=True)
             }
         })
 
@@ -614,7 +614,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scan Zones", mapped_zones, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.ScanZone(val.ID==obj.ID)': createContext(mapped_zones, removeNull=True)
+                  'TenableSC.ScanZone(val.ID===obj.ID)': createContext(mapped_zones, removeNull=True)
             }
         })
 
@@ -694,7 +694,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Scan created successfully", mapped_scan, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
+                  'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
             }
         })
 
@@ -809,7 +809,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scan", mapped_scan, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.ScanResults(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
+                  'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
             }
         })
 
@@ -852,7 +852,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable.sc Scan Status", mapped_scans_results, headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.ScanResults(val.ID==obj.ID)': createContext(mapped_scans_results, removeNull=True)
+                  'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scans_results, removeNull=True)
             }
         })
 
@@ -913,7 +913,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                'TenableSC.ScanResults(val.ID==obj.ID)': createContext(mapped_results, removeNull=True)
+                'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_results, removeNull=True)
             }
         })
 
@@ -957,7 +957,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc Plugins', mapped_plugins, headers=headers,removeNull=True),
             'EntryContext': {
-                'TenableSC.Plugin(val.ID==obj.ID)': createContext(mapped_plugins, removeNull=True)
+                'TenableSC.Plugin(val.ID===obj.ID)': createContext(mapped_plugins, removeNull=True)
             }
         })
 
@@ -1162,9 +1162,9 @@ script:
 
         context = {}
 
-        context['TenableSC.ScanResults(val.ID==obj.ID)'] = createContext(scan_result, removeNull=True)
+        context['TenableSC.ScanResults(val.ID===obj.ID)'] = createContext(scan_result, removeNull=True)
         if len(cves_output) > 0:
-            context['CVE(val.ID==obj.ID)'] = createContext(cves_output)
+            context['CVE(val.ID===obj.ID)'] = createContext(cves_output)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1263,9 +1263,10 @@ script:
     def get_device_command():
         uuid = demisto.args().get('uuid')
         ip = demisto.args().get('ip')
-        dns_name = demisto.args().get('dnsName')
+        dns_name = demisto.args().get('dns_name')
+        repo = demisto.args().get('repository_id')
 
-        res = get_device(uuid, ip, dns_name)
+        res = get_device(uuid, ip, dns_name, repo)
 
         if not res or 'response' not in res:
             return_message('Device not found')
@@ -1292,20 +1293,27 @@ script:
 
         mapped_device = {
             'IP': device['ip'],
-            'UUID': device['uuid'],
-            'MacAddress': device['macAddress'],
-            'RepositoryID': device['repository'].get('id'),
-            'RepositoryName': device['repository'].get('name'),
-            'NetbiosName': device['netbiosName'],
-            'DNSName': device['dnsName'],
-            'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device['os'] else '',
-            'OsCPE': device['osCPE'],
-            'LastScan': datetime.datetime.utcfromtimestamp(int(device['lastScan'])).strftime('%Y-%m-%dT%H:%M:%SZ') if device['lastScan'] else '',
-            'TotalScore': device['total'],
-            'LowSeverity': device['severityLow'],
-            'MediumSeverity': device['severityMedium'],
-            'HighSeverity': device['severityHigh'],
-            'CriticalSeverity': device['severityCritical']
+            'UUID': device.get('uuid'),
+            'MacAddress': device.get('macAddress'),
+            'RepositoryID': device.get('repository', {}).get('id'),
+            'RepositoryName': device.get('repository', {}).get('name'),
+            'NetbiosName': device.get('netbiosName'),
+            'DNSName': device.get('dnsName'),
+            'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
+            'OsCPE': device.get('osCPE'),
+            'LastScan': datetime.datetime.utcfromtimestamp(int(device.get('lastScan'))).strftime('%Y-%m-%dT%H:%M:%SZ') if device.get('lastScan') and int(device['lastScan']) > 0 else '',
+            'TotalScore': device.get('total'),
+            'LowSeverity': device.get('severityLow'),
+            'MediumSeverity': device.get('severityMedium'),
+            'HighSeverity': device.get('severityHigh'),
+            'CriticalSeverity': device.get('severityCritical')
+        }
+
+        endpoint =  {
+            'IPAddress': mapped_device['IP'],
+            'MACAddress': mapped_device['MacAddress'],
+            'Hostname': mapped_device['DNSName'],
+            'OS': mapped_device['OS']
         }
 
         demisto.results({
@@ -1315,13 +1323,15 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Device(val.UUID==obj.UUID)': createContext(mapped_device, removeNull=True)
+                  'TenableSC.Device(val.UUID===obj.UUID)': createContext(mapped_device, removeNull=True),
+                  'Endpoint(val.IP===obj.IP)': createContext(endpoint, removeNull=True)
             }
         })
 
 
-    def get_device(uuid, ip, dns_name):
-        path = 'deviceInfo'
+    def get_device(uuid, ip, dns_name, repo):
+        path = 'repository/' + repo + '/' if repo else ''
+        path += 'deviceInfo'
         params = {
             'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical'
         }
@@ -1332,7 +1342,7 @@ script:
             if dns_name:
                 params['dnsName'] = dns_name
 
-        return send_request(path)
+        return send_request(path, params=params)
 
 
     def list_users_command():
@@ -1392,7 +1402,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc Users', mapped_users, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.User(val.ID==obj.ID)': createContext(mapped_users, removeNull=True)
+                  'TenableSC.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)
             }
         })
 
@@ -1497,7 +1507,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc System information', mapped_information, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.System(val.BuildID==obj.BuildID)': createContext(mapped_information, removeNull=True)
+                  'TenableSC.System(val.BuildID===obj.BuildID)': createContext(mapped_information, removeNull=True)
             }
         })
 
@@ -1544,7 +1554,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Alert(val.ID==obj.ID)': createContext(mapped_alerts, removeNull=True)
+                  'TenableSC.Alert(val.ID===obj.ID)': createContext(mapped_alerts, removeNull=True)
             }
         })
 
@@ -1601,7 +1611,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                  'TenableSC.Alert(val.ID==obj.ID)': createContext(mapped_alert, removeNull=True)
+                  'TenableSC.Alert(val.ID===obj.ID)': createContext(mapped_alert, removeNull=True)
             }
         })
 
@@ -2356,9 +2366,12 @@ script:
   - name: tenable-sc-get-device
     arguments:
     - name: ip
-      description: A valid IP address to filter by
-    - name: dnsName
-      description: DNS name for the IP address
+      description: A valid IP address of a device
+    - name: dns_name
+      description: DNS name of a device
+    - name: repository_id
+      description: Repository ID to get the device from, can be retrieved from list-repositories
+        command
     outputs:
     - contextPath: TenableSC.Device.IP
       description: Device IP address
@@ -2405,7 +2418,19 @@ script:
     - contextPath: TenableSC.Device.CriticalSeverity
       description: Device total threat scores with critical severity
       type: number
-    description: Gets the device information from the current user in Tenable.sc
+    - contextPath: Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Endpoint DNS name
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint mac address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint OS
+      type: string
+    description: Gets the specified device information
   - name: tenable-sc-list-users
     arguments:
     - name: id
@@ -2489,6 +2514,6 @@ script:
       type: date
     description: Get the system information and diagnostics from Tenable.sc
   isfetch: true
-releaseNotes: "Enabled fetch incidents (alerts)"
+releaseNotes: "Enabled fetch incidents (alerts), fixes to get-device command"
 tests:
   - tenable-sc-test
