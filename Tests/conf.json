@@ -813,6 +813,8 @@
     },
     "skipped_integrations": {
         "Whois": "Server currently has Whois by default, need to deprecate",
+        "Skyformation": "Server installed by skyformation is down, waiting on reply",
+        "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
