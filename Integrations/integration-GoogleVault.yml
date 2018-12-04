@@ -157,6 +157,8 @@ script:
             start_time = parsed_str.isoformat() + 'Z'
             return (start_time, end_time)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to parse date correctly: {}'.format(ex)})
             sys.exit(2)
 
@@ -569,6 +571,8 @@ script:
                             demisto.log("{}".format(ex))
                             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being closed.'})
                             sys.exit(2)
+                        if 'Quota exceeded for quota metric' in str(ex):
+                            return_error('Quota for Google Vault API exceeded')
 
             # Dealing with DELETE:
             elif wanted_state == 'DELETE':
@@ -582,6 +586,9 @@ script:
                             demisto.log("{}".format(ex))
                             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being deleted.'})
                             sys.exit(2)
+                        if 'Quota exceeded for quota metric' in str(ex):
+                            return_error('Quota for Google Vault API exceeded')
+
                 elif current_state == 'CLOSED':
                     try:
                         delete_response = delete_matter(service, matter_id)
@@ -591,6 +598,9 @@ script:
                             demisto.log("{}".format(ex))
                             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'The matter has holds that prevent it from being deleted.'})
                             sys.exit(2)
+                        if 'Quota exceeded for quota metric' in str(ex):
+                            return_error('Quota for Google Vault API exceeded')
+
                 elif current_state == 'DELETED':
                     demisto.results("Matter is already deleted.")
 
@@ -807,6 +817,8 @@ script:
         try:
             response = create_hold_mail_accounts(service, matter_id, query)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create hold. Error: {}'.format(ex)})
             sys.exit(2)
         hold_id = response['holdId']
@@ -859,6 +871,8 @@ script:
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
             sys.exit(2)
         create_time = response.get('createTime')
@@ -910,6 +924,8 @@ script:
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
             sys.exit(2)
         create_time = response.get('createTime')
@@ -960,6 +976,8 @@ script:
         try:
             response = create_export(service, matter_id, query)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
             sys.exit(2)
         create_time = response.get('createTime')
@@ -995,6 +1013,17 @@ script:
         service = connect()
         matter_id = demisto.getArg('matterId')
         export_id = demisto.getArg('exportID')
+
+        id_concatenation = demisto.getArg('queryIDS')
+        if id_concatenation:
+            if ',' not in id_concatenation:
+                return_error('Should enter a concatenation of MatterID and ExportID with comma delimeter such: <Matter_ID>,<ExportID>')
+
+            matter_id, export_id = id_concatenation.split(',')
+
+        if not (matter_id and export_id):
+            return_error('Missing parameter MetterID or ExportID')
+
         try:
             response = get_export_by_id(service, matter_id, export_id)
             export_name = response.get('name')
@@ -1040,6 +1069,8 @@ script:
                              }
             })
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to get export. Error: {}'.format(ex)})
             sys.exit(2)
 
@@ -1059,6 +1090,8 @@ script:
             demisto.results(fileResult(demisto.uniqueFile() + ".zip", out_file.getvalue()))
 
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to download export. Error: {}'.format(ex)})
             sys.exit(2)
 
@@ -1120,6 +1153,8 @@ script:
             })
 
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to display export result. Error: {}'.format(ex)})
             sys.exit(2)
 
@@ -1159,8 +1194,9 @@ script:
             })
 
         except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to display export result. Error: {}'.format(ex)})
-            sys.exit(2)
+            if 'Quota exceeded for quota metric' in str(ex):
+                ex = 'Quota for Google Vault API exceeded'
+            return_error('Unable to display export result. Error: {}'.format(ex))
 
 
 
@@ -1174,6 +1210,8 @@ script:
             demisto.results('ok')
             sys.exit(0)
         except Exception, ex:
+            if 'Quota exceeded for quota metric' in str(ex):
+                return_error('Quota for Google Vault API exceeded')
             return_error(ex.message)
     elif demisto.command() == 'gvault-list-matters':
         list_matters_command()
@@ -1584,11 +1622,12 @@ script:
   - name: gvault-export-status
     arguments:
     - name: matterId
-      required: true
       description: Matter ID
     - name: exportID
-      required: true
       description: Export ID
+    - name: queryIDS
+      description: 'MatterID and ExportID concatenation (used only for playbook) such:
+        <Matter_ID>,<ExportID>'
     outputs:
     - contextPath: GoogleVault.Export.MatterID
       description: Matter ID
