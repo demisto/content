@@ -545,6 +545,10 @@
             "playbookID": "Cybereason Test"
         },
         {
+            "integrations": "Cisco Meraki",
+            "playbookID": "Cisco-Meraki-Test"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
