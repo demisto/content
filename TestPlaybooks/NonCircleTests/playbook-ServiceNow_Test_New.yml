@@ -157,10 +157,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 24017728-cc30-4649-877a-d98e782d37a6
+    taskid: 4977a43f-48f6-416e-836e-3c4bacda978c
     type: regular
     task:
-      id: 24017728-cc30-4649-877a-d98e782d37a6
+      id: 4977a43f-48f6-416e-836e-3c4bacda978c
       version: -1
       name: 'VerifyContextFields: Summary, Assignee'
       scriptName: VerifyContextFields
@@ -175,14 +175,16 @@ tasks:
         simple: ServiceNow.Ticket.Assignee
       field2:
         simple: ServiceNow.Ticket.Summary
-      field3: {}
+      field3:
+        simple: ServiceNow.Ticket.Priority
       field4: {}
       field5: {}
       value1:
         simple: Johnny Doe
       value2:
         simple: Hello World
-      value3: {}
+      value3:
+        simple: 5 - Planning
       value4: {}
       value5: {}
     separatecontext: false
@@ -573,10 +575,10 @@ tasks:
     timertriggers: []
   "29":
     id: "29"
-    taskid: 0290651c-95ac-453c-8ce2-8373e47a10a0
+    taskid: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
     type: regular
     task:
-      id: 0290651c-95ac-453c-8ce2-8373e47a10a0
+      id: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
       scriptName: VerifyContextFields
@@ -591,14 +593,16 @@ tasks:
         simple: ServiceNow.Ticket.[0].Summary
       field2:
         simple: ServiceNow.Ticket.[0].Assignee
-      field3: {}
+      field3:
+        simple: ServiceNow.Ticket.[0].Priority
       field4: {}
       field5: {}
       value1:
         simple: Goodbye Please
       value2:
         simple: New Assignee
-      value3: {}
+      value3:
+        simple: 5 - Planning
       value4: {}
       value5: {}
     separatecontext: false
