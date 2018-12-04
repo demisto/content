@@ -330,7 +330,7 @@ script:
     except Exception, e:
         LOG(e)
         LOG.print_log()
-        return_error(e.messsage)
+        return_error(e.message)
   type: python
   commands:
   - name: deepsight-get-domain
