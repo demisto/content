@@ -801,7 +801,11 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
+        }
     ],
     "skipped_tests": {
         "whois_test": "Server currently has Whois by default, need to deprecate",
