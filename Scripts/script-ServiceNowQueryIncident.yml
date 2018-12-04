@@ -1,7 +1,7 @@
 commonfields:
-  id: 842052da-bfc7-4942-8d21-7d32edeea256
-  version: 86
-name: ServiceNowQueryIncidents
+  id: ServiceNowQueryIncident
+  version: 100
+name: ServiceNowQueryIncident
 script: |
   """
   This script is used to wrap the generic query-table command in ServiceNow.
@@ -14,27 +14,10 @@ script: |
   stating that a required field is missing.
   """
 
-  """
-  The table name is required by the API. To acquire the table name, please use the servicenow-get-table-name command.
-  """
-  command_args = {
-      'table_name': 'incident'
-  }
 
   """
-  These record fields(columns) are mapped from their names in ServiceNow to your choice of field names.
-  To view all optional fields for a given table, please use the servicenow-list-fields command.
-  The ID field must be included to manage unique context entries.
+  Mapping of priority values to their corresponding display in the UI
   """
-
-  fields_to_map = {
-      'sys_id': 'ID',
-      'name': 'Name',
-      'priority': 'Priority',
-      'opened_by': 'Caller',
-      'number': 'Number',
-      'short_description': 'Description'
-  }
 
   INCIDENT_PRIORITY = {
       '1': '1 - Critical',
@@ -44,6 +27,9 @@ script: |
       '5': '5 - Planning'
   }
 
+  """
+  Function to use the query command to retrieve records from the users table.
+  """
   def get_user(query):
       user_args = {
           'table_name': 'sys_user',
@@ -81,6 +67,27 @@ script: |
 
       return '{} {}'.format(user[0]['first_name'], user[0]['last_name'])
 
+  """
+  The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
+  """
+  command_args = {
+      'table_name': 'incident'
+  }
+
+  """
+  These record fields(columns) are mapped from their names in ServiceNow to your choice of field names.
+  To view all fields for a given table, use the servicenow-list-fields command.
+  The ID field must be included to manage unique context entries.
+  """
+
+  fields_to_map = {
+      'sys_id': 'ID',
+      'priority': 'Priority',
+      'opened_by': 'Caller',
+      'number': 'Number',
+      'short_description': 'Description'
+  }
+
   command_args['fields'] = list(fields_to_map.keys())
 
   incident_id = demisto.args().get('id')
@@ -94,7 +101,7 @@ script: |
 
 
   """
-  Set up the query
+  Set up the query according to the arguments and execute the command
   """
   if incident_id:
       query = 'id=' + incident_id
@@ -119,6 +126,7 @@ script: |
               # In case of string result, e.g "No incidents found"
               result = record_data
           else:
+              # Get the actual records
               records = record_data['result']
               # Map fields according to fields_to_map that were defined earlier
               mapped_records = [dict((fields_to_map[key], value) for (key, value) in list(filter(lambda (k,v): k in list(fields_to_map.keys()), r.items()))) for r in records]
@@ -128,6 +136,8 @@ script: |
                   # Map the priority
                   mr['Priority'] = INCIDENT_PRIORITY.get(mr['Priority'], mr['Priority'])
               display_headers = ['ID','Number','Priority', 'Description', 'Caller']
+
+              # Output entry
               result = {
                   'Type': entryTypes['note'],
                   'Contents': record_data,
@@ -162,8 +172,8 @@ outputs:
 - contextPath: ServiceNow.Incident.ID
   description: Incident ID
   type: string
-- contextPath: ServiceNow.Incident.Name
-  description: Incident name
+- contextPath: ServiceNow.Incident.Description
+  description: Incident description
   type: string
 - contextPath: ServiceNow.Incident.Number
   description: Incident number
@@ -173,3 +183,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+releaseNotes: "ServiceNow query table example"
