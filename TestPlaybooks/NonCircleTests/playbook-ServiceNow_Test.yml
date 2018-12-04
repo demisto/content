@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": 65
         }
       }
     note: false
@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -150,17 +150,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 515
+          "y": 545
         }
       }
     note: false
     timertriggers: []
   "6":
     id: "6"
-    taskid: b5e47340-57f7-4197-803e-da438c182caa
+    taskid: 7598b7d5-4213-40b8-83be-20932c8778a3
     type: regular
     task:
-      id: b5e47340-57f7-4197-803e-da438c182caa
+      id: 7598b7d5-4213-40b8-83be-20932c8778a3
       version: -1
       name: 'VerifyContextFields: Summary, Assignee'
       scriptName: VerifyContextFields
@@ -175,14 +175,16 @@ tasks:
         simple: Ticket.Assignee
       field2:
         simple: Ticket.Summary
-      field3: {}
+      field3:
+        simple: Ticket.Priority
       field4: {}
       field5: {}
       value1:
         simple: Johnny Doe
       value2:
         simple: Hello World
-      value3: {}
+      value3:
+        simple: "5"
       value4: {}
       value5: {}
     separatecontext: false
@@ -190,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 720
         }
       }
     note: false
@@ -288,7 +290,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 895
         }
       }
     note: false
@@ -328,7 +330,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1070
         }
       }
     note: false
@@ -352,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -376,7 +378,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1215
+          "y": 1245
         }
       }
     note: false
@@ -406,7 +408,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1360
+          "y": 1390
         }
       }
     note: false
@@ -436,7 +438,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1710
+          "y": 1740
         }
       }
     note: false
@@ -456,7 +458,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "28"
+      - "56"
     scriptarguments:
       active: {}
       activity_due: {}
@@ -534,48 +536,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2060
-        }
-      }
-    note: false
-    timertriggers: []
-  "28":
-    id: "28"
-    taskid: 990af179-91e5-438d-8976-1b126da46be0
-    type: regular
-    task:
-      id: 990af179-91e5-438d-8976-1b126da46be0
-      version: -1
-      name: 'servicenow-query Ticket #0'
-      script: '|||servicenow-query-tickets'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-      - "29"
-    scriptarguments:
-      limit: {}
-      query:
-        simple: sys_id=${Ticket.[0].ID}
-      ticket_type: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2235
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
   "29":
     id: "29"
-    taskid: 13f3c178-59be-42a5-8cac-a3f943e074d1
+    taskid: 51a0f8ac-e280-43db-8dc9-20ff8904969f
     type: regular
     task:
-      id: 13f3c178-59be-42a5-8cac-a3f943e074d1
+      id: 51a0f8ac-e280-43db-8dc9-20ff8904969f
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, Ticket[0])'
       scriptName: VerifyContextFields
@@ -590,14 +561,16 @@ tasks:
         simple: Ticket.[0].Summary
       field2:
         simple: Ticket.[0].Assignee
-      field3: {}
+      field3:
+        simple: Ticket.[0].Priority
       field4: {}
       field5: {}
       value1:
         simple: Goodbye Please
       value2:
         simple: New Assignee
-      value3: {}
+      value3:
+        simple: "5"
       value4: {}
       value5: {}
     separatecontext: false
@@ -605,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2440
         }
       }
     note: false
@@ -637,7 +610,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 2615
         }
       }
     note: false
@@ -670,7 +643,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2935
+          "y": 2965
         }
       }
     note: false
@@ -701,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3285
+          "y": 3315
         }
       }
     note: false
@@ -731,7 +704,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 690
+          "y": 720
         }
       }
     note: false
@@ -762,7 +735,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1040
+          "y": 1070
         }
       }
     note: false
@@ -792,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1535
+          "y": 1565
         }
       }
     note: false
@@ -822,7 +795,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2410
+          "y": 2440
         }
       }
     note: false
@@ -852,7 +825,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1885
+          "y": 1915
         }
       }
     note: false
@@ -882,7 +855,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2760
+          "y": 2790
         }
       }
     note: false
@@ -912,7 +885,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3110
+          "y": 3140
         }
       }
     note: false
@@ -942,7 +915,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3810
+          "y": 3840
         }
       }
     note: false
@@ -974,7 +947,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3635
+          "y": 3665
         }
       }
     note: false
@@ -1012,7 +985,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3460
+          "y": 3490
         }
       }
     note: false
@@ -1033,7 +1006,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5420
+          "y": 5415
         }
       }
     note: false
@@ -1062,7 +1035,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4510
+          "y": 4540
         }
       }
     note: false
@@ -1098,7 +1071,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4685
+          "y": 4715
         }
       }
     note: false
@@ -1131,7 +1104,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4160
+          "y": 4190
         }
       }
     note: false
@@ -1167,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4335
+          "y": 4365
         }
       }
     note: false
@@ -1200,7 +1173,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3985
+          "y": 4015
         }
       }
     note: false
@@ -1234,7 +1207,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4860
+          "y": 4890
         }
       }
     note: false
@@ -1271,7 +1244,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5035
+          "y": 5065
         }
       }
     note: false
@@ -1301,7 +1274,38 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5215
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+  "56":
+    id: "56"
+    taskid: fe0215c0-d264-4158-8512-506a0282678a
+    type: regular
+    task:
+      id: fe0215c0-d264-4158-8512-506a0282678a
+      version: -1
+      name: 'servicenow-query Ticket #0'
+      script: ServiceNow|||servicenow-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "29"
+      - "40"
+    scriptarguments:
+      limit: {}
+      sysparm_query:
+        simple: sys_id=${Ticket.[0].ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2265
         }
       }
     note: false
@@ -1311,10 +1315,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5435,
+        "height": 5415,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }
