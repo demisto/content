@@ -520,10 +520,12 @@ script:
             all_mailboxes = get_searchable_mailboxes(protocol)[ENTRY_CONTEXT]['EWS.Mailboxes']
             for email_address in email_addresses:
                 for mailbox in all_mailboxes:
+                    if MAILBOX not in mailbox:
+                        continue
                     if email_address.lower() == mailbox[MAILBOX].lower():
                         mailbox_ids.append(mailbox[MAILBOX_ID])
             if len(mailbox_ids) != len(email_addresses):
-                raise Exception("Did not found one or some of the specified email addresses")
+                raise Exception("Did not find one or more of the specified email addresses")
         elif mailbox_search_scope:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
@@ -2201,5 +2203,6 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
   - pyEWS_Test
