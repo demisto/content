@@ -332,12 +332,10 @@ script: |-
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
-      'TBLMD' : test_tbl_to_md,
       'FLTNCL': test_flatten_cell
       'TBLMD' : test_tbl_to_md,
       'HASH'  : test_hash_djb2,
       'CAMELIZE': test_camelize
-      'FLTNCL': test_flatten_cell
   }
 
   test_type = demisto.args()['test_type']
