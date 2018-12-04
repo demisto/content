@@ -94,14 +94,14 @@ script:
                         'Registrar': {
                             'Name': str(whois_result.registrar),
                             'AbuseEmail': str(list_tool(whois_result.emails, list, 0))
-                            },
+                        },
                         'Registrant': {
                             'Name': str(whois_result.get('name')),
                             'Email': str(list_tool(whois_result.emails, list, 1))
-                            }
                         }
                     }
-                    })
+                }
+            })
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['markdown'],
