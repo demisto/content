@@ -1014,6 +1014,6 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
-test:
+tests:
   - Zscaler Test
 releaseNotes: "Added URL validation to the command zscaler-blacklist-url as done in Zscaler GUI"
