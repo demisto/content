@@ -44,10 +44,7 @@ script:
         md = tableToMarkdown('dnstwist for domain - '  + DOMAIN, new_result, headers=["domain-name","IP Address","dns-mx","dns-ns","whois-updated", "whois-created"])
 
         domainContext = new_result[0] # The requested domain for variations
-        if limit < len(new_result):
-            domainsContextList = new_result[1:]   # The variations domains
-        else:
-            domainsContextList = new_result[1:int(limit)]
+        domainsContextList = new_result[1:int(limit)] # The variations domains
 
         domains =[]
         for item in domainsContextList:
@@ -59,7 +56,7 @@ script:
 
         ec = {
             "Name" : domainContext["domain-name"],
-            "IP" : domainContext["IP Address"],
+            "IP" : domainContext.get("IP Address"),
             "Domains" : domains
         }
 
@@ -69,7 +66,7 @@ script:
             'Contents': dnstwist_result,
             'HumanReadable':md,
             'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {'dnstwist.Domain' : ec}
+            'EntryContext': {'dnstwist.Domain(val.Name == obj.Name)' : ec}
         }
 
         demisto.results(entry_result)
