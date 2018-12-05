@@ -1237,7 +1237,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers),
             'EntryContext': {
-                  'ServiceNow.Table': createContext(mapped_tables),
+                  'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
             }
         }
 
@@ -3375,6 +3375,11 @@ script:
     - name: label
       required: true
       description: The table label, e.g Asset, Incident, IP address etc.
+    - name: limit
+      description: Results limit
+      defaultValue: "10"
+    - name: offset
+      description: Starting record index to begin retrieving records from
     outputs:
     - contextPath: ServiceNow.Table.ID
       description: Table system ID
