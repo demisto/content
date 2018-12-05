@@ -167,7 +167,8 @@ script:
                 Body: body
 
             },
-            params.insecure
+            params.insecure,
+            params.proxy
         );
 
         res = parseResponse(res);
@@ -673,5 +674,6 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
+releaseNotes: Add proxy to http post request
 tests:
 - sep_-_test_endpoint_search
