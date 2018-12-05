@@ -520,7 +520,13 @@ script:
                         'Vendor': 'Cisco Umbrella Investigate',
                         'Description': 'Malicious domain found via umbrella-domain-security'
                     }
-
+        else:
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': 0
+            }
         results.append ({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
