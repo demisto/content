@@ -311,7 +311,8 @@ view: |-
   }
 inputs:
 - key: URL
-  value: {}
+  value:
+    simple: ${URL.Data}
   required: false
   description: URL to detonate
 - key: interval
