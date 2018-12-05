@@ -1247,6 +1247,61 @@ script:
     description: Unsuspends a user and returns them to the ACTIVE state.  This operation
       can only be performed on users that have a SUSPENDED status.
     execution: true
+  - name: okta-get-user-factors
+    arguments:
+    - name: userId
+      description: The user Id
+    - name: username
+      description: The user name
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: string
+    - contextPath: Account.Factor.ID
+      description: Okta account factor ID
+      type: string
+    - contextPath: Account.Factor.FactorType
+      description: Okta account factor type
+      type: string
+    - contextPath: Account.Factor.Provider
+      description: Okta account factor provider
+      type: string
+    - contextPath: Account.Factor.Status
+      description: Okta account factor status
+      type: string
+    - contextPath: Account.Factor.Profile
+      description: Okta account factor profile
+      type: string
+    description: Enumerates all the enrolled factors for the specified user.
+  - name: okta-verify-push-factor
+    arguments:
+    - name: userId
+      required: true
+      description: The id of the user to challenge
+    - name: factorId
+      required: true
+      description: The push factor id
+    outputs:
+    - contextPath: Account.ID
+      description: Okta user ID
+      type: string
+    - contextPath: Account.VerifyPushResult
+      description: Okta user verify push factor result
+      type: string
+    description: Creates and verifies a push factor for a specified user.
+    execution: true
+  - name: okta-reset-factor
+    arguments:
+    - name: userId
+      description: The user id
+    - name: username
+      description: The user name
+    - name: factorId
+      required: true
+      description: The id of the factor to reset
+    description: Unenrolls an existing factor for the specified user, allowing the
+      user to enroll a new factor.
+    execution: true
   - name: okta-get-groups
     arguments:
     - name: username
@@ -2319,61 +2374,6 @@ script:
       description: Account type - Okta
       type: string
     description: Enumerates all users that are members of a group
-  - name: okta-get-user-factors
-    arguments:
-    - name: userId
-      description: The user Id
-    - name: username
-      description: The user name
-    outputs:
-    - contextPath: Account.ID
-      description: Okta account ID
-      type: string
-    - contextPath: Account.Factor.ID
-      description: Okta account factor ID
-      type: string
-    - contextPath: Account.Factor.FactorType
-      description: Okta account factor type
-      type: string
-    - contextPath: Account.Factor.Provider
-      description: Okta account factor provider
-      type: string
-    - contextPath: Account.Factor.Status
-      description: Okta account factor status
-      type: string
-    - contextPath: Account.Factor.Profile
-      description: Okta account factor profile
-      type: string
-    description: Enumerates all the enrolled factors for the specified user.
-  - name: okta-verify-push-factor
-    arguments:
-    - name: userId
-      required: true
-      description: The id of the user to challenge
-    - name: factorId
-      required: true
-      description: The push factor id
-    outputs:
-    - contextPath: Account.ID
-      description: Okta user ID
-      type: string
-    - contextPath: Account.VerifyPushResult
-      description: Okta user verify push factor result
-      type: string
-    description: Creates and verifies a push factor for a specified user.
-    execution: true
-  - name: okta-reset-factor
-    arguments:
-    - name: userId
-      description: The user id
-    - name: username
-      description: The user name
-    - name: factorId
-      required: true
-      description: The id of the factor to reset
-    description: Unenrolls an existing factor for the specified user, allowing the
-      user to enroll a new factor.
-    execution: true
   runonce: false
 fromversion: 3.6.0
 releaseNotes: "Added option to send and verify push factor, also reset a user's factor"
