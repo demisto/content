@@ -311,8 +311,9 @@ view: |-
   }
 inputs:
 - key: URL
-  value: {}
-  required: true
+  value:
+    simple: ${URL.Data}
+  required: false
   description: URL to detonate
 - key: interval
   value:
@@ -369,5 +370,6 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+releaseNotes: "-"
 tests:
   - CuckooTest
