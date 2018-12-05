@@ -1217,7 +1217,7 @@ script: |-
   sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
   sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
-  pascalRegex = re.compile('([A-Z]?[a-z]+)')
+  PASCAL_REGEX = re.compile('([A-Z]?[a-z0-9]+)')
 
   ############################### REGEX FORMATTING end ###############################
 
