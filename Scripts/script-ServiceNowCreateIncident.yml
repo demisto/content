@@ -103,14 +103,15 @@ script: |
   To view all fields for a given table, use the servicenow-list-fields command.
   The ID field must be included to manage unique context entries.
   """
-
   fields_to_map = {
       'sys_id': 'ID',
       'number': 'Number'
   }
 
 
-
+  """
+  For each field in the arguments, you need to check if it was provided and apply any operations required (e.g, get a user id from a user name) to send them to the API.
+  """
   incident_severity = demisto.args().get('severity')
   group_name = demisto.args().get('assigned_group')
   user_name = demisto.args().get('assignee')
@@ -127,8 +128,9 @@ script: |
 
 
   """
-  Set up the fields in the format of 'field1=a;field2=b;...' to create the incident with according to the arguments and execute the command.
-  To view all available fields for a record use the servicenow-list-fields-command.
+  Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...' to create the incident according to the arguments and execute the command.
+  In order to do that, to each field you need to concatenate the field's corresponding name in the ServiceNow API along with an '=' and the value. In the end each of those fields are joined by a ';'.
+  To view all the API fields for a record use the servicenow-list-fields-command.
   """
   fields = []
 
@@ -211,6 +213,10 @@ outputs:
   description: Incident number
   type: string
 scripttarget: 0
+dependson:
+  must:
+  - ServiceNow|||servicenow-create-record
+  - ServiceNow|||servicenow-query-table
 runonce: false
 releaseNotes: "ServiceNow create record example"
 tests:
