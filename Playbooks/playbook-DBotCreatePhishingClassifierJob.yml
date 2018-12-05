@@ -1,0 +1,180 @@
+id: DBotTrainPhishingModel
+version: -1
+name: DBotTrainPhishingModel
+description: 'Train the phishing machine learning model. This playbook can be use
+  as job, to run repeatedly, for example every week. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f296bee-5970-4a35-819b-30ace9905ff7
+    type: start
+    task:
+      id: 3f296bee-5970-4a35-819b-30ace9905ff7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 831b0954-1008-49f0-84e1-43dc7c585ec0
+    type: playbook
+    task:
+      id: 831b0954-1008-49f0-84e1-43dc7c585ec0
+      version: -1
+      name: DBotCreatePhishingClassifier
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
+      playbookName: DBotCreatePhishingClassifier
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ModelListStoreName:
+        simple: phishing_model
+      emailSubjectKey:
+        simple: name
+      emailTagKey:
+        simple: closeReason
+      emailTextKey:
+        simple: details
+      hashData:
+        simple: "no"
+      historicalDataFileListName: {}
+      incidentsEvaluationQuery:
+        simple: type:Phishing and created:>="180 days ago" and created:<"7 days ago"
+      incidentsTrainingQuery:
+        simple: type:Phishing and created:>="7 days ago"
+      isContextNeeded:
+        simple: "no"
+      maxIncidentsToFetchOnTraining:
+        simple: "3000"
+      phishingLabels:
+        simple: malicious,other
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: f2153861-94b2-4de6-8883-546b3e4dc5b9
+    type: title
+    task:
+      id: f2153861-94b2-4de6-8883-546b3e4dc5b9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 151eb179-a6e6-4f0d-859b-5e3e65e2e95d
+    type: regular
+    task:
+      id: 151eb179-a6e6-4f0d-859b-5e3e65e2e95d
+      version: -1
+      name: Close incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 122c08f4-f358-4ba9-837c-b644a6b8083b
+    type: regular
+    task:
+      id: 122c08f4-f358-4ba9-837c-b644a6b8083b
+      version: -1
+      name: Clean context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 4.1.0
+releaseNotes: "New playbook: wrapper for DBotCreatePhishingClassifier - easy to use as job"

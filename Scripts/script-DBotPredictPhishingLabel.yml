@@ -1,0 +1,69 @@
+commonfields:
+  id: DBotPredictPhishingLabel
+  version: -1
+name: DBotPredictPhishingLabel
+script: |-
+  import json
+  args = demisto.args()
+  args['inputText'] = args.get('emailSubject','') + ' ' + args.get('emailBody','')
+  res = demisto.executeCommand('DBotPredictTextLabel', demisto.args())
+  res = res[-1]
+  old_context_key_prefix = 'DBotPredictTextLabel'
+  new_context_key_prefix = 'DBotPredictPhishingLabel'
+  ec = res.get('EntryContext', {}) or {}
+  for key in ec:
+      if key.startswith(old_context_key_prefix):
+          new_key = new_context_key_prefix + key.lstrip(old_context_key_prefix)
+          ec[new_context_key_prefix] = ec.pop(old_context_key_prefix)
+  res['EntryContext'] = ec
+  demisto.results(res)
+type: python
+tags:
+- ml
+- phishing
+comment: |-
+  Predict text label using pre-trained machine learning phishing model.
+  Notice you have to run training playbook successfully first.
+enabled: true
+args:
+- name: warningThreshold
+  description: If the number of words in the input  text smaller then threshold a
+    warning will be displayed.
+  defaultValue: "30"
+- name: modelListName
+  required: true
+  description: Demisto list name that stores the machine learning model
+- name: hashData
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Is the input text is hashed
+  defaultValue: "no"
+- name: emailSubject
+  description: The email subject.
+- name: emailBody
+  description: The email body. It's better to use text body if possible, HTML is also
+    valid (HTML tags will be removed).
+outputs:
+- contextPath: DBotPredictPhishingLabel.Label
+  description: The suggested label
+  type: string
+- contextPath: DBotPredictPhishingLabel.Pobability
+  description: 'The prediction probability '
+  type: number
+- contextPath: DBotPredictPhishingLabel.AboveThreshold
+  description: Is the input text number of words above threshold?
+  type: boolean
+- contextPath: DBotPredictPhishingLabel.InputTextNumberOfTokens
+  description: Number of tokens in the input text
+  type: number
+- contextPath: DBotPredictPhishingLabel.InputTextTokens
+  description: The input text
+  type: string
+scripttarget: 0
+runonce: false
+dockerimage: demisto/dl:1.1
+runas: DBotWeakRole
+fromversion: 4.1.0
+releaseNotes: "New script: wrapper for DBotPredictTextLabel to predict phishing label using machine learning pre-trained model in Demisto"
