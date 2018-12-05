@@ -503,9 +503,9 @@ script:
                         DBotScore = 3
                     else:
                         DBotScore = securerank_to_dbotscore(secure_rank)
-                    context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
+                    context[outputPaths['dbotscore']] = {
                         'Indicator': domain,
-                        'Type': 'Domain',
+                        'Type': 'domain',
                         'Vendor': 'Cisco Umbrella Investigate',
                         'Score': DBotScore
                     }
@@ -697,14 +697,14 @@ script:
                 })
                 context_dbotscore.append({
                     'Indicator': domain['name'],
-                    'Type': 'Domain',
+                    'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Score': 3
                 })
 
             if contents:
                 context[outputPaths['domain']] = contents
-                context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
+                context[outputPaths['dbotscore']] = context_dbotscore
 
         results.append ({
             'Type': entryTypes['note'],
@@ -784,9 +784,9 @@ script:
 
         # context entry
         # DbotScore
-        context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
+        context[outputPaths['dbotscore']] = {
             'Indicator': domain,
-            'Type': 'Domain',
+            'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
             'Score': dbotscore
         }
@@ -1072,9 +1072,9 @@ script:
                         dbotscore = 3
                     else:
                         dbotscore = securerank_to_dbotscore(secure_rank)
-                    context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
+                    context[outputPaths['dbotscore']] = {
                         'Indicator': domain,
-                        'Type': 'Domain',
+                        'Type': 'domain',
                         'Vendor': 'Cisco Umbrella Investigate',
                         'Score': dbotscore
                     }
@@ -1441,7 +1441,7 @@ script:
                     })
                     context_dbotscore.append({
                         'Indicator': domain,
-                        'Type': 'Domain',
+                        'Type': 'domain',
                         'Vendor': 'Cisco Umbrella Investigate',
                         'Score': 3
                     })
@@ -1458,7 +1458,7 @@ script:
                 'Data': domains_context
             }
             context[outputPaths['domain']] = context_malicious
-            context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
+            context[outputPaths['dbotscore']] = context_dbotscore
 
         results.append ({
             'Type': entryTypes['note'],
@@ -2908,3 +2908,4 @@ script:
   runonce: false
 tests:
   - Cisco Umbrella Test
+releaseNotes: "-"
