@@ -36,7 +36,7 @@ script: |
           'query': query
       }
 
-      user_result = demisto.executeCommand("servicenow-query-table", user_args)[0]
+      user_result = demisto.executeCommand('servicenow-query-table', user_args)[0]
       user_data = demisto.get(user_result, 'Contents')
       if not user_data:
           return_error('Could not get the contents from the command result: ' + json.dumps(user_result))
@@ -112,7 +112,7 @@ script: |
 
   command_args['query'] = query
 
-  command_res = demisto.executeCommand("servicenow-query-table", command_args)
+  command_res = demisto.executeCommand('servicenow-query-table', command_args)
   result = {}
   try:
       entry = command_res[0]

@@ -32,7 +32,7 @@ script: |
           'query': query
       }
 
-      incident_result = demisto.executeCommand("servicenow-query-table", incident_args)[0]
+      incident_result = demisto.executeCommand('servicenow-query-table', incident_args)[0]
       incident_data = demisto.get(incident_result, 'Contents')
       if not incident_data:
           return_error('Could not get the contents from the command result: ' + json.dumps(incident_result))
@@ -64,7 +64,7 @@ script: |
           'query': query
       }
 
-      user_result = demisto.executeCommand("servicenow-query-table", user_args)[0]
+      user_result = demisto.executeCommand('servicenow-query-table', user_args)[0]
       user_data = demisto.get(user_result, 'Contents')
       if not user_data:
           return_error('Could not get the contents from the command result: ' + json.dumps(user_result))
@@ -98,7 +98,7 @@ script: |
           'query': query
       }
 
-      group_result = demisto.executeCommand("servicenow-query-table", group_args)[0]
+      group_result = demisto.executeCommand('servicenow-query-table', group_args)[0]
       group_data = demisto.get(group_result, 'Contents')
       if not group_data:
           return_error('Could not get the contents from the command result: ' + json.dumps(group_result))
