@@ -1637,7 +1637,7 @@ script:
     - contextPath: File.Name
       description: The name of the threat.
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.SubClassification
@@ -1826,7 +1826,7 @@ script:
     - contextPath: File.GlobalQuarantine
       description: Identifies if the threat is on the Global Quarantine list.
       type: boolean
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: File.Name
@@ -1839,7 +1839,7 @@ script:
     - contextPath: File.Safelisted
       description: Identifies if the threat is on the Safe List.
       type: boolean
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Signed
@@ -1934,7 +1934,7 @@ script:
     - contextPath: File.SubClassification
       description: The threat sub-classification for the threat.
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Safelisted
@@ -1959,7 +1959,7 @@ script:
     - contextPath: File.FileSize
       description: The size of the file.
       type: number
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: DBotScore.Indicator
@@ -2029,10 +2029,10 @@ script:
     - contextPath: File.ListType
       description: The list type that the threat belongs to (GlobalQuarantine or GlobalSafe).
       type: string
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 has for the threat.
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 has for the threat.
       type: string
     - contextPath: File.Name
@@ -2082,8 +2082,8 @@ script:
     - contextPath: File.Timestamp
       description: Timestamp
       type: string
-    - contextPath: File.Md5
-      description: Md5
+    - contextPath: File.MD5
+      description: MD5
       type: string
     - contextPath: DBotScore.Indicator
       description: The Indicator
@@ -2214,3 +2214,4 @@ script:
   runonce: false
 tests:
   - Cylance Protect v2 Test
+releaseNotes: "-"
