@@ -22,4 +22,4 @@ dependson:
 timeout: 0s
 releaseNotes: "test"
 tests:
-- panorama_test_pb
+- palo_alto_firewall_test_pb
