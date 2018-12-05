@@ -181,20 +181,24 @@ script:
             return None
         return d
 
-    # Converts elements of obj (incl. dictionary and list) to string recursively
-    def convert_to_str(obj):
+    # Converts unicode elements of obj (incl. dictionary and list) to string recursively
+    def unicode_to_str_recur(obj):
         if isinstance(obj, dict):
-            obj = {convert_to_str(k): convert_to_str(v) for k,v in obj.iteritems()}
+            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k,v in obj.iteritems()}
         elif isinstance(obj, list):
-            obj = map(convert_to_str, obj)
+            obj = map(unicode_to_str_recur, obj)
         elif isinstance(obj, unicode):
             obj = obj.encode('utf-8')
-        else:
-            try:
-                obj = str(obj)
-            except:
-                pass
         return obj
+
+    # Converts to an str
+    def convert_to_str(obj):
+        if isinstance(obj, unicode):
+            return obj.encode('utf-8')
+        try:
+            return str(obj)
+        except:
+            return obj
 
     # Filters recursively from dictionary (d1) all keys that do not appear in d2
     def filter_dict_nonintersection_key_to_value(d1, d2):
@@ -454,7 +458,7 @@ script:
             offenseId = max(offenseId, offense['id'])
             incidents.append(create_incident_from_offense(offense))
         demisto.setLastRun({'id': offenseId})
-        return json.dumps(incidents)
+        return incidents
 
     # Finds the last page position for QRadar query that receives a range parameter
     def find_last_page_pos(fetchQuery):
@@ -646,7 +650,7 @@ script:
         result_key = raw_search_results.keys()[0]
         title = 'QRadar Search Results from ' + result_key
         context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
-        return get_entry_for_object(title, convert_to_str(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
