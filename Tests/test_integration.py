@@ -63,7 +63,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     if not module_configuration:
         module_configuration = []
 
-    instance_name = integration_name + '_test_instance'
+    instance_name = integration_name + '_test' + str(uuid.uuid4())
     # define module instance
     module_instance = {
         'brand': configuration['name'],

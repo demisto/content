@@ -935,10 +935,10 @@ tasks:
     note: false
   "37":
     id: "37"
-    taskid: 33bccfca-28d9-44b6-818f-f754dee8a773
+    taskid: 1acde938-be32-41ba-8848-0b391e524d5a
     type: regular
     task:
-      id: 33bccfca-28d9-44b6-818f-f754dee8a773
+      id: 1acde938-be32-41ba-8848-0b391e524d5a
       version: -1
       name: Test fetch incidents
       scriptName: FetchFromInstance
@@ -949,8 +949,9 @@ tasks:
       '#none#':
       - "38"
     scriptarguments:
-      instance_name:
-        simple: QRadar_test_instance
+      brand_name:
+        simple: QRadar
+      instance_name: {}
     separatecontext: false
     view: |-
       {

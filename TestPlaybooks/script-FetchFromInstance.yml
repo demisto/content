@@ -3,9 +3,24 @@ commonfields:
   version: -1
 rolename: []
 name: FetchFromInstance
-script: |
+script: |-
   res = []
-  instance_name = demisto.args()["instance_name"]
+  brand_name = demisto.args().get("brand_name")
+  instance_name = None
+  if brand_name:
+      context_modules = demisto.getModules()
+      # In case we only have a single module
+      if isinstance(context_modules, dict):
+          context_modules = [context_modules]
+      for module in context_modules:
+          module_instance_name = module.keys()[0]
+          if module.get(module_instance_name).get("brand") == brand_name:
+              instance_name = module_instance_name
+              break
+  elif demisto.args().get("instance_name"):
+      instance_name = demisto.args()["instance_name"]
+  if not instance_name:
+      raise Exception("No instance name was found")
   command = '!{0}-fetch'.format(instance_name)
 
   response = demisto.executeCommand(command, {})
@@ -29,8 +44,9 @@ tags: []
 enabled: true
 args:
 - name: instance_name
-  required: true
   description: The name of the instance you want to fetch from
+- name: brand_name
+  description: The name of the brand you want to fetch from
 scripttarget: 0
 runonce: false
 tests:
