@@ -312,7 +312,9 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: URL to detonate
 - key: interval
