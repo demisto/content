@@ -1,7 +1,7 @@
-id: DBotTrainPhishingModel
+id: DBotCreatePhishingClassifierJob
 version: -1
-name: DBotTrainPhishingModel
-description: 'Train the phishing machine learning model. This playbook can be use
+name: DBotCreatePhishingClassifierJob
+description: 'Train the phishing machine learning model. This playbook should be used
   as job, to run repeatedly, for example every week. '
 starttaskid: "0"
 tasks:
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -92,6 +93,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -104,22 +106,26 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 151eb179-a6e6-4f0d-859b-5e3e65e2e95d
+    taskid: a0577456-3576-460d-8ede-15c6569f611a
     type: regular
     task:
-      id: 151eb179-a6e6-4f0d-859b-5e3e65e2e95d
+      id: a0577456-3576-460d-8ede-15c6569f611a
       version: -1
       name: Close incident
-      scriptName: CloseInvestigation
+      description: Close the investigation - we want to close the incident if the
+        playbook successfully finished.
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      notes: {}
-      reason: {}
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
     separatecontext: false
     view: |-
       {
@@ -132,12 +138,13 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 122c08f4-f358-4ba9-837c-b644a6b8083b
+    taskid: cd901cee-98fa-416b-8e39-519218a516ea
     type: regular
     task:
-      id: 122c08f4-f358-4ba9-837c-b644a6b8083b
+      id: cd901cee-98fa-416b-8e39-519218a516ea
       version: -1
       name: Clean context
+      description: Clear all context data
       scriptName: DeleteContext
       type: regular
       iscommand: false

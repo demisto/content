@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +31,13 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 82bf820d-715c-4225-8470-47db79e5e85c
+    taskid: 88dfca43-623f-4ab4-8b4a-c76e522c7f5f
     type: regular
     task:
-      id: 82bf820d-715c-4225-8470-47db79e5e85c
+      id: 88dfca43-623f-4ab4-8b4a-c76e522c7f5f
       version: -1
       name: Prepare phishing data
+      description: Prepare emails data to machine learning model
       scriptName: DBotPreparePhishingData
       type: regular
       iscommand: false
@@ -73,12 +75,13 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 8fed5d85-ebf3-4cd7-82db-e01e3431b6cb
+    taskid: ee891512-2e90-40eb-8e62-46242df2a75f
     type: regular
     task:
-      id: 8fed5d85-ebf3-4cd7-82db-e01e3431b6cb
+      id: ee891512-2e90-40eb-8e62-46242df2a75f
       version: -1
       name: Train model
+      description: Train the machine learning model
       scriptName: DBotTrainTextClassifier
       type: regular
       iscommand: false
@@ -104,12 +107,13 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 55a946ad-f329-4b48-8334-fccaf15dce9c
+    taskid: 47b24192-7505-4410-838d-4036ab392f2b
     type: regular
     task:
-      id: 55a946ad-f329-4b48-8334-fccaf15dce9c
+      id: 47b24192-7505-4410-838d-4036ab392f2b
       version: -1
       name: 'Model evaluation '
+      description: 'Evaluate the model  '
       scriptName: DBotPredictPhishingEvaluation
       type: regular
       iscommand: false
@@ -157,6 +161,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -169,12 +174,13 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 5ed12e21-b988-4956-8e05-1c9d5af7602b
+    taskid: 8ed34b82-1f51-4129-81e6-010ea0e16584
     type: condition
     task:
-      id: 5ed12e21-b988-4956-8e05-1c9d5af7602b
+      id: 8ed34b82-1f51-4129-81e6-010ea0e16584
       version: -1
       name: Is model trained?
+      description: Check if the model successfully trained
       type: condition
       iscommand: false
       brand: ""
@@ -203,12 +209,13 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: a38ffb57-58c7-4f5e-8529-293c8a73d949
+    taskid: c20fcbea-60ac-49c6-8659-bf3bc09033d2
     type: condition
     task:
-      id: a38ffb57-58c7-4f5e-8529-293c8a73d949
+      id: c20fcbea-60ac-49c6-8659-bf3bc09033d2
       version: -1
       name: Historical data exist
+      description: Do we have file with historic data we want to load?
       type: condition
       iscommand: false
       brand: ""
@@ -237,12 +244,13 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 0bf5cf73-1058-4f50-8b88-71ca827da768
+    taskid: c87ef0d3-71bc-4d0d-8110-e8fc6e838cfa
     type: regular
     task:
-      id: 0bf5cf73-1058-4f50-8b88-71ca827da768
+      id: c87ef0d3-71bc-4d0d-8110-e8fc6e838cfa
       version: -1
       name: Get historical file
+      description: Dump the file to the war room (from base64 list)
       scriptName: Base64ListToFile
       type: regular
       iscommand: false

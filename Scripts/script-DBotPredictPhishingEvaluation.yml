@@ -37,6 +37,7 @@ script: |+
       demisto.results(entries[0]['Contents'])
       sys.exit(0)
   else:
+      entries = [e for e in entries if e['ContentsFormat'] == formats['json']]
       labeled_data = entries[0]['Contents']
   if len(labeled_data) == 0:
       return_error("There is not data to evaluate")

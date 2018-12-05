@@ -121,4 +121,4 @@ runonce: false
 dockerimage: demisto/dl:1.1
 runas: DBotWeakRole
 fromversion: 4.1.0
-releaseNotes: "New scirpt: predict text label using machine learning pre-trained model in Demisto" 
+releaseNotes: "New script: predict text label using machine learning pre-trained model in Demisto"
