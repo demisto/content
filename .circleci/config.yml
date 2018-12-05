@@ -24,12 +24,12 @@ jobs:
       - run:
           name: Validate Files and Yaml
           command: |
-              chmod +x ./Tests/yamlvalidator
-              ./Tests/yamlvalidator
-              python ./Tests/scripts/validate_files_structure.py
+              python ./Tests/scripts/validate_files_structure.py -c true
       - run:
           name: Configure Test Filter
-          command: python ./Tests/scripts/configure_tests.py
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
@@ -42,3 +42,37 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
+      - run:
+          name: Download Configuration
+          command: |
+              ./Tests/scripts/download_demisto_conf.sh
+      - run:
+          name: Create Instance
+          command: |
+              ./Tests/scripts/create_instance.sh instance.json
+      - run:
+          name: Setup Instance
+          command: |
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
+      - run:
+          name: Run Tests
+          shell: /bin/bash
+          command: ./Tests/scripts/run_tests.sh
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Instance Test
+          command: ./Tests/scripts/instance_test.sh
+          when: always
+      - run:
+          name: Destroy Instances
+          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
+          when: always
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
