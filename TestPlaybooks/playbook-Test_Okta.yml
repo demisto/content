@@ -1,6 +1,5 @@
 id: okta_test_playbook
 version: -1
-fromversion: 3.6.0
 name: Okta test playbook
 description: Test the functionality of Okta
 starttaskid: "0"
@@ -27,6 +26,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 6aa6b2d2-cbbf-4d0d-8db9-bdee5dc48ada
@@ -58,6 +58,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: f5471866-db3b-4c4d-8ce0-941a3face541
@@ -94,6 +95,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 61a34794-6cab-42f1-870e-d7d62abb0f81
@@ -123,6 +125,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: 7314eebd-01b1-4f8f-821c-fe827a6302c5
@@ -151,6 +154,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: 29794378-53b4-4526-8723-885d620018e5
@@ -188,6 +192,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: db909f79-6f7f-4cb9-8c5a-15c6643724a5
@@ -220,6 +225,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: a7e6f06d-c2b9-4894-8556-6651f144f8c5
@@ -252,6 +258,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 8e4968f9-3931-48b3-8eda-66843a87b5b7
@@ -317,6 +324,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 53329509-bb31-47b3-84db-39909a8ba522
@@ -349,6 +357,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: 7d9d88b1-9bbe-4c8d-8a29-4ca5fbd32bf4
@@ -381,6 +390,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
     taskid: 338e07ce-eb3a-4ec3-8eeb-33ae596f3591
@@ -412,6 +422,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
     taskid: d4c09dda-4e8b-4f85-8603-f5b47599f10d
@@ -444,6 +455,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "17":
     id: "17"
     taskid: 210e6984-9cd8-485a-8788-cc0146014493
@@ -476,6 +488,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
     taskid: c8ba1fdf-77cc-4ca0-8059-dd4c34d78d01
@@ -507,6 +520,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
     taskid: 02b0ffa6-5712-4eda-86ab-eba9835b05e4
@@ -538,6 +552,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "20":
     id: "20"
     taskid: c1ed2517-6ee7-4f3e-8804-00d9fd30485b
@@ -574,6 +589,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
     taskid: 7ece916f-09b3-4d34-819a-1744a74b2cc1
@@ -603,6 +619,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
     taskid: b809227c-4c57-4abe-8bdd-5761d007f8e2
@@ -633,6 +650,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "23":
     id: "23"
     taskid: e366655c-1bde-4f87-8da7-8f3dc071b6c5
@@ -647,6 +665,9 @@ tasks:
       type: regular
       iscommand: true
       brand: okta
+    nexttasks:
+      '#none#':
+      - "24"
     scriptarguments:
       username:
         simple: test@this.com
@@ -659,12 +680,77 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 735e952a-0dc0-42c2-873d-2e516ef0e7be
+    type: regular
+    task:
+      id: 735e952a-0dc0-42c2-873d-2e516ef0e7be
+      version: -1
+      name: okta-get-user-factors
+      description: Enumerates all the enrolled factors for the specified user.
+      script: okta|||okta-get-user-factors
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      userId: {}
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3525
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: cd1a9f49-049c-4c33-8cad-dd2142b457d0
+    type: regular
+    task:
+      id: cd1a9f49-049c-4c33-8cad-dd2142b457d0
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Factor
+      path:
+        simple: Account
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3390,
+        "height": 3745,
         "width": 492.5,
         "x": 50,
         "y": 50
