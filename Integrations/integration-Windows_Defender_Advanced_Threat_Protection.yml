@@ -1017,4 +1017,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
