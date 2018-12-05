@@ -27,7 +27,9 @@ jobs:
               python ./Tests/scripts/validate_files_structure.py -c true
       - run:
           name: Configure Test Filter
-          command: python ./Tests/scripts/configure_tests.py
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
