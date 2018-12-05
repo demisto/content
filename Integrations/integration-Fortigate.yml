@@ -684,7 +684,7 @@ script:
         response = move_policy_request(policy_id, position, neighbour)
 
         policy_context = {
-            'ID': policy_id,
+            'ID': int(policy_id),
             'Moved': True
         }
         contents.append({
@@ -1376,5 +1376,6 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
+releaseNotes: "-"
 tests:
   - Fortigate Test
