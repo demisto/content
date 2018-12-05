@@ -28,7 +28,7 @@
         },
         {
             "integrations": "Panorama",
-            "playbookID": "panorama_test_pb"
+            "playbookID": "palo_alto_firewall_test_pb"
         },
         {
           "integrations": "Tenable.io",
