@@ -770,11 +770,10 @@ script:
            });
 
            hr.push({
-               ID: factor.id,
-               FactorType: factor.factorType,
-               Provider: factor.provider,
-               Status: factor.status,
-               Profile: flattenValue(factor.profile)
+               'ID': factor.id,
+               'Factor Type': factor.factorType,
+               'Provider': factor.provider,
+               'Status': factor.status
            });
         });
 
@@ -786,12 +785,12 @@ script:
 
         return {
             Type: entryTypes.note,
-            EntryContext: {
-                'Account(val.ID==obj.ID)': account
-            },
             Contents: factors,
             ContentsFormat: formats.json,
-            HumanReadable: md
+            HumanReadable: md,
+            EntryContext: {
+                'Account(val.ID==obj.ID)': account
+            }
         }
     }
 
@@ -842,6 +841,7 @@ script:
 
 
     function pollVerifyPush(verifyLink){
+        // Get the query string of the link
         var index = verifyLink.indexOf(API_POSTFIX);
         var path = verifyLink.substr(index + API_POSTFIX.length);
 
@@ -850,6 +850,10 @@ script:
             if(!response){
                 throw 'Did not receive a response from the factor verfication';
             }
+
+            // Wait 5 seconds
+            wait(5);
+
         } while(response.factorResult === 'WAITING')
 
         return response;
@@ -1189,8 +1193,8 @@ script:
         case 'okta-get-user-factors':
             entry = getUserFactorsCommand();
             break;
-        case 'okta-verify-user-factor':
-            entry = verifyUserFactorCommand();
+        case 'okta-verify-push-factor':
+            entry = verifyPushCommand();
             break;
         case 'okta-reset-factor':
             entry = resetFactorCommand();
@@ -2348,7 +2352,7 @@ script:
       description: The id of the user to challenge
     - name: factorId
       required: true
-      description: The factor id
+      description: The push factor id
     outputs:
     - contextPath: Account.ID
       description: Okta user ID
