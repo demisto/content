@@ -1840,9 +1840,5 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
-releaseNotes: "QRadar integration enhancements:
-      - Added remoteDestinationCount field to indicate an offense has a remote destination.
-      - Added ability to use custom output path for 'qradar-get-search-results'
-      - CloseTime field is now converted to date string"
 tests:
   - test_Qradar
