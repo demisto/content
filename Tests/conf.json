@@ -2,6 +2,9 @@
     "testTimeout": 160,
     "tests": [
         {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
+        {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
         },

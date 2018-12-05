@@ -215,3 +215,5 @@ dockerimage: demisto/dl:1.1
 runas: DBotWeakRole
 fromversion: 4.1.0
 releaseNotes: "This script is part of phishing model training using machine learning"
+tests:
+  - CreatePhishingClassifierMLTest

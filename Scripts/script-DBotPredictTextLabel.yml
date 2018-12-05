@@ -3,13 +3,12 @@ commonfields:
   version: -1
 name: DBotPredictTextLabel
 script: |+
-  import fastText, sys, base64, re
+  import sys, base64, re
   import demisto_ml
 
   THRESHOLD = int(demisto.args().get('warning_threshold', 50))
   HASH_WORDS = (demisto.args()['hashData'] == 'yes')
   HASH_SEED = 5381
-  TAG_PREFIX = demisto_ml.DEFAULT_LABEL_PREFIX
 
   def get_input_text_prediction(model, input_text):
       number_of_tokens = len(input_text.split(" "))
@@ -17,15 +16,15 @@ script: |+
       if number_of_tokens < THRESHOLD:
           about_threshold = False
 
-      fast_text_prediction =  model.predict(input_text)
-      for i in range(0, len(fast_text_prediction[0])):
-          return {
-              'Label': fast_text_prediction[0][i].replace(TAG_PREFIX,''),
-              'Probability': "%.2f" % fast_text_prediction[1][i],
-              'AboveThreshold': len(input_text) >= THRESHOLD,
-              'InputTextNumberOfTokens': number_of_tokens,
-              'InputTextTokens': input_text
-          }
+      label, probability =  demisto_ml.predict(model, input_text)
+      return {
+          'Label': label,
+          'Probability': "%.2f" % probability,
+          'AboveThreshold': len(input_text) >= THRESHOLD,
+          'InputTextNumberOfTokens': number_of_tokens,
+          'InputTextTokens': input_text
+      }
+
 
 
   def load_model(list_name):
@@ -122,3 +121,5 @@ dockerimage: demisto/dl:1.1
 runas: DBotWeakRole
 fromversion: 4.1.0
 releaseNotes: "New script: predict text label using machine learning pre-trained model in Demisto"
+tests:
+  - CreatePhishingClassifierMLTest

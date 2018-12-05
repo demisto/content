@@ -1,6 +1,6 @@
-id: TestCreatePhishingClassifierML
+id: CreatePhishingClassifierMLTest
 version: -1
-name: TestCreatePhishingClassifierML
+name: CreatePhishingClassifierMLTest
 description: Test CreatePhishingClassifierML playbook
 starttaskid: "0"
 tasks:
