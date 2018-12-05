@@ -950,7 +950,7 @@ tasks:
       - "38"
     scriptarguments:
       instance_name:
-        simple: QRadar_instance_1
+        simple: QRadar_test_instance
     separatecontext: false
     view: |-
       {
