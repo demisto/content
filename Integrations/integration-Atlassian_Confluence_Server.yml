@@ -1,0 +1,573 @@
+commonfields:
+  id: Atlassian Confluence Server
+  version: -1
+name: Atlassian Confluence Server
+display: Atlassian Confluence Server
+category: Utilities
+image: data:image/png;base64,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
+description: Atlassian Confluence Server API
+configuration:
+- display: API Server URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |-
+    import requests
+    import json
+
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    """
+    GLOBAL VARIABLES
+    """
+
+    SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
+    BASE_URL = SERVER + '/rest/api'
+    VERIFY_CERTIFICATE = not demisto.params().get('unsecure', False)
+    USERNAME = demisto.params().get('username')
+    PASSWORD = demisto.params().get('password')
+
+    """
+    Helper Functions
+    """
+    def return_error_and_exit(message):
+        demisto.results({
+            'Type': entryTypes['error'], # note, warning, error
+            'ContentsFormat': formats['text'], # json, markdown, file, text
+            'Contents': message
+        })
+        sys.exit(0)
+
+    """
+    Confluence Commands
+    """
+
+    def update_content_command():
+        """
+        Confluence Update Content method
+        """
+        content_data = {}
+
+        page_id = demisto.args().get('pageid')
+        content_title = demisto.args().get('title')
+        space_key = demisto.args().get('space')
+        content_body = demisto.args().get('body')
+        content_type = demisto.args().get('type')
+        content_version = int(demisto.args().get('currentversion')) + 1
+
+        #Populate the content_data dictionary
+        content_data['type'] = content_type
+        if space_key is not None:
+            content_data['space'] = {"key": space_key}
+        if content_title is not None:
+            content_data['title'] = content_title
+        content_data['body'] = {
+            "storage": {
+                "value": content_body,
+                "representation":"storage"
+                }
+            }
+        content_data['version'] = {
+            "number": content_version
+            }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/content/' + page_id
+
+        res = requests.put(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, data=json.dumps(content_data))
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to update Content.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Updated Content', context, ['id', 'title', 'type'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content.Update': context
+            }
+        })
+
+    def create_content_command():
+        """
+        Confluence Create Content method
+        """
+
+        content_data = {}
+
+        content_type = demisto.args().get('type')
+        content_title = demisto.args().get('title')
+        space_key = demisto.args().get('space')
+        content_body = demisto.args().get('body')
+
+        #Populate the content_data dictionary
+        content_data['type'] = content_type
+        content_data['space'] = {
+            "key": space_key
+            }
+        content_data['title'] = content_title
+        content_data['body'] = {
+            "storage": {
+                "value": content_body,
+                "representation": "storage"
+                }
+            }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/content'
+
+        res = requests.post(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, data=json.dumps(content_data))
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to create Content.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content', context, ['id', 'title', 'type'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content.Create': context
+            }
+        })
+
+    def create_space_command():
+        """
+        Confluence Create Space method
+        """
+
+        space_data = {}
+
+        space_type = demisto.args().get('type')
+        space_description = demisto.args().get('description')
+        space_key = demisto.args().get('key')
+        space_name = demisto.args().get('name')
+
+        #Populate the space_data dictionary
+        space_data['type'] = space_type
+        space_data['space'] = {
+            "key": space_key
+        }
+        space_data['description'] = {
+            "plain": {
+                "value": space_description,
+                "representation": "plain"
+                }
+            }
+        space_data['name'] = space_name
+        space_data['key'] = space_key
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/space'
+
+        res = requests.post(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, data=json.dumps(space_data))
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to create Space.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Space', context, ['id', 'key', 'name'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Space.Create': context
+            }
+        })
+
+    def get_content_command():
+        """
+        Confluence Get Content method
+        """
+
+        params = {}
+
+        space_key = demisto.args().get('key')
+        content_title = demisto.args().get('title')
+
+        #Populate the params dictionary
+        if content_title is not None:
+            params['title'] = content_title
+        params['spaceKey'] = space_key
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/content'
+
+        res = requests.get(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, params=params)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to get Content.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content', context['results'], ['id', 'title', 'type'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content.Get': context
+            }
+        })
+
+    def search_content_command():
+        """
+        Confluence Search Content method
+        Reference:  https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/
+        """
+
+        params = {}
+
+        cql = demisto.args().get('cql')
+        cql_context = demisto.args().get('cqlcontext')
+        expand = demisto.args().get('expand')
+        start = demisto.args().get('start')
+        limit = demisto.args().get('limit')
+
+        #Populate the params dictionary
+        if cql_context is not None:
+            params['cqlcontext'] = cql_context
+        if expand is not None:
+            params['expand'] = expand
+        if start is not None:
+            params['start'] = start
+        params['limit'] = limit
+        params['cql'] = cql
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/content/search'
+
+        res = requests.get(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, params=params)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to search Content.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content Search', context['results'], ['id', 'title', 'type'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content.Search': context
+            }
+        })
+
+    def list_spaces_command():
+        """
+        Confluence list Spaces method
+        """
+
+        params = {}
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        full_url = BASE_URL + '/space'
+
+        res = requests.get(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers, params=params)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Failed to list Spaces.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        context = res.json()
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Spaces', context['results'], ['id', 'key', 'name'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Space.List': context
+            }
+        })
+
+    def delete_content_command():
+        """
+        Confluence Delete Content Spaces method
+        """
+
+        content_id = demisto.args().get('id')
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+
+        full_url = BASE_URL + '/content/' + content_id
+
+        res = requests.delete(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers)
+
+        if res.status_code == 204:
+            context = {
+                "results": "Successfully Deleted Content ID " + content_id
+                }
+        else:
+            return_error_and_exit('Delete failed. Check Content ID.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content', context['results'], ['Result'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': context,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content.Delete': context
+                }
+            })
+
+    def test():
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+
+        full_url = BASE_URL + '/user/current'
+
+        res = requests.get(full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME,PASSWORD), headers=headers)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit('Test failed. Check URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(full_url, res.status_code, res.text))
+
+        demisto.results('ok')
+
+    """
+    CODE EXECUTION STARTS HERE
+
+    demisto.command() returns the name of the command which executed now
+    """
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            """
+            demisto.command() will return 'test-module' when the Test button in integration page clicked
+            """
+            test()
+        elif demisto.command() == 'confluence-create-space':
+            create_space_command()
+        elif demisto.command() == 'confluence-create-content':
+            create_content_command()
+        elif demisto.command() == 'confluence-get-content':
+            get_content_command()
+        elif demisto.command() == 'confluence-list-spaces':
+            list_spaces_command()
+        elif demisto.command() == 'confluence-delete-content':
+            delete_content_command()
+        elif demisto.command() == 'confluence-update-content':
+            update_content_command()
+        elif demisto.command() == 'confluence-search-content':
+            search_content_command()
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: confluence-create-space
+    arguments:
+    - name: name
+      required: true
+      description: Space Name E.g. Test Space
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - global
+      description: Space Type E.g. global
+      defaultValue: global
+    - name: description
+      description: Space Description
+    - name: key
+      required: true
+      description: Space Key E.g. TSTSPC  This key will be used as input when creating/updating
+        child components from a Space
+    outputs:
+    - contextPath: Confluence.Space.Create
+      description: ""
+    description: Create a new Confluence Space
+  - name: confluence-create-content
+    arguments:
+    - name: title
+      required: true
+      description: Confluence Page Title
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - page
+      description: Confluence Content Type  E.g. page
+    - name: space
+      required: true
+      description: Space Key to add Content to a specific Space
+    - name: body
+      description: Confluence Page body to add
+    outputs:
+    - contextPath: Confluence.Content.Create
+    description: Create Confluence content for a given Space
+  - name: confluence-list-spaces
+    arguments: []
+    outputs:
+    - contextPath: Confluence.Space.List
+      description: List of Confluence Spaces
+    description: List all Confluence Spaces
+  - name: confluence-get-content
+    arguments:
+    - name: key
+      required: true
+      description: Confluence Space Key
+    - name: title
+      required: true
+      description: Confluence Content Title
+    outputs:
+    - contextPath: Confluence.Content.Get
+    description: Get Confluence Content by Space Key and Title
+  - name: confluence-delete-content
+    arguments:
+    - name: id
+      required: true
+      description: Content ID
+    outputs:
+    - contextPath: Confluence.Content.Delete
+    description: Delete Confluence Content
+    execution: true
+  - name: confluence-update-content
+    arguments:
+    - name: pageid
+      required: true
+      description: Page ID used to find and update page
+    - name: currentversion
+      required: true
+      description: This is a required value ... Must select/pass the value from a
+        content search ... The integration will increment by 1
+    - name: title
+      required: true
+      description: Page Title to update
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - page
+      description: Content Type
+    - name: space
+      description: Space key to update
+    - name: body
+      description: Confluence Page body to update. Note, this data will completely
+        replace the current content body.
+    outputs:
+    - contextPath: Confluence.Content.Update
+    description: Update Confluence Content
+    execution: true
+  - name: confluence-search-content
+    arguments:
+    - name: cql
+      required: true
+      description: a cql query string to use to locate content ... E.g. space = DEV
+        order by created
+    - name: cqlcontext
+      description: The context to execute a cql search in, this is the json serialized
+        form of SearchContext
+    - name: expand
+      description: A comma separated list of properties to expand on the content
+    - name: start
+      description: The start point of the collection to return
+    - name: limit
+      description: The limit of the number of items to return, this may be restricted
+        by fixed system limits
+      defaultValue: "25"
+    outputs:
+    - contextPath: Confluence.Content.Search
+    description: 'Fetch a list of content using the Confluence Query Language (CQL).
+      See: https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
+  runonce: false
