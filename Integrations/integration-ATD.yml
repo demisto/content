@@ -84,6 +84,9 @@ script:
         if (res):
             return res['results']
 
+    def heart_beat():
+        return http_request('php/heartbeat.php','get', API_HEADERS, HEARTBEATHEADERS)
+
     def get_headers():
         sess = get_session_credentials()
         return {
@@ -115,36 +118,14 @@ script:
                     return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
         return result
 
-    ''' FUNCTIONS '''
-    def heart_beat():
-        return http_request('php/heartbeat.php','get', API_HEADERS, HEARTBEATHEADERS)
-
-    def test_get_session():
-        res = http_request('php/session.php','get', LOGINHEADERS)
-
     def prettify_current_user_res(current_user):
         pretty_current_user = {
             'APIVersion': current_user['apiVersion'],
-            'IsAdmin': 'True' if (current_user['isAdmin'] == '1') else 'False',
+            'IsAdmin': 'True' if current_user['isAdmin'] == '1' else 'False',
             'SessionId': current_user['session'],
             'UserId': current_user['userId']
         }
         return pretty_current_user
-
-    def get_session():
-        res = http_request('php/session.php','get', LOGINHEADERS)
-        md = tableToMarkdown('ATD Current User',prettify_current_user_res(res['results']),
-                                ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': res['results'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.Session(val.SessionId == obj.SessionId)': prettify_current_user_res(res['results'])
-            }
-        })
 
     def prettify_list_users_res(users):
         pretty_users = [] if len(users) > 0 else ''
@@ -159,6 +140,68 @@ script:
             })
 
         return pretty_users
+
+    def prettify_list_profiles_res(profiles):
+        pretty_profiles = []
+        for i in range(len(profiles)):
+            pretty_profiles.append({
+                'Name': profiles[i]['name'],
+                'AnalyzerProfileId': profiles[i]['vmProfileid'],
+                'Description': profiles[i]['vmDesc'],
+                'Sandbox': 'True' if profiles[i]['sandbox'] == 1 else 'False',
+                'Internet': 'True' if profiles[i]['internet'] == 1 else 'False',
+                'LocalBlackList': 'True' if profiles[i]['locBlackList'] == 1 else 'False'
+            })
+        return pretty_profiles
+
+    def prettify_task_status_by_taskId_res(task_status):
+        pretty_task_status = {
+            'taskId': task_status['taskid'],
+            'jobId': task_status['jobid'],
+            'status': task_status['status'],
+            'filename': task_status['filename'],
+            'MD5': task_status['md5'],
+            'submitTime': task_status['submitTime']
+        }
+        return pretty_task_status
+
+    def prettify_file_upload_res(file_upload_res):
+        pretty_file_upload = {
+            'taskId': file_upload_res['results'][0]['taskId'],
+            'jobId': file_upload_res['subId'],
+            'messageId': file_upload_res['results'][0]['messageId'],
+            'url': file_upload_res['results'][0]['url'],
+            'srcIp': file_upload_res['results'][0]['srcIp'],
+            'destIp': file_upload_res['results'][0]['destIp'],
+            'MD5': file_upload_res['results'][0]['md5'],
+            'SHA1': file_upload_res['results'][0]['sha1'],
+            'SHA256': file_upload_res['results'][0]['sha256'],
+        }
+        return pretty_file_upload
+
+    ''' FUNCTIONS '''
+    def test_get_session():
+        result = get_session()
+
+    def get_session():
+        result = http_request('php/session.php','get', LOGINHEADERS)
+        return result
+
+    def get_session_command():
+        result = get_session()
+        result = result['results']
+        md = tableToMarkdown('ATD Current User',prettify_current_user_res(result),
+                                ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'ATD.Session(val.SessionId == obj.SessionId)': prettify_current_user_res(result)
+            }
+        })
 
     def list_users(userType):
         userType = userType if userType else 'STAND_ALONE'
@@ -187,19 +230,6 @@ script:
             }
         })
 
-    def prettify_list_profiles_res(profiles):
-        prettyProfiles = []
-        for i in range(len(profiles)):
-            prettyProfiles.append({
-                'Name': profiles[i]['name'],
-                'AnalyzerProfileId': profiles[i]['vmProfileid'],
-                'Description': profiles[i]['vmDesc'],
-                'Sandbox': 'True' if profiles[i]['sandbox'] == 1 else 'False',
-                'Internet': 'True' if profiles[i]['internet'] == 1 else 'False',
-                'LocalBlackList': 'True' if profiles[i]['locBlackList'] == 1 else 'False'
-            })
-        return prettyProfiles
-
     def list_profiles():
         result =  http_request('php/vmprofiles.php','get', API_HEADERS)
         return result['results']
@@ -222,17 +252,6 @@ script:
                   'ATD.ListAnalyzerProfiles(val.AnalyzerProfileId == obj.AnalyzerProfileId)': prettify_list_profiles_res(result)
             }
         })
-
-    def prettify_task_status_by_taskId_res(task_status):
-        pretty_task_status = {
-            'taskId': task_status['taskid'],
-            'jobId': task_status['jobid'],
-            'status': task_status['status'],
-            'filename': task_status['filename'],
-            'MD5': task_status['md5'],
-            'submitTime': task_status['submitTime']
-        }
-        return pretty_task_status
 
     def check_task_status_by_taskId(taskIds):
         res = {}
@@ -299,10 +318,10 @@ script:
 
     def get_taskIds(jobIds):
         results = []
-        res = {}
+        result = {}
         for i in range(len(jobIds)):
-            res = http_request('php/getTaskIdList.php?jobId=' + str(jobIds[i]),'get', API_HEADERS)
-            results.append(res)
+            result = http_request('php/getTaskIdList.php?jobId=' + str(jobIds[i]),'get', API_HEADERS)
+            results.append(result)
         return results
 
     def get_taskIds_command():
@@ -333,20 +352,6 @@ script:
                   'ATD.Task(val.jobId == obj.jobId)': ec
             }
         })
-
-    def prettify_file_upload_res(fileUploadRes):
-        prettyFileUpload = {
-            'taskId': fileUploadRes['results'][0]['taskId'],
-            'jobId': fileUploadRes['subId'],
-            'messageId': fileUploadRes['results'][0]['messageId'],
-            'url': fileUploadRes['results'][0]['url'],
-            'srcIp': fileUploadRes['results'][0]['srcIp'],
-            'destIp': fileUploadRes['results'][0]['destIp'],
-            'MD5': fileUploadRes['results'][0]['md5'],
-            'SHA1': fileUploadRes['results'][0]['sha1'],
-            'SHA256': fileUploadRes['results'][0]['sha256'],
-        }
-        return prettyFileUpload;
 
     def file_upload_raw(body, fileEntryId, filenameToUpload):
         uri = 'php/fileupload.php'
