@@ -31,7 +31,8 @@
         {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
-          "timeout": 240
+          "timeout": 240,
+          "nightly": true
         },
         {
             "integrations": "MimecastV2",
@@ -83,6 +84,12 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Test_Sagemaker",
+            "integrations": [
+                "AWS Sagemaker"
+            ]
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -106,6 +113,10 @@
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "dnstwist",
+            "playbookID": "dnstwistTest"
         },
         {
             "integrations": "BitDam",
@@ -539,6 +550,10 @@
             "playbookID": "Cybereason Test"
         },
         {
+            "integrations": "Cisco Meraki",
+            "playbookID": "Cisco-Meraki-Test"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -690,6 +705,10 @@
             "nightly": true
         },
         {
+            "integrations": "whois",
+            "playbookID": "whois_test"
+        },
+        {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
         },
@@ -782,9 +801,19 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+        },
+        {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test"
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
+
+        }
     ],
     "skipped_tests": {
+        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
@@ -796,10 +825,13 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
-        "tenable-sc-scan-test": "Scan takes too long"
+        "tenable-sc-scan-test": "Scan takes too long",
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "Whois": "Server currently has Whois by default, need to deprecate",
+        "Skyformation": "Server installed by skyformation is down, waiting on reply",
+        "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",

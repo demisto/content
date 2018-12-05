@@ -1,7 +1,7 @@
 id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
-fromversion: 4.0.0
+fromversion: 4.0
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -34,10 +34,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
+    taskid: 17b50e98-fd3e-4410-80c7-a6095629096c
     type: regular
     task:
-      id: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
+      id: 17b50e98-fd3e-4410-80c7-a6095629096c
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -56,6 +56,7 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -92,10 +93,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 26ed9557-a1c3-433a-8614-94e6c671d9af
+    taskid: 96f4ce72-93d9-45b9-8831-0cbda3396066
     type: regular
     task:
-      id: 26ed9557-a1c3-433a-8614-94e6c671d9af
+      id: 96f4ce72-93d9-45b9-8831-0cbda3396066
       version: -1
       name: Manually review the incident
       description: Review the incident to determine if the email that the user reported
@@ -117,24 +118,29 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
+    taskid: 0cead84c-7626-4cc0-839f-d1b8d5260b9c
     type: regular
     task:
-      id: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
+      id: 0cead84c-7626-4cc0-839f-d1b8d5260b9c
       version: -1
       name: Close investigation
       description: Close the investigation.
-      scriptName: CloseInvestigation
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "29"
     scriptarguments:
-      notes:
-        simple: 'Default enrichment playbook '
-      reason: {}
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      importantfield: {}
+      test2: {}
+      timefield1: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -170,10 +176,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 36ce6034-d509-405b-8e8d-4bef662e0709
+    taskid: 40a1c30b-92a4-41fc-84f3-c8474693f931
     type: regular
     task:
-      id: 36ce6034-d509-405b-8e8d-4bef662e0709
+      id: 40a1c30b-92a4-41fc-84f3-c8474693f931
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -193,6 +199,7 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -204,23 +211,24 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+    taskid: 4aafb18b-b981-470e-864c-5caedb033ce0
     type: regular
     task:
-      id: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+      id: 4aafb18b-b981-470e-864c-5caedb033ce0
       version: -1
       name: Acknowledge incident was received
       description: |
         Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
-      scriptName: SendEmail
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
         simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
@@ -229,7 +237,6 @@ tasks:
           notice.\n\nCordially, \n  Your friendly neighborhood security team"
       cc: {}
       htmlBody: {}
-      noteEntryID: {}
       replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
@@ -237,6 +244,7 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -310,10 +318,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+    taskid: 79084bbf-1187-4b31-82f2-8b153a093a49
     type: regular
     task:
-      id: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+      id: 79084bbf-1187-4b31-82f2-8b153a093a49
       version: -1
       name: Update  the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
@@ -344,6 +352,7 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -355,23 +364,24 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: c0fd6e60-203b-4039-89f9-d34f4024d349
+    taskid: f7788586-5020-4246-8946-2021c76dc722
     type: regular
     task:
-      id: c0fd6e60-203b-4039-89f9-d34f4024d349
+      id: f7788586-5020-4246-8946-2021c76dc722
       version: -1
       name: Update  the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
         is malicious.
-      scriptName: SendEmail
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
         simple: |-
@@ -382,7 +392,6 @@ tasks:
             Your security team
       cc: {}
       htmlBody: {}
-      noteEntryID: {}
       replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
@@ -619,10 +628,10 @@ tasks:
     note: false
   "33":
     id: "33"
-    taskid: 1787361d-c8b7-4c66-89ac-9f90d340358b
+    taskid: f59a91ed-b686-4133-8f23-13338cff2d6e
     type: condition
     task:
-      id: 1787361d-c8b7-4c66-89ac-9f90d340358b
+      id: f59a91ed-b686-4133-8f23-13338cff2d6e
       version: -1
       name: Is the email malicious?
       description: Is the email that the user reported malicious?
@@ -645,10 +654,10 @@ tasks:
     note: false
   "34":
     id: "34"
-    taskid: 4533b6d8-c08d-42c2-805a-e540762472fb
+    taskid: 17f0be59-6aff-4f12-829a-395597295427
     type: regular
     task:
-      id: 4533b6d8-c08d-42c2-805a-e540762472fb
+      id: 17f0be59-6aff-4f12-829a-395597295427
       version: -1
       name: Manually remediate  the incident
       description: "Consider the following:\n1. Search for and delete similar emails\n2.
@@ -843,6 +852,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+releaseNotes: "-"
 tests:
-  - Phishing test - attachment
-  - Phishing test - Inline
+- Phishing test - attachment
+- Phishing test - Inline
