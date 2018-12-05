@@ -1826,7 +1826,7 @@ script:
     - contextPath: File.GlobalQuarantine
       description: Identifies if the threat is on the Global Quarantine list.
       type: boolean
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: File.Name
@@ -1959,7 +1959,7 @@ script:
     - contextPath: File.FileSize
       description: The size of the file.
       type: number
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: DBotScore.Indicator
@@ -2029,7 +2029,7 @@ script:
     - contextPath: File.ListType
       description: The list type that the threat belongs to (GlobalQuarantine or GlobalSafe).
       type: string
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 has for the threat.
       type: string
     - contextPath: File.SHA256
@@ -2082,8 +2082,8 @@ script:
     - contextPath: File.Timestamp
       description: Timestamp
       type: string
-    - contextPath: File.Md5
-      description: Md5
+    - contextPath: File.MD5
+      description: MD5
       type: string
     - contextPath: DBotScore.Indicator
       description: The Indicator
