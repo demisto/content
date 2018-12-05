@@ -50,7 +50,8 @@ script: |+
       'modelListName': demisto.args()['modelListName']
   })
   if isError(res[0]):
-      demisto.results(res[0])
+      return_error(res[0]['Contents'])
+
 
   predictions = res[0]['Contents']
 
