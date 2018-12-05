@@ -1,22 +1,30 @@
 commonfields:
   id: FetchFromInstance
   version: -1
-rolename: []
 name: FetchFromInstance
+fromversion: 4.0.0
 script: |
+  import re
+
   res = []
   instance_name = demisto.args()["instance_name"]
+  expect_data = False if demisto.args()["expect_data"] == 'false' else True
   command = '!{0}-fetch'.format(instance_name)
 
   response = demisto.executeCommand(command, {})
   try:
-      if not response:
+      if not response and expect_data:
           raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
 
       for inc in response:
           contents = inc.get('Contents', '')
-          if 'Error' in contents:
-              raise Exception("Error occurred while fetching incidents from {0}: {1}".format(instance_name, contents))
+          if 'Error' in str(contents):
+              return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
+          if re.match("invalid character \'[a-zA-Z]\' looking for beginning of value", str(contents), re.IGNORECASE):
+              return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
+
+      if not response and not expect_data:
+          response = "No data returned"
 
       res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
 
@@ -31,7 +39,13 @@ args:
 - name: instance_name
   required: true
   description: The name of the instance you want to fetch from
+- name: expect_data
+  description: Whether to expect data to return from the fetch
+  defaultValue: "true"
 scripttarget: 0
 runonce: false
+deprecated: true
+comment: Execute FetchIncident for a given instance
 tests:
   - No test - cannot create a dummy integration inorder to test that
+releaseNotes: "-"

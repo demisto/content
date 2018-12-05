@@ -169,13 +169,19 @@ script:
          "work_start", "impact", "incident_state", "title", "type", "change_type", "category", "state"]
 
 
+    # Every table in ServiceNow has those fields
     DEFAULT_RECORD_FIELDS = {
         'sys_id': 'ID',
         'sys_updated_by': 'UpdatedBy',
         'sys_updated_on': 'UpdatedAt',
         'sys_created_by': 'CreatedBy',
         'sys_created_on': 'CreatedAt'
-        }
+    }
+
+    DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
+                           'servicenow-create', 'servicenow-incident-create',
+                           'servicenow-update', 'servicenow-query',
+                           'servicenow-incidents-query', 'servicenow-incident-update']
 
     ''' HELPER FUNCTIONS '''
 
@@ -243,18 +249,28 @@ script:
             'OpenedAt': data.get('opened_at')
         }
 
+        # These fields refer to records in the database, the value is their system ID.
         if 'closed_by' in data:
             context['ResolvedBy'] = data['closed_by']['value'] if 'value' in data['closed_by'] else ''
         if 'opened_by' in data:
             context['OpenedBy'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
+            context['Creator'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
         if 'assigned_to' in data:
             context['Assignee'] = data['assigned_to']['value'] if 'value' in data['assigned_to'] else ''
+
+        # Try to map fields
         if 'priority' in data:
-                context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
+                # Backward compatibility
+                if demisto.command() in DEPRECATED_COMMANDS:
+                    context['Priority'] = data['priority']
+                else:
+                    context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
         if 'state' in data:
             mapped_state = data['state']
-            if ticket_type in TICKET_STATES:
-                mapped_state = TICKET_STATES[ticket_type].get(data['state'], mapped_state)
+            # Backward compatibility
+            if demisto.command() not in DEPRECATED_COMMANDS:
+                if ticket_type in TICKET_STATES:
+                    mapped_state = TICKET_STATES[ticket_type].get(data['state'], mapped_state)
             context['State'] = mapped_state
 
         return createContext(context, removeNull=True)
@@ -286,6 +302,7 @@ script:
                 'Description': ticket.get('description'),
                 'Opened at': ticket.get('opened_at'),
                 'Due date': ticket.get('due_date'),
+                # This field refers to a record in the database, the valus is its system ID.
                 'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket['closed_by'], dict) else ticket['closed_by'],
                 'Resolved at': ticket.get('resolved_at'),
                 'SLA due': ticket.get('sla_due'),
@@ -293,6 +310,7 @@ script:
                 'Additional Comments': ticket.get('comments')
             }
 
+            # Try to map the fields
             if 'impact' in ticket:
                 hr['Impact'] = TICKET_SEVERITY.get(ticket['impact'], ticket['impact'])
             if 'urgency' in ticket:
@@ -311,6 +329,7 @@ script:
         return result
 
     def get_ticket_fields(template):
+        # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
         inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
         inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
         body = {}
@@ -337,6 +356,7 @@ script:
 
         if custom_fields:
             for field in custom_fields:
+                # custom fields begin with "u_"
                 body['u_' + field] = custom_fields[field]
 
         return body
@@ -346,6 +366,7 @@ script:
         dic_fields = {}
 
         if fields:
+            # As received by the command
             arr_fields = fields.split(';')
 
             for f in arr_fields:
@@ -460,10 +481,13 @@ script:
         if fields:
             fields = argToList(fields)
             if 'sys_id' not in fields:
+                # ID is added by default
                 fields.append('sys_id')
+            # filter the record for the required fields
             record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
             for k,v in record.iteritems():
                 if isinstance(v, dict):
+                    # For objects that refer to a record in the database, take their value(system ID).
                     record[k] = v.get('value', record[k])
             record['ID'] = record.pop('sys_id')
             entry['ReadableContentsFormat'] = formats['markdown']
@@ -493,7 +517,8 @@ script:
                 'number': number
             }
         else:
-            raise ValueError('servicenow-get requires either ticket ID (sys_id) or ticket number')
+            # Only in cases where the table is of type ticket
+            raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number')
 
         return send_request(path, 'get', params = query_params)
 
@@ -812,12 +837,15 @@ script:
         if fields:
             fields = argToList(fields)
             if 'sys_id' not in fields:
+                # ID is added by default
                 fields.append('sys_id')
+            # Filter the records according to the given fields
             records = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
             for r in records:
                 r['ID'] = r.pop('sys_id')
                 for k,v in r.iteritems():
                     if isinstance(v, dict):
+                        # For objects that refer to a record in the database, take their value (system ID).
                         r[k] = v.get('value', v)
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow records', records, removeNull=True)
@@ -901,12 +929,12 @@ script:
 
         return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
 
-
+    # Deprecated
     def get_computer_command():
         table_name = 'cmdb_ci_computer'
         computer_name = demisto.args()['computerName']
 
-        res = query(table_name, None, 'u_code=' + computer_name)
+        res = query(table_name, None, 0, 'u_code=' + computer_name)
 
         if not res or 'result' not in res:
             return 'Cannot find computer'
@@ -1104,11 +1132,11 @@ script:
 
         return entry
 
-
+    # Deprecated
     def get_groups_command():
         table_name = 'sys_user_group'
         group_name = demisto.args()['name']
-        res = query(table_name, None, 'name=' + group_name)
+        res = query(table_name, None, 0, 'name=' + group_name)
 
         if not res or 'result' not in res:
             return 'No groups found'
@@ -1171,7 +1199,7 @@ script:
         return entry
 
     def get_table_fields(table_name):
-        # Get 1 record
+        # Get one record
         path = 'table/' + table_name + '?sysparm_limit=1'
         res = send_request(path, 'GET')
 
@@ -1303,7 +1331,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Ticket System ID to retrieve
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1317,7 +1345,12 @@ script:
     - name: number
       description: Ticket number to retrieve
     - name: get_attachments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Whether to retrieve ticket attachments, default false
+      defaultValue: "false"
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
@@ -1463,7 +1496,7 @@ script:
     - contextPath: File.MD5
       description: Attachment file MD5
       type: string
-    description: Deprecated. Please use servicenow-get-ticket or servicenow-get-record
+    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record
       instead
   - name: servicenow-incident-get
     deprecated: true
@@ -1500,7 +1533,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Deprecated. Please use servicenow-get-ticket or servicenow-get-record
+    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record
       instead
   - name: servicenow-create-ticket
     arguments:
@@ -1952,7 +1985,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Deprecated. Please use servicenow-create-ticket or servicenow-create-record
+    description: Deprecated. Use servicenow-create-ticket or servicenow-create-record
       instead
   - name: servicenow-incident-create
     deprecated: true
@@ -2522,7 +2555,7 @@ script:
       defaultValue: normal
     - name: state
       description: State of the ticket
-    description: Deprecated. Please use servicenow-update-ticket or servicenow-update-record
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record
       instead
   - name: servicenow-incident-update
     deprecated: true
@@ -2680,7 +2713,7 @@ script:
     - name: id
       required: true
       description: System ID of the ticket to update
-    description: Deprecated. Please use servicenow-update-ticket or servicenow-update-record
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record
       instead
   - name: servicenow-delete-ticket
     arguments:
@@ -2745,7 +2778,7 @@ script:
         false will publish the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
-    description: Deprecated. Please use servicenow-add-link instead.
+    description: Deprecated. Use servicenow-add-link instead.
   - name: servicenow-add-comment
     arguments:
     - name: id
@@ -2788,7 +2821,7 @@ script:
     - name: post-as-comment
       description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
-    description: Deprecated. Please use servicenow-add-comment instead.
+    description: Deprecated. Use servicenow-add-comment instead.
   - name: servicenow-query-tickets
     arguments:
     - name: limit
@@ -2889,7 +2922,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Deprecated. Please use servicenow-query-table or servicenow-query-tickets
+    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets
       instead.
   - name: servicenow-incidents-query
     deprecated: true
@@ -2926,7 +2959,8 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Retrieve ticket info with query
+    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets
+      instead.
   - name: servicenow-upload-file
     arguments:
     - name: id
@@ -2989,7 +3023,7 @@ script:
     - contextPath: Ticket.File.SystemID
       description: System ID of the file
       type: string
-    description: Deprecated. Please use servicenow-upload-file instead.
+    description: Deprecated. Use servicenow-upload-file instead.
   - name: servicenow-get-groups
     deprecated: true
     arguments:
@@ -3003,7 +3037,7 @@ script:
     - contextPath: ServiceNowGroups.GroupName
       description: Group name
       type: string
-    description: Deprecated. Please use servicenow-query-groups instead.
+    description: Deprecated. Use servicenow-query-groups instead.
   - name: servicenow-get-computer
     deprecated: true
     arguments:
@@ -3026,7 +3060,7 @@ script:
     - contextPath: ServiceNowComputer.comments
       description: Comments
       type: string
-    description: Deprecated. Please user servicenow-query-computers instead.
+    description: Deprecated. Use servicenow-query-computers instead.
   - name: servicenow-get-record
     arguments:
     - name: id
@@ -3300,3 +3334,4 @@ script:
   runonce: false
 tests:
   - No test - No instance
+releaseNotes: "-"
