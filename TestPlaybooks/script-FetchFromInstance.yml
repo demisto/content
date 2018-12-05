@@ -9,13 +9,9 @@ script: |-
   instance_name = None
   if brand_name:
       context_modules = demisto.getModules()
-      # In case we only have a single module
-      if isinstance(context_modules, dict):
-          context_modules = [context_modules]
-      for module in context_modules:
-          module_instance_name = module.keys()[0]
-          if module.get(module_instance_name).get("brand") == brand_name:
-              instance_name = module_instance_name
+      for module_name, module in context_modules.iteritems():
+          if module.get("brand") == brand_name:
+              instance_name = module_name
               break
   elif demisto.args().get("instance_name"):
       instance_name = demisto.args()["instance_name"]
