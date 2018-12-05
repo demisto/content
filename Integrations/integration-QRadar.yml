@@ -181,12 +181,12 @@ script:
             return None
         return d
 
-    # Converts unicode elements of obj (incl. dictionary and list) to string recursively
-    def unicode_to_str_recur(obj):
+    # Converts elements of obj (incl. dictionary and list) to string recursively
+    def convert_to_str(obj):
         if isinstance(obj, dict):
-            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k,v in obj.iteritems()}
+            obj = {convert_to_str(k): convert_to_str(v) for k,v in obj.iteritems()}
         elif isinstance(obj, list):
-            obj = map(unicode_to_str_recur, obj)
+            obj = map(convert_to_str, obj)
         elif isinstance(obj, unicode):
             obj = obj.encode('utf-8')
         else:
@@ -222,7 +222,7 @@ script:
 
     # Transforms flat dictionary to comma seperated values
     def dict_values_to_comma_seperated_string(dic):
-        return ','.join(unicode_to_str_recur(v) for v in dic.itervalues())
+        return ','.join(convert_to_str(v) for v in dic.itervalues())
 
     # Sends request to the server using the given method, url, headers and params
     def send_request(method, url, headers=AUTH_HEADERS, params=None):
@@ -329,12 +329,12 @@ script:
 
     # Returns a search object (doesn't contain reuslt)
     def get_search(search_id):
-        url = '{0}/api/ariel/searches/{1}'.format(SERVER, unicode_to_str_recur(search_id))
+        url = '{0}/api/ariel/searches/{1}'.format(SERVER, convert_to_str(search_id))
         return send_request('GET', url, AUTH_HEADERS)
 
     # Returns a search result
     def get_search_results(search_id, _range=''):
-        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, unicode_to_str_recur(search_id))
+        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, convert_to_str(search_id))
         headers = dict(AUTH_HEADERS)
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
@@ -485,7 +485,7 @@ script:
         keys = offense.keys()
         labels = []
         for i in range(len(keys)):
-            labels.append({'type': keys[i], 'value': unicode_to_str_recur(offense[keys[i]])})
+            labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
         return {
             'name': '{0} {1}'.format(offense['id'], offense['description']),
             'labels': labels,
@@ -575,17 +575,17 @@ script:
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
         src_res = send_request('GET', source_url, AUTH_HEADERS)
         for src_adr in src_res:
-            src_adrs[src_adr['id']] = unicode_to_str_recur(src_adr['source_ip'])
+            src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
         return src_adrs
 
     # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to the ids
     def enrich_destination_addresses_dict(dst_adrs):
         dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
         destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
-        headers = {'Content-Type': 'application/json', "SEC": unicode_to_str_recur(TOKEN)}
+        headers = {'Content-Type': 'application/json', "SEC": convert_to_str(TOKEN)}
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
         for dst_adr in dst_res:
-            dst_adrs[dst_adr['id']] = unicode_to_str_recur(dst_adr['local_destination_ip'])
+            dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
         return dst_adrs
 
     # Helper method: For a single offense replaces the source and destination ids with the actual addresses
@@ -646,7 +646,7 @@ script:
         result_key = raw_search_results.keys()[0]
         title = 'QRadar Search Results from ' + result_key
         context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
-        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
+        return get_entry_for_object(title, convert_to_str(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -654,7 +654,7 @@ script:
         return get_entry_for_assets('QRadar Assets', assets_result, human_readable_res, demisto.args().get('headers'))
 
     def get_asset_by_id_command():
-        _filter = "id=" + unicode_to_str_recur(demisto.args().get('asset_id'))
+        _filter = "id=" + convert_to_str(demisto.args().get('asset_id'))
         raw_asset = get_assets(_filter=_filter)
         asset_result, human_readable_res = create_assets_result(raw_asset, full_values=True)
         return get_entry_for_assets('QRadar Asset', asset_result, human_readable_res, demisto.args().get('headers'))
