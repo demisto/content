@@ -110,7 +110,7 @@ script: |+
       demisto.log("Store file successfully in list " + listname)
 
   # tokenize text and remove empty strings
-  res = demisto.executeCommand('WordTokenize', {'value': data_texts, 'hashWordWithSeed': HASH_SEED if HASH_WORDS else None, 'type': 'punkt'})
+  res = demisto.executeCommand('WordTokenizer', {'value': data_texts, 'hashWordWithSeed': HASH_SEED if HASH_WORDS else None, 'type': 'punkt'})
   if isError(res[0]):
       demisto.results(res)
       sys.exit(0)
