@@ -1,0 +1,302 @@
+id: SNDBOX_Test
+version: -1
+name: SNDBOX_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fff92052-f29b-4697-8316-64d3633ed401
+    type: start
+    task:
+      id: fff92052-f29b-4697-8316-64d3633ed401
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: cfd9dcf2-6d23-4a1e-872a-59e05f82b807
+    type: regular
+    task:
+      id: cfd9dcf2-6d23-4a1e-872a-59e05f82b807
+      version: -1
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 93cad980-6541-43a7-84f9-7a983dbba4e0
+    type: regular
+    task:
+      id: 93cad980-6541-43a7-84f9-7a983dbba4e0
+      version: -1
+      name: Is Integration Online
+      script: '|||sndbox-is-online'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 132733a9-cbf2-4241-82aa-e4dee86155a9
+    type: regular
+    task:
+      id: 132733a9-cbf2-4241-82aa-e4dee86155a9
+      version: -1
+      name: Get Test File
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: file.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}aHE7kOB/KVykK55LbjeM16bqnXCeogqNDj+PHeh6r258a5yrpGDcHB4tgPxiYEile81OJ4swARKdU17afnc2vQ=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: e6e71338-f063-4575-8f15-d600cecad684
+    type: regular
+    task:
+      id: e6e71338-f063-4575-8f15-d600cecad684
+      version: -1
+      name: Submit
+      script: '|||sndbox-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: ab2c5764-edef-4965-87b8-9709f2a181d6
+    type: regular
+    task:
+      id: ab2c5764-edef-4965-87b8-9709f2a181d6
+      version: -1
+      name: Get Info
+      script: '|||sndbox-analysis-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "8"
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: d73b88c0-dce8-40e1-864d-438c07c26d5d
+    type: regular
+    task:
+      id: d73b88c0-dce8-40e1-864d-438c07c26d5d
+      version: -1
+      name: Download Sample
+      script: '|||sndbox-download-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 9b3286b4-f141-4842-848c-af7b3bc18e9e
+    type: regular
+    task:
+      id: 9b3286b4-f141-4842-848c-af7b3bc18e9e
+      version: -1
+      name: Download Report
+      script: '|||sndbox-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: bbfa98f3-7fc9-4e95-8283-c77cfa82ef4f
+    type: condition
+    task:
+      id: bbfa98f3-7fc9-4e95-8283-c77cfa82ef4f
+      version: -1
+      name: Check if task is done
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SNDBOX.Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: finished
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 5de12561-5a8a-48e5-8afd-e50038edac55
+    type: title
+    task:
+      id: 5de12561-5a8a-48e5-8afd-e50038edac55
+      version: -1
+      name: End Test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

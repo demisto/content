@@ -51,6 +51,11 @@ mapping:
           scriptarguments:
             type: map
             allowempty: True
+          timertriggers:
+            allowempty: True
+            type: seq
+            sequence:
+            - include: timertriggers_schema
           task:
             type: map
             required: yes
@@ -225,3 +230,11 @@ schema;arg_filter_schema:
           required: yes
         iscontext:
           type: bool
+
+schema;timertriggers_schema:
+  type: map
+  mapping:
+    fieldName:
+      type: str
+    action:
+      type: str

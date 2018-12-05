@@ -1,0 +1,78 @@
+id: Test-Detonate URL - Phish.AI
+version: -1
+rolename: []
+name: Test-Detonate URL - Phish.AI
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83a84f16-003e-4940-8754-7956165fe409
+    type: start
+    task:
+      id: 83a84f16-003e-4940-8754-7956165fe409
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: e094f3d0-8162-452e-8a06-126c457e8dc9
+    type: playbook
+    task:
+      id: e094f3d0-8162-452e-8a06-126c457e8dc9
+      version: -1
+      name: Detonate URL - Phish.AI
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
+      playbookName: Detonate URL - Phish.AI
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        simple: www.google.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 295,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - 'No test'

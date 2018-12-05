@@ -1,6 +1,6 @@
 commonfields:
-  id: b4465e06-bf34-4b77-8373-5b8413c482ad
-  version: 4
+  id: FireEyeDetonateFile
+  version: -1
 name: FireEyeDetonateFile
 script: |+
   import json
@@ -8,12 +8,7 @@ script: |+
 
   res = []
   timeout = 960
-
-  if 'timeout' in demisto.args():
-      timeout = int(demisto.args()['timeout'])
   interval = 10
-  if 'interval' in demisto.args():
-      interval = int(demisto.args()['interval'])
 
   file = demisto.get(demisto.args(),'file')
 
@@ -23,18 +18,20 @@ script: |+
   #profiles = ['win10x64','win7-sp1','win7x64-sp1','winxp-sp3']
   profiles = argToList(demisto.args()['profiles'])
 
+  analysistype = demisto.args().get('analysistype', 0)
+  prefetch = demisto.args().get('prefetch', 1)
+
   ### Make sure fireeye available
   if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'fireeye'})[0]['Contents'] != 'yes':
       feDone = True
 
   ### Upload file and get submission_key
   if not feDone:
-      bArgs = {'analysistype':'1',
+      bArgs = {'analysistype': analysistype,
               'application':'0',
               'force':"true",
-              'prefetch':"1",
+              'prefetch': prefetch,
               'priority':"1",
-              'profiles':'win7-sp1',
               'timeout':"180",
               'upload':file}
 
@@ -46,7 +43,8 @@ script: |+
               sys.exit(0)
           else:
               feSubmissionKey = demisto.get(resp[0],'Contents')
-              feSubmissionKey = json.loads(feSubmissionKey)
+              if isinstance(feSubmissionKey, str):
+                  feSubmissionKey = json.loads(feSubmissionKey)
               feSubmissionKeys[profile] = demisto.get(feSubmissionKey[0],'ID')
   else:
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Integration not available.' } )
@@ -105,12 +103,12 @@ script: |+
           demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Failed to detonate file {0}, exit status = {1}'.format(file,status) })
 
 type: python
-comment: Detonate File or URL through FireEye
 tags:
 - fireeye
 - file
 - enhancement
-system: true
+comment: Detonate File or URL through FireEye
+enabled: true
 args:
 - name: file
   required: true
@@ -119,6 +117,13 @@ args:
 - name: profiles
   required: true
   description: The FireEye profiles to use (comma separated)
+- name: analysistype
+  description: Specify live or sandbox analysis mode. 0—Sandbox, analyze suspected malware objects in a closed, protected environment. 1 —Live, analyze suspected malware objects live within the MAS Multivector Virtual Execution (MVX) analysis engine.
+  defaultValue: "0"
+- name: prefetch
+  description: Specifies whether to determine the file target based on an internal
+    determination rather than browsing to the target location. 0—No 1—Yes
+  defaultValue: "1"
 scripttarget: 0
 dependson:
   must:
@@ -126,3 +131,5 @@ dependson:
   - fe-submit-result
   - fe-submit-status
 timeout: 960ns
+tests:
+  - No test

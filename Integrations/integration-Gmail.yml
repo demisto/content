@@ -16,10 +16,11 @@ detaileddescription: "This API enables the usage of Google Admin API. In order t
   order to search user mailboxes, please authorize this api too: [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)\n\nIn
   order to delete emails from user mailbox, please authorize this api too: \n[https://mail.google.com](https://mail.google.com),
   \n[https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify)\n\nIn
-  order to to fetch user security tokens, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security)\n\nIn
-  order to to fetch mobile info, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly)\n\nIn
-  order to to preform actions on mobile devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action)\n\nIn
-  order to to preform actions on chorme devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos)\n\nFor
+  order to fetch user security tokens, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security)\n\nIn
+  order to fetch mobile info, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly)\n\nIn
+  order to preform actions on mobile devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action)\n\nIn
+  order to preform actions on chorme devices, please authorize this api too:[https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos)\n\nIn
+  order to block email addresses, please authorize this api too:\n[https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)\n\nFor
   the email user param, please choose a user with admin permissions and make sure
   that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.\n\nIn
   order to revoke/fetch user role, you will need the Immutable Google Apps ID param.\nTo
@@ -46,11 +47,6 @@ configuration:
   name: queryUserKey
   defaultvalue: ""
   type: 0
-  required: false
-- display: Require users to enter additional password
-  name: additionalPassword
-  defaultvalue: ""
-  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -81,6 +77,7 @@ script:
     PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
     GAPPS_ID = demisto.params().get('gappsID')
     SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
+
 
     ''' HELPER FUNCTIONS '''
     def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
@@ -334,6 +331,26 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
             'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)' : context}
+        }
+
+
+    def filters_to_entry(title, response):
+        context = []
+        for filter_data in response:
+            context.append({
+                'ID' : filter_data.get('id'),
+                'Criteria' : filter_data.get('criteria'),
+                'Action' : filter_data.get('action'),
+            })
+
+        headers = ['ID', 'Criteria', 'Action', ]
+
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
         }
 
 
@@ -773,6 +790,87 @@ script:
         return result['messages']
 
 
+    def add_delete_filter_command():
+        args = demisto.args()
+
+        user_id = args.get('user-id', ADMIN_EMAIL)
+        _from = args.get('email-address')
+
+        _filter = add_filter(user_id, _from=_from, add_labels=['TRASH', ])
+
+        return filters_to_entry('New filter:', [_filter])
+
+
+    def add_filter_command():
+        args = demisto.args()
+
+        user_id = args.get('user-id', ADMIN_EMAIL)
+        _from = args.get('email-address')
+        to = args.get('to')
+        subject = args.get('subject')
+        query = args.get('query')
+        has_attachments = args.get('has-attachments')
+        size = args.get('size')
+        size_comparison = args.get('size-comparison')
+        forward = args.get('forward')
+        add_labels = args.get('add-labels', '').split(',')
+        add_labels = add_labels if any(add_labels) else None
+        remove_labels = args.get('remove-labels', '').split(',')
+        remove_labels = remove_labels if any(remove_labels) else None
+
+        _filter = add_filter(user_id,
+            _from=_from,
+            to=to,
+            subject=subject,
+            query=query,
+            has_attachments=has_attachments,
+            size=size,
+            size_comparison=size_comparison,
+            forward=forward,
+            add_labels=add_labels,
+            remove_labels=remove_labels,
+        )
+
+        return filters_to_entry('New filter:', [_filter])
+
+
+    def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attachments=None, size=None, size_comparison=None, forward=None, add_labels=None, remove_labels=None):
+        command_args = {
+            'userId': user_id,
+            'body' : {
+                'criteria': {},
+                'action': {},
+            }
+        }
+
+        if _from is not None:
+            command_args['body']['criteria']['from'] = _from
+        if to is not None:
+            command_args['body']['criteria']['to'] = to
+        if subject is not None:
+            command_args['body']['criteria']['subject'] = subject
+        if query is not None:
+            command_args['body']['criteria']['query'] = query
+        if has_attachments is not None:
+            command_args['body']['criteria']['hasAttachment'] = has_attachment
+        if size is not None:
+            command_args['body']['criteria']['size'] = size
+        if size_comparison is not None:
+            command_args['body']['criteria']['size_comparison'] = size_comparison
+        if add_labels is not None:
+            command_args['body']['action']['addLabelIds'] = add_labels
+        if remove_labels is not None:
+            command_args['body']['action']['removeLabelIds'] = remove_labels
+        if forward is not None:
+            command_args['body']['action']['forward'] = forward
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.settings.basic',], delegated_user=user_id)
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().settings().filters().create(**command_args).execute()
+
+        return result
+
+
     def fetch_incidents():
         params = demisto.params()
         user_key = params['queryUserKey']
@@ -816,58 +914,52 @@ script:
 
 
     ''' EXECUTION CODE '''
-    LOG('command is %s' % (demisto.command(), ))
+    COMMANDS = {
+        'gmail-list-users' : list_users_command,
+        'gmail-get-user' : get_user_command,
+        'gmail-create-user' : create_user_command,
+        'gmail-delete-user' : delete_user_command,
+        'gmail-get-user-roles' : get_user_role_command,
+        'gmail-revoke-user-role' : revoke_user_roles_command,
+        'gmail-get-tokens-for-user' : get_user_tokens_command,
+        'gmail-search-all-mailboxes' : search_all_mailboxes,
+        'gmail-search' : search_command,
+        'gmail-get-mail' : get_mail_command,
+        'gmail-get-attachments' : get_attachments_command,
+        'gmail-move-mail' : move_mail_command,
+        'gmail-move-mail-to-mailbox' : move_mail_to_mailbox_command,
+        'gmail-delete-mail' : delete_mail_command,
+        'gmail-get-thread' : get_thread_command,
+        'gmail-add-filter' : add_filter_command,
+        'gmail-add-delete-filter' : add_delete_filter_command,
+    }
+    command = demisto.command()
+    LOG('command is %s' % (command, ))
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
             demisto.results('ok')
             sys.exit(0)
 
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
-        elif demisto.command() == 'gmail-list-users':
-            demisto.results(list_users_command())
-        elif demisto.command() == 'gmail-get-user':
-            demisto.results(get_user_command())
-        elif demisto.command() == 'gmail-create-user':
-            demisto.results(create_user_command())
-        elif demisto.command() == 'gmail-delete-user':
-            demisto.results(delete_user_command())
-        elif demisto.command() == 'gmail-get-user-roles':
-            demisto.results(get_user_role_command())
-        elif demisto.command() == 'gmail-revoke-user-role':
-            demisto.results(revoke_user_roles_command())
-        elif demisto.command() == 'gmail-get-tokens-for-user':
-            demisto.results(get_user_tokens_command())
-        elif demisto.command() == 'gmail-search-all-mailboxes':
-            demisto.results(search_all_mailboxes())
-        elif demisto.command() == 'gmail-search':
-            demisto.results(search_command())
-        elif demisto.command() == 'gmail-get-mail':
-            demisto.results(get_mail_command())
-        elif demisto.command() == 'gmail-get-attachments':
-            demisto.results(get_attachments_command())
-        elif demisto.command() == 'gmail-move-mail':
-            demisto.results(move_mail_command())
-        elif demisto.command() == 'gmail-move-mail-to-mailbox':
-            demisto.results(move_mail_to_mailbox_command())
-        elif demisto.command() == 'gmail-delete-mail':
-            demisto.results(delete_mail_command())
-        elif demisto.command() == 'gmail-get-thread':
-            demisto.results(get_thread_command())
+
+        cmd_func = COMMANDS.get(command)
+        if cmd_func is None:
+            raise NotImplementedError('Command "{}" is not implemented.'.format(command))
+        else:
+            demisto.results(cmd_func())
 
     except Exception, e:
         LOG('%s: %s' % (type(e), e.message, ))
-        if demisto.command() != 'test-module':
-            LOG.print_log()
+        LOG.print_log()
 
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': 'error has occured: %s' % (e.message, ),
         })
-        raise
   type: python
   commands:
   - name: gmail-delete-user
@@ -875,14 +967,16 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     description: Delete a User
   - name: gmail-get-tokens-for-user
     arguments:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     description: Returns the set of tokens specified user has issued to 3rd party
       applications.
   - name: gmail-get-user
@@ -890,7 +984,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: projection
       auto: PREDEFINED
       predefined:
@@ -941,7 +1036,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     outputs:
     - contextPath: GoogleApps.Role.RoleAssignmentId
       description: unique id of role assignment
@@ -969,14 +1065,16 @@ script:
       description: The ID of the message to retrieve
     - name: user-id
       required: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     description: Gets the all attachments of an Gmail.
   - name: gmail-get-mail
     arguments:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
@@ -1041,7 +1139,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: query
       description: 'Only return messages matching the specified query. Supports the
         same query format as the Gmail search box. For example, "from:someuser@example.com
@@ -1315,7 +1414,8 @@ script:
   - name: gmail-revoke-user-role
     arguments:
     - name: user-id
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: role-assignment-id
       required: true
       description: Immutable ID of the role assignment.
@@ -1363,7 +1463,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to delete
@@ -1379,7 +1480,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: thread-id
       required: true
       description: The ID of the thread to retrieve
@@ -1444,7 +1546,8 @@ script:
     - name: user-id
       required: true
       default: true
-      description: The user's email address. The special value me can be used to indicate the authenticated user.
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
@@ -1500,13 +1603,15 @@ script:
     - name: src-user-id
       required: true
       default: true
-      description: The source user's email address. The special value me can be used to indicate the authenticated user.
+      description: The source user's email address. The special value me can be used
+        to indicate the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
     - name: dst-user-id
       required: true
-      description: The destination user's email address. The special value me can be used to indicate the authenticated user.
+      description: The destination user's email address. The special value me can
+        be used to indicate the authenticated user.
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -1548,6 +1653,58 @@ script:
       description: The Gmail.Mailbox
       type: string
     description: Move a mail to a different mailbox
+  - name: gmail-add-delete-filter
+    arguments:
+    - name: user-id
+      required: true
+      default: true
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+    - name: email-address
+      required: true
+      description: Email address to block messages from.
+    description: Add a rule for email deletion by address
+  - name: gmail-add-filter
+    arguments:
+    - name: user-id
+      required: true
+      default: true
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+    - name: from
+      description: The sender's display name or email address.
+    - name: to
+      description: The recipient's display name or email address. Includes recipients
+        in the "to", "cc", and "bcc" header fields. You can use simply the local part
+        of the email address. For example, "example" and "example@" both match "example@gmail.com".
+        This field is case-insensitive.
+    - name: subject
+      description: The mail subject.
+    - name: query
+      description: Only return messages matching the specified query. Supports the
+        same query format as the Gmail search box. For example, "from:someuser@example.com
+        is:unread".
+    - name: has-attachments
+      description: Whether the message has any attachment.
+    - name: size
+      description: The size of the entire RFC822 message in bytes, including all headers
+        and attachments.
+    - name: add-labels
+      description: Comma-separated list of labels to add to the message.
+    - name: remove-labels
+      description: Comma-separated list of labels to remove from the message.
+    - name: forward
+      description: Email address that the message should be forwarded to.
+    - name: size-comparison
+      auto: PREDEFINED
+      predefined:
+      - larger
+      - smaller
+      description: How the message size in bytes should be in relation to the size
+        field.
+    description: Add a new filter.
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+tests:
+- GmailTest

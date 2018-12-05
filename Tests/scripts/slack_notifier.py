@@ -70,50 +70,48 @@ def options_handler():
     return options
 
 
-def extract_build_status(build_number, circleci_token):
-    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
-    res = http_request(url)
+def get_attachments(build_url):
+    content_team_fields, content_fields, failed_tests = get_fields()
+    color = 'good' if not failed_tests else 'danger'
+    title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
 
-    status = 'success'
-    steps = res.get('steps', [])
-    for step in steps:
-        action = step.get('actions', [{}])[0]
-        if action.get('status', 'failed') == 'failed':
-            status = 'failed'
-
-    return status
-
-
-def get_attachments(build_url, build_st):
-    color = 'good' if build_st is 'success' else 'danger'
-    title = 'Content Build - Success' if build_st is 'success' else 'Content Build - Failure'
-    fields = get_fields()
-
-    attachment = [{
+    content_team_attachment = [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': build_url,
-        'fields': fields
+        'fields': content_team_fields
     }]
 
-    return attachment
+    content_attachment = [{
+        'fallback': title,
+        'color': color,
+        'title': title,
+        'title_link': build_url,
+        'fields': content_fields
+    }]
+
+    return content_team_attachment, content_attachment
 
 
 def get_fields():
+    print('Extracting failed_tests')
     with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
         failed_tests = failed_tests_file.readlines()
         failed_tests = [line.strip('\n') for line in failed_tests]
 
+    print('Extracting skipped_tests')
     with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
         skipped_tests = skipped_tests_file.readlines()
         skipped_tests = [line.strip('\n') for line in skipped_tests]
 
+    print('Extracting skipped_integrations')
     with open('./Tests/skipped_integrations.txt', 'r') as skipped_integrations_file:
         skipped_integrations = skipped_integrations_file.readlines()
         skipped_integrations = [line.strip('\n') for line in skipped_integrations]
 
-    fields = []
+    content_team_fields = []
+    content_fields = []
 
     if failed_tests:
         field_failed_tests = {
@@ -121,7 +119,8 @@ def get_fields():
             "value": '\n'.join(failed_tests),
             "short": False
         }
-        fields.append(field_failed_tests)
+        content_team_fields.append(field_failed_tests)
+        content_fields.append(field_failed_tests)
 
     if skipped_tests:
         field_skipped_tests = {
@@ -129,7 +128,7 @@ def get_fields():
             "value": '\n'.join(skipped_tests),
             "short": True
         }
-        fields.append(field_skipped_tests)
+        content_team_fields.append(field_skipped_tests)
 
     if skipped_integrations:
         field_skipped_integrations = {
@@ -137,9 +136,9 @@ def get_fields():
             "value": '\n'.join(skipped_integrations),
             "short": True
         }
-        fields.append(field_skipped_integrations)
+        content_team_fields.append(field_skipped_integrations)
 
-    return fields
+    return content_team_fields, content_fields, failed_tests
 
 
 def slack_notifier(build_url, build_number, slack_token, circleci_token):
@@ -148,31 +147,26 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
     branch_name = branch_name_reg.group(1)
 
     if branch_name == 'master':
-        build_st = extract_build_status(build_number, circleci_token)
-        attachments = get_attachments(build_url, build_st)
+        print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
+        print("Extracting build status")
+        content_team_attachments, content_attachments = get_attachments(build_url)
 
+        print("Sending Slack messages to #content and #content-team")
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
             channel="content-team",
             username="Content CircleCI",
             as_user="False",
-            attachments=attachments
+            attachments=content_team_attachments
         )
-
-        sc.api_call(
-            "chat.postMessage",
-            channel="content",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=attachments
-        )
-
 
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
         slack_notifier(options.url, options.buildNumber, options.slack, options.circleci)
+    else:
+        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
     os.remove('./Tests/skipped_tests.txt')

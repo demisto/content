@@ -233,13 +233,12 @@ script:
         the first X elements of the query or reaching its end.
       defaultValue: "30"
     - name: writeToContext
-      description: Wether to write results to context or not
+      description: Whether to write results to context or not
       defaultValue: "true"
     outputs:
     - contextPath: Devo.Results
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "Added a default results limit of 30"
 tests:
     - devo_test_playbook

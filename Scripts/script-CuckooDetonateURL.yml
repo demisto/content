@@ -1,9 +1,9 @@
 commonfields:
-  id: 7775cafc-a080-49a7-890b-6bcba60a4830
-  version: 2
+  id: CuckooDetonateURL
+  version: -1
 name: CuckooDetonateURL
 script: |-
-  res =  demisto.executeCommand("ck-url", demisto.args())
+  res =  demisto.executeCommand("cuckoo-create-task-from-url", demisto.args())
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -26,5 +26,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ck-url
+  - cuckoo-create-task-from-url
 timeout: 0s
+tests:
+  - No test

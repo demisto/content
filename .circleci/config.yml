@@ -2,10 +2,10 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:9.11
+      - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "18.10.1"
-      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
+      CONTENT_VERSION: "18.11.2"
+      GIT_SHA1: "3ac083b891d2f146ffbad6c7ce0a3be9e4f94b92"
     steps:
       - checkout
       - run:
@@ -17,16 +17,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
-              sudo easy_install pip
-              sudo npm install npm -g
-              sudo pip install pykwalify
-              sudo pip install awscli
-              sudo pip install requests
-              sudo pip install slackclient
-              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
-              sudo npm install -g jsdoc-to-markdown
-              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
       - add_ssh_keys:
           fingerprints:
@@ -34,12 +24,12 @@ jobs:
       - run:
           name: Validate Files and Yaml
           command: |
-              chmod +x ./Tests/yamlvalidator
-              ./Tests/yamlvalidator
-              python ./Tests/scripts/validate_files_structure.py
+              python ./Tests/scripts/validate_files_structure.py -c true
       - run:
           name: Configure Test Filter
-          command: python ./Tests/scripts/configure_tests.py
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
@@ -52,10 +42,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - run:
-          name: Download Artifacts
-          command: |
-              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
       - run:
           name: Download Configuration
           command: |
@@ -77,6 +63,10 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Instance Test
+          command: ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances

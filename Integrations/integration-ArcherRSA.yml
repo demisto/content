@@ -353,8 +353,11 @@ script:
             rawResponse = result.Body;
             break;
         }
-        var response = JSON.parse(x2j(rawResponse));
-
+        try {
+            var response = JSON.parse(x2j(rawResponse));
+        } catch (err) {
+            throw "Problem with login, please make sure that you have the right credentials. Original server response: " + rawResponse + " Error was: " + err
+        }
         if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
             throw "Login failed. Request = " + soap + " Response = " + rawResponse;
         }
@@ -367,7 +370,7 @@ script:
         var soap = terminateSessionSoapRequest(token);
         var SOAPAction = 'http://archer-tech.com/webservices/TerminateSession';
         for (var i = 0; i<5; i++){
-            try{
+            try {
                 var result = soapRequestSender('logout', soap, SOAPAction);
                 if (result.StatusCode < 200 || result.StatusCode >= 300) {
                     if (result.StatusCode === 500 || result.StatusCode === -1){ // unauthorized, try again

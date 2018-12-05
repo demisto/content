@@ -90,7 +90,7 @@ script: |-
   doc += '---\n'
 
   # Use-cases
-  doc += '## Use cases\n'
+  doc += '## Use Cases\n'
   doc += '---\n'
 
   if 'useCases' in demisto.args():
@@ -110,16 +110,15 @@ script: |-
   1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
   2. Search for ''' + name + '''.
   3. Click __Add instance__ to create and configure a new integration instance.
-  You should configure the following settings:
-    * __Name__: a textual name for the integration instance.
+      * __Name__: a textual name for the integration instance.
   '''
 
   j=2
   for i in range(len(dataMap['configuration'])):
       if (dataMap['configuration'][i]['display']):
-          doc += '  * __' + dataMap['configuration'][i]['display'] +'__\n'
+          doc += '    * __' + dataMap['configuration'][i]['display'] +'__\n'
       else:
-          doc += '  * __' + dataMap['configuration'][i]['name'] +'__\n'
+          doc += '    * __' + dataMap['configuration'][i]['name'] +'__\n'
       j += 1
   doc += '4. Click __Test__ to validate the URLs, token, and connection.' +'\n'
 
@@ -147,14 +146,14 @@ script: |-
           doc += '### ' + dataMap['script']['commands'][i]['name'] + '\n'
           doc += '---\n'
           doc += str(dataMap['script']['commands'][i].get('description'," ")) + '\n'
-          doc += '##### Base Command\n'
+          doc += '##### Base Command\n\n'
           doc += '`' + dataMap['script']['commands'][i]['name'] + '`' + '\n'
 
           #Inputs
-          doc += '##### Input\n'
-          doc += '| **Argument Name** | **Description** | **Required** |\n'
-          doc += '| --- | --- | --- |\n'
+          doc += '##### Input\n\n'
           if len(dataMap['script']['commands'][i]['arguments']) != 0:
+              doc += '| **Argument Name** | **Description** | **Required** |\n'
+              doc += '| --- | --- | --- |\n'
               for j in range(len(dataMap['script']['commands'][i]['arguments'])):
                   doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
                   if not (dataMap['script']['commands'][i]['arguments'][j].get('description', False)):
@@ -162,11 +161,11 @@ script: |-
                       " of command " + dataMap['script']['commands'][i]['name'])
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | '
-                  doc += str(dataMap['script']['commands'][i]['arguments'][j].get('required', 'False'))  + ' | \n'
+                  doc += ('Required' if str(dataMap['script']['commands'][i]['arguments'][j].get('required')).lower() == 'true' else 'Optional')  + ' | \n'
           else:
-              doc += '-\n'
+              doc += 'There are no input arguments for this command.'
           #Context output
-          doc += '##### Context Output\n'
+          doc += '\n\n##### Context Output\n\n'
           if 'outputs' in dataMap['script']['commands'][i]:
               doc += '| **Path** | **Type** | **Description** |\n'
               doc += '| --- | --- | --- |\n'
@@ -179,11 +178,13 @@ script: |-
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
           else:
-              doc += 'There is no context output for this command.\n'
+              doc += 'There is no context output for this command.'
           #Raw output:
-          doc += '##### Command Example\n'
+          doc += '\n\n##### Command Example\n'
+          doc += '` `\n\n'
           doc += '##### Context Example\n'
-          doc += '##### Human Readable Output\n'
+          doc += '```\n\n```\n\n'
+          doc += '##### Human Readable Output\n\n'
 
           doc += '\n'
       except Exception as e:
@@ -194,21 +195,25 @@ script: |-
 
   # Additional info
 
-  doc += '\n## Additional information:\n'
+  doc += '\n## Additional Information\n'
+  doc += '---\n'
 
   if 'addInfo' in demisto.args():
       doc +=addLines(demisto.args()['addInfo']) + '\n'
 
   # Known limitations
 
-  doc += '\n## Known limitations:'
+  doc += '\n## Known Limitations\n'
+  doc += '---\n'
 
   if 'limit' in demisto.args():
       doc +=addLines(demisto.args()['limit']) + '\n'
 
   # Troubleshooting
 
-  doc += '\n## Troubleshooting:\n'
+  doc += '\n## Troubleshooting\n'
+  doc += '---\n'
+
   if 'troubleshooting' in demisto.args():
       doc +=addLines(demisto.args()['troubleshooting'])
 
@@ -253,3 +258,6 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/docs
+releaseNotes: "-"
+tests:
+  - No test - Test not needed

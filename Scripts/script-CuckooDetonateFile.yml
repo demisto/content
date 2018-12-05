@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CuckooDetonateFile
 script: |-
-  res =  demisto.executeCommand("ck-file", demisto.args())
+  res =  demisto.executeCommand("cuckoo-create-task-from-file", demisto.args())
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -46,5 +46,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ck-file
+  - cuckoo-create-task-from-file
 timeout: 0s
+tests:
+  - No test

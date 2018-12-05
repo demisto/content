@@ -23,6 +23,5 @@ dependson:
   - PagerDuty-submit-event
 runonce: false
 timeout: 0s
-releaseNotes: "Updating script to PagerDuty API v2"
 tests:
   - PagerDuty Test

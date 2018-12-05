@@ -95,6 +95,11 @@ script:
         }
         login_url = 'login.do'
         login_response = http_request('post', login_url, cookies=cookies, data=data)
+
+        #if JSESSIONID doesn't exist - creds may be invalid
+        if 'JSESSIONID' not in login_response.cookies:
+            return_error('Failed to login. Username or password may be invalid')
+
         jsession = login_response.cookies.get_dict()['JSESSIONID']
 
         # Add Jsession ID to the cookies
