@@ -40,7 +40,7 @@ script: |+
   input_txt = demisto.args().get('inputText', '')
   if len(input_txt) == 0:
       return_error("Input text is missing")
-  res = demisto.executeCommand('WordTokenize', {
+  res = demisto.executeCommand('WordTokenizer', {
       'value': input_txt,
       'hashWordWithSeed': HASH_SEED if HASH_WORDS else None,
       'type': 'punkt'
