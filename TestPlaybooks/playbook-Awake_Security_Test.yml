@@ -11,6 +11,7 @@ tasks:
       id: 9db0fc3d-32ea-42f6-8320-038d19f873f0
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -28,10 +29,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: fe097933-e9cf-4a48-8e92-762a18118362
+    taskid: e0bbc91a-75fa-4b50-8dd1-9e0db685a98e
     type: regular
     task:
-      id: fe097933-e9cf-4a48-8e92-762a18118362
+      id: e0bbc91a-75fa-4b50-8dd1-9e0db685a98e
       version: -1
       name: ip
       description: Lookup an IP address
@@ -43,15 +44,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 10.200.104.236
-      long: {}
       lookback_minutes: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -101,10 +96,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 0818cff8-b9a4-4242-8333-32bc8aa2b98d
+    taskid: 9b68a5f4-99da-489d-87e4-ce50bba3ccf7
     type: regular
     task:
-      id: 0818cff8-b9a4-4242-8333-32bc8aa2b98d
+      id: 9b68a5f4-99da-489d-87e4-ce50bba3ccf7
       version: -1
       name: email
       script: Awake Security|||email
@@ -205,6 +200,7 @@ tasks:
       id: 4649f944-4d2f-4ec2-89cf-00858682e727
       version: -1
       name: Query
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -223,10 +219,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: e14c500c-438d-4515-8a8c-c2b0664eb4e3
+    taskid: 0d8aada8-edd3-4627-8d8c-1302ccba9ada
     type: regular
     task:
-      id: e14c500c-438d-4515-8a8c-c2b0664eb4e3
+      id: 0d8aada8-edd3-4627-8d8c-1302ccba9ada
       version: -1
       name: domain
       description: Lookup a domain
@@ -290,10 +286,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: feddeb2c-3639-4241-8a47-65be6dfa4f9e
+    taskid: 7cc5bd5a-14dc-4471-8fa8-9bb6828f0b7d
     type: regular
     task:
-      id: feddeb2c-3639-4241-8a47-65be6dfa4f9e
+      id: 7cc5bd5a-14dc-4471-8fa8-9bb6828f0b7d
       version: -1
       name: device
       description: Lookup a device
@@ -400,6 +396,7 @@ tasks:
       id: cf4d0e04-96f2-4362-874c-b0a695c0cd1b
       version: -1
       name: Pcap
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -488,17 +485,17 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: fb45f220-10ed-47c4-8f7a-61f81c4b0bbe
+    taskid: b436af3d-4b62-47df-87c9-6b29704e7afd
     type: regular
     task:
-      id: fb45f220-10ed-47c4-8f7a-61f81c4b0bbe
+      id: b436af3d-4b62-47df-87c9-6b29704e7afd
       version: -1
       name: awake-query-activities
       description: Query activities
-      script: Awake Security|||awake-query-activities
+      script: '|||awake-query-activities'
       type: regular
       iscommand: true
-      brand: Awake Security
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -563,17 +560,17 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 6f42cb67-0115-4195-8cb1-1ec0ee4423db
+    taskid: 031061b4-c87b-490f-8cd3-d63f5dfc0522
     type: regular
     task:
-      id: 6f42cb67-0115-4195-8cb1-1ec0ee4423db
+      id: 031061b4-c87b-490f-8cd3-d63f5dfc0522
       version: -1
       name: awake-query-devices
       description: Query devices
-      script: Awake Security|||awake-query-devices
+      script: '|||awake-query-devices'
       type: regular
       iscommand: true
-      brand: Awake Security
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -600,10 +597,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 89c951b0-d07b-49c7-87a8-d3f6ed5b0789
+    taskid: c7b07d2b-f390-4634-8321-8d8eb2d4e525
     type: condition
     task:
-      id: 89c951b0-d07b-49c7-87a8-d3f6ed5b0789
+      id: c7b07d2b-f390-4634-8321-8d8eb2d4e525
       version: -1
       name: Test awake-query-devices
       type: condition
@@ -616,16 +613,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
                 root: AwakeSecurity
-                accessor: Devices.ips
+                accessor: Devices.numberSessions
             iscontext: true
           right:
             value:
-              simple: 10.200.104.166
+              simple: "10"
     view: |-
       {
         "position": {
@@ -654,7 +651,7 @@ tasks:
       hostB:
         simple: 10.200.103.100
       portA:
-        simple: "6"
+        simple: "67"
       portB:
         simple: "68"
       protocol: {}
