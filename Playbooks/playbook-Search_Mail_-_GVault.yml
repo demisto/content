@@ -1,0 +1,838 @@
+id: e9226dc3-e410-47da-8374-1bb33c5994b2
+version: 60
+fromversion: 4.0.0
+name: gvault-search-mail
+description: ''
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14cac14a-3745-46d2-8ef6-da411a06da52
+    type: start
+    task:
+      id: 14cac14a-3745-46d2-8ef6-da411a06da52
+      version: -1
+      name: ""
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -820
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 86e115b4-9d57-4aa5-89a9-c0625f4af1f7
+    type: regular
+    task:
+      id: 86e115b4-9d57-4aa5-89a9-c0625f4af1f7
+      version: -1
+      name: gvault-create-export-mail
+      description: Creates a Google Vault export in order to perform search actions
+        on emails.
+      script: google-vault_workingOnDownload_copy|||gvault-create-export-mail
+      type: regular
+      iscommand: true
+      brand: google-vault_workingOnDownload_copy
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dataScope:
+        simple: ${inputs.dataScope}
+      emails:
+        simple: ${inputs.emails}
+      endTime:
+        simple: ${inputs.endTime}
+      exportMBOX:
+        simple: ${inputs.exportMBOX}
+      exportName:
+        simple: ${inputs.exportName}
+      exportPST:
+        simple: ${inputs.exportPST}
+      includeDrafts:
+        simple: ${inputs.includeDrafts}
+      matterID:
+        simple: ${inputs.matterID}
+      ou:
+        simple: ${inputs.ou}
+      searchMethod:
+        simple: ${inputs.searchMethod}
+      startTime:
+        simple: ${inputs.startTime}
+      terms:
+        simple: ${inputs.terms}
+      timeFrame:
+        simple: ${inputs.timeFrame}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 30be4e0b-b55b-4040-80aa-2567d0240952
+    type: playbook
+    task:
+      id: 30be4e0b-b55b-4040-80aa-2567d0240952
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      Ids:
+        simple: ${GoogleVault.Export.MatterID}#${GoogleVault.Export.ExportID}
+      Interval:
+        simple: ${inputs.pollInterval}
+      PollingCommandArgName:
+        simple: queryIDS
+      PollingCommandName:
+        simple: gvault-export-status
+      Timeout:
+        simple: ${inputs.pollTimeout}
+      dt:
+        simple: GoogleVault.Export(val.Status != 'COMPLETED')=val.MatterID + '#' +
+          val.ExportID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 576cc0ce-12c6-4edc-8d53-773e0ea58f45
+    type: regular
+    task:
+      id: 576cc0ce-12c6-4edc-8d53-773e0ea58f45
+      version: -1
+      name: gvault-get-mail-results
+      description: Get the results of a given mail export
+      script: google-vault_workingOnDownload_copy|||gvault-get-mail-results
+      type: regular
+      iscommand: true
+      brand: google-vault_workingOnDownload_copy
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      bucketName:
+        simple: ${GoogleVault.Export.BucketName}
+      maxResult:
+        simple: ${inputs.maxResultForDisplay}
+      viewID:
+        simple: ${GoogleVault.Export.ViewID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1120
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 566b7ab9-431f-4cab-8572-811f3d3bcf1e
+    type: condition
+    task:
+      id: 566b7ab9-431f-4cab-8572-811f3d3bcf1e
+      version: -1
+      name: Validate scope
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.dataScope
+            iscontext: true
+          right:
+            value:
+              simple: All Data
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.dataScope
+            iscontext: true
+          right:
+            value:
+              simple: Held Data
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.dataScope
+            iscontext: true
+          right:
+            value:
+              simple: Unprocessed Data
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 140
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 9ed8fed0-adb4-4d5a-8de3-4390979be049
+    type: title
+    task:
+      id: 9ed8fed0-adb4-4d5a-8de3-4390979be049
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1760
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: f40a8e8d-3cad-46fe-82d3-e099deff4c47
+    type: regular
+    task:
+      id: f40a8e8d-3cad-46fe-82d3-e099deff4c47
+      version: -1
+      name: Invalid dataScope
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid dataScope: ${inputs.dataScope}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 310
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
+    type: condition
+    task:
+      id: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
+      version: -1
+      name: validate searchMethod
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.searchMethod
+            iscontext: true
+          right:
+            value:
+              simple: All Accounts
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.searchMethod
+            iscontext: true
+          right:
+            value:
+              simple: Specific Accounts(requires emails argument)
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.searchMethod
+            iscontext: true
+          right:
+            value:
+              simple: Organizational Unit(requires ou argument)
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -80
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: d4e0183d-19b7-465b-8cf0-61a09ecc9fd2
+    type: regular
+    task:
+      id: d4e0183d-19b7-465b-8cf0-61a09ecc9fd2
+      version: -1
+      name: Invalid searchMethod
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid searchMethod: ${inputs.searchMethod}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 110
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 75db2227-4188-49f3-8a5f-4bc2548dfd6f
+    type: condition
+    task:
+      id: 75db2227-4188-49f3-8a5f-4bc2548dfd6f
+      version: -1
+      name: validate includeDrafts
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.includeDrafts
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.includeDrafts
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -290
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 2c11b21d-177c-4caa-8e45-8f9a1e25feb1
+    type: regular
+    task:
+      id: 2c11b21d-177c-4caa-8e45-8f9a1e25feb1
+      version: -1
+      name: Invalid includeDrafts
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid input for includeDrafts: ${inputs.includeDrafts}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -120
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: f359a495-d591-43a7-89ba-fad3d43c428b
+    type: condition
+    task:
+      id: f359a495-d591-43a7-89ba-fad3d43c428b
+      version: -1
+      name: validate exportPST
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.exportPST
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.exportPST
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -490
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 8ce0b9b7-2d4e-4463-8ded-db8732cecc3e
+    type: regular
+    task:
+      id: 8ce0b9b7-2d4e-4463-8ded-db8732cecc3e
+      version: -1
+      name: Invalid exportPST
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid input for exportPST: ${inputs.exportPST}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -310
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: fe2a296f-bdd8-4870-8e32-ce312034ef8e
+    type: condition
+    task:
+      id: fe2a296f-bdd8-4870-8e32-ce312034ef8e
+      version: -1
+      name: validate exportMBOX
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.exportMBOX
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.exportMBOX
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -670
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 003c3b26-f5e8-498b-8cd2-949c7d43def8
+    type: regular
+    task:
+      id: 003c3b26-f5e8-498b-8cd2-949c7d43def8
+      version: -1
+      name: Invalid exportMBOX
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid input for exportMBOX: ${inputs.exportMBOX}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -500
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 3f8f4650-cc6f-4dde-85cf-52875002b5a1
+    type: condition
+    task:
+      id: 3f8f4650-cc6f-4dde-85cf-52875002b5a1
+      version: -1
+      name: Check downloadFile
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.downloadFile
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 9b8234da-1a70-499b-86c8-6de0665449f9
+    type: regular
+    task:
+      id: 9b8234da-1a70-499b-86c8-6de0665449f9
+      version: -1
+      name: Get Export status to context
+      description: ""
+      script: '|||gvault-export-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      exportID:
+        complex:
+          root: GoogleVault
+          accessor: Export.ExportID
+      matterId:
+        complex:
+          root: GoogleVault
+          accessor: Export.MatterID
+      queryIDS: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 24fe9a06-2fde-4c19-8207-148ca50b2b04
+    type: regular
+    task:
+      id: 24fe9a06-2fde-4c19-8207-148ca50b2b04
+      version: -1
+      name: Download Export file
+      description: ""
+      script: '|||gvault-download-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bucketName:
+        complex:
+          root: GoogleVault
+          accessor: Export.BucketName
+      downloadID:
+        complex:
+          root: GoogleVault
+          accessor: Export.DownloadID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1550
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: f04a7a20-83ae-4198-86e0-22c079cef34b
+    type: condition
+    task:
+      id: f04a7a20-83ae-4198-86e0-22c079cef34b
+      version: -1
+      name: Check if status COMPLETED
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleVault
+                accessor: Export.Status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: de226b27-9336-4659-823e-079c17b7873b
+    type: regular
+    task:
+      id: de226b27-9336-4659-823e-079c17b7873b
+      version: -1
+      name: Polling Timeout
+      description: ""
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Polling time out: increase polling time out'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1110
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2645,
+        "width": 1110,
+        "x": 50,
+        "y": -820
+      }
+    }
+  }
+inputs:
+- key: matterID
+  value: {}
+  required: true
+  description: |2-
+
+    matterID
+- key: exportName
+  value: {}
+  required: true
+  description: Export Name
+- key: dataScope
+  value:
+    simple: All Data
+  required: false
+  description: Choice of Search scope
+- key: searchMethod
+  value:
+    simple: All Accounts
+  required: false
+  description: Choice of Search method
+- key: emails
+  value: {}
+  required: false
+  description: If the search method is set to Specific Accounts (separated by comma)
+- key: ou
+  value: {}
+  required: false
+  description: The organizational unit (specify only if the search method is set to
+    Organizational Unit)
+- key: includeDrafts
+  value:
+    simple: "true"
+  required: false
+  description: Include/Exclude drafts in the search
+- key: timeFrame
+  value: {}
+  required: false
+  description: 'Search time frame. E.g: "1 min ago","2 weeks ago","3 months ago"'
+- key: startTime
+  value: {}
+  required: false
+  description: UTC start time (2018-10-16T12:59:02.584000Z)
+- key: endTime
+  value: {}
+  required: false
+  description: UTC end time (2018-10-16T12:59:02.584000Z)
+- key: terms
+  value: {}
+  required: false
+  description: Add specific terms for the search (subject:example)
+- key: exportPST
+  value:
+    simple: "true"
+  required: false
+  description: Export format
+- key: exportMBOX
+  value:
+    simple: "false"
+  required: false
+  description: Export format
+- key: pollInterval
+  value:
+    simple: "2"
+  required: false
+  description: Interval to check export status (sec)
+- key: pollTimeout
+  value:
+    simple: "30"
+  required: false
+  description: Timeout to terminate the poll (sec)
+- key: maxResultForDisplay
+  value:
+    simple: "30"
+  required: false
+  description: The maximal number of result to be displayed
+- key: downloadFile
+  value:
+    simple: "false"
+  required: false
+  description: If set to true the export file created will be downloaded into the
+    War Room
+outputs: []
+releaseNotes: "Created new playbook for performing search and get results on Google vault"
+tests:
+  - No test - no test needed
