@@ -103,7 +103,7 @@ script:
     }
 
 
-    var sendRequest = function (method, resourceUrl, body, isCookie) {
+    var sendRequest = function (method, resourceUrl, body) {
         var requestParams = {
             Headers: {'Content-Type': ['application/json']},
             Method: method,
@@ -155,7 +155,7 @@ script:
     };
 
     var runQuery = function(query, startAt, maxResults) {
-        var url = 'rest/api/2/search?jql='+encodeURIComponent(query);
+        var url = 'rest/api/latest/search?jql='+encodeURIComponent(query);
         url = addQueryParam(url,'startAt',startAt);
         url = addQueryParam(url,'maxResults',maxResults);
         var result  = sendRequest('GET', url)
@@ -555,7 +555,6 @@ script:
             }
             else return 'No comments were found in the ticket'
 
-
         case 'jira-issue-upload-file':
             var jRes = uploadFile(args.upload, args.issueId);
             var md = generateMdUploadIssue(jRes);
@@ -616,9 +615,17 @@ script:
                HumanReadable: md,
                ReadableContentsFormat: formats.markdown
             };
+        case 'jira-delete-issue':
+            var url = 'rest/api/latest/issue/' + String(args.issueIdOrKey);
+            var issue = getIssueFields()
+            var result = sendRequest('DELETE', url, JSON.stringify(issue));
+            if (result.StatusCode == '204')
+                return 'Issue deleted successfully.'
+            break;
+
         case 'fetch-incidents':
             var lastRun = getLastRun();
-            var idOffset = lastRun && lastRun.idOffset ? lastRun.idOffset : params.idOffset;
+            var idOffset = (lastRun && lastRun.idOffset) ? lastRun.idOffset : params.idOffset;
             var incidents = [];
             var maxResults = 50;
             var query = params.query + ' and id > ' + String(idOffset)
@@ -815,6 +822,12 @@ script:
       description: The user that created the comment
       type: string
     description: Gets the comments added to a ticket
+  - name: jira-delete-issue
+    arguments:
+    - name: issueIdOrKey
+      required: true
+      description: issue ID or Key
+    description: deletes an issue
   isfetch: true
   runonce: false
 releaseNotes: new authentication method, and some functionality updates
