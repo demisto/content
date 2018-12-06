@@ -187,7 +187,7 @@ script:
             ProjectionConstants.OUTPUTS: outputs or MAR_COLLECTORS.get(collector)
         }
 
-    def search(collector, outputs, filter_by, filter_operator, filter_value):
+    def search(collector, projection_collector, outputs, filter_by, filter_operator, filter_value):
         config = get_client_config()
         with DxlClient(config) as client:
             client.connect()
@@ -205,8 +205,8 @@ script:
                     raise Exception('you must specify filter-by, filter-operator & filter-value (or specify none of them)')
                 else:
                     result_context = mar_client.search(
-                        projections=[{
-                            ProjectionConstants.NAME: collector,
+                         projections=[{
+                            ProjectionConstants.NAME: projection_collector,
                             ProjectionConstants.OUTPUTS: outputs
                         }],
                         conditions={ ConditionConstants.OR: [{
@@ -254,7 +254,7 @@ script:
 
             return None
 
-    def search_wrapper(collector, outputs_str, filter_by, filter_operator, filter_value):
+    def search_wrapper(collector, projection_collector, outputs_str, filter_by, filter_operator, filter_value):
         try:
             if outputs_str:
                 outputs = outputs_str.split(',')
@@ -262,7 +262,7 @@ script:
                 # get all outputs
                 outputs = MAR_COLLECTORS.get(collector)
 
-            result = search(collector, outputs, filter_by, filter_operator, filter_value)
+            result = search(collector, projection_collector, outputs, filter_by, filter_operator, filter_value)
         except Exception as ex:
             return create_error_entry(str(ex))
 
@@ -303,6 +303,7 @@ script:
     elif demisto.command() == 'mar-search':
         results = search_wrapper(
             args.get('collector'),
+            args.get('projection-collector', args.get('collector')),
             args.get('outputs'),
             args.get('filter-by'),
             args.get('filter-operator'),
@@ -358,6 +359,35 @@ script:
       - UserProfiles
       - WinRegistry
       description: The collector to query
+    - name: prejection-collector
+      auto: PREDEFINED
+      predefined:
+      - CommandLineHistory
+      - CurrentFlow
+      - DNSCache
+      - EnvironmentVariables
+      - Files
+      - HostEntries
+      - HostInfo
+      - InstalledCertificates
+      - InstalledDrivers
+      - InstalledUpdates
+      - InteractiveSessions
+      - LocalGroups
+      - LoggedInUsers
+      - NetworkFlow
+      - NetworkInterfaces
+      - NetworkSessions
+      - NetworkShares
+      - Processes
+      - ScheduledTasks
+      - Services
+      - Software
+      - Startup
+      - UsbConnectedStorageDevices
+      - UserProfiles
+      - WinRegistry
+      description: Projection collector that we want to return. By default prejection collector will be equal to the collector
     - name: outputs
       description: Comma separated fields (outputs). Run `mar-collectors-list` to
         view all collectors & fields command for all collectors outputs, shows all
@@ -478,3 +508,4 @@ script:
     description: Search endpoint data crossed by multiple collectors
   dockerimage: demisto/dxl
   runonce: false
+releaseNotes: support projection collector
