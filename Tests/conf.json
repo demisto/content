@@ -671,6 +671,9 @@
             "timeout": 300
         },
         {
+            "playbookID" : "Jira-createIssue-generic-test"
+        },
+        {
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
