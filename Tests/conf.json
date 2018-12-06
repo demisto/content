@@ -49,6 +49,9 @@
           "playbookID": "ReadPDFFile-Test"
         },
         {
+          "playbookID": "Jira-createIssue-generic-test"
+        },
+        {
           "playbookID": "JSONtoCSV-Test"
         },
         {
