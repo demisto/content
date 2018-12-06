@@ -443,7 +443,7 @@ script:
 
                 contents.append({
                     'Name': policy.get('name'),
-                    'ID': int(policy.get('policyid')),
+                    'ID': policy.get('policyid'),
                     'Description': policy.get('comments'),
                     'Status': policy.get('status'),
                     'Source': src_address,
@@ -535,7 +535,7 @@ script:
         })
         policy_context.append({
             'Name': policy.get('name'),
-            'ID': policy.get('policyid'),
+            'ID': int(policy.get('policyid')),
             'Description': policy.get('comments'),
             'Status': policy.get('status'),
             'Source': src_address,
@@ -722,7 +722,7 @@ script:
         response = delete_policy_request(policy_id)
 
         policy_context = {
-            'ID': policy_id,
+            'ID': int(policy_id),
             'Deleted': True
         }
         contents.append({
@@ -929,11 +929,93 @@ script:
             'EntryContext': context
         })
 
+
     def delete_address_group_request(name):
         uri_suffix = 'cmdb/firewall/addrgrp/' + name
         response = http_request('DELETE', uri_suffix)
         return response
 
+
+    def create_address_command():
+        contents = []
+        context = {}
+        address_context = []
+        address_name = demisto.args().get('addressName', '')
+        address_type = demisto.args().get('type', '')
+        start_ip = demisto.args().get('startIp', '')
+        end_ip = demisto.args().get('endIp', '')
+        domain = demisto.args().get('domain', '')
+        ip_range = None
+        subnet = None
+
+        response = create_address_request(address_name, start_ip, end_ip, address_type, domain)
+
+        if start_ip and end_ip:
+            if address_type == 'iprange':
+                ip_range = start_ip + '-' + end_ip
+            elif address_type == 'subnet':
+                subnet = start_ip + ' ' + end_ip
+
+        contents = {
+            'Name': address_name,
+            'IP Range': ip_range,
+            'Subnet': subnet,
+            'Type': address_type,
+            'Domain': domain
+        }
+        address_context = {
+            'Name': address_name,
+            'IPRange': ip_range,
+            'Subnet': subnet,
+            'Type': address_type,
+            'Domain': domain
+        }
+
+        context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('FortiGate address ' + address_name + ' created successfully', contents, removeNull=True),
+            'EntryContext': context
+        })
+
+
+    def create_address_request(address_name, start_ip, end_ip, address_type, domain):
+        if address_type == 'subnet':
+            address_type = 'ipmask'
+        elif address_type == 'domain':
+            address_type = 'fqdn'
+
+        uri_suffix = 'cmdb/firewall/address/'
+        if does_path_exist(uri_suffix + address_name):
+            return_error('Address already exists.')
+
+        payload = {
+            'name': address_name,
+            'type': address_type,
+        }
+
+        if address_type == 'iprange':
+            payload.update({
+                'start-ip': start_ip,
+                'end-ip': end_ip
+            })
+
+        elif address_type == 'ipmask':
+            payload.update({
+                'subnet': start_ip + ' ' + end_ip
+            })
+
+        elif address_type == 'fqdn':
+            payload.update({
+                'fqdn': domain
+            })
+
+        result = http_request('POST', uri_suffix, params={} , data=json.dumps(payload))
+        return result
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -975,6 +1057,8 @@ script:
             create_address_group_command()
         elif demisto.command() == 'fortigate-delete-address-group':
             delete_address_group_command()
+        elif demisto.command() == 'fortigate-create-address':
+            create_address_command()
 
     except Exception, e:
         LOG(e.message)
@@ -1375,6 +1459,29 @@ script:
       description: Was address group deleted
       type: boolean
     description: Delete an address group from FortiGate firewall
+  - name: fortigate-create-address
+    arguments:
+    - name: addressName
+      required: true
+      description: Address name
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - iprange
+      - subnet
+      - domain
+      description: Address type (If chosen fqdn, only provide domain, else  for subnet/iprange
+        provide only start ip and end ip)
+      defaultValue: iprange
+    - name: startIp
+      description: 'Start ip for address ip range or subnet (Example: 0.0.0.0)'
+    - name: endIp
+      description: 'End ip for address ip range or subnet (Example: 1.1.1.1)'
+    - name: domain
+      description: 'Fully qualified domain name for address (Example: play.google.com)'
+    description: Create an address in FortiGate firewall, you may choose either IP
+      range or subnet.
   runonce: false
 releaseNotes: "-"
 tests:
