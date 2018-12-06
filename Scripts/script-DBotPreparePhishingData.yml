@@ -116,7 +116,7 @@ script: |+
           demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': Error storing file in list " + listname
+            'Contents': "Error storing file in list " + listname
           })
 
 
