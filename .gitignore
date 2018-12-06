@@ -1,3 +1,5 @@
 .DS_Store
 .idea
 _site
+TestData/EmailWithNonUnicodeAttachmentName.eml
+TestData/EmailWithNonUnicodeSubject.eml
