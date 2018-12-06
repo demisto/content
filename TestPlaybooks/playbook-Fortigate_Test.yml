@@ -561,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 6390
         }
       }
     note: false
@@ -1170,12 +1170,96 @@ tasks:
     note: false
   "34":
     id: "34"
-    taskid: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+    taskid: 90d3aac5-583f-4576-8172-2cdee0d60a62
     type: condition
     task:
-      id: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+      id: 90d3aac5-583f-4576-8172-2cdee0d60a62
       version: -1
       name: TEST fortigate-delete-address-group context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: Fortigate
+                accessor: AddressGroup.Deleted
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+        - operator: isTrue
+          left:
+            value:
+              complex:
+                root: Fortigate
+                accessor: AddressGroup.Deleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 4746fe63-4782-4ca5-878f-df83c0110b9e
+    type: regular
+    task:
+      id: 4746fe63-4782-4ca5-878f-df83c0110b9e
+      version: -1
+      name: fortigate-create-address
+      script: '|||fortigate-create-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      addressName:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: Stringify
+      domain:
+        simple: play.google.com
+      endIp: {}
+      startIp: {}
+      type:
+        simple: domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: ae536598-836a-4bc2-83b9-654ad06f717a
+    type: condition
+    task:
+      id: ae536598-836a-4bc2-83b9-654ad06f717a
+      version: -1
+      name: Test fortigate-create-address context
       type: condition
       iscommand: false
       brand: ""
@@ -1186,16 +1270,36 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isEqualString
           left:
             value:
-              simple: Fortigate.AddressGroup.Deleted
+              simple: Fortigate.Address.Domain
             iscontext: true
+          right:
+            value:
+              simple: play.google.com
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Fortigate
+                accessor: Address.Domain
+                transformers:
+                - operator: ReverseList
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: play.google.com
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 6145
         }
       }
     note: false
@@ -1204,7 +1308,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 6405,
         "width": 380,
         "x": 50,
         "y": 50

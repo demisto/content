@@ -1480,6 +1480,22 @@ script:
       description: 'End ip for address ip range or subnet (Example: 1.1.1.1)'
     - name: domain
       description: 'Fully qualified domain name for address (Example: play.google.com)'
+    outputs:
+    - contextPath: Fortigate.Address.Name
+      description: Address name
+      type: string
+    - contextPath: Fortigate.Address.Subnet
+      description: Address subnet
+      type: string
+    - contextPath: Fortigate.Address.IPRange
+      description: Address IP range
+      type: string
+    - contextPath: Fortigate.Address.Type
+      description: Address type
+      type: string
+    - contextPath: Fortigate.Address.Domain
+      description: Address domain
+      type: string
     description: Create an address in FortiGate firewall, you may choose either IP
       range or subnet.
   runonce: false
