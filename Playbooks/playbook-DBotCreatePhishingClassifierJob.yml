@@ -39,7 +39,7 @@ tasks:
       name: DBotCreatePhishingClassifier
       description: Create a phishing classifier using machine learning technique,
         based on email content
-      playbookName: DBotCreatePhishingClassifier
+      playbookName: DBot Create Phishing Classifier
       type: playbook
       iscommand: false
       brand: ""

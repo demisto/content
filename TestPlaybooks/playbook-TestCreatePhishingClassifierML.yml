@@ -1,6 +1,6 @@
 id: CreatePhishingClassifierMLTest
 version: -1
-name: CreatePhishingClassifierMLTest
+name: Create Phishing Classifier ML Test
 description: Test CreatePhishingClassifierML playbook
 starttaskid: "0"
 tasks:
@@ -37,7 +37,7 @@ tasks:
       name: CreatePhishingClassifierML
       description: Create a phishing classifier using machine learning technique,
         based on email content
-      playbookName: DBotCreatePhishingClassifier
+      playbookName: DBot Create Phishing Classifier
       type: playbook
       iscommand: false
       brand: ""
