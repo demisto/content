@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: DBotTrainTextClassifier
 script: |+
-  import fastText, base64, sys, uuid, zlib
+  import base64, sys, uuid, zlib
   import demisto_ml
 
   MODEL_LIST = demisto.args()['modelStoreListName']
@@ -44,15 +44,18 @@ script: |+
 
   # evaluate model
   train_amount, (test_amount, precision, recall) = demisto_ml.get_model_precision(training_file_path)
-  demisto.log("Model evaluation trained on %d samples and tested on %d samples:\r\nPrecision:%.2f%%\r\nRecall:%.2f%%" % (train_amount, test_amount, precision*100, recall*100))
+  demisto.log("Model evaluation trained on %d samples and tested on %d samples:\nPrecision:%.2f%%\nRecall:%.2f%%" % (train_amount, test_amount, precision*100, recall*100))
   total_amount = train_amount + test_amount
   if precision <= TEST_ABOVE_THRESHOLD:
       return_error("Model evaluation is below %.2f threshold, do not store model" % TEST_ABOVE_THRESHOLD)
 
   # train model
-  model = demisto_ml.train_text_model(training_file_path, True)
+  try:
+      model = demisto_ml.train_text_model(training_file_path, True)
+      encoded_model = demisto_ml.encode_model(model)
+  except Exception:
+      return_error("An error occurred while training model")
 
-  encoded_model = demisto_ml.encode_model(model)
   res = demisto.executeCommand("createList", {"listName": MODEL_LIST, "listData": encoded_model})
   if isError(res[0]):
       demisto.results(res)
@@ -113,7 +116,6 @@ scripttarget: 0
 timeout: 60µs
 runonce: true
 dockerimage: demisto/dl:1.1
-runas: DBotWeakRole
 fromversion: 4.1.0
 releaseNotes: "New script: create a strong text machine learning classifier in Demisto"
 tests:

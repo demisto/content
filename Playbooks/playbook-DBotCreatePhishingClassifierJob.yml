@@ -1,6 +1,6 @@
 id: DBotCreatePhishingClassifierJob
 version: -1
-name: DBotCreatePhishingClassifierJob
+name: DBot Create Phishing Classifier Job
 description: 'Train the phishing machine learning model. This playbook should be used
   as job, to run repeatedly, for example every week. '
 starttaskid: "0"
@@ -47,7 +47,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      ModelListStoreName:
+      modelListStoreName:
         simple: phishing_model
       emailSubjectKey:
         simple: name

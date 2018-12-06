@@ -12,10 +12,6 @@ script: |+
 
   def get_input_text_prediction(model, input_text):
       number_of_tokens = len(input_text.split(" "))
-      about_threshold = True
-      if number_of_tokens < THRESHOLD:
-          about_threshold = False
-
       label, probability =  demisto_ml.predict(model, input_text)
       return {
           'Label': label,
@@ -84,7 +80,7 @@ enabled: true
 args:
 - name: inputText
   required: true
-  description: 'The input text for '
+  description: The input text to predict on
   isArray: true
 - name: warningThreshold
   description: If the number of words in the input  text smaller then threshold a
@@ -118,7 +114,6 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/dl:1.1
-runas: DBotWeakRole
 fromversion: 4.1.0
 releaseNotes: "New script: predict text label using machine learning pre-trained model in Demisto"
 tests:

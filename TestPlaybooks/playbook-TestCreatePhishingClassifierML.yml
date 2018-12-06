@@ -45,7 +45,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      ModelListStoreName:
+      modelListStoreName:
         simple: phishing_model_test
       emailSubjectKey:
         simple: ${EmailSujbectKey}

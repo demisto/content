@@ -1,6 +1,6 @@
 id: DBotCreatePhishingClassifier
 version: -1
-name: DBotCreatePhishingClassifier
+name: DBot Create Phishing Classifier
 description: Create a phishing classifier using machine learning technique, based
   on email content
 starttaskid: "0"
@@ -91,7 +91,7 @@ tasks:
       - "9"
     scriptarguments:
       modelStoreListName:
-        simple: ${inputs.ModelListStoreName}
+        simple: ${inputs.modelListStoreName}
       precisionThreshold: {}
       trainingFileName:
         simple: ${DBotPreparePhishingDataFilename},${inputs.historicalDataFileListName}
@@ -135,7 +135,7 @@ tasks:
       maxNumberOfIncidents:
         simple: "500"
       modelListName:
-        simple: ${inputs.ModelListStoreName}
+        simple: ${inputs.modelListStoreName}
       phishingLabels:
         simple: ${inputs.phishingLabels}
       tagKey:
@@ -287,7 +287,7 @@ view: |-
     }
   }
 inputs:
-- key: ModelListStoreName
+- key: modelListStoreName
   value:
     simple: phishing_model
   required: false

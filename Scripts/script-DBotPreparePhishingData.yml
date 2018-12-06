@@ -11,37 +11,39 @@ script: |+
   TAG_PREFIX = demisto_ml.DEFAULT_LABEL_PREFIX
 
   def get_context(incident_id):
-      res = demisto.executeCommand("getContext", {'id': incident_id});
+      res = demisto.executeCommand("getContext", {'id': incident_id})
       try:
-        return res[0]['Contents']['context']
+        return res[0]['Contents'].get('context') or {}
       except:
         return {}
 
   def canonize_label(label):
-      return label.lower().strip().replace(" ","_")
+      if label:
+          return label.lower().strip().replace(" ","_")
 
   def get_phishing_map_labels(comma_values):
       if comma_values == ALL_LABELS:
           return comma_values
       comma_values = comma_values.lower()
       values = comma_values.split(",")
-      labels_map = {}
+      labels_dict = {}
       for v in values:
           v = canonize_label(v)
           if ":" in v:
               splited = v.split(":")
-              labels_map[splited[0].strip()] = canonize_label(splited[1])
+              labels_dict[splited[0].strip()] = canonize_label(splited[1])
           else:
-              labels_map[v] = canonize_label(v)
-      return labels_map
+              labels_dict[v] = canonize_label(v)
+      return labels_dict
 
   def get_incidents(query, size, is_context_data_needed):
       res = demisto.executeCommand("getIncidents", {"query": query, "size": size, "sort": "created"})
       if res[0]['Type'] == entryTypes['error']:
           return_error(str(res[0]['Contents']))
-      incident_list = res[0]['Contents']['data'] or []
+      incident_list = res[0]['Contents'].get('data') or []
 
       for i in incident_list:
+          # we flat the custom field to the incident structure, like in the context
           custom_fields = i.get('CustomFields', {}) or {}
           if is_context_data_needed:
               i.update(get_context(i['id']))
@@ -98,16 +100,25 @@ script: |+
               labels_value_counts[original_label] = labels_value_counts.get(original_label, 0) + 1
               data_texts.append(full_txt)
               data_labels.append(original_label)
-      except Exception:
+      except Exception, e:
           skipped_exception += 1
+          demisto.log("Error parsing: " + str(e))
           continue
   def store_data_as_list(data, listname):
-      data = zlib.compress(data)
-      res = demisto.executeCommand("createList", {"listName": listname,"listData": base64.encodestring(data)})
-      if isError(res[0]):
-          demisto.results(res)
-          return
-      demisto.log("Store file successfully in list " + listname)
+      try:
+          data = zlib.compress(data)
+          res = demisto.executeCommand("createList", {"listName": listname,"listData": base64.encodestring(data)})
+          if isError(res[0]):
+              demisto.results(res[0])
+              return
+          demisto.log("Stored file successfully in list " + listname)
+      except:
+          demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': Error storing file in list " + listname
+          })
+
 
   # tokenize text and remove empty strings
   res = demisto.executeCommand('WordTokenizer', {'value': data_texts, 'hashWordWithSeed': HASH_SEED if HASH_WORDS else None, 'type': 'punkt'})
@@ -132,9 +143,7 @@ script: |+
       demisto.log("%d incidents skipped due to exception in parsing" % skipped_exception)
 
   if len(data) == 0:
-      # raise Exception("There is no data to train")
       return_error("There is no data to train")
-      sys.exit()
 
   labels_value_counts_hr = [{'Email Label': k, 'Count': v} for k,v in labels_value_counts.items()]
   demisto.results({
@@ -146,7 +155,7 @@ script: |+
   })
 
   file_lines = map(lambda x: x['txt'] + ' %s%s' % (TAG_PREFIX, x['label']), data)
-  txt_to_write = "\r\n".join(file_lines)
+  txt_to_write = "\n".join(file_lines)
   data_to_write = txt_to_write.encode('utf-8').lower()
   file_entry = fileResult(TRAIN_FILE_NAME, data_to_write)
   if LIST_NAME_TO_STORE:
@@ -212,7 +221,6 @@ scripttarget: 0
 timeout: 6µs
 runonce: true
 dockerimage: demisto/dl:1.1
-runas: DBotWeakRole
 fromversion: 4.1.0
 releaseNotes: "This script is part of phishing model training using machine learning"
 tests:
