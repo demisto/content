@@ -942,8 +942,8 @@ script:
         address_context = []
         address_name = demisto.args().get('addressName', '')
         address_type = demisto.args().get('type', '')
-        start_ip = demisto.args().get('startIp', '')
-        end_ip = demisto.args().get('endIp', '')
+        start_ip = demisto.args().get('startIP', '')
+        end_ip = demisto.args().get('endIP', '')
         domain = demisto.args().get('domain', '')
         ip_range = None
         subnet = None
@@ -1014,7 +1014,7 @@ script:
                 'fqdn': domain
             })
 
-        result = http_request('POST', uri_suffix, params={} , data=json.dumps(payload))
+        result = http_request('POST', uri_suffix, data=json.dumps(payload))
         return result
 
 
@@ -1471,13 +1471,13 @@ script:
       - iprange
       - subnet
       - domain
-      description: Address type (If chosen fqdn, only provide domain, else  for subnet/iprange
-        provide only start ip and end ip)
+      description: Address type (If chosen fqdn, only provide domain, else for subnet/IPrange
+        provide only start IP and end IP)
       defaultValue: iprange
-    - name: startIp
-      description: 'Start ip for address ip range or subnet (Example: 0.0.0.0)'
-    - name: endIp
-      description: 'End ip for address ip range or subnet (Example: 1.1.1.1)'
+    - name: startIP
+      description: 'Start IP for address IP range or subnet (Example: 0.0.0.0)'
+    - name: endIP
+      description: 'End IP for address IP range or subnet (Example: 1.1.1.1)'
     - name: domain
       description: 'Fully qualified domain name for address (Example: play.google.com)'
     outputs:
