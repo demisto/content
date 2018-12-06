@@ -111,3 +111,5 @@ dependson:
   must:
   - jira-create-issue
 runonce: false
+tests:
+  - Jira-createIssue-generic-test
