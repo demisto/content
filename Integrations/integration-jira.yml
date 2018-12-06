@@ -98,7 +98,7 @@ script:
 
     var isOAuth = params.consumerKey && params.accessToken && params.privateKey;
     // if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
-    if(!isOAuth && !(params.username && params.password || params.APItoken)) {
+    if(!isOAuth && !(params.username && (params.password || params.APItoken))) {
         throw 'Provide Authorization information, Basic(userName & password / API-token) or OAuth1.0'
     }
 
@@ -482,7 +482,7 @@ script:
             }
         }
         if (checkError)
-        throw 'Status ' + args.status + ' not found';
+          throw 'Status ' + args.status + ' not found';
     }
 
     // The command input arg holds the command sent from the user.
