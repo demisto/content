@@ -23,7 +23,7 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents')
+      data = demisto.get(resp[0],'Contents.events')
 
       if not data:
           resp[0]['HumanReadable'] = "No logs were found for correlation id {0}".format(correlation_id)
