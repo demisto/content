@@ -1,0 +1,178 @@
+commonfields:
+  id: symantec DLP fetch incidents and update
+  version: -1
+name: symantec DLP fetch incidents and update
+display: symantec DLP
+category: Endpoint
+image: data:image/png;base64,UklGRooIAABXRUJQVlA4WAoAAAAQAAAAogAAKgAAQUxQSCkGAAAB8Ib9//lG/v/d06bmuB3bWBsZ21rv2J59v9/jydjGW2OsbW/Gtm3bs0VuF57PV9rMMc3liJgAPaLFaadQt/kM7xOhTXTx4jNOFY8PbTzgLU67kKbjZ9v/8UR8u9IhhLvM856XK8U4JT0ROfPwzjaVFTK6Xp66PR3Tf2RB0wijGcVn7tTJr0OFyG6HCPyqN48UW/zU6GY3a+UPEeoeJes3ehSZOXP08PHeFIWEUXPJ3gvQYOVOhYZJqwlmiJC0jQBP+L7+7WBGQNubhAThv+G4oWOKzPhmX/gdHnRRSDgW+6E6CrTSJhu/hgUWE5czPZVpWxmngAufd6Crk/v93+5AxsFlzcJynPVY57oUcKmZOF9PtuXbgPPPj4ku/frle0TqYv3apcB/I9ARFtc6Auz2eIj1wxOPyA+WC7mkomEBtMD8YY3lktuoB5zp7Xm5zbSTF6IeD0/xyBTIsLSXenDkDYfII8bBwZX9Bg2MaUBFmeFl9Hh899F5H/OcW3oH+CzO0gfTK31nmWcsgXtydns8npcsBT0eT4EUjydcKtF7fJ9USfl7jBtQ2hZTa8D4Ue2KWFI8nggptcu4Qc9KesazBOjk8eQ1inYZO7RNklNk/SEThjRNdFpkmSzJ9QWwKUlS/BWjn6SWlv3GbOA5Jx0Gf15jJlCpHdRM/L8fuP1K9JQ0IL2dpNQ5tzAz5kZKagf1YmdlAMyWduLYTEpaiHm7t63FBcyb/3TZNltqSVLsNmBTnDQI831JSZlGRoSktsDVbtEOY4C3jZ1wVO3g051Yj6zD+ndBaRvOc2wfb8LeNLDoTTgONjrgmFHFdtWSx1Dhq8BXrvibxk63JB0zKCsp6gTArSU1wowqwDJJyX6YYQBHVqVjnvfdBfpLreDaV/O+BzKKWoBzv10HvlQ3707gP15veU0ENrYbeA3SyknFHgAHPl2dzhjZ/cZ92RsBDBsI4H9Wps/ytCQ9eQ3rib4RkvbDRZfUCPBY7rR1aRCQNsCtlsBSybXgzUhJU4D3bPe7hKlUJpyQtAR4QlLiHTgdJ9UGZkrzgQVhUrFpEQ6YNx20HMi8YiyS9UeLx1Cx7yywrbA0HHhSmgrXwy3/lFQbmCepOPC1nFsDQ21DJOks3AyoDTBJkusaHFHYdXiYrMDTjDSXQ4Hb2B8Usa21PGGRqs29YrAvSuWBQdJWWCFLP0keYGYWYjwjvjwFeG39jJNZmQZ0Tk5OTt4OxJYDViuLFwyKOMjrMEP285aiDlJEs40AfaRd4FNSJrQORqkFt7EHZSUBF68NLM/KKksrp1x3LWmFbYUxH7gCkNQXWCUNgrSERvB3YhBaPgS4cyhYXwdWrRmwJCszLYudNNmyWPZulo3K4jE4K5UCmkyFX5R9he4Bi14JbxasRcB/+jnmexX4IitNLXeSnYr5jacdtlrGWeKcdsF5SVth/lboGYSewDBJQRsC9JJzAeBIVmLvGIx10rfAFtkbY33WaHrubbflFT+sljQQzmVCkSBMAmo9Ci8CW8ONIq9I2ge8btSJdNAiy8MKTpXPkd7QlnDcsk+SEs/B2fnvN2wz6z7QX1JRzB0Kwj+BBe7wWtuyaw7QL7xkinYCX71ettbc+5dyS72AS+2fqP8xc50q+g32Jjkosko+WV2fYW1n9CLgg9GStNHwBqOCH7h3HzNb3sY6UC9k4LxAcu/CuY0qLuk06AtpuYW1SQ7O4f/BesBt6J2jAWwsIrO38WQwNALruQXZFLXXslRqc8fh0HOSCu9x2JQqeZv9dFxKvWlhb4Us5Pkeew3Z3Y3/s+Oa/+6xj5uFy1rQD2dcRj2fz9dK0hM+n6+XpBSfzzdWUvM/79zfNSwx4XdfO6mez+drZXzs830vSXnmncq4s72PpNTJu+88PPtte7fMyJ5rbmRe+uV9tyRP+RZtJLWy8XBscgCRXS5jn6rsj7gIs5VTTrHBnSWtirikvLWnXsDx94jsS/kYqJZjuBY6mOk3HxLopkRl83MPrgB8pJzTNSWQLP4cp+x+D3Nr7hxEansrWzK84cr2nvfg4LBo5aypK/xZW1dNQY13KweuuPhOQOnf11RIGtts5qoLafivbl70Tn6FkABWUDggOgIAANAMAJ0BKqMAKwADAFAlkCHABisKh2EGN4AG2A8wHlAeoDzoOoA9AD9cush/t3/c9JzMADO681YfX7XUBucWkLywbQRXECeYJubdcCcsmafdD95NWbuA3Xd+RMhtafcpNTfJ0mW4X8bQvUCsWlo6AAD8M3/8eP/+OZ//8hwj7IZn81JITn/98UZJ83YJfYGsFzHcvo4KZv/Ts/nQ061jwCIzk53PJS5mOKrlzKn9vIhCUA4J1uPejcoopehCIi6H4bEj1bju6zjwZdZu97t5mxQgWgmRaevBbszi5M0HrQB31K/xl9lskm7gB4R8Gds2jXwYRVNtCMTzOPfA8fvh5HWt27Dj/maG+namRmqOlw8+VeD8bJPge9D93Ea0vdPUH5/bVWKccayQcCHp1mEEzxouY9r0JJY3dZKO6k0y0fk9BoTHX7RXbwuvwcGD/szrP5yrYZNLP3Y/9TJW+4pDDo6aboXMgEfdMzpc8fy9FKIZOmx/xjt5SI39TVGE3Z3+iFM7YPuzSIey7l1B09zojc5121J2uS1lx+yNpOipjexBVbqL1Hpc//72S5MjxsyphD/GzNacfFQTyToACWhjXthmOrrtl50M5P/WVO6IZlNrwUTgZP4af6Se1B5gOiP614D0humVlC8VoH9fNEdGrxf1BO2t+QHtEvwVto+e8uSrB8H+1NRfwkj5v1iT4nfYL6CRtLz20tihsWP7J8IvG2t2kHeF8JcOGy6C5pHtDo0N2/5RVW0yXOAAAA==
+description: Integration to fetch and update symantec DLP Incidents
+detaileddescription: Symantec DLP integration uses SOAP API to communicate with Enforce
+  server to fetch and update  incident Data. uses Zeep package for SOAP Api
+configuration:
+- display: 'credentials '
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: server-ip
+  name: server-ip
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: saved report Id
+  name: saved-Report-id
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |+
+    from requests import Session
+    from zeep import Client
+    from zeep.transports import Transport
+    from requests.auth import AuthBase, HTTPBasicAuth
+    from zeep import helpers
+    import random
+    import datetime
+    import json
+    import requests
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+    requests.packages.urllib3.disable_warnings()
+
+    # hexdump:732073756468656572206b756d6172
+
+    class SymantecAuth(AuthBase):
+        def __init__(self, username, password, host):
+            self.basic = HTTPBasicAuth(username, password)
+            self.host = host
+
+        def __call__(self, r):
+            if r.url.startswith(self.host):
+                return self.basic(r)
+            else:
+                return r
+
+    serverIp=demisto.params()['server-ip']
+    username=demisto.params()['credentials']['identifier']
+    password=demisto.params()['credentials']['password']
+    savedReportId = demisto.params()['saved-Report-id']
+
+
+    wsdl = 'https://{}/ProtectManager/services/v2011/incidents?wsdl'.format(serverIp)
+
+    session = Session()
+    session.auth = SymantecAuth(username,password, "https://{}".format(serverIp))
+    session.verify = False
+    transport = Transport(session=session)
+
+    client = Client(wsdl=wsdl, transport=transport)
+
+    def  getIncidentId(dtobj):
+
+        if type(dtobj) is datetime.datetime:
+            return client.service.incidentList(savedReportId=savedReportId, incidentCreationDateLaterThan=dtobj)
+        else:
+            raise ValueError('excpected datetime object')
+
+
+
+    def incidentDetail(_id):
+
+        return client.service.incidentDetail(incidentId=_id,includeViolations=True,includeHistory=True)
+
+
+
+    def fetchincidents():
+        last_run=demisto.getLastRun()
+        if 'lt_time' not in last_run:
+            last_run['lt_time'] = datetime.datetime.strptime("01/11/2018 00:00:00.000000",'%d/%m/%Y %H:%M:%S.%f')
+        else:
+            last_run['lt_time']= datetime.datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
+
+        incidentids=getIncidentId(last_run['lt_time'])
+        incidents=[]
+        if len(incidentids['incidentId']) > 0:
+            for incident1 in incidentids['incidentId']:
+                inc=incidentDetail(str(incident1))
+                incidents.append({
+                    'name':"DLP Incident #"+str(incident1),
+                    'details':  inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated"
+                })
+                if inc[0]['incident']['incidentCreationDate'].isoformat() > last_run['lt_time'].isoformat():
+                    demisto.setLastRun({'lt_time':inc[0]['incident']['incidentCreationDate'].strftime("%d/%m/%Y %H:%M:%S.%f")})
+        demisto.incidents(incidents)
+        return(incidents)
+
+
+    def updateIncidents():
+        args = demisto.args()
+        inc_id = args['incidentId']
+        args.pop('incidentId')
+        if args['status'] == 'New':
+            args['status'] = 'incident.status.New'
+        return client.service.updateIncidents(updateBatch={'batchId':str(random.randint(11111,99999)),'incidentId':inc_id,'incidentAttributes':args})
+
+
+
+    def myconverter(o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
+
+
+
+    if demisto.command() == 'fetch-incidents':
+        fetchincidents()
+    elif demisto.command() =='test-module':
+        demisto.results("ok")
+    elif demisto.command() == 'DLP-incedent-details':
+        inc_details = incidentDetail( demisto.args()['incidentId'])
+        res = helpers.serialize_object(inc_details[0])
+        demisto.results(json.loads(json.dumps(res,default = myconverter)))
+    elif demisto.command() == 'DLP-update-incident':
+        demisto.results(updateIncidents())
+
+  type: python
+  commands:
+  - name: DLP-incedent-details
+    arguments:
+    - name: incidentId
+      required: true
+      description: incident Id  from DLP console to fetch the data of
+    description: fetches DLP incident details
+  - name: DLP-update-incident
+    arguments:
+    - name: incidentId
+      required: true
+      description: incident Id  from DLP console to fetch the data of
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFO
+      description: changes the severity of the Incident
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Escalated
+      - Investigation
+      - Resolved
+      - Dissmissed
+      description: 'changes the status of the incident in DLP console NOTE:  status
+        attributes are defined in the DLP console. '
+    description: updates Symantec DLP incidents
+  dockerimage: ssudheerk99/zeep
+  isfetch: true
+  runonce: false
