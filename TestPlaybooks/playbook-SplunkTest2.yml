@@ -1,0 +1,558 @@
+id: Splunk-Test
+version: -1
+name: Splunk-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fe46a9c6-fca2-4376-8b10-6a0d47d66c8e
+    type: start
+    task:
+      id: fe46a9c6-fca2-4376-8b10-6a0d47d66c8e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6b91de0b-957f-43ab-88c9-f2c10174506f
+    type: regular
+    task:
+      id: 6b91de0b-957f-43ab-88c9-f2c10174506f
+      version: -1
+      name: splunk-search
+      description: Search Splunk for events
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      earliest_time:
+        simple: -1000d
+      event_limit: {}
+      latest_time: {}
+      query:
+        simple: '* | head 3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: afe0b8d8-d593-41e1-8be7-cb312a544fb2
+    type: regular
+    task:
+      id: afe0b8d8-d593-41e1-8be7-cb312a544fb2
+      version: -1
+      name: Verify Context result of Splunk Search
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: ${Splunk.Result}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a923a471-df1d-4c77-8d60-92fcdd4cb02d
+    type: regular
+    task:
+      id: a923a471-df1d-4c77-8d60-92fcdd4cb02d
+      version: -1
+      name: Get indexes names
+      script: SplunkPy|||splunk-get-indexes
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: indexes=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a12f77fc-fa5a-4419-8179-bd0c81133bff
+    type: condition
+    task:
+      id: a12f77fc-fa5a-4419-8179-bd0c81133bff
+      version: -1
+      name: Has main index
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      left: {}
+      right: {}
+      string:
+        simple: ${JsonStr}
+      substring:
+        simple: main
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 3c8622d5-aad0-4efb-800c-61a4f3d18979
+    type: regular
+    task:
+      id: 3c8622d5-aad0-4efb-800c-61a4f3d18979
+      version: -1
+      name: Create new Splunk event
+      script: SplunkPy|||splunk-submit-event
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      data:
+        simple: test
+      host:
+        simple: localhost
+      index:
+        simple: main
+      sourcetype:
+        simple: demisto-ci
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    taskid: e20e59c8-4fcd-458f-8f25-4eb57e4ab50b
+    type: regular
+    task:
+      id: e20e59c8-4fcd-458f-8f25-4eb57e4ab50b
+      version: -1
+      name: DumpJSON
+      description: Dumps a json from context key input, and returns a json object
+        string result
+      scriptName: DumpJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context: {}
+      key:
+        simple: indexes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 38a12b6c-cf45-4aed-8119-c5af3069cebc
+    type: regular
+    task:
+      id: 38a12b6c-cf45-4aed-8119-c5af3069cebc
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: non-existent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4666fa1f-8e98-4c26-8b75-b48219d62603
+    type: regular
+    task:
+      id: 4666fa1f-8e98-4c26-8b75-b48219d62603
+      version: -1
+      name: Test eventcount query
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      earliest_time: {}
+      event_limit: {}
+      extend-context:
+        simple: eventcount=
+      latest_time: {}
+      query:
+        simple: '| eventcount'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    taskid: d726bdbf-1783-43c0-8345-78a1509b22f7
+    type: condition
+    task:
+      id: d726bdbf-1783-43c0-8345-78a1509b22f7
+      version: -1
+      name: Verify eventcount
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "12"
+    scriptarguments:
+      first:
+        simple: ${eventcount.[0].count}
+      second:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 11c7d1e7-dc6b-4f31-843e-d5530ac9fee4
+    type: regular
+    task:
+      id: 11c7d1e7-dc6b-4f31-843e-d5530ac9fee4
+      version: -1
+      name: Hurry!
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Hurry!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 32810da8-cfab-46b3-86d1-4ca32aea53ce
+    type: regular
+    task:
+      id: 32810da8-cfab-46b3-86d1-4ca32aea53ce
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: non-existent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 0526ccff-71b5-405e-874f-1da81a919a40
+    type: title
+    task:
+      id: 0526ccff-71b5-405e-874f-1da81a919a40
+      version: -1
+      name: Test _raw parsing
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1610
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ad00a519-843a-430d-8e28-76d58a367888
+    type: regular
+    task:
+      id: ad00a519-843a-430d-8e28-76d58a367888
+      version: -1
+      name: Parse Raw
+      script: SplunkPy|||splunk-parse-raw
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      raw: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "14":
+    id: "14"
+    taskid: e0d3eb61-4c4c-479a-8097-65f485f8790d
+    type: regular
+    task:
+      id: e0d3eb61-4c4c-479a-8097-65f485f8790d
+      version: -1
+      name: Verify parse get's to context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Splunk.Raw.Parsed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "15":
+    id: "15"
+    taskid: f5e76637-2f8d-4799-87c3-5d0eac9c62b9
+    type: regular
+    task:
+      id: f5e76637-2f8d-4799-87c3-5d0eac9c62b9
+      version: -1
+      name: Add raw Data example
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: rawEvent
+      value:
+        simple: 1531041382, search_name="0 - Azure AD-Concurrent Access From Different
+          GEO", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx", logon_ip="xx.xx.xx.xx",
+          logon_source_Country="Egypt", logon_source_Country="Germany", logon_source_info="Potentially_unauthorized",
+          logon_source_info="VPN", timestamps="2018-07-08T08:22:41", timestamps="2018-07-08T08:28:50",
+          timestamps="2018-07-08T08:35:31", country_count="2", country_in_AD="United
+          Arab Emirates", info_max_time="+Infinity", info_min_time="0.000", muid="xx.xx.xx.xx",
+          service="AzureActiveDirectory", user="xx.xx.xx.xx", user_type="A regular
+          user", users_bunit="xx.xx.xx.xx"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+  "16":
+    id: "16"
+    taskid: a36495dc-0c5e-4cef-8065-1ec37c75fb4a
+    type: regular
+    task:
+      id: a36495dc-0c5e-4cef-8065-1ec37c75fb4a
+      version: -1
+      name: Parse Raw example
+      script: SplunkPy|||splunk-parse-raw
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      extend-context:
+        simple: parsedRaw=
+      raw:
+        simple: ${rawEvent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 90521670-3b29-4eb5-84b3-0ab049fd4bf4
+    type: condition
+    task:
+      id: 90521670-3b29-4eb5-84b3-0ab049fd4bf4
+      version: -1
+      name: Is Raw parsed ?
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        complex:
+          root: parsedRaw
+          accessor: timestamps
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: count
+      right:
+        simple: "3"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 6e9a6ee9-746a-4aad-83a4-6aad8a899ebe
+    type: regular
+    task:
+      id: 6e9a6ee9-746a-4aad-83a4-6aad8a899ebe
+      version: -1
+      name: FAIL
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: non-existent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2645
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2690,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
