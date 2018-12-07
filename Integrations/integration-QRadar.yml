@@ -246,7 +246,7 @@ script:
         return res.json()
 
     # Generic function that receives a result json, and turns it into an entryObject
-    def get_entry_for_object(title, obj, headers=None, contextKey=None):
+    def get_entry_for_object(title, obj, contents, headers=None, contextKey=None):
         if len(obj) == 0:
             return "There is no output result"
         obj = filter_dict_null(obj)
@@ -258,7 +258,7 @@ script:
         ec = { contextKey: obj } if contextKey else obj
         return {
             'Type': entryTypes['note'],
-            'Contents': obj,
+            'Contents': contents,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, obj, headers),
@@ -499,8 +499,9 @@ script:
 
     def get_offenses_command():
         raw_offenses = get_offenses(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
-        enrich_offense_result(raw_offenses)
-        offenses = filter_dict_nonintersection_key_to_value(replace_keys(raw_offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
+        offenses = list(raw_offenses)
+        enrich_offense_result(offenses)
+        offenses = filter_dict_nonintersection_key_to_value(replace_keys(offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
 
         # prepare for printing:
         headers = demisto.args().get('headers')
@@ -510,7 +511,7 @@ script:
             offenses_names_map_cpy.pop('description', None)
             headers = 'ID,Description,' + dict_values_to_comma_seperated_string(offenses_names_map_cpy)
 
-        return get_entry_for_object('QRadar offenses', offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
+        return get_entry_for_object('QRadar offenses', offenses, raw_offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
 
     # Enriches the values of a given offense result (full_enrichment adds more enrichment options)
     def enrich_offense_result(response, full_enrichment=False):
@@ -617,9 +618,10 @@ script:
     def get_offense_by_id_command():
         offense_id = demisto.args().get('offense_id')
         raw_offense = get_offense_by_id(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
-        enrich_offense_result(raw_offense, full_enrichment=True)
-        offense = filter_dict_nonintersection_key_to_value(replace_keys(raw_offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
-        return get_entry_for_object('QRadar Offenses', offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+        offense = dict(raw_offense)
+        enrich_offense_result(offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offenses', offense, raw_offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
 
     def update_offense_command():
         args = demisto.args()
@@ -629,20 +631,23 @@ script:
             raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
         offense_id = args.get('offense_id')
         raw_offense = update_offense(offense_id)
-        enrich_offense_result(raw_offense, full_enrichment=True)
-        offense = filter_dict_nonintersection_key_to_value(replace_keys(raw_offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
-        return get_entry_for_object('QRadar Offense', offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+        offense = dict(raw_offense)
+        enrich_offense_result(offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offense', offense, raw_offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
 
     def search_command():
         raw_search = search(demisto.args())
-        raw_search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+        search_res = dict(raw_search)
+        search_res = filter_dict_nonintersection_key_to_value(replace_keys(search_res, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search', search_res, raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
 
     def get_search_command():
         search_id = demisto.args().get('search_id')
         raw_search = get_search(search_id)
-        raw_search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}")'.format(search_id))
+        search = dict(raw_search)
+        search = filter_dict_nonintersection_key_to_value(replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search Info', search, raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}")'.format(search_id))
 
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
@@ -650,21 +655,21 @@ script:
         result_key = raw_search_results.keys()[0]
         title = 'QRadar Search Results from ' + result_key
         context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
-        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), raw_search_results, demisto.args().get('headers'), context_key)
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
-        assets_result, human_readable_res = create_assets_result(raw_assets)
-        return get_entry_for_assets('QRadar Assets', assets_result, human_readable_res, demisto.args().get('headers'))
+        assets_result, human_readable_res = create_assets_result(list(raw_assets))
+        return get_entry_for_assets('QRadar Assets', assets_result, raw_assets, human_readable_res, demisto.args().get('headers'))
 
     def get_asset_by_id_command():
         _filter = "id=" + convert_to_str(demisto.args().get('asset_id'))
         raw_asset = get_assets(_filter=_filter)
-        asset_result, human_readable_res = create_assets_result(raw_asset, full_values=True)
-        return get_entry_for_assets('QRadar Asset', asset_result, human_readable_res, demisto.args().get('headers'))
+        asset_result, human_readable_res = create_assets_result(list(raw_asset), full_values=True)
+        return get_entry_for_assets('QRadar Asset', asset_result, raw_asset, human_readable_res, demisto.args().get('headers'))
 
     # Specific implementation for assets commands, that turns asset result to entryObject
-    def get_entry_for_assets(title, obj, human_readable_obj, headers=None):
+    def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None):
         if len(obj) == 0:
             return "There is no output result"
         obj = filter_dict_null(obj)
@@ -678,7 +683,7 @@ script:
             human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
         return {
             'Type': entryTypes['note'],
-            'Contents': obj,
+            'Contents': contents,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': "### {0}\n{1}".format(title, human_readable_md),
@@ -773,7 +778,7 @@ script:
         closing_reasons_map.pop('text', None)
         headers = 'ID,Name,' + dict_values_to_comma_seperated_string(closing_reasons_map)
 
-        return get_entry_for_object('Offense Closing Reasons', closing_reasons, contextKey='QRadar.Offense.ClosingReasons', headers=headers)
+        return get_entry_for_object('Offense Closing Reasons', closing_reasons, raw_closing_reasons, contextKey='QRadar.Offense.ClosingReasons', headers=headers)
 
 
     def get_note_command():
@@ -787,7 +792,7 @@ script:
         note = replace_keys(raw_note, note_names_map)
         if 'CreateTime' in note:
           note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-        return get_entry_for_object('QRadar note created successfuly', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
+        return get_entry_for_object('QRadar note created successfuly', note, raw_note, demisto.args().get('headers'), 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
     def create_note_command():
         raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
@@ -799,7 +804,7 @@ script:
         }
         note = replace_keys(raw_note, note_names_map)
         note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note')
+        return get_entry_for_object('QRadar Note', note, raw_note, demisto.args().get('headers'), 'QRadar.Note')
 
     def get_reference_by_name_command():
         raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
@@ -824,9 +829,10 @@ script:
         return ref
 
     def get_entry_for_reference_set(ref, title='QRadar References'):
-        data = ref.pop('Data', None)
+        ref_cpy = dict(ref)
+        data = ref_cpy.pop('Data', None)
         ec_key = 'QRadar.Reference(val.Name === obj.Name)'
-        entry = get_entry_for_object(title, ref, demisto.args().get('headers'), ec_key)
+        entry = get_entry_for_object(title, ref_cpy, ref, demisto.args().get('headers'), ec_key)
         # Add another table for the data values
         if data:
             entry['HumanReadable'] = entry['HumanReadable'] + tableToMarkdown("Reference Items", data)
