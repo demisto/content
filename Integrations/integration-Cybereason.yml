@@ -39,6 +39,12 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
 script:
   script: |+
     ''' IMPORTS '''
@@ -69,6 +75,7 @@ script:
     PASSWORD = demisto.params().get('credentials').get('password')
     USE_SSL = not demisto.params().get('unsecure', False)
     CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 
     STATUS_MAP = {
         'To Review': 'TODO',
@@ -195,19 +202,41 @@ script:
                 'values': [machine]
             }]
         }
-
         response = http_request('POST', cmd_url, json=json).json()
         pylum_id = response['sensors'][0]['pylumId']
         return pylum_id
 
+    def get_machine_guid(machine_name):
+
+        query_fields = ['elementDisplayName']
+        path = [
+            {
+                'requestedType': 'Machine',
+                'filters': [
+                    {'facetName': 'elementDisplayName', 'values': [machine_name]}
+                ],
+                'isResult': True
+            }
+        ]
+        json = build_query(query_fields, path)
+        cmd_url = '/rest/visualsearch/query/simple'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+        data = response['data'].get('resultIdToElementDataMap')
+        if not data:
+            return_error('Could not find machine')
+        machine_guid = data.keys()[0]
+        return machine_guid
+
     ''' FUNCTIONS '''
 
-    def is_probe_connected_command():
+    def is_probe_connected_command(is_remediation_commmand=False):
 
         machine = demisto.args().get('machine')
         is_connected = False
 
         response = is_probe_connected(machine)
+
         elements = response['data']['resultIdToElementDataMap']
 
         for key, value in elements.iteritems():
@@ -215,6 +244,9 @@ script:
             if machine_name.upper() == machine.upper():
                 is_connected = True
                 break
+
+        if is_remediation_commmand:
+            return is_connected
 
         ec = {
             'Cybereason.Machine(val.Name && val.Name === obj.Name)': {
@@ -289,7 +321,7 @@ script:
             'EntryContext': ec
         })
 
-    def query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection):
+    def query_processes(machine, process_name, only_suspicious=None, has_incoming_connection=None, has_outgoing_connection=None):
 
         machine_filters = []
         process_filters = []
@@ -446,15 +478,19 @@ script:
             malop = malops_map[malop_id]
             management_status = malop['simpleValues']['managementStatus']['values'][0]
 
-            if management_status.lower() == 'closed':
+            if management_status and management_status.lower() == 'closed':
                 continue
 
             creation_time = translate_timestamp(malop['simpleValues']['creationTime']['values'][0])
             malop_last_update_time = translate_timestamp(malop['simpleValues']['malopLastUpdateTime']['values'][0])
             decision_failure = malop['simpleValues']['decisionFeature']['values'][0].replace('Process.', '')
 
-            suspects = malop['elementValues']['suspects']['elementValues'][0]
-            suspects_string = '{}: {}'.format(suspects['elementType'], suspects['name'])
+            suspects_string = ''
+            raw_suspects = malop['elementValues'].get('suspects')
+            if raw_suspects:
+                suspects = raw_suspects['elementValues'][0]
+                suspects_string = '{}: {}'.format(suspects['elementType'], suspects['name'])
+
             malop_output = {
                 'GUID': malop_id,
                 'Link': SERVER + '/#/malop/' + malop_id,
@@ -530,6 +566,7 @@ script:
     def isolate_machine(machine):
 
         pylum_id = get_pylum_id(machine)
+
         cmd_url = '/rest/monitor/global/commands/isolate'
         json = {
             'pylumIds': [pylum_id]
@@ -675,7 +712,6 @@ script:
                 'Status': status
             }
         }
-        demisto.results(ec)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': 'Successfully updated malop {0} to status {1}'.format(malop_guid, status),
@@ -695,6 +731,185 @@ script:
         if response['status'] != 'SUCCESS':
             return_error('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status, response['message']))
 
+    def prevent_file_command():
+
+        file_hash = demisto.args()['hash']
+        response = prevent_file(file_hash)
+        if response['outcome'] == 'success':
+            ec = {
+                'Process(val.MD5 && val.MD5 === obj.MD5)': {
+                    'MD5': file_hash,
+                    'Prevent': True
+                }
+            }
+            entry = {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': 'File was prevented successfully',
+                'EntryContext': ec
+            }
+            demisto.results(entry)
+        else:
+            return_error('Failed to prevent file')
+
+    def prevent_file(file_hash):
+
+        json = [{
+            'keys': [str(file_hash)],
+            'maliciousType': 'blacklist',
+            'remove': False,
+            'prevent': True
+        }]
+        cmd_url = '/rest/classification/update'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+    def unprevent_file_command():
+        file_hash = demisto.args()['hash']
+        response = unprevent_file(file_hash)
+        if response['outcome'] == 'success':
+            ec = {
+                'Process(val.MD5 && val.MD5 === obj.MD5)': {
+                    'MD5': file_hash,
+                    'Prevent': False
+                }
+            }
+            entry = {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': 'File was unprevented successfully',
+                'EntryContext': ec
+            }
+            demisto.results(entry)
+        else:
+            return_error('Failed to unprevent file')
+
+    def unprevent_file(file_hash):
+
+        json = [{
+            'keys': [str(file_hash)],
+            'remove': True,
+            'prevent': False
+        }]
+        cmd_url = '/rest/classification/update'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+    def kill_process_command():
+
+        machine_name = demisto.args()['machine']
+        file_name = demisto.args()['file']
+        malop_guid = demisto.args()['malop']
+
+        is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+        if is_machine_conntected is False:
+            return_error('Machine must be connected to Cybereason in order to perform this action.')
+
+        machine_guid = get_machine_guid(machine_name)
+        procceses = query_processes(machine_name, file_name)
+        process_data = procceses['data'].get('resultIdToElementDataMap')
+        if not process_data:
+            return_error('Could not find process')
+        processes = process_data.keys()
+        for process_guid in processes:
+            response = kill_process(malop_guid, machine_guid, process_guid)
+            status_log = response['statusLog'][0]
+            status = status_log['status']
+            #response
+            #demisto.results('Request to kill process {0} was sent successfully and now in status {1}')
+
+    def kill_process(malop_guid, machine_guid, process_guid):
+
+        json = {
+            'malopId': malop_guid,
+            'actionsByMachine': {
+                machine_guid: [{
+                    'targetId': process_guid,
+                    'actionType': 'KILL_PROCESS'
+                }]
+            }
+        }
+
+        cmd_url = '/rest/remediate'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+    def quarantine_file_command():
+
+        machine_name = demisto.args()['machine']
+        file_name = demisto.args()['file']
+        malop_guid = demisto.args()['malop']
+
+        is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+        if is_machine_conntected is False:
+            return_error('Machine must be connected to Cybereason in order to perform this action.')
+
+        machine_guid = get_machine_guid(machine_name)
+        procceses = query_processes(machine_name, file_name)
+        process_data = procceses['data'].get('resultIdToElementDataMap')
+        if not process_data:
+            return_error('Could not find process')
+        processes = process_data.keys()
+        for process_guid in processes:
+            response = kill_process(malop_guid, machine_guid, process_guid)
+            status_log = response['statusLog'][0]
+            status = status_log['status']
+            demisto.results(status)
+
+    def quarantine_file(malop_guid, machine_guid, process_guid):
+
+        json = {
+            'malopId': malop_guid,
+            'actionsByMachine': {
+                machine_guid: [{
+                    'targetId': process_guid,
+                    'actionType': 'QUARANTINE_FILE'
+                }]
+            }
+        }
+
+        cmd_url = '/rest/remediate'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+    def delete_registry_key_command():
+
+        machine_name = demisto.args()['machine']
+        file_name = demisto.args()['file']
+        malop_guid = demisto.args()['malop']
+
+        machine_guid = get_machine_guid(machine_name)
+        procceses = query_processes(machine_name, file_name)
+        process_data = procceses['data'].get('resultIdToElementDataMap')
+        if not process_data:
+            return_error('Could not find process')
+        processes = process_data.keys()
+        for process_guid in processes:
+            response = delete_registry_key(malop_guid, machine_guid, process_guid)
+            status_log = response['statusLog'][0]
+            status = status_log['status']
+            demisto.results(status)
+
+    def delete_registry_key(malop_guid, machine_guid, process_guid):
+
+        json = {
+            'malopId': malop_guid,
+            'actionsByMachine': {
+                machine_guid: [{
+                    'targetId': process_guid,
+                    'actionType': 'DELETE_REGISTRY_KEY'
+                }]
+            }
+        }
+
+        cmd_url = '/rest/remediate'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
     def malop_to_incident(malop):
         incident = {}
         incident['rawJSON'] = json.dumps(malop)
@@ -706,45 +921,36 @@ script:
 
         last_run = demisto.getLastRun()
 
-        if last_run and last_run['creation_time']:
-            last_creation_time = last_run['creation_time']
+        if last_run and last_run['creation_time']: # key is creation_time in order to keep BC, but it's actually indicating malop last update time
+            last_update_time = int(last_run['creation_time'])
         else:
-            now_time = time.time()
-            now_datetime = datetime.fromtimestamp(now_time)
-            creation_datetime = now_datetime - timedelta(days=3) # Last 3 days
-            last_creation_time = time.mktime(creation_datetime.timetuple()) + creation_datetime.microsecond / 1E6 # Converting datetime to time
-            last_creation_time *= 1000
+            # In first run
+            last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-        max_creation_time = last_creation_time
+        max_update_time = last_update_time
 
-        filters = None # fetch all unread malops without time query
-
+        filters = [{
+            'facetName': 'malopLastUpdateTime',
+            'values': [last_update_time],
+            'filterType': 'GreaterThan'
+        }]
         data = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters)['data']
         malops = data['resultIdToElementDataMap']
 
         incidents = []
 
         for malop in malops:
+            malops[malop]['simpleValues'].pop('iconBase64', None)
+            malops[malop]['simpleValues'].pop('malopActivityTypes', None)
+            malop_update_time = malops[malop]['simpleValues']['malopLastUpdateTime']['values'][0]
 
-            management_status = malops[malop]['simpleValues']['managementStatus']['values'][0]
-            malop_creation_time = malops[malop]['simpleValues']['creationTime']['values'][0]
-
-            if management_status.lower() == 'unread' or management_status.lower() == 'reopen': # Fetching only incidents with the following status management: UNREAD and REOPEN
-                incident = malop_to_incident(malops[malop])
-                incidents.append(incident)
-
-                malopGUID = malops[malop]['guidString']
-                update_malop_status(malopGUID, 'Open')
-
-            elif malop_creation_time > last_creation_time:
-                incident = malop_to_incident(malops[malop])
-                incidents.append(incident)
-
-                if malop_creation_time > max_creation_time:
-                    max_creation_time = malop_creation_time
+            incident = malop_to_incident(malops[malop])
+            incidents.append(incident)
+            if malop_update_time > max_update_time:
+                max_update_time = malop_update_time
 
         demisto.setLastRun({
-            'creation_time': max_creation_time
+            'creation_time': max_update_time
         })
 
         demisto.incidents(incidents)
@@ -817,7 +1023,6 @@ script:
     else:
         return_error('No credentials were provided')
 
-
     try:
         if demisto.command() == 'test-module':
             # Tests connectivity and credentails on login
@@ -853,6 +1058,20 @@ script:
         elif demisto.command() == 'cybereason-update-malop-status':
             update_malop_status_command()
 
+        elif demisto.command() == 'cybereason-prevent-file':
+            prevent_file_command()
+
+        elif demisto.command() == 'cybereason-unprevent-file':
+            unprevent_file_command()
+
+        elif demisto.command() == 'cybereason-kill-process': # To be added as a command in the future
+            kill_process_command()
+
+        elif demisto.command() == 'cybereason-quarantine-file': # To be added as a command in the future
+            quarantine_file_command()
+
+        elif demisto.command() == 'cybereason-delete-registry-key': # To be added as a command in the future
+            delete_registry_key_command()
 
     except Exception, e:
         LOG(e.message)
@@ -1160,7 +1379,36 @@ script:
       description: 'Malop status: To Review,Unread,Remediated,Not Relevant'
       type: string
     description: Updates malop status
+  - name: cybereason-prevent-file
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: Malop process file MD5 to prevent
+    outputs:
+    - contextPath: Process.MD5
+      description: Process file MD5
+      type: string
+    - contextPath: Process.Prevent
+      description: True if process file is prevented, else false
+      type: boolean
+    description: Prevent malop process file
+  - name: cybereason-unprevent-file
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: Malop process file MD5 to unprevent
+    outputs:
+    - contextPath: Process.MD5
+      description: Process file MD5
+      type: string
+    - contextPath: Process.Prevent
+      description: True if process file is prevented, else false
+      type: boolean
+    description: Unprevent malop process file
   isfetch: true
   runonce: false
 tests:
   - Cybereason Test
+releaseNotes: "1. Improved malop fetching as incidents implementation. 2. Added commands to prevent and unprevent file"

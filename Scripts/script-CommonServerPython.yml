@@ -1323,10 +1323,10 @@ script: |-
         :rtype: ``int``
       """
       if isinstance(date_str_or_dt, basestring):
-          return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
+          return int(time.mktime(time.strptime(date_str_or_dt, date_format)))*1000
 
       # otherwise datetime.datetime
-      return int(time.mktime(date_str_or_dt.timetuple()*1000))
+      return int(time.mktime(date_str_or_dt.timetuple()))*1000
 
 type: python
 tags:
@@ -1339,3 +1339,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
+releaseNotes: "-"
