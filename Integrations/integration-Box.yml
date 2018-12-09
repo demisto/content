@@ -709,6 +709,7 @@ script:
     outputs:
     - contextPath: Box.Uploads
       description: File's ID in box
+      type: string
     description: Upload file from entry
   runonce: false
 tests:
