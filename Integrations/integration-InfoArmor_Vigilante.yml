@@ -915,7 +915,6 @@ script:
       description: The re_token required to retrieve the next page of results when
         the result set is larger than limit. If this parameter is specified, all other
         parameters are ignored.
-    - name: days_ago
     outputs:
     - contextPath: VigilanteATI.ECrimeQueryToken
       description: The re_token parameter value required to retrieve the next page
@@ -1244,3 +1243,5 @@ script:
     description: Returns the usage data for your account.
   runonce: false
 releaseNotes: "-"
+tests:
+  - InfoArmorVigilanteATITest
