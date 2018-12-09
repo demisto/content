@@ -4743,4 +4743,4 @@ script:
   runonce: false
 releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute. Upgraded Boto3 to ver 1.9.55"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No Tests
