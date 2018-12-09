@@ -139,7 +139,8 @@ script:
             'Contents': infected_hosts,
             'HumanReadable': markdown,
             'EntryContext': {
-                'VigilanteATI.InfectedHost(val.ip == obj.ip)': infected_hosts.get('hosts')
+                'VigilanteATI.InfectedHost(val.ip == obj.ip)': infected_hosts.get('hosts'),
+                'VigilanteATI.GetInfectedHostsToken(true==true)': infected_hosts.get('re_token')
             }
         })
 
@@ -253,7 +254,7 @@ script:
             }
         })
 
-    def list_leaks(leak_id, days_ago, keyword, limit, token=None):
+    def search_leaks(leak_id, days_ago, keyword, limit, token=None):
         """
         Retrieves the list of leaks from our database.
         """
@@ -276,15 +277,34 @@ script:
         res = http_request('get', 'api/1/leaks/info', 'leaks.info', params)
         return res.json()
 
-    def list_leaks_command():
+    def search_leaks_command():
         leak_id = demisto.args().get('leak_id')
         days_ago = demisto.args().get('days_ago')
         keyword = demisto.args().get('keyword')
         limit = int(demisto.args().get('limit', 20))
         token = demisto.args().get('token')
 
-        raw_list_leaks = list_leaks(leak_id, days_ago, keyword, limit, token)
-        markdown = tableToMarkdown('List of leaks', raw_list_leaks.get('leaks'))
+        raw_list_leaks = search_leaks(leak_id, days_ago, keyword, limit, token)
+        markdown = tableToMarkdown('List of leaks', raw_list_leaks.get('leaks'), [
+                'leak_id',
+                'title',
+                'leak_type',
+                'score',
+                'leak_date',
+                'breach_date',
+                'targets',
+                'attackers',
+                'num_entries',
+                'password_type',
+                'description',
+                'source_refs',
+                'attack_method',
+                'target_industries',
+                'media_refs',
+                'password_hash',
+                'num_domains_affected',
+                'import_date'
+            ])
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -292,7 +312,7 @@ script:
             'Contents': raw_list_leaks,
             'HumanReadable': markdown,
             'EntryContext': {
-                'VigilanteATI.LeakInfoToken': raw_list_leaks.get('token'),
+                'VigilanteATI.LeakInfoToken(true==true)': raw_list_leaks.get('token'),
                 'VigilanteATI.Leaks(val.leak_id === obj.leak_id)': raw_list_leaks.get('leaks')
             }
         })
@@ -323,15 +343,21 @@ script:
             demisto.results('Leak has no accounts related to it')
             sys.exit(0)
 
-        markdown = tableToMarkdown('Accounts related to leak {}'.format(leak_id), leak.get('accounts'))
+        accounts = leak.get('accounts')
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+
+        markdown = tableToMarkdown('Accounts related to leak {}'.format(leak_id), leak.get('accounts'), ['email', 'domain', 'password', 'type_id'])
         outputs = {
             'VigilanteATI.Leaks(val.leak_id === obj.leak_id)': {
                 'leak_id': leak_id,
-                'accounts': leak.get('accounts')
+                'accounts': accounts
             }
         }
         if leak.get('token'):
-            outputs['VigilanteATI.LeakAccountsToken'] = leak.get('token')
+            outputs['VigilanteATI.LeakAccountsToken(true==true)'] = leak.get('token')
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -368,15 +394,19 @@ script:
 
         results = query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token)
         posts = results.get('posts')
+        for post in posts:
+            post['title'] = base64.b64decode(post['title']).decode('utf8')
+            post['post'] = base64.b64decode(post['post']).decode('utf8')
+
         markdown = tableToMarkdown('ECrime Posts', posts)
         markdown += '\n**Total Count**: {}'.format(results.get('count'))
         markdown += '\n**Next Page Token**: \n{}'.format(results.get('re_token'))
 
         outputs = {
-            'VigilanteATI.ECrimePosts': posts.get('accounts')
+            'VigilanteATI.ECrimePosts': posts
         }
-        if leak.get('token'):
-            outputs['VigilanteATI.ECrimeQueryToken'] = results.get('re_token')
+        if results.get('re_token'):
+            outputs['VigilanteATI.ECrimeQueryToken(true==true)'] = results.get('re_token')
 
 
         demisto.results({
@@ -399,6 +429,9 @@ script:
         return res.json()
 
     def query_accounts(account_identifier, limit, days_ago):
+        if days_ago is not None:
+            days_ago = int(days_ago)
+
         body = remove_none_params({
             'account_identifier': account_identifier,
             'limit': limit,
@@ -409,23 +442,25 @@ script:
         return res.json()
 
     def query_accounts_command():
-        account_identifiers = demisto.args().get('account_identifiers')
-        if isinstance(account_identifiers, basestring):
-            account_identifiers = account_identifiers.split(',')
-
+        emails = argToList(demisto.args().get('emails'))
         days_ago = demisto.args().get('days_ago')
         limit = demisto.args().get('limit')
 
-        results = query_accounts(account_identifiers, limit, days_ago)
+        results = query_accounts(emails, limit, days_ago)
         accounts = results.get('results')
-        markdown = tableToMarkdown('Leaks related to accounts {}'.format(account_identifiers), accounts)
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+
+        markdown = tableToMarkdown('Leaks related to email accounts \n{}'.format('\n'.join(emails)), accounts, ['leak_id', 'email', 'password', 'source_type', 'type_id'])
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': results,
             'HumanReadable': markdown,
             'EntryContext': {
-                'VigilanteATI.Account(val.plain == obj.plain)': accounts
+                'VigilanteATI.Account(val.email == obj.email && val.password == obj.password && val.leak_id && obj.leak_id)': accounts
             }
         })
 
@@ -447,9 +482,9 @@ script:
 
         return domain_info
 
-    def query_domains(domain_identifier, days_ago, limit, token=None):
+    def query_domains(domain, days_ago, limit, token=None):
         params = remove_none_params({
-            'domain_identifier': domain_identifier,
+            'domain_identifier': domain,
             'limit': limit,
             'daysAgo': days_ago,
             'token': token
@@ -460,17 +495,24 @@ script:
         return domains
 
     def query_domains_command():
-        domain_identifier = demisto.args().get('domain_identifier')
+        domain = demisto.args().get('domain')
         limit = int(demisto.args().get('limit', 20))
         days_ago = demisto.args().get('days_ago')
         token = demisto.args().get('token')
 
-        query_results = query_domains(domain_identifier, days_ago, limit, token)
+        query_results = query_domains(domain, days_ago, limit, token)
         accounts = query_results.get('accounts')
-        markdown = tableToMarkdown('Account related to domain', accounts)
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+        markdown = tableToMarkdown('Accounts related to domain: {}'.format(domain), accounts, ['leak_id', 'email', 'password', 'source_type', 'type_id'])
 
         outputs = {
-            'VigilanteATI.Domain(val.domain_identifier == obj.domain_identifier)': accounts
+            'VigilanteATI.Domain(val.domain == obj.domain)': {
+                'domain': query_results.get('domain_identifier'),
+                'accounts': accounts
+            }
         }
         if query_results.get('token'):
             outputs['DomainQueryToken'] = query_results.get('token')
@@ -601,7 +643,7 @@ script:
             'Contents': watchlist,
             'HumanReadable': markdown,
             'EntryContext': {
-                'VigilanteATI.WatchlistQueryToken': watchlist.get('token'),
+                'VigilanteATI.WatchlistQueryToken(true==true)': watchlist.get('token'),
                 'VigilanteATI.Watchlist(val.identifier == obj.identifier)': watchlist.get('identifiers')
             }
         })
@@ -653,15 +695,15 @@ script:
         get_vulnerable_host_data_command()
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-list-leaks':
-        list_leaks_command()
+    elif demisto.command() == 'vigilante-search-leaks':
+        search_leaks_command()
         sys.exit(0)
 
     elif demisto.command() == 'vigilante-get-leak':
         get_leak_command()
         sys.exit(0)
 
-    elif demisto.command() == 'vigilante-query-ecrime-intelligence-database':
+    elif demisto.command() == 'vigilante-query-ecrime-db':
         query_ecrime_intelligence_database_command()
         sys.exit(0)
 
@@ -723,29 +765,29 @@ script:
       description: Query parameter specifying the IP address of the infected host
         was seen communicating with. (optional)
     outputs:
-    - contextPath: VigilanteATI.Hosts.ip
+    - contextPath: VigilanteATI.InfectedHosts.ip
       description: Alphanumeric version of the IPv4 address belonging to this infected
         host.
       type: string
-    - contextPath: VigilanteATI.Hosts.port
+    - contextPath: VigilanteATI.InfectedHosts.port
       description: 'Port number used by the infected host. '
       type: number
-    - contextPath: VigilanteATI.Hosts.domain
+    - contextPath: VigilanteATI.InfectedHosts.domain
       description: Domain name associated with the infected host. (e.g sample.com)
       type: string
-    - contextPath: VigilanteATI.Hosts.country
+    - contextPath: VigilanteATI.InfectedHosts.country
       description: Country code representing the country the host is located in. (e.g
         US)
       type: string
-    - contextPath: VigilanteATI.Hosts.malware
+    - contextPath: VigilanteATI.InfectedHosts.malware
       description: Name of the malware family we believe has infected the host. (e.g
         c_zeroaccess)
       type: string
-    - contextPath: VigilanteATI.Hosts.c_and_c
+    - contextPath: VigilanteATI.InfectedHosts.c_and_c
       description: IP address of the C&C the infected host was seen communicating
         with.
       type: string
-    - contextPath: VigilanteATI.Hosts.timestamp
+    - contextPath: VigilanteATI.InfectedHosts.timestamp
       description: Timestamp of when we last saw this infected host and imported it
         into our database. (e.g 2015-10-10 12:01:01)
       type: date
@@ -755,7 +797,7 @@ script:
         size. Otherwise it is set to an empty string. If empty, it means there is
         no next page
       type: string
-    - contextPath: VigilanteATI.Hosts
+    - contextPath: VigilanteATI.InfectedHosts
       description: Container for infected host objects. This is basically a list of
         dictionaries (hosts).
     description: Query all infected host data. This is the API call you want to use
@@ -851,7 +893,7 @@ script:
     description: Returns all vulnerable host data from VI feed for the given query.
       This is the API call you want to use to download the entire feed of vulnerable
       hosts that matches the query.
-  - name: vigilante-query-ecrime-intelligence-database
+  - name: vigilante-query-ecrime-db
     arguments:
     - name: query
       required: true
@@ -873,6 +915,7 @@ script:
       description: The re_token required to retrieve the next page of results when
         the result set is larger than limit. If this parameter is specified, all other
         parameters are ignored.
+    - name: days_ago
     outputs:
     - contextPath: VigilanteATI.ECrimeQueryToken
       description: The re_token parameter value required to retrieve the next page
@@ -897,7 +940,7 @@ script:
     description: Query the eCrime intelligence database. This is the API call you
       want to use to do a full text search on eCrime intelligence data, such as hacker
       chatter.
-  - name: vigilante-list-leaks
+  - name: vigilante-search-leaks
     arguments:
     - name: leak_id
       description: If set this parameter determines which leak the user wants to return
@@ -940,12 +983,14 @@ script:
     - contextPath: VigilanteATI.Leaks.source_refs
       description: List of sources (URIs) where this leak was available at the time
         VigilanteATI team harvested it.
+      type: string
     - contextPath: VigilanteATI.Leaks.import_date
       description: The date the leak was first imported into the VigilanteATI database.
+      type: date
     - contextPath: VigilanteATI.Leaks.attackers
       description: A list of attackers (hackers) who claimed responsibility for the
         breach/leak.
-      type: unknown
+      type: string
     - contextPath: VigilanteATI.Leaks.score
       description: An integer, in a range of 0 to 100, of how confident we are this
         leak is legitimate.
@@ -964,9 +1009,11 @@ script:
       description: A list of media articles covering the data leak.
     - contextPath: VigilanteATI.Leaks.targets
       description: List of entities targeted by this leak.
+      type: string
     - contextPath: VigilanteATI.Leaks.num_entries
       description: Total number of account credentials (email/password pairs) harvested
         from this leak.
+      type: number
     - contextPath: VigilanteATI.Leaks.password_hash
       description: Type of password hash; only present if leaked passwords have been
         hashed.
@@ -975,6 +1022,7 @@ script:
       description: Token required to paginate the next set of results in. This is
         only provided if the number of items in the response exceeds our max pagination
         size. Otherwise it is set to an empty string.
+      type: string
     description: ' Retrieves the list of leaks from database.'
   - name: vigilante-get-leak
     arguments:
@@ -1007,7 +1055,7 @@ script:
       type: string
     - contextPath: VigilanteATI.Leaks.accounts
       description: Container for account objects. This is just a list of dictionaries.
-    - contextPath: VigilanteATI.Leaks.accounts.account_identifier
+    - contextPath: VigilanteATI.Leaks.accounts.domain
       description: Email domain which the account belongs to.
       type: string
     - contextPath: VigilanteATI.Leaks.accounts.type_id
@@ -1015,7 +1063,7 @@ script:
         1, which are email addresses. As we expand our service we will add support
         for additional types such as usernames.
       type: number
-    - contextPath: VigilanteATI.Leaks.accounts.plain
+    - contextPath: VigilanteATI.Leaks.accounts.email
       description: A plaintext form of the email address from the account. The email
         address will always be lowercased.
       type: string
@@ -1033,7 +1081,7 @@ script:
       leak.'
   - name: vigilante-query-accounts
     arguments:
-    - name: account_identifiers
+    - name: emails
       required: true
       description: The string (or comma delimited list of strings) that uniquely identifier
         the account we are trying to match on. In the current version of the API the
@@ -1043,6 +1091,7 @@ script:
         the two types. The list must be either only email addresses, or only hashes.
         Any email address provided in account_identifier must adhere to RFC 2822.
         (required)
+      isArray: true
     - name: limit
       description: Upper bounds for how many results we will return. By default this
         is set to 20. (optional)
@@ -1065,7 +1114,7 @@ script:
         Value of 2 means that these are Endangered Credentials, and the password field
         contains a JSON dictionary instead of a password.
       type: number
-    - contextPath: VigilanteATI.Account.plain
+    - contextPath: VigilanteATI.Account.email
       description: A plaintext form of the email address from the account. The email
         address will always be lowercased.
       type: string
@@ -1083,7 +1132,7 @@ script:
       of leaked credentials.
   - name: vigilante-query-domains
     arguments:
-    - name: domain_identifier
+    - name: domain
       required: true
       description: The string that uniquely identifies the domain we are trying to
         match on. Domain names provided as domain_identifier must adhere to RFC 1035.
@@ -1101,8 +1150,9 @@ script:
         along with the response so the client can request the next page appropriately
         with the next API request. (optional)
     outputs:
-    - contextPath: VigilanteATI.Domain.domain_identifier
+    - contextPath: VigilanteATI.Domain.domain
       description: The domain name you queried for.
+      type: string
     - contextPath: VigilanteATI.Domain.accounts
       description: Container for results. List of dictionaries, each representing
         a single pair of account credentials with associated metadata.
@@ -1110,7 +1160,8 @@ script:
       description: Denotes type of data. Value of 1 indicates compromised credentials.
         Value of 2 means that these are Endangered Credentials, and the password field
         contains a JSON dictionary instead of a password.
-    - contextPath: VigilanteATI.Domain.accounts.plain
+      type: number
+    - contextPath: VigilanteATI.Domain.accounts.email
       description: A plaintext form of the email address from the account. The email
         address will always be lowercased.
       type: string
@@ -1127,6 +1178,7 @@ script:
     - contextPath: VigilanteATI.Domain.accounts.leak_id
       description: Identifier of the leak where this account came from. You can use
         this ID to correlate account data to the leak.
+      type: string
     description: ' Performs a query to match the given domain name against our database
       of leaked credentials.'
   - name: vigilante-watchlist-add-accounts
@@ -1191,4 +1243,4 @@ script:
     arguments: []
     description: Returns the usage data for your account.
   runonce: false
-releaseNotes: InfoArmor VigilanteATI new integration
+releaseNotes: "-"
