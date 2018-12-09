@@ -788,7 +788,7 @@ script:
         domain was registered
       type: string
     - contextPath: AwakeSecurity.Domains.IntelSources
-      description: Intel sources
+      description: Indicators of compromise from Awake Security
       type: string
     - contextPath: AwakeSecurity.Domains.ipAddresses
       description: IP addressesassociated with the domain
@@ -797,7 +797,7 @@ script:
       description: Does the domain appear in Alexa 1 million list
       type: string
     - contextPath: AwakeSecurity.Domains.isDGA
-      description: Does the domain appear is the domain DGA
+      description: Is domain generation algorithm
       type: boolean
     - contextPath: AwakeSecurity.Domains.lastSeen
       description: Last time the domain was seen
@@ -815,10 +815,10 @@ script:
       description: List of protocols used in the domain activities
       type: string
     - contextPath: AwakeSecurity.Domains.relatedSubdomains
-      description: Subdomains of the specified domain
+      description: Related subdomains of the specified domain
       type: string
     - contextPath: AwakeSecurity.Domains.subdomains
-      description: Subdomains
+      description: Subdomains of the specified domain
       type: string
     - contextPath: AwakeSecurity.Domains.topDevices
       description: LIst of devices that accessed the specified domain (maximum is
@@ -997,7 +997,8 @@ script:
         device
       type: number
     - contextPath: AwakeSecurity.Devices.watchlistCount.percentile
-      description: How this device compares to other devices for threat behaviors
+      description: How this device compares to other devices for number of threat
+        behaviors
       type: number
     - contextPath: AwakeSecurity.Devices.watchlistCount.weight
       description: Importance given to the threat behaviors when calculating the specified
@@ -1078,7 +1079,8 @@ script:
       description: List of IP addresses associated with the specified device
       type: unknown
     - contextPath: AwakeSecurity.Devices.usernames
-      description: List of usernames associated with the specified device
+      description: List of usernames that were inferred as accounts on the specified
+        device
       type: string
     - contextPath: AwakeSecurity.Devices.emails
       description: List of email addresses associated with the specified device
