@@ -27,7 +27,7 @@ configuration:
 script:
   script: |-
     /*
-        params.code = access_code
+        params.code = access_code in new integration
     */
     var base = 'https://api.box.com/2.0/';
     var brandData = getBrandContext();
@@ -574,7 +574,8 @@ script:
       description: File's id
     outputs:
     - contextPath: $(File)
-    description: 'getting file from private box '
+      description: Output path of file
+    description: getting a file from private Box storage
   - name: box_initiate
     arguments:
     - name: access_code
@@ -684,6 +685,7 @@ script:
       description: Size of path_collection object
       type: string
     - contextPath: Box.purged_at
+      description: purged at
       type: string
     - contextPath: Box.type
       description: File's type
@@ -692,7 +694,7 @@ script:
       description: File's ID
       type: string
     - contextPath: Box.id
-      description: 'Time of item deletion '
+      description: Time of item deletion
       type: date
     - contextPath: Box.description
       description: File's description
