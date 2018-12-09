@@ -77,6 +77,10 @@ script:
             client_secret: brandData.client_secret,
         };
         request.code = args.access_code ? args.access_code : params.code;
+        // if there's no request code, return error
+        if (!params.code && !args.access_code){
+            throw "There's no access code, please use box_initiate command.";
+        }
         request.grant_type = 'authorization_code';
         // Send it and get initial access token
         var response = sendRequest('POST', 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);
@@ -332,6 +336,7 @@ script:
         var ec = null;
         return {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};
     }
+
     // Initialize token
     var token = getToken(false);
     switch (command) {
@@ -400,21 +405,12 @@ script:
                     md += 'Content is now available in account **' + contents.owned_by.login + '** under directory **' + contents.name + '**\n';
                     break;
                 case 'box_files_get_info':
+                    contents = fileInfoKeysCamelized(contents);
                     md = '### File info:\n';
                     md += objToMd(contents);
-                    contents = fileInfoKeysCamelized(contents);
                     ec = {
                         'Box(val.Sha1 === obj.Sha1)': contents
                     };
-                    break;
-                case 'box_files_upload':
-                    md = '### File uploaded succesfully\n';
-                    md += "File's ID: " + file_id
-                    ec = {
-                        'Box': {
-                            'Uploads': file_id
-                        }
-                    }
                     break;
                 default:
                     md = "### Box Response: " + response.Status + '\n';
@@ -588,131 +584,118 @@ script:
       required: true
       description: File's ID
     outputs:
-    - contextPath: Box.size
+    - contextPath: Box.Size
       description: Size of file (in bits)
       type: number
-    - contextPath: Box.content_modified_at
+    - contextPath: Box.ContentModifiedAt
       description: Time of content modification
       type: date
-    - contextPath: Box.sha1
+    - contextPath: Box.Sha1
       description: File's SHA1
       type: string
-    - contextPath: Box.modified_at
+    - contextPath: Box.ModifiedAt
       description: Time of file info
       type: date
-    - contextPath: Box.parent.etag
+    - contextPath: Box.Parent.Etag
       description: Parent's etag
       type: string
-    - contextPath: Box.parent.id
+    - contextPath: Box.Parent.Id
       description: Parent's ID
       type: string
-    - contextPath: Box.parent.name
+    - contextPath: Box.Parent.Name
       description: Parent's name
       type: string
-    - contextPath: Box.sequence_id
+    - contextPath: Box.SequenceId
       description: Parent's sequence ID
       type: string
-    - contextPath: Box.parent.type
+    - contextPath: Box.Parent.Type
       description: Parent's type
       type: string
-    - contextPath: Box.created_at
+    - contextPath: Box.CreatedAt
       description: Time of file's upload
       type: date
-    - contextPath: Box.name
+    - contextPath: Box.Name
       description: File's name
       type: string
-    - contextPath: Box.modified_by.id
+    - contextPath: Box.ModifiedBy.Id
       description: ID's of last user modified
       type: string
-    - contextPath: Box.modified_by.login
+    - contextPath: Box.ModifiedBy.Login
       description: User's login email
       type: string
-    - contextPath: Box.modified_by.name
+    - contextPath: Box.ModifiedBy.Name
       description: User's name of last modified
       type: string
-    - contextPath: Box.modified_by.user
+    - contextPath: Box.ModifiedBy.User
       description: User's type
       type: string
-    - contextPath: Box.content_created_at
+    - contextPath: Box.ContentCreatedAt
       description: File's time of creation
       type: date
-    - contextPath: Box.owned_by.id
+    - contextPath: Box.OwnedBy.Id
       description: File's owner ID
       type: string
-    - contextPath: Box.owned_by.login
+    - contextPath: Box.OwnedBy.Login
       description: File's owner email
       type: string
-    - contextPath: Box.owned_by.name
+    - contextPath: Box.OwnedBy.Name
       description: File's owner name
       type: string
-    - contextPath: Box.owned_by.type
+    - contextPath: Box.OwnedBy.Type
       description: File's owner type
       type: string
-    - contextPath: Box.shared_link
+    - contextPath: Box.SharedLink
       description: Shared link
       type: string
-    - contextPath: Box.etag
+    - contextPath: Box.Etag
       description: File's etag
       type: string
-    - contextPath: Box.file_version.id
+    - contextPath: Box.FileVersion.Id
       description: File's version ID
       type: string
-    - contextPath: Box.file_version.sha1
+    - contextPath: Box.FileVersion.Sha1
       description: File's version SHA1
       type: string
-    - contextPath: Box.file_version.type
+    - contextPath: Box.FileVersion.Type
       description: File's version type
       type: string
-    - contextPath: Box.path_collection.entries.etag
+    - contextPath: Box.PathCollection.Entries.Etag
       description: Path's collection entries etag
       type: string
-    - contextPath: Box.path_collection.entries.id
+    - contextPath: Box.PathCollection.Entries.Id
       description: Path's collection entries ID
       type: string
-    - contextPath: Box.path_collection.entries.sha1
+    - contextPath: Box.PathCollection.Entries.Sha1
       description: Path's collection entries SHA1
       type: string
-    - contextPath: Box.path_collection.entries.name
+    - contextPath: Box.PathCollection.Entries.Name
       description: Path's collection entries name
       type: string
-    - contextPath: Box.path_collection.entries.sequence_id
+    - contextPath: Box.PathCollection.Entries.SequenceId
       description: Path's collection entries sequence_id
       type: string
-    - contextPath: Box.path_collection.entries.type
+    - contextPath: Box.PathCollection.Entries.Type
       description: Path's collection entries type
       type: string
-    - contextPath: Box.path_collection.total_count
+    - contextPath: Box.PathCollection.TotalCount
       description: Size of path_collection object
       type: string
-    - contextPath: Box.purged_at
+    - contextPath: Box.PurgedAt
       description: purged at
       type: string
-    - contextPath: Box.type
+    - contextPath: Box.Type
       description: File's type
       type: string
-    - contextPath: Box.id
+    - contextPath: Box.Id
       description: File's ID
       type: string
-    - contextPath: Box.id
-      description: Time of item deletion
-      type: date
-    - contextPath: Box.description
+    - contextPath: Box.Description
       description: File's description
       type: string
-    - contextPath: Box.item_status
+    - contextPath: Box.ItemStatus
       description: File's status
       type: string
     description: Getting file info of provided ID
-  - name: box_files_upload
-    arguments:
-    - name: entryID
-      required: true
-      description: Entry ID of file to upload
-    outputs:
-    - contextPath: Box.Uploads
-      description: File's ID in box
-      type: string
-    description: Upload file from entry
   runonce: false
 releaseNotes: add box_files_get and box_files_get_info commands
 tests:
