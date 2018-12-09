@@ -715,4 +715,4 @@ script:
     description: Upload file from entry
   runonce: false
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test
