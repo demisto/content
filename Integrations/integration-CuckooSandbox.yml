@@ -974,5 +974,6 @@ script:
       name.
 hidden: false
 fromversion: 3.5.0
+releaseNotes: "-"
 tests:
-  - CuckooTest
+  - No test
