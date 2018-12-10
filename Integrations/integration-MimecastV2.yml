@@ -186,11 +186,10 @@ script:
             integration_context = demisto.getIntegrationContext()
             last_update_ts = integration_context.get('token_last_update')
             current_ts = epoch_seconds()
-            if last_update_ts is not None:
-                if current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800:
-                    response = refresh_token_request()
-                    current_ts = epoch_seconds()
-                    demisto.setIntegrationContext({'token_last_update': current_ts})
+            if (last_update_ts and current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800) or last_update_ts is None:
+                response = refresh_token_request()
+                current_ts = epoch_seconds()
+                demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
     def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True, is_file=False):
@@ -1353,7 +1352,7 @@ script:
 
 
     def login():
-        headers = ['Access Key','Secret Key','Duration (ms)','Duration (days)']
+        headers = ['Access Key','Secret Key']
         contents = []
 
         response = login_request()
@@ -1576,7 +1575,9 @@ script:
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('command is %s' % (demisto.command(), ))
-    is_token_refreshed = auto_refresh_token()
+
+    # Check if token needs to be refresh, if it does and relevant params are set, refresh.
+    auto_refresh_token()
 
     try:
         if demisto.command() == 'test-module':
