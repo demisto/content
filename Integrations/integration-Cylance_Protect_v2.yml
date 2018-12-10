@@ -54,6 +54,10 @@ script:
     import requests
     import json
     import re
+    import zipfile
+    import shutil
+    from zipfile import ZipFile
+    from StringIO import StringIO
     from datetime import datetime, timedelta
 
     # CONSTANTS
@@ -81,6 +85,8 @@ script:
     SCOPE_THREAT_UPDATE = 'threat:update'
     SCOPE_GLOBAL_LIST = 'globallist:list'
     SCOPE_THREAT_LIST = 'threat:list'
+    SCOPE_GLOBAL_LIST_CREATE = 'globallist:create'
+    SCOPE_GLOBAL_LIST_DELETE = 'globallist:delete'
 
     # PREREQUISITES
     def load_server_url():
@@ -127,7 +133,7 @@ script:
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params)
         if res.status_code < 200 or res.status_code >= 300:
             if not res.status_code == 404 and not accept_404:
-                raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+                return_error('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return json.loads(res.text) if res.text else res.ok
 
 
@@ -167,10 +173,18 @@ script:
             incident['occurred'] = threat['last_found'] + 'Z'
             incident['rawJSON'] = json.dumps(threat)
 
+            host_name = None
+            devices = get_threat_devices_request(threat['sha256'], None, None)['page_items']
+            for device in devices:
+                if device['date_found'] == threat['last_found']:
+                    host_name = device['name']
+
             labels = []
             labels.append({'type':'Classification','value':threat['classification']})
             labels.append({'type':'MD5','value':threat['md5']})
             labels.append({'type':'SHA256','value':threat['sha256']})
+            labels.append({'type':'ThreatLastFound','value':threat['last_found']})
+            labels.append({'type':'HostName','value':host_name})
             incident['labels'] = labels
             return incident
 
@@ -701,7 +715,7 @@ script:
             'Authorization': 'Bearer ' + access_token
         }
         uri = '%s/%s' % (URI_THREATS, hash)
-        res = api_call(uri=uri, method='get', headers=headers, body = {}, params = {}, accept_404 = True)
+        res = api_call(uri=uri, method='get', headers=headers, body = {}, params = {}, accept_404 = False)
         return res
 
     def get_threats():
@@ -906,6 +920,51 @@ script:
         res = api_call(uri=URI_LISTS, method='get', headers=headers, params=params)
         return res
 
+    def get_list_entry_by_hash(sha256=None, listTypeId=None):
+        if not sha256:
+            sha256 = demisto.args()['sha256']
+        if not listTypeId:
+            listTypeId = demisto.args()['listTypeId']
+        total_pages = None
+        current_page = None
+        found_hash = None
+        while not found_hash and total_pages >= current_page:
+            if not current_page:
+                current_page = 1
+            lst = get_list_request(listTypeId, current_page, 200)
+            if not total_pages:
+                total_pages = lst['total_pages']
+            for i in lst['page_items']:
+                if i['sha256'] == sha256:
+                    found_hash = i
+                    break
+            current_page += 1
+        if demisto.command() == 'cylance-protect-get-list-entry':
+            if found_hash:
+                context_list = createContext(data=found_hash, keyTransform=underscoreToCamelCase, removeNull=True)
+
+                ec = {
+                'CylanceListSearch':  context_list
+                }
+
+                title = 'Cylance Protect Global List Entry'
+
+                entry = {
+                'Type': entryTypes['note'],
+                'Contents': found_hash,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, found_hash, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': ec
+                }
+
+                demisto.results(entry)
+            else:
+                demisto.results("Hash not found")
+        else:
+            return found_hash
+
+
     def get_indicators_report():
         url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
         res = requests.request('GET', url)
@@ -937,15 +996,392 @@ script:
 
         return res
 
+
+    def download_threat():
+
+        contents = {}
+        context = {}
+        dbot_score = 0
+        score = 0
+
+        hash = demisto.args()['sha256']
+        threat_url = download_threat_request(hash)
+
+        threat_file = requests.get(threat_url, allow_redirects=True)
+        if threat_file.status_code == 200:
+            if demisto.args()['unzip'] == "yes":
+                file_archive = StringIO(threat_file.content)
+                zip_file = zipfile.ZipFile(file_archive)
+                file_data = zip_file.read(hash.upper(), pwd='infected')
+                demisto.results(fileResult(hash, file_data))
+            else:
+                demisto.results(fileResult(hash, threat_file.content + '.zip'))
+        else:
+            return_error('Could not fetch the file')
+
+        threat = get_threat_request(hash)
+        if threat:
+            # add data about the threat if found
+            if threat.get('cylance_score'):
+                score = normalize_score(threat.get('cylance_score'))
+                threshold = demisto.args().get('threshold', FILE_THRESHOLD)
+                dbot_score = translate_score(score, int(threshold))
+
+            contents = {
+                'Download URL': threat_url,
+                'File Name': threat.get('name'),
+                'File Size': threat.get('file_size'),
+                'Detected By': threat.get('detected_by'),
+                'GlobalQuarantine': threat.get('global_quarantined'),
+                'Safelisted': threat.get('safelisted'),
+                'Timestamp': threat.get('cert_timestamp'),
+            }
+
+            context[outputPaths['file']] = {
+                'DownloadURL': threat_url,
+                'SHA256': threat.get('sha256'),
+                'Name': threat.get('name'),
+                'Size': threat.get('file_size'),
+                'Safelisted': threat.get('safelisted'),
+                'Timestamp': threat.get('cert_timestamp'),
+                'MD5': threat.get('md5')
+            }
+
+            if dbot_score == 3:
+                context[outputPaths['file']]['Malicious'] = {
+                    'Vendor': 'Cylance Protect',
+                    'Description': 'Score determined by get threat command'
+                }
+
+            context[outputPaths['dbotscore']] = {
+                'Indicator': threat.get('name'),
+                'Type': 'file',
+                'Vendor': 'Cylance Protect',
+                'Score': dbot_score
+            }
+
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cylance Protect - Downloading threat attached to the following hash: ' +  hash, contents),
+            'EntryContext': context
+        })
+
+
+    def download_threat_request(hash):
+        access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+        uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
+        res = api_call(uri=uri, method='get', headers=headers)
+        if not res['url']:
+            return_error('No url was found')
+        return res['url']
+
+
+    def add_hash_to_list():
+
+        context = {}
+        contents = {}
+
+        hash = demisto.args().get('sha256')
+        list_type = demisto.args().get('listType')
+        reason = demisto.args().get('reason')
+        category = demisto.args().get('category')
+
+        if list_type == "GlobalSafe" and not category:
+            return_error('Category argument is required for list type of Global Safe')
+
+        add_hash = add_hash_to_list_request(hash, list_type, reason, category)
+        if not add_hash:
+            return_error('Could not add hash to list')
+
+        contents = {
+            'Threat File SHA256': hash,
+            'List Type': list_type,
+            'Category': category,
+            'Reason': reason
+        }
+
+        context[outputPaths['file']] = {
+            'SHA256': hash,
+            'Cylance': {
+                'ListType': list_type,
+                'Category': category
+            }
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The requested threat has been successfully added to ' + list_type + ' hashlist.', contents),
+            'EntryContext': context
+        })
+
+    def add_hash_to_list_request(sha256, list_type, reason, category=None):
+        access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+
+        body = {
+            'sha256': sha256,
+            'list_type': list_type,
+            'reason': reason
+        }
+        if category:
+            body['category'] = category.replace(" ", "")
+        res = api_call(uri=URI_LISTS, method='post', headers=headers, body=body)
+        return res
+
+
+    def delete_hash_from_lists():
+
+        hash = demisto.args().get('sha256')
+        list_type = demisto.args().get('listType')
+        contents = {}
+        context =  {}
+
+        delete_hash = delete_hash_from_lists_request(hash, list_type)
+
+        contents = {
+            'Threat File SHA256': hash,
+            'Threat List Type': list_type
+        }
+
+        context[outputPaths['file']] = {
+            'SHA256': hash,
+            'Cylance': {
+                'ListType': list_type
+            }
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The requested threat has been successfully removed from ' + list_type + ' hashlist.', contents),
+            'EntryContext': context
+        })
+
+
+    def delete_hash_from_lists_request(sha256, list_type):
+        access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+
+        body = {
+            'sha256': sha256,
+            'list_type': list_type
+        }
+        res = api_call(uri=URI_LISTS, method='delete', headers=headers, body=body)
+        return res
+
+
+    def delete_devices():
+
+        device_ids = demisto.args().get('deviceIds')
+        device_ids_list = argToList(device_ids)
+        contents = []
+        context = []
+        context_list = []
+
+        for device_id in device_ids_list:
+            device = get_device_request(device_id)
+            if not device:
+                continue
+            device_name = device.get('name')
+            context_list.append({
+                'Id': device_id,
+                'Name': device_name,
+                'Deleted': True
+            })
+            contents.append({
+                'Device Removed': device_id,
+                'Device Name': device_name,
+                'Deletion status': True
+            })
+
+        devices_deleted = delete_devices_request(device_ids_list)
+        context = {
+            'Cylance.Device(val.Id && val.Id == obj.Id)': context_list
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The requested devices have been successfully removed from your organization list.', contents),
+            'EntryContext': context
+        })
+
+
+    def delete_devices_request(device_ids):
+
+        access_token = get_authentication_token()
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+        body = {
+            'device_ids': device_ids
+        }
+
+        res = api_call(uri=URI_DEVICES, method='delete', headers=headers, body=body)
+        if not res or not res.get('request_id'):
+            return_error('Delete response does not contain request id')
+
+        return res
+
+
+    def get_policy_details():
+        policy_id = demisto.args()['policyID']
+        contents = {}
+        context = {}
+        title = 'Could not find policy details for that ID'
+        filetype_actions_threat_contents = {}
+        filetype_actions_suspicious_contents = {}
+        safelist_contents = {}
+        title_filetype_actions_threat = 'Cylance Policy Details - FileType Actions Threat Files'
+        title_filetype_actions_suspicious = 'Cylance Policy Details - FileType Actions Suspicious Files'
+        title_safelist = 'Cylance Policy Details - File Exclusions - SafeList'
+        title_memory_exclusion = 'Cylance Policy Details - Memory Violation Actions \n' + 'This table provides detailed information about the memory voilation settings. \n' + 'Memory protections Exclusion List :'
+        title_memory_violation = 'Memory Violation Settings: '
+        title_additional_settings = 'Cylance Policy Details - Policy Settings. \n' + 'Various policy settings are contained within this section.'
+
+        policy_details = get_policy_details_request(policy_id)
+        if policy_details:
+            title = 'Cylance Policy Details for: ' + policy_id
+            timestamp = 0
+            reg = None
+            ts = 0
+            date_time = ''
+            # timestamp in response comes back as bugged string, convert to actual timestamp.
+            timestamp = policy_details.get('policy_utctimestamp')
+            if timestamp:
+                reg = re.search("\d{13}", timestamp)
+                ts = float(reg.group())
+                date_time = datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
+
+            context = {
+                'Cylance.Policy(val.ID && val.ID == obj.ID)': {
+                    'ID': policy_details.get('policy_id'),
+                    'Name': policy_details.get('policy_name'),
+                    'Timestamp': date_time
+                }
+            }
+
+            contents = {
+                'Policy Name': policy_details.get('policy_name'),
+                'Policy Created At': date_time
+            }
+
+            suspicious_files = policy_details.get('filetype_actions').get('suspicious_files')
+            if suspicious_files:
+                suspicious_files_list = []
+                for file in suspicious_files:
+                    suspicious_files_list.append({
+                        'Actions': file.get('actions'),
+                        'File Type': file.get('file_type')
+                    })
+
+            threat_files = policy_details.get('filetype_actions').get('threat_files')
+            if threat_files:
+                threat_files_list = []
+                for file in threat_files:
+                    threat_files_list.append({
+                        'Actions': file.get('actions'),
+                        'File Type': file.get('file_type')
+                    })
+
+            filetype_actions_suspicious_contents = suspicious_files_list
+            filetype_actions_threat_contents = threat_files_list
+            safelist = policy_details.get('file_exclusions')
+            if safelist:
+                file_exclusions_list = []
+                for file_exclusion in safelist:
+                    file_exclusions_list.append({
+                        'Research Class ID': file_exclusion.get('research_class_id'),
+                        'Infinity': file_exclusion.get('infinity'),
+                        'File Type': file_exclusion.get('file_type'),
+                        'AV Industry': file_exclusion.get('av_industry'),
+                        'Cloud Score': file_exclusion.get('cloud_score'),
+                        'File Hash': file_exclusion.get('file_hash'),
+                        'Research Subclass ID': file_exclusion.get('research_subclass_id'),
+                        'Reason': file_exclusion.get('reason'),
+                        'File Name': file_exclusion.get('file_name'),
+                        'Category Id': file_exclusion.get('category_id'),
+                        'MD5': file_exclusion.get('md5')
+                    })
+
+                safelist_contents = file_exclusions_list
+
+            memory_violations = policy_details.get('memoryviolation_actions').get('memory_violations')
+            memory_violations_content = []
+            for memory_violation in memory_violations:
+                memory_violations_content.append({
+                    'Action': memory_violation.get('action'),
+                    'Violation Type': memory_violation.get('violation_type')
+                })
+
+            additional_settings = policy_details.get('policy')
+            additional_settings_content = []
+            for additional_setting in additional_settings:
+                additional_settings_content.append({
+                    'Name': memory_violation.get('name'),
+                    'Value': memory_violation.get('value')
+                })
+
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, contents) +
+                tableToMarkdown(title_filetype_actions_suspicious, filetype_actions_suspicious_contents) +
+                tableToMarkdown(title_filetype_actions_threat, filetype_actions_threat_contents) +
+                tableToMarkdown(title_safelist, safelist_contents) +
+                tableToMarkdown(title_memory_exclusion, policy_details.get('memory_exclusion_list')) +
+                tableToMarkdown(title_memory_violation, memory_violations_content) +
+                tableToMarkdown(title_additional_settings, memory_violations_content),
+                'EntryContext': context
+            })
+
+
+    def get_policy_details_request(policy_id):
+        access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+
+        uri = '%s/%s' % (URI_POLICIES, policy_id)
+        res = api_call(uri=uri, method='get', headers=headers)
+        return res
+
+
     def fetch_incidents():
         now = datetime.utcnow()
-        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-        if len(last_run) == 0:
-            now -= timedelta(minutes=10)
+        last_run = demisto.getLastRun().get('time')
+        if last_run is None:
+            now = now - timedelta(days=3)
             last_run = now
-        if isinstance(last_run, unicode):
-            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S.%f') # Converts string to datetime object
-
+        else:
+            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') #Converts string to datetime object
+        current_run = last_run
         threats = get_threats_request().get('page_items', [])
 
         incidents = []
@@ -954,9 +1390,12 @@ script:
             if last_found > last_run:
                 incident = threat_to_incident(threat)
                 incidents.append(incident)
+            if last_found > current_run:
+                current_run = last_found
 
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': now.isoformat()})
+        demisto.setLastRun({ 'time': current_run.isoformat().split('.')[0] })
+
 
     # EXECUTION
     LOG('command is %s' % (demisto.command(), ))
@@ -1011,6 +1450,26 @@ script:
 
         elif demisto.command() == 'cylance-protect-get-list':
             get_list()
+
+        elif demisto.command() == 'cylance-protect-get-list-entry':
+            get_list_entry_by_hash()
+
+        # new commands
+        elif demisto.command() == 'cylance-protect-download-threat':
+            download_threat()
+
+        elif demisto.command() == 'cylance-protect-add-hash-to-list':
+            add_hash_to_list()
+
+        elif demisto.command() == 'cylance-protect-delete-hash-from-lists':
+            delete_hash_from_lists()
+
+        elif demisto.command() == 'cylance-protect-delete-devices':
+            delete_devices()
+
+        elif demisto.command() == 'cylance-protect-get-policy-details':
+            get_policy_details()
+
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -1021,9 +1480,11 @@ script:
   - name: cylance-protect-get-devices
     arguments:
     - name: pageNumber
-      description: 'Default: 1'
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     - name: pageSize
-      description: 'Default: 100'
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
@@ -1150,9 +1611,11 @@ script:
         will be considered malicious. If threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     - name: pageNumber
-      description: 'Default: 1'
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     - name: pageSize
-      description: 'Default: 100, Max: 200'
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     outputs:
     - contextPath: File.Classification
       description: The threat classification assigned by Cylance.
@@ -1174,7 +1637,7 @@ script:
     - contextPath: File.Name
       description: The name of the threat.
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.SubClassification
@@ -1197,9 +1660,11 @@ script:
   - name: cylance-protect-get-policies
     arguments:
     - name: pageNumber
-      description: 'Default: 1'
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     - name: pageItems
-      description: 'Default: 100'
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     outputs:
     - contextPath: CylanceProtect.Policies.DateAdded
       description: The date and time (in UTC) when the Console policy resource was
@@ -1242,9 +1707,11 @@ script:
   - name: cylance-protect-get-zones
     arguments:
     - name: pageNumber
-      description: The page number to request.
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     - name: pageItems
-      description: The number of zone records to retrieve per page.
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     outputs:
     - contextPath: CylanceProtect.Zones.Criticality
       description: The Value of the Zone – Low, Medium, or High.
@@ -1359,7 +1826,7 @@ script:
     - contextPath: File.GlobalQuarantine
       description: Identifies if the threat is on the Global Quarantine list.
       type: boolean
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: File.Name
@@ -1372,7 +1839,7 @@ script:
     - contextPath: File.Safelisted
       description: Identifies if the threat is on the Safe List.
       type: boolean
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Signed
@@ -1455,9 +1922,11 @@ script:
   - name: cylance-protect-get-threats
     arguments:
     - name: page_size
-      description: The number of device records to retrieve per page.
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     - name: page
-      description: The page number to request.
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     outputs:
     - contextPath: File.Classification
       description: The threat classification for the threat.
@@ -1465,7 +1934,7 @@ script:
     - contextPath: File.SubClassification
       description: The threat sub-classification for the threat.
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Safelisted
@@ -1490,7 +1959,7 @@ script:
     - contextPath: File.FileSize
       description: The size of the file.
       type: number
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 hash for the threat.
       type: string
     - contextPath: DBotScore.Indicator
@@ -1533,9 +2002,11 @@ script:
       - GlobalSafe
       description: 'The type of the list to retrieve the hashes for. '
     - name: page
-      description: The page number to request
+      description: The page number parameter is optional. When the value is not specified,
+        the default is 1.
     - name: page_size
-      description: The number of policy records to retrieve per page
+      description: The page size parameter is optional. When the value is not specified,
+        the default is 10. Max is 200.
     outputs:
     - contextPath: File.Added
       description: The timestamp when the file was added to the list.
@@ -1558,8 +2029,11 @@ script:
     - contextPath: File.ListType
       description: The list type that the threat belongs to (GlobalQuarantine or GlobalSafe).
       type: string
-    - contextPath: File.Md5
+    - contextPath: File.MD5
       description: The MD5 has for the threat.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 has for the threat.
       type: string
     - contextPath: File.Name
       description: The name of the threat.
@@ -1577,8 +2051,167 @@ script:
       description: The actual score
       type: number
     description: Gets a list of global list resources for a tenant
+  - name: cylance-protect-download-threat
+    arguments:
+    - name: sha256
+      required: true
+      description: The SHA256 hash for the file you want to download.
+    - name: threshold
+      description: file threshold to determine reputation
+    - name: unzip
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Check if you want to file to be returned unzipped into the war
+        room
+      defaultValue: "no"
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256
+      type: string
+    - contextPath: File.Name
+      description: Name
+      type: string
+    - contextPath: File.Size
+      description: Size
+      type: number
+    - contextPath: File.Safelisted
+      description: Safelisted
+      type: boolean
+    - contextPath: File.Timestamp
+      description: Timestamp
+      type: string
+    - contextPath: File.MD5
+      description: MD5
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    description: Download threat attached to a specific SHA256 hash.
+  - name: cylance-protect-add-hash-to-list
+    arguments:
+    - name: sha256
+      required: true
+      description: SHA256 hash to add to the GlobalSafe/GlobalQuarantine list
+    - name: listType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalQuarantine
+      - GlobalSafe
+      description: The list type to which the threat belongs (GlobalQuarantine or
+        GlobalSafe).
+    - name: reason
+      description: The reason why the file was added to the list.
+      defaultValue: Added by Demisto
+    - name: category
+      auto: PREDEFINED
+      predefined:
+      - Admin Tool
+      - Commercial Software
+      - Drivers
+      - Internal Application
+      - Operating System
+      - Security Software
+      - None
+      description: This field is required only if the list_type value is Global Safe.
+        The value can be one ofthe following:• Admin Tool• Commercial Software• Drivers•
+        Internal Application• Operating System• Security Software• None
+      defaultValue: None
+    outputs:
+    - contextPath: File.SHA256
+      description: The SHA256 hash for the threat.
+      type: string
+    - contextPath: File.Cylance.ListType
+      description: The list type to which the threat belongs (GlobalQuarantine or
+        GlobalSafe).
+      type: string
+    - contextPath: File.Cylance.Category
+      description: 'This field is required only if the list_type value is Global Safe.
+        The value can be one of the following: • Admin Tool • Commercial Software
+        • Drivers • Internal Application • Operating System • Security Software •
+        None'
+      type: string
+    description: Add a convicted threat to either the Global Quarantine or the Global
+      Safe list for a particular Tenant
+  - name: cylance-protect-delete-hash-from-lists
+    arguments:
+    - name: sha256
+      required: true
+      description: The SHA256 hash for the threat.
+    - name: listType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalSafe
+      - GlobalQuarantine
+      description: The list type to which the threat belongs (GlobalQuarantine or
+        GlobalSafe).
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256
+      type: string
+    - contextPath: File.Cylance.ListType
+      description: The list type to which the threat belongs (GlobalQuarantine or
+        GlobalSafe).
+      type: string
+    description: Remove a convicted threat from either the Global Quarantine or the
+      Global Safe list for a particular Tenant.
+    execution: true
+  - name: cylance-protect-get-policy-details
+    arguments:
+    - name: policyID
+      required: true
+      description: The Tenant policy ID to the service endpoint.
+    outputs:
+    - contextPath: Cylance.Policy.ID
+      description: The ID of the policy
+      type: string
+    - contextPath: Cylance.Policy.Name
+      description: The name of the policy
+      type: string
+    - contextPath: Cylance.Policy.Timestamp
+      description: The date and time the policy was created, in UTC.
+      type: string
+    description: Get details for a single policy.
+  - name: cylance-protect-delete-devices
+    arguments:
+    - name: deviceIds
+      required: true
+      description: The unique identifiers for the devices to be deleted. The maximum
+        number of Device IDs per request is 20.
+      isArray: true
+    outputs:
+    - contextPath: Cylance.Device.Id
+      description: The unique identifier of the deletion request.
+      type: string
+    - contextPath: Cylance.Device.Name
+      description: Device Name
+      type: string
+    - contextPath: Cylance.Device.Deleted
+      description: A boolean to check if the device was deleted.
+      type: string
+    description: Delete one or more devices from an organization.
+    execution: true
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
 tests:
   - Cylance Protect v2 Test
+releaseNotes: "-"

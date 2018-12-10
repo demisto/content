@@ -29,16 +29,14 @@ script: |-
                   }
               }
 
-              if(domain && username) {
+              if(domain && username && !users.some(e => e.Username == username && e.Domain == domain)) {
                   users.push({'Username' : username, 'Domain' : domain});
               }
           });
 
-  users = uniqBy(users, JSON.stringify);
-  var res = users;
   var md = tableToMarkdown("Users", users);
   var ec = {"Account(val.Username == obj.Username)" : users};
-  return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+  return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': users, "HumanReadable": md, "EntryContext": ec} );
 type: javascript
 tags:
 - endpoint
@@ -46,3 +44,5 @@ tags:
 comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
+tests:
+  - No test

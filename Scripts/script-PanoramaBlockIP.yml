@@ -86,7 +86,6 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: made rulename optional, with sensible defaults
 dependson:
   must:
   - panorama
