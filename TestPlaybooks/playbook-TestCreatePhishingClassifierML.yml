@@ -127,7 +127,7 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: This is email
+        simple: tag1 this is a email bla bla bla
       hashData: {}
       modelListName:
         simple: ${DBotTextClassifier.ListName}
