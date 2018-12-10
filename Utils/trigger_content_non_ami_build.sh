@@ -26,7 +26,7 @@ if [ -z "$3"]
     EOF)
 fi
 
-echo curl \
+curl \
 --header "Accept: application/json" \
 --header "Content-Type: application/json" \
 --data "${post_data}" \
