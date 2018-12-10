@@ -496,18 +496,6 @@ script:
     if demisto.command() == 'aws-securityhub-get-findings':
         result = get_findings(demisto.args())
 
-    if demisto.command() == 'aws-securityhub-invite-members':
-        result = invite_members(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-list-invitations':
-        result = list_invitations(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-accept-invitation':
-        result = accept_invitation(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-decline-invitations':
-        result = decline_invitations(demisto.args())
-
     if demisto.command() == 'aws-securityhub-get-master-account':
         result = get_master_account(demisto.args())
 
@@ -519,21 +507,6 @@ script:
 
     if demisto.command() == 'aws-securityhub-disable-security-hub':
         result = disable_security_hub(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-disassociate-from-master-account':
-        result = disassociate_from_master_account(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-disassociate-members':
-        result = disassociate_members(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-enable-import-findings-for-product':
-        result = enable_import_findings_for_product(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-disable-import-findings-for-product':
-        result = disable_import_findings_for_product(demisto.args())
-
-    if demisto.command() == 'aws-securityhub-list-enabled-products-for-import':
-        result = list_enabled_products_for_import(demisto.args())
 
     if demisto.command() == 'aws-securityhub-update-finding':
         result = update_finding(demisto.args())
