@@ -404,7 +404,18 @@ tasks:
       - "7"
     scriptarguments:
       instance_name:
-        simple: Cybereason_instance_1
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cybereason
+          accessor: name
     separatecontext: false
     view: |-
       {
