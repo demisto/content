@@ -628,8 +628,8 @@ script:
         args = demisto.args()
         if 'closing_reason_name' in args:
             args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-        elif 'CLOSED' == args.get('status'):
-            raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
+        elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+            raise ValueError('Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to get them) to close offense')
         offense_id = args.get('offense_id')
         raw_offense = update_offense(offense_id)
         offense = deepcopy(raw_offense)
@@ -1146,6 +1146,10 @@ script:
       - HIDDEN
       - CLOSED
       description: The new status for the offense
+    - name: closing_reason_id
+      description: 'The id of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
     - name: closing_reason_name
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default  closing_reasons are: (1) False-Positive,
