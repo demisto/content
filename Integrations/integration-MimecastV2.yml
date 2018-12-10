@@ -1357,14 +1357,10 @@ script:
         contents = []
 
         response = login_request()
-        duration_ms = response.get('duration')
-        if duration_ms:
-            duration_days = duration_ms/(1000*60*60*24)
+
         contents.append({
             'Access Key': response.get('accessKey'),
-            'Secret Key': response.get('secretKey'),
-            'Duration (ms)': duration_ms,
-            'Duration (days)': duration_days,
+            'Secret Key': response.get('secretKey')
         })
 
         results = {
