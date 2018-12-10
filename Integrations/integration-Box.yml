@@ -573,16 +573,22 @@ script:
     outputs:
     - contextPath: File.Name
       description: Filename
+      type: string
     - contextPath: File.Type
       description: File type
+      type: string
     - contextPath: File.Size
       description: File size
+      type: number
     - contextPath: File.MD5
       description: MD5 hash of the file
+      type: string
     - contextPath: File.SHA1
       description: SHA1 hash of the file
+      type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file
+      type: string
   - name: box_initiate
     arguments:
     - name: access_code
