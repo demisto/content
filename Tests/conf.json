@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cymon",
+            "playbookID": "playbook-Cymon_Test"
+        },
+        {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
         },
@@ -145,7 +149,8 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest"
+            "playbookID": "RedCanaryTest",
+            "nightly" : true
         },
         {
           "integrations": "Devo",
