@@ -325,13 +325,15 @@ script:
                     mapped_state = TICKET_STATES[ticket_type].get(ticket['state'], mapped_state)
                 hr['State'] = mapped_state
             result.append(hr)
-
         return result
 
-    def get_ticket_fields(template):
+    def get_ticket_fields(template, ticket_type):
         # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
         inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
         inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
+        states = TICKET_STATES[ticket_type]
+        inv_states = {v: k for k, v in states.iteritems()}
+
         body = {}
         for arg in SNOW_ARGS:
             input_arg = demisto.args().get(arg)
@@ -340,6 +342,8 @@ script:
                     body[arg] = inv_severity.get(input_arg, input_arg)
                 elif arg == 'priority':
                     body[arg] = inv_priority.get(input_arg, input_arg)
+                elif arg == 'state':
+                    body[arg] = inv_states.get(input_arg, input_arg)
                 else:
                     body[arg] = input_arg
             elif template and arg in template:
@@ -554,7 +558,7 @@ script:
 
         if template:
             template = get_template(template_name)
-        fields = get_ticket_fields(template)
+        fields = get_ticket_fields(template, ticket_type)
 
         res = update(ticket_type, ticket_id ,fields, custom_fields, template)
 
@@ -622,7 +626,7 @@ script:
 
         if template:
             template = get_template(template_name)
-        fields = get_ticket_fields(template)
+        fields = get_ticket_fields(template, ticket_type)
 
         res = create(ticket_type, fields, custom_fields, template)
 
@@ -1536,8 +1540,7 @@ script:
     - contextPath: File.MD5
       description: Attachment file MD5
       type: string
-    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record
-      instead
+    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record instead
   - name: servicenow-incident-get
     deprecated: true
     arguments:
@@ -1573,8 +1576,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record
-      instead
+    description: Deprecated. Use servicenow-get-ticket or servicenow-get-record instead
   - name: servicenow-create-ticket
     arguments:
     - name: short_description
