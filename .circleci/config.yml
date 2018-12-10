@@ -46,7 +46,7 @@ jobs:
       - run:
           name: Download Artifacts
           command: |
-            if ! [[ ./Tests/scripts/is_ami.sh ]] ; then ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN ; fi
+            if [ ! ./Tests/scripts/is_ami.sh ] ; then ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN ; fi
       - run:
           name: Download Configuration
           command: |
