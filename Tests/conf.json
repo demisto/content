@@ -94,6 +94,7 @@
             ]
         },
         {
+
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -234,6 +235,7 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
+
             "integrations": "PagerDuty v2",
             "playbookID": "PagerDuty Test"
         },
@@ -504,6 +506,7 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
+
             "integrations": "carbonblackliveresponse",
             "playbookID": "CarbonBlackLiveResponseTest",
             "nightly": true
@@ -521,7 +524,6 @@
             "playbookID": "pyEWS_Test"
         },
         {
-
             "integrations": "Netskope",
             "playbookID": "Netskope Test"
         },
@@ -743,6 +745,7 @@
             "playbookID": "ExifReadTest"
         },
         {
+
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,
