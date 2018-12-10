@@ -100,6 +100,10 @@ schema;configuration_schema:
       type: bool
     hidden:
       type: bool
+    options:
+      type: seq
+      sequence:
+      - type: str
 
 # integration->script->command
 schema;command_schema:
