@@ -221,7 +221,7 @@ script:
         json = build_query(query_fields, path)
         cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        return response
+
         data = response['data'].get('resultIdToElementDataMap')
         if not data:
             return_error('Could not find machine')
@@ -733,7 +733,7 @@ script:
 
     def prevent_file_command():
 
-        file_hash = demisto.args()['hash']
+        file_hash = demisto.args()['md5']
         response = prevent_file(file_hash)
         if response['outcome'] == 'success':
             ec = {
@@ -767,7 +767,7 @@ script:
         return response
 
     def unprevent_file_command():
-        file_hash = demisto.args()['hash']
+        file_hash = demisto.args()['md5']
         response = unprevent_file(file_hash)
         if response['outcome'] == 'success':
             ec = {
@@ -1381,7 +1381,7 @@ script:
     description: Updates malop status
   - name: cybereason-prevent-file
     arguments:
-    - name: hash
+    - name: md5
       required: true
       default: true
       description: Malop process file MD5 to prevent
@@ -1395,7 +1395,7 @@ script:
     description: Prevent malop process file
   - name: cybereason-unprevent-file
     arguments:
-    - name: hash
+    - name: md5
       required: true
       default: true
       description: Malop process file MD5 to unprevent
