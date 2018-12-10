@@ -93,22 +93,57 @@ def get_script_or_integration_id(file_path):
 
     if data_dictionary:
         commonfields = data_dictionary.get('commonfields', {})
-        return commonfields.get('id', ['-', ])
+        return commonfields.get('id', '-')
+
+
+def get_from_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('fromversion', 'beginning')
+
+
+def get_to_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('toversion', 'current')
 
 
 def re_create_id_set():
     id_list = []
     for file in glob.glob(os.path.join('Integrations', '*')):
         id = get_script_or_integration_id(file)
-        id_list.append(id)
+        versioning = {
+            "fromversion": get_from_version(file),
+            "toversion": get_to_version(file)
+        }
+        id_dict = {
+            id: versioning
+        }
+        id_list.append(id_dict)
 
     for file in glob.glob(os.path.join('Playbooks', '*')):
         id = collect_ids(file)
-        id_list.append(id)
+        versioning = {
+            "fromversion": get_from_version(file),
+            "toversion": get_to_version(file)
+        }
+        id_dict = {
+            id: versioning
+        }
+        id_list.append(id_dict)
 
     for file in glob.glob(os.path.join('Scripts', '*')):
         id = get_script_or_integration_id(file)
-        id_list.append(id)
+        versioning = {
+            "fromversion": get_from_version(file),
+            "toversion": get_to_version(file)
+        }
+        id_dict = {
+            id: versioning
+        }
+        id_list.append(id_dict)
 
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(id_list, id_set_file, indent=4)
@@ -133,14 +168,31 @@ def update_id_set(git_sha):
         for file_path in added_files:
             if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
-                id_list.append(id)
+                versioning = {
+                    "fromversion": get_from_version(file_path),
+                    "toversion": get_to_version(file_path)
+                }
+                id_dict = {
+                    id: versioning
+                }
+                id_list.append(id_dict)
                 print("Adding {0} to id_set".format(id))
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
-                id_list.append(id)
+                versioning = {
+                    "fromversion": get_from_version(file_path),
+                    "toversion": get_to_version(file_path)
+                }
+                id_dict = {
+                    id: versioning
+                }
+                id_list.append(id_dict)
                 print("Adding {0} to id_set".format(id))
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(id_list, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
+
+if __name__ == "__main__":
+    re_create_id_set()
