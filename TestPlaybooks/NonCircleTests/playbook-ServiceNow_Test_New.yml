@@ -1,5 +1,5 @@
-id: servicenow_test_new
-version: -1
+id: ad055a1b-edec-4285-8bb6-fbfc558e22e9
+version: 15
 name: ServiceNow Test New
 description: This playbook tests the ServiceNow integration commands.
 starttaskid: "0"
@@ -157,10 +157,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 24017728-cc30-4649-877a-d98e782d37a6
+    taskid: 4977a43f-48f6-416e-836e-3c4bacda978c
     type: regular
     task:
-      id: 24017728-cc30-4649-877a-d98e782d37a6
+      id: 4977a43f-48f6-416e-836e-3c4bacda978c
       version: -1
       name: 'VerifyContextFields: Summary, Assignee'
       scriptName: VerifyContextFields
@@ -175,14 +175,16 @@ tasks:
         simple: ServiceNow.Ticket.Assignee
       field2:
         simple: ServiceNow.Ticket.Summary
-      field3: {}
+      field3:
+        simple: ServiceNow.Ticket.Priority
       field4: {}
       field5: {}
       value1:
         simple: Johnny Doe
       value2:
         simple: Hello World
-      value3: {}
+      value3:
+        simple: 5 - Planning
       value4: {}
       value5: {}
     separatecontext: false
@@ -573,10 +575,10 @@ tasks:
     timertriggers: []
   "29":
     id: "29"
-    taskid: 0290651c-95ac-453c-8ce2-8373e47a10a0
+    taskid: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
     type: regular
     task:
-      id: 0290651c-95ac-453c-8ce2-8373e47a10a0
+      id: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
       scriptName: VerifyContextFields
@@ -591,14 +593,16 @@ tasks:
         simple: ServiceNow.Ticket.[0].Summary
       field2:
         simple: ServiceNow.Ticket.[0].Assignee
-      field3: {}
+      field3:
+        simple: ServiceNow.Ticket.[0].Priority
       field4: {}
       field5: {}
       value1:
         simple: Goodbye Please
       value2:
         simple: New Assignee
-      value3: {}
+      value3:
+        simple: 5 - Planning
       value4: {}
       value5: {}
     separatecontext: false
@@ -1629,10 +1633,10 @@ tasks:
     timertriggers: []
   "67":
     id: "67"
-    taskid: b5fb1279-37be-432c-8b23-46e33a2507c8
+    taskid: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
     type: regular
     task:
-      id: b5fb1279-37be-432c-8b23-46e33a2507c8
+      id: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
       version: -1
       name: VerifyContext
       description: |-
@@ -1648,7 +1652,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Field,Computer,Group,User
+        simple: Field,Computer,Group,User,Table
       path:
         simple: ServiceNow
     separatecontext: false
@@ -1656,7 +1660,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7485
+          "y": 7660
         }
       }
     note: false
@@ -1676,7 +1680,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "67"
+      - "70"
     scriptarguments:
       limit:
         simple: "1"
@@ -1727,12 +1731,41 @@ tasks:
       }
     note: false
     timertriggers: []
+  "70":
+    id: "70"
+    taskid: 563001d5-1061-4bb8-8609-648cda6953db
+    type: regular
+    task:
+      id: 563001d5-1061-4bb8-8609-648cda6953db
+      version: -1
+      name: servicenow-get-table-name
+      description: Get table names by a label to use in commands
+      script: ServiceNow|||servicenow-get-table-name
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      label:
+        simple: Asset
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7530,
+        "height": 7705,
         "width": 810,
         "x": 50,
         "y": 50
