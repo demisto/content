@@ -1,5 +1,5 @@
-id: servicenow_test_new
-version: -1
+id: ad055a1b-edec-4285-8bb6-fbfc558e22e9
+version: 15
 name: ServiceNow Test New
 description: This playbook tests the ServiceNow integration commands.
 starttaskid: "0"
@@ -1633,10 +1633,10 @@ tasks:
     timertriggers: []
   "67":
     id: "67"
-    taskid: b5fb1279-37be-432c-8b23-46e33a2507c8
+    taskid: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
     type: regular
     task:
-      id: b5fb1279-37be-432c-8b23-46e33a2507c8
+      id: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
       version: -1
       name: VerifyContext
       description: |-
@@ -1652,7 +1652,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Field,Computer,Group,User
+        simple: Field,Computer,Group,User,Table
       path:
         simple: ServiceNow
     separatecontext: false
@@ -1660,7 +1660,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7485
+          "y": 7660
         }
       }
     note: false
@@ -1680,7 +1680,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "67"
+      - "70"
     scriptarguments:
       limit:
         simple: "1"
@@ -1731,12 +1731,41 @@ tasks:
       }
     note: false
     timertriggers: []
+  "70":
+    id: "70"
+    taskid: 563001d5-1061-4bb8-8609-648cda6953db
+    type: regular
+    task:
+      id: 563001d5-1061-4bb8-8609-648cda6953db
+      version: -1
+      name: servicenow-get-table-name
+      description: Get table names by a label to use in commands
+      script: ServiceNow|||servicenow-get-table-name
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      label:
+        simple: Asset
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7530,
+        "height": 7705,
         "width": 810,
         "x": 50,
         "y": 50
