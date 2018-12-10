@@ -31,10 +31,10 @@ script:
     /*
         params.code = access_code in new integration
     */
-    var base = 'https://api.box.com/2.0/';
-    var brandData = getBrandContext();
-    var contextData = getIntegrationContext();
-    var currentTime = new Date();
+    var Base = 'https://api.box.com/2.0/';
+    var BrandData = getBrandContext();
+    var ContextData = getIntegrationContext();
+    var CurrentTime = new Date();
     var twoGraceMinute = 2 * 60 * 1000;
 
     function fileInfoKeysCamelized(old_obj){
@@ -75,8 +75,8 @@ script:
 
     var getNewToken = function() {
         var request = {
-            client_id: brandData.client_id,
-            client_secret: brandData.client_secret,
+            client_id: BrandData.client_id,
+            client_secret: BrandData.client_secret,
         };
         request.code = args.access_code ? args.access_code : params.code;
         // if there's no request code, return error
@@ -91,22 +91,22 @@ script:
         }
         // save new token
         newResponse = JSON.parse(response.Body);
-        newResponse.expires_in = newResponse.expires_in * 1000 + currentTime.getTime();
+        newResponse.expires_in = newResponse.expires_in * 1000 + CurrentTime.getTime();
         newResponse.code = args.access_code ? args.access_code : params.code;
         setIntegrationContext(newResponse);
         return newResponse.access_token;
     }
 
     function refreshToken(){
-        contextData = getIntegrationContext();
+        ContextData = getIntegrationContext();
         var request = {
-            client_id: brandData.client_id,
-            client_secret: brandData.client_secret,
+            client_id: BrandData.client_id,
+            client_secret: BrandData.client_secret,
         };
-        contextData.expires_in += twoGraceMinute;
-        setIntegrationContext(contextData);
+        ContextData.expires_in += twoGraceMinute;
+        setIntegrationContext(ContextData);
         // Build renewal request
-        request.refresh_token = contextData.refresh_token;
+        request.refresh_token = ContextData.refresh_token;
         request.grant_type = 'refresh_token';
         // Send it and get new access token
         var response = sendRequest('POST', 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);
@@ -114,9 +114,9 @@ script:
         var isRefreshed = false;
         while (i < 5 && response.StatusCode === 401 && !isRefreshed) {
             // try to refresh 5 times if we got 401
-            contextData = getIntegrationContext();
+            ContextData = getIntegrationContext();
             wait(Math.floor(Math.random() * 10));
-            isRefreshed = contextData.expires_in > (10 * 60 * 1000 + currentTime.getTime());
+            isRefreshed = ContextData.expires_in > (10 * 60 * 1000 + CurrentTime.getTime());
             i++;
         }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
@@ -124,7 +124,7 @@ script:
         }
         // save new token and refresh token
         refreshResponse = JSON.parse(response.Body);
-        refreshResponse.expires_in = refreshResponse.expires_in * 1000 + currentTime.getTime();
+        refreshResponse.expires_in = refreshResponse.expires_in * 1000 + CurrentTime.getTime();
         refreshResponse.code = args.access_code ? args.access_code : params.code;
         setIntegrationContext(refreshResponse);
         return refreshResponse.access_token;
@@ -132,16 +132,16 @@ script:
 
     var getToken = function(forceRefresh) {
         var returnToken = '';
-        contextData = getIntegrationContext();
-        if (!Object.keys(contextData).length) {
+        ContextData = getIntegrationContext();
+        if (!Object.keys(ContextData).length) {
             // Build get initial tokens request
             returnToken = getNewToken();
-        } else if (forceRefresh || (contextData.expiry && (contextData.expires_in - twoGraceMinute > currentTime.getTime()))) {
+        } else if (forceRefresh || (ContextData.expiry && (ContextData.expires_in - twoGraceMinute > CurrentTime.getTime()))) {
             // Give this thread two minutes before trying to get a new token
             returnToken = refreshToken();
         } else {
             // context exist and valid - return token from context
-            returnToken = contextData.access_token ;
+            returnToken = ContextData.access_token ;
         }
         return returnToken;
     }
@@ -298,13 +298,13 @@ script:
         var body = '';
         var url = getURL(command, args);
         query = encodeToURLQuery(args);
-        var response = sendRequest(method, base + url + query, body, token, false);
+        var response = sendRequest(method, Base + url + query, body, token, false);
         var i = 0;
         while (i < 5 && response.StatusCode === 401 || response.StatusCode === 400) {
             // try to refresh 5 times if we got 401
             token = getToken(true);
             wait(Math.floor(Math.random() * 10));
-            response = sendRequest(method, base + url + query, body, token, url, true);
+            response = sendRequest(method, Base + url + query, body, token, url, true);
                 i++;
         }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
@@ -322,20 +322,18 @@ script:
         var body = '';
         var url = getURL(command, args);
         query = encodeToURLQuery(args);
-        var response = sendRequest(method, base + url + query, body, token, false);
+        var response = sendRequest(method, Base + url + query, body, token, false);
         var i = 0;
         while (i < 5 && response.StatusCode === 401 || response.StatusCode === 400) {
             // try to refresh 5 times if we got 401
             token = getToken(true);
             wait(Math.floor(Math.random() * 10));
-            response = sendRequest(method, base + url + query, body, token, url, true);
+            response = sendRequest(method, Base + url + query, body, token, url, true);
                 i++;
         }
         if (response.StatusCode < 200 || response.StatusCode >= 300) {
                throw 'Failed to ' + command + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
         }
-        var md = '';
-        var ec = null;
         return {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};
     }
 
@@ -347,7 +345,7 @@ script:
         case 'box_initiate':
             var access_code = args.access_code;
             token = getToken();
-            var testResponse = sendRequest('GET', base + urlDict['box_get_current_user'], undefined, token, 'Test');
+            var testResponse = sendRequest('GET', Base + urlDict['box_get_current_user'], undefined, token, 'Test');
             if (testResponse.StatusCode === 200) {
                 return 'Box initialized successfully';
             }
@@ -364,13 +362,14 @@ script:
             } else {
                 body = encodeBody(command, args);
             }
-            var response = sendRequest(method, base + url + query, body, token, url);
+            var response = sendRequest(method, Base + url + query, body, token, url);
             var i = 0;
             while (i < 5 && response.StatusCode === 401) {
                 // try to refresh 5 times if we got 401
                 token = getToken(true);
                 wait(Math.floor(Math.random() * 10));
-                response = sendRequest(method, base + url + query, body, token, url);
+                response = sendRequest(method, Base + url + query, body, token, url);
+                response = sendRequest(method, Base + url + query, body, token, url);
                 i++;
             }
             if (response.StatusCode < 200 || response.StatusCode >= 300) {
@@ -566,14 +565,24 @@ script:
       the root folder of a Box account (Currently only moving of the root folder (0)
       is supported)
   - name: box_files_get
+    description: getting a file from private Box storage
     arguments:
     - name: file_id
       required: true
       description: File's id
     outputs:
-    - contextPath: $(File)
-      description: Output path of file
-    description: getting a file from private Box storage
+    - contextPath: File.Name
+      description: Filename
+    - contextPath: File.Type
+      description: File type
+    - contextPath: File.Size
+      description: File size
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
   - name: box_initiate
     arguments:
     - name: access_code
