@@ -4,11 +4,32 @@ commonfields:
 name: ReadPDFFile
 script: |-
   import pdfx
+  from pdfminer.psparser import PSEOF
   import sys
   reload(sys)
   sys.setdefaultencoding('utf-8')
 
   entryID = demisto.args()['entryID']
+
+  def mark_suspicious():
+      """Missing EOF, file may be corrupted or suspicious file"""
+
+      dbot = {
+          'DBotScore(val.Indicator == obj.Indicator)':
+          {
+              'Indicator': entryID,
+              'Type': 'file',
+              'Vendor': 'PDFx',
+              'Score': 2
+          }
+      }
+      demisto.results({
+          'EntryContext': dbot,
+          'Type': entryTypes["error"],
+          'ContentsFormat': formats["text"],
+          'Contents': "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entryID),
+          })
+
 
   #File entity
   pdfFile = {
@@ -25,13 +46,22 @@ script: |-
       maxFileSize = 1024**2
   res = demisto.executeCommand('getFilePath', {'id': entryID})
   if isError(res[0]):
-      demisto.results(resp)
+      demisto.results(res)
   else:
       path = demisto.get(res[0],'Contents.path')
       if path:
-          pdf = pdfx.PDFx(path)
+          try:
+              pdf = pdfx.PDFx(path)
+          except PSEOF:
+              mark_suspicious()
+              sys.exit(0)
+
           if not pdf:
-              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Could not load pdf file in EntryID {0}".format(entryID) } )
+              demisto.results({
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents" : "Could not load pdf file in EntryID {0}".format(entryID)
+              })
               sys.exit(0)
 
           metadata = pdf.get_metadata()
@@ -75,7 +105,7 @@ tags:
 - Utility
 - ingestion
 comment: Load the contents and metadata of a PDF file into context.
-system: true
+enabled: true
 args:
 - name: entryID
   required: true
@@ -83,8 +113,6 @@ args:
   description: War room entryID of the file to read.
 - name: maxFileSize
   description: Maximal file size to load, in bytes. Default is 1MB.
-scripttarget: 0
-dockerimage: demisto/pdfx
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
@@ -108,3 +136,8 @@ outputs:
   description: The PDF File CreationDate
 - contextPath: File.Pages
   description: Number of pages in PDF file
+scripttarget: 0
+runonce: false
+dockerimage: demisto/pdfx
+tests:
+  - ReadPDFFile-Test

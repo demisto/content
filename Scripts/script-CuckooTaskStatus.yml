@@ -29,6 +29,5 @@ dependson:
   must:
   - cuckoo-view-task
 timeout: 0s
-releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

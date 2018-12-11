@@ -12,11 +12,12 @@ import re
 import os
 import sys
 import json
+import argparse
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
-NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
+NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
@@ -70,6 +71,15 @@ def checked_type(file_path, regex_list):
             return True
 
     return False
+
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def get_modified_files(files_string):
@@ -211,13 +221,12 @@ def find_tests_for_modified_files(modified_files):
 
     tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
-    test_names.append(NO_TESTS_FORMAT)
     test_names.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_names:
+            if test in test_names or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
                         re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
@@ -228,6 +237,7 @@ def find_tests_for_modified_files(modified_files):
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
+
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
@@ -238,6 +248,44 @@ def find_tests_for_modified_files(modified_files):
         message = "You've failed to provide tests for:\n{0}".format(test_string)
         print_color(message, LOG_COLORS.RED)
         sys.exit(1)
+
+    return tests
+
+
+def get_test_from_conf():
+    tests = set([])
+    changed = set([])
+    change_string = run_git_command("git diff origin/master Tests/conf.json")
+    added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
+    if added_groups:
+        for group in added_groups:
+            changed.add(group[1])
+
+    deleted_groups = re.findall('(\-[ ]+")(.*)(":)', change_string)
+    if deleted_groups:
+        for group in deleted_groups:
+            changed.add(group[1])
+
+    with open("./Tests/conf.json", 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    conf_tests = conf['tests']
+    for t in conf_tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+        if playbook_id in changed:
+            tests.add(playbook_id)
+            continue
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        for integration in integrations_conf:
+            if integration in changed:
+                tests.add(playbook_id)
+
+    if not tests:
+        tests.add('changed skip section')
 
     return tests
 
@@ -253,7 +301,10 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
         if test not in tests:
             tests.add(test)
 
-    if all_tests or (is_conf_json and not tests):
+    if is_conf_json:
+        tests = tests.union(get_test_from_conf())
+
+    if all_tests:
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
@@ -263,16 +314,22 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
     return tests
 
 
-def create_test_file():
+def create_test_file(is_nightly):
     """Create a file containing all the tests we need to run for the CI"""
-    branches = run_git_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
-    branch_name = branch_name_reg.group(1)
-
-    print("Getting changed files from the branch: {0}".format(branch_name))
     tests_string = ''
-    if branch_name != 'master':
-        files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+    if not is_nightly:
+        branches = run_git_command("git branch")
+        branch_name_reg = re.search("\* (.*)", branches)
+        branch_name = branch_name_reg.group(1)
+
+        print("Getting changed files from the branch: {0}".format(branch_name))
+        if branch_name != 'master':
+            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+        else:
+            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = commit_string.replace("'", "")
+            last_commit, second_last_commit = commit_string.split()
+            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
         tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json)
@@ -289,10 +346,14 @@ def create_test_file():
 
 
 if __name__ == "__main__":
-   print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
+    print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
 
-   # Create test file based only on committed files
-   create_test_file()
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
+    options = parser.parse_args()
 
-   print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
-   sys.exit(0)
+    # Create test file based only on committed files
+    create_test_file(options.nightly)
+
+    print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
+    sys.exit(0)

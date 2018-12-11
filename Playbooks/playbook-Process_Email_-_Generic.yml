@@ -5,7 +5,6 @@ fromversion: 4.0.0
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -55,6 +54,7 @@ tasks:
           v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
           0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
           0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -120,6 +120,7 @@ tasks:
           v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
           0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
           0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+    reputationcalc: 2
     results:
     - AttachmentName
     separatecontext: false
@@ -193,6 +194,7 @@ tasks:
           accessor: HTML
       type: {}
       width: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -633,8 +635,14 @@ tasks:
     task:
       id: e6915e5d-bdca-4d59-8636-2e65b2e680e1
       version: -1
-      name: Get Original Message - Generic
-      description: ""
+      name: Get Original Email - Generic
+      description: |-
+        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+        You must have the necessary permissions in your email service to execute global search.
+
+        - EWS: eDiscovery
+        - Gmail: Google Apps Domain-Wide Delegation of Authority
       playbookName: Get Original Email - Generic
       type: playbook
       iscommand: false
@@ -810,5 +818,6 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

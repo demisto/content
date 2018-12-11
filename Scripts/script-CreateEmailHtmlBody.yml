@@ -11,15 +11,15 @@ script: |
   // get a specific label from incident labels
   var getLabel = function(incident,path) {
       label = path.split('.')[2];
-      for (var i=0;i<incident.labels.length;i++) {
-          if (incident.labels[i].type==label) {
+      for (var i=0; i<incident.labels.length; i++) {
+          if (incident.labels[i].type == label) {
               return incident.labels[i].value;
           }
       }
       return null;
   };
 
-  var res = executeCommand("getList", {"listName":args.listTemplate});
+  var res = executeCommand("getList", {"listName": args.listTemplate});
 
   if (res[0].Type == entryTypes.error) {
       return res;
@@ -29,6 +29,7 @@ script: |
   var html = res[0].Contents;
   var reg = /\${(.+?)}/g;
   var map = {};
+
   while (found = reg.exec(html)) {
       var path = found[1];
 
@@ -36,14 +37,16 @@ script: |
           map[path] = getLabel(incidents[0], path);
       } else if (path.indexOf('incident.') === 0) {
           map[path] = dq({'incident': incidents[0]}, path);
+          // check if this path is actually in custom fields
+          if (!map[path]) {
+              var customFieldPath = path.replace('incident.', 'incident.CustomFields.');
+              map[path] = dq({'incident': incidents[0]}, customFieldPath);
+          }
       } else if (path.indexOf('object.') === 0) {
           var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
           map[path] = dq({'object': obj}, path);
       } else {
           map[path] = dq(invContext, path);
-      }
-      if (!map[path]) {
-          map[path]=false;
       }
   }
 
@@ -51,12 +54,21 @@ script: |
   for (var path in map) {
       // if value found replace. Otherwise will leave placeholder
       if (map[path]) {
-          html = html.replaceAll('${'+path+'}',map[path]);
+          html = html.replaceAll('${' + path + '}', map[path]);
+      } else if (args.removeNotFound === 'yes') {
+          html = html.replaceAll('${' + path + '}', '');
       }
   }
 
+  // setting to contesxt so it override an oder entry if there is (using EntryContext in the returned object only append)
   setContext(args.key,html);
-  return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: {htmlBody:html}, HumanReadable: 'htmlBody set to context key ' + args.key } ;
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: {htmlBody: html},
+      HumanReadable: 'htmlBody set to context key ' + args.key
+  };
 type: javascript
 tags:
 - email
@@ -83,7 +95,18 @@ args:
 - name: object
   description: Values object provided as stringified JSON
   isArray: true
+- name: removeNotFound
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: if true, replace path not found with empty string, otherwise leave
+    as is
+  defaultValue: "no"
 outputs:
 - contextPath: htmlBody
   description: HTML Body
 scripttarget: 0
+runonce: false
+tests:
+- CreateEmailHtmlBody_test_pb

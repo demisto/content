@@ -18,6 +18,5 @@ dependson:
   must:
   - cuckoo-get-task-report
 timeout: 0s
-releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

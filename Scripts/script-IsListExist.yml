@@ -20,6 +20,5 @@ args:
   description: 'List name to check '
 scripttarget: 0
 runonce: false
-releaseNotes: "add new script"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

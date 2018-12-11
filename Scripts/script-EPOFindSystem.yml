@@ -95,4 +95,3 @@ timeout: 0s
 dependson:
   must:
   - epo-command
-releaseNotes: Better handling of error scenarios

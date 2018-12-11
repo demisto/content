@@ -277,6 +277,5 @@ script:
       description: The array of aggregate records
     description: Search SumoLogic for matching records to the given query
   isfetch: true
-releaseNotes: "Added support for equal sign in query and headers arguments to search command"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

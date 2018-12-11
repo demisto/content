@@ -1,0 +1,1020 @@
+commonfields:
+  id: Windows Defender Advanced Threat Protection
+  version: -1
+name: Windows Defender Advanced Threat Protection
+display: Windows Defender Advanced Threat Protection
+category: Endpoint
+image: data:image/png;base64,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
+description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
+  for preventative protection, post-breach detection, automated investigation, and
+  response.
+configuration:
+- display: Host URL (e.g. https://api.securitycenter.windows.com)
+  name: url
+  defaultvalue: https://api.securitycenter.windows.com
+  type: 0
+  required: true
+- display: Access Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: 'Status to filter out alerts for fetching as incidents. The property values
+    are: New,InProgress,Resolved (Comma separated values supported, e.g. New,Resolved)'
+  name: fetch_status
+  defaultvalue: New
+  type: 0
+  required: false
+- display: 'Severity to filter out alerts for fetching as incidents. The property
+    values are: Informational,Low,Medium,High (Comma separated values supported, e.g.
+    Medium,High)'
+  name: fetch_severity
+  defaultvalue: Informational,Low,Medium,High
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    import requests
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+
+    SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
+    BASE_URL = SERVER + '/api'
+    TOKEN = demisto.params()['token']
+    USE_SSL = not demisto.params().get('unsecure', False)
+    FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
+    FETCH_STATUS = demisto.params().get('fetch_status').split(',')
+
+    ''' HELPER FUNCTIONS '''
+
+    def http_request(method, url_suffix, json=None, params=None):
+
+        r = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            json=json,
+            headers={
+                'Authorization': 'Bearer ' + TOKEN,
+                'Content-Type': 'application/json'
+            }
+        )
+        if r.status_code not in {200, 201}:
+
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, r.reason))
+        if not r.text:
+            return {}
+        return r.json()
+
+    def alert_to_incident(alert):
+        incident = {}
+        incident['rawJSON'] = json.dumps(alert)
+        incident['name'] = 'Windows Defender ATP Alert ' + alert['id']
+        return incident
+
+    def capitalize_first_letter(string):
+        return string[:1].upper() + string[1:]
+
+    ''' FUNCTIONS '''
+
+    def isolate_machine_command():
+
+        machine_id = demisto.args().get('machine_id')
+        comment = demisto.args().get('comment')
+        isolation_type = demisto.args().get('isolation_type')
+        response = isolate_machine(machine_id, comment, isolation_type)
+        ec = {
+            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': {
+                'ID': machine_id,
+                'Isolation': {
+                    'Isolated': True,
+                    'Requestor': response['requestor'],
+                    'RequestorComment': response['requestorComment']
+                }
+            }
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'The isolation request has been submitted successfully',
+            'EntryContext': ec
+        }
+        demisto.results(entry)
+
+    def isolate_machine(machine_id, comment, isolation_type):
+
+        cmd_url = '/machines/{}/isolate'.format(machine_id)
+        json = {
+            'Comment': comment
+        }
+        if isolation_type:
+            json['IsolationType'] = isolation_type
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+    def unisolate_machine_command():
+
+        machine_id = demisto.args().get('machine_id')
+        comment = demisto.args().get('comment')
+        response = unisolate_machine(machine_id, comment)
+        ec = {
+            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': {
+                'ID': machine_id,
+                'Isolation': {
+                    'Isolated': False,
+                    'Requestor': response['requestor'],
+                    'RequestorComment': response['requestorComment']
+                }
+            }
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'The request to stop the isolation has been submitted successfully',
+            'EntryContext': ec
+        }
+        demisto.results(entry)
+
+    def unisolate_machine(machine_id, comment):
+
+        cmd_url = '/machines/{}/unisolate'.format(machine_id)
+        json = {
+            'Comment': comment
+        }
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+    def get_machines_command():
+
+        machines = get_machines()['value']
+
+        hostname = demisto.args().get('hostname')
+        ip = demisto.args().get('ip')
+        risk_score = demisto.args().get('risk_score')
+        health_status = demisto.args().get('health_status')
+
+        output = []
+        endpoint_context = []
+
+        for machine in machines:
+            computer_dns_name = machine['computerDnsName']
+            last_external_ip = machine['lastExternalIpAddress']
+            machine_risk_score = machine['riskScore']
+            machine_health_status = machine['healthStatus']
+            if (hostname and hostname != computer_dns_name) or (ip and ip != last_external_ip) or (risk_score and risk_score != machine_risk_score) or (health_status and health_status != machine_health_status):
+                continue
+            current_machine_output = {
+                'ComputerDNSName': computer_dns_name,
+                'ID': machine['id'],
+                'AgentVersion': machine['agentVersion'],
+                'FirstSeen': machine['firstSeen'],
+                'LastSeen': machine['lastSeen'],
+                'HealthStatus': machine_health_status,
+                'IsAADJoined': machine['isAadJoined'],
+                'LastExternalIPAddress': last_external_ip,
+                'LastIPAddress': machine['lastIpAddress'],
+                'Tags': machine['machineTags'],
+                'OSBuild': machine['osBuild'],
+                'OSPlatform': machine['osPlatform'],
+                'RBACGroupID': machine['rbacGroupId'],
+                'RiskScore': machine_risk_score
+            }
+            current_endpoint_output = {
+                'Hostname': machine['computerDnsName'],
+                'IPAddress': machine['lastExternalIpAddress'],
+                'OS': machine['osPlatform']
+            }
+            rbac_group_name = machine.get('rbacGroupName')
+            if rbac_group_name:
+                current_machine_output['RBACGroupName'] = rbac_group_name
+            aad_device_id = machine.get('aadDeviceId')
+            if aad_device_id:
+                current_machine_output['AADDeviceID'] = aad_device_id
+            os_version = machine.get('osVersion')
+            if os_version:
+                current_machine_output['OSVersion'] = os_version
+                current_endpoint_output['OSVersion'] = os_version
+            output.append(current_machine_output)
+            endpoint_context.append(current_endpoint_output)
+
+        if output:
+            ec = {
+                'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
+            }
+
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': machines,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Windows Defender ATP machines', output, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found'
+        demisto.results(entry)
+
+    def get_machines():
+
+        cmd_url = '/machines'
+        response = http_request('GET', cmd_url)
+        return response
+
+    def get_file_related_machines_command():
+
+        file = demisto.args()['file']
+        machines = get_file_related_machines(file)['value']
+        if machines:
+            output = []
+            endpoint_context = []
+            for machine in machines:
+                current_machine_output = {
+                    'ComputerDNSName': machine['computerDnsName'],
+                    'ID': machine['id'],
+                    'AgentVersion': machine['agentVersion'],
+                    'FirstSeen': machine['firstSeen'],
+                    'LastSeen': machine['lastSeen'],
+                    'HealthStatus': machine['healthStatus'],
+                    'IsAADJoined': machine['isAadJoined'],
+                    'LastExternalIPAddress': machine['lastExternalIpAddress'],
+                    'LastIPAddress': machine['lastIpAddress'],
+                    'Tags': machine['machineTags'],
+                    'OSBuild': machine['osBuild'],
+                    'OSPlatform': machine['osPlatform'],
+                    'RBACGroupID': machine['rbacGroupId'],
+                    'RiskScore': machine['riskScore'],
+                    'RelatedFile': file
+                }
+                current_endpoint_output = {
+                    'Hostname': machine['computerDnsName'],
+                    'IPAddress': machine['lastExternalIpAddress'],
+                    'OS': machine['osPlatform']
+                }
+                rbac_group_name = machine.get('rbacGroupName')
+                if rbac_group_name:
+                    current_machine_output['RBACGroupName'] = rbac_group_name
+                aad_device_id = machine.get('aadDeviceId')
+                if aad_device_id:
+                    current_machine_output['AADDeviceID'] = aad_device_id
+                os_version = machine.get('osVersion')
+                if os_version:
+                    current_machine_output['OSVersion'] = os_version
+                    current_endpoint_output['OSVersion'] = os_version
+                output.append(current_machine_output)
+                endpoint_context.append(current_endpoint_output)
+
+            ec = {
+                'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
+            }
+
+            title = 'Windows Defender ATP machines related to file {}'.format(file)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': machines,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, output, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found'
+        demisto.results(entry)
+
+    def get_file_related_machines(file):
+
+        cmd_url = '/files/{}/machines'.format(file)
+        response = http_request('GET', cmd_url)
+        return response
+
+    def get_machine_details_command():
+
+        machine_id = demisto.args()['machine_id']
+        machine = get_machine_details(machine_id)
+
+        if machine:
+            output = []
+            endpoint_context = []
+            current_machine_output = {
+                'ComputerDNSName': machine['computerDnsName'],
+                'ID': machine['id'],
+                'AgentVersion': machine['agentVersion'],
+                'FirstSeen': machine['firstSeen'],
+                'LastSeen': machine['lastSeen'],
+                'HealthStatus': machine['healthStatus'],
+                'IsAADJoined': machine['isAadJoined'],
+                'LastExternalIPAddress': machine['lastExternalIpAddress'],
+                'LastIPAddress': machine['lastIpAddress'],
+                'Tags': machine['machineTags'],
+                'OSBuild': machine['osBuild'],
+                'OSPlatform': machine['osPlatform'],
+                'RBACGroupID': machine['rbacGroupId'],
+                'RiskScore': machine['riskScore']
+            }
+            current_endpoint_output = {
+                'Hostname': machine['computerDnsName'],
+                'IPAddress': machine['lastExternalIpAddress'],
+                'OS': machine['osPlatform']
+            }
+            rbac_group_name = machine.get('rbacGroupName')
+            if rbac_group_name:
+                current_machine_output['RBACGroupName'] = rbac_group_name
+            aad_device_id = machine.get('aadDeviceId')
+            if aad_device_id:
+                current_machine_output['AADDeviceID'] = aad_device_id
+            os_version = machine.get('osVersion')
+            if os_version:
+                current_machine_output['OSVersion'] = os_version
+                current_endpoint_output['OSVersion'] = os_version
+            output.append(current_machine_output)
+            endpoint_context.append(current_endpoint_output)
+            ec = {
+                'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
+            }
+
+            title = 'Windows Defender ATP machine {} details'.format(machine_id)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': machine,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, output, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found'
+        demisto.results(entry)
+
+    def get_machine_details(machine_id):
+
+        cmd_url = '/machines/{}'.format(machine_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+    def block_file_command():
+
+        file_sha1 = demisto.args().get('sha1')
+        comment = demisto.args().get('comment')
+        title = demisto.args().get('title')
+        expiration_time = demisto.args().get('expiration_time')
+        severity = demisto.args().get('severity')
+        recommended_actions = demisto.args().get('recommended_actions')
+
+        response = block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions)
+
+    def block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions):
+
+        cmd_url = '/tiindicators'
+        json = {
+            'indicator': file_sha1,
+            'indicatorType': 'FileSha1',
+            'action': 'AlertAndBlock',
+            'title': title,
+            'expirationTime': expiration_time,
+            'severity': severity,
+            'description': comment,
+            'recommendedActions': recommended_actions
+        }
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+    def get_user_related_machines_command():
+
+        user_id = demisto.args()['user_id']
+
+        machines = get_user_related_machines(user_id)['value']
+
+        if machines:
+            output = []
+            endpoint_context = []
+            for machine in machines:
+                current_machine_output = {
+                    'ComputerDNSName': machine['computerDnsName'],
+                    'ID': machine['id'],
+                    'AgentVersion': machine['agentVersion'],
+                    'FirstSeen': machine['firstSeen'],
+                    'LastSeen': machine['lastSeen'],
+                    'HealthStatus': machine['healthStatus'],
+                    'IsAADJoined': machine['isAadJoined'],
+                    'LastExternalIPAddress': machine['lastExternalIpAddress'],
+                    'LastIPAddress': machine['lastIpAddress'],
+                    'Tags': machine['machineTags'],
+                    'OSBuild': machine['osBuild'],
+                    'OSPlatform': machine['osPlatform'],
+                    'RBACGroupID': machine['rbacGroupId'],
+                    'RiskScore': machine['riskScore'],
+                    'RelatedFile': file
+                }
+                current_endpoint_output = {
+                    'Hostname': machine['computerDnsName'],
+                    'IPAddress': machine['lastExternalIpAddress'],
+                    'OS': machine['osPlatform']
+                }
+                rbac_group_name = machine.get('rbacGroupName')
+                if rbac_group_name:
+                    current_machine_output['RBACGroupName'] = rbac_group_name
+                aad_device_id = machine.get('aadDeviceId')
+                if aad_device_id:
+                    current_machine_output['AADDeviceID'] = aad_device_id
+                os_version = machine.get('osVersion')
+                if os_version:
+                    current_machine_output['OSVersion'] = os_version
+                    current_endpoint_output['OSVersion'] = os_version
+                output.append(current_machine_output)
+                endpoint_context.append(current_endpoint_output)
+            ec = {
+                'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
+            }
+            title = 'Windows Defender ATP machines related to file {}'.format(file)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': machines,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, output, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found'
+        demisto.results(entry)
+
+    def get_user_related_machines(user_id):
+
+        cmd_url = '/users/{}/machines'.format(user_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+    def stop_and_quarantine_file_command():
+
+        machine_id = demisto.args().get('machine_id')
+        file_sha1 = demisto.args().get('file')
+        comment = demisto.args().get('comment')
+
+        response = stop_and_quarantine_file(machine_id, file_sha1, comment)
+
+    def stop_and_quarantine_file(machine_id, file_sha1, comment):
+
+        cmd_url = '/machines/{}/stopAndQuarantineFile'.format(machine_id)
+        json = {
+            'Comment': comment,
+            'Sha1': file_sha1
+        }
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+    def run_antivirus_scan_command():
+
+        machine_id = demisto.args().get('machine_id')
+        scan_type = demisto.args().get('scan_type')
+        comment = demisto.args().get('comment')
+
+        response = run_antivirus_scan(machine_id, comment, scan_type)
+
+        demisto.results('Antivirus scan successfully triggered')
+
+    def run_antivirus_scan(machine_id, comment, scan_type):
+
+        cmd_url = '/machines/{}/runAntiVirusScan'.format(machine_id)
+        json = {
+            'Comment': comment,
+            'ScanType': scan_type
+        }
+        response = http_request('POST', cmd_url, json=json)
+        return response
+
+    def list_alerts_command():
+
+        alerts = list_alerts()['value']
+
+        severity = demisto.args().get('severity')
+        status = demisto.args().get('status')
+
+        output = []
+        for alert in alerts:
+            alert_severity = alert['severity']
+            alert_status = alert['status']
+            if (severity and severity != alert_severity) or (status and status != alert_status):
+                continue
+            current_alert_output = {}
+            for key, value in alert.iteritems():
+                if value or value is False:
+                    current_alert_output[capitalize_first_letter(key).replace('Id', 'ID')] = value
+            output.append(current_alert_output)
+
+        if output:
+            ec = {
+                'MicrosoftATP.Alert(val.ID && val.ID === obj.ID)': output
+            }
+
+            title = 'Windows Defender ATP alerts'
+
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': alerts,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, output, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found'
+        demisto.results(entry)
+
+    def list_alerts():
+        cmd_url = '/alerts'
+        response = http_request('GET', cmd_url)
+        return response
+
+    def get_alert_related_domains(alert_id):
+        cmd_url = '/alerts/{}/domains'.format(alert_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+    def get_alert_related_files(alert_id):
+        cmd_url = '/alerts/{}/files'.format(alert_id)
+        response = http_request('GET', cmd_url)['value']
+        return response
+
+    def get_alert_related_ips(alert_id):
+        cmd_url = '/alerts/{}/ips'.format(alert_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+    def fetch_incidents():
+
+        last_run = demisto.getLastRun()
+        if last_run and last_run['last_alert_fetched_time']:
+            last_alert_fetched_time = datetime.strptime(last_run['last_alert_fetched_time'], '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            last_alert_fetched_time = datetime.now() - timedelta(days=300)
+
+        latest_creation_time = last_alert_fetched_time
+
+        alerts = list_alerts()['value']
+
+        incidents = []
+
+        for alert in alerts:
+            alert_creation_time = datetime.strptime(alert['alertCreationTime'][:-2], '%Y-%m-%dT%H:%M:%S.%f') # Removing 'Z' from timestamp and converting to datetime
+            alert_status = alert['status']
+            alert_severity = alert['severity']
+            if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and alert_severity in FETCH_SEVERITY:
+                alert_id = alert['id']
+                alert['RelatedFiles'] = get_alert_related_files(alert_id)
+                #alert['RelatedDomains'] = get_alert_related_domains(alert_id)
+                #alert['RelatedIPs'] = get_alert_related_ips(alert_id)
+                incident = alert_to_incident(alert)
+                incidents.append(incident)
+                if alert_creation_time > latest_creation_time:
+                    latest_creation_time = alert_creation_time
+
+        demisto.setLastRun({
+            'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f')
+        })
+
+        demisto.incidents(incidents)
+
+
+    def test_function():
+        cmd_url = '/alerts?$top=1'
+        response = http_request('GET', cmd_url)
+        demisto.results('ok')
+
+    ''' EXECUTION CODE '''
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            test_function()
+
+        elif demisto.command() == 'fetch-incidents': # 404
+            fetch_incidents()
+
+        elif demisto.command() == 'microsoft-atp-isolate-machine':
+            isolate_machine_command()
+
+        elif demisto.command() == 'microsoft-atp-unisolate-machine':
+            unisolate_machine_command()
+
+        elif demisto.command() == 'microsoft-atp-get-machines':
+            get_machines_command()
+
+        elif demisto.command() == 'microsoft-atp-get-file-related-machines':
+            get_file_related_machines_command()
+
+        elif demisto.command() == 'microsoft-atp-get-machine-details':
+            get_machine_details_command()
+
+        elif demisto.command() == 'microsoft-atp-block-file': # 404 - new file
+            block_file_command()
+
+        elif demisto.command() == 'microsoft-atp-get-user-related-machines': # 404 - checking
+            get_user_related_machines_command()
+
+        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file': # 500 - does not exist yet - 2 weeks
+            stop_and_quarantine_file_command()
+
+        elif demisto.command() == 'microsoft-atp-run-antivirus-scan': # 400
+            run_antivirus_scan_command()
+
+        elif demisto.command() == 'microsoft-atp-list-alerts':
+            list_alerts_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: microsoft-atp-isolate-machine
+    arguments:
+    - name: machine_id
+      required: true
+      default: true
+      description: Machine ID to be used for isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+    - name: comment
+      required: true
+      description: Comment to associate with the action.
+    - name: isolation_type
+      auto: PREDEFINED
+      predefined:
+      - Full
+      - Selective
+      description: Full isolation or selective isolation (Restrict only limited set
+        of applications from accessing the network)
+    outputs:
+    - contextPath: MicrosoftATP.Machine.Isolation.Requestor
+      description: Machine isolation requestor
+      type: string
+    - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
+      description: Machine isolation requestor comment
+      type: string
+    - contextPath: MicrosoftATP.Machine.ID
+      description: Machine ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.Isolation.Isolated
+      description: True if machine is isolated, else false
+      type: boolean
+    description: Isolates a machine from accessing external network.
+    execution: true
+  - name: microsoft-atp-unisolate-machine
+    arguments:
+    - name: machine_id
+      required: true
+      description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+    - name: comment
+      required: true
+      description: Comment to associate with the action.
+    outputs:
+    - contextPath: MicrosoftATP.Machine.Isolation.Requestor
+      description: Machine un-isolation requestor
+      type: string
+    - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
+      description: Machine un-isolation requestor comment
+      type: string
+    - contextPath: MicrosoftATP.Machine.ID
+      description: Machine ID
+    description: Undo an isolation of a machine
+  - name: microsoft-atp-get-machines
+    arguments:
+    - name: hostname
+      description: Computer DNS name
+    - name: ip
+      description: Machine last external IP address
+    - name: risk_score
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Machine risk score
+    - name: health_status
+      auto: PREDEFINED
+      predefined:
+      - Active
+      - Inactive
+      description: Machine health status
+    outputs:
+    - contextPath: MicrosoftATP.Machine.ID
+      description: Machine ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      description: Machine DNS name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AgentVersion
+      description: Machine agent version
+      type: string
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      description: Machine first seen date
+      type: date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      description: Machine last seen date
+      type: string
+    - contextPath: MicrosoftATP.Machine.HelathStatus
+      description: Machine health status
+      type: string
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      description: True if machine is AAD joined, else false
+      type: boolean
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      description: Machine last external IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.Tags
+      description: Machine tags
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      description: Machine OS build
+      type: number
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      description: Machine OS platform
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      description: Machine RBAC group ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      description: Machine risk score
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      description: Machine RBAC group name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      description: Machine AAD device ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSVersion
+      description: Machine OS version
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Machine DNS name
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Machine OS platform
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Machine OS version
+      type: string
+    description: Retrieves a collection of machines that have communicated with WDATP
+      cloud on the last 30 days
+  - name: microsoft-atp-get-file-related-machines
+    arguments:
+    - name: file
+      required: true
+      description: File hash to get machines related to
+    outputs:
+    - contextPath: MicrosoftATP.Machine.ID
+      description: Machine ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      description: Machine DNS name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AgentVersion
+      description: Machine agent version
+      type: string
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      description: Machine first seen date
+      type: date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      description: Machine last seen date
+      type: string
+    - contextPath: MicrosoftATP.Machine.HelathStatus
+      description: Machine health status
+      type: string
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      description: True if machine is AAD joined, else false
+      type: boolean
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      description: Machine last external IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.Tags
+      description: Machine tags
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      description: Machine OS build
+      type: number
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      description: Machine OS platform
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      description: Machine RBAC group ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      description: Machine risk score
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      description: Machine RBAC group name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      description: Machine AAD device ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSVersion
+      description: Machine OS version
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Machine DNS name
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Machine OS platform
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Machine OS version
+      type: string
+    - contextPath: MicrosoftATP.Machine.RelatedFile
+      description: Machine related file hash
+      type: string
+    description: Get a collection of machines related to a given file hash.
+  - name: microsoft-atp-get-machine-details
+    arguments:
+    - name: machine_id
+      required: true
+      default: true
+      description: Machine id to be used for getting the machine details, e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+    outputs:
+    - contextPath: MicrosoftATP.Machine.ID
+      description: Machine ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      description: Machine DNS name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AgentVersion
+      description: Machine agent version
+      type: string
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      description: Machine first seen date
+      type: date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      description: Machine last seen date
+      type: string
+    - contextPath: MicrosoftATP.Machine.HelathStatus
+      description: Machine health status
+      type: string
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      description: True if machine is AAD joined, else false
+      type: boolean
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      description: Machine last external IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: MicrosoftATP.Machine.Tags
+      description: Machine tags
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      description: Machine OS build
+      type: number
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      description: Machine OS platform
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      description: Machine RBAC group ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      description: Machine risk score
+      type: string
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      description: Machine RBAC group name
+      type: string
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      description: Machine AAD device ID
+      type: string
+    - contextPath: MicrosoftATP.Machine.OSVersion
+      description: Machine OS version
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Machine DNS name
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: Machine last IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Machine OS platform
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Machine OS version
+      type: string
+    description: Get a machine details by its identity.
+  - name: microsoft-atp-run-antivirus-scan
+    arguments:
+    - name: machine_id
+      required: true
+      description: Machine ID to run the scan on
+    - name: comment
+      required: true
+      description: Comment to associate with the action
+    - name: scan_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Quick
+      - Full
+      description: Defines the type of the scan
+    description: Initiate Windows Defender Antivirus scan on a machine
+  - name: microsoft-atp-list-alerts
+    arguments:
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Medium
+      - Low
+      - Informational
+      description: Alert severity
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+      description: Alert status
+    outputs:
+    - contextPath: MicrosoftATP.Alert.DetectionSource
+      description: Alert detection source
+      type: string
+    - contextPath: MicrosoftATP.Alert.MachineID
+      description: Alert machine ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.Classification
+      description: Alert classification
+      type: string
+    - contextPath: MicrosoftATP.Alert.AlertCreationTime
+      description: Alert creation time
+      type: date
+    - contextPath: MicrosoftATP.Alert.RecommendedAction
+      description: Alert recommended action
+      type: string
+    - contextPath: MicrosoftATP.Alert.LastEventTime
+      description: Alert last event time
+      type: date
+    - contextPath: MicrosoftATP.Alert.New
+      description: Alert status
+      type: string
+    - contextPath: MicrosoftATP.Alert.FirstEventTime
+      description: Alert first event time
+      type: string
+    - contextPath: MicrosoftATP.Alert.Title
+      description: Alert title
+      type: string
+    - contextPath: MicrosoftATP.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.Description
+      description: Alert description
+      type: string
+    - contextPath: MicrosoftATP.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: MicrosoftATP.Alert.Category
+      description: Alert category
+      type: string
+    description: Get a list of alerts present on the system.
+  isfetch: true
+  runonce: false
+tests:
+- No test

@@ -97,7 +97,7 @@ tasks:
       - "4"
     scriptarguments:
       alertId:
-        simple: ${SCADAfence.Alerts.id}
+        simple: ${SCADAfence.Alert.id}
       alertStatus:
         simple: InProgress
     separatecontext: false
@@ -128,7 +128,7 @@ tasks:
       assetType: {}
       hostName: {}
       ipAddress:
-        simple: SCADAfence.Alerts.ip
+        simple: SCADAfence.Alert.ip
     separatecontext: false
     view: |-
       {
@@ -155,7 +155,7 @@ tasks:
       - "7"
     scriptarguments:
       alertId:
-        simple: ${SCADAfence.Alerts.id}
+        simple: ${SCADAfence.Alert.id}
       alertStatus:
         simple: Resolved
     separatecontext: false
@@ -189,7 +189,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: SCADAfence.Alerts.ip
+        simple: SCADAfence.Alert.ip
     separatecontext: false
     view: |-
       {

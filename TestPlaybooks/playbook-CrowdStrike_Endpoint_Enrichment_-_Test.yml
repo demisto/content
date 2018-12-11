@@ -1,16 +1,16 @@
 id: CrowdStrike Endpoint Enrichment - Test
 version: -1
+rolename: []
 name: CrowdStrike Endpoint Enrichment - Test
-description: ""
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
+    taskid: 82d14d08-e086-413e-8f6f-cb7c9309303a
     type: start
     task:
-      id: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
+      id: 82d14d08-e086-413e-8f6f-cb7c9309303a
       version: -1
       name: ""
       description: ""
@@ -23,17 +23,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
+    taskid: ed0336e2-778b-4c07-86ad-511d86cd520c
     type: regular
     task:
-      id: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
+      id: ed0336e2-778b-4c07-86ad-511d86cd520c
       version: -1
       name: cs-device-search
       description: Search for devices in your environment by platform, host name,
@@ -54,17 +54,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: fa76f81b-d55e-41af-8f39-2f08a71bfa22
+    taskid: e3edaafa-0d2a-44b8-8317-9d73ff3dcf0f
     type: regular
     task:
-      id: fa76f81b-d55e-41af-8f39-2f08a71bfa22
+      id: e3edaafa-0d2a-44b8-8317-9d73ff3dcf0f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -83,71 +83,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: b41b5726-e981-448d-8a02-93ce27941a7a
+    taskid: fc7af480-343f-4bed-8081-b53cbd6e8b5f
     type: playbook
     task:
-      id: b41b5726-e981-448d-8a02-93ce27941a7a
+      id: fc7af480-343f-4bed-8081-b53cbd6e8b5f
       version: -1
       name: CrowdStrike Endpoint Enrichment
+      description: Enrich Endpoint with CrowdStrike
       playbookName: CrowdStrike Endpoint Enrichment
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 485ef202-1272-4bcb-82bf-9980f530e21e
-    type: regular
-    task:
-      id: 485ef202-1272-4bcb-82bf-9980f530e21e
-      version: -1
-      name: ContextContains
-      description: This script searches for a value in a context path.
-      scriptName: ContextContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
+      - "13"
     scriptarguments:
-      path:
-        simple: ${Endpoint.OS}
-      value:
-        simple: Windows
-    separatecontext: false
+      Hostname:
+        simple: ${Endpoint.Hostname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 545
         }
       }
     note: false
   "12":
     id: "12"
-    taskid: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+    taskid: afed1757-85c5-40a8-82ff-be7f8a00fb8e
     type: regular
     task:
-      id: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+      id: afed1757-85c5-40a8-82ff-be7f8a00fb8e
       version: -1
       name: cs-detection-search
       description: String search through all Crowdstrike Detection fields.  For example,
@@ -166,7 +144,74 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 900
+          "y": 895
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: a9ab8750-2d51-4bbb-85c1-2e77591cf409
+    type: condition
+    task:
+      id: a9ab8750-2d51-4bbb-85c1-2e77591cf409
+      version: -1
+      name: Context check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Endpoint.OS
+          right:
+            value:
+              simple: Windows
+        - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.OS
+            iscontext: true
+          right:
+            value:
+              simple: Linux
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 49c635f7-d828-4351-8099-c7b15595facd
+    type: regular
+    task:
+      id: 49c635f7-d828-4351-8099-c7b15595facd
+      version: -1
+      name: raise an error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No endpoint data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -175,8 +220,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 945,
-        "width": 380,
+        "height": 940,
+        "width": 810,
         "x": 50,
         "y": 50
       }
