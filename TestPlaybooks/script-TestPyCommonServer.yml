@@ -309,7 +309,7 @@ script: |-
         flattenCell(list_of_special)
         flattenCell(special_char)
       except:
-        demisto.results(toEntry('special character failure - flatten_cell))
+        demisto.results(toEntry('special character failure - flatten_cell'))
         demisto.results(return_error('failure'))
 
       # dictionary test
