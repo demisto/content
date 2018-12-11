@@ -174,12 +174,14 @@ tasks:
       - "6"
     scriptarguments:
       folder-path: {}
+      is-public: {}
       limit: {}
       query:
         simple: subject:"${inputs.ThreadTopic}"
       target-mailbox:
         complex:
           root: inputs.Mailbox
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -260,6 +262,7 @@ tasks:
         complex:
           root: EWS
           accessor: Items
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -303,6 +306,7 @@ tasks:
       target-mailbox:
         complex:
           root: inputs.mailbox
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -330,11 +334,13 @@ tasks:
       - "5"
     scriptarguments:
       all: {}
+      index: {}
       key:
         simple: EWS
       keysToKeep: {}
       subplaybook:
         simple: "yes"
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -368,6 +374,7 @@ tasks:
         simple: '${EWS.Items={Subject: val[''subject''], To: val[''toRecipients''],
           From: val[''sender''], Text: val[''textBody''],HTML: val[''body''], Headers:
           val[''headers'']}}'
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -440,6 +447,7 @@ tasks:
       target-mailbox:
         complex:
           root: inputs.Mailbox
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {

@@ -324,10 +324,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: a645e6bf-634f-48a9-878b-75e02fc3538c
+    taskid: 01879da4-0b64-477e-800a-4ad969db97a5
     type: regular
     task:
-      id: a645e6bf-634f-48a9-878b-75e02fc3538c
+      id: 01879da4-0b64-477e-800a-4ad969db97a5
       version: -1
       name: fortigate-move-policy
       script: '|||fortigate-move-policy'
@@ -339,9 +339,9 @@ tasks:
       - "28"
     scriptarguments:
       neighbor:
-        simple: "31"
+        simple: "35"
       policyID:
-        simple: "30"
+        simple: "34"
       position:
         simple: after
     separatecontext: false
@@ -355,10 +355,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 4580baee-a84e-40c6-8938-dd1bf1c97fe3
+    taskid: 588f330a-fc24-4dad-829a-ca91443b7b56
     type: regular
     task:
-      id: 4580baee-a84e-40c6-8938-dd1bf1c97fe3
+      id: 588f330a-fc24-4dad-829a-ca91443b7b56
       version: -1
       name: fortigate-delete-policy
       script: '|||fortigate-delete-policy'
@@ -374,11 +374,12 @@ tasks:
           root: Fortigate
           accessor: Policy.ID
           transformers:
+          - operator: ReverseList
           - operator: atIndex
             args:
               index:
                 value:
-                  simple: "20"
+                  simple: "1"
           - operator: Stringify
     separatecontext: false
     view: |-
@@ -949,10 +950,10 @@ tasks:
     note: false
   "28":
     id: "28"
-    taskid: ed06aa83-2302-47cf-8b1a-9a967a48a446
+    taskid: faff01ec-3bd1-4797-864d-e3fd0ff97610
     type: condition
     task:
-      id: ed06aa83-2302-47cf-8b1a-9a967a48a446
+      id: faff01ec-3bd1-4797-864d-e3fd0ff97610
       version: -1
       name: TEST fortigate-move-policy context
       type: condition
@@ -971,14 +972,14 @@ tasks:
               complex:
                 root: Fortigate
                 filters:
-                - - operator: isEqualString
+                - - operator: isEqualNumber
                     left:
                       value:
                         simple: Fortigate.Policy.ID
                       iscontext: true
                     right:
                       value:
-                        simple: "30"
+                        simple: "34"
                 accessor: Policy.Moved
             iscontext: true
     view: |-

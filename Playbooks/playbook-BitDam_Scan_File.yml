@@ -379,16 +379,6 @@ inputs:
   required: false
   description: The duration after which to stop pooling and to resume the playbook
     (in minutes)
-- key: Comments
-  value: {}
-  required: false
-  description: Comments for the analysis.
-- key: InternetAccess
-  value:
-    simple: "True"
-  required: false
-  description: Enable internet access (boolean). True= internet access (default),
-    False= no internet access.
 outputs:
 - contextPath: BitDam.Analysis.ID
   description: Sample ID
@@ -410,3 +400,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "-"
