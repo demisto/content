@@ -1,0 +1,95 @@
+commonfields:
+  id: JSONtoCSV
+  version: -1
+name: JSONtoCSV
+script: |-
+  import json
+  import io
+  import csv
+
+  entry_id = demisto.args()['entryid']
+  if isinstance(entry_id, list):
+      entry_id = entry_id[0]
+
+  json_ent = demisto.executeCommand('getEntry', {'id': entry_id})
+
+  dictlist = json_ent[0]['Contents']
+  delim = demisto.args()['delimiter']
+
+  def json_to_csv(data):
+      """
+      takes a list of dictionatiers and parsing them into csv.
+      json should be only list which contains dictionaries.
+
+      json:
+          [
+              {
+                  "dn": "DC=demisto,DC=int",
+                  "provider": "activedir"
+              },
+              {
+                  "dn": "CN=Users,DC=demisto,DC=int",
+                  "provider": "activedir"
+              }
+          ]
+
+      csv:
+          "dn", "provider"
+          "DC=demisto,DC=int" , "activedir"
+          "CN=Users,DC=demisto, DC=int" ,"activedir"
+      """
+      si = io.BytesIO()
+      cw = csv.writer(si)
+      keys = list(dictlist[0].iterkeys())
+
+      cw.writerow(keys)
+      for d in data:
+          val_lst = []
+          for k in keys:
+              val_lst.append(d[k])
+          cw.writerow(val_lst)
+      return si.getvalue().strip('\r\n')
+
+  csv_final = json_to_csv(dictlist)
+
+  if 'filename' in demisto.args():
+      #outout cvs to file in warroom
+      demisto.results(fileResult(demisto.args()['filename'],csv_final.encode("utf-8")))
+  else:
+      #outout cvs to warrrom
+      demisto.results(csv_final.encode("utf-8"))
+
+
+
+type: python
+tags: []
+comment: Convert a JSON warroom output via EntryID to a CSV file.
+enabled: true
+args:
+- name: entryid
+  required: true
+  description: entry id of json
+  isArray: true
+- name: delimiter
+  default: true
+  description: CSV Delimiter.
+  defaultValue: '|'
+- name: filename
+  description: if provided will output CSV to file. Default output is to WarRoom.
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+scripttarget: 0
+runonce: false
+tests:
+- JSONtoCSV-Test

@@ -17,13 +17,28 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
+  name: FetchInterval
+  defaultvalue: "1"
+  type: 0
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
     import os
     import json
     import requests
-    import datetime
+    from datetime import datetime, timedelta
 
     ''' GLOBAL VARS '''
     # Pagerduty API works only with secured communication.
@@ -31,6 +46,7 @@ script:
 
     API_KEY = demisto.params()['APIKey']
     SERVICE_KEY = demisto.params()['ServiceKey']
+    FETCH_INTERVAL = demisto.params()['FetchInterval']
 
     SERVER_URL = 'https://api.pagerduty.com/'
     CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
@@ -42,7 +58,9 @@ script:
 
 
     '''PARAMS'''
+    UTC_PARAM = '&time_zone=UTC'
     STATUSES = 'statuses%5B%5D'
+    INCLUDED_FIELDS = '&include%5B%5D=first_trigger_log_entries&include%5B%5D=assignments'
 
     '''SUFFIX ENDPOINTS'''
     GET_SCHEDULES_SUFFIX = 'schedules'
@@ -70,6 +88,8 @@ script:
     '''TABLE NAMES'''
     SCHEDULES = 'All Schedules'
     TRIGGER_EVENT = 'Trigger Event'
+    RESOLVE_EVENT = 'Resolve Event'
+    ACKNOLWEDGE_EVENT = 'Acknowledge Event'
     USERS_ON_CALL = 'Users On Call'
     INCIDETS = 'PagerDuty Incidents'
     CONTACT_METHODS = 'Contact Methods'
@@ -81,7 +101,7 @@ script:
     NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
     SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
     USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
-    INCIDENTS_HEADERS = ['ID', 'Title', 'Status', 'Created On', 'Urgency', 'Html Url', 'Assigned To User', 'Service ID', 'Service Name',
+    INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url', 'Assigned To User', 'Service ID', 'Service Name',
                          'Escalation Policy', 'Last Status Change On', 'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
 
     ''' HELPER FUNCTIONS '''
@@ -100,15 +120,21 @@ script:
 
             return res.json()
 
-        except Exception, e:
+        except Exception as e:
             LOG(e)
             raise(e)
 
+    def translate_severity(sev):
+        if sev == 'high':
+            return 3
+        elif sev == 'Low':
+            return 1
+        return 0
 
     def test_module():
         try:
             get_on_call_now_users_command()
-        except Exception, e:
+        except Exception as e:
             raise Exception(e.message)
 
         demisto.results('ok')
@@ -192,16 +218,18 @@ script:
             }
         }
 
-    def extract_incidents_data(incidents):
-        """Extact data about incidents."""
+    def parse_incident_data(incidents):
+        """Parse incident data to output,context format"""
         outputs = []
         contexts = []
+        raw_response = []
         for i, incident in enumerate(incidents):
             output = {}
             context = {}
 
             context['ID'] = output['ID'] = incident.get('id')
             context['Title'] = output['Title'] = incident.get('summary')
+            context['Description'] = output['Description'] = incident.get('first_trigger_log_entry', {}).get('channel', {}).get('details', '')
             context['Status'] = output['Status'] = incident.get('status')
             context['created_at'] = output['Created On'] = incident.get('created_at')
             context['urgency'] = output['Urgency'] = incident.get('urgency', '')
@@ -232,8 +260,45 @@ script:
             context['resolved_by'] = output['Assigned To User']
             context['resolve_reason'] = output['Resolve reason'] = incident.get('resolve_reason', '')
 
+            context['teams'] = []
+            for team in incident.get('teams', []):
+                team_id = team.get('id', '')
+                team_name = team.get('summary', '')
+
+                team_data = {
+                    "ID": team_id,
+                    "Name": team_name
+                }
+
+                context['teams'].append(team_data)
+
+            assignment = incident.get('assignments', [{},])
+            if len(assignment) > 0:
+                context['assignment'] = {
+                    "time": assignment[0].get('at', ''),
+                    "assignee":assignment[0].get('assignee', {}).get('summary', ''),
+                }
+            else:
+                context['assignment'] = {}
+
+            acknowledgements = incident.get('acknowledgements', [{},])
+            if len(acknowledgements) > 0:
+                context['acknowledgement'] = {
+                    "time": assignment[0].get('at', ''),
+                    "acknowledger":assignment[0].get('acknowledger', {}).get('summary', ''),
+                }
+            else:
+                context['acknowledgement'] = {}
+
             outputs.append(output)
             contexts.append(context)
+            raw_response.append(incident)
+
+        return outputs, contexts, raw_response
+
+    def extract_incidents_data(incidents):
+        """Extact data about incidents."""
+        outputs, contexts, _ = parse_incident_data(incidents)
 
         return {
             'Type': entryTypes['note'],
@@ -258,7 +323,7 @@ script:
             output['ID'] = data.get('id')
             output['Name'] = data.get('name')
             output['Time Zone'] = data.get('time_zone')
-            output['Today'] = datetime.datetime.today().strftime('%Y-%m-%d')
+            output['Today'] = datetime.today().strftime('%Y-%m-%d')
             escalation_policies = data.get('escalation_policies', [])
             if len(escalation_policies) > 0:
                 output['Escalation Policy ID'] = escalation_policies[0].get('id')
@@ -313,7 +378,17 @@ script:
 
         return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
-    def extract_new_event_data(response):
+    def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
+        """Resolve or Acknowledge an incident in the PagerDuty instance."""
+        payload = {
+                        'routing_key': service_key,
+                        'event_action': action,
+                        'dedup_key': incident_key
+                  }
+
+        return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
+
+    def extract_new_event_data(table_name, response):
         """Extract the data from the response of creating a new command."""
         output = {}
         context = {}
@@ -331,7 +406,7 @@ script:
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
+            'HumanReadable': tableToMarkdown(table_name, output),
             'EntryContext': {
                 'PagerDuty.Event(val.incident_key==obj.dedup_key)': context,
                 'Event.ID(val.ID==obj.dedup_key)': context['incident_key']
@@ -402,14 +477,46 @@ script:
 
     '''COMMANDS'''
 
-    def configure_status(status):
+    def fetch_incidents():
+        param_dict = {}
+        now_time = datetime.utcnow()
+        now = datetime.isoformat(now_time)
+        lastRunObject = demisto.getLastRun()
+        if lastRunObject:
+            param_dict['since'] = lastRunObject['time']
+        else:
+            param_dict['since'] = datetime.isoformat(now_time - timedelta(minutes=int(FETCH_INTERVAL)))
+
+        param_dict['until'] = now
+
+        url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status()
+        res = http_request('GET', url, param_dict)
+        _, parsed_incidents, raw_responses = parse_incident_data(res.get('incidents',[]))
+
+        incidents = []
+        for incident, raw_response in zip(parsed_incidents, raw_responses):
+            incidents.append({
+                'name': incident['ID'] + ' - ' + incident['Title'],
+                'occurred': incident['created_at'],
+                'severity': translate_severity(incident['urgency']),
+                'rawJSON': json.dumps(raw_response)
+            })
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
+
+
+    def configure_status(status='triggered,acknowledged'):
         statuses = status.split(',')
         statuses_string = "&" + STATUSES + '='
         statuses = statuses_string.join(statuses)
         status_request = '&' + STATUSES + '=' + statuses
+
+        status_request = status_request + INCLUDED_FIELDS + UTC_PARAM
         return status_request
 
-    def get_incidents_command(since=None, until=None, status=None, sortBy=None):
+
+    def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None):
         """Get incidents command."""
         param_dict = {}
         if since is not None:
@@ -418,8 +525,6 @@ script:
             param_dict['until'] = until
         if sortBy is not None:
             param_dict['sortBy'] = sortBy
-        if status is None:
-            status = 'triggered,acknowledged'
 
         url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
         res = http_request('GET', url, param_dict)
@@ -431,7 +536,7 @@ script:
             raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
         res = create_new_incident(source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey)
-        return extract_new_event_data(res)
+        return extract_new_event_data(TRIGGER_EVENT, res)
 
     def get_all_schedules_command(query=None, limit=None):
         """Get all the schedules."""
@@ -481,6 +586,35 @@ script:
         user_notication_role = http_request('GET', url, {})
         return extract_users_notification_role(user_notication_role)
 
+
+    def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
+
+        action_response = resolve_or_ack_incident('resolve', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "resolved":
+            raise Exception('Could not resolve incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(RESOLVE_EVENT, action_response)
+
+
+    def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
+
+        action_response = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "acknowledged":
+            raise Exception('Could not acknowledge incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(ACKNOLWEDGE_EVENT, action_response)
+
+
     ''' EXECUTION CODE '''
 
     LOG('command is %s' % (demisto.command(), ))
@@ -488,6 +622,8 @@ script:
     try:
         if demisto.command() == 'test-module':
             test_module()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
         elif demisto.command() == 'PagerDuty-incidents':
             demisto.results(get_incidents_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-submit-event':
@@ -502,9 +638,13 @@ script:
             demisto.results(get_users_contact_methods_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-notification':
             demisto.results(get_users_notification_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-resolve-event':
+            demisto.results(resolve_event(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-acknowledge-event':
+            demisto.results(acknowledge_event(**demisto.args()))
 
 
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         LOG.print_log()
         raise
@@ -595,7 +735,7 @@ script:
         are triggered,acknowledged)
     - name: since
       description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents
-        since=2011-05-06T17:00Z
+        since=2011-05-06T17:00Z (must be used with until argument)
     - name: sortBy
       description: Used to specify both the field you wish to sort the results on,
         as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
@@ -621,29 +761,50 @@ script:
     - contextPath: PagerDuty.Incidents.assignee
       description: 'The assignee of the incident '
       type: string
-    - contextPath: service_id
+    - contextPath: PagerDuty.Incidents.service_id
       description: The id of the impacted service
       type: string
-    - contextPath: service_name
+    - contextPath: PagerDuty.Incidents.service_name
       description: The name of the impacted service
       type: string
-    - contextPath: escalation_policy
+    - contextPath: PagerDuty.Incidents.escalation_policy
       description: The escalation policy
       type: string
-    - contextPath: last_status_change_at
+    - contextPath: PagerDuty.Incidents.last_status_change_at
       description: Time in which the last status change occurred
       type: date
-    - contextPath: last_status_change_by
+    - contextPath: PagerDuty.Incidents.last_status_change_by
       description: Name of the user who done the last status change
       type: string
-    - contextPath: number_of_escalations
+    - contextPath: PagerDuty.Incidents.number_of_escalations
       description: Number of escalations that took place
       type: number
-    - contextPath: resolved_by
+    - contextPath: PagerDuty.Incidents.resolved_by
       description: Name of the User who resolved the incident
       type: string
-    - contextPath: resolve_reason
+    - contextPath: PagerDuty.Incidents.resolve_reason
       description: The reason for resolving the issue
+      type: string
+    - contextPath: PagerDuty.Incidents.Description
+      description: The Description of the incident
+      type: string
+    - contextPath: PagerDuty.Incidents.teams.ID
+      description: The ID of the team assigned for the incident.
+      type: string
+    - contextPath: PagerDuty.Incidents.teams.ID
+      description: The name of the team assigned for the incident.
+      type: string
+    - contextPath: PagerDuty.Incidents.assignment.time
+      description: The time of the assignment to the incident
+      type: date
+    - contextPath: PagerDuty.Incidents.assignment.assignee
+      description: The name of the assignee to the incident
+      type: string
+    - contextPath: PagerDuty.Incidents.acknowledgement.time
+      description: The time of the acknowledgement to the incident
+      type: date
+    - contextPath: PagerDuty.Incidents.acknowledgement.acknowledger
+      description: The name of the acknowledger to the incident
       type: string
     description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
   - name: PagerDuty-submit-event
@@ -732,8 +893,40 @@ script:
       description: The id of the notification rule
       type: string
     description: Get the users notification rules
+  - name: PagerDuty-resolve-event
+    arguments:
+    - name: incident_key
+      required: true
+      description: Incident key
+    - name: serviceKey
+      required: true
+      description: Service key for the integration
+    outputs:
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+      type: string
+    - contextPath: PagerDuty.Event.incident_key
+      description: Incident key
+      type: string
+    description: Resolves an existing event in PagerDuty
+  - name: PagerDuty-acknowledge-event
+    arguments:
+    - name: incident_key
+      required: true
+      description: Incident key
+    - name: serviceKey
+      required: true
+      description: Service key for the integration
+    outputs:
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+      type: string
+    - contextPath: PagerDuty.Event.incident_key
+      description: Incident key
+      type: string
+    description: Acknowledges an existing event in PagerDuty
+  isfetch: true
   runonce: false
-hidden: false
-releaseNotes: "Adding option to send ServiceKey with the PagerDuty-submit-event command"
+releaseNotes: "Adding PagerDuty-acknowledge-event, PagerDuty-resolve-event commands"
 tests:
-  - PagerDuty Test
+- PagerDuty Test

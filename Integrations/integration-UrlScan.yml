@@ -6,475 +6,564 @@ display: urlscan.io
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Urlscan.io reputation
-defaultEnabled: true
 detaileddescription: |-
   This integration checks domain information from the urlscan.io Database.
   This is a free service with an API key required. contact urlscan.io to obtain one.
 configuration:
-- display: Server URL (e.g. https://urlscan.io/api/v1/)
-  name: url
-  defaultvalue: https://urlscan.io/api/v1/
-  type: 0
-  required: true
-  hidden: false
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey
   defaultvalue: ""
   type: 4
   required: false
-  hidden: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-  hidden: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
   required: false
-  hidden: false
 script:
-  script: |
-    var sendRequest = function(method, arg, body, headers, img) {
+  script: |-
+    '''IMPORTS'''
+    import requests
+    import collections
+    from urlparse import urlparse
+    from requests.utils import quote
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
-        url = params.url;
-        if (url[url.length - 1] === '/') {
-            url = url.substring(0, url.length - 1);
-        }
 
-        var requestUrl;
-        var res;
 
-        if (img) {
-            requestUrl = img;
 
-            res = http(
-                requestUrl,
-                {
-                    Method: method,
-                    SaveToFile: true
-                },
-                params.insecure,
-                params.proxy
-            );
+    '''GLOBAL VARS'''
+    BASE_URL = 'https://urlscan.io/api/v1/'
+    APIKEY = demisto.params().get('apikey')
+    INSECURE = demisto.params().get('insecure')
+    PROXY = demisto.params().get('proxy')
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
-            return res.Path;
 
-        } else {
-            requestUrl = url + arg;
 
-            res = http(
-                requestUrl,
-                {
-                    Method: method,
-                    Headers: headers,
-                    Body: body
-                },
-                params.insecure,
-                params.proxy
-            );
-        }
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success === false) {
-            throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
-        }
-
-        try {
-            var obj = JSON.parse(res.Body);
-            if (obj.status === 400) {
-                throw 'Urlscan.io Request Failed.\nObject Status code: ' + obj.status + '.\nBody: ' + res.Body + '.';
+    '''HELPER FUNCTIONS'''
+    def http_request(method, url_suffix, json=None):
+        if method is 'GET':
+            headers = {}
+        elif method is 'POST':
+            headers = {
+                'API-Key': APIKEY,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
-            return obj;
-        }
-        catch (exc) {
-            throw 'Urlscan.io Error: JSON parse error.\n' + res.Body;
-        }
-    };
+        r = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            data=json,
+            headers=headers,
+            verify=INSECURE
+        )
+        if r.status_code is not 200:
+            return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
+        return r.json()
 
-    var searchResults = function(id) {
-        return sendRequest('GET', '/result/' + id);
-    };
 
-    var addMD = function(stats, lists, link) {
-        var md = '';
+    # Allows nested keys to be accesible
+    def makehash():
+        return collections.defaultdict(makehash)
 
-        if (stats.securePercentage) {
-            md += 'Security Percentage: **' + stats.securePercentage + '**\n';
-        }
 
-        if (stats.resourceStats && stats.resourceStats[0] && stats.resourceStats[0].countries) {
-            md += 'Number of countries associated with this site: **' + stats.resourceStats[0].countries.length + ' (';
-            md += stats.resourceStats[0].countries.join(', ') + ')**\n';
-        }
+    def is_valid_ip(s):
+        a = s.split('.')
+        if len(a) != 4:
+            return False
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
-        if (stats.ipStats && stats.ipStats[0] && stats.ipStats[0].asn) {
-            if (stats.ipStats[0].asn.asn) {
-              md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + (stats.ipStats[0].asn.description || '') + '**\n';
-            } else {
-              md += 'ASN: ** N/A **\n';
-            }
-        }
 
-        if (stats.malicious) {
-            md += 'Malicious: **' + stats.malicious + '**\n';
-        }
+    def polling(uuid):
+        request_url = demisto.args().get('url')
+        if demisto.args().get('timeout') is None:
+            TIMEOUT = 60
+        else:
+            TIMEOUT = demisto.args().get('timeout')
+        uri = BASE_URL+'result/{}'.format(uuid)
 
-        if (stats.regDomainStats) {
-            md += tableToMarkdown('Registered Domains', stats.regDomainStats, ['regDomain', 'count', 'ips', 'countries', 'redirects']);
-        }
+        ready = poll(
+            lambda: requests.get(uri).status_code == 200,
+            step=5,
+            ignore_exceptions=(requests.exceptions.ConnectionError),
+            timeout=int(TIMEOUT)
+        )
+        return ready
 
-        if (lists) {
-            if (lists.ips) {
-                md += 'IPs: **' + lists.ips.join(', ') + '**\n';
-            }
-            if (lists.domains) {
-                md += 'Domains: **' + lists.domains.join(', ') + '**\n';
-            }
-        }
 
-        if (link) {
-            md += 'Urlscan.io result link: [' + link + '](' + link + ')\n';
-        }
 
-        return md;
-    };
 
-    var handleSearchResults = function(res) {
-        var data = searchResults(res.results[0]._id);
-        var resStats = data.stats;
-        var lists = data.lists;
-        // A bit of an ugly hack but make sure to add some data to the original res
-        res.results[0].lists = lists;
-        res.results[0].regDomainStats = resStats.regDomainStats;
-        res.results[0].malicious = resStats.malicious;
-        return addMD(resStats, lists, res.results[0].result);
-    };
+    """ POLLING FUNCTIONS"""
+    try:
+        from Queue import Queue
+    except ImportError:
+        from queue import Queue
 
-    var searchUrl = function(url) {
-        var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(url) + '"');
-        var md = '';
-        var ec = {};
-        var resDis = [];
-        var dbotScore = 0;
-        md += '## Urlscan.io Reputation for ' + url + '\n';
 
-        if (res.results.length !== 0) {
-            md += handleSearchResults(res);
-            if (res.results[0].malicious && res.results[0].malicious > 0){
-                dbotScore = 3;
-                addMalicious(ec, outputPaths.url, {
-                    Data: url,
-                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
-                });
-            } else {
-                ec[outputPaths.url] = {Data: url};
-                dbotScore = 1;
-            }
+    def step_constant(step):
+        return step
 
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
-            resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-            resDis.push(getScreenshot(res.results[0]._id));
 
-            return resDis;
+    def is_truthy(val):
+        return bool(val)
 
-        } else {
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
-            md += 'No results for this url';
-            resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-        }
 
-        return resDis;
-    };
+    def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check_success=is_truthy,
+             step_function=step_constant, ignore_exceptions=(), poll_forever=False, collect_values=None, *a, **k):
 
-    var getScreenshot = function(id) {
-        var scanRes = searchResults(id);
-        if (scanRes.status === 404) {
-            return scanRes.description;
-        }
-        var img = scanRes.task.screenshotURL;
-        var res = sendRequest('GET', '', '','' , img);
+        kwargs = kwargs or dict()
+        values = collect_values or Queue()
 
-        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res};
-    };
+        max_time = time.time() + timeout if timeout else None
+        tries = 0
 
-    var searchIP = function(ip) {
-        var res = sendRequest('GET', '/search?q=ip:' + ip);
-        var md = '';
-        var ec = {};
-        var resDis = [];
-        var dbotScore = 0;
+        last_item = None
+        while True:
 
-        md += '## Urlscan.io Reputation for ' + ip + '\n';
+            try:
+                val = target(*args, **kwargs)
+                last_item = val
+            except ignore_exceptions as e:
+                last_item = e
+            else:
+                if check_success(val):
+                    return val
 
-        if (res.results.length !== 0) {
-            md += handleSearchResults(res);
+            values.put(last_item)
+            tries += 1
+            if max_time is not None and time.time() >= max_time:
+                demisto.results('The operation timed out. Please try again with a longer timeout period.')
+            time.sleep(step)
+            step = step_function(step)
 
-            if (res.results[0].malicious && res.results[0].malicious > 0){
-                dbotScore = 3;
-                addMalicious(ec, outputPaths.ip, {
-                    Address: ip,
-                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
-                });
-            } else {
-                ec[outputPaths.ip] = {Address: ip};
-                dbotScore = 1;
-            }
 
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'urlscan.io', Score: dbotScore};
-            resDis.push ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
-            resDis.push(getScreenshot(res.results[0]._id));
 
-            return resDis;
 
-        }else {
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'urlscan.io', Score: dbotScore};
-            md += 'No results for this ip';
-            resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
-        }
+    '''MAIN FUNCTIONS'''
+    def urlscan_submit_url():
+        submission_dict = {}
+        if demisto.args().get('public') is 'public':
+            submission_dict['public'] = 'on'
+        submission_dict['url'] = demisto.args().get('url')
+        sub_json = json.dumps(submission_dict)
+        r = http_request('POST', 'scan/', sub_json)
+        uuid = r['uuid']
+        return uuid
 
-        return resDis;
-    };
 
-    var searchHash = function(hash) {
-        var res = sendRequest('GET', '/search?q=hash:' + hash);
-        var md = '';
-        var ec = {};
-        var resDis = [];
-        var dbotScore = 0;
+    def format_results(uuid):
+        # Scan Lists sometimes returns empty
+        scan_lists = None
+        while scan_lists is None:
+            try:
+                response = urlscan_submit_request(uuid)
+                scan_lists = response['lists']
+                scan_tasks = response['task']
+                scan_page = response['page']
+                scan_stats = response['stats']
+                scan_meta = response['meta']
+                url_query = scan_tasks['url']
+            except:
+                pass
 
-        md += '## Urlscan.io Reputation for ' + hash + '\n';
+        ec = makehash()
+        dbot_score = makehash()
+        human_readable = makehash()
+        cont = makehash()
+        file_context = makehash()
+        url_cont = makehash()
+        hr_string = ''
 
-        if (res.results.length !== 0) {
-            md += handleSearchResults(res);
+        LIMIT = int(demisto.args().get('limit'))
+        if 'certificates' in scan_lists:
+            cert_md = []
+            cert_ec = []
+            certs = scan_lists['certificates']
+            for x in certs[:LIMIT]:
+                info, ec_info = cert_format(x)
+                cert_md.append(info)
+                cert_ec.append(ec_info)
+            CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
+            cont['Certificates'] = cert_ec
+        url_cont['Data'] = url_query
+        if 'urls' in scan_lists:
+            url_cont['Data'] = demisto.args().get('url')
+            cont['URL'] = demisto.args().get('url')
+        human_readable['Effective URL'] = url_query
+        if 'uuid' in scan_tasks:
+            ec['URLScan']['UUID']
+        if 'ips' in scan_lists:
+            ip_asn_MD = []
+            ip_asn_ec = []
+            ip_ec_info = makehash()
+            ip_list = scan_lists['ips']
+            asn_list = scan_lists['asns']
 
-            if (res.results[0].malicious && res.results[0].malicious > 0) {
-                dbotScore = 3;
-                addMalicious(ec, outputPaths.file, {
-                    MD5: hash,
-                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
-                });
-            }else {
-                ec[outputPaths.file] = {MD5: hash};
-                dbotScore = 1;
-            }
-
-            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'urlscan.io', Score: dbotScore};
-            resDis.push ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
-            resDis.push(getScreenshot(res.results[0]._id));
-
-            return resDis;
-
-        } else {
-            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'urlscan.io', Score: dbotScore};
-            md += 'No results for this hash';
-            resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
-        }
-
-        return resDis;
-    };
-
-    var submitUrl = function(scanUrl, timeout, isPublic) {
-        if (!params.apikey) {
-            throw 'Urlscan.io: No API key provided.';
-        }
-
-        var md = '';
-        var ec = {};
-        var resDis = [];
-        var dbotScore = 0;
-        var body;
-
-        if (scanUrl.indexOf('#') !== -1) {
-            md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
-            md += 'Could not submit this url';
-            return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
-        }
-
-        if (isPublic === 'public') {
-            body = JSON.stringify({url: scanUrl, 'public': 'on'});
-        } else {
-            body = JSON.stringify({url: scanUrl});
-        }
-
-        var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
-        var resScan = sendRequest('POST', '/scan', body, headers);
-
-        var tWait = 0;
-
-        md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
-
-        if (!timeout) {
-            timeout = 30;
-        }
-
-        if (isPublic === 'private') {
-            wait(parseInt(timeout));
-        } else {
-            var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
-
-            if (res.results.length >= 1) {
-                while (tWait < timeout && res.results[0]._id !== resScan.uuid) {
-                    wait(5);
-                    tWait += 5;
-                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
+            ip_asn_dict = dict(zip(ip_list, asn_list))
+            i = 1
+            for k in ip_asn_dict:
+                if i - 1 == LIMIT:
+                    break
+                v = ip_asn_dict[k]
+                ip_info = {
+                    'Count': i,
+                    'IP': k,
+                    'ASN': v
                 }
-            } else {
-                while (tWait < timeout && res.results.length < 1) {
-                    wait(5);
-                    tWait += 5;
-                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
-                }
+                ip_ec_info[i]['IP'] = k
+                ip_ec_info[i]['ASN'] = v
+                ip_asn_MD.append(ip_info)
+                i = i + 1
+            cont['RelatedIPs'] = ip_ec_info
+            IP_HEADERS = ['Count', 'IP', 'ASN']
+        if 'countries' in scan_lists:
+            countries = scan_lists['countries']
+            human_readable['Associated Countries'] = countries
+            cont['Country'] = countries
+        if not None in scan_lists['hashes']:
+            hashes = scan_lists['hashes']
+            cont['RelatedHash'] = hashes
+            human_readable['Related Hashes'] = hashes
+        if 'domains' in scan_lists:
+            subdomains = scan_lists['domains']
+            cont['Subdomains'] = subdomains
+            human_readable['Subdomains'] = subdomains
+        if 'asn' in scan_page:
+            cont['ASN'] = scan_page['asn']
+        if 'malicious' in scan_stats:
+            human_readable['Malicious URLs Found'] = scan_stats['malicious']
+            if int(scan_stats['malicious']) > 0:
+                human_readable['Malicious'] = 'Malicious'
+                url_cont['Data'] = demisto.args().get('url')
+                cont['Data'] = demisto.args().get('url')
+                dbot_score['Indicator'] = demisto.args().get('url')
+                url_cont['Malicious']['Vendor'] = 'urlscan.io'
+                cont['Malicious']['Vendor'] = 'urlscan.io'
+                dbot_score['Vendor'] = 'urlscan.io'
+                url_cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                dbot_score['Score'] = 3
+                dbot_score['Type'] = 'url'
+            else:
+                dbot_score['Vendor'] = 'urlscan.io'
+                dbot_score['Indicator'] = demisto.args().get('url')
+                dbot_score['Score'] = 0
+                dbot_score['Type'] = 'url'
+                human_readable['Malicious'] = 'Benign'
+        if 'url' in scan_meta['processors']['gsb']['data'] is None:
+            mal_url_list = []
+            matches = scan_meta['processors']['gsb']['data']['matches']
+            for match in matches:
+                mal_url = match['threat']['url']
+                mal_url_list.append(mal_url)
+            human_readable['Related Malicious URLs'] = mal_url_list
+        if len(scan_meta['processors']['download']['data']) > 0:
+            meta_data = scan_meta['processors']['download']['data'][0]
+            sha256 = meta_data['sha256']
+            filename = meta_data['filename']
+            filesize = meta_data['filesize']
+            filetype = meta_data['mimeType']
+            human_readable['File']['Hash'] = sha256
+            cont['File']['Hash'] = sha256
+            file_context['SHA256'] = sha256
+            human_readable['File']['Name'] = filename
+            cont['File']['FileName'] = filename
+            file_context['Name'] = filename
+            human_readable['File']['Size'] = filesize
+            cont['File']['FileSize'] = filesize
+            file_context['Size'] = filesize
+            human_readable['File']['Type'] = filetype
+            cont['File']['FileType'] = filetype
+            file_context['Type'] = filetype
+            file_context['Hostname'] = demisto.args().get('url')
+
+        ec = {
+                'URLScan(val.URL && val.URL == obj.URL)': cont,
+                'DBotScore': dbot_score,
+                'URL': url_cont
             }
+        ec[outputPaths['file']]=file_context
+
+        if 'screenshotURL' in scan_tasks:
+            human_readable['Screenshot'] = scan_tasks['screenshotURL']
+            screen_path = scan_tasks['screenshotURL']
+            response_img = requests.request("GET", screen_path)
+            stored_img = fileResult('screenshot.png', response_img.content)
+
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': response,
+                'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
+                'EntryContext': ec
+                })
+        if len(cert_md) > 0:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': tableToMarkdown('Certificates',cert_md,CERT_HEADERS),
+                'HumanReadable': tableToMarkdown('Certificates',cert_md,CERT_HEADERS)
+                })
+        if 'ips' in scan_lists:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': tableToMarkdown('Related IPs and ASNs',ip_asn_MD,IP_HEADERS),
+                'HumanReadable': tableToMarkdown('Related IPs and ASNs',ip_asn_MD,IP_HEADERS)
+                })
+
+        if 'screenshotURL' in scan_tasks:
+            demisto.results({
+                'Type': entryTypes['image'],
+                'ContentsFormat': formats['text'],
+                'File': stored_img['File'],
+                'FileID': stored_img['FileID'],
+                'Contents': ''
+            })
+
+    def urlscan_submit_request(uuid):
+        response = http_request('GET', 'result/{}'.format(uuid))
+        return response
+
+
+    def get_urlscan_submit_results_polling(uuid):
+        ready = polling(uuid)
+        if ready is True:
+            format_results(uuid)
+
+
+    def urlscan_submit_command():
+        get_urlscan_submit_results_polling(urlscan_submit_url())
+
+
+    def urlscan_search(search_type, query):
+        r = http_request('GET', 'search/?q='+search_type+':"'+query+'"')
+        return r
+
+
+    def cert_format(x):
+        valid_to = datetime.fromtimestamp(x['validTo']).strftime('%Y-%m-%d %H:%M:%S')
+        valid_from = datetime.fromtimestamp(x['validFrom']).strftime('%Y-%m-%d %H:%M:%S')
+        info = {
+            'Subject Name': x['subjectName'],
+            'Issuer': x['issuer'],
+            'Validity': "{} - {}".format(valid_to, valid_from)
         }
-
-        if (resScan.api ||
-            (res.results.length >= 1 &&
-            res.results[0]._id === resScan.uuid)) {
-
-            var scanResults;
-            var resStats;
-
-            if (isPublic === 'private') {
-                var res = http(resScan.api, {Method: 'GET'}, params.insecure, params.proxy);
-                resStats = JSON.parse(res.Body).stats
-            } else {
-                scanResults = res.results[0];
-                resStats = searchResults(scanResults._id).stats;
+        ec_info = {
+            'SubjectName': x['subjectName'],
+            'Issuer': x['issuer'],
+            'ValidFrom': valid_from,
+            'ValidTo': valid_to
             }
+        return info, ec_info
 
-            md += addMD(resStats);
+    def urlscan_search_command():
+        LIMIT = int(demisto.args().get('limit'))
+        HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date' ]
+        raw_query = demisto.args().get('searchParameter', '')
+        if is_valid_ip(raw_query):
+            search_type = 'ip'
 
-            if (resStats.malicious && resStats.malicious > 0){
-                dbotScore = 3;
-                addMalicious(ec, outputPaths.url, {
-                    Data: scanUrl,
-                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
-                });
-            } else {
-                ec[outputPaths.url] = {Data: scanUrl};
-                dbotScore = 1;
-            }
+        # Parsing query to see if it's a url
+        parsed = urlparse(raw_query)
+        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+        if parsed[1] is '' and len(raw_query) == 64:
+            search_type = 'hash'
+        else:
+            search_type = 'page.url'
 
-            ec.DBotScore = {Indicator: scanUrl, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
+        # Making the query string safe for Elastic Search
+        query = quote(raw_query, safe='')
 
-            if (isPublic === 'private') {
-                resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-                resDis.push(getScreenshot(resScan.uuid));
-            } else {
-                resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-                resDis.push(getScreenshot(res.results[0]._id));
-            }
+        r = urlscan_search(search_type, query)
 
-            return resDis;
+        if r['total'] == 0:
+            demisto.results('No results found for {}'.format(raw_query))
+            return
+        if r['total'] > 0:
+            demisto.results('{} results found for {}'.format(r['total'], raw_query))
 
-        } else {
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
-            md += 'No scan results.';
-            resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
-            return resDis;
-        }
 
-        return res.results[0];
-    }
+        # Opening empty string for url comparison
+        last_url = ''
+        hr_md = []
+        cont_array = []
+        ip_array = []
+        dom_array = []
+        url_array = []
 
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            searchHash('google.com');
+        for res in r['results'][:LIMIT]:
+            ec = makehash()
+            cont = makehash()
+            url_cont = makehash()
+            ip_cont = makehash()
+            dom_cont = makehash()
+            file_context = makehash()
+            res_dict = res
+            res_tasks = res_dict['task']
+            res_stats = res_dict['stats']
+            res_page = res_dict['page']
 
-            if(params.apikey) {
-                var body = JSON.stringify({url: 'www.demisto.com', 'public': 'on'});
-                var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
-                sendRequest('POST', '/scan', body, headers);
-            }
+            if last_url == res_tasks['url']:
+                continue
 
-            return 'ok';
+            human_readable = makehash()
 
-        case 'url':
-            return searchUrl(args.url);
+            if 'url' in res_tasks:
+                url = res_tasks['url']
+                human_readable['URL'] = url
+                cont['URL'] = url
+                url_cont['Data'] = url
+            if 'domain' in res_page:
+                domain = res_page['domain']
+                human_readable['Domain'] = domain
+                cont['Domain'] = domain
+                dom_cont['Name'] = domain
+            if 'asn' in res_page:
+                asn = res_page['asn']
+                cont['ASN'] = asn
+                ip_cont['ASN'] = asn
+                human_readable['ASN'] = asn
+            if 'ip' in res_page:
+                ip = res_page['ip']
+                cont['IP'] = ip
+                ip_cont['Address'] = ip
+                human_readable['IP'] = ip
+            if '_id' in res_dict:
+                scanID = res_dict['_id']
+                cont['ScanID'] = scanID
+                human_readable['Scan ID'] = scanID
+            if 'time' in res_tasks:
+                scanDate = res_tasks['time']
+                cont['ScanDate'] = scanDate
+                human_readable['Scan Date'] = scanDate
+            if 'files' in res_dict:
+                HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File' ]
+                files = res_dict['files'][0]
+                sha256 = files['sha256']
+                filename = files['filename']
+                filesize = files['filesize']
+                filetype = files['mimeType']
+                url = res_tasks['url']
+                human_readable['File']['Hash'] = sha256
+                cont['Hash'] = sha256
+                file_context['SHA256'] = sha256
+                human_readable['File']['Name'] = filename
+                cont['FileName'] = filename
+                file_context['File']['Name'] = filename
+                human_readable['File']['Size'] = filesize
+                cont['FileSize'] = filesize
+                file_context['Size'] = filesize
+                human_readable['File']['Type'] = filetype
+                cont['FileType'] = filetype
+                file_context['File']['Type'] = filetype
+                file_context['File']['Hostname'] = url
 
-        case 'ip':
-            return searchIP(args.ip);
 
-        case 'file':
-            return searchHash(args.file);
 
-        case 'urlscan-submit':
-            return submitUrl(args.url, args.timeout, args.public);
+            ec[outputPaths['file']]=file_context
+            hr_md.append(human_readable)
+            cont_array.append(cont)
+            ip_array.append(ip_cont)
+            url_array.append(url_cont)
+            dom_array.append(dom_cont)
 
-        default:
-             throw 'Unknown command - ' + command;
-    }
-  type: javascript
+            # Storing last url in memory for comparison on next loop
+            last_url = url
+        ec = ({
+                'URLScan(val.URL && val.URL == obj.URL)': cont_array,
+                'URL': url_array,
+                'IP': ip_array,
+                'Domain': dom_array
+            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': r,
+            'HumanReadable': tableToMarkdown('URLScan.io query results for {}'.format(raw_query), hr_md, HUMAN_READBALE_HEADERS, removeNull=True),
+            'EntryContext': ec
+        })
+
+
+
+
+    """COMMAND FUNCTIONS"""
+    try:
+        if demisto.command() == 'test-module':
+            search_type = 'ip'
+            query = '8.8.8.8'
+            urlscan_search(search_type, query)
+            demisto.results('ok')
+        if demisto.command() in {'urlscan-submit', 'url'}:
+            urlscan_submit_command()
+        if demisto.command() == 'urlscan-search':
+            urlscan_search_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+  type: python
   commands:
-  - name: url
+  - name: urlscan-search
     arguments:
-    - name: url
+    - name: searchParameter
       required: true
       default: true
-      description: Url to check
+      description: Enter a parameter to search as a string (IP, File name, sha256,
+        url, domain)
+    - name: limit
+      description: Limits the returned results
+      defaultValue: "20"
     outputs:
-    - contextPath: URL.Data
-      description: Bad URLs found
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: Check URL Reputation
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: IP to check
-    outputs:
-    - contextPath: IP.Address
-      description: IP Address
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
-    - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: Check IP Reputation
-  - name: file
-    arguments:
-    - name: file
-      required: true
-      default: true
-      description: MD5 hash of the file to query.
-    outputs:
-    - contextPath: File.MD5
-      description: File MD5
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: Check if file MD5 is malicious
+    - contextPath: URLScan.URL
+      description: URL found
+      type: string
+    - contextPath: URLScan.Domain
+      description: Domain of the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.IP
+      description: IP of the url scanned
+      type: string
+    - contextPath: URLScan.ScanID
+      description: Scan ID for the URL scanned
+      type: string
+    - contextPath: URLScan.ScanDate
+      description: Latest scan date for the URL
+      type: string
+    - contextPath: URLScan.Hash
+      description: SHA256 of file scanned
+      type: string
+    - contextPath: URLScan.FileName
+      description: Filename of the file scanned
+      type: string
+    - contextPath: URLScan.FileSize
+      description: File size of the file scanned
+      type: number
+    - contextPath: URLScan.FileType
+      description: File type of the file scanned
+      type: string
+    description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
     arguments:
     - name: url
@@ -482,29 +571,168 @@ script:
       default: true
       description: Url to scan
     - name: timeout
-      description: How much seconds to wait to the scan id result
-      defaultValue: "30"
+      description: How many seconds to wait for the scan id result
+      defaultValue: "60"
     - name: public
       auto: PREDEFINED
       predefined:
       - public
       - private
-      description: Does the submit will be public or private
+      description: Will the submission be public or private
       defaultValue: public
+    - name: limit
+      description: Limits the returned list of Certificates, IP's and ASN's
+      defaultValue: "20"
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: URL submitted
+      type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      type: string
+    - contextPath: URLScan.RelatedIPs
+      description: Related IPs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedASNs
+      description: Related ASNs found for the URL scanned
+      type: string
+    - contextPath: URLScan.Countries
+      description: Associated countries for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
+    - contextPath: URLScan.Subdomains
+      description: Associated subdomains for the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.Data
+      description: URL of the file found
+      type: string
+    - contextPath: URLScan.Malicious.Vendor
+      description: Vendor reporting the malicious indicator for the file
+      type: string
+    - contextPath: URLScan.Malicious.Description
+      description: Description of the malicious indicator
+      type: string
+    - contextPath: URLScan.File.Hash
+      description: SHA256 of file found
+      type: string
+    - contextPath: URLScan.File.FileName
+      description: File name of file found
+      type: string
+    - contextPath: URLScan.File.FileType
+      description: File type of the file found
+      type: string
+    - contextPath: URLScan.File.Hostname
+      description: URL where the file was found
+      type: string
+    - contextPath: URLScan.Certificates
+      description: Certificates found for the URL scanned
+      type: string
     - contextPath: DBotScore.Score
-      description: The actual score
-    description: Submit an url to scan
+      description: Score retrieved for Dbot
+      type: number
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
+      type: string
+    description: Submit a url to scan
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: Url to scan
+    - name: timeout
+      description: How many seconds to wait for the scan id result
+      defaultValue: "60"
+    - name: public
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Will the submission be public or private
+      defaultValue: public
+    - name: limit
+      description: Limits the results in the war room
+      defaultValue: "20"
+    outputs:
+    - contextPath: URL.Data
+      description: URL submitted
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: URLScan.RelatedIPs
+      description: Related IPs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedASNs
+      description: Related ASNs found for the URL scanned
+      type: string
+    - contextPath: URLScan.Countries
+      description: Associated countries for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
+    - contextPath: URLScan.Subdomains
+      description: Associated subdomains for the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.Data
+      description: URL of the file found
+      type: string
+    - contextPath: URLScan.Malicious.Vendor
+      description: Vendor reporting the malicious indicator for the file
+      type: string
+    - contextPath: URLScan.Malicious.Description
+      description: Description of the malicious indicator
+      type: string
+    - contextPath: URLScan.File.Hash
+      description: SHA256 of file found
+      type: string
+    - contextPath: URLScan.File.FileName
+      description: File name of file found
+      type: string
+    - contextPath: URLScan.File.FileType
+      description: File type of the file found
+      type: string
+    - contextPath: URLScan.File.Hostname
+      description: URL where the file was found
+      type: string
+    - contextPath: URLScan.Certificates
+      description: Certificates found for the URL scanned
+      type: string
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+      type: string
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
+      type: string
+    description: Submit a url to scan
+  runonce: false
 fromversion: 3.5.0
+releaseNotes: "Formatted context"
+tests:
+  - urlscan_malicious_Test

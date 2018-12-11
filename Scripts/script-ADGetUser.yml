@@ -90,8 +90,11 @@ script: |-
               if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
                   continue
               if userAccountControlOut:
+                  accountControlFlags = []
                   for flag, mask in UserAccountControlFlags.iteritems():
-                      m['Contents'][0][flag] = int(m['Contents'][0]['UserAccountControl'],10) & mask != 0
+                      if int(m['Contents'][0]['UserAccountControl'],10) & mask != 0:
+                          accountControlFlags.append(flag)
+                  m['Contents'][0]['UserAccountControl'] = ', '.join(accountControlFlags)
               else:
                   m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10) & 2 != 0
           return resAD
@@ -113,49 +116,44 @@ script: |-
           resAD = translateUserAccountControl(resAD, userAccountControlOut)
           return resAD
 
+  def getGroups(userDN):
+      queryValue = escapeSpecialCharacters(userDN)
+      group_attrs = 'name'
+      filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
+      group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs, 'size-limit' : limit } )
+      if isError(group_resp[0]):
+          return group_resp
+      try:
+          data = demisto.get(group_resp[0],'Contents')
+          data = data if isinstance(data, list) else [data]
+          memberOf = ",".join([demisto.get(k,'dn') for k in data])
+          return memberOf
+      except Exception as e:
+          return ""
+
+
   def queryBuilder(queryType,queryValue,attrs,nested,using, userAccountControlOut):
       args = {}
       args['size-limit'] = limit
       if using:
           args['using'] = using
-      if not queryType == "distinguishedName":
-          filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
-          args['filter'] = filterstr
-          resp = demisto.executeCommand('ad-search', args)
-          if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
-              return resp
-          else:
-              userDN = ""
-              try:
-                  userDN = resp[0]['Contents'][0]['dn']
-              except Exception as ex:
-                  return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) }
-              queryType = "distinguishedName"
-              queryValue = escapeSpecialCharacters(userDN)
-
-      filterstr = r"(&(objectClass=User)(distinguishedName=" + queryValue + "))"
+      filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
       args['filter'] = filterstr
       args['attributes'] = attrs
-      resAD = demisto.executeCommand( 'ad-search', args )
+      resp = demisto.executeCommand('ad-search', args)
+      if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
+          return resp
       if nested:
-          group_attrs = 'name'
-          filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
-          group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs, 'size-limit' : limit } )
-          if isError(group_resp[0]):
-              return group_resp
-          else:
-              data = demisto.get(group_resp[0],'Contents')
-              data = data if isinstance(data, list) else [data]
-              memberOf = ",".join([demisto.get(k,'dn') for k in data])
-      resAD = prettifyDateTimeADFields(resAD)
-      resAD = translateUserAccountControl(resAD, userAccountControlOut)
-      try:
-          resAD[0]['Contents']['memberOf'] = memberOf
-      except:
-          pass # Could not get nested groups - return as is
-      return resAD
+          for index,user in enumerate(resp[0]['Contents']):
+              memberOf = getGroups(user["dn"])
+              if memberOf:
+                  resp[0]['Contents'][index]['memberOf'] = memberOf
 
-  attrs = 'name,displayName,memberOf,mail,samAccountName,manager,UserAccountControl'
+      resp = prettifyDateTimeADFields(resp)
+      resp = translateUserAccountControl(resp, userAccountControlOut)
+      return resp
+
+  attrs = 'dn,name,displayName,memberOf,mail,samAccountName,manager,UserAccountControl,ACCOUNTDISABLE,provider'
   queryValue, queryType = "",""
   headers = argToList(demisto.get(demisto.args(), 'headers'))
   userAccountControlOut = False
@@ -254,8 +252,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: ' Enter ''true'' to allow nested groups search as well (only works
-    on a single user query)'
+  description: ' Enter ''true'' to allow nested groups search as well'
 - name: username
   description: samAccountName of the desire user
 - name: limit
@@ -313,3 +310,4 @@ runonce: false
 dependson:
   must:
   - ad-search
+releaseNotes: return multiple results when runing the script with custome query

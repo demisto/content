@@ -1730,6 +1730,68 @@ script:
         except Exception as e:
             return raise_error(e)
 
+    def modify_network_interface_attribute(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
+
+            if args.get('sourceDestCheck') is not None:
+                kwargs.update({'SourceDestCheck':{'Value': True if args.get('sourceDestCheck') == 'True'  else False}})
+            if args.get('attachmentId') is not None and args.get('deleteOnTermination') is not None:
+                kwargs.update({
+                    'Attachment':{
+                        'AttachmentId': args.get('attachmentId'),
+                        'DeleteOnTermination': True if args.get('deleteOnTermination') == 'True'  else False
+                    }})
+            if args.get('description') is not None:
+                kwargs.update({'Description':{'Value': args.get('description')}})
+            if args.get('groups') is not None:
+                kwargs.update({'Groups':parse_resource_ids(args.get('groups'))})
+
+            response = client.modify_network_interface_attribute(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Network Interface Aattribute was successfully modified"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def modify_instance_attribute(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'InstanceId': args.get('instanceId')}
+
+            if args.get('sourceDestCheck') is not None:
+                kwargs.update({'SourceDestCheck':{'Value': True if args.get('sourceDestCheck') == 'True'  else False}})
+            if args.get('disableApiTermination') is not None:
+                kwargs.update({'DisableApiTermination':{'Value': True if args.get('disableApiTermination') == 'True'  else False}})
+            if args.get('ebsOptimized') is not None:
+                kwargs.update({'EbsOptimized':{'Value': True if args.get('ebsOptimized') == 'True'  else False}})
+            if args.get('enaSupport') is not None:
+                kwargs.update({'EnaSupport':{'Value': True if args.get('enaSupport') == 'True'  else False}})
+            if args.get('instanceType') is not None:
+                kwargs.update({'InstanceType':{'Value': args.get('instanceType')}})
+            if args.get('instanceInitiatedShutdownBehavior') is not None:
+                kwargs.update({'InstanceInitiatedShutdownBehavior':{'Value': args.get('instanceInitiatedShutdownBehavior')}})
+            if args.get('groups') is not None:
+                kwargs.update({'Groups':parse_resource_ids(args.get('groups'))})
+
+            response = client.modify_instance_attribute(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Instance attribute was successfully modified"
+
+        except Exception as e:
+            return raise_error(e)
+
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -1883,6 +1945,11 @@ script:
     if demisto.command() == 'aws-ec2-get-password-data':
         result = get_password_data(demisto.args())
 
+    if demisto.command() == 'aws-ec2-modify-network-interface-attribute':
+        result = modify_network_interface_attribute(demisto.args())
+
+    if demisto.command() == 'aws-ec2-modify-instance-attribute':
+        result = modify_instance_attribute(demisto.args())
     demisto.results(result)
     sys.exit(0)
 
@@ -4533,6 +4600,16 @@ script:
     - name: instanceId
       required: true
       description: The ID of the Windows instance.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
       description: The password of the instance. Returns an empty string if the password
@@ -4544,5 +4621,126 @@ script:
     description: Retrieves the encrypted administrator password for a running Windows
       instance.
     execution: true
-  dockerimage: demisto/boto3
+  - name: aws-ec2-modify-network-interface-attribute
+    arguments:
+    - name: networkInterfaceId
+      required: true
+      description: The ID of the network interface.
+    - name: groups
+      description: Changes the security groups for the network interface. The new
+        set of groups you specify replaces the current set. You must specify at least
+        one group, even if it's just the default security group in the VPC. You must
+        specify the ID of the security group, not the name.
+    - name: sourceDestCheck
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Indicates whether source/destination checking is enabled. A value
+        of true means checking is enabled, and false means checking is disabled. This
+        value must be false for a NAT instance to perform NAT.
+    - name: description
+      description: A description for the network interface.
+    - name: attachmentId
+      description: The ID of the network interface attachment. Information about the
+        interface attachment. If modifying the 'delete on termination' attribute,
+        you must specify the ID of the interface attachment.
+    - name: deleteOnTermination
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Indicates whether the network interface is deleted when the instance
+        is terminated. Information about the interface attachment. If modifying the
+        'delete on termination' attribute, you must specify the ID of the interface
+        attachment.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Modifies the specified network interface attribute. You can specify
+      only one attribute at a time.
+    execution: true
+  - name: aws-ec2-modify-instance-attribute
+    arguments:
+    - name: instanceId
+      required: true
+      description: The ID of the instance.
+    - name: sourceDestCheck
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether source/destination checking is enabled. A value
+        of true means that checking is enabled, and false means that checking is disabled.
+        This value must be false for a NAT instance to perform NAT.
+    - name: disableApiTermination
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If the value is true , you can't terminate the instance using the
+        Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter
+        for Spot Instances.
+    - name: ebsOptimized
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether the instance is optimized for Amazon EBS I/O.
+        This optimization provides dedicated throughput to Amazon EBS and an optimized
+        configuration stack to provide optimal EBS I/O performance. This optimization
+        isn't available with all instance types. Additional usage charges apply when
+        using an EBS Optimized instance.
+    - name: enaSupport
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Set to true to enable enhanced networking with ENA for the instance.  This
+        option is supported only for HVM instances. Specifying this option with a
+        PV instance can make it unreachable.
+    - name: instanceType
+      description: Changes the instance type to the specified value.
+    - name: instanceInitiatedShutdownBehavior
+      auto: PREDEFINED
+      predefined:
+      - Stop
+      - Terminate
+      description: Specifies whether an instance stops or terminates when you initiate
+        shutdown from the instance (using the operating system command for system
+        shutdown)
+    - name: groups
+      description: '[EC2-VPC] Changes the security groups of the instance. You must
+        specify at least one security group, even if it''s just the default security
+        group for the VPC. You must specify the security group ID, not the security
+        group name.'
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Modifies the specified attribute of the specified instance. You can
+      specify only one attribute at a time. Using this action to change the security
+      groups associated with an elastic network interface (ENI) attached to an instance
+      in a VPC can result in an error if the instance has more than one ENI. To change
+      the security groups associated with an ENI attached to an instance that has
+      multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
+      action.
+    execution: true
+  dockerimage: demisto/boto3:1.9.55
   runonce: false
+releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute. Upgraded Boto3 to ver 1.9.55"
+tests:
+  - No Tests

@@ -1,0 +1,44 @@
+commonfields:
+  id: ExifRead
+  version: -1
+name: ExifRead
+script: |
+  import exifread
+
+  res = demisto.getFilePath(demisto.args()['EntryID'])
+  f = open(res['path'], 'rb')
+
+  tags = exifread.process_file(f)
+  arr = []
+  for tag in tags.keys():
+      arr.append({'tag':str(tag), 'value':str(tags[tag])})
+
+  md = tableToMarkdown('Exif Tags', arr)
+
+  demisto.results({
+      'ContentsFormat': formats['json'],
+      'Type': entryTypes['note'],
+      'Contents': {'Exif': arr},
+      'HumanReadable': md,
+      'EntryContext': {'Exif':arr}
+  })
+type: python
+tags:
+- Utility
+comment: Read image files metadata and provide Exif tags
+enabled: true
+args:
+- name: EntryID
+  required: true
+  default: true
+  description: Entry ID of image file
+outputs:
+- contextPath: Exif.tag
+  description: Exif tag name
+  type: string
+- contextPath: Exif.value
+  description: Exif tag value
+  type: string
+scripttarget: 0
+runonce: false
+dockerimage: demisto/exifread

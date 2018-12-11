@@ -34,10 +34,10 @@ tasks:
       name: url
       description: Check if url is phishing and get details about the brand that is
         being phished
-      script: Phish.AI|||url
+      script: '|||phish-ai-scan-url'
       type: regular
       iscommand: true
-      brand: Phish.AI
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -52,6 +52,7 @@ tasks:
           "y": 230
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 65d3021b-4acc-4c3f-8d2b-a2dc909ee851
@@ -76,21 +77,22 @@ tasks:
       fields:
         simple: Data
       path:
-        simple: Url
+        simple: URL
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 410
+          "y": 420
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 455,
+        "height": 465,
         "width": 380,
         "x": 450,
         "y": 50

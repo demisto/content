@@ -156,7 +156,7 @@ script: |-
 
       var escapedSt = '';
       if (minimal_escaping) {
-          escapedSt = st.replace(/\|/g, '\|');
+          escapedSt = st.replace(/\|/g, '\\|');
       } else {
           for (var i = 0; i < st.length; i++) {
               if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
@@ -273,7 +273,7 @@ script: |-
           }
           var sep = [];
           headers.forEach(function(h){
-              sep.push('-');
+              sep.push('---');
           });
           if (sep.length === 1) {
               sep[0] = sep[0]+'|';

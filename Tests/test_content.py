@@ -172,16 +172,17 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
             }
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
+    is_nightly_integration = False
     has_skipped_integration = False
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf:
-            if integration not in skipped_integration:
-                skipped_integration.append(integration)
-
+        if integration in skipped_integrations_conf.keys():
+            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
-            break
+
+        if integration in nightly_integrations:
+            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -189,7 +190,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return has_skipped_integration, integrations
+    return has_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests():
@@ -251,8 +252,11 @@ def main():
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
+    default_test_timeout = conf.get('testTimeout', 30)
+
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
+    nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
@@ -265,28 +269,28 @@ def main():
         print('no integrations are configured for test')
         return
 
-    skipped_tests = []
     failed_playbooks = []
     succeed_playbooks = []
-    skipped_integration = []
+    skipped_tests = set([])
+    skipped_integration = set([])
     for t in tests:
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
         integrations_conf = t.get('integrations', [])
-        skip_nightly_test = True if nightly_test and not is_nightly else False
 
         test_message = 'playbook: ' + playbook_id
 
         test_options = {
-            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-            'interval': conf.get('testInterval', 10)
+            'timeout': t.get('timeout', default_test_timeout)
         }
 
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
-        has_skipped_integration, integrations = collect_integrations(
-            integrations_conf, skipped_integration, skipped_integrations_conf)
+        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+        skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
         # Skip nightly test
         if skip_nightly_test:
@@ -302,8 +306,8 @@ def main():
                 continue
 
         # Skip bad test
-        if playbook_id in skipped_tests_conf:
-            skipped_tests.append(playbook_id)
+        if playbook_id in skipped_tests_conf.keys():
+            skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
             continue
 
         # Skip integration

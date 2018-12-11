@@ -2,7 +2,7 @@ commonfields:
   id: CuckooGetScreenshot
   version: -1
 name: CuckooGetScreenshot
-script: demisto.results(demisto.executeCommand("ck-scrshot", demisto.args()))
+script: demisto.results(demisto.executeCommand("cuckoo-task-screenshot", demisto.args()))
 type: python
 tags:
 - cuckoo
@@ -19,5 +19,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ck-scrshot
+  - cuckoo-task-screenshot
 timeout: 0s
+tests:
+  - No test
