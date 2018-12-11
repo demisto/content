@@ -410,6 +410,10 @@
             "playbookID": "Jira-Test"
         },
         {
+            "integrations" : "jira",
+            "playbookID" : "JiraCreateIssue-example-test"
+        },
+        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
