@@ -12,7 +12,7 @@ script: |-
     file_path =file['path']
     file_name = file['name']
     raw_name = file_name.split(".")
-    formatted_name = raw_name+".html"
+    formatted_name = raw_name[0]+".html"
   try:
     fopen = open(str(file_path), "r")
     data = fopen.read()
