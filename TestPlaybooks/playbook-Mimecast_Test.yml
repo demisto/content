@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
@@ -39,13 +39,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1940
         }
       }
     note: false
@@ -63,7 +63,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "36"
     scriptarguments:
       description:
         simple: test policy
@@ -84,16 +84,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 370
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 97099010-bc08-474e-827b-351d91df97be
+    taskid: f26be047-828c-4cb7-85d3-21d2692e448d
     type: regular
     task:
-      id: 97099010-bc08-474e-827b-351d91df97be
+      id: f26be047-828c-4cb7-85d3-21d2692e448d
       version: -1
       name: mimecast-delete-policy
       script: '|||mimecast-delete-policy'
@@ -102,7 +102,34 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "32"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policy.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1475
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d56c9aa0-06c7-467e-8408-d41fad873216
+    type: regular
+    task:
+      id: d56c9aa0-06c7-467e-8408-d41fad873216
+      version: -1
+      name: mimecast-get-policy
+      script: '|||mimecast-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
     scriptarguments:
       policyID:
         simple: ${Mimecast.Policy.ID}
@@ -112,33 +139,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1070
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: d4627d42-a711-402d-8a44-e038968ae77b
-    type: regular
-    task:
-      id: d4627d42-a711-402d-8a44-e038968ae77b
-      version: -1
-      name: mimecast-get-policy
-      script: '|||mimecast-get-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      policyID:
-        simple: ${Mimecast.Policy.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
         }
       }
     note: false
@@ -156,7 +156,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "22"
     scriptarguments:
       active: {}
       attachmentText: {}
@@ -177,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -196,7 +196,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "23"
     scriptarguments:
       url:
         simple: https://sandbox-api.mimecast.com/s/tfS6Czmwni3uXGu3a
@@ -204,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -223,7 +223,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "24"
     scriptarguments:
       action:
         simple: permit
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -254,7 +254,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "25"
     scriptarguments:
       action:
         simple: permit
@@ -279,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 480,
+          "y": 1475
         }
       }
     note: false
@@ -298,7 +298,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "26"
     scriptarguments:
       url:
         simple: https://www.google.com
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 480,
+          "y": 1940
         }
       }
     note: false
@@ -325,7 +325,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "37"
     scriptarguments:
       endTime: {}
       mailbox:
@@ -339,17 +339,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 910,
+          "y": 370
         }
       }
     note: false
   "11":
     id: "11"
-    taskid: 8452fd0e-a65d-4f65-8140-cca9a2ac63e6
+    taskid: f9daee98-9385-4a14-8dfb-d2761f873b2c
     type: regular
     task:
-      id: 8452fd0e-a65d-4f65-8140-cca9a2ac63e6
+      id: f9daee98-9385-4a14-8dfb-d2761f873b2c
       version: -1
       name: mimecast-get-url-logs
       script: '|||mimecast-get-url-logs'
@@ -358,30 +358,29 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "34"
     scriptarguments:
       fromDate:
         simple: 2016-10-01T14:49:18+0000
       limit: {}
-      resultType:
-        simple: malicious
+      resultType: {}
       resultsNumber: {}
       toDate: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 910,
+          "y": 1070
         }
       }
     note: false
   "12":
     id: "12"
-    taskid: c248ed25-65bf-4527-8ff1-ce737e126827
+    taskid: 9e729c4d-d451-4e65-81f7-2c3061e5a2e3
     type: regular
     task:
-      id: c248ed25-65bf-4527-8ff1-ce737e126827
+      id: 9e729c4d-d451-4e65-81f7-2c3061e5a2e3
       version: -1
       name: mimecast-get-impersonation-logs
       script: '|||mimecast-get-impersonation-logs'
@@ -390,33 +389,33 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "33"
     scriptarguments:
       actions: {}
-      fromDate: {}
+      fromDate:
+        simple: 2015-10-01T14:49:18+0000
       identifiers: {}
       limit: {}
       query: {}
       resultsNumber: {}
       searchField: {}
-      taggedMalicious:
-        simple: "true"
+      taggedMalicious: {}
       toDate: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 910,
+          "y": 1475
         }
       }
     note: false
   "13":
     id: "13"
-    taskid: fc217ddc-8859-438c-8a98-56526dbe28c2
+    taskid: 1970a228-9d0c-4a15-8a07-e968a0dea705
     type: regular
     task:
-      id: fc217ddc-8859-438c-8a98-56526dbe28c2
+      id: 1970a228-9d0c-4a15-8a07-e968a0dea705
       version: -1
       name: mimecast-get-attachment-logs
       script: '|||mimecast-get-attachment-logs'
@@ -425,21 +424,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "31"
     scriptarguments:
       fromDate:
         simple: 2015-10-01T14:49:18+0000
       limit: {}
       resultType:
-        simple: malicious
+        simple: all
       resultsNumber: {}
       toDate: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 910,
+          "y": 1940
         }
       }
     note: false
@@ -458,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 480,
+          "y": 3350
         }
       }
     note: false
@@ -477,37 +476,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: 09433f84-6f56-4522-85f0-6dc985518114
-    type: regular
-    task:
-      id: 09433f84-6f56-4522-85f0-6dc985518114
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
+      - "5"
+      - "10"
       - "2"
     scriptarguments:
       all:
@@ -520,8 +490,750 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 4c5c1928-c731-4df4-8b28-fc97b9be6a26
+    type: regular
+    task:
+      id: 4c5c1928-c731-4df4-8b28-fc97b9be6a26
+      version: -1
+      name: mimecast-discover
+      script: '|||mimecast-discover'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2375
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: dc9477ef-60cf-4040-8759-88fb49e43561
+    type: regular
+    task:
+      id: dc9477ef-60cf-4040-8759-88fb49e43561
+      version: -1
+      name: mimecast-login
+      script: '|||mimecast-login'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2375
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: eea698e3-1180-4d03-88af-d00f3b362809
+    type: regular
+    task:
+      id: eea698e3-1180-4d03-88af-d00f3b362809
+      version: -1
+      name: mimecast-refresh-token
+      script: '|||mimecast-refresh-token'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2375
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 65559f12-ea83-40b3-87bc-ba9c775bd95c
+    type: regular
+    task:
+      id: 65559f12-ea83-40b3-87bc-ba9c775bd95c
+      version: -1
+      name: mimecast-get-message
+      script: '|||mimecast-get-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      context:
+        simple: DELIVERED
+      messageID:
+        simple: eNolj01vgkAQhv_LJj0txv0QdoUTamnaYmugrR5MCO4OlgC7hq8eTP97sc5hJnmS98m8V9SBGlooNfLRcb7-Mf17jZ8_V5SXmn-d3fE4f41HfkgqPZj8xRNiP-bNU7iFZrWLK747uDHYjd2KOI8MclADXZefoba2Gi69rcBMZk3kacFPiinhEqmBFdyTXHIgslgw6qmlli5QEUT7Bx7iKK-VNXhTdsqO0OJwn-LU1kNfTnTVllDgBC627QMz1HXACJWUMkmXnJHb3PH_mj76QD5x0OTppjjyqYPyVn2X4730Y5Klbxs6c7P17YZCSJLdjYRmTGSd0T20DZ0RQmdCCBf9_gG8al8L
+      part:
+        simple: all
+      type:
+        simple: PLAIN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2550
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 60233303-b7a9-4935-8826-4c5a6af41a54
+    type: regular
+    task:
+      id: 60233303-b7a9-4935-8826-4c5a6af41a54
+      version: -1
+      name: mimecast-get-message
+      script: '|||mimecast-get-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      context:
+        simple: RECEIVED
+      messageID:
+        simple: eNolj01vgkAQhv_LJj0txv0QdoUTamnaYmugrR5MCO4OlgC7hq8eTP97sc5hJnmS98m8V9SBGlooNfLRcb7-Mf17jZ8_V5SXmn-d3fE4f41HfkgqPZj8xRNiP-bNU7iFZrWLK747uDHYjd2KOI8MclADXZefoba2Gi69rcBMZk3kacFPiinhEqmBFdyTXHIgslgw6qmlli5QEUT7Bx7iKK-VNXhTdsqO0OJwn-LU1kNfTnTVllDgBC627QMz1HXACJWUMkmXnJHb3PH_mj76QD5x0OTppjjyqYPyVn2X4730Y5Klbxs6c7P17YZCSJLdjYRmTGSd0T20DZ0RQmdCCBf9_gG8al8L
+      part:
+        simple: all
+      type:
+        simple: PLAIN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2920
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: f9c359ed-f7d4-4d01-8b5b-c721d68ae215
+    type: regular
+    task:
+      id: f9c359ed-f7d4-4d01-8b5b-c721d68ae215
+      version: -1
+      name: mimecast-download-attachments
+      script: '|||mimecast-download-attachments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      attachmentID:
+        simple: eNpNj11vgjAYhf9Lr3VrC-Ut3jndp-Cci5sXS0hbiqK0LFDIErP_vjKzj_tznuecE2q16hpd5miCNk8vjU0Pd8vHbVrdHzbBwnzMFkkfbNfHvLPiIQJ47YW5nabaXK2SY7DaskTX8zqFRNxYNEKmRpNCVK0eoaZQnNLWdVKiie2qaoSEc0LtjbZONGpf9trVR229ud2LIJNhwYmOAi1DFosYJCsAZCR5FOYhJsCwCLEEQhlTEgJOYipjHudxJGPJucooJpwQTPyOwhqPLY3YaYzJxbvdof_6oqzOl8nQoB4VUAIYh0NXda2rjW5UnWsfmT0v52QKwPHANe6H-3Z5pva6acvavyDecL71jb5eZ0NzzLI_wu_EjELW2tzpxpCxXzgGAIY-vwDIHnh9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2550
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 19fba455-e03e-40be-8c2e-5ddc79df4b01
+    type: condition
+    task:
+      id: 19fba455-e03e-40be-8c2e-5ddc79df4b01
+      version: -1
+      name: Test mimecast-query context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Mimecast
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Mimecast.Message.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ARCHIVED
+                accessor: Message.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 8a22d3ec-4c43-404b-8b53-63bff27d535d
+    type: condition
+    task:
+      id: 8a22d3ec-4c43-404b-8b53-63bff27d535d
+      version: -1
+      name: Test mimecast-url-decode context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Mimecast.DecodedURL
+            iscontext: true
+          right:
+            value:
+              simple: https://spam.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: bcfcf2bc-4cb7-41a7-8e47-ef872b008f57
+    type: condition
+    task:
+      id: bcfcf2bc-4cb7-41a7-8e47-ef872b008f57
+      version: -1
+      name: Test mimecast-manage-sender context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Mimecast.Managed.Sender
+            iscontext: true
+          right:
+            value:
+              simple: yarden@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1270
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: b2a97fe3-1420-4617-82d8-099ff12b6163
+    type: condition
+    task:
+      id: b2a97fe3-1420-4617-82d8-099ff12b6163
+      version: -1
+      name: Test create-managed-url context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Mimecast.URL.Action
+            iscontext: true
+          right:
+            value:
+              simple: permit
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1680
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 6932620c-f1df-4a1b-8045-6cfe8c651dfb
+    type: condition
+    task:
+      id: 6932620c-f1df-4a1b-8045-6cfe8c651dfb
+      version: -1
+      name: Test mimecast-list-managed-url context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Mimecast
+                accessor: URL.Domain
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 938302c4-c40d-4a55-8822-50b9d48cf63d
+    type: condition
+    task:
+      id: 938302c4-c40d-4a55-8822-50b9d48cf63d
+      version: -1
+      name: Test mimecast-get-message context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.Message.Subject
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3120
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 40b133f5-2e49-4985-8d63-201e1314045b
+    type: condition
+    task:
+      id: 40b133f5-2e49-4985-8d63-201e1314045b
+      version: -1
+      name: Test mimecast-get-message context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Mimecast.Message.HasHtmlBody
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2750
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 25dc35bc-409d-4b79-8df0-e8a8e89616ce
+    type: condition
+    task:
+      id: 25dc35bc-409d-4b79-8df0-e8a8e89616ce
+      version: -1
+      name: Test mimecast-download-attachments context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+          right:
+            value:
+              simple: image/png
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2740
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: d469ab78-1022-4c91-8fa8-6a62d3eb3b2a
+    type: condition
+    task:
+      id: d469ab78-1022-4c91-8fa8-6a62d3eb3b2a
+      version: -1
+      name: Test mimecast-list-blocked-sender-policies context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.Policy.Sender.Type
+            iscontext: true
+          right:
+            value:
+              simple: external_addresses
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2130
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: 52a2ba5d-46a2-47fc-80ee-6559a38f5007
+    type: condition
+    task:
+      id: 52a2ba5d-46a2-47fc-80ee-6559a38f5007
+      version: -1
+      name: Test mimecast-get-attachment-logs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.AttachmentLog.Recipient
+            iscontext: true
+          right:
+            value:
+              simple: mimecast@demistolab.com
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 705394bb-85c4-4b39-8323-fa568a6c7254
+    type: condition
+    task:
+      id: 705394bb-85c4-4b39-8323-fa568a6c7254
+      version: -1
+      name: Test mimecast-delete-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Mimecast.Policy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1660
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: f260f7d3-71c4-40f4-8b7b-bfd7acd9af62
+    type: condition
+    task:
+      id: f260f7d3-71c4-40f4-8b7b-bfd7acd9af62
+      version: -1
+      name: Test mimecast-get-impersonation-logs context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.Impersonation.SenderIP
+            iscontext: true
+          right:
+            value:
+              simple: 40.107.78.135
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1660
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 68c88c95-6c5e-4b8d-8c13-26510616eb69
+    type: condition
+    task:
+      id: 68c88c95-6c5e-4b8d-8c13-26510616eb69
+      version: -1
+      name: Test mimecast-get-url-logs context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.UrlLog.Category
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1260
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 1033eb9b-5754-4434-8708-277c1c27e31c
+    type: condition
+    task:
+      id: 1033eb9b-5754-4434-8708-277c1c27e31c
+      version: -1
+      name: Test mimecast-get-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Mimecast.Policy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1270
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 04bf8b0a-5647-4003-853c-972a5c619b19
+    type: condition
+    task:
+      id: 04bf8b0a-5647-4003-853c-972a5c619b19
+      version: -1
+      name: Test mimecast-create-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Mimecast.Policy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
           "x": 50,
           "y": 545
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 326e025e-9442-4e9f-8eb7-840d05d29232
+    type: condition
+    task:
+      id: 326e025e-9442-4e9f-8eb7-840d05d29232
+      version: -1
+      name: Test mimecast-list-messages context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Mimecast.Message.Subject
+            iscontext: true
+          right:
+            value:
+              simple: impersonation
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+    type: regular
+    task:
+      id: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+      version: -1
+      name: Fetch incidents
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      brand_name:
+        simple: MimecastV2
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2930
         }
       }
     note: false
@@ -530,8 +1242,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 380,
+        "height": 3365,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
