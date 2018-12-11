@@ -89,7 +89,7 @@ outputs:
 scripttarget: 0
 dependson:
   must:
-  - archer-create-record
+  - jira-create-issue
 runonce: false
 tests:
   - JiraCreateIssue-example-test
