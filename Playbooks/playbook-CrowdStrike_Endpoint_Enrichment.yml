@@ -1,4 +1,4 @@
-id: CrowdStrike Endpoint Enrichment
+id: crowdstrike_endpoint_enrichment
 version: -1
 name: CrowdStrike Endpoint Enrichment
 fromversion: "3.5.0"
