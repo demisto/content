@@ -21,6 +21,7 @@ enabled: true
 args:
 - name: file_id
   required: true
+  description: Entry ID of the file to be converted.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/markdown2
