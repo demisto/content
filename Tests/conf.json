@@ -833,6 +833,7 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "FortiGate": "License expired, in the process of getting new one",
         "Whois": "Server currently has Whois by default, need to deprecate",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
