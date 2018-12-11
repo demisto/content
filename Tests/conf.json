@@ -439,9 +439,6 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
-            "playbookID": "test-md2html"
-        },
-        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
