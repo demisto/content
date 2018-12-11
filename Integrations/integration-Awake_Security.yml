@@ -1,0 +1,1103 @@
+commonfields:
+  id: Awake Security
+  version: -1
+name: Awake Security
+display: Awake Security
+category: Network Security
+image: data:image/png;base64,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
+description: Network Traffic Analysis
+detaileddescription: ""
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Awake Security server address
+  name: server
+  defaultvalue: https://example.awake.cloud
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "False"
+  type: 8
+  required: true
+- display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
+    "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement:
+    Unix-based PSEXEC, C2: Possible ICMP tunnel"'
+  name: threat_behaviors
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Period between incident fetch interval (in minutes)
+  name: fetch_interval
+  defaultvalue: "1"
+  type: 0
+  required: true
+- display: Minimum threshold to determine an indicator suspicious in Demisto
+  name: suspicious_threshold
+  defaultvalue: "33"
+  type: 0
+  required: true
+- display: Minimum threshold to determine an indicator malicious in Demisto
+  name: malicious_threshold
+  defaultvalue: "66"
+  type: 0
+  required: true
+script:
+  script: |-
+    ''' IMPORTS '''
+    import base64
+    import datetime
+    import re
+    import requests
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS '''
+    params = demisto.params()
+    server = params["server"]
+    prefix = server + "/awakeapi/v1"
+    verify = params.get('unsecure', False)
+    if not params.get("proxy", False):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+    credentials = params["credentials"]
+    identifier = credentials["identifier"]
+    password = credentials["password"]
+    suspicious_threshold = params["suspicious_threshold"]
+    malicious_threshold = params["malicious_threshold"]
+    authTokenRequest = {
+      "loginUsername": identifier,
+      "loginPassword": password
+    }
+    authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
+    authToken = authTokenResponse.json()["token"]["value"]
+    headers = {
+        "Authentication": ("access " + authToken)
+    }
+    command = demisto.command()
+    args = demisto.args()
+    request = {}
+
+    ''' HELPERS '''
+    def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
+        ''' Makes an API call with the given arguments '''
+        result = requests.request(
+            method,
+            uri,
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files
+        )
+        if result.status_code < 200 or result.status_code >= 300:
+            return_error('Request Failed.\nStatus code: ' + str(result.status_code) + ' with body ' + result.content + ' with headers ' + str(result.headers))
+
+        jresult = json.loads(xml2json(result.text))
+        if jresult['response']['@status'] != 'success':
+            if '@code' in jresult['response']:
+                return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            elif '@status' in jresult['response']:
+                return_error('Request Failed.\nStatus: ' + jresult['response']['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            else:
+                return_error('Request Failed.\n' + jresult['response'])
+
+        return jresult
+
+    # Convenient utility to marshal command arguments into the request body
+    def slurp(fields):
+        for field in fields:
+            if field in args:
+                request[field] = args[field]
+
+    # Render a subset of the fields of the Contents as a markdown table
+    def displayTable(contents, fields):
+        # We don't use a set() because we want to preserve field order
+        #
+        # The fields are ordered to put the most relevant information first
+        presentFields = []
+        # Omit table columns that are all empty
+        for content in contents:
+            for field in fields:
+                if field in content and content[field] and field not in presentFields:
+                    presentFields.append(field)
+        line0 = "| "
+        line1 = "| "
+        for field in presentFields:
+            # Translate camel-case field names to title-case space-separated words
+            tokens = re.findall("[a-zA-Z][A-Z]*[^A-Z]*", field)
+            name = " ".join(map(lambda token: token.title(), tokens))
+            line0 += name + " | "
+            line1 += "--- | "
+        line0 += "\n"
+        line1 += "\n"
+        body = ""
+        for content in contents:
+            body += "| "
+            for field in presentFields:
+                if field in content:
+                    value = json.dumps(content[field])
+                else:
+                    value = ""
+                body += value + " | "
+            body += "\n"
+        if presentFields:
+            return (line0 + line1 + body)
+        else:
+            return "Empty results"
+
+    def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore):
+        machineReadable = {
+            "AwakeSecurity": contents,
+        }
+        entryContext = {
+            ("AwakeSecurity." + outerKey + "(val." + innerKey + "===obj." + innerKey + ")"): contents,
+        }
+        if dbotScore is not None:
+            machineReadable["DBotScore"] = dbotScore
+            entryContext["DBotScore"] = dbotScore
+        demisto.results({
+            "Type": entryTypes['note'],
+            "ContentsFormat": formats['json'],
+            "Contents": json.dumps(machineReadable),
+            "HumanReadable": humanReadable,
+            "ReadableContentsFormat": formats['markdown'],
+            "EntryContext": entryContext,
+        })
+
+    def toDBotScore(indicator_type, percentile, lookup_key):
+        if percentile <= suspicious_threshold:
+            score = 1
+        elif percentile <= malicious_threshold:
+            # Something doing something out of the ordinary
+            score = 2
+        else:
+            # Probably bad or at least not compliant with
+            # company policy.
+            score = 3
+        return {
+            "Vendor": "Awake Security",
+            "Type": indicator_type,
+            "Indicator": lookup_key,
+            "Score": score
+        }
+
+    ''' COMMANDS '''
+    def lookup(lookup_type, lookup_key):
+        path = "/lookup/" + lookup_type
+        request["lookup_key"] = lookup_key
+        # default value of lookback_minutes is 480
+        if "lookback_minutes" not in args:
+            args["lookback_minutes"] = 480
+        request["lookback_minutes"] = int(args["lookback_minutes"])
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        if response.status_code < 200 or response.status_code >= 300:
+            return_error('Request Failed.\nStatus code: ' + str(response.status_code) + ' with body ' + response.content + ' with headers ' + str(response.headers))
+        return response.json()
+
+    def lookupDevice():
+        lookup_key = args["device"]
+        contents = lookup("device", lookup_key)
+        humanReadableFields = [
+            "deviceScore",
+            "deviceName",
+            "deviceType",
+            "os",
+            "osVersion",
+            "commonEmail",
+            "commonUsername",
+            "tags",
+            "recentIP",
+            "activeIP",
+            "nSimilarDevices",
+            "ipCount",
+            "applicationCount",
+            # "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+        if "deviceScore" in contents:
+            dbotScore = toDBotScore("device", contents["deviceScore"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'device',
+                "Indicator": lookup_key,
+                "Score": 0
+            }
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["device"] = lookup_key
+        returnResults(contents, "Devices", "device", humanReadable, dbotScore)
+
+    def lookupDomain():
+        lookup_key = args["domain"]
+        contents = lookup("domain", lookup_key)
+        humanReadableFields = [
+            "notability",
+            "isAlexaTopOneMillion",
+            "isDGA",
+            "intelSources",
+            "numAssociatedDevices",
+            "numAssociatedActivities",
+            "approxBytesTransferred",
+            "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+        if "notability" in contents:
+            dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'domain',
+                "Indicator": lookup_key,
+                "Score": 0
+            }
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["domain"] = lookup_key
+        returnResults(contents, "Domains", "domain", humanReadable, dbotScore)
+
+    def lookupEmail():
+        lookup_key = args["email"]
+        contents = lookup("email", lookup_key)
+        humanReadableFields = [
+            "notabilityPercentile",
+            "deviceName",
+            "os",
+            "deviceType",
+            "application",
+            "numberSimilarDevices",
+            "numberSessions",
+            "firstSeen",
+            "lastSeen",
+            "duration",
+            "deviceId",
+        ]
+        if "notabilityPercentile" in contents:
+            dbotScore = toDBotScore("email", contents["notabilityPercentile"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'email',
+                "Indicator": lookup_key,
+                "Score": 0
+            }
+        humanReadable = displayTable(contents, humanReadableFields)
+        for content in contents:
+            content["email"] = lookup_key
+        returnResults(contents, "Emails", "email", humanReadable, dbotScore)
+
+    def lookupIp():
+        lookup_key = args["ip"]
+        contents = lookup("ip", lookup_key)
+        humanReadableFields = [
+            "deviceCount",
+            "activityCount",
+            "ipFirstSeen",
+            "ipLastSeen",
+        ]
+        dbotScore = {
+            "Vendor": "Awake Security",
+            "Type": 'ip',
+            "Indicator": lookup_key,
+            "Score": 0
+        }
+        # Note: No DBotScore for IP addresses as we do not score them.
+        # Our product scores devices rather than IP addresses.
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["ip"] = lookup_key
+        returnResults(contents, "IPs", "ip", humanReadable, dbotScore)
+
+    def query(lookup_type):
+        # Default to an empty query if unset
+        request["queryExpression"] = ""
+        slurp(["queryExpression", "startTime", "endTime"])
+        nameMappings = [
+            ("ipAddress","device.ip == {}"),
+            ("deviceName","device.name like r/{}/"),
+            ("domainName", "domain.name like r/{}/"),
+            ("protocol", "activity.protocol == \"{}\""),
+            ("tags","\"{}\" in device.tags"),
+        ]
+        for (name, mapping) in nameMappings:
+            if name in args:
+                if "queryExpression" in request and request["queryExpression"]:
+                    request["queryExpression"] = request["queryExpression"] + " && " + mapping.format(args[name])
+                else:
+                    request["queryExpression"] = mapping.format(args[name])
+        path = "/query/" + lookup_type
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        if response.status_code < 200 or response.status_code >= 300:
+            return_error('Request Failed.\nStatus code: ' + str(response.status_code) + ' with body ' + response.content + ' with headers ' + str(response.headers))
+        contents = response.json()
+        return request["queryExpression"], contents
+
+    def queryActivities():
+        q, contents = query("activities")
+        humanReadableFields = [
+            "sourceIP",
+            "sourceHost",
+            "sourcePort",
+            "destIP",
+            "destHost",
+            "destPort",
+            "activityDeviceName",
+            "activityStart",
+            "activityEnd",
+            "protocols",
+        ]
+        humanReadable = displayTable(contents, humanReadableFields)
+        for content in contents:
+            content["query"] = q
+        returnResults(contents, "Activities", "query", humanReadable, None)
+
+    def queryDevices():
+        q, contents = query("devices")
+        humanReadableFields = [
+            "notabilityPercentile",
+            "deviceName",
+            "os",
+            "deviceType",
+            "application",
+            "numberSimilarDevices",
+            "numberSessions",
+            "firstSeen",
+            "lastSeen",
+            "duration",
+            "deviceId",
+        ]
+        humanReadable = displayTable(contents, humanReadableFields)
+        for content in contents:
+            content["query"] = q
+        returnResults(contents, "Devices", "query", humanReadable, None)
+
+    def queryDomains():
+        q, contents = query("domains")
+        humanReadableFields = [
+            "name",
+            "notability",
+            "created",
+            "lastUpdated",
+            "expiration",
+            "registrantOrg",
+            "registrantCountry",
+            "registrarName",
+            "nameservers",
+            "deviceCount",
+            "intelCount",
+            "lastSeen",
+        ]
+        humanReadable = displayTable(contents, humanReadableFields)
+        for content in contents:
+            content["query"] = q
+        returnResults(contents, "Domains", "query", humanReadable, None)
+
+    def pcapDownload():
+        slurp(["monitoringPointID"])
+        session = {}
+        for field in [ "hostA", "hostB", "startTimeRFC3339Nano", "endTimeRFC3339Nano" ]:
+            if field in args:
+                session[field] = args[field]
+        if "startTimeRFC3339Nano" in args:
+            session["startTimeRFC3339Nano"] = args["startTime"]
+        if "endTimeRFC3339Nano" in args:
+            session["endTimeRFC3339Nano"] = args["endTime"]
+        for field in [ "protocol", "portA", "portB" ]:
+            if field in args:
+                session[field] = int(args[field])
+        request["sessions"] = [ session ]
+        path = "/pcap/download"
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        if response.status_code < 200 or response.status_code >= 300:
+            return_error('Request Failed.\nStatus code: ' + str(response.status_code) + ' with body ' + response.content + ' with headers ' + str(response.headers))
+        b64 = response.json()["pcap"]
+        bytes = base64.b64decode(b64)
+        demisto.results(fileResult("download.pcap", bytes))
+
+    def fetchIncidents():
+        threatBehaviorsString = params.get("threat_behaviors") or ""
+        threatBehaviors = [ threatBehavior.strip() for threatBehavior in threatBehaviorsString.split(",")]
+        if threatBehaviors == [""]:
+            threatBehaviors = []
+        lastRun = demisto.getLastRun();
+        formatString = "%Y-%m-%d %H:%M:%S+0000"
+        earlyTimeString = "1970-01-01 00:00:00+0000"
+        startTimeString = lastRun.get("time") or earlyTimeString
+        startTime = datetime.datetime.strptime(startTimeString, formatString)
+        endTime = datetime.datetime.utcnow()
+        endTimeString = datetime.datetime.strftime(endTime, formatString)
+        if datetime.timedelta(minutes=int(params['fetch_interval'])) <= endTime - startTime:
+            jsonRequest = {
+                "startTime": startTimeString,
+                "endTime": endTimeString,
+                "threatBehaviors": threatBehaviors
+            }
+            response = requests.post(prefix + "/threat-behavior/matches", json=jsonRequest, headers=headers, verify=verify)
+            jsonResponse = response.json()
+            matchingThreatBehaviors = jsonResponse.get("matchingThreatBehaviors", [])
+            def toIncident(matchingThreatBehavior):
+                # Currently the threat behavior API doesn't allow us to retrieve metadata for
+                # the behaviors that matched, which is why this incident record is mostly empty
+                #
+                # However, we can provide the original query that the threat behavior corresponded
+                # to plus the date range so that a playbook can feed them back into
+                # `awake-query-{devices,activities}` to retrieving the matching devices or
+                # activities that triggered the match to the threat behavior.
+                return {
+                    "Name": matchingThreatBehavior["name"],
+                    "Query": matchingThreatBehavior["query"],
+                    "StartTime": startTimeString,
+                    "EndTime": endTimeString,
+                }
+            demisto.incidents(map(toIncident, matchingThreatBehaviors))
+            # Don't increase the low-water-mark until we actually find incidents
+            #
+            # This is a precaution because incidents sometimes appear in an old time
+            # bucket after a delay
+            if 0 < len(matchingThreatBehaviors):
+                lastRun = { "time": endTimeString }
+        else:
+            demisto.incidents([])
+        demisto.setLastRun(lastRun)
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (command))
+
+    try:
+        if command == "test-module":
+            # If we got this far we already successfully authenticated against the server
+            demisto.results('ok')
+
+        elif command == "fetch-incidents":
+            fetchIncidents()
+
+        elif command == "awake-query-devices":
+            queryDevices()
+
+        elif command == "awake-query-activities":
+            queryActivities()
+
+        elif command == "awake-query-domains":
+            queryDomains()
+
+        elif command == "awake-pcap-download":
+            pcapDownload()
+
+        elif command == "domain":
+            lookupDomain()
+
+        elif command == "email":
+            lookupEmail()
+
+        elif command == "ip":
+            lookupIp()
+
+        elif command == "device":
+            lookupDevice()
+
+    except Exception, e:
+        if command == "fetch-incidents":
+            raise
+        LOG(e)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
+  commands:
+  - name: awake-query-devices
+    arguments:
+    - name: queryExpression
+      description: A query expression in Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: Tag to filter by (regular expression)
+    outputs:
+    - contextPath: AwakeSecurity.Devices.deviceId
+      description: Awake Security unique identifier for the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceName
+      description: Device name
+      type: string
+    - contextPath: AwakeSecurity.Devices.firstSeen
+      description: Date that the specified device was first seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.lastSeen
+      description: Date that the specified device was last seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.os
+      description: Operating system associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceType
+      description: Device type
+      type: string
+    - contextPath: AwakeSecurity.Devices.ips
+      description: List of IP addresses associated with the specified device
+      type: unknown
+    - contextPath: AwakeSecurity.Devices.monitoringPointIds
+      description: List of monitoring point IDs the specified device was seen on
+      type: string
+    - contextPath: AwakeSecurity.Devices.application
+      description: List of applications the specified device was seen using
+      type: string
+    - contextPath: AwakeSecurity.Devices.notabilityPercentile
+      description: How the notability of this device compares to other devices
+      type: number
+    - contextPath: AwakeSecurity.Devices.numberSimilarDevices
+      description: Number of devices that are similar to this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.numberSessions
+      description: Number of TCP sessions for this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.ackTime
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
+      type: number
+    - contextPath: AwakeSecurity.Devices.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    description: Query devices in Awake Security
+  - name: awake-query-activities
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: ' Tag to filter by (regular expression)'
+    outputs:
+    - contextPath: AwakeSecurity.Activities.activityId
+      description: UUID that uniquely identifies the activity
+      type: string
+    - contextPath: AwakeSecurity.Activities.sessionId
+      description: UUID that uniquely identifies the corresponding session
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourceIP
+      description: IP address of the source
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourceHost
+      description: Hostname of the source
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourcePort
+      description: Port of the source
+      type: number
+    - contextPath: AwakeSecurity.Activities.destinationIP
+      description: IP address of the destination
+      type: string
+    - contextPath: AwakeSecurity.Activities.destinationHost
+      description: Hostname of the destination
+      type: string
+    - contextPath: AwakeSecurity.Activities.destinationPort
+      description: Port of the destination
+      type: number
+    - contextPath: AwakeSecurity.Activities.directionKnown
+      description: Do we know for sure which endpoint was the client?
+      type: bool
+    - contextPath: AwakeSecurity.Activities.activityDeviceName
+      description: Device name for the endpoint within your network
+      type: string
+    - contextPath: AwakeSecurity.Activities.activityStart
+      description: Date when the activity began
+      type: string
+    - contextPath: AwakeSecurity.Activities.activityEnd
+      description: Date when the activity ended
+      type: string
+    - contextPath: AwakeSecurity.Activities.protocols
+      description: Protocols that the activity used
+      type: string
+    description: Query activities in Awake Security
+  - name: awake-query-domains
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: ' Tag to filter by (regular expression)'
+    outputs:
+    - contextPath: AwakeSecurity.Domains.name
+      description: Domain name
+      type: string
+    - contextPath: AwakeSecurity.Domains.created
+      description: Date the specified domain was created
+      type: string
+    - contextPath: AwakeSecurity.Domains.lastUpdated
+      description: Date the specified domain was last updated
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrantOrg
+      description: Organization of the registrant
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrantCountry
+      description: Country of the registrant
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrarName
+      description: Name of the registrar
+      type: string
+    - contextPath: AwakeSecurity.Domains.whoisServer
+      description: Address of the WHOIS server
+      type: string
+    - contextPath: AwakeSecurity.Domains.whoisFound
+      description: Was this domain found via WHOIS
+      type: bool
+    - contextPath: AwakeSecurity.Domains.deviceCount
+      description: Number of devices currently interacting with the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.totalDevices
+      description: Total number of devices that have interacted with the specified
+        domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.intelCount
+      description: Number of matches of imported intel against the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.lastSeen
+      description: Date of the most recent interaction with the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.nameservers
+      description: List of authoritative nameservers for the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.notability
+      description: Notability score of the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.whiteListed
+      description: Is the specified domain in white list
+      type: bool
+    description: Query domains in Awake Security
+  - name: awake-pcap-download
+    arguments:
+    - name: protocol
+      description: Protocol to filter by (all uppercase, e.g., "TLS")
+    - name: hostA
+      description: First host's address
+    - name: portA
+      description: First host's port
+    - name: hostB
+      description: Second host's address
+    - name: portB
+      description: Second host's port
+    - name: startTime
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      description: Query end time ("2000-01-01T00:00:00Z")
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA-1 of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA-256 of the file
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: File common metadata
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.Extension
+      description: 'File Extension e.g: "pcap"'
+      type: string
+    description: Download a PCAP
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Domains.approxBytesTransferred
+      description: Approximate bytes the indicator transferred
+      type: number
+    - contextPath: AwakeSecurity.Domains.DomainWithSameRegistrant
+      description: Domains with the same registrant
+      type: unknown
+    - contextPath: AwakeSecurity.Domains.domainsWithSameRegistrant.registrationDate
+      description: Date that the domain with the same registrant as the specified
+        domain was registered
+      type: string
+    - contextPath: AwakeSecurity.Domains.IntelSources
+      description: Indicators of compromise from Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Domains.ipAddresses
+      description: IP addressesassociated with the domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.isAlexaTopOneMillion
+      description: Does the domain appear in Alexa 1 million list
+      type: string
+    - contextPath: AwakeSecurity.Domains.isDGA
+      description: Is domain generation algorithm
+      type: boolean
+    - contextPath: AwakeSecurity.Domains.lastSeen
+      description: Last time the domain was seen
+      type: string
+    - contextPath: AwakeSecurity.Domains.notabillity
+      description: Notability score of the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.numAssociatedActivities
+      description: Number of network activities associated with the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.numAssociatedADevices
+      description: Number of devices associated with the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.protocols
+      description: List of protocols used in the domain activities
+      type: string
+    - contextPath: AwakeSecurity.Domains.relatedSubdomains
+      description: Related subdomains of the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.subdomains
+      description: Subdomains of the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.topDevices
+      description: LIst of devices that accessed the specified domain (maximum is
+        10)
+      type: string
+    - contextPath: AwakeSecurity.Domains.totalNumDevices
+      description: Total number of devices that accessed the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.whiteListed
+      description: Is the specified domain in white list
+      type: boolean
+    - contextPath: DBotScore.Indicator
+      description: The specified domain
+      type: string
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified domain in Demisto
+      type: number
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified domain
+      type: string
+    description: Lookup and enrich a domain
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.IPs.activityCount
+      description: Number of activities associated with the specified IP address
+      type: number
+    - contextPath: AwakeSecurity.IPs.deviceCount
+      description: Number of devices associated with the specified IP address
+      type: number
+    - contextPath: AwakeSecurity.IPs.devices
+      description: Device object associated with the specified IP address
+      type: unknown
+    - contextPath: AwakeSecurity.IPs.domains
+      description: Domain object associated with the specified IP address
+      type: unknown
+    - contextPath: AwakeSecurity.IPs.ipFirstSeen
+      description: Date that the IP address was first seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.IPs.ipLastSeen
+      description: Date that the IP address was last seen in Awake Security
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The specified IP address
+      type: string
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified IP address in Demisto
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified IP address
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    description: Lookup and enrich an IP address
+  - name: email
+    arguments:
+    - name: email
+      description: The email address
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Emails.deviceId
+      description: Device ID associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.deviceName
+      description: Device name associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.firstSeen
+      description: Date that the email address was first seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.lastSeen
+      description: Date that the email address was last seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.duration
+      description: Time (in seconds) between the email address first seen date and
+        last seen date in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.os
+      description: Operating system of the device associated with the specified email
+        address
+      type: string
+    - contextPath: AwakeSecurity.Emails.deviceType
+      description: Device type associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.ips
+      description: IP addresses that the device associated with the specified email
+        address accessed
+      type: string
+    - contextPath: AwakeSecurity.Emails.monitoringPointIds
+      description: Monitoring point IDs on which the device associated with the specified
+        email address were seen
+      type: string
+    - contextPath: AwakeSecurity.Emails.application
+      description: Email applications associated with this email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.notabilityPercentile
+      description: Notability (risk score) of the specified email address
+      type: number
+    - contextPath: AwakeSecurity.Emails.numberSimilarDevices
+      description: Number of similar devices associated with the device of the specified
+        email addresses
+      type: number
+    - contextPath: AwakeSecurity.Emails.numberSessions
+      description: Number of TCP sessions the device associated with this email address
+        initiated
+      type: number
+    - contextPath: AwakeSecurity.Emails.ackTime
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified email address in Demisto
+      type: number
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified email address
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The specified email address
+      type: string
+    description: Lookup and enrich an email address
+  - name: device
+    arguments:
+    - name: device
+      required: true
+      description: The device ID
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Devices.deviceScore
+      description: Risk score of the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.value
+      description: Number of suspicious domains accessed by the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.percentile
+      description: Percentile of the specified device for notable domains accessed
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.weight
+      description: Importance given to the suspicious domains when calculating the
+        specified device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.value
+      description: Number of suspicious IOCs associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.percentile
+      description: Percentile of the specified device for notable IOCs
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.weight
+      description: Importance given to the IOCs when calculating the specified device
+        risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.value
+      description: Total number of current threat behaviors associated with the specified
+        device
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.percentile
+      description: How this device compares to other devices for number of threat
+        behaviors
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.weight
+      description: Importance given to the threat behaviors when calculating the specified
+        device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.value
+      description: Number of characteristic artifacts associated with the specified
+        device
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.percentile
+      description: How this device compares to other devices for characteristic artifacts
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.weight
+      description: Importance given to the characteristic artifacts when calculating
+        the specified device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.deviceName
+      description: Device name
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceType
+      description: Device type
+      type: string
+    - contextPath: AwakeSecurity.Devices.os
+      description: Operating system associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.recentIp
+      description: Most recent IP address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.activeIp
+      description: Most common IP address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonEmail
+      description: Most common email address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonUsername
+      description: Most common username associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonMpid
+      description: Most common monitoring point ID the specified device was seen on
+      type: string
+    - contextPath: AwakeSecurity.Devices.nSimilarDevices
+      description: Number of devices that are similar to the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.tags
+      description: Tags applied to the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ipCount
+      description: Number of IP addresses associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.emailCount
+      description: Number of email addresses associated with this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.usernameCount
+      description: Number of usernames associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.applicationCount
+      description: Number of applications associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.mpids
+      description: List of monitoring point IDs associated with th specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.protocols.count
+      description: Number of time this protocol was used by the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.firstSeen
+      description: Date that the specified device was first seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.lastSeen
+      description: Date that the specified device was last seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.osVersion
+      description: Operating system version of the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceGuid
+      description: Awake Security unique identifier for the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ips
+      description: List of IP addresses associated with the specified device
+      type: unknown
+    - contextPath: AwakeSecurity.Devices.usernames
+      description: List of usernames that were inferred as accounts on the specified
+        device
+      type: string
+    - contextPath: AwakeSecurity.Devices.emails
+      description: List of email addresses associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ackTs
+      description: Date of the last TCP session acknowledgment of the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    - contextPath: AwakeSecurity.Devices.protocols.name
+      description: Type of protocol used by the specified device
+      type: string
+    description: Lookup and enrich a device
+  isfetch: true
+  runonce: false
+releaseNotes: "New Integration"
+tests:
+- awake_security_test_pb

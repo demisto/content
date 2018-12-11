@@ -1,5 +1,6 @@
 {
     "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
         {
             "integrations": "Cymon",
@@ -31,6 +32,10 @@
         },
         {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
         },
         {
           "integrations": "Tenable.sc",
@@ -88,12 +93,6 @@
             "integrations": "Luminate"
         },
         {
-            "playbookID": "Test_Sagemaker",
-            "integrations": [
-                "AWS Sagemaker"
-            ]
-        },
-        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -148,7 +147,8 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest"
+            "playbookID": "RedCanaryTest",
+            "nightly" : true
         },
         {
           "integrations": "Devo",
