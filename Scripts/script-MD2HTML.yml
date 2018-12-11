@@ -25,3 +25,5 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/markdown2
+tests:
+  - No test
