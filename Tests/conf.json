@@ -1,6 +1,11 @@
 {
     "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
+        {
+            "integrations": "Cymon",
+            "playbookID": "playbook-Cymon_Test"
+        },
         {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
@@ -29,9 +34,14 @@
             "playbookID": "WordTokenizeTest"
         },
         {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
+        },
+        {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
-          "timeout": 240
+          "timeout": 240,
+          "nightly": true
         },
         {
             "integrations": "MimecastV2",
@@ -83,12 +93,6 @@
             "integrations": "Luminate"
         },
         {
-            "playbookID": "Test_Sagemaker",
-            "integrations": [
-                "AWS Sagemaker"
-            ]
-        },
-        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -112,6 +116,10 @@
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "dnstwist",
+            "playbookID": "dnstwistTest"
         },
         {
             "integrations": "BitDam",
@@ -139,7 +147,8 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest"
+            "playbookID": "RedCanaryTest",
+            "nightly" : true
         },
         {
           "integrations": "Devo",
@@ -796,7 +805,16 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+        },
+        {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test"
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
+
+        }
     ],
     "skipped_tests": {
         "whois_test": "Server currently has Whois by default, need to deprecate",
@@ -811,7 +829,6 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },

@@ -512,7 +512,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: in
+      - - operator: containsGeneral
           left:
             value:
               simple: Domain.Malicious.Vendor
@@ -520,6 +520,38 @@ tasks:
           right:
             value:
               simple: Cisco Umbrella Investigate
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
     view: |-
       {
         "position": {
