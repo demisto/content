@@ -672,7 +672,7 @@
         },
         {
             "integrations" : "jira",
-            "playbookID" : "Jira-createIssue-generic-test"
+            "playbookID" : "JiraCreateIssue-example-test"
         },
         {
             "integrations": "LogRhythm",

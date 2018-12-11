@@ -1,17 +1,18 @@
 commonfields:
-  id: JiraCreateIssue-generic
+  id: JiraCreateIssue-example
   version: -1
-name: JiraCreateIssue-generic
+name: JiraCreateIssuee-example
 script: |-
-  """
-  This script is used to simplify the process of creating a new Issue in Jira.
-  You can add fields that you want in the Issue as script arguments and or in the
-  code and have a newly created record easily.
-  """
   import json
 
   """
-  createIssue defualt argument, we recommend not changing them.
+  This script is used to simplify the process of creating a new Issue in Jira.
+  You can add fields that you want in the Issue as script arguments and or in the
+  code and have a newly created Issue easily.
+  """
+
+  """
+  createIssue default argument, we recommend not changing them.
   """
   DEFUALT_ARGS = ['summary',
                   'projectKey',
@@ -28,38 +29,15 @@ script: |-
                   'parentIssueId'
                   ]
 
-  """
-  If you want to add some constant args you can modify 'constants'
-  and insert as key:value pairs
-  """
-
-  constantsFields = {
-      # 'constKey' : 'value', <-- example for constant args for 'issueJson'
-  }
-
 
   createIssueArgs = {key : value for key,value in demisto.args().items() if key in DEFUALT_ARGS}
 
-  """
-  Demisto script arguments cannot have spaces or special chars, e.g. '/' in their name.
-  Therefore, we are replacing some values with such structure in Jira
-  from their script argument structure to their Jira structure.
-
-  If you add such arguments to the script, add them to this 'keysToChange' dictionary as well.
-  """
-
-  keysToChange = {
-      # 'exampleEXAMPLE' : 'example EXAMPLE',
-  }
-
 
   """
-  Adding the argument fields to the issueJson field.
-  If the key is in keysToChange we would add the Jira form, else we will add it as is.
+  Adding the arguments fields to the issueJson field.
   """
 
-  extraIssueArgs = {(keysToChange[k] if k in keysToChange else k) : v for k,v in demisto.args().items()  if k not in DEFUALT_ARGS}
-  extraIssueArgs.update(constantsFields)
+  extraIssueArgs = {key: value for key,value in demisto.args().items()  if key not in DEFUALT_ARGS}
   createIssueArgs['issueJson'] = json.dumps(extraIssueArgs)
 
   """
@@ -68,10 +46,12 @@ script: |-
   createIssueResult = demisto.executeCommand("jira-create-issue", createIssueArgs)
   demisto.results(createIssueResult)
 type: python
-tags: []
+tags:
+- jira
+- example
 comment: This script is used to simplify the process of creating a new Issue in Jira.
   You can add fields that you want in the record as script arguments and or in the
-  code and have a newly created record easily.
+  code and have a newly created Issue easily.
 enabled: true
 args:
 - name: summary

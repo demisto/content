@@ -1,6 +1,6 @@
-id: Jira-createIssue-generic-test
+id: JiraCreateIssue-example-test
 version: -1
-name: Jira-createIssue-generic-test
+name: JiraCreateIssue-example-test
 starttaskid: "0"
 tasks:
   "0":
