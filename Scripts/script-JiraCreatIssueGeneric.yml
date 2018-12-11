@@ -92,4 +92,4 @@ dependson:
   - archer-create-record
 runonce: false
 tests:
-  - Jira-createIssue-generic-test
+  - JiraCreateIssue-example-test
