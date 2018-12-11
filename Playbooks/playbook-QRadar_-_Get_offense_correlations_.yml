@@ -183,7 +183,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: Inputs.Modified.StartTime
+        simple: QRadar.OffenseStartTime
       value:
         complex:
           root: inputs.StartTime
@@ -218,7 +218,7 @@ tasks:
       all: {}
       index: {}
       key:
-        simple: Inputs.Modified.StartTime
+        simple: QRadar.OffenseStartTime
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -261,7 +261,7 @@ tasks:
           as "QID",destinationip as "DestinationIP",category as "CategoryID",username
           as "Username",sourceip as "SourceIP","CRE Name" as "CREName","CRE Description"
           as "CREDescription",CATEGORYNAME(highlevelcategory) as "Category" FROM events
-          WHERE "CRE NAME" <> NULL AND INOFFENSE(${inputs.ID}) START '${Inputs.Modified.StartTime}'
+          WHERE "CRE NAME" <> NULL AND INOFFENSE(${inputs.ID}) START '${QRadar.OffenseStartTime}'
       range:
         simple: 0-${inputs.MaxLogsCount}
       timeout:
@@ -311,7 +311,7 @@ tasks:
                   as "StartTime", destinationport as "DestinationPort", magnitude as "Magnitude",
                   identityip as "IdentityIP", CATEGORYNAME(category) as "Category", PROTOCOLNAME(protocolid)
                   as "ProtocolName", LOGSOURCENAME(logsourceid) as "Logsourcename_Logsourceid"
-                  from events where "CRE Name" IS NULL AND INOFFENSE(${inputs.ID}) START '${Inputs.Modified.StartTime}'
+                  from events where "CRE Name" IS NULL AND INOFFENSE(${inputs.ID}) START '${QRadar.OffenseStartTime}'
       range:
         simple: 0-${inputs.MaxLogsCount}
       timeout:
