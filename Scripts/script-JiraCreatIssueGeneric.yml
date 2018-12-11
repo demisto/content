@@ -1,7 +1,7 @@
 commonfields:
   id: JiraCreateIssue-example
   version: -1
-name: JiraCreateIssuee-example
+name: JiraCreateIssue-example
 script: |-
   import json
 
