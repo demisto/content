@@ -45,6 +45,7 @@ tags:
 - context
 - Utility
 comment: |-
+  Deprecated, use playbook filters instead.
   Verifies path in context:
   - Verifies path existence
   - If matching object is an array: verify fields exists in each of the objects in the array
@@ -62,3 +63,7 @@ args:
   description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
     ''{"a": 1, "b": ["hello", "world" ]}'
 scripttarget: 0
+deprecated: true
+releaseNotes: "Deprecated in favor of playbook filters."
+tests:
+  - No test
