@@ -1,0 +1,27 @@
+commonfields:
+  id: MD2HTML
+  version: -1
+name: MD2HTML
+script: |-
+  from markdown2 import Markdown
+
+  markdowner = Markdown(extras=["tables"])
+  file_entry = demisto.args().get('file_id', '')
+  file_path = demisto.getFilePath(file_entry)['path']
+  demisto.results(file_path)
+  fopen = open(str(file_path), "r")
+  data = fopen.read()
+  res = markdowner.convert(data)
+  demisto.results(fileResult("md2htmlresult.html", res))
+
+type: python
+tags: []
+comment: Converts MarkDown files to HTML files
+enabled: true
+args:
+- name: file_id
+  required: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/markdown2
+runas: DBotWeakRole
