@@ -20,7 +20,7 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents')
+      data = demisto.get(resp[0],'Contents.events')
 
       if not data:
           resp[0]['HumanReadable'] = "No Correlations were found for offense id {0}".format(offense_id)
@@ -96,7 +96,6 @@ args:
   description: Timeout in seconds. Default is 10 minutes.
 - name: fields
   description: Property fields to include in results
-  description: Fields
 outputs:
 - contextPath: QRadar.Correlation
   description: The QRadar offense correlations
