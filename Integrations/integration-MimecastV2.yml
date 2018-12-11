@@ -89,6 +89,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Hours before first fetch to retrieve incidents
+  name: fetchDelta
+  defaultvalue: "24"
+  type: 0
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -109,8 +114,6 @@ script:
     from urllib2 import HTTPError
     from distutils.util import strtobool
 
-    # from datetime import datetime,timedelta
-
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -130,6 +133,7 @@ script:
     # Used to refresh token / discover available auth types / login
     EMAIL_ADDRESS = demisto.params().get('email')
     PASSWORD = demisto.params().get('password')
+    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
     # remove proxy if not set to true in params
@@ -1172,7 +1176,7 @@ script:
 
         # handle first time fetch
         if last_fetch is None:
-            last_fetch = datetime.datetime.now() - datetime.timedelta(days=1)
+            last_fetch = datetime.datetime.now() - datetime.timedelta(hours=FETCH_DELTA)
             last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
         else:
             last_fetch = datetime.datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
@@ -1182,7 +1186,7 @@ script:
         incidents = []
         if FETCH_URL:
             search_params = {
-                'fromDate': last_fetch_date_time,
+                'from': last_fetch_date_time,
                 'scanResult': 'malicious'
             }
             url_logs = get_url_logs_request(search_params)
@@ -1199,7 +1203,7 @@ script:
 
         if FETCH_ATTACHMENTS:
             search_params = {
-                'fromDate': last_fetch_date_time,
+                'from': last_fetch_date_time,
                 'result': 'malicious'
             }
             attachment_logs = get_attachment_logs_request(search_params)
@@ -1403,7 +1407,7 @@ script:
         if message_part == 'all' or message_part == 'metadata':
             contents, metadata_context = get_message_metadata(message_id)
 
-            context['Mimecast.Message(val.ID && val.ID == obj.ID)'] = metadata_context
+            context['Mimecast.Message(val.ID && val.ID === obj.ID)'] = metadata_context
 
             results.append({
                 'Type': entryTypes['note'],
