@@ -1,5 +1,5 @@
-id: ad055a1b-edec-4285-8bb6-fbfc558e22e9
-version: 15
+id: servicenow_test_new
+version: -1
 name: ServiceNow Test New
 description: This playbook tests the ServiceNow integration commands.
 starttaskid: "0"
@@ -446,13 +446,13 @@ tasks:
     timertriggers: []
   "26":
     id: "26"
-    taskid: 6651062d-f4a4-453e-8296-6745b38da44e
+    taskid: 57534ab4-5337-4b67-83fe-173578e8a0e5
     type: regular
     task:
-      id: 6651062d-f4a4-453e-8296-6745b38da44e
+      id: 57534ab4-5337-4b67-83fe-173578e8a0e5
       version: -1
       name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
-        "New Assignee"'
+        "New Assignee", State: "2 - In Progress"'
       script: '|||servicenow-update-ticket'
       type: regular
       iscommand: true
@@ -520,7 +520,8 @@ tasks:
       short_description:
         simple: Goodbye Please
       sla_due: {}
-      state: {}
+      state:
+        simple: 2 - In Progress
       subcategory: {}
       sys_updated_by: {}
       sys_updated_on: {}
@@ -575,10 +576,10 @@ tasks:
     timertriggers: []
   "29":
     id: "29"
-    taskid: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
+    taskid: 60418a74-96ae-4ff1-8b04-689db9e1901b
     type: regular
     task:
-      id: 4dcfa53d-22fc-48df-80bd-bfde26bd3251
+      id: 60418a74-96ae-4ff1-8b04-689db9e1901b
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
       scriptName: VerifyContextFields
@@ -595,7 +596,8 @@ tasks:
         simple: ServiceNow.Ticket.[0].Assignee
       field3:
         simple: ServiceNow.Ticket.[0].Priority
-      field4: {}
+      field4:
+        simple: ServiceNow.Ticket.[0].State
       field5: {}
       value1:
         simple: Goodbye Please
@@ -603,7 +605,8 @@ tasks:
         simple: New Assignee
       value3:
         simple: 5 - Planning
-      value4: {}
+      value4:
+        simple: 2 - In Progress
       value5: {}
     separatecontext: false
     view: |-
