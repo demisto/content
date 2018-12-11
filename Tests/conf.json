@@ -89,12 +89,6 @@
             "integrations": "Luminate"
         },
         {
-            "playbookID": "Test_Sagemaker",
-            "integrations": [
-                "AWS Sagemaker"
-            ]
-        },
-        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
