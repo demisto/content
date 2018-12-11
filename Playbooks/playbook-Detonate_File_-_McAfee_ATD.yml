@@ -618,5 +618,5 @@ outputs:
   type: string
 tests:
 - Test Playbook McAfee ATD
-- detonate_file_-_generic_test
+- Detonate File - Generic Test
 releaseNotes: "Added outputs to the playbook"
