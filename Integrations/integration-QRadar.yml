@@ -61,6 +61,10 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
     CREDENTIALS = demisto.params().get('credentials')
@@ -177,15 +181,24 @@ script:
             return None
         return d
 
-      # Converts unicode dictionary to string (recursively)
+    # Converts unicode elements of obj (incl. dictionary and list) to string recursively
     def unicode_to_str_recur(obj):
         if isinstance(obj, dict):
             obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k,v in obj.iteritems()}
         elif isinstance(obj, list):
             obj = map(unicode_to_str_recur, obj)
         elif isinstance(obj, unicode):
-            obj = str(obj)
+            obj = obj.encode('utf-8')
         return obj
+
+    # Converts to an str
+    def convert_to_str(obj):
+        if isinstance(obj, unicode):
+            return obj.encode('utf-8')
+        try:
+            return str(obj)
+        except:
+            return obj
 
     # Filters recursively from dictionary (d1) all keys that do not appear in d2
     def filter_dict_nonintersection_key_to_value(d1, d2):
@@ -213,7 +226,7 @@ script:
 
     # Transforms flat dictionary to comma seperated values
     def dict_values_to_comma_seperated_string(dic):
-        return ','.join(str(v) for v in dic.itervalues())
+        return ','.join(convert_to_str(v) for v in dic.itervalues())
 
     # Sends request to the server using the given method, url, headers and params
     def send_request(method, url, headers=AUTH_HEADERS, params=None):
@@ -320,12 +333,12 @@ script:
 
     # Returns a search object (doesn't contain reuslt)
     def get_search(search_id):
-        url = '{0}/api/ariel/searches/{1}'.format(SERVER, str(search_id))
+        url = '{0}/api/ariel/searches/{1}'.format(SERVER, convert_to_str(search_id))
         return send_request('GET', url, AUTH_HEADERS)
 
     # Returns a search result
     def get_search_results(search_id, _range=''):
-        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, str(search_id))
+        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, convert_to_str(search_id))
         headers = dict(AUTH_HEADERS)
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
@@ -435,34 +448,33 @@ script:
             # start looking for the end of the list by doubling the page position until we're empty.
             # then start binary search back until you find the end of the list and finally return
             # `offensesPerCall` from the end.
-        demisto.debug('QRadar lastRun: {0}\nFetchQuery: {1}\n'.format(str(lastRun), fetchQuery))
-        raw_offenses = get_offenses(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)
         if len(raw_offenses) >= OFFENSES_PER_CALL:
             lastOffensePos = find_last_page_pos(fetchQuery)
-            raw_offenses = get_offenses(_range='{0}-{1}'.format(str(lastOffensePos - OFFENSES_PER_CALL + 1), str(lastOffensePos)))
+            raw_offenses = get_offenses(_range='{0}-{1}'.format(lastOffensePos - OFFENSES_PER_CALL + 1, lastOffensePos))
         incidents = []
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
         for offense in raw_offenses:
             offenseId = max(offenseId, offense['id'])
             incidents.append(create_incident_from_offense(offense))
         demisto.setLastRun({'id': offenseId})
-        return json.dumps(incidents)
+        return incidents
 
     # Finds the last page position for QRadar query that receives a range parameter
     def find_last_page_pos(fetchQuery):
         # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-        if len(get_offenses(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
+        if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)) == 0:
             return OFFENSES_PER_CALL - 1
         # Search up until we don't have any more results
         pos = OFFENSES_PER_CALL * 2
-        while len(get_offenses(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+        while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
             pos = pos * 2
         # Binary search the gap from the las step
         high = pos
         low = pos / 2
         while high > low+1:
             pos = (high + low) / 2
-            if len(get_offenses(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+            if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
                 # we still have results, raise the bar
                 low = pos
             else:
@@ -477,7 +489,7 @@ script:
         keys = offense.keys()
         labels = []
         for i in range(len(keys)):
-            labels.append({'type': keys[i], 'value': str(offense[keys[i]])})
+            labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
         return {
             'name': '{0} {1}'.format(offense['id'], offense['description']),
             'labels': labels,
@@ -567,17 +579,17 @@ script:
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
         src_res = send_request('GET', source_url, AUTH_HEADERS)
         for src_adr in src_res:
-            src_adrs[src_adr['id']] = str(src_adr['source_ip'])
+            src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
         return src_adrs
 
     # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to the ids
     def enrich_destination_addresses_dict(dst_adrs):
         dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
         destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
-        headers = {'Content-Type': 'application/json', "SEC": str(TOKEN)}
+        headers = {'Content-Type': 'application/json', "SEC": convert_to_str(TOKEN)}
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
         for dst_adr in dst_res:
-            dst_adrs[dst_adr['id']] = str(dst_adr['local_destination_ip'])
+            dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
         return dst_adrs
 
     # Helper method: For a single offense replaces the source and destination ids with the actual addresses
@@ -646,7 +658,7 @@ script:
         return get_entry_for_assets('QRadar Assets', assets_result, human_readable_res, demisto.args().get('headers'))
 
     def get_asset_by_id_command():
-        _filter = "id=" + str(demisto.args().get('asset_id'))
+        _filter = "id=" + convert_to_str(demisto.args().get('asset_id'))
         raw_asset = get_assets(_filter=_filter)
         asset_result, human_readable_res = create_assets_result(raw_asset, full_values=True)
         return get_entry_for_assets('QRadar Asset', asset_result, human_readable_res, demisto.args().get('headers'))
@@ -865,7 +877,7 @@ script:
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'fetch-incidents':
-        demisto.results(fetch_incidents())
+        demisto.incidents(fetch_incidents())
     elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
