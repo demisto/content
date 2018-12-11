@@ -671,6 +671,7 @@
             "timeout": 300
         },
         {
+            "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
         },
         {
