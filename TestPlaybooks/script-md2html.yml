@@ -1,0 +1,211 @@
+id: test-md2html
+version: -1
+name: test-md2html
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9cafa19f-7395-455c-8aea-c34b926c410f
+    type: start
+    task:
+      id: 9cafa19f-7395-455c-8aea-c34b926c410f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: ff3ea043-0100-405b-8fc7-f1f7b98b06e8
+    type: regular
+    task:
+      id: ff3ea043-0100-405b-8fc7-f1f7b98b06e8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: f1527101-e7ce-4a38-8604-40d30b67dfe2
+    type: regular
+    task:
+      id: f1527101-e7ce-4a38-8604-40d30b67dfe2
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.md
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/README.md?raw=true
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 6c82486d-7440-4166-8374-fdbadfaabb19
+    type: regular
+    task:
+      id: 6c82486d-7440-4166-8374-fdbadfaabb19
+      version: -1
+      name: MD2HTML
+      description: Converts MarkDown files to HTML files
+      scriptName: MD2HTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      fileID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 8b93ecb5-5879-4c7d-8497-e5e552911fba
+    type: condition
+    task:
+      id: 8b93ecb5-5879-4c7d-8497-e5e552911fba
+      version: -1
+      name: Check if output is HTML
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Pass:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Pass
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.[1].Extension
+            iscontext: true
+          right:
+            value:
+              simple: html
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 2cc9e9be-f972-4c88-8ebf-4c244746da1c
+    type: regular
+    task:
+      id: 2cc9e9be-f972-4c88-8ebf-4c244746da1c
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

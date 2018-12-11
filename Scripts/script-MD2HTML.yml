@@ -6,24 +6,32 @@ script: |-
   from markdown2 import Markdown
 
   markdowner = Markdown(extras=["tables"])
-  file_entry = demisto.args().get('file_id', '')
-  file_path = demisto.getFilePath(file_entry)['path']
-  demisto.results(file_path)
-  fopen = open(str(file_path), "r")
-  data = fopen.read()
+  file_entry = demisto.args().get('fileID')
+  file = demisto.getFilePath(file_entry)
+  if isinstance(file,dict):
+    file_path =file['path']
+    file_name = file['name']
+    raw_name = file_name.split(".")
+    formatted_name = raw_name+".html"
+  try:
+    fopen = open(str(file_path), "r")
+    data = fopen.read()
+  except IOError:
+      demisto.results("Could not read file - {}".format(file_name))
   res = markdowner.convert(data)
-  demisto.results(fileResult("md2htmlresult.html", res))
+  fopen.close()
+  demisto.results(fileResult(formatted_name, res))
 
 type: python
 tags: []
 comment: Converts MarkDown files to HTML files
 enabled: true
 args:
-- name: file_id
+- name: fileID
   required: true
   description: Entry ID of the file to be converted.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/markdown2
 tests:
-  - No test
+  - test-md2html
