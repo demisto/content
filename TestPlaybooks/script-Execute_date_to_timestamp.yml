@@ -6,7 +6,13 @@ script: |-
   from datetime import datetime
   dArgs = demisto.args()
   date_string = dArgs.get("date_string") if dArgs.get("date_type") != 'True' else datetime.strptime(dArgs.get("date_string"), "%Y-%m-%dT%H:%M:%S")
-  return date_to_timestamp(date_string)
+  res = date_to_timestamp(date_string)
+  demisto.results({
+      'ContentsFormat': formats['text'],
+      'Type': entryTypes['note'],
+      'Contents': res,
+      'EntryContext': {'Date.Timestamp': res}
+  })
 type: python
 tags: []
 enabled: true
@@ -28,4 +34,3 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-runas: DBotWeakRole
