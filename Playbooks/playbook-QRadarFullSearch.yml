@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -53,7 +53,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -73,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "3"
     scriptarguments:
       headers:
         simple: ${inputs.headers}
@@ -83,7 +83,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 370
         }
       }
@@ -126,16 +126,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: b4cb04a8-b5cc-4d88-841f-ae9f71d8dd10
+    taskid: 012ffb1a-721a-4ee6-81a6-0c16d441bb8d
     type: regular
     task:
-      id: b4cb04a8-b5cc-4d88-841f-ae9f71d8dd10
+      id: 012ffb1a-721a-4ee6-81a6-0c16d441bb8d
       version: -1
       name: qradar-get-search-results
       description: executes qradar-get-search-results to get the search results
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -180,45 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 7c323154-9752-4e8d-8e18-7d43fef89edf
-    type: condition
-    task:
-      id: 7c323154-9752-4e8d-8e18-7d43fef89edf
-      version: -1
-      name: Is search completed?
-      description: Checks whether the search is completed
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: QRadar.Search.Status
-            iscontext: true
-          right:
-            value:
-              simple: COMPLETED
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -227,8 +190,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 492.5,
+        "height": 910,
+        "width": 380,
         "x": 50,
         "y": 50
       }
