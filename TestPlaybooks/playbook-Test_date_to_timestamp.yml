@@ -1,0 +1,226 @@
+id: test_date_to_timestamp
+version: -1
+name: test_date_to_timestamp
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73473ddb-fa58-4d93-85b9-80c39919034d
+    type: start
+    task:
+      id: 73473ddb-fa58-4d93-85b9-80c39919034d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 930400a4-4ea0-43d0-8750-ad18833a1858
+    type: regular
+    task:
+      id: 930400a4-4ea0-43d0-8750-ad18833a1858
+      version: -1
+      name: date_to_timestamp with date_string
+      scriptName: Execute_date_to_timestamp
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      date_string:
+        simple: 2018-11-06T08:56:41
+      date_type:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: cbb7e6f5-3d33-469a-8ea7-6a437f6da465
+    type: condition
+    task:
+      id: cbb7e6f5-3d33-469a-8ea7-6a437f6da465
+      version: -1
+      name: Check date was converted to timestamp correctly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Date
+                accessor: Timestamp
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: "1541494601000"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 6e6b32e2-4c9c-4a61-8f16-e5ae1d1cffd0
+    type: regular
+    task:
+      id: 6e6b32e2-4c9c-4a61-8f16-e5ae1d1cffd0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ${Date}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 81f11a6e-4011-4360-8614-eda422dddb5c
+    type: regular
+    task:
+      id: 81f11a6e-4011-4360-8614-eda422dddb5c
+      version: -1
+      name: date_to_timestamp with datetime
+      scriptName: Execute_date_to_timestamp
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      date_string:
+        simple: 2018-11-06T08:56:41
+      date_type:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: b798ebd2-1e74-4ece-8b22-d5e9756f92ac
+    type: title
+    task:
+      id: b798ebd2-1e74-4ece-8b22-d5e9756f92ac
+      version: -1
+      name: Finish successfuly
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 731f1f7b-0fdc-456c-8cdb-fb8e3f10e06d
+    type: condition
+    task:
+      id: 731f1f7b-0fdc-456c-8cdb-fb8e3f10e06d
+      version: -1
+      name: Check date was converted to timestamp correctly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Date
+                accessor: Timestamp
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: "1541494601000"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

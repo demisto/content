@@ -1,0 +1,31 @@
+commonfields:
+  id: Execute_date_to_timestamp
+  version: -1
+name: Execute_date_to_timestamp
+script: |-
+  from datetime import datetime
+  dArgs = demisto.args()
+  date_string = dArgs.get("date_string") if dArgs.get("date_type") != 'True' else datetime.strptime(dArgs.get("date_string"), "%Y-%m-%dT%H:%M:%S")
+  return date_to_timestamp(date_string)
+type: python
+tags: []
+enabled: true
+args:
+- name: date_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: If True, will try to convert the given date_string to a datetime.datetime
+    object
+  defaultValue: "False"
+- name: date_string
+  required: true
+outputs:
+- contextPath: Date.Timestamp
+  description: Timestamp value of given date
+  type: string
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
