@@ -34,6 +34,10 @@
             "playbookID": "WordTokenizeTest"
         },
         {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
+        },
+        {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
           "timeout": 240,
