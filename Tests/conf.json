@@ -114,6 +114,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "InfoArmor VigilanteATI",
+            "playbookID": "InfoArmorVigilanteATITest"
+        },
+        {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
         },
