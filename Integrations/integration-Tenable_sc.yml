@@ -1583,7 +1583,7 @@ script:
             'Description': alert['description'],
             'LastTriggered': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] and int(alert['lastTriggered']) > 0 else 'Never',
             'State': 'Triggered' if alert['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
-            'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on first trigger'
+            'Behavior': 'Execute on every trigger' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on first trigger'
         }
 
         mapped_condition = {
