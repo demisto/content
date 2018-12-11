@@ -24,4 +24,3 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/markdown2
-runas: DBotWeakRole
