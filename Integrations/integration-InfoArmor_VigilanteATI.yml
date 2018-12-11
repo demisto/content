@@ -47,6 +47,9 @@ script:
     import requests
     from datetime import datetime
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
