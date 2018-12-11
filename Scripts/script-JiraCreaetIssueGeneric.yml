@@ -90,6 +90,7 @@ scripttarget: 0
 dependson:
   must:
   - jira-create-issue
+  - jira-delete-issue
 runonce: false
 tests:
   - JiraCreateIssue-example-test
