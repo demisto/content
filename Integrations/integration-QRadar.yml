@@ -249,7 +249,12 @@ script:
     # Generic function that receives a result json, and turns it into an entryObject
     def get_entry_for_object(title, obj, contents, headers=None, contextKey=None):
         if len(obj) == 0:
-            return ""
+            return {
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': "There is no output result"
+            }
         obj = filter_dict_null(obj)
         if headers:
             if isinstance(headers, basestring):
