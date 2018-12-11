@@ -64,7 +64,7 @@ tasks:
       id: b716384f-1231-4d76-8558-f302af7cc086
       version: -1
       name: Jira create generic Issue
-      scriptName: JiraCreateIssue-generic
+      scriptName: JiraCreateIssuee-example
       type: regular
       iscommand: false
       brand: ""
