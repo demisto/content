@@ -271,7 +271,7 @@ def non_valid_versioning(id_to_file, my_id, id_list):
         versioning = id_obj[id]
         if my_id == id:
             if from_version > versioning['toversion']:
-                print_error("The ID {0} already exists, please update the file {1}".format(id, id_to_file[id]))
+                print_error("The ID {0} already exists, please update the file {1} or update the id_set.json file with the script update_id_set.py with the function update_id_set".format(id, id_to_file[id]))
                 has_duplicate = True
 
     return has_duplicate

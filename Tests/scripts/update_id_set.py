@@ -48,18 +48,17 @@ def checked_type(file_path):
 
 def get_added_files(files_string):
     all_files = files_string.split('\n')
-    added_files_list = []
-    modified_files_list = []
+    added_files_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
             continue
 
         file_status = file_data[0]
-        file_path = file_data[1]
+        file_path = file_data[1]s
 
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-            added_files_list.append(file_path)
+            added_files_list.add(file_path)
 
     return added_files_list
 
@@ -193,6 +192,3 @@ def update_id_set(git_sha):
             json.dump(id_list, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
-
-if __name__ == "__main__":
-    re_create_id_set()
