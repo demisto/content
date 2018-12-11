@@ -458,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3090
+          "y": 3350
         }
       }
     note: false
@@ -509,7 +509,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -628,8 +628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2550
+          "x": 50,
+          "y": 2920
         }
       }
     note: false
@@ -875,8 +875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2750
+          "x": 50,
+          "y": 3120
         }
       }
     note: false
@@ -893,7 +893,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -924,7 +924,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1208,12 +1208,41 @@ tasks:
         }
       }
     note: false
+  "38":
+    id: "38"
+    taskid: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+    type: regular
+    task:
+      id: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+      version: -1
+      name: Fetch incidents
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      brand_name:
+        simple: MimecastV2
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2930
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3105,
+        "height": 3365,
         "width": 1240,
         "x": 50,
         "y": 50
