@@ -89,7 +89,7 @@ outputs:
 scripttarget: 0
 dependson:
   must:
-  - '|||jira-create-issue'
+  - jira-create-issue
 runonce: false
 tests:
   - JiraCreateIssue-example-test
