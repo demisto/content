@@ -174,10 +174,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 8ed34b82-1f51-4129-81e6-010ea0e16584
+    taskid: 3c14c89b-6d87-4dba-813b-4d783f81ad85
     type: condition
     task:
-      id: 8ed34b82-1f51-4129-81e6-010ea0e16584
+      id: 3c14c89b-6d87-4dba-813b-4d783f81ad85
       version: -1
       name: Is model trained?
       description: Check if the model successfully trained
@@ -193,7 +193,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: DBotTextClassifier
