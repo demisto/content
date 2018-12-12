@@ -75,7 +75,7 @@ script: |-
   MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxResults'])
   EXTRA_QUERY = demisto.args().get('filterQuery')
   INCIDENT_FIELDS_APPLIED_CONDITION = demisto.args()['incidentFieldsAppliedCondition']
-  SKIP_MISSING_VALUES = (demisto.args()['skipMissingValues'] == 'yes')
+  RAISE_ERROR_MISSING_VALUES = not (demisto.args()['skipMissingValues'] == 'yes')
 
   def parse_datetime(datetime_str):
       return parser.parse(datetime_str)
@@ -107,7 +107,7 @@ script: |-
                   if raise_error:
                       return_error("Missing key\label\custom\context field for incident: " + key)
                   else:
-                      return {}
+                      continue
       return result
 
 
@@ -260,12 +260,12 @@ script: |-
   incident = merge_incident_fields(demisto.incidents()[0])
 
   # validate fields
-  exact_match_incident_fields = get_map_from_nested_dict(incident, {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v == EXACT_MATCH}, raise_error=SKIP_MISSING_VALUES)
+  exact_match_incident_fields = get_map_from_nested_dict(incident, {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v == EXACT_MATCH}, raise_error=RAISE_ERROR_MISSING_VALUES)
   SIMILAR_INCIDENTS_FIELDS_MAP = {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v != EXACT_MATCH}
-  similar_incident_fields = get_map_from_nested_dict(incident, SIMILAR_INCIDENTS_FIELDS_MAP, raise_error=SKIP_MISSING_VALUES)
+  similar_incident_fields = get_map_from_nested_dict(incident, SIMILAR_INCIDENTS_FIELDS_MAP, raise_error=RAISE_ERROR_MISSING_VALUES)
   labels_map = get_incident_labels_map(incident.get('labels', []))
-  incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(), raise_error=SKIP_MISSING_VALUES)
-  incident_similar_context = get_map_from_nested_dict(demisto.context() or {}, SIMILAR_CONTEXT_MAP.keys(), raise_error=SKIP_MISSING_VALUES)
+  incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(), raise_error=RAISE_ERROR_MISSING_VALUES)
+  incident_similar_context = get_map_from_nested_dict(demisto.context() or {}, SIMILAR_CONTEXT_MAP.keys(), raise_error=RAISE_ERROR_MISSING_VALUES)
 
   log_message = 'Incident fields with exact math: %s' % exact_match_incident_fields
   if len(exact_match_incident_fields) > 1:
@@ -408,7 +408,7 @@ args:
   description: 'If the incident does not have specific key, skip it. WARNING: notice
     that if there is no fields existing in the incident, random incidents might be
     return as results due to empty condition.'
-  defaultValue: "no"
+  defaultValue: "yes"
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.
@@ -425,4 +425,4 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "1. Support OR condition. 2. Add custom query argument"
+releaseNotes: "Fix bug: support missing field in the incident"
