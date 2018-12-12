@@ -59,7 +59,7 @@ script: |-
   SIMILAR_CUSTOMS_FIELDS_MAP = parse_input(demisto.args().get('similarCustomFields', ''))
   SIMILAR_INCIDENTS_FIELDS_MAP = parse_input(demisto.args().get('similarIncidentFields', ''))
   if len(SIMILAR_INCIDENTS_FIELDS_MAP) > 0 and (len(SIMILAR_INCIDENT_KEYS) > 0 or len(SIMILAR_CUSTOMS_FIELDS_MAP) > 0):
-      raise Exception('If using similarIncidentFields do not use deprecated similarCustomFields\\similarIncidentKeys')
+      return_error('If using similarIncidentFields do not use deprecated similarCustomFields\\similarIncidentKeys')
   else:
       SIMILAR_INCIDENTS_FIELDS_MAP.update(SIMILAR_CUSTOMS_FIELDS_MAP)
       for k in map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS):
@@ -105,7 +105,7 @@ script: |-
                   result[key] = flat_dict[key]
               else:
                   if raise_error:
-                      raise Exception("Missing key\label\custom\context field for incident: " + key)
+                      return_error("Missing key\label\custom\context field for incident: " + key)
                   else:
                       return {}
       return result
@@ -159,7 +159,7 @@ script: |-
       res = demisto.executeCommand("getIncidents",
                                    {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % TIME_FIELD})
       if res[0]['Type'] == entryTypes['error']:
-          raise Exception(str(res[0]['Contents']))
+          return_error(str(res[0]['Contents']))
 
       incident_list = res[0]['Contents']['data'] or []
       return incident_list
@@ -279,7 +279,7 @@ script: |-
       demisto.log('Similar context keys: %s' % incident_similar_context)
 
   if len(exact_match_incident_fields) == 0 and len(similar_incident_fields) == 0 and len(incident_similar_labels) == 0 and len(incident_similar_context) == 0:
-      raise Execption("Does not have any field to compare in the current incident")
+      return_error("Does not have any field to compare in the current incident")
 
   duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, incident[TIME_FIELD], incident['id'],
                                               HOURS_BACK, IGNORE_CLOSED, MAX_NUMBER_OF_INCIDENTS, EXTRA_QUERY, INCIDENT_FIELDS_APPLIED_CONDITION)
