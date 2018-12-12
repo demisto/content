@@ -55,7 +55,7 @@ def get_added_files(files_string):
             continue
 
         file_status = file_data[0]
-        file_path = file_data[1]s
+        file_path = file_data[1]
 
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
@@ -99,14 +99,14 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', 'beginning')
+        return data_dictionary.get('fromversion', '0')
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', 'current')
+        return data_dictionary.get('toversion', '99.99.99')
 
 
 def re_create_id_set():

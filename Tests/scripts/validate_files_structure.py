@@ -25,8 +25,9 @@ import os
 import glob
 import json
 import argparse
-from subprocess import Popen, PIPE
 from pykwalify.core import Core
+from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -270,7 +271,7 @@ def non_valid_versioning(id_to_file, my_id, id_list):
         id = id_obj.keys()[0]
         versioning = id_obj[id]
         if my_id == id:
-            if from_version > versioning['toversion']:
+            if LooseVersion(from_version) <= LooseVersion(versioning['toversion']):
                 print_error("The ID {0} already exists, please update the file {1} or update the id_set.json toversion field of this id to match the old occurrence of this id".format(id, id_to_file[id]))
                 has_duplicate = True
 
@@ -288,7 +289,6 @@ def has_duplicated_ids(id_to_file):
 
     for id in id_to_file.keys():
         if id in ids_list and non_valid_versioning(id_to_file, id, id_list):
-            print_error("The ID {0} already exists, please update the file {1}".format(id, id_to_file[id]))
             has_duplicate = True
 
     return has_duplicate
