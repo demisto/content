@@ -128,7 +128,7 @@ script:
         };
     }
 
-    var merakiUrlPrefix = 'https://dashboard.meraki.com/api/v0/';
+    var merakiUrlPrefix = 'https://api.meraki.com/api/v0/';
     var apiKey = params.apiKey;
     var insecure = params.insecure;
     var proxy = params.proxy;
@@ -793,3 +793,6 @@ script:
         DestPort, DestCidr & Comment
     description: update rule to L3 firewall rules of an SSID
 hidden: false
+tests:
+- Cisco-Meraki-Test
+releaseNotes: updated API login

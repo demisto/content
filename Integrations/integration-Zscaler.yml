@@ -76,6 +76,11 @@ script:
             raise
         return res
 
+    def validate_urls(urls):
+        for url in urls:
+            if url.startswith('http://') or url.startswith('https://'):
+                return_error('Enter a valid URL address without an http:// or https:// prefix. URL should have at least host.domain pattern to qualify.')
+
     ''' FUNCTIONS '''
     def login():
         cmd_url = '/authenticatedSession'
@@ -140,6 +145,7 @@ script:
 
     def blacklist_url(url):
         blacklistUrls = url.split(',')
+        validate_urls(blacklistUrls)
         cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
         data = {
             'blacklistUrls': blacklistUrls
@@ -1008,3 +1014,6 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
+tests:
+  - Zscaler Test
+releaseNotes: "Added URL validation to the command zscaler-blacklist-url as done in Zscaler GUI"

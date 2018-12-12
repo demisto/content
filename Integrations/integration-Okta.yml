@@ -74,7 +74,8 @@ script:
         'manager'
     ];
 
-    var SERVER_URL = fixUrl(params.url) + 'api/v1/';
+    var API_POSTFIX = 'api/v1/'
+    var SERVER_URL = fixUrl(params.url) + API_POSTFIX;
     var DEFAULT_SEARCH_LIMIT = 200;
     var CLIENT_USERAGENT = 'Demisto/1.0'
 
@@ -296,10 +297,10 @@ script:
 
         // backward compatibility
         if(params.proxy){
-            if(params.proxy === "true"){
+            if(params.proxy === 'true'){
                 params.proxy = true;
             }
-            else if(params.proxy === "false"){
+            else if(params.proxy === 'false'){
                 params.proxy = false;
             }
         }
@@ -361,7 +362,7 @@ script:
 
         var res = suspendUser(userId);
 
-        var md = "### Okta user suspended: " + args.username + '\n';
+        var md = '### Okta user suspended: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -388,7 +389,7 @@ script:
 
         var res = unSuspendUser(userId);
 
-        var md = "### Okta user unsuspended: " + args.username + '\n';
+        var md = '### Okta user unsuspended: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -404,7 +405,7 @@ script:
 
         var res = unlockUser(userId);
 
-        var md = "### Okta user unlocked: " + args.username + '\n';
+        var md = '### Okta user unlocked: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -424,7 +425,7 @@ script:
 
         var res = deactivateUser(userId);
 
-        var md = "### Okta user deactivated: " + args.username + '\n';
+        var md = '### Okta user deactivated: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -445,7 +446,7 @@ script:
 
         var res = activateUser(userId);
 
-        var md = "### Okta user activated: " + args.username + '\n';
+        var md = '### Okta user activated: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -472,13 +473,13 @@ script:
             Type: 'Okta'
         };
 
-        var md = "### Okta groups for user " + args.username + '\n';
+        var md = '### Okta groups for user ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';;
         md += tableToMarkdown('Groups', hr);
         return {
             Type: entryTypes.note,
             EntryContext: {
-                'Account(val.ID==obj.ID)' : ec
+                'Account(val.ID===obj.ID)' : ec
             },
             Contents: results,
             ContentsFormat: formats.json,
@@ -524,7 +525,7 @@ script:
         return {
             Type: entryTypes.note,
             entryContext: {
-                'Okta.Group(val.ID==obj.ID)' : hr
+                'Okta.Group(val.ID===obj.ID)' : hr
             },
             Contents: results,
             ContentsFormat: formats.json,
@@ -656,7 +657,7 @@ script:
 
         var res = setPassword(userId, args.password);
 
-        var md = "### Okta user password set: " + args.username + '\n';
+        var md = '### Okta user password set: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         return {
             Type: entryTypes.note,
@@ -671,12 +672,12 @@ script:
         var uri = 'users/' + userId;
 
         var body =  {
-            "credentials": {
-                "password" : { "value": password }
+            'credentials': {
+                'password' : { 'value': password }
             }
         };
 
-        return sendRequest(uri, 'POST', body);
+        return sendRequest(uri, 'POST', null, body);
     }
 
     function searchCommand(){
@@ -738,6 +739,155 @@ script:
         return sendRequest(uri);
     }
 
+    function getUserFactorsCommand(){
+        var userId = args.userId;
+        var username = args.username;
+
+        if(!userId && !username){
+            throw "You must supply either 'username' or 'userid'";
+        }
+
+        if(!userId){
+            userId = getUserId(username);
+        }
+
+        var factors = getUserFactors(userId);
+
+        if(!factors || factors.length === 0){
+            return 'No factors found';
+        }
+
+        var mappedFactors = [];
+        var hr = [];
+
+        factors.forEach(function(factor){
+           mappedFactors.push({
+               ID: factor.id,
+               FactorType: factor.factorType,
+               Provider: factor.provider,
+               Status: factor.status,
+               Profile: factor.profile
+           });
+
+           hr.push({
+               'ID': factor.id,
+               'Factor Type': factor.factorType,
+               'Provider': factor.provider,
+               'Status': factor.status
+           });
+        });
+
+        var md = tableToMarkdown('Okta available factors for user with ID: ' + userId, hr);
+        var account = {
+            ID: userId,
+            Factor: mappedFactors
+        };
+
+        return {
+            Type: entryTypes.note,
+            Contents: factors,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'Account(val.ID===obj.ID)': account
+            }
+        }
+    }
+
+    function getUserFactors(userId){
+        var uri = 'users/' + userId + '/factors';
+
+        return sendRequest(uri);
+    }
+
+    function verifyPushCommand(){
+        var userId = args.userId;
+        var factorId = args.factorId;
+        var response = verifyPush(userId, factorId);
+
+        if (!response) {
+            throw 'Did not receive a response from the factor challenge';
+        }
+
+        var links = response._links;
+
+        if (!links || !links.poll){
+            throw 'Did not recieve a polling link for the push factor challenge';
+        }
+
+        var result = pollVerifyPush(links.poll.href);
+
+        var account = {
+            ID: userId,
+            VerifyPushResult: result.factorResult
+        };
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: {
+                'Account(val.ID===obj.ID)': account
+            },
+            Contents: response,
+            ContentsFormat: formats.json,
+            HumanReadable: 'Verify push factor result: ' + account.VerifyPushResult
+        };
+    }
+
+    function verifyPush(userId, factorId){
+        var path = '/users/' + userId + '/factors/' + factorId + '/verify';
+
+        return sendRequest(path, 'POST');
+    }
+
+
+    function pollVerifyPush(verifyLink){
+        // Get the query string of the link
+        var index = verifyLink.indexOf(API_POSTFIX);
+        var path = verifyLink.substr(index + API_POSTFIX.length);
+
+        do {
+            var response = sendRequest(path);
+            if (!response) {
+                throw 'Did not receive a response from the factor verfication';
+            }
+
+            // Wait 5 seconds
+            wait(5);
+
+        } while (response.factorResult === 'WAITING')
+
+        return response;
+    }
+
+    function resetFactorCommand(){
+        var userId = args.userId;
+        var username = args.username;
+        var factorId = args.factorId;
+
+        if(!userId && !username){
+            throw "You must supply either 'username' or 'userid'";
+        }
+
+        if(!userId){
+            userId = getUserId(username);
+        }
+
+        var response = resetFactor(userId, factorId);
+
+        return {
+            Type: entryTypes.note,
+            Contents: response,
+            ContentsFormat: formats.json,
+            HumanReadable: 'Successfully reset factor for user with ID: ' + userId
+        };
+    }
+
+    function resetFactor(userId, factorId){
+        var path = '/users/' + userId + '/factors/' + factorId;
+
+        return sendRequest(path, 'DELETE');
+    }
+
     function createUserCommand(){
         var cred = buildCredentials(args);
         var profile = buildProfile(args);
@@ -753,7 +903,7 @@ script:
 
         var res = createUser(cred, profile, groupIds, activate);
 
-        var md = "### Okta user created: " + args.login + '\n';
+        var md = '### Okta user created: ' + args.login + '\n';
         md += profileToMd(res.profile);
         var ec = usersToEntryContext(res);
         return {
@@ -787,7 +937,7 @@ script:
         profile.login = args.username;
 
         var res = updateUser(userId, profile, cred);
-        var md = "### Okta user updated: " + args.username + '\n';
+        var md = '### Okta user updated: ' + args.username + '\n';
         md += 'User ID: ' + userId + '\n';
         md += profileToMd(res.profile);
         return {
@@ -853,14 +1003,14 @@ script:
             readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = tableToMarkdown("Failed Login events", readableLogs);
+        var md = tableToMarkdown('Failed Login events', readableLogs);
 
         return {
             Type: entryTypes.note,
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid===obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -879,14 +1029,14 @@ script:
             readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = tableToMarkdown("Group assignment events", readableLogs);
+        var md = tableToMarkdown('Group assignment events', readableLogs);
 
         return {
             Type: entryTypes.note,
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid===obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -905,14 +1055,14 @@ script:
             readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = tableToMarkdown("Application assignment events", readableLogs);
+        var md = tableToMarkdown('Application assignment events', readableLogs);
 
         return {
             Type: entryTypes.note,
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid===obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -931,14 +1081,14 @@ script:
             readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = tableToMarkdown("Application authentication events", readableLogs);
+        var md = tableToMarkdown('Application authentication events', readableLogs);
 
         return {
             Type: entryTypes.note,
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid===obj.uuid)' : logs
             },
             HumanReadable: md
         };
@@ -956,19 +1106,18 @@ script:
             readableLogs.push(createReadableLog(logs[i]));
         }
 
-        var md = tableToMarkdown("Okta events", readableLogs);
+        var md = tableToMarkdown('Okta events', readableLogs);
 
         return {
             Type: entryTypes.note,
             Contents: logs,
             ContentsFormat: formats.json,
             EntryContext: {
-                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+                'Okta.Logs.Events(val.uuid===obj.uuid)' : logs
             },
             HumanReadable: md
         };
     }
-
 
     function test() {
         var uri = 'users/me';
@@ -1041,6 +1190,15 @@ script:
         case 'okta-unsuspend-user':
             entry = unSuspendUserCommand();
             break;
+        case 'okta-get-user-factors':
+            entry = getUserFactorsCommand();
+            break;
+        case 'okta-verify-push-factor':
+            entry = verifyPushCommand();
+            break;
+        case 'okta-reset-factor':
+            entry = resetFactorCommand();
+            break;
     }
 
 
@@ -1088,6 +1246,61 @@ script:
       description: Username in Okta to unsuspend
     description: Unsuspends a user and returns them to the ACTIVE state.  This operation
       can only be performed on users that have a SUSPENDED status.
+    execution: true
+  - name: okta-get-user-factors
+    arguments:
+    - name: userId
+      description: The user Id
+    - name: username
+      description: The user name
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: string
+    - contextPath: Account.Factor.ID
+      description: Okta account factor ID
+      type: string
+    - contextPath: Account.Factor.FactorType
+      description: Okta account factor type
+      type: string
+    - contextPath: Account.Factor.Provider
+      description: Okta account factor provider
+      type: string
+    - contextPath: Account.Factor.Status
+      description: Okta account factor status
+      type: string
+    - contextPath: Account.Factor.Profile
+      description: Okta account factor profile
+      type: string
+    description: Enumerates all the enrolled factors for the specified user.
+  - name: okta-verify-push-factor
+    arguments:
+    - name: userId
+      required: true
+      description: The id of the user to challenge
+    - name: factorId
+      required: true
+      description: The push factor id
+    outputs:
+    - contextPath: Account.ID
+      description: Okta user ID
+      type: string
+    - contextPath: Account.VerifyPushResult
+      description: Okta user verify push factor result
+      type: string
+    description: Creates and verifies a push factor for a specified user.
+    execution: true
+  - name: okta-reset-factor
+    arguments:
+    - name: userId
+      description: The user id
+    - name: username
+      description: The user name
+    - name: factorId
+      required: true
+      description: The id of the factor to reset
+    description: Unenrolls an existing factor for the specified user, allowing the
+      user to enroll a new factor.
     execution: true
   - name: okta-get-groups
     arguments:
@@ -2073,6 +2286,7 @@ script:
     - name: groupName
       description: Name of the group to add the user to
     description: Adds a user to a group with OKTA_GROUP type.
+    execution: true
   - name: okta-remove-from-group
     arguments:
     - name: userId
@@ -2080,10 +2294,11 @@ script:
     - name: groupId
       description: ID of the group to remove the user from
     - name: username
-      description: Name of the user to add
+      description: Name of the user to remove
     - name: groupName
-      description: Name of the group to add the user to
+      description: Name of the group to remove the user from
     description: Removes a user from a group with OKTA_GROUP type.
+    execution: true
   - name: okta-list-groups
     arguments:
     - name: query
@@ -2161,3 +2376,4 @@ script:
     description: Enumerates all users that are members of a group
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "Added option to send and verify push factor, also reset a user's factor"

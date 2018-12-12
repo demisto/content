@@ -27,6 +27,12 @@ script: |-
   if not direction:
       direction = 'both'
 
+  if not demisto.get(demisto.args(), 'rulename'):
+      demisto.args()['rulename'] = 'ip' + demisto.args()['ip'] + ' blocked in direction ' + direction
+
+  if not demisto.get(demisto.args(), 'ipname'):
+      demisto.args()['ipname'] = demisto.args()['ip'] + ' . ' + direction
+
   i = 1
   blocked = []
   if not ips:
@@ -77,8 +83,7 @@ tags:
 - firewall
 - response
 comment: Block one or more IP addresses using Checkpoint Firewall.
-system: true
-deprecated: true
+enabled: true
 args:
 - name: ip
   required: true
@@ -88,13 +93,14 @@ args:
   description: Whether to block traffic "to" or "from" the IPs, or "both". Default
     is "both".
 - name: rulename
-  required: true
   description: Base name for added rules inside checkpoint db
 - name: ipname
-  required: true
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
+runonce: false
+deprecated: true
 dependson:
   must:
   - checkpoint
-timeout: 0s
+tests:
+- blockip_test_playbook

@@ -5,9 +5,14 @@ name: LoadJSON
 script: |-
   import json
   JSON_CONTEXT_KEY = "JsonObject"
-  obj = json.loads(demisto.args()['input'])
-  demisto.setContext(JSON_CONTEXT_KEY, obj)
-  demisto.results(obj)
+  json_str = demisto.args()['input']
+  obj = json.loads(json_str)
+
+  demisto.results({
+      "EntryContext": {JSON_CONTEXT_KEY: obj},
+      "Type": entryTypes['note'],
+      "ContentsFormat": formats['json'],
+      "Contents": obj})
 type: python
 tags:
 - Utility
@@ -17,8 +22,11 @@ args:
 - name: input
   required: true
   default: true
-  description: input string to transform to json object
+  description: Input string to transform to JSON object
 outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
 scripttarget: 0
+runonce: false
+tests:
+- JSONtoCSV-Test

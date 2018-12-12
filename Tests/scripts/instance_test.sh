@@ -4,13 +4,18 @@ echo "start instance test"
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
 
-USERNAME="admin"
-PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
+USERNAME=$(cat $SECRET_CONF_PATH | jq '.username')
+PASSWORD=$(cat $SECRET_CONF_PATH | jq '.userPassword')
 
 # remove quotes from password
 temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
+
+# remove quotes from username
+temp="${USERNAME%\"}"
+temp="${temp#\"}"
+USERNAME=$temp
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 

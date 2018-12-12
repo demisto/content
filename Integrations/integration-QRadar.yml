@@ -5,7 +5,8 @@ name: QRadar
 display: IBM QRadar
 category: Analytics & SIEM
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAfCAYAAADUdfLHAAAHgElEQVR4Ae3YA6xlWRaA4VW2bdu2bVdbZbRt27a7y7Zt27ZtvFrzJ1mT7Nnpvnicmb6VfPXeuzzJn3P2OltC+bd0z8eJUB4P4RcswVGcwXGsxCA8hRpIComIX/4DvsRohUmIgoZoIW5HCkhEwscsgjHQGFiIqpCIhIvZBsegnrOYg0/wKHriQbyLKTgB9VxCb0hE/MfsBfUcwXPICDFJkB6pICY5emAn1PMGJCL+YnaGen51IubBs1iPS1DcxHGMQUskNm/76yyehMS9SMzSOAU1t/AYBCnwnj2mOIc1mIl52A81W1EPgs64BDU30BQStyIxx0IdT0CQA8uhGIYq3rSbCIIi+AO3vPd3ch5TrEQySNyIxOwCdXwPQWZsxToUg6AAvsMOnMERzMM9EFTGASieguBpqOMRSNyIxJwKNXuQDYJBmI8UELwIxXnMxB9YgstQbEJRFMJRKOpBsAhqNiI5JHZFYlaFOl6CoCW2IysE7yEKPf0QSOGEPm4xW0IxE4JuUEdDSPRFvDSgW2bkRSqI2JCj5jQKQDAYAyDoiGOoCEEZe349FqEXBO2hWADBcCdcImyDmm8h0RYJ2RYd0Bh3orTYpVLNdAjyYS7SQDADfSGoj5V4Cb3sOcVvELwFRWs0h+IjCL6EmqUQIy/07ZKIA6qPtmgdQBs0Q05IPMuL9miNdsgCSQDVLWQztEBLdBVnUlV8DEFLDIOgPOYhERJjEKpCHH9A0R0FnCEqGxSzIOgDNfuX7fskLQTyYr+uyTigTdAQncMolIbEkx5QR2NIArgHRdAfr6M56oq3bfckBD3wKQSdLIygFt6GeGpCMQiCPViCJDiEzRC0hpqzy/Z+kgMCeaFPFydmWI6iAiQePPBfErMD6qAp6qIV2oi3UTAAgr74AILbnICN8DDEUwSKcRBsxCokwi7sgKAB1FwgYj4I5HkvptmAJVjm2A31zP+HxUyD+9AM+dETzcTuE9U8DUFXfAtBIydsPrwM8bSE4gVkgWI00uIqlkHQDmrOcHnNDoGwZvoxb6EixJMUz0Ad11HqnxLTpEZL3IcK/55mF0PN5xBUwTAIstjjiSG4G2UgjjKYhGwYCMXDKA/FHxAMgJq9REzjrZlBY5rk2AJ1NII4kqAWHsfn+Alf4RV0RnqIz9TGi/gMb6EdBPcFiZkSzfE8vsKP+BzPoZk9L45KaGbKQZABd+ML9ICExGL+DDWzIUiCH5ENgifQGoJkRowf9SJOISNehqI3BN9BzQKICSumWQx11IGYPBgHDWArakAcafADFL4ReDJAzCpYAQ1gLgpAzCyoGYp8WAM1U8KNOdBdx1AcgsfRF4LceC2EXZuyOIiByIGz9nc6sw9qPvuPmP3/MmYFCHwZsR9qziCPE2SZ9zlbsQC7oI69yAwxw6Dee68gCoqT9pgfsyAOQ80NrMNC93Ez2Y9ppmKe/9pwY5bDDah5B4Ls+BwpIciCFJAg0iA1JnoT8n1QRw3vJvivYrZDXhQ1RVAJg6COX7yxXR3vQEwiDIY6GkLQDerYg07Ii6qYCTV+zB+hjnsgJgOWQM1VFIMfMwqKG9iIlfg8rJj8JzasqDmCAhC0Qh9ImArhNGZAkBproWYVEgeKaa7hiueWdwYMQlqI6YllmIvJyAlx3A51tIJghve9leEPHBv+Zp3+DIsxH0OQCuL40L/i+DHNKbSGmEQIO2YrqGMYxJRCEkiYiiA3BG9DHQ9AgsYMbjcqQYJIheyojgVQRzMk8S6HMyDwvRLiNJsIaZAbzbEtxJi9Ib6wYlrQ36GOtyCxoBfUMQ8CP2ao95lHoI5LqAF/2u2CP7EUe3ER6rMg2XAZal6AwNcoQMwM6ItRWIWDuAo1wWJeRpHYilkA+6H++hkD/REFNedRLUjMYNNsGvwKdYyHmNxYAfXcwC7MgR8kJ65CzRMQ+Or+TcwaOAD1XMN6rAsh5kGki5WYFrQJrkIdU1AAEobM+BXq6QGJSUxT1DuT9iI1BEOhju9RCwUgaAt1NEUanIGaHyHw3Q11NIBgjbeB8TIqIw8Eb4YQcx/SxFpMC9oRV6COc/gKJb3BxZcfr+Mo1HEd90NiKab/2nPIijQ4GmTt6wd1tIB4Z89+ZIR4hkAdtZEH16DmDYjn6/iPaWxDfTvUcw3rMQTv4xW8g9+xApeg8I1HVwv6AHrg3uX7PkkPAdt5YW8azIaaK8iP9N4ZNiHI+9xp9l2o41sk9ja3/TWwFgojCmqegTiyYHvCxDR2n/kNoqAxdAvqucoGezF/oz2MmD9CTRTKQrDeW7M+QifcbXHV0xaCnDgEdazEdxiPS1BPPaTGcag5jefREX2wAuqpGC8xfTaw/IBz0Njix3wh/JjPQh13QHAnNICd3hnWA2Lae2uxb6wXtREE70B9Jgr+cNQIfswDSBtXMf2oedAd72EU5mFZNK3EAiLmdWIm4Xt+xgLMwcwgo3pdLMIsLMVzEHO7PXcCZ3AcK/AcimA05mIpHoI4qmMEDuAMTmEN+qI4pmMOFqISBEnxONbhFM7gMObhXtTHPMzGErSF4ENvsyElJLr+BYNjupf20vh5AAAAAElFTkSuQmCC
-description: Get incidents and search QRadar
+description: Fetch offenses as incidents and search QRadar
+detaileddescription: Fetch offenses as incidents and search QRadar
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -27,12 +28,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: "Number of offenses to pull per API call (max: 50)"
+- display: Number of offenses to pull per API call
   name: offensesPerCall
   defaultvalue: "50"
   type: 0
@@ -42,317 +38,1058 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
-    // The command input arg holds the command sent from the user.
-    var username = params.credentials ? params.credentials.identifier : '';
-    var password = params.credentials ? params.credentials.password : '';
-    var token = params.token;
-    if (!token && !password) {
-        throw 'Either credentials or auth token should be provided.'
+    import sys, os, requests, traceback, datetime, json
+    from requests.exceptions import HTTPError
+    from copy import deepcopy
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    ''' GLOBAL VARS '''
+    SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    CREDENTIALS = demisto.params().get('credentials')
+    USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
+    PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
+    TOKEN = demisto.params().get('token')
+    USE_SSL = not demisto.params().get('insecure', False)
+    AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type':  'application/json'}
+    OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
+    OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
+
+    if not TOKEN and not (USERNAME and PASSWORD):
+        raise Exception('Either credentials or auth token should be provided.')
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' Header names transformation maps '''
+    # Format: {'OldName': 'NewName'}
+
+    OFFENSES_NAMES_MAP = {
+        'follow_up': 'Followup',
+        'id': 'ID',
+        'description': 'Description',
+        'source_address_ids': 'SourceAddress',
+        'local_destination_address_ids': 'DestinationAddress',
+        'remote_destination_count': 'RemoteDestinationCount',
+        'start_time': 'StartTime',
+        'event_count': 'EventCount',
+        'magnitude': 'Magnitude',
+        'last_updated_time': 'LastUpdatedTime',
+        'offense_type': 'OffenseType'
     }
-    var server = params.server+'/';
-    var insecure = params.insecure;
-    var query = params.query;
-    var offensesPerCall = parseInt(params.offensesPerCall || 50);
-    offensesPerCall = offensesPerCall > 50 ? 50 : offensesPerCall;
 
-    var createIncidentFromOffense = function(incident) {
-        var keys = Object.keys(incident);
-        var labels = [];
-        var occured = (new Date(incident.start_time)).toISOString();
-        for (var i = 0; i<keys.length; i++) {
-            labels.push({'type': keys[i], 'value': String(incident[keys[i]])});
-        }
+    SINGLE_OFFENSE_NAMES_MAP = {
+        'credibility': 'Credibility',
+        'relevance': 'Relevance',
+        'severity': 'Severity',
+        'assigned_to': 'AssignedTo',
+        'destination_networks': 'DestinationHostname',
+        'status': 'Status',
+        'closing_user': 'ClosingUser',
+        'closing_reason_id': 'ClosingReason',
+        'close_time': 'CloseTime',
+        'categories': 'Categories',
+        'follow_up': 'Followup',
+        'id': 'ID',
+        'description': 'Description',
+        'source_address_ids': 'SourceAddress',
+        'local_destination_address_ids': 'DestinationAddress',
+        'remote_destination_count': 'RemoteDestinationCount',
+        'start_time': 'StartTime',
+        'event_count': 'EventCount',
+        'flow_count': 'FlowCount',
+        'offense_source': 'OffenseSource',
+        'magnitude': 'Magnitude',
+        'last_updated_time': 'LastUpdatedTime',
+        'offense_type': 'OffenseType',
+        'protected': 'Protected'
+    }
 
+    SEARCH_ID_NAMES_MAP = {
+        'search_id': 'ID',
+        'status': 'Status'
+    }
+
+    ASSET_PROPERTIES_NAMES_MAP = {
+        'Unified Name': 'Name',
+        'CVSS Collateral Damage Potential': 'AggregatedCVSSScore',
+        'Weight': 'Weight'
+    }
+    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {
+        'Primary OS ID': 'OS'
+    }
+
+    FULL_ASSET_PROPERTIES_NAMES_MAP = {
+        'Compliance Notes': 'ComplianceNotes',
+        'Compliance Plan': 'CompliancePlan',
+        'CVSS Collateral Damage Potential': 'CollateralDamagePotential',
+        'Location': 'Location',
+        'Switch ID': 'SwitchID',
+        'Switch Port ID': 'SwitchPort',
+        'Group Name': 'GroupName',
+        'Vulnerabilities': 'Vulnerabilities'
+    }
+
+    REFERENCE_NAMES_MAP = {
+        'number_of_elements': 'NumberOfElements',
+        'name': 'Name',
+        'creation_time': 'CreationTime',
+        'element_type': 'ElementType',
+        'number_of_elements': 'NumberOfElements',
+        'time_to_live': 'TimeToLive',
+        'timeout_type': 'TimeoutType',
+        'data': 'Data',
+        'last_seen': 'LastSeen',
+        'source': 'Source',
+        'value': 'Value',
+        'first_seen': 'FirstSeen'
+    }
+
+    ''' Utility methods '''
+
+    # Filters recursively null values from dictionary
+    def filter_dict_null(d):
+        if isinstance(d, dict):
+            return dict((k, filter_dict_null(v)) for k, v in d.items() if filter_dict_null(v) is not None)
+        elif isinstance(d, list):
+            if len(d) > 0:
+                return list(map(filter_dict_null, d))
+            return None
+        return d
+
+    # Converts unicode elements of obj (incl. dictionary and list) to string recursively
+    def unicode_to_str_recur(obj):
+        if isinstance(obj, dict):
+            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k,v in obj.iteritems()}
+        elif isinstance(obj, list):
+            obj = map(unicode_to_str_recur, obj)
+        elif isinstance(obj, unicode):
+            obj = obj.encode('utf-8')
+        return obj
+
+    # Converts to an str
+    def convert_to_str(obj):
+        if isinstance(obj, unicode):
+            return obj.encode('utf-8')
+        try:
+            return str(obj)
+        except:
+            return obj
+
+    # Filters recursively from dictionary (d1) all keys that do not appear in d2
+    def filter_dict_nonintersection_key_to_value(d1, d2):
+        if isinstance(d1, list):
+            return map(lambda x: filter_dict_nonintersection_key_to_value(x, d2), d1)
+        elif isinstance(d1, dict) and isinstance(d2, dict):
+            d2values = d2.values()
+            return dict((k,v) for k,v in d1.items() if k in d2values)
+        return d1
+
+    # Change the keys of a dictionary according to a conversion map
+    # trans_map - { 'OldKey': 'NewKey', ...}
+    def replace_keys(src, trans_map):
+        def replace(key, trans_map):
+            if key in trans_map:
+                return trans_map[key]
+            return key
+
+        if trans_map:
+            if isinstance(src, list):
+                return map(lambda x: replace_keys(x, trans_map), src)
+            else:
+                src = {replace(k, trans_map): v for k,v in src.iteritems()}
+        return src
+
+    # Transforms flat dictionary to comma seperated values
+    def dict_values_to_comma_seperated_string(dic):
+        return ','.join(convert_to_str(v) for v in dic.itervalues())
+
+    # Sends request to the server using the given method, url, headers and params
+    def send_request(method, url, headers=AUTH_HEADERS, params=None):
+        try:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+            res.raise_for_status()
+        except HTTPError, e:
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+              err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+            return_error(err_msg)
+        return res.json()
+
+    # Generic function that receives a result json, and turns it into an entryObject
+    def get_entry_for_object(title, obj, contents, headers=None, contextKey=None):
+        if len(obj) == 0:
+            return {
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': "There is no output result"
+            }
+        obj = filter_dict_null(obj)
+        if headers:
+            if isinstance(headers, basestring):
+                headers = headers.split(',')
+            if isinstance(obj, dict):
+                headers = list(set(headers).intersection(set(obj.keys())))
+        ec = { contextKey: obj } if contextKey else obj
         return {
-            "name": incident.id + ' ' + incident.description,
-            "labels": labels,
-            "rawJSON": JSON.stringify(incident),
-            "occurred": occured
-        }
-    }
-
-    var sendRequest = function(method, url, headers, queryName, body) {
-        var httpParams = {
-                    Headers: headers,
-                    Method: method,
-                    Body: body,
-                };
-        if (token) {
-            if (!httpParams.Headers) {
-                httpParams.Headers = {};
-            }
-            httpParams.Headers['SEC'] = [token];
-        } else {
-            httpParams.Username = username;
-            httpParams.Password = password;
-        }
-        var res = http(
-                url,
-                httpParams,
-                insecure,
-                params.proxy
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        try {
-          return JSON.parse(res.Body);
-        } catch (err) {
-            logInfo('QRadar error: Could stringify respons for ' + url + '. Error is ' + err + '. Returned body is ' + res.Body);
-            throw 'QRadar error\n Could stringify respons for ' + url + '\n Error is ' + err + '\n Returned body is ' + res.Body;
-        }
-    }
-
-    var getOffenses = function(filter, fields, range) {
-        var urlArgs = {};
-        if (filter) {
-            urlArgs.filter = filter;
-        }
-        if (fields) {
-            urlArgs.fields = fields;
-        }
-        var headers = {'Content-Type': ['application/json']};
-        if (range) {
-            headers.Range = ['items=' + range];
-        }
-        return sendRequest('GET', server + 'api/siem/offenses' + encodeToURLQuery(urlArgs), headers, 'siem offenses');
-    }
-
-    var search = function(query_expression, fields) {
-        var urlArgs = {query_expression: query_expression};
-        if (fields) {
-            urlArgs.fields = fields;
-        }
-        return sendRequest('POST', server + 'api/ariel/searches' + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'searches');
-    }
-
-    var getClosingReasons = function(filter, fields, include_deleted, include_reserved, range) {
-        var urlArgs = {};
-        if (filter) {
-            urlArgs.filter = filter;
-        }
-        if (fields) {
-            urlArgs.fields = fields;
-        }
-        if (include_deleted) {
-            urlArgs.include_deleted = include_deleted;
-        }
-        if (include_reserved) {
-            urlArgs.include_reserved = include_reserved;
-        }
-        var headers = {'Content-Type': ['application/json']};
-        if (range) {
-            headers.Range = ['items=' + range];
-        }
-        return sendRequest('GET', server + 'api/siem/offense_closing_reasons' + encodeToURLQuery(urlArgs), headers);
-    }
-
-    var getSearch = function(search_id, fields) {
-        var urlArgs = {};
-        if (fields) {
-            urlArgs.fields = fields;
-        }
-        return sendRequest('GET', server + 'api/ariel/searches/' + search_id + encodeToURLQuery(urlArgs), {'Content-Type': ['application/json']}, 'get search');
-    }
-
-    var getSearchResults = function(search_id, range) {
-        var headers = {'Content-Type': ['application/json']};
-        if (range) {
-            headers.Range = ['items=' + range];
-        }
-        return sendRequest('GET', server + 'api/ariel/searches/' + search_id + '/results', headers, 'get search results');
-    }
-
-    var getAssets = function(query_expression, fields, range) {
-        var headers = {'Content-Type': ['application/json']};
-        if (range) {
-            headers.Range = ['items=' + range];
-        }
-        var urlArgs = {};
-        if (fields) {
-            urlArgs.fields = fields;
-        }
-        if (query_expression) {
-            urlArgs.query_expression = query_expression;
-        }
-        return sendRequest('GET', server + 'api/asset_model/assets' + encodeToURLQuery(urlArgs), headers, 'get-assets');
-    }
-
-    var addHumanRedable = function(object, title, headers, path) {
-      var obj = path ? dq(object, path) : object;
-      return {
-        Type: entryTypes.note,
-        Contents: object,
-        ContentsFormat: formats.json,
-        HumanReadable: obj && ((obj instanceof Array && obj.length >0) || (obj instanceof Object && Object.keys(obj).length > 0)) ? tblToMd(title, obj, headers) : 'no results'
-      };
-    }
-
-    var updateOffense = function(offense_id, args) {
-        if (!args['closing_reason_id'] && args['status'] === 'CLOSED') {
-            throw 'Invalid input - must provide closing reason id (may use "qradar-get-closing-reasons" command to get them) to close offense';
-        }
-        var booleanFields = ['protected', 'follow_up'];
-        var keys = Object.keys(args);
-        for (var i = 0; i < keys.length; i++) {
-            if (keys[i] === 'closing_reason_id') {
-                args[keys[i]] = parseInt(args[keys[i]]);
-            }
-            if (booleanFields.indexOf(keys[i]) !== -1) {
-                args[keys[i]] = args[keys[i]] === 'true';
-            }
-        }
-        return sendRequest(
-            'POST', server + 'api/siem/offenses/' + offense_id + encodeToURLQuery(args),
-            undefined,
-            'update offense'
-            );
-    }
-    var headers = args.headers;
-    if (headers) {
-        headers = headers.split(',');
-    }
-    delete(args.headers);
-
-    var findLastPagePos = function (fetchQuery) {
-        // make sure it's not a fluke and we simply have exactly offensePerCall results
-        if (getOffenses(fetchQuery, undefined, offensesPerCall + '-' + offensesPerCall).length == 0) {
-            return offensesPerCall-1;
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, obj, headers),
+            'EntryContext': ec
         }
 
-        // search up until we don't have any more results
-        pos = offensesPerCall*2;
-        while (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
-            pos *= 2;
+    # Converts epoch (miliseconds) to ISO string
+    def epoch_to_ISO(ms_passed_since_epoch):
+        if ms_passed_since_epoch >= 0:
+            return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%dT%H:%M:%S.%fZ"))
+        return ms_passed_since_epoch
+
+    # Converts closing reason name to id
+    def convert_closing_reason_name_to_id(closing_name, closing_reasons=None):
+        if not closing_reasons:
+            closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in closing_reasons:
+            if closing_reason['text'] == closing_name:
+                return closing_reason['id']
+        return closing_name
+
+    # Converts closing reason id to name
+    def convert_closing_reason_id_to_name(closing_id, closing_reasons=None):
+        if not closing_reasons:
+            closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in closing_reasons:
+            if closing_reason['id'] == closing_id:
+                return closing_reason['text']
+        return closing_id
+
+    # Converts offense type id to name
+    def convert_offense_type_id_to_name(offense_type_id, offense_types=None):
+        if not offense_types:
+            offense_types = get_offense_types()
+        if offense_types:
+            for o_type in offense_types:
+                if o_type['id'] == offense_type_id:
+                    return o_type['name']
+        return offense_type_id
+
+    ''' Request/Response methods '''
+
+    # Returns the result of an offenses request
+    def get_offenses(_range, _filter='', _fields=''):
+        full_url = '{0}/api/siem/offenses'.format(SERVER)
+        params = {'filter': _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params['fields'] = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', full_url, headers, params)
+
+    # Returns the result of a single offense request
+    def get_offense_by_id(offense_id, _filter='', _fields=''):
+        full_url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
+        params = {"filter": _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params['fields'] = _fields
+        return send_request('GET', full_url, headers, params)
+
+    # Updates a single offense and returns the updated offense
+    def update_offense(offense_id):
+        url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
+        return send_request('POST', url, params=demisto.args())
+
+    # Posts a search in QRadar and returns the search object
+    def search(args):
+        url = '{0}/api/ariel/searches'.format(SERVER)
+        return send_request('POST', url, AUTH_HEADERS, params=args)
+
+    # Returns a search object (doesn't contain reuslt)
+    def get_search(search_id):
+        url = '{0}/api/ariel/searches/{1}'.format(SERVER, convert_to_str(search_id))
+        return send_request('GET', url, AUTH_HEADERS)
+
+    # Returns a search result
+    def get_search_results(search_id, _range=''):
+        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, convert_to_str(search_id))
+        headers = dict(AUTH_HEADERS)
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers)
+
+    # Returns the result of an assets request
+    def get_assets(_range='', _filter='', _fields=''):
+        url = '{0}/api/asset_model/assets'.format(SERVER)
+        params = {"filter": _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params['fields'] = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params)
+
+    # Returns the result of a closing reasons request
+    def get_closing_reasons(_range='', _filter='', _fields='', include_deleted=False, include_reserved=False):
+        url = '{0}/api/siem/offense_closing_reasons'.format(SERVER)
+        params = {}
+        if _filter:
+            params['filter'] = _filter
+        if include_deleted:
+            params['include_deleted'] = include_deleted
+        if include_reserved:
+            params['include_reserved'] = include_reserved
+        headers = AUTH_HEADERS
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params)
+
+    # Returns the result of a offense types request
+    def get_offense_types():
+        url = '{0}/api/siem/offense_types'.format(SERVER)
+        # Due to a bug in QRadar, this functions does not work if username/password was not provided
+        if USERNAME and PASSWORD:
+            return send_request('GET', url, headers=None)
+        return {}
+
+    # Returns the result of a get note request
+    def get_note(offense_id, note_id, fields):
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+        params = {'fields': fields} if fields else {}
+        return send_request('GET', url, AUTH_HEADERS, params=params)
+
+    # Creates a note and returns the note as a result
+    def create_note(offense_id, note_text, fields):
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
+        params = {'fields': fields} if fields else {}
+        params['note_text'] = note_text
+        return send_request('POST', url, AUTH_HEADERS, params=params)
+
+    # Returns the result of a reference request
+    def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        params = {'filter': _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params['fields'] = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params=params)
+
+    def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
+        url = '{0}/api/reference_data/sets'.format(SERVER)
+        params = {'name': ref_name, 'element_type': element_type}
+        if timeout_type:
+            params['timeout_type'] = timeout_type
+        if time_to_live:
+            params['time_to_live'] = time_to_live
+        return send_request('POST', url, params=params)
+
+    def delete_reference_set(ref_name):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        return send_request('DELETE', url)
+
+    def update_reference_set_value(ref_name, value, source=None):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        params = {'name': ref_name, 'value': value}
+        if source:
+            params['source'] = source
+        return send_request('POST', url, params=params)
+
+    def delete_reference_set_value(ref_name, value):
+        url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+        params = {'name': ref_name, 'value': value}
+        return send_request('DELETE', url, params=params)
+
+    ''' Command methods '''
+
+    def test_module():
+        get_offenses('0-0')
+        # If encountered error, send_request will return_error
+        return 'ok'
+
+    def fetch_incidents():
+        query = demisto.params().get('query')
+        lastRun = demisto.getLastRun()
+        offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
+        if lastRun and offenseId == 0:
+            startTime = lastRun['startTime'] if 'startTime' in lastRun else '0'
+            fetchQuery = 'start_time>{0}{1}'.format(startTime, ' AND ({0})'.format(query) if query else '')
+        else:
+           fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+            # qradar returns offenses sorted desc on id and there's no way to change sorting.
+            # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+            # start looking for the end of the list by doubling the page position until we're empty.
+            # then start binary search back until you find the end of the list and finally return
+            # `offensesPerCall` from the end.
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)
+        if len(raw_offenses) >= OFFENSES_PER_CALL:
+            lastOffensePos = find_last_page_pos(fetchQuery)
+            raw_offenses = get_offenses(_range='{0}-{1}'.format(lastOffensePos - OFFENSES_PER_CALL + 1, lastOffensePos))
+        incidents = []
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
+        for offense in raw_offenses:
+            offenseId = max(offenseId, offense['id'])
+            incidents.append(create_incident_from_offense(offense))
+        demisto.setLastRun({'id': offenseId})
+        return incidents
+
+    # Finds the last page position for QRadar query that receives a range parameter
+    def find_last_page_pos(fetchQuery):
+        # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
+        if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetchQuery)) == 0:
+            return OFFENSES_PER_CALL - 1
+        # Search up until we don't have any more results
+        pos = OFFENSES_PER_CALL * 2
+        while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
+            pos = pos * 2
+        # Binary search the gap from the las step
+        high = pos
+        low = pos / 2
+        while high > low+1:
+            pos = (high + low) / 2
+            if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetchQuery)) == 1:
+                # we still have results, raise the bar
+                low = pos
+            else:
+                # we're too high, lower the bar
+                high = pos
+        # low holds the last pos of the list
+        return low
+
+    # Creates incidents from offense
+    def create_incident_from_offense(offense):
+        occured = epoch_to_ISO(offense['start_time'])
+        keys = offense.keys()
+        labels = []
+        for i in range(len(keys)):
+            labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+        return {
+            'name': '{0} {1}'.format(offense['id'], offense['description']),
+            'labels': labels,
+            'rawJSON': json.dumps(offense),
+            'occurred': occured
         }
 
-        // binary search the gap from the last step
-        var high = pos; // doesn't have results
-        var low = pos / 2; // last place we saw results
-        while (high > low+1) { // if
-            pos = parseInt((high + low) / 2); // split the gap and round down
-            if (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
-                // we still have results, raise the bar
-                low = pos;
-            } else {
-                // we're too high, lower the bar
-                high = pos;
-            }
+    def get_offenses_command():
+        raw_offenses = get_offenses(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
+        offenses = deepcopy(raw_offenses)
+        enrich_offense_result(offenses)
+        offenses = filter_dict_nonintersection_key_to_value(replace_keys(offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
+
+        # prepare for printing:
+        headers = demisto.args().get('headers')
+        if not headers:
+            offenses_names_map_cpy = dict(OFFENSES_NAMES_MAP)
+            offenses_names_map_cpy.pop('id', None)
+            offenses_names_map_cpy.pop('description', None)
+            headers = 'ID,Description,' + dict_values_to_comma_seperated_string(offenses_names_map_cpy)
+
+        return get_entry_for_object('QRadar offenses', offenses, raw_offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
+
+    # Enriches the values of a given offense result (full_enrichment adds more enrichment options)
+    def enrich_offense_result(response, full_enrichment=False):
+        enrich_offense_res_with_source_and_destination_address(response)
+        if isinstance(response, list):
+            type_dict = get_offense_types()
+            closing_reason_dict = get_closing_reasons(include_deleted=True, include_reserved=True)
+            for offense in response:
+                enrich_single_offense_result(offense, full_enrichment, type_dict, closing_reason_dict)
+        else:
+            enrich_single_offense_result(response, full_enrichment)
+
+        return response
+
+    # Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts closing_reason_id to name
+    def enrich_single_offense_result(offense, full_enrichment, type_dict=None, closing_reason_dict=None):
+        enrich_offense_times(offense)
+        if 'offense_type' in offense:
+            offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'], type_dict)
+        if full_enrichment and 'closing_reason_id' in offense:
+            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'], closing_reason_dict)
+
+    # Enriches offense result dictionary with source and destination addresses
+    def enrich_offense_res_with_source_and_destination_address(response):
+        src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
+        # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel the enrichment
+        try:
+            if src_adrs:
+                enrich_source_addresses_dict(src_adrs)
+            if dst_adrs:
+                enrich_destination_addresses_dict(dst_adrs)
+            if isinstance(response, list):
+                for offense in response:
+                   enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
+            else:
+                enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
+        except ValueError:
+            pass
+        return response
+
+    # Helper method: Extracts all source and destination addresses ids from an offense result
+    def extract_source_and_destination_addresses_ids(response):
+        src_ids = {}
+        dst_ids = {}
+        if isinstance(response, list):
+            for offense in response:
+                populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids)
+        else:
+            populate_src_and_dst_dicts_with_single_offense(response, src_ids, dst_ids)
+
+        return src_ids, dst_ids
+
+    # Helper method: Populates source and destination id dictionaries with the id key/values
+    def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
+        if 'source_address_ids' in offense and isinstance(offense['source_address_ids'], list):
+            for source_id in offense['source_address_ids']:
+                src_ids[source_id] = source_id
+        if 'local_destination_address_ids' in offense and isinstance(offense['local_destination_address_ids'], list):
+            for destination_id in offense['local_destination_address_ids']:
+                dst_ids[destination_id] = destination_id
+        return None
+
+    # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
+    def enrich_source_addresses_dict(src_adrs):
+        src_ids_str = dict_values_to_comma_seperated_string(src_adrs)
+        source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
+        src_res = send_request('GET', source_url, AUTH_HEADERS)
+        for src_adr in src_res:
+            src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
+        return src_adrs
+
+    # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to the ids
+    def enrich_destination_addresses_dict(dst_adrs):
+        dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
+        destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
+        headers = {'Content-Type': 'application/json', "SEC": convert_to_str(TOKEN)}
+        dst_res = send_request('GET', destination_url, AUTH_HEADERS)
+        for dst_adr in dst_res:
+            dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
+        return dst_adrs
+
+    # Helper method: For a single offense replaces the source and destination ids with the actual addresses
+    def enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs):
+        if isinstance(offense.get('source_address_ids'), list):
+            for i in range(len(offense['source_address_ids'])):
+                offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
+        if isinstance(offense.get('local_destination_address_ids'), list):
+            for i in range(len(offense['local_destination_address_ids'])):
+                offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
+
+        return None
+
+    # Helper method: For a single offense replaces the epoch times with ISO string
+    def enrich_offense_times(offense):
+        if 'start_time' in offense:
+            offense['start_time'] = epoch_to_ISO(offense['start_time'])
+        if 'last_updated_time' in offense:
+            offense['last_updated_time'] = epoch_to_ISO(offense['last_updated_time'])
+        if offense.get('close_time'):
+            offense['close_time'] = epoch_to_ISO(offense['close_time'])
+
+        return None
+
+    def get_offense_by_id_command():
+        offense_id = demisto.args().get('offense_id')
+        raw_offense = get_offense_by_id(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
+        offense = deepcopy(raw_offense)
+        enrich_offense_result(offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offenses', offense, raw_offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+
+    def update_offense_command():
+        args = demisto.args()
+        if 'closing_reason_name' in args:
+            args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
+        elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+            raise ValueError('Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to get them) to close offense')
+        offense_id = args.get('offense_id')
+        raw_offense = update_offense(offense_id)
+        offense = deepcopy(raw_offense)
+        enrich_offense_result(offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offense', offense, raw_offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+
+    def search_command():
+        raw_search = search(demisto.args())
+        search_res = deepcopy(raw_search)
+        search_res = filter_dict_nonintersection_key_to_value(replace_keys(search_res, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search', search_res, raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+
+    def get_search_command():
+        search_id = demisto.args().get('search_id')
+        raw_search = get_search(search_id)
+        search = deepcopy(raw_search)
+        search = filter_dict_nonintersection_key_to_value(replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search Info', search, raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}")'.format(search_id))
+
+    def get_search_results_command():
+        search_id = demisto.args().get('search_id')
+        raw_search_results = get_search_results(search_id, demisto.args().get('range'))
+        result_key = raw_search_results.keys()[0]
+        title = 'QRadar Search Results from ' + result_key
+        context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), raw_search_results, demisto.args().get('headers'), context_key)
+
+    def get_assets_command():
+        raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
+        assets_result, human_readable_res = create_assets_result(deepcopy(raw_assets))
+        return get_entry_for_assets('QRadar Assets', assets_result, raw_assets, human_readable_res, demisto.args().get('headers'))
+
+    def get_asset_by_id_command():
+        _filter = "id=" + convert_to_str(demisto.args().get('asset_id'))
+        raw_asset = get_assets(_filter=_filter)
+        asset_result, human_readable_res = create_assets_result(deepcopy(raw_asset), full_values=True)
+        return get_entry_for_assets('QRadar Asset', asset_result, raw_asset, human_readable_res, demisto.args().get('headers'))
+
+    # Specific implementation for assets commands, that turns asset result to entryObject
+    def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None):
+        if len(obj) == 0:
+            return "There is no output result"
+        obj = filter_dict_null(obj)
+        human_readable_obj = filter_dict_null(human_readable_obj)
+        if headers:
+            if isinstance(headers, basestring):
+                headers = headers.split(',')
+            headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        human_readable_md = ''
+        for k, h_obj in human_readable_obj.iteritems():
+            human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "### {0}\n{1}".format(title, human_readable_md),
+            'EntryContext': obj
         }
-        // low holds the last pos of the list
-        return low;
-    }
 
-    switch (command) {
-        case 'test-module':
-            if (getOffenses(undefined, undefined, '0-0')) { // return only one offense
-                return 'ok';
-            }
-            return 'not ok';
-        case 'fetch-incidents':
-            var lastRun = getLastRun();
+    def create_assets_result(assets, full_values=False):
+        trans_assets = {}
+        human_readable_trans_assets = {}
+        endpoint_dict = create_empty_endpoint_dict(full_values)
+        for asset in assets:
+            asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
+            human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+            populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
+            trans_assets[asset_key] = populated_asset
+            human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
+        # Adding endpoints context items
+        trans_assets['Endpoint'] = endpoint_dict
+        human_readable_trans_assets['Endpoint'] = endpoint_dict
+        return trans_assets, human_readable_trans_assets
 
-            // Using startTime is deprecated, and is being supported here for backward compability
-            // it should be removed once everyone use this code at least once
-            var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
-            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var fetchQuery = (startTime ? 'start_time>' + startTime : 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
-            /*
-                qradar returns offenses sorted desc on id and there's no way to change sorting.
-                if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
-                start looking for the end of the list by doubling the page position until we're empty.
-                then start binary search back until you find the end of the list and finally return
-                `offensesPerCall` from the end.
-            */
-            var res = getOffenses(fetchQuery, undefined, '0-' + (offensesPerCall-1));
-            if (res.length >= offensesPerCall) {
-                var lastOffensePos = findLastPagePos(fetchQuery);
-                res = getOffenses(fetchQuery, undefined, lastOffensePos-offensesPerCall+1 + '-' + lastOffensePos);
-            }
+    def transform_single_asset_to_hr(asset):
+        '''
+        Prepares asset for human readable
+        '''
+        hr_asset = []
+        for k,v in asset.iteritems():
+            if isinstance(v, dict):
+                hr_item = v
+                hr_item['Property Name'] = k
+                hr_asset.append(hr_item)
+        return hr_asset
 
-            var incidents = [];
-            for (var i = 0; i < res.length; i++) {
-                var offense = res[i];
-                startTime = Math.max(startTime, offense.start_time);
-                offenseId = Math.max(offenseId, offense.id);
-                incidents.push(createIncidentFromOffense(res[i]));
-            }
-            setLastRun({'id': offenseId});
-            return JSON.stringify(incidents);
+    def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
+        asset_dict = {}
+        asset_dict['ID'] = asset['id']
+        for interface in asset['interfaces']:
+            if full_values:
+                endpoint_dict['MACAddress'].append(interface['mac_address'])
+            for ip_address in interface['ip_addresses']:
+                endpoint_dict['IPAddress'].append(ip_address['value'])
+        if full_values:
+            domain_name = get_domain_name(asset['domain_id'])
+            endpoint_dict['Domain'].append(domain_name)
+        # Adding values found in properties of the asset
+        enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
+        return asset_dict
 
-        case 'qr-offenses':
-        case 'qradar-offenses':
-            return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offenses', headers);
-        case 'qr-get-assets':
-        case 'qradar-get-assets':
-            return addHumanRedable(getAssets(args.filter, args.fields, args.range), 'QRadar get assets', headers);
-        case 'qr-update-offense':
-        case 'qradar-update-offense':
-            return addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers);
-        case 'qr-searches':
-        case 'qradar-searches':
-            return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
-        case 'qr-get-search':
-        case 'qradar-get-search':
-            return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
-        case 'qr-get-search-results':
-        case 'qradar-get-search-results':
-            return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
-        case 'qradar-get-closing-reasons':
-            return addHumanRedable(getClosingReasons(args.filter, args.fields, args.include_deleted, args.include_reserved, args.range), 'QRadar get closing reasons', headers);
-        case 'qradar-create-note':
-            return addHumanRedable(
-                sendRequest(
-                    'POST',
-                    server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes', args) + encodeToURLQuery(args),
-                    null,
-                    'create note'),
-                'QRadar create note',
-                headers);
-        case 'qradar-get-note':
-            return addHumanRedable(
-                sendRequest(
-                    'GET',
-                    server + replaceInTemplatesAndRemove('api/siem/offenses/%offense_id%/notes/%note_id%', args) + encodeToURLQuery(args),
-                    null,
-                    'get note'),
-                'QRadar get note',
-                headers);
-    }
-  type: javascript
+    def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
+        for prop in asset['properties']:
+            if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
+                asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'], 'LastUser': prop['last_reported_by']}
+            elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
+                endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+            elif full_values:
+                if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
+                    asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'], 'LastUser': prop['last_reported_by']}
+        return None
+
+    # Creates an empty endpoint dictionary (for use in other methods)
+    def create_empty_endpoint_dict(full_values):
+      endpoint_dict = {}
+      endpoint_dict['IPAddress'] = []
+      endpoint_dict['OS'] = []
+      if full_values:
+        endpoint_dict['MACAddress'] = []
+        endpoint_dict['Domain'] = []
+      return endpoint_dict
+
+    # Retrieves domain name using domain id
+    def get_domain_name(domain_id):
+        try:
+            query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
+            search_id = search(query_param)['search_id']
+            return get_search_results(search_id)['events'][0]['Domain name']
+        except:
+            return domain_id
+
+    def get_closing_reasons_command():
+        args = demisto.args()
+        closing_reasons_map = {
+            'id': 'ID',
+            'text': 'Name',
+            'is_reserved': 'IsReserved',
+            'is_deleted': 'IsDeleted'
+        }
+        raw_closing_reasons = get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
+        closing_reasons = replace_keys(raw_closing_reasons, closing_reasons_map)
+
+        # prepare for printing:
+        closing_reasons_map.pop('id', None)
+        closing_reasons_map.pop('text', None)
+        headers = 'ID,Name,' + dict_values_to_comma_seperated_string(closing_reasons_map)
+
+        return get_entry_for_object('Offense Closing Reasons', closing_reasons, raw_closing_reasons, contextKey='QRadar.Offense.ClosingReasons', headers=headers)
+
+
+    def get_note_command():
+        raw_note = get_note(demisto.args().get('offense_id'), demisto.args().get('note_id'), demisto.args().get('fields'))
+        note_names_map = {
+            'id': 'ID',
+            'note_text': 'Text',
+            'create_time': 'CreateTime',
+            'username': 'CreatedBy'
+        }
+        note = replace_keys(raw_note, note_names_map)
+        if 'CreateTime' in note:
+          note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+        return get_entry_for_object('QRadar note created successfuly', note, raw_note, demisto.args().get('headers'), 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
+
+    def create_note_command():
+        raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
+        note_names_map = {
+            'id': 'ID',
+            'note_text': 'Text',
+            'create_time': 'CreateTime',
+            'username': 'CreatedBy'
+        }
+        note = replace_keys(raw_note, note_names_map)
+        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+        return get_entry_for_object('QRadar Note', note, raw_note, demisto.args().get('headers'), 'QRadar.Note')
+
+    def get_reference_by_name_command():
+        raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref['ElementType'] == 'DATE' else False
+        enrich_reference_set_result(ref, convert_date_elements)
+        return get_entry_for_reference_set(ref)
+
+    def enrich_reference_set_result(ref, convert_date_elements=False):
+        if 'Data' in ref:
+            ref['Data'] = replace_keys(ref['Data'], REFERENCE_NAMES_MAP)
+            for item in ref['Data']:
+                item['FirstSeen'] = epoch_to_ISO(item['FirstSeen'])
+                item['LastSeen'] = epoch_to_ISO(item['LastSeen'])
+                if convert_date_elements:
+                    try:
+                        item['Value'] = epoch_to_ISO(int(item['Value']))
+                    except:
+                        pass
+        if 'CreationTime' in ref:
+            ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
+        return ref
+
+    def get_entry_for_reference_set(ref, title='QRadar References'):
+        ref_cpy = deepcopy(ref)
+        data = ref_cpy.pop('Data', None)
+        ec_key = 'QRadar.Reference(val.Name === obj.Name)'
+        entry = get_entry_for_object(title, ref_cpy, ref, demisto.args().get('headers'), ec_key)
+        # Add another table for the data values
+        if data:
+            entry['HumanReadable'] = entry['HumanReadable'] + tableToMarkdown("Reference Items", data)
+            entry['EntryContext'][ec_key]['Data'] = data
+        return entry
+
+    def create_reference_set_command():
+        args = demisto.args()
+        raw_ref = create_reference_set(args.get('ref_name'), args.get('element_type'), args.get('timeout_type'), args.get('time_to_live'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref)
+
+    def delete_reference_set_command():
+        ref_name = demisto.args().get('ref_name')
+        raw_ref = delete_reference_set(ref_name)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': raw_ref,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "Reference Data Deletion Task for '{0}' was intiated. Refernce set '{0}' should be deleted shortly.".format(ref_name)
+        }
+
+    def update_reference_set_value_command():
+        args = demisto.args()
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref, title='Element value was updated successfuly in reference set:')
+
+    def delete_reference_set_value_command():
+        args = demisto.args()
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = delete_reference_set_value(args.get('ref_name'), value)
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref, title='Element value was deleted successfuly in reference set:')
+
+    # Command selector
+    if demisto.command() == 'test-module':
+        demisto.results(test_module())
+    elif demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
+    elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
+        demisto.results(get_offenses_command())
+    elif demisto.command() == 'qradar-offense-by-id':
+        demisto.results(get_offense_by_id_command())
+    elif demisto.command() in ['qradar-update-offense', 'qr-update-offense']:
+        demisto.results(update_offense_command())
+    elif demisto.command() in ['qradar-searches', 'qr-searches']:
+        demisto.results(search_command())
+    elif demisto.command() in ['qradar-get-search', 'qr-get-search']:
+        demisto.results(get_search_command())
+    elif demisto.command() in ['qradar-get-search-results', 'qr-get-search-results']:
+        demisto.results(get_search_results_command())
+    elif demisto.command() in ['qradar-get-assets', 'qr-get-assets']:
+        demisto.results(get_assets_command())
+    elif demisto.command() == 'qradar-get-asset-by-id':
+        demisto.results(get_asset_by_id_command())
+    elif demisto.command() == 'qradar-get-closing-reasons':
+        demisto.results(get_closing_reasons_command())
+    elif demisto.command() == 'qradar-get-note':
+        demisto.results(get_note_command())
+    elif demisto.command() == 'qradar-create-note':
+        demisto.results(create_note_command())
+    elif demisto.command() == 'qradar-get-reference-by-name':
+        demisto.results(get_reference_by_name_command())
+    elif demisto.command() == 'qradar-create-reference-set':
+        demisto.results(create_reference_set_command())
+    elif demisto.command() == 'qradar-delete-reference-set':
+        demisto.results(delete_reference_set_command())
+    elif demisto.command() in ('qradar-create-reference-set-value', 'qradar-update-reference-set-value'):
+        demisto.results(update_reference_set_value_command())
+    elif demisto.command() == 'qradar-delete-reference-set-value':
+        demisto.results(delete_reference_set_value_command())
+  type: python
   commands:
   - name: qradar-offenses
     arguments:
     - name: filter
-      description: Query to filter offenses
+      description: 'Query to filter offenses. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Fields to filter in '
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
     - name: range
-      description: Number of results in return
+      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers
-    description: Gets offenses from qradar
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The local destination addresses that are associated with the offense.
+        If your offense has a remote destination, you will need to use QRadarFullSearch
+        playbook with the following query - SELECT destinationip FROM events WHERE
+        inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destination that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.OffenseType
+      description: The offense type (due to API limitations if username and password
+        were not provided, this value will be the id of offense type)
+      type: string
+    description: Gets offenses from QRadar
+  - name: qradar-offense-by-id
+    arguments:
+    - name: offense_id
+      required: true
+      default: true
+      description: Offense ID
+    - name: filter
+      description: 'Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
+    - name: headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Offense.Credibility
+      description: The credibility of the offense
+      type: number
+    - contextPath: QRadar.Offense.Relevance
+      description: The relevance of the offense
+      type: number
+    - contextPath: QRadar.Offense.Severity
+      description: The severity of the offense
+      type: number
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The local destination addresses that are associated with the offense.
+        If your offense has a remote destination, you will need to use QRadarFullSearch
+        playbook with the following query - SELECT destinationip FROM events WHERE
+        inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destination that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user the offense is assigned to.
+      type: string
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destintion hostname
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+      type: string
+    - contextPath: QRadar.Offense.Status
+      description: The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED".
+      type: string
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user that closed the offense
+      type: string
+    - contextPath: QRadar.Offense.ClosingReason
+      description: The offense closing reason.
+      type: string
+    - contextPath: QRadar.Offense.CloseTime
+      description: The time when the offense was closed.
+      type: date
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.FollowUp
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+      type: string
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected
+      type: boolean
+    description: Gets offense with matching offense ID from qradar
   - name: qradar-searches
     arguments:
     - name: query_expression
       required: true
       default: true
-      description: The query expressions in AQL
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
     - name: headers
-      description: Table headers
-    description: Searches in QRadar
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: number
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
+      type: string
+    description: Searches in QRadar using AQL. It is highly recommended to use the
+      playbook 'QRadarFullSearch' instead of this command - it will execute the search,
+      and will return the result.
   - name: qradar-get-search
     arguments:
     - name: search_id
@@ -360,8 +1097,16 @@ script:
       default: true
       description: The search id
     - name: headers
-      description: Table headers
-    description: Gets a specific search id
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: number
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
+      type: string
+    description: Gets a specific search id and status
   - name: qradar-get-search-results
     arguments:
     - name: search_id
@@ -369,9 +1114,17 @@ script:
       default: true
       description: The search id
     - name: range
-      description: Number of results in return
+      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    - name: output_path
+      description: Replaces the default context output path for the query result (QRadar.Search.Result).
+                     e.g. for output_path=QRadar.Correlations the result will be under the key
+                     "QRadar.Correlations" in the context data.
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search
     description: Gets search results
   - name: qradar-update-offense
     arguments:
@@ -399,8 +1152,13 @@ script:
       - CLOSED
       description: The new status for the offense
     - name: closing_reason_id
-      description: The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense
+      description: 'The id of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
+    - name: closing_reason_name
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
     - name: assigned_to
       description: A user to assign the offense to
     - name: headers
@@ -408,40 +1166,209 @@ script:
     - name: fields
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas
+        in brackets and multiple fields in the same object are separated by commas.
+        Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
+    outputs:
+    - contextPath: QRadar.Offense.Credibility
+      description: The credibility of the offense
+      type: number
+    - contextPath: QRadar.Offense.Relevance
+      description: The relevance of the offense
+      type: number
+    - contextPath: QRadar.Offense.Severity
+      description: The severity of the offense
+      type: number
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The destination addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user the offense is assigned to.
+      type: string
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destintion hostname
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+      type: string
+    - contextPath: QRadar.Offense.Status
+      description: The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED".
+      type: string
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user that closed the offense
+      type: string
+    - contextPath: QRadar.Offense.ClosingReason
+      description: The offense closing reason.
+      type: string
+    - contextPath: QRadar.Offense.CloseTime
+      description: The time when the offense was closed.
+      type: date
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.FollowUp
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+      type: string
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected
+      type: boolean
     description: Update an offense
   - name: qradar-get-assets
     arguments:
-    - name: range
-      description: Number of results in return
-    - name: fields
-      description: Fields to filter in
     - name: filter
-      description: Query to filter offenses
+      description: 'Query to filter assets. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
+    - name: range
+      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Assets.ID
+      description: The ID of the asset
+      type: number
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the asset
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
+      type: string
+    - contextPath: Endpoint.OS
+      description: Asset OS
+      type: number
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+      type: number
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+      type: string
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+      type: number
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
+      type: string
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+      type: string
     description: List all assets found in the model
-  - name: qr-offenses
-    deprecated: true
+  - name: qradar-get-asset-by-id
     arguments:
-    - name: filter
-      description: Query to filter offenses
-    - name: fields
-      description: 'Fields to filter in '
-    - name: range
-      description: Number of results in return
-    - name: headers
-      description: Table headers
-    description: Gets offenses from qradar
+    - name: asset_id
+      required: true
+      default: true
+      description: The ID of the requested asset.
+    outputs:
+    - contextPath: QRadar.Assets.ID
+      description: The ID of the asset.
+      type: number
+    - contextPath: Endpoint.MACAddress
+      description: Asset MAC address.
+    - contextPath: Endpoint.IPAddress
+      description: It's in ip_addresses - value
+    - contextPath: QRadar.Assets.ComplianceNotes.Value
+      description: Compliance notes
+      type: string
+    - contextPath: QRadar.Assets.CompliancePlan.Value
+      description: Compliance plan
+      type: string
+    - contextPath: QRadar.Assets.CollateralDamagePotential.Value
+      description: Collateral damage potential
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+      type: number
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
+      type: string
+    - contextPath: QRadar.Assets.GroupName
+      description: Name of the asset's group
+      type: string
+    - contextPath: Endpoint.Domain
+      description: DNS name
+    - contextPath: Endpoint.OS
+      description: Asset OS
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+      type: number
+    - contextPath: QRadar.Assets.Vulnerabilities.Value
+      description: Vulnerabilities
+    - contextPath: QRadar.Assets.Location
+      description: Location.
+      type: string
+    - contextPath: QRadar.Assets.Description
+      description: The asset description.
+      type: string
+    - contextPath: QRadar.Assets.SwitchID
+      description: Switch ID
+      type: number
+    - contextPath: QRadar.Assets.SwitchPort
+      description: Switch port.
+      type: number
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+      type: string
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+      type: string
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
+      type: string
+    - contextPath: QRadar.Assets.ComplianceNotes.LastUser
+      description: Last user who updated the compliance notes
+      type: string
+    - contextPath: QRadar.Assets.CompliancePlan.LastUser
+      description: Last user who updated the compliance plan
+      type: string
+    - contextPath: QRadar.Assets.CollateralDamagePotential.LastUser
+      description: Last user who updated the collateral damage potential
+      type: string
+    - contextPath: QRadar.Assets.Vulnerabilities.LastUser
+      description: Last user who updated the vulnerabilities
+      type: string
+    description: Retrieves the asset by id
   - name: qr-searches
     deprecated: true
     arguments:
     - name: query_expression
       required: true
       default: true
-      description: The query expressions in AQL
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language please review https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html)
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: number
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
     description: Searches in QRadar
   - name: qr-get-search
     deprecated: true
@@ -452,7 +1379,14 @@ script:
       description: The search id
     - name: headers
       description: Table headers
-    description: Gets a specific search id
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: number
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
+    description: Gets a specific search id and state
   - name: qr-get-search-results
     deprecated: true
     arguments:
@@ -464,10 +1398,17 @@ script:
       description: Number of results in return
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search
     description: Gets search results
   - name: qr-update-offense
     deprecated: true
     arguments:
+    - name: closing_reason_id
+      deprecated: true
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense
     - name: offense_id
       required: true
       default: true
@@ -490,8 +1431,13 @@ script:
       - OPEN
       - HIDDEN
       - CLOSED
-      description: he new status for the offense
+      description: The new status for the offense
+    - name: closing_reason_name
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
     - name: closing_reason_id
+      deprecated: true
       description: The ID of a closing reason. You must provide a valid closing_reason_id
         when you close an offense
     - name: assigned_to
@@ -502,6 +1448,34 @@ script:
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The destination addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected
     description: Update an offense
   - name: qr-get-assets
     deprecated: true
@@ -514,7 +1488,65 @@ script:
       description: Query to filter offenses
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Assets.ID
+      description: The ID of the asset
+      type: number
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the asset
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
+    - contextPath: Endpoint.OS
+      description: Asset OS
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
     description: List all assets found in the model
+  - name: qr-offenses
+    deprecated: true
+    arguments:
+    - name: filter
+      description: Query to filter offenses
+    - name: fields
+      description: 'Fields to filter in '
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The destination addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+    description: Gets offenses from QRadar
   - name: qradar-get-closing-reasons
     arguments:
     - name: include_reserved
@@ -531,14 +1563,23 @@ script:
       - "false"
       description: If true, deleted closing reasons are included in the response
       defaultValue: "true"
-    - name: fields
-      description: Use this parameter to specify which fields you would like to get
-        back in the response
     - name: filter
-      description: This parameter is used to restrict the elements in a list base
-        on the contents of various fields
+      description: 'Query to filter results. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
     - name: range
-      description: Number of results in return
+      description: 'Range of results to return. e.g.: 0-20'
+    outputs:
+    - contextPath: QRadar.Offense.ClosingReasons.ID
+      description: Closing reason ID
+      type: number
+    - contextPath: QRadar.Offense.ClosingReasons.Name
+      description: Closing reason name
+      type: string
     description: Get closing reasons
   - name: qradar-create-note
     arguments:
@@ -550,11 +1591,27 @@ script:
       required: true
       description: The note text
     - name: fields
-      description: Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
     - name: headers
-      description: Table headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID
+      type: number
+    - contextPath: QRadar.Note.Text
+      description: Note text
+      type: string
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note
+      type: date
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note
+      type: string
     description: Create a note on an offense
   - name: qradar-get-note
     arguments:
@@ -566,11 +1623,241 @@ script:
       required: true
       description: The note ID
     - name: fields
-      description: Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
     - name: headers
-      description: Table headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID
+      type: number
+    - contextPath: QRadar.Note.Text
+      description: Note text
+      type: string
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note
+      type: date
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note
+      type: string
     description: Retrieve a note for an offense
+  - name: qradar-get-reference-by-name
+    arguments:
+    - name: ref_name
+      required: true
+      default: true
+      description: The name of the requestered reference.
+    - name: headers
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If set to true will try to convert the data values to ISO-8601
+        string.
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Reference time to live.
+      type: string
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    - contextPath: QRadar.Reference.Data
+      description: Reference set items
+    description: Information about the reference set that had data added or updated.
+      This returns information set but not the contained data. This feature is supported
+      from version 8.1 and upward.
+  - name: qradar-create-reference-set
+    arguments:
+    - name: ref_name
+      required: true
+      description: Reference name to be created
+    - name: element_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
+        values need to be represented in milliseconds since the Unix Epoch January
+        1st 1970.'
+    - name: timeout_type
+      auto: PREDEFINED
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+        default value is UNKNOWN.
+    - name: time_to_live
+      description: 'The time to live interval, for example: "1 month" or "5 minutes"'
+    outputs:
+    - contextPath: QRadar.Reference.CreationTime
+      description: Creation time of the reference set.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE.'
+      type: string
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the created reference set.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: Timeout type of the reference. The allowed values are FIRST_SEEN,
+        LAST_SEEN and UNKNOWN.
+      type: string
+    description: Creates a new reference set. If the provided name is already in use,
+      this command will fail
+  - name: qradar-delete-reference-set
+    arguments:
+    - name: ref_name
+      required: true
+      default: true
+      description: The name of reference set to delete.
+    description: Deletes a reference set corresponding to the name provided.
+  - name: qradar-create-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update a value in.
+    - name: value
+      required: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in epoch in reference sets (milliseconds since the Unix
+        Epoch January 1st 1970). If ''date_value'' is set to ''True'', then the argument
+        will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g.
+        ''2018-11-06T08:56:41.000000Z'') to epoch.'
+    - name: source
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Add or update a value in a reference set.
+  - name: qradar-update-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update a value in.
+    - name: value
+      required: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+    - name: source
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Add or update a value in a reference set.
+  - name: qradar-delete-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to remove a value from.
+    - name: value
+      required: true
+      description: The value to remove from the reference set.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
+releaseNotes: "This version reverts the output paths of the QRadar commands to be as they were prior to content version 18.11.0.
+    These changes may affect users who created a QRadar custom script after that content release. If you are having issues with your QRadar
+    custom scripts, please contact customer support for assistance."
+tests:
+  - test_Qradar

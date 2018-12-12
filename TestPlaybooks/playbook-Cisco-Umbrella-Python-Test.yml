@@ -1,0 +1,1693 @@
+id: Cisco Umbrella Test
+version: 38
+name: Cisco Umbrella Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 28d6a2c4-894a-44a9-899f-62717d59b16d
+    type: start
+    task:
+      id: 28d6a2c4-894a-44a9-899f-62717d59b16d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 94933409-63ba-4d65-8aa4-e5367e39d51a
+    type: title
+    task:
+      id: 94933409-63ba-4d65-8aa4-e5367e39d51a
+      version: -1
+      name: Legacy Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 3b7745ea-cb5f-43f7-8044-da9f975b51b4
+    type: regular
+    task:
+      id: 3b7745ea-cb5f-43f7-8044-da9f975b51b4
+      version: -1
+      name: umbrella-domain-categorization
+      script: '|||umbrella-domain-categorization'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 420
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b48af87d-1d71-40b7-85a6-b52d75743f9a
+    type: regular
+    task:
+      id: b48af87d-1d71-40b7-85a6-b52d75743f9a
+      version: -1
+      name: umbrella-domain-co-occurrences
+      script: '|||umbrella-domain-co-occurrences'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain:
+        simple: walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 420
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 1c13ae89-add8-410d-87f0-f513243685a8
+    type: regular
+    task:
+      id: 1c13ae89-add8-410d-87f0-f513243685a8
+      version: -1
+      name: umbrella-domain-related
+      script: '|||umbrella-domain-related'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 420
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 2e841a54-44ac-43ce-8538-e224edb9a325
+    type: regular
+    task:
+      id: 2e841a54-44ac-43ce-8538-e224edb9a325
+      version: -1
+      name: umbrella-domain-security
+      script: '|||umbrella-domain-security'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 420
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 4d1f42b4-3af3-480e-8537-5ab8a5ad4623
+    type: regular
+    task:
+      id: 4d1f42b4-3af3-480e-8537-5ab8a5ad4623
+      version: -1
+      name: umbrella-domain-dns-history
+      script: '|||umbrella-domain-dns-history'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 420
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 22ccdd0f-d249-4a5f-8449-5f88fa41eabb
+    type: regular
+    task:
+      id: 22ccdd0f-d249-4a5f-8449-5f88fa41eabb
+      version: -1
+      name: umbrella-ip-dns-history
+      script: '|||umbrella-ip-dns-history'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.99
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2330,
+          "y": 420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 837a6842-a0b7-4919-8521-bdc6ab4b9ea7
+    type: condition
+    task:
+      id: 837a6842-a0b7-4919-8521-bdc6ab4b9ea7
+      version: -1
+      name: Test Domain Categorization Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.ContentCategories
+            iscontext: true
+          right:
+            value:
+              simple: News/Media
+    view: |-
+      {
+        "position": {
+          "x": -1330,
+          "y": 620
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 62df85ad-a8e9-4bf2-8680-06ec61f033e4
+    type: regular
+    task:
+      id: 62df85ad-a8e9-4bf2-8680-06ec61f033e4
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 0083eca4-122d-4508-827c-9d2e013ce00f
+    type: condition
+    task:
+      id: 0083eca4-122d-4508-827c-9d2e013ce00f
+      version: -1
+      name: Test domain co-occurrences context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: walla.com
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 620
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: aca1aaa1-6fc7-4ed5-8c8b-ee1f7a2b80b1
+    type: condition
+    task:
+      id: aca1aaa1-6fc7-4ed5-8c8b-ee1f7a2b80b1
+      version: -1
+      name: Test related domains context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: Domain.Related.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+        - operator: in
+          left:
+            value:
+              simple: Domain.Related.Name
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+        - operator: in
+          left:
+            value:
+              simple: Domain.Related.Name
+            iscontext: true
+          right:
+            value:
+              simple: yahoo.com
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 600
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 47bc30c3-e2e8-4019-8a64-7a257302f868
+    type: condition
+    task:
+      id: 47bc30c3-e2e8-4019-8a64-7a257302f868
+      version: -1
+      name: Test domain security context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Security.DGA
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 600
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: c7c2dced-a295-46ef-836d-d93dd9f06098
+    type: condition
+    task:
+      id: c7c2dced-a295-46ef-836d-d93dd9f06098
+      version: -1
+      name: Test domain dns history context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.DNSHistory.BaseDomain
+            iscontext: true
+          right:
+            value:
+              simple: cnn.com
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 600
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 247409fd-8af5-427c-8a96-88c981416764
+    type: condition
+    task:
+      id: 247409fd-8af5-427c-8a96-88c981416764
+      version: -1
+      name: Test ip dns history context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.DNSHistory.RRS.Class
+            iscontext: true
+          right:
+            value:
+              simple: IN
+    view: |-
+      {
+        "position": {
+          "x": 2330,
+          "y": 600
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 999f6462-c403-4769-89cd-a2e6168804c3
+    type: regular
+    task:
+      id: 999f6462-c403-4769-89cd-a2e6168804c3
+      version: -1
+      name: umbrella-ip-malicious-domains
+      script: '|||umbrella-ip-malicious-domains'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1390
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 29978faf-abf8-4e8c-8af1-d4e637b2f0ba
+    type: condition
+    task:
+      id: 29978faf-abf8-4e8c-8af1-d4e637b2f0ba
+      version: -1
+      name: Test IP malicious domains context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.Malicious.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Cisco Umbrella Investigate
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+        - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1590
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: b3c5c772-d08a-4e3a-8743-ed99c4d04a8c
+    type: regular
+    task:
+      id: b3c5c772-d08a-4e3a-8743-ed99c4d04a8c
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1900
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: ff0f94ce-ae86-4ece-85bf-abb830fa0ef0
+    type: regular
+    task:
+      id: ff0f94ce-ae86-4ece-85bf-abb830fa0ef0
+      version: -1
+      name: umbrella-domain-search
+      description: Regex search in the service, may take up to 10 sec to retrieve
+        results due to the nature of regex.
+      script: '|||umbrella-domain-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      regex:
+        simple: googleapi.*
+      start:
+        simple: -7days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1390
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: ad970d19-3ce9-43ae-822d-86a9ee82b5a0
+    type: condition
+    task:
+      id: ad970d19-3ce9-43ae-822d-86a9ee82b5a0
+      version: -1
+      name: Test domain search context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: googleapi
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1570
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 945fe664-c489-4041-872a-8fa4c096b2be
+    type: regular
+    task:
+      id: 945fe664-c489-4041-872a-8fa4c096b2be
+      version: -1
+      name: Domain reputation
+      script: Cisco Umbrella Investigate|||domain
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2190
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: b17df8ba-1734-49b1-8e99-59d7e2533698
+    type: condition
+    task:
+      id: b17df8ba-1734-49b1-8e99-59d7e2533698
+      version: -1
+      name: Test domain reputation context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Umbrella.RiskScore
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2350
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 5266bd5e-270c-497c-80f9-06eb9a499428
+    type: regular
+    task:
+      id: 5266bd5e-270c-497c-80f9-06eb9a499428
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "24"
+      - "25"
+      - "26"
+      - "27"
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2550
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: c476cffe-ec2f-40f8-85cc-55d83ad0f607
+    type: regular
+    task:
+      id: c476cffe-ec2f-40f8-85cc-55d83ad0f607
+      version: -1
+      name: umbrella-get-related-domains
+      script: '|||umbrella-get-related-domains'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      coOccurences:
+        simple: "true"
+      domain:
+        simple: walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1580,
+          "y": 2750
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: cb068475-d784-4600-8f02-d25ecf48c982
+    type: regular
+    task:
+      id: cb068475-d784-4600-8f02-d25ecf48c982
+      version: -1
+      name: umbrella-get-domain-classifiers
+      script: '|||umbrella-get-domain-classifiers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      domain:
+        simple: cosmos.furnipict.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": 2750
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: a258b1c4-416f-432a-820c-4650766a7e99
+    type: regular
+    task:
+      id: a258b1c4-416f-432a-820c-4650766a7e99
+      version: -1
+      name: umbrella-get-domain-queryvolume
+      script: '|||umbrella-get-domain-queryvolume'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      domain:
+        simple: walla.com
+      match:
+        simple: all
+      start:
+        simple: -7days
+      stop:
+        simple: now
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2750
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: d6e32c07-f412-4bd7-859c-c1c39a8dbd94
+    type: regular
+    task:
+      id: d6e32c07-f412-4bd7-859c-c1c39a8dbd94
+      version: -1
+      name: umbrella-get-domain-details
+      script: '|||umbrella-get-domain-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 2750
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 6d23d487-37b2-4632-823c-77f9c2c86d08
+    type: regular
+    task:
+      id: 6d23d487-37b2-4632-823c-77f9c2c86d08
+      version: -1
+      name: umbrella-get-domains-for-email-registrar
+      script: '|||umbrella-get-domains-for-email-registrar'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      emails:
+        simple: dns@google.com
+      limit: {}
+      offset: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 2750
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 41e0415b-08c7-4eae-8d00-c0a591538db2
+    type: regular
+    task:
+      id: 41e0415b-08c7-4eae-8d00-c0a591538db2
+      version: -1
+      name: umbrella-get-domains-for-nameserver
+      script: '|||umbrella-get-domains-for-nameserver'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      limit:
+        simple: "5"
+      nameservers:
+        simple: ns1.google.com
+      offset: {}
+      sort:
+        simple: created
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 2750
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: dea74da1-c896-47b9-8460-f21e410375f7
+    type: regular
+    task:
+      id: dea74da1-c896-47b9-8460-f21e410375f7
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+      - "38"
+      - "39"
+      - "40"
+      - "41"
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 3330
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: 68b1b87a-dcac-4ef0-841d-d5f83b93e0f8
+    type: condition
+    task:
+      id: 68b1b87a-dcac-4ef0-841d-d5f83b93e0f8
+      version: -1
+      name: Test umbrella-get-related-domains Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.RelatedDomains.Domain
+            iscontext: true
+          right:
+            value:
+              simple: walla.com
+    view: |-
+      {
+        "position": {
+          "x": -1580,
+          "y": 2970
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 005a0624-e160-4bc1-8f1a-7c88e60a8567
+    type: condition
+    task:
+      id: 005a0624-e160-4bc1-8f1a-7c88e60a8567
+      version: -1
+      name: Test umbrella-get-domain-classifiers Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.DomainClassifiers.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": 2970
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 2537e12b-e1ba-438c-85c0-764b911bdb62
+    type: condition
+    task:
+      id: 2537e12b-e1ba-438c-85c0-764b911bdb62
+      version: -1
+      name: Test umbrella-get-domain-queryvolume Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Umbrella.QueryVolume.Data.QueriesInfo.Queries
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2970
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: aad6b17c-039a-410b-8c7b-e9b4f46c30c6
+    type: condition
+    task:
+      id: aad6b17c-039a-410b-8c7b-e9b4f46c30c6
+      version: -1
+      name: Test umbrella-get-domain-details Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.DomainDetails.Data.DGA
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 2970
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 378a29da-f9f5-482b-8a97-6afa5eb4d797
+    type: condition
+    task:
+      id: 378a29da-f9f5-482b-8a97-6afa5eb4d797
+      version: -1
+      name: Test umbrella-get-domains-for-email-registrar Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.AssociatedDomains.Data.Domains.Name
+            iscontext: true
+          right:
+            value:
+              simple: careersgoogle.com
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 2970
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 1b3d7f5b-95c0-4bc0-8a7a-dc3d40dda793
+    type: condition
+    task:
+      id: 1b3d7f5b-95c0-4bc0-8a7a-dc3d40dda793
+      version: -1
+      name: Test umbrella-get-domains-for-nameserver Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.AssociatedDomains.Data.Domains.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.cr
+        - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.AssociatedDomains.Data.Domains.Name.ContentCategories
+            iscontext: true
+          right:
+            value:
+              simple: Search Engines
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 2970
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 39b3bf1b-facd-40d0-8c16-01321142288e
+    type: regular
+    task:
+      id: 39b3bf1b-facd-40d0-8c16-01321142288e
+      version: -1
+      name: umbrella-get-whois-for-domain
+      script: '|||umbrella-get-whois-for-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1580,
+          "y": 3580
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: c02a58e8-2de1-4c27-8f5f-7ff3f0bd5e97
+    type: regular
+    task:
+      id: c02a58e8-2de1-4c27-8f5f-7ff3f0bd5e97
+      version: -1
+      name: umbrella-get-malicious-domains-for-ip
+      script: '|||umbrella-get-malicious-domains-for-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 3580
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: cf897367-6405-4748-8096-a929a5468a95
+    type: regular
+    task:
+      id: cf897367-6405-4748-8096-a929a5468a95
+      version: -1
+      name: umbrella-get-domains-using-regex
+      script: '|||umbrella-get-domains-using-regex'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      expression:
+        simple: google.*.com
+      includeCategory:
+        simple: "true"
+      limit:
+        simple: "100"
+      start:
+        simple: -1days
+      stop: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 3580
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: 8f9ded4d-ad37-4b2d-8b5e-d71a9ee96c6c
+    type: regular
+    task:
+      id: 8f9ded4d-ad37-4b2d-8b5e-d71a9ee96c6c
+      version: -1
+      name: umbrella-get-domain-timeline
+      script: '|||umbrella-get-domain-timeline'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      domain:
+        simple: cosmos.furnipict.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3580
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: 27581997-1218-4d07-82f1-e922f1e8b197
+    type: regular
+    task:
+      id: 27581997-1218-4d07-82f1-e922f1e8b197
+      version: -1
+      name: umbrella-get-ip-timeline
+      script: '|||umbrella-get-ip-timeline'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 3580
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: db3d1e8c-8786-4364-8a4e-5f711b78c575
+    type: regular
+    task:
+      id: db3d1e8c-8786-4364-8a4e-5f711b78c575
+      version: -1
+      name: umbrella-get-url-timeline
+      script: '|||umbrella-get-url-timeline'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      url:
+        simple: http://gauttam.com/wp-includes/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 3580
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: 71d96738-78e7-49ec-8f0c-8bf559363047
+    type: condition
+    task:
+      id: 71d96738-78e7-49ec-8f0c-8bf559363047
+      version: -1
+      name: Test umbrella-get-whois-for-domain Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Umbrella.Whois.IANAID
+            iscontext: true
+          right:
+            value:
+              simple: "299"
+    view: |-
+      {
+        "position": {
+          "x": -1580,
+          "y": 3780
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 95557145-f1fb-4e60-86e9-cab6d70f8fc8
+    type: title
+    task:
+      id: 95557145-f1fb-4e60-86e9-cab6d70f8fc8
+      version: -1
+      name: Test is Completed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 4310
+        }
+      }
+    note: false
+  "45":
+    id: "45"
+    taskid: fd3857e8-1751-4ce2-8a4d-6c2756c88879
+    type: condition
+    task:
+      id: fd3857e8-1751-4ce2-8a4d-6c2756c88879
+      version: -1
+      name: Test umbrella-get-malicious-domains-for-ip Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.MaliciousDomains.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Command and Control
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.MaliciousDomains.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.MaliciousDomains.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Phishing
+        - operator: in
+          left:
+            value:
+              simple: Umbrella.MaliciousDomains.Data.ContentCategories
+            iscontext: true
+          right:
+            value:
+              simple: '[Infrastructure, Illegal Activities, Adware, Software/Technology]'
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 3770
+        }
+      }
+    note: false
+  "46":
+    id: "46"
+    taskid: 2aff172d-997e-4241-88fc-5dab9bc0451f
+    type: condition
+    task:
+      id: 2aff172d-997e-4241-88fc-5dab9bc0451f
+      version: -1
+      name: umbrella-get-domains-using-regex
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.DomainSearch.Data.SecurityCategories
+            iscontext: true
+          right:
+            value:
+              simple: Newly Seen Domains
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.DomainSearch.Data.SecurityCategories
+            iscontext: true
+          right:
+            value:
+              simple: Potentially Harmful
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 3770
+        }
+      }
+    note: false
+  "47":
+    id: "47"
+    taskid: c2525cd3-981d-43df-8b62-c0a4572c7e47
+    type: condition
+    task:
+      id: c2525cd3-981d-43df-8b62-c0a4572c7e47
+      version: -1
+      name: Test umbrella-get-domain-timeline Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.Timeline.Data.Attacks
+            iscontext: true
+          right:
+            value:
+              simple: Neutrino
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.Timeline.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Umbrella.Timeline.Data.ThreatTypes
+            iscontext: true
+          right:
+            value:
+              simple: Exploit Kit
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3770
+        }
+      }
+    note: false
+  "48":
+    id: "48"
+    taskid: 926bdc23-5a2b-4df5-83bd-e72eaf5c88ca
+    type: condition
+    task:
+      id: 926bdc23-5a2b-4df5-83bd-e72eaf5c88ca
+      version: -1
+      name: Test umbrella-get-ip-timeline Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.Timeline.IP
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 3770
+        }
+      }
+    note: false
+  "49":
+    id: "49"
+    taskid: 5570d5fe-0dc6-4f57-8b1e-bc923ca885c2
+    type: condition
+    task:
+      id: 5570d5fe-0dc6-4f57-8b1e-bc923ca885c2
+      version: -1
+      name: Test umbrella-get-url-timeline context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Umbrella.Timeline.Data.MalwareCategories
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 3780
+        }
+      }
+    note: false
+  "50":
+    id: "50"
+    taskid: e74b3428-3806-4c0a-8b1f-f40f8d5482aa
+    type: regular
+    task:
+      id: e74b3428-3806-4c0a-8b1f-f40f8d5482aa
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+  "51":
+    id: "51"
+    taskid: 22f9139f-0392-4361-8390-ee971418f696
+    type: title
+    task:
+      id: 22f9139f-0392-4361-8390-ee971418f696
+      version: -1
+      name: New Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4475,
+        "width": 4490,
+        "x": -1580,
+        "y": -100
+      }
+    }
+  }
+inputs: []
+outputs: []

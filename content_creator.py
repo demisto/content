@@ -4,6 +4,7 @@ import yaml
 import json
 import glob
 import shutil
+import zipfile
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
@@ -37,7 +38,12 @@ def is_ge_version(ver1, ver2):
 
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
-        shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
+        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w', zipfile.ZIP_DEFLATED)
+        zipf.comment = '{ "system": true }'
+        for root, _, files in os.walk(d):
+            for file in files:
+                zipf.write(os.path.join(root, file), file)
+        zipf.close()
 
 
 # modify incident fields file to contain only `incidentFields` field (array)
@@ -96,8 +102,15 @@ def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
-        print "copying path %s" % (path,)
-        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
+        if os.path.isdir(path):
+            NonCircleTests = glob.glob(os.path.join(path, '*'))
+            for new_path in NonCircleTests:
+                print "copying path %s" % (new_path,)
+                shutil.copyfile(new_path, os.path.join(bundle_test, os.path.basename(new_path)))
+
+        else:
+            print "copying path %s" % (path,)
+            shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def main(circle_artifacts):
@@ -142,7 +155,7 @@ def main(circle_artifacts):
 
 
 def test_version_compare(version_num):
-    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1', '3.6']
+    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1', '3.6', '4.0.0', '5.0.1']
 
     lower = []
     greater = []
