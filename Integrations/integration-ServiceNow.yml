@@ -331,8 +331,8 @@ script:
         # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
         inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
         inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
-        states = TICKET_STATES[ticket_type]
-        inv_states = {v: k for k, v in states.iteritems()}
+        states = TICKET_STATES.get(ticket_type)
+        inv_states = {v: k for k, v in states.iteritems()} if states else {}
 
         body = {}
         for arg in SNOW_ARGS:
@@ -3395,6 +3395,6 @@ script:
     description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-releaseNotes: "Added command to retrieve table names, new ServiceNow logo, support of updating/creating tickets with states by context values"
+releaseNotes: "-"
 tests:
-  - No test - Hibernating instance
+- No test - Hibernating instance
