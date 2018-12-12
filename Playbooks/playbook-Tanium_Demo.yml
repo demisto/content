@@ -214,3 +214,5 @@ view: |-
     }
   }
 inputs: []
+tests:
+  - No test

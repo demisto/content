@@ -1,0 +1,256 @@
+id: CuckooTest
+version: -1
+name: CuckooTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5b2e726e-18d9-4ad1-8cea-57b3e6c7944f
+    type: start
+    task:
+      description: "-"
+      id: 5b2e726e-18d9-4ad1-8cea-57b3e6c7944f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 08437a15-4df4-49cd-8488-140a21d5a220
+    type: regular
+    task:
+      description: getting file using get
+      id: 08437a15-4df4-49cd-8488-140a21d5a220
+      version: -1
+      name: Get file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 508ea88a-b5bd-4de8-8387-44b54f6a020f
+    type: regular
+    task:
+      description: delete context
+      id: 508ea88a-b5bd-4de8-8387-44b54f6a020f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 7ce222de-5f8b-469e-845a-23df060cfa30
+    type: playbook
+    task:
+      description: start detonation playbook file
+      id: 7ce222de-5f8b-469e-845a-23df060cfa30
+      version: -1
+      name: Detonate File - Cuckoo
+      playbookName: Detonate File - Cuckoo
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      File:
+        simple: ${File}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: f2daa2f7-6815-459e-806d-d88649a8f61f
+    type: title
+    task:
+      description: done file
+      id: f2daa2f7-6815-459e-806d-d88649a8f61f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: a5eef8a0-e185-4934-8a0e-c049c7fefc80
+    type: playbook
+    task:
+      description: url detonation playbook
+      id: a5eef8a0-e185-4934-8a0e-c049c7fefc80
+      version: -1
+      name: Detonate URL - Cuckoo
+      playbookName: Detonate URL - Cuckoo
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      URL:
+        simple: google.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 9a0aac37-5da5-45ef-877c-579d4a51726b
+    type: title
+    task:
+      description: done file detonate
+      id: 9a0aac37-5da5-45ef-877c-579d4a51726b
+      version: -1
+      name: FileDetonate Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: e0f79738-8de0-4b5f-8a27-b3065d43ac79
+    type: regular
+    task:
+      description: delete context
+      id: e0f79738-8de0-4b5f-8a27-b3065d43ac79
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: "-"

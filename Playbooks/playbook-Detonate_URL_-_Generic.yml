@@ -22,11 +22,13 @@ tasks:
       - "13"
       - "12"
       - "14"
+      - "15"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 50
         }
       }
@@ -47,7 +49,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1125,
           "y": 370
         }
       }
@@ -95,7 +97,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 50,
           "y": 195
         }
       }
@@ -134,7 +136,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 480,
           "y": 195
         }
       }
@@ -180,7 +182,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 195
         }
       }
@@ -222,7 +224,79 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
+    type: playbook
+    task:
+      id: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
+      version: -1
+      name: Detonate URL - Lastline
+      description: Detonates a URL using the Lastline sandbox integration.
+      playbookName: Detonate URL - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 317e29bb-856f-4081-8fdd-f4a189d01c90
+    type: playbook
+    task:
+      id: 317e29bb-856f-4081-8fdd-f4a189d01c90
+      version: -1
+      name: Detonate URL - Cuckoo
+      playbookName: Detonate URL - Cuckoo
+      type: playbook
+      description: "Detonates a file using Cuckoo sandbox"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 2200,
           "y": 195
         }
       }
@@ -233,7 +307,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 1660,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
@@ -352,3 +426,50 @@ outputs:
 - contextPath: InfoFile
   description: The report file's object
   type: unknown
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Target
+  description: Target of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+releaseNotes: "-"
+tests:
+- Detonate URL - Generic Test

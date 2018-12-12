@@ -389,57 +389,283 @@ script:
         }
     }
 
+    function epoFindSystem() {
+        var pArgs = {'searchText':args.searchText};
+        var result = callEpo('system.find', pArgs);
+        if (result) {
+            var md = '#### Systems in the System Tree\n';
+            if (result.length>0) {
+                md += systemsToMd(result,args.verbose);
+            } else {
+                md += 'No systems found\n';
+            }
+            return {
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {
+                    'Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
+                    'McAfee.ePO.Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
+                }
+            };
+        } else {
+            throw 'No systems found. Response: ' + JSON.stringify(result);
+        }
+    }
+
+    function epoWakeupAgent() {
+        var pArgs = {'names':args.names};
+        var result = callEpo('system.wakeupAgent', pArgs);
+
+        var md = "ePO agent was awaken.\n";
+        md += result;
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function epoApplyTag() {
+        var pArgs = {
+            'names': args.names,
+            'tagName': args.tagName
+        };
+        var result = callEpo('system.applyTag', pArgs);
+
+        var md = "ePO applied the tags on the hostnames successfully.\n";
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function epoClearTag() {
+        var pArgs = {
+            'names': args.names,
+            'tagName': args.tagName
+        };
+        var result = callEpo('system.clearTag', pArgs);
+
+        var md = "ePO cleared the tags from the hostnames successfully.\n";
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function epoGetTables() {
+        var result;
+        var pArgs = {};
+        if (args.table) {
+            pArgs.table = args.table;
+        }
+
+        result = callEpo('core.listTables', pArgs);
+
+        var md = tableToMarkdown(
+                'ePO tables:',
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
+                args.headers && args.headers.split(',')
+            );
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function epoQueryTable() {
+        var pArgs = {'target': args.target};
+        var result;
+        var ec = {};
+        var ec_key = '';
+        if (args.select) {
+            pArgs.select = args.select;
+        }
+        if (args.where) {
+            pArgs.where = args.where;
+        }
+        if (args.order) {
+            pArgs.order = args.order;
+        }
+        if (args.group) {
+            pArgs.group = args.group;
+        }
+        if (args.joinTables) {
+            pArgs.joinTables = args.joinTables;
+        }
+
+        result = callEpo('core.executeQuery', pArgs);
+
+        var md = tableToMarkdown(
+                'ePO Table Query:',
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
+                args.headers && args.headers.split(',')
+            );
+
+        if (args.query_name) {
+            ec_key = 'McAfee.ePO.Query.' + args.query_name;
+        } else {
+            var ts = (new Date()).getTime() / 1000;
+            ec_key = 'McAfee.ePO.Query.' + ts;
+        }
+        ec[ec_key] = result;
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+    function epoGetVersion() {
+        var pArgs = {};
+        var result;
+
+        result = callEpo('epo.getVersion', pArgs);
+
+        var md = "### ePO version is:\n" + result;
+        var ec = {"McAfee.ePO.Version": result};
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.text,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+
+    }
+
+    function parseCommandArgs(command, commandArgs) {
+        //commandArgs should be in the format of:  keyName1:keyValue1, keyName2:KeyValue2
+        if (!commandArgs) {
+            return null;
+        }
+        var commandArgsDict = {};
+        commandArgsDict.command = command;
+        var commandArgsList = commandArgs.split(',');
+        var temp = [];
+        for (i=0; i < commandArgsList.length; i++) {
+            //commandArgsVal in commandArgsList:
+            temp = commandArgsList[i].split(':');
+            commandArgsDict[temp[0]] = temp[1];
+        }
+        return commandArgsDict;
+    }
+
+    function epoCommand(parsedArgs) {
+        if (parsedArgs) {
+            args = parsedArgs;
+        }
+        var pArgs = {};
+        for (var key in args) {
+            if (key != 'command' && key != 'headers') {
+                pArgs[key] = args[key];
+            }
+        }
+        var result = callEpo(args.command, pArgs);
+
+        var md;
+        var contents;
+        if (typeof result === 'string') {
+            md = "#### ePO command *" + args.command + "* results:\n" + result;
+            contents = {result: result};
+        } else {
+
+            md = tableToMarkdown(
+                'ePO command *' + args.command + '* results:',
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
+                args.headers && args.headers.split(',')
+            );
+            contents = result;
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: contents,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
             epoHelp();
             return 'ok';
+
         case 'epo-help':
             return epoHelp();
+
         case 'epo-get-latest-dat':
             return epoGetLatestDat();
+
         case 'epo-get-current-dat':
             return epoGetCurrentDat();
+
         case 'epo-update-client-dat':
             return epoUpdateClientDat();
+
         case 'epo-update-repository':
             return epoUpdateRepository();
+
         case 'epo-get-system-tree-group':
             return epoGetSystemTreeGroups();
+
         case 'epo-find-systems':
             return epoFindSystems();
+
+        case 'epo-find-system':
+            return epoFindSystem();
+
+        case 'epo-wakeup-agent':
+            return epoWakeupAgent();
+
+        case 'epo-apply-tag':
+            return epoApplyTag();
+
+        case 'epo-clear-tag':
+            return epoClearTag();
+
+        case 'epo-get-tables':
+            return epoGetTables();
+
+        case 'epo-query-table':
+            return epoQueryTable();
+
+        case 'epo-get-version':
+            return epoGetVersion();
+
         case 'epo-command':
             if (!args.command) {
                 throw 'ePO error: command argument is missing';
             }
-            var pArgs = {};
-            for (var key in args) {
-                if (key != 'command' && key != 'headers') {
-                    pArgs[key] = args[key];
-                }
-            }
-            var result = callEpo(args.command,pArgs);
+            return epoCommand(undefined);
 
-            var md;
-            var contents;
-            if (typeof result === 'string') {
-                md = "#### ePO command *"+args.command+"* results:\n" + result;
-                contents = { result: result };
-            } else {
-
-                md = tableToMarkdown(
-                    'ePO command *'+args.command+'* results:',
-                    Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
-                    args.headers && args.headers.split(',')
-                );
-                contents = result;
+        case 'epo-advanced-command':
+            if (!args.command) {
+                throw 'ePO error: command argument is missing';
             }
-            return {
-                Type: entryTypes.note,
-                Contents: contents,
-                ContentsFormat: formats.json,
-                HumanReadable: md
-            };
+            if (!args.commandArgs) {
+                throw 'ePO error: commandArgs argument is missing';
+            }
+            var parsedArgs = parseCommandArgs(args.command, args.commandArgs);
+            return epoCommand(parsedArgs);
+
         default:
             throw 'ePO Error: unknown command';
     }
@@ -571,14 +797,154 @@ script:
     - contextPath: McAfee.ePO.Endpoint.Memory
       description: 'Amount of memory on this endpoint '
       type: number
-    description: Find systems in the System Tree - by group ID or by search
+    description: Find computers within a given group in the ePO tree
   - name: epo-command
     arguments: []
     description: Execute ePO command. Receives mandatory 'command' argument and other
       specific commands other arguments - Run 'epo-help' command to see a list available
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
+  - name: epo-advanced-command
+    arguments:
+    - name: command
+      required: true
+      description: Command to execute. Run a core.help command or !epo-help to identify
+        all possible commands.
+    - name: commandArgs
+      required: true
+      description: Comma separated key value pairs as additional arguments to pass.  E.g.
+        argName1:argValue1,argName2:argValue2
+    description: 'Execute ePO command. Run ''epo-help'' command to see a list available
+      commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
+      You can also specify ''headers'' argument  to filter tables headers. e.g: ''!epo-command
+      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+  - name: epo-wakeup-agent
+    arguments:
+    - name: names
+      required: true
+      description: Agent hostname
+    description: Wakeup an agent
+  - name: epo-apply-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to apply tags on
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Applies a tag
+  - name: epo-clear-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to clear tags from
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Clears a tag
+  - name: epo-query-table
+    arguments:
+    - name: target
+      required: true
+      description: Table name
+    - name: select
+      description: 'Which columns to select. Please use SQUID syntax. Example: "(select
+        EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
+    - name: where
+      description: 'Filter results. Please use SQUID syntax. Example: "(where ( eq
+        ( OrionTaskLogTask .UserName "ga" )))"'
+    - name: order
+      description: 'Order the results. Please use SQUID syntax. Example: "(order (asc
+        OrionTaskLogTask.StartDate) )")'
+    - name: group
+      description: 'Group the results. Please use SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+    - name: joinTables
+      description: Perform join. Please use SQUID Syntax.
+    - name: query_name
+      description: Name for the query to appear in the context
+    outputs:
+    - contextPath: McAfee.ePO.Query
+      description: Query result
+    description: Queries an ePO table
+  - name: epo-get-tables
+    arguments:
+    - name: table
+      description: Name of the table
+    description: Get an ePO table
+  - name: epo-find-system
+    arguments:
+    - name: searchText
+      description: Hostname to search
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print all system data
+      isArray: true
+    outputs:
+    - contextPath: Endpoint.Name
+      description: Endpoint name
+      type: string
+    - contextPath: Endpoint.Domain
+      description: Endpoint domain
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Endpoint hostname
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint operation system
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Endpoint operation system version
+      type: string
+    - contextPath: Endpoint.Processor
+      description: Model of the processor
+      type: string
+    - contextPath: Endpoint.Processors
+      description: Number of processors
+      type: number
+    - contextPath: Endpoint.Memory
+      description: 'Amount of memory on this endpoint '
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.Name
+      description: Endpoint name
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Domain
+      description: Endpoint domain
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Hostname
+      description: Endpoint hostname
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.OS
+      description: Endpoint operation system
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.OSVersion
+      description: Endpoint operation system version
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Processor
+      description: Model of the processor
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Processors
+      description: Number of processors
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.Memory
+      description: 'Amount of memory on this endpoint '
+      type: number
+    description: Finds systems in the System Tree
+  - name: epo-get-version
+    arguments: []
+    outputs:
+    - contextPath: McAfee.ePO.Version
+      description: ePO version
+      type: string
+    description: Gets the ePO version. This requires global admin permissions.
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Fixes for epo-command

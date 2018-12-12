@@ -48,6 +48,5 @@ dependson:
   must:
   - cuckoo-create-task-from-file
 timeout: 0s
-releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

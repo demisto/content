@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "18.10.1"
-      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
+      CONTENT_VERSION: "18.11.2"
+      GIT_SHA1: "efe3aa6fc07335e211c146449ac734d98b68f020"
     steps:
       - checkout
       - run:
@@ -17,19 +17,20 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
       - run:
           name: Validate Files and Yaml
           command: |
-              chmod +x ./Tests/yamlvalidator
-              ./Tests/yamlvalidator
-              python ./Tests/scripts/validate_files_structure.py
+              python ./Tests/scripts/validate_files_structure.py -c true
       - run:
           name: Configure Test Filter
-          command: python ./Tests/scripts/configure_tests.py
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
@@ -43,22 +44,58 @@ jobs:
           path: artifacts
           destination: artifacts
       - run:
+          name: Download Artifacts
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo "Using AMI - Not downloading artifacts"
+
+              else
+                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+            fi
+      - run:
           name: Download Configuration
           command: |
-              ./Tests/scripts/download_demisto_conf.sh
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/download_demisto_conf.sh
+
+              else
+                ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+            fi
       - run:
           name: Create Instance
           command: |
-              ./Tests/scripts/create_instance.sh instance.json
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/create_instance.sh instance.json
+
+              else
+                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+            fi
       - run:
           name: Setup Instance
           command: |
-              ./Tests/scripts/run_installer_on_instance.sh
-              ./Tests/scripts/wait_until_server_ready.sh
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_installer_on_instance.sh
+
+              else
+                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+            fi
+
+            ./Tests/scripts/wait_until_server_ready.sh
       - run:
           name: Run Tests
           shell: /bin/bash
-          command: ./Tests/scripts/run_tests.sh
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh
+
+              else
+                ./Tests/lastest_server_build_scripts/run_tests.sh
+            fi
       - run:
           name: Slack Notifier
           shell: /bin/bash

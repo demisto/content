@@ -131,6 +131,5 @@ dependson:
   - fe-submit-result
   - fe-submit-status
 timeout: 960ns
-releaseNotes: "add arguments to enable setting analysis type and pre-fetch when running the script"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

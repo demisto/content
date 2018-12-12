@@ -114,8 +114,16 @@ script:
     // add args to a if exists
     function add(a, k, f) {
         if (args[k]) {
+            // check if the argument is a number
+            if(!isNaN(args[k])){
+                args[k] = args[k].toString();
+            }
             var parts = argToList(args[k]);
             for (var i=0; i<parts.length; i++) {
+                // check if the argument is a number
+                if(!isNaN(parts[i])){
+                    parts[i] = parts[i].toString();
+                }
                 parts[i] = parts[i].trim();
             }
             a[k] = f ? f(args[k]) : parts.length > 1 ? parts : parts[0];
@@ -937,3 +945,4 @@ script:
   runonce: false
 tests:
 - CrowdStrike Endpoint Enrichment - Test
+- crowdstrike_falconhost_test

@@ -478,6 +478,5 @@ script:
       - malware
       - other
     description: Submission of malware and other files for community sharing
-releaseNotes: "return DBot score for indicator when no data is found"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

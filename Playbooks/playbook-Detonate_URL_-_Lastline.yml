@@ -1,0 +1,429 @@
+id: Detonate URL - Lastline
+version: -1
+name: Detonate URL - Lastline
+description: Detonates a URL using the Lastline sandbox integration.
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 703b80c2-e281-498a-8d00-2bbf1e6f2df0
+    type: start
+    task:
+      id: 703b80c2-e281-498a-8d00-2bbf1e6f2df0
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 5843724a-5947-48e9-85dc-721427e3e01f
+    type: regular
+    task:
+      id: 5843724a-5947-48e9-85dc-721427e3e01f
+      version: -1
+      name: Lastline Upload URL
+      description: Uploads the submission to Latline.
+      script: Lastline|||lastline-upload-url
+      type: regular
+      iscommand: true
+      brand: Lastline
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      pushToPortal: {}
+      threshold: {}
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
+    type: playbook
+    task:
+      id: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: lastline-get-report
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Lastline.Submission(val.Status != 'Completed').UUID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
+    type: regular
+    task:
+      id: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
+      version: -1
+      name: Lastline Get Report
+      description: Retrieve the reports from Lastline.
+      script: Lastline|||lastline-get-report
+      type: regular
+      iscommand: true
+      brand: Lastline
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      threshold: {}
+      uuid:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 9cf17ba9-0559-471e-8012-1abbd588a590
+    type: condition
+    task:
+      id: 9cf17ba9-0559-471e-8012-1abbd588a590
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks that there is a URL in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 686f6312-301b-461a-877c-6e4ec794393f
+    type: title
+    task:
+      id: 686f6312-301b-461a-877c-6e4ec794393f
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 5305d933-86c0-46b2-8889-9c675f21f978
+    type: condition
+    task:
+      id: 5305d933-86c0-46b2-8889-9c675f21f978
+      version: -1
+      name: Is Lastline sandbox enabled?
+      description: |
+        Verify that there is a valid instance of Lastline enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Lastline
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: b5e9fe45-6986-4e58-8ba4-229eafdcf817
+    type: condition
+    task:
+      id: b5e9fe45-6986-4e58-8ba4-229eafdcf817
+      version: -1
+      name: Filter UUIDs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Lastline
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Lastline.Submission.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Completed
+                accessor: Submission.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 727.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Data
+  description: List of malicious URLs identified by Lastline analysis
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Malicious.Score
+  description: For malicious URLs, the score from the vendor
+  type: number
+- contextPath: File.Malicious.Score
+  description: For malicious files, the score from the vendor
+  type: number
+- contextPath: Lastline.Submission.Status
+  description: Status of the submission
+  type: string
+- contextPath: Lastline.Submission.DNSqueries
+  description: List of DNS queries done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.NetworkConnections
+  description: ist of network connections done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.DownloadedFiles
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
+  type: string
+- contextPath: Lastline.Submission.UUID
+  description: ID of the submission
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.name
+  description: Yara signatures name
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.score
+  description: The score according to the yara signatures. from 0 to 100.
+  type: number
+- contextPath: Lastline.Submission.Process.arguments
+  description: Argument of the process
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.internal
+  description: True if the signature is only for internal usage
+  type: boolean
+- contextPath: Lastline.Submission.Process.process_id
+  description: The process ID
+  type: string
+- contextPath: Lastline.Submission.Process.executable.abs_path
+  description: Absolute path of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.filename
+  description: Filename of the executable
+  type: string
+- contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+  description: Yara signature of the executable of the process
+  type: string
+tests:
+- Lastline - testplaybook

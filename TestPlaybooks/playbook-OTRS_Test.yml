@@ -1,0 +1,667 @@
+id: OTRS Test
+version: -1
+name: OTRS Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ca20645c-eeae-4bac-88ff-728411ebf3ae
+    type: start
+    task:
+      id: ca20645c-eeae-4bac-88ff-728411ebf3ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 2c646fd1-cef0-4bf4-891a-3d24acb4ecff
+    type: regular
+    task:
+      id: 2c646fd1-cef0-4bf4-891a-3d24acb4ecff
+      version: -1
+      name: Create ticket
+      description: Create a new ticket in OTRS
+      script: '|||otrs-create-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      article_body:
+        simple: Testing
+      article_subject:
+        simple: TestArticle
+      customer_user:
+        simple: jb
+      priority:
+        simple: 2Low
+      queue:
+        simple: Inbox::SIEM
+      state:
+        simple: New
+      title:
+        simple: TestTicket
+      type:
+        simple: Unclassified
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 4cf8d89a-b10b-4226-8923-d5f18366083c
+    type: condition
+    task:
+      id: 4cf8d89a-b10b-4226-8923-d5f18366083c
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Subject
+            iscontext: true
+          right:
+            value:
+              simple: TestArticle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Type
+            iscontext: true
+          right:
+            value:
+              simple: Unclassified
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Title
+            iscontext: true
+          right:
+            value:
+              simple: TestTicket
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.State
+            iscontext: true
+          right:
+            value:
+              simple: new
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Queue
+            iscontext: true
+          right:
+            value:
+              simple: Inbox::SIEM
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Priority
+            iscontext: true
+          right:
+            value:
+              simple: 2 low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Body
+            iscontext: true
+          right:
+            value:
+              simple: Testing
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 07eb83ca-35de-4700-8977-51863b7b9b8d
+    type: regular
+    task:
+      id: 07eb83ca-35de-4700-8977-51863b7b9b8d
+      version: -1
+      name: Get ticket
+      script: '|||otrs-get-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ticket_id:
+        simple: ${OTRS.Ticket.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 361669b4-23d9-47ea-8c68-a7e4e739a571
+    type: condition
+    task:
+      id: 361669b4-23d9-47ea-8c68-a7e4e739a571
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Subject
+            iscontext: true
+          right:
+            value:
+              simple: TestArticle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Type
+            iscontext: true
+          right:
+            value:
+              simple: Unclassified
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Title
+            iscontext: true
+          right:
+            value:
+              simple: TestTicket
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.State
+            iscontext: true
+          right:
+            value:
+              simple: new
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Queue
+            iscontext: true
+          right:
+            value:
+              simple: Inbox::SIEM
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Priority
+            iscontext: true
+          right:
+            value:
+              simple: 2 low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Body
+            iscontext: true
+          right:
+            value:
+              simple: Testing
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: aef07169-3598-4fda-8638-6679dcf8067a
+    type: regular
+    task:
+      id: aef07169-3598-4fda-8638-6679dcf8067a
+      version: -1
+      name: Update ticket
+      script: '|||otrs-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      article_body: {}
+      article_subject: {}
+      priority:
+        simple: 1VeryLow
+      queue: {}
+      state:
+        simple: Open
+      ticket_id:
+        simple: ${OTRS.Ticket.ID}
+      title:
+        simple: UpdatedTitle
+      type:
+        simple: Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: b0ac94b8-5aaa-4231-8393-c1ed6fca5a42
+    type: condition
+    task:
+      id: b0ac94b8-5aaa-4231-8393-c1ed6fca5a42
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Subject
+            iscontext: true
+          right:
+            value:
+              simple: TestArticle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Type
+            iscontext: true
+          right:
+            value:
+              simple: Incident
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Title
+            iscontext: true
+          right:
+            value:
+              simple: UpdatedTitle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.State
+            iscontext: true
+          right:
+            value:
+              simple: open
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Queue
+            iscontext: true
+          right:
+            value:
+              simple: Inbox::SIEM
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Priority
+            iscontext: true
+          right:
+            value:
+              simple: 1 very low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Body
+            iscontext: true
+          right:
+            value:
+              simple: Testing
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 749e71df-5037-456f-8ce3-18f1e72cbb30
+    type: regular
+    task:
+      id: 749e71df-5037-456f-8ce3-18f1e72cbb30
+      version: -1
+      name: Search ticket
+      script: '|||otrs-search-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      created_after: {}
+      created_before: {}
+      state:
+        simple: PendingReminder
+      title:
+        simple: ${OTRS.Ticket.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: c4c65a22-80fc-4fa3-8222-4bd86e9d81cd
+    type: condition
+    task:
+      id: c4c65a22-80fc-4fa3-8222-4bd86e9d81cd
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Subject
+            iscontext: true
+          right:
+            value:
+              simple: TestArticle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Type
+            iscontext: true
+          right:
+            value:
+              simple: Incident
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Title
+            iscontext: true
+          right:
+            value:
+              simple: UpdatedTitle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.State
+            iscontext: true
+          right:
+            value:
+              simple: open
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Queue
+            iscontext: true
+          right:
+            value:
+              simple: Inbox::SIEM
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Priority
+            iscontext: true
+          right:
+            value:
+              simple: 1 very low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Body
+            iscontext: true
+          right:
+            value:
+              simple: Testing
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 48d01342-700c-48f7-886e-ef5112072336
+    type: regular
+    task:
+      id: 48d01342-700c-48f7-886e-ef5112072336
+      version: -1
+      name: Close ticket
+      script: '|||otrs-close-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      article_body:
+        simple: ClosingBody
+      article_subject:
+        simple: ClosingSubject
+      ticket_id:
+        simple: ${OTRS.Ticket.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: d79df38b-50a2-4afe-8beb-8211a7a897d4
+    type: condition
+    task:
+      id: d79df38b-50a2-4afe-8beb-8211a7a897d4
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Subject
+            iscontext: true
+          right:
+            value:
+              simple: ClosingSubject
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Title
+            iscontext: true
+          right:
+            value:
+              simple: UpdatedTitle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.State
+            iscontext: true
+          right:
+            value:
+              simple: closed successful
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OTRS.Ticket.Article.Body
+            iscontext: true
+          right:
+            value:
+              simple: ClosingBody
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 2ced9c7b-46c6-41ef-8299-645349c6ab59
+    type: title
+    task:
+      id: 2ced9c7b-46c6-41ef-8299-645349c6ab59
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 5806892e-dccd-4f7a-866b-07be907d56dd
+    type: regular
+    task:
+      id: 5806892e-dccd-4f7a-866b-07be907d56dd
+      version: -1
+      name: FetchFromInstance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: OTRS
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
