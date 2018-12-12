@@ -415,9 +415,9 @@ script:
     def remove_held_accounts(service, matter_id, hold_id):
         pass
 
-    def downloadStorageObject(objectID):
+    def download_storage_object(objectID):
         bucket_name = demisto.getArg('bucketName');
-        service = connectToStorage()
+        service = connect_to_storage()
         req = service.objects().get_media(bucket=bucket_name, object=objectID)
         out_file = io.BytesIO()
         downloader = googleapiclient.http.MediaIoBaseDownload(out_file, req)
@@ -426,20 +426,34 @@ script:
             done = downloader.next_chunk()[1]
         return out_file
 
+    def get_storage_credentials():
+        privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
+        crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES, subject=ADMIN_EMAIL)
+        return crads
 
-    def getObjectNameByType(objectsArr,extension):
+    def connect_to_storage():
+        service = build('storage', 'v1', credentials=get_storage_credentials())
+        return service
+
+
+    def get_object_mame_by_type(objectsArr,extension):
         for file in objectsArr:
             objName = str(file.get('objectName'))
             if(objName.endswith(extension)):
                 return objName
 
-    def buildKeyValPer(tagDict):
+    def build_key_val_pair(tagDict):
+        demisto.info('this is value: ')
+        demisto.info(tagDict['@TagName'])
+        demisto.info('this is key: ')
+        demisto.info(tagDict['@TagValue'])
+
         key = filter(str.isalnum, str(tagDict['@TagName']))
-        value = str(tagDict['@TagValue'])
+        value = tagDict['@TagValue'].encode('utf-8')
         keyValPair = { key: value}
         return keyValPair
 
-    def buildDocumentDict(document):
+    def build_document_dict(document):
         file_info = document['Files']['File']['ExternalFile']
         newDocumentDict = {
             'DocType' : os.path.splitext(file_info['@FileName'])[1][1:].strip().lower(),
@@ -447,13 +461,13 @@ script:
         }
         tags = document['Tags']['Tag']
         for currentTagDict in tags:
-            newDocumentDict.update(buildKeyValPer(currentTagDict))
+            newDocumentDict.update(build_key_val_pair(currentTagDict))
         return newDocumentDict
 
-    def buildDictList(documentsArr, exportType):
+    def build_dict_list(documentsArr, exportType):
         documentsDictList = []
         for document in documentsArr:
-            currentDocumentDict = buildDocumentDict(document)
+            currentDocumentDict = build_document_dict(document)
             documentsDictList.append(currentDocumentDict)
 
         return documentsDictList
@@ -1016,10 +1030,10 @@ script:
 
         id_concatenation = demisto.getArg('queryIDS')
         if id_concatenation:
-            if ',' not in id_concatenation:
-                return_error('Should enter a concatenation of MatterID and ExportID with comma delimeter such: <Matter_ID>,<ExportID>')
+            if '#' not in id_concatenation:
+                return_error('Should enter a concatenation of MatterID and ExportID with comma delimeter such: <Matter_ID>#<ExportID>')
 
-            matter_id, export_id = id_concatenation.split(',')
+            matter_id, export_id = id_concatenation.split('#')
 
         if not (matter_id and export_id):
             return_error('Missing parameter MetterID or ExportID')
@@ -1030,8 +1044,8 @@ script:
             export_status = response.get('status')
             create_time = response.get('createTime')
             bucket_name = response.get('cloudStorageSink').get('files')[0].get('bucketName') if export_status == 'COMPLETED' else ''
-            zip_object_name = getObjectNameByType(response.get('cloudStorageSink').get('files'), '.zip') if export_status == 'COMPLETED' else ''
-            xml_object_name = getObjectNameByType(response.get('cloudStorageSink').get('files'), '.xml') if export_status == 'COMPLETED' else ''
+            zip_object_name = get_object_mame_by_type(response.get('cloudStorageSink').get('files'), '.zip') if export_status == 'COMPLETED' else ''
+            xml_object_name = get_object_mame_by_type(response.get('cloudStorageSink').get('files'), '.xml') if export_status == 'COMPLETED' else ''
             context_output = []
             context_output.append({
                 'MatterID': matter_id,
@@ -1074,19 +1088,9 @@ script:
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to get export. Error: {}'.format(ex)})
             sys.exit(2)
 
-    def getStorageCredentials():
-        privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
-        crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES, subject=ADMIN_EMAIL)
-        return crads
-
-    def connectToStorage():
-        service = build('storage', 'v1', credentials=getStorageCredentials())
-        return service
-
-
     def download_export_command():
         try:
-            out_file = downloadStorageObject(demisto.getArg('downloadID'))
+            out_file = download_storage_object(demisto.getArg('downloadID'))
             demisto.results(fileResult(demisto.uniqueFile() + ".zip", out_file.getvalue()))
 
         except Exception, ex:
@@ -1095,9 +1099,9 @@ script:
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to download export. Error: {}'.format(ex)})
             sys.exit(2)
 
-    def downloadAndSanitizeExportResults():
+    def download_and_sanitize_export_results():
 
-        out_file = downloadStorageObject(demisto.getArg('viewID'))
+        out_file = download_storage_object(demisto.getArg('viewID'))
         out_file_json = json.loads(xml2json(out_file.getvalue()))
 
         if not out_file_json['Root']['Batch'].get('Documents'):
@@ -1108,7 +1112,7 @@ script:
         if type(documents) is dict:
             documents = [documents]
 
-        dictList = buildDictList(documents, 'drive')
+        dictList = build_dict_list(documents, 'drive')
 
         maxResult = int(demisto.getArg('maxResult'))
         if len(dictList) > maxResult:
@@ -1118,7 +1122,7 @@ script:
 
     def get_drive_results_command():
         try:
-            output = downloadAndSanitizeExportResults()
+            output = download_and_sanitize_export_results()
 
             if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
                 demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match'})
@@ -1160,7 +1164,7 @@ script:
 
     def get_mail_and_groups_results_command(inquiryType):
         try:
-            output = downloadAndSanitizeExportResults()
+            output = download_and_sanitize_export_results()
 
             if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')) :
                 demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match'})
@@ -1177,7 +1181,7 @@ script:
             },output)
 
             title = "Your {} inquiry details\n".format(inquiryType)
-            headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent', 'Labels']
+            headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent']
             markdown = tableToMarkdown(title, markedown_output, headers)
 
             exportID = str(demisto.getArg('viewID')).split('/')[1]
@@ -1312,7 +1316,7 @@ script:
     - contextPath: GoogleVault.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Export.ID
+    - contextPath: GoogleVault.Export.ExportID
       description: Export ID
       type: string
     - contextPath: GoogleVault.Export.Name
@@ -1391,16 +1395,16 @@ script:
     - name: terms
       description: Add specific terms for the search
     outputs:
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.ID
+    - contextPath: GoogleVault.Export.ExportID
       description: Export ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.Name
+    - contextPath: GoogleVault.Export.Name
       description: Export's name
       type: string
-    - contextPath: GoogleVault.Matter.Export.CreateTime
+    - contextPath: GoogleVault.Export.CreateTime
       description: Export's creation time
       type: string
     description: Creates a Google Vault export in order to perform search actions
@@ -1474,16 +1478,16 @@ script:
       description: Export format
       defaultValue: "false"
     outputs:
-    - contextPath: GoogleVault.Matter.ID
+    - contextPath: GoogleVault.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.ID
+    - contextPath: GoogleVault.Export.ExportID
       description: Export ID
       type: string
-    - contextPath: GoogleVault.Matter.Export.Name
+    - contextPath: GoogleVault.Export.Name
       description: Export's name
       type: string
-    - contextPath: GoogleVault.Matter.Export.CreateTime
+    - contextPath: GoogleVault.Export.CreateTime
       description: Export's creation time
       type: string
     description: Creates a Google Vault Export in order to perform search actions
@@ -1626,13 +1630,13 @@ script:
     - name: exportID
       description: Export ID
     - name: queryIDS
-      description: 'MatterID and ExportID concatenation (used only for playbook) such:
-        <Matter_ID>,<ExportID>'
+      description: 'MatterID and ExportID concatenation separated by ''#'' (used only
+        for playbook) such: <Matter_ID>#<ExportID>'
     outputs:
     - contextPath: GoogleVault.Export.MatterID
       description: Matter ID
       type: string
-    - contextPath: GoogleVault.Export.ID
+    - contextPath: GoogleVault.Export.ExportID
       description: Export ID
       type: string
     - contextPath: GoogleVault.Export.Name

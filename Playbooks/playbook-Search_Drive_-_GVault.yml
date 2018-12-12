@@ -1,7 +1,7 @@
-id: gvault-search-mail
+id: gvault-search-drive
 version: -1
 fromversion: 4.0.0
-name: gvault-search-mail
+name: gvault-search-drive
 description: ''
 starttaskid: "0"
 tasks:
@@ -30,15 +30,15 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: e3690834-b9f7-4574-8106-e70ec6cec8c6
+    taskid: 4535653a-d322-4c51-8857-a50edf322136
     type: regular
     task:
-      id: e3690834-b9f7-4574-8106-e70ec6cec8c6
+      id: 4535653a-d322-4c51-8857-a50edf322136
       version: -1
-      name: gvault-create-export-mail
+      name: gvault-create-export-drive
       description: Creates a Google Vault export in order to perform search actions
         on emails.
-      script: google-vault_workingOnDownload_copy|||gvault-create-export-mail
+      script: google-vault_workingOnDownload_copy|||gvault-create-export-drive
       type: regular
       iscommand: true
       brand: google-vault_workingOnDownload_copy
@@ -54,15 +54,12 @@ tasks:
       endTime:
         complex:
           root: inputs.endTime
-      exportMBOX:
-        simple: ${inputs.exportMBOX}
       exportName:
         complex:
           root: inputs.exportName
-      exportPST:
-        simple: ${inputs.exportPST}
-      includeDrafts:
-        simple: ${inputs.includeDrafts}
+      includeTeamDrives:
+        complex:
+          root: inputs.includeTeamDrives
       matterID:
         complex:
           root: inputs.matterID
@@ -70,10 +67,14 @@ tasks:
         complex:
           root: inputs.ou
       searchMethod:
-        simple: ${inputs.searchMethod}
+        complex:
+          root: inputs.searchMethod
       startTime:
         complex:
           root: inputs.startTime
+      teamDrive:
+        complex:
+          root: inputs.teamDrive
       terms:
         complex:
           root: inputs.terms
@@ -91,10 +92,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: db065150-defd-4197-85cd-001dcbcd8d5f
+    taskid: 79dff934-921d-4168-8b52-ccc0fbed0fab
     type: playbook
     task:
-      id: db065150-defd-4197-85cd-001dcbcd8d5f
+      id: 79dff934-921d-4168-8b52-ccc0fbed0fab
       version: -1
       name: GenericPolling
       description: |-
@@ -117,7 +118,7 @@ tasks:
         simple: ${GoogleVault.Export.MatterID}#${GoogleVault.Export.ExportID}
       Interval:
         complex:
-          root: inputs.pollTimeout
+          root: inputs.pollInterval
       PollingCommandArgName:
         simple: queryIDS
       PollingCommandName:
@@ -143,14 +144,14 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 84cab8e3-4c98-4931-83fa-5c13d0c55e05
+    taskid: 3e6b8705-bc47-4c32-8ccd-99944b60e1d8
     type: regular
     task:
-      id: 84cab8e3-4c98-4931-83fa-5c13d0c55e05
+      id: 3e6b8705-bc47-4c32-8ccd-99944b60e1d8
       version: -1
       name: gvault-get-mail-results
       description: Get the results of a given mail export
-      script: google-vault_workingOnDownload_copy|||gvault-get-mail-results
+      script: google-vault_workingOnDownload_copy|||gvault-get-drive-results
       type: regular
       iscommand: true
       brand: google-vault_workingOnDownload_copy
@@ -282,10 +283,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
+    taskid: 14dc1e09-2d5c-4c5e-8c93-3a84ef506b87
     type: condition
     task:
-      id: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
+      id: 14dc1e09-2d5c-4c5e-8c93-3a84ef506b87
       version: -1
       name: validate searchMethod
       description: ''
@@ -308,7 +309,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: All Accounts
+              simple: Team Drive
         - operator: isEqualString
           left:
             value:
@@ -316,7 +317,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Specific Accounts(requires emails argument)
+              simple: Specific Accounts
         - operator: isEqualString
           left:
             value:
@@ -324,7 +325,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Organizational Unit(requires ou argument)
+              simple: Organizational Unit
     view: |-
       {
         "position": {
@@ -361,79 +362,6 @@ tasks:
         }
       }
     note: false
-  "9":
-    id: "9"
-    taskid: 75db2227-4188-49f3-8a5f-4bc2548dfd6f
-    type: condition
-    task:
-      id: 75db2227-4188-49f3-8a5f-4bc2548dfd6f
-      version: -1
-      name: validate includeDrafts
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.includeDrafts
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.includeDrafts
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -290
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 2c11b21d-177c-4caa-8e45-8f9a1e25feb1
-    type: regular
-    task:
-      id: 2c11b21d-177c-4caa-8e45-8f9a1e25feb1
-      version: -1
-      name: Invalid includeDrafts
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      message:
-        simple: 'Invalid input for includeDrafts: ${inputs.includeDrafts}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": -120
-        }
-      }
-    note: false
   "11":
     id: "11"
     taskid: f359a495-d591-43a7-89ba-fad3d43c428b
@@ -450,7 +378,7 @@ tasks:
       '#default#':
       - "12"
       "yes":
-      - "9"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -502,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": -310
+          "x": 520,
+          "y": -300
         }
       }
     note: false
@@ -582,10 +510,10 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: 3f8f4650-cc6f-4dde-85cf-52875002b5a1
+    taskid: aa748877-64f6-403b-8a28-5a48d7470abf
     type: condition
     task:
-      id: 3f8f4650-cc6f-4dde-85cf-52875002b5a1
+      id: aa748877-64f6-403b-8a28-5a48d7470abf
       version: -1
       name: Check downloadFile
       description: ''
@@ -619,10 +547,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 9b8234da-1a70-499b-86c8-6de0665449f9
+    taskid: 97311171-052d-4110-8cac-66da6235bd3b
     type: regular
     task:
-      id: 9b8234da-1a70-499b-86c8-6de0665449f9
+      id: 97311171-052d-4110-8cac-66da6235bd3b
       version: -1
       name: Get Export status to context
       description: ''
@@ -654,10 +582,10 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: 52069817-50f6-4267-80f4-7e4c94431f52
+    taskid: afc45103-f1da-466f-8950-4b4a4227378e
     type: regular
     task:
-      id: 52069817-50f6-4267-80f4-7e4c94431f52
+      id: afc45103-f1da-466f-8950-4b4a4227378e
       version: -1
       name: Download Export file
       description: ''
@@ -688,10 +616,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: f04a7a20-83ae-4198-86e0-22c079cef34b
+    taskid: 0273f108-4e62-44b6-82aa-bb543619668d
     type: condition
     task:
-      id: f04a7a20-83ae-4198-86e0-22c079cef34b
+      id: 0273f108-4e62-44b6-82aa-bb543619668d
       version: -1
       name: Check if status COMPLETED
       description: ''
@@ -727,10 +655,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: de226b27-9336-4659-823e-079c17b7873b
+    taskid: 75b444cb-48e7-4472-882a-ae287fd96386
     type: regular
     task:
-      id: de226b27-9336-4659-823e-079c17b7873b
+      id: 75b444cb-48e7-4472-882a-ae287fd96386
       version: -1
       name: Polling Timeout
       description: ''
@@ -750,6 +678,79 @@ tasks:
         "position": {
           "x": 550,
           "y": 1110
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: a3d08a4f-5d42-47fa-8e62-8ec28c72b7dd
+    type: condition
+    task:
+      id: a3d08a4f-5d42-47fa-8e62-8ec28c72b7dd
+      version: -1
+      name: validate includeTeamDrives
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.includeTeamDrives
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.includeTeamDrives
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -310
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: e9699e98-5e52-4557-8b2d-fa53ccd5b258
+    type: regular
+    task:
+      id: e9699e98-5e52-4557-8b2d-fa53ccd5b258
+      version: -1
+      name: Invalid  includeTeamDrives
+      description: ''
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Invalid input for  includeTeamDrives: ${inputs.includeTeamDrives}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -130
         }
       }
     note: false
@@ -775,7 +776,7 @@ inputs:
 - key: exportName
   value: {}
   required: true
-  description: Export Name
+  description: exportName
 - key: dataScope
   value:
     simple: All Data
@@ -783,9 +784,10 @@ inputs:
   description: Choice of Search scope
 - key: searchMethod
   value:
-    simple: All Accounts
+    simple: Specific Accounts
   required: false
-  description: Choice of Search method
+  description: "Choice of Search method.\n Default is: 'Specific Accounts' -requires
+    emails argument. \n'Organizational Unit' - requires ou argument.\n'Team Drive'"
 - key: emails
   value: {}
   required: false
@@ -793,13 +795,16 @@ inputs:
 - key: ou
   value: {}
   required: false
-  description: The organizational unit (specify only if the search method is set to
-    Organizational Unit)
-- key: includeDrafts
+  description: If the search method is set to Specific Accounts (separated by comma)
+- key: teamDrive
+  value: {}
+  required: false
+  description: If the search method is set to Team Drives
+- key: includeTeamDrives
   value:
     simple: "true"
   required: false
-  description: Include/Exclude drafts in the search
+  description: Include/Exclude team drives
 - key: timeFrame
   value: {}
   required: false
@@ -830,12 +835,16 @@ inputs:
   value:
     simple: "2"
   required: false
-  description: Interval to check export status (minutes)
+  description: |-
+    Interval to check export status (minutes)
+    For big data inquires increase both 'pollInterval' and 'pollTimeout'
 - key: pollTimeout
   value:
     simple: "30"
   required: false
-  description: Timeout to terminate the poll (minutes)
+  description: |-
+    Timeout to terminate the poll (minutes).
+    For big data inquires increase both 'pollTimeout' and 'pollInterval'
 - key: maxResultForDisplay
   value:
     simple: "30"
@@ -860,26 +869,29 @@ outputs:
 - contextPath: GoogleVault.Export.CreateTime
   description: Export's creation time
   type: string
-- contextPath: GoogleVault.Export.Results.CC
-  description: CC of the mail
+- contextPath: GoogleVault.Export.Results.Title
+  description: Title of the file
   type: string
-- contextPath: GoogleVault.Export.Results.BCC
-  description: 'BCC of the mail '
+- contextPath: GoogleVault.Export.Results.Author
+  description: Author of the file
   type: string
-- contextPath: GoogleVault.Export.Results.DateSent
-  description: The date the email was sent
+- contextPath: GoogleVault.Export.Results.Others
+  description: Other users related to the file
   type: string
-- contextPath: GoogleVault.Export.Results.From
-  description: The sender of the email
+- contextPath: GoogleVault.Export.Results.Viewers
+  description: Viewers of the file
   type: string
-- contextPath: GoogleVault.Export.Results.Subject
-  description: The subject of the email
+- contextPath: GoogleVault.Export.Results.DateModified
+  description: The date the file was modified
   type: string
-- contextPath: GoogleVault.Export.Results.DateReceived
-  description: The date the email was received
+- contextPath: GoogleVault.Export.Results.DateCreated
+  description: The date the file was created
   type: string
-- contextPath: GoogleVault.Export.Results.To
-  description: The address the email was sent to
+- contextPath: GoogleVault.Export.Results.DocType
+  description: The type of the file (extension)
+  type: string
+- contextPath: GoogleVault.Export.Results.MD5
+  description: The MD5 of the file (SHA1)
   type: string
 - contextPath: GoogleVault.Export.Status
   description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
