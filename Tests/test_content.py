@@ -162,7 +162,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
         is_integration_found = False
         for item in secret_params:
             if item["name"] == integration['name']:
-                if not integration['instance_name']:
+                if integration['instance_name'] is None:
                     integration_params = item
                     is_integration_found = True
                     break
@@ -170,6 +170,10 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                     integration_params = item
                     is_integration_found = True
                     break
+
+        if not is_integration_found:
+            print_error("Integration {} was not found".format(integration['name']))
+            sys.exit(1)
 
         if integration_params:
             del integration['instance_name']
@@ -181,9 +185,6 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                 'apikey': demisto_api_key,
                 'insecure': True,
             }
-
-        if not is_integration_found:
-            print_error("Integration {} was not found".format(integration['name']))
 
 
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
@@ -204,7 +205,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
         # string description
         integrations.append({
-            'name': integration,
+            'name': integration_id,
             'instance_name': integration_instance,
             'params': {}
         })
