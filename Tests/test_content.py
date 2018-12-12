@@ -191,7 +191,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
         integration_id, integration_instance = integration
         if integration_id in skipped_integrations_conf.keys():
-            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+            skipped_integration.add("{0} - reason: {1}".format(integration_id, skipped_integrations_conf[integration_id]))
             has_skipped_integration = True
 
         if integration_id in nightly_integrations:
