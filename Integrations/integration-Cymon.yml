@@ -1,0 +1,533 @@
+commonfields:
+  id: Cymon
+  version: -1
+name: Cymon
+display: Cymon
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Analyzes suspicious domains and IP addresses
+configuration:
+  - display: Trust any certificate (unsecure)
+    name: unsecure
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: useProxy
+    defaultvalue: ""
+    type: 8
+    required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import datetime
+    import time
+    import requests
+    import json
+    import os
+    import re
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('useProxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+    SERVER_URL_V1='https://www.cymon.io:443/api/nexus/v1'
+    SERVER_DASHBOARD_URL_V1='https://www.cymon.io:443/api/dashboard/v1'
+    SERVER_URL_V2 = 'https://api.cymon.io/v2/ioc/search'
+
+    VERIFY_CERTIFICATES = False if demisto.params().get('unsecure') else True
+
+    DEFAULT_HEADERS = {
+      "Content-Type": "application/json"
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+    def http_request(method, url, headers):
+        try:
+            res = requests.request(method,
+                                    url,
+                                    verify=VERIFY_CERTIFICATES,
+                                    headers=headers)
+
+            if res.status_code == 200:
+                return res.json()
+            # 204 HTTP status code is returned when api rate limit has been exceeded
+            elif res.status_code == 204:
+                return_error("You've reached your API call quota.")
+            elif res.status_code == 404:
+                return {}
+
+            res.raise_for_status()
+
+        except Exception, e:
+            raise(e)
+
+    ''' DOMAIN COMMAND '''
+    def get_domain_full_report(domain):
+        report_results = []
+
+        from_param = 0
+        size_param = 10
+        total = None
+
+        url = '{}/{}/{}?from={}&size={}'.format(SERVER_URL_V2, 'domain', domain, from_param, size_param)
+
+        while total is None or total > from_param:
+            response = http_request('GET', url, DEFAULT_HEADERS)
+
+            hits = response.get('hits', [])
+            for hit in hits:
+                timestamp = datetime.datetime.strptime(hit.get('timestamp', datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")), '%Y-%m-%dT%H:%M:%S.%fZ')
+
+                report_results.append({
+                    'Title': hit.get('title', "").title(),
+                    'Feed': hit.get('feed'),
+                    'Timestamp': timestamp.strftime("%Y-%m-%d %H:%M:%S"), # Formatting the timestamp to human readable date and time
+                    'Tags': hit.get('tags'),
+                    'Hostname': hit.get('ioc', {}).get('hostname'),
+                    'IP': hit.get('ioc', {}).get('ip'),
+                    'Domain': hit.get('ioc', {}).get('domain'),
+                    'Reported By': hit.get('reported_by'),
+                    'Location': hit.get('location', {}).get('country')
+                })
+
+            from_param = from_param + size_param
+            total = int(response.get('total', 0))
+
+            url = '{}/{}/{}?from={}&size={}'.format(SERVER_URL_V2, 'domain', domain, from_param, size_param)
+
+        return report_results
+
+    def get_domain_report(domain_full_report):
+        reports = {}
+
+        for report in domain_full_report:
+            title = report.get('Title')
+            timestamp = datetime.datetime.strptime(report.get('Timestamp', datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), '%Y-%m-%d %H:%M:%S')
+
+            if (title in reports and reports.get(title).get('Timestamp') < timestamp) or title not in reports:
+                reports.update({title: {
+                    'Feed': report.get('Feed'),
+                    'Timestamp': timestamp,
+                    'Tags': report.get('Tags'),
+                    'Hostname': report.get('Hostname'),
+                    'IP': report.get('IP'),
+                    'Domain': report.get('Domain'),
+                    'Reported By': report.get('Reported By'),
+                    'Location': report.get('Location')
+                }})
+
+        report_results = []
+
+        for report in reports:
+            report_results.append({
+                'Title': report,
+                'Feed': reports.get(report).get('Feed'),
+                'Timestamp': reports.get(report).get('Timestamp').strftime("%Y-%m-%d %H:%M:%S"),  # Formatting the timestamp to human readable date and time
+                'Tags': reports.get(report).get('Tags'),
+                'Hostname': reports.get(report).get('Hostname'),
+                'IP': reports.get(report).get('IP'),
+                'Domain': reports.get(report).get('Domain'),
+                'Reported By': reports.get(report).get('Reported By'),
+                'Location': reports.get(report).get('Location')
+            })
+
+        return {
+            'reports': report_results,
+            'total': len(domain_full_report)
+            }
+
+    def create_domain_command_markdown(domain, total_hits, reports, domain_full_report, is_full_response):
+        md = '## Cymon Domain report for: {}\n'.format(domain)
+
+        md += '\n'
+
+        md += '**Total Hits:** {}'.format(total_hits)
+
+        md += '\n'
+
+        md += tableToMarkdown("The following reports are the latest malicious hits resolved to the given domain:", reports, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
+
+        if is_full_response:
+           md += tableToMarkdown("Full report list:", domain_full_report, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
+
+        return md
+
+    def create_context_domain_command(domain, reports):
+
+        cymon_domain_context_activities = []
+        description = 'Reported suspicious activities: '
+
+        for report in reports:
+            cymon_domain_context_activities.append({
+                'Title': report.get('Title'),
+                'Tags': report.get('Tags'),
+                'Time': report.get('Timestamp'),
+                'Hostname': report.get('Hostname'),
+                'IP': report.get('IP')
+            })
+
+            description += '{}, '.format(report.get('Title'))
+
+        description = description[:-2]
+
+        context = {
+            outputPaths['domain']: {
+                'Name': domain,
+                'Malicious': {
+                    'Vendor': 'Cymon',
+                    'Description': description
+                }
+            },
+            'Cymon': {
+                'Domain': {
+                    'Activities': cymon_domain_context_activities
+                }
+            }
+        }
+
+        return context
+
+    def get_domain_report_command():
+        args = demisto.args()
+
+        domain = args.get('domain')
+        is_full_response = args.get('fullResponse') == 'true'
+
+        domain_full_report = get_domain_full_report(domain)
+        domain_summarized_report = get_domain_report(domain_full_report)
+
+        if len(domain_full_report) == 0:
+            return "Domain " + domain + " is not in Cymons's dataset"
+
+        markdown = create_domain_command_markdown(domain, domain_summarized_report.get('total'), domain_summarized_report.get('reports'), domain_full_report, is_full_response)
+        context = create_context_domain_command(domain, domain_summarized_report.get('reports'))
+
+        return {
+                'Type': entryTypes['note'],
+                'Contents': domain_full_report,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': markdown,
+                'EntryContext': context
+            }
+
+    ''' IP COMMAND '''
+    def get_ip_events_sources(ip):
+        url = '{}/{}/{}'.format(SERVER_URL_V1, 'ip', ip)
+        response = http_request('GET', url, DEFAULT_HEADERS)
+
+        return response.get('sources', None)
+
+    def get_ip_events(ip):
+        url = '{}/{}/{}/{}?limit={}'.format(SERVER_URL_V1, 'ip', ip, 'events', 100)
+        events = {}
+
+        next_link = url
+
+        while next_link is not None:
+            response = http_request('GET', next_link, DEFAULT_HEADERS)
+
+            for event in response.get('results', []):
+                tag = event.get('tag')
+                date = datetime.datetime.strptime(event.get('updated', datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")), '%Y-%m-%dT%H:%M:%SZ')
+
+                if (tag in events and events[tag] < date) or tag not in events:
+                    events.update({tag: date})
+
+            next_link = response.get('next')
+
+        for event in events:
+            events[event] = events[event].strftime("%Y-%m-%d %H:%M:%S")  # Formatting the timestamp to human readable date and time
+
+        return events
+
+    def get_ip_location(ip):
+        url = '{}/{}/{}'.format(SERVER_DASHBOARD_URL_V1, 'geolocation', ip)
+
+        response = http_request('GET', url, DEFAULT_HEADERS)
+
+        lon = response.get('longitude', None)
+        lat = response.get('latitude', None)
+
+        if not lon or not lat:
+            return {}
+        else:
+            return {
+                'lon': lon,
+                'lat': lat
+            }
+
+    def get_ip_domains(ip, max_len):
+        url = '{}/{}/{}/{}?limit={}'.format(SERVER_URL_V1, 'ip', ip, 'domains', max_len)
+        domains = []
+
+        response = http_request('GET', url, DEFAULT_HEADERS)
+
+        for domain in response.get('results', []):
+            date = datetime.datetime.strptime(domain.get('updated', datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")), '%Y-%m-%dT%H:%M:%SZ')
+
+            domains.append({'Hostname': domain.get('name'),
+                            'Last Resolved': date.strftime("%Y-%m-%d %H:%M:%S")})
+
+        return domains
+
+    def get_ip_urls(ip, max_len):
+        url = '{}/{}/{}/{}?limit={}'.format(SERVER_URL_V1, 'ip', ip, 'urls', max_len)
+        urls = {}
+
+        response = http_request('GET', url, DEFAULT_HEADERS)
+
+        for response_url in response.get('results',[]):
+            url = response_url.get('location')
+            if url.endswith("/"):
+                url = url[:-1]
+
+            date = datetime.datetime.strptime(response_url.get('updated', datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")), '%Y-%m-%dT%H:%M:%SZ')
+
+            if (url in urls and urls[url] < date) or url not in urls:
+                urls.update({url: date})
+
+        urls_result = []
+        for url in urls:
+            urls_result.append({'Url': url, "Last Resolved": urls[url].strftime("%Y-%m-%d %H:%M:%S")}) # Formatting the timestamp to human readable date and time
+
+        return urls_result
+
+    def get_ip_asn(ip):
+        url = '{}/{}/{}'.format(SERVER_DASHBOARD_URL_V1, 'ipwhois', ip)
+
+        response = http_request('GET', url, DEFAULT_HEADERS)
+
+        asn = response.get('asn')
+        asn_country_code = response.get('asn_country_code')
+
+        if not asn or not asn_country_code:
+            return {}
+        else:
+            return {
+                'asn': asn,
+                'country': asn_country_code
+            }
+
+    def create_ip_command_markdown(ip, sources, events, domains, urls, asn):
+        md = '## Cymon IP report for: {}\n'.format(ip)
+
+        if asn:
+            md += 'ASN: **{}** ({})\n'.format(asn.get('asn'), asn.get('country'))
+
+        md += '\n'
+
+        if events:
+            md += '### Reports\n'
+            for event in events:
+                md += '**{}** (Last reported on: {})\n'.format(event.title(), events[event])
+
+        if sources:
+            md += '#### Sources\n'
+            for source in sources:
+                md += '{}\n'.format(source)
+
+        if domains and len(domains) > 0:
+            md += tableToMarkdown("The following domains were resolved to the given IP address:", domains)
+
+        if urls and len(urls) > 0:
+            md += tableToMarkdown("The following urls were resolved to the given IP address:", urls)
+
+        return md
+
+    def create_ip_command_context(ip, asn, events, domains):
+        context = {}
+        description = None
+
+        if events:
+            description = 'Reported suspicious activities: '
+
+            for event in events:
+                description += '{}, '.format(event)
+
+            description = description[:-2]
+        else:
+            description = 'No suspicious activities were reported'
+
+        asn_in_context = {}
+
+        if asn:
+            asn_in_context = {
+            'ASN': asn.get('asn'),
+            'Geo': {
+                'Country': asn.get('country')
+                }
+            }
+
+        context = {
+            'Cymon': {
+                'IP': {
+                    'Domains': domains
+                }
+            }
+        }
+
+        context[outputPaths['ip']] = {
+            'Address': ip,
+            'Malicious': {
+                'Vendor': 'Cymon',
+                'Description': description
+            }
+        }
+
+        context[outputPaths['ip']].update(asn_in_context);
+
+        return context
+
+    def get_ip_report_command():
+        args = demisto.args()
+
+        full_response = args.get('fullResponse') == 'true'
+
+        ip = args.get('ip')
+        if not is_ip_valid(ip):
+            return_error('An inalid IP was specified')
+
+        sources = get_ip_events_sources(ip)
+
+        if not sources:
+            return "IP " + ip + " is not in Cymons's dataset"
+
+        if (full_response):
+            max_len = 1000
+        else:
+            max_len = 50
+
+        events = get_ip_events(ip)
+        location = get_ip_location(ip)
+        domains = get_ip_domains(ip, max_len)
+        urls = get_ip_urls(ip, max_len)
+        asn = get_ip_asn(ip)
+
+        markdown = create_ip_command_markdown(ip, sources, events, domains, urls, asn)
+        context = create_ip_command_context(ip, asn, events, domains)
+
+        return [
+            {
+                'Type': entryTypes['map'],
+                'Contents': {
+                    'lat': float(location.get('lat')),
+                    'lng': float(location.get('lon'))
+                },
+                'ContentsFormat': formats['json']
+            },
+            {
+                'Type': entryTypes['note'],
+                'Contents': {
+                    'events': events,
+                    'sources': sources,
+                    'location': location,
+                    'domains': domains,
+                    'urls': urls,
+                    'asn': asn
+                },
+                'HumanReadable': markdown,
+                'EntryContext': context,
+                'ContentsFormat': formats['json']
+            }]
+
+    ''' EXECUTION CODE '''
+    try:
+        command = demisto.command()
+        result = None
+
+        if command == 'test-module':
+            full_report = get_domain_full_report('google.com')
+            report = get_domain_report(full_report)
+
+            if 'total' in report:
+                result = 'ok'
+            else:
+                result = 'test failed'
+            pass
+        elif command == 'ip':
+            result = get_ip_report_command()
+        elif command == 'domain':
+            result = get_domain_report_command()
+
+        demisto.results(result)
+
+    except Exception, e:
+        raise
+  type: python
+  commands:
+    - name: ip
+      arguments:
+        - name: ip
+          required: true
+          default: true
+          description: IP to check the reputation of
+        - name: fullResponse
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Returns all results, of which there can be hundreds. We recommend
+            that you do not use this argument in playbooks. Default is false.
+          defaultValue: "false"
+      outputs:
+        - contextPath: IP.Address
+          description: Malicious IP address
+          type: string
+        - contextPath: IP.ASN
+          description: Malicious IP ASN
+          type: number
+        - contextPath: IP.Geo.Country
+          description: Malicious IP country
+          type: string
+        - contextPath: IP.Malicious.Vendor
+          description: For malicious IPs, the vendor that made the decision
+          type: string
+        - contextPath: IP.Malicious.Description
+          description: For malicious IPs, the reason the vendor made the decision
+          type: string
+        - contextPath: Cymon.IP.Domains
+          description: Related malicious domains
+      description: Check the reputation of an IP address
+    - name: domain
+      arguments:
+        - name: domain
+          required: true
+          default: true
+          description: A domain name
+        - name: fullResponse
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Displays all the malicious hits of the domain
+          defaultValue: "false"
+      outputs:
+        - contextPath: Domain.Name
+          description: Domain name
+          type: string
+        - contextPath: Domain.Malicious.Vendor
+          description: For malicious Domains, the vendor that made the decision
+          type: string
+        - contextPath: Domain.Malicious.Description
+          description: For malicious domains, the reason the vendor made the decision
+          type: string
+        - contextPath: Cymon.Domain.Activities.Title
+          description: 'Title describing the malicious activity '
+        - contextPath: Cymon.Domain.Activities.Tags
+          description: Tags describing the malicious activity
+        - contextPath: Cymon.Domain.Activities.Time
+          description: The time the activity was last reported
+        - contextPath: Cymon.Domain.Activities.Hostname
+          description: The hostname on which the malicious activity was reported
+        - contextPath: Cymon.Domain.Activities.IP
+          description: The IP on which the malicious activity was reported
+      description: Retrieves a report on a given domain
+  runonce: false

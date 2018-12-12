@@ -35,7 +35,7 @@ script:
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
     var proxy = params.proxy;
 
-    function sendRequest(method, url_suffix, headers, body) {
+    function sendRequest(method, url_suffix, headers, body, params) {
         // add default headers
         if (!("Accept" in headers)) {
             headers["Accept"] = ['application/vnd.nsm.v1.0+json', 'application/vnd.nsm.v2.0+json'];
@@ -47,8 +47,14 @@ script:
             headers['NSM-SDK-API'] = [session_credentials];
         }
 
+        var path = base_url + url_suffix;
+
+        if(params){
+            path += encodeToURLQuery(params);
+        }
+
         var res = http(
-            base_url + url_suffix,
+            path,
             {
                 Method: method,
                 Headers: headers,
@@ -76,7 +82,7 @@ script:
 
     function attacks_to_entry(title, attacks) {
         return createEntry(attacks, {
-            contextPath : 'NSM.Attacks(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Attacks(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'attackId'},
@@ -91,7 +97,7 @@ script:
 
     function IPS_policies_to_entry(title, ips_policies) {
         return createEntry(ips_policies, {
-            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'policyId'},
@@ -107,7 +113,7 @@ script:
     function IPS_policy_to_entry(title, ips_policy, policy_id) {
         ips_policy.ID = policy_id;
         return createEntry([ips_policy], {
-            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'ID'},
@@ -128,10 +134,10 @@ script:
 
     function alerts_to_entry(title, alerts) {
         return createEntry(alerts, {
-            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Alerts(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
-                {to : 'ID', from : 'uniqueAlertId'},
+                {to : 'ID', from : 'event.alertId'},
                 {to : 'Name', from : 'name'},
                 {to : 'State', from : 'alertState'},
                 {to : 'CreatedTime', from : 'event.time'},
@@ -139,6 +145,7 @@ script:
                 {to : 'AttackSeverity', from : 'attackSeverity'},
                 {to : 'Application', from : 'application'},
                 {to : 'EventResult', from : 'event.result'},
+                {to : 'SensorID', from : 'detection.deviceId'},
 
                 {to : 'Event', from : 'event', humanReadable : false},
                 {to : 'Event.domain', from : 'detection.domain', humanReadable : false},
@@ -156,33 +163,74 @@ script:
 
     function alert_to_entry(title, alert) {
         /// single alert object has different structure than the alerts of alerts_to_entry.
-        return createEntry([alert], {
-            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
-            title : title,
-            data : [
-                {to : 'ID', from : 'uniqueAlertId'},
-                {to : 'Name', from : 'name'},
-                {to : 'State', from : 'alertState'},
-                {to : 'CreatedTime', from : 'summary.event.time'},
-                {to : 'Assignee', from : 'assignTo'},
-                {to : 'Description', from : 'description.definition'},
-                {to : 'EventResult', from : 'summary.event.result'},
+        var context = {
+            ID : alert.summary.event.alertId,
+            Name : alert.name,
+            State : alert.alertState,
+            CreatedTime : alert.summary.event.time,
+            Assignee : alert.assignTo,
+            Description : alert.description.definition,
+            EventResult : alert.summary.event.result,
+            Attack : {
+                attackCategory : alert.description.attackCategory,
+                attackSubCategory : alert.description.attackSubCategory,
+                nspId : alert.description.reference.nspId, // no human readable
+            },
+            Protocols : alert.description.protocals,
 
-                {to : 'Event', from : 'summary.event', humanReadable : false},
-                {to : 'Attack.nspId', from : 'description.referance.nspId', humanReadable : false},
-                {to : 'Attack.attackCategory', from : 'description.attackCategory', humanReadable : false},
-                {to : 'Attacker', from : 'summary.attacker', humanReadable : false},
-                {to : 'Target', from : 'summary.target', humanReadable : false},
-                {to : 'MalwareFile', from : 'details.malwareFile', humanReadable : false},
-                {to : 'Details', from : 'details', humanReadable : false},
-            ],
-        },
-        undefined, pascalToSpace);
+            // no human readable
+            SensorID : alert.summary.event.deviceId,
+            Event : alert.summary.event,
+            Attacker : alert.summary.attacker,
+            Target : alert.summary.target,
+            MalwareFile : alert.details.malwareFile,
+            Details : alert.details,
+        };
+
+        var headers = ['ID', 'Name', 'Attack Category', 'Attack SubCategory', 'Description', 'State', 'Assignee', 'CreatedTime', 'EventResult', 'Comments'];
+        var md = {
+            ID : alert.summary.event.alertId,
+            Name : alert.name,
+            State : alert.alertState,
+            CreatedTime : alert.summary.event.time,
+            Assignee : alert.assignTo,
+            Description : alert.description.definition,
+            EventResult : alert.summary.event.result,
+            'Attack Category' : alert.description.attackCategory,
+            'Attack SubCategory' : alert.description.attackSubCategory,
+            Comments : alert.description.comments.comments,
+        };
+        var links = alert.description.reference.additionInfo.split('<BR>');
+        for (var i in links) {
+            links[i] = '[{0}]({0})'.format(links[i]);
+        }
+
+        var reference = {
+            CVE : alert.description.reference.cveId,
+            Microsoft : alert.description.reference.microsoftId,
+            'Intruvert ID' : alert.description.reference.nspId,
+            'Additional Info' : links.join('<br>'),
+        };
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: alert,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable : (tableToMarkdown(title, md, headers) +
+                tableToMarkdown('Reference', reference) +
+                tableToMarkdown('Platform Affected', {Protocols : alert.description.protocals})
+            ),
+            EntryContext : {
+            'NSM.Alerts(val.ID && val.ID === obj.ID)' : createContext(context),
+            },
+        };
+        return entry;
     }
 
     function domains_to_entry(title, domains) {
         return createEntry(domains, {
-            contextPath : 'NSM.Domains(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Domains(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'DomainDescriptor.id'},
@@ -194,7 +242,7 @@ script:
 
     function sensors_to_entry(title, sensors) {
         return createEntry(sensors, {
-            contextPath : 'NSM.Sensors(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Sensors(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'sensorId'},
@@ -334,9 +382,12 @@ script:
         return get_alerts(state, time_period, start_time, end_time);
     }
 
-    function get_alert_details(alert_id) {
+    function get_alert_details(alert_id, sensor_id) {
         var cmd_url = 'alerts/' + alert_id;
-        var res = sendRequest('GET', cmd_url, {}, '');
+        var query_params = {
+            'sensorId': sensor_id
+        };
+        var res = sendRequest('GET', cmd_url, {}, '', query_params);
         return alert_to_entry('Alert ' + res.name, res);
     }
 
@@ -368,7 +419,7 @@ script:
             }
             return get_alerts(args.state, args.time_period, args.start_time, args.end_time, args.search, args.filter);
         case 'nsm-get-alert-details':
-            return get_alert_details(args.alert_id);
+            return get_alert_details(args.alert_id, args.sensor_id);
         case 'nsm-update-alerts':
             if (!validateTimeArgs(args.time_period, args.start_time, args.end_time)) {
                 throw 'Error! In CUSTOM mode, You must specify both start time and end time';
@@ -567,6 +618,8 @@ script:
       required: true
       default: true
       description: Alert ID
+    - name: sensor_id
+      description: Sensor ID
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID

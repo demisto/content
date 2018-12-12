@@ -456,10 +456,10 @@ script:
         var returnObject;
         if (json && json['qvs.getMatrixDataResponse'] && json['qvs.getMatrixDataResponse']['qvs.return']) {
             // ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
-            returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];    
+            returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];
         } else if (json && json['que.getMatrixDataResponse'] && json['que.getMatrixDataResponse']['que.return']) {
             // ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
-            returnObject = json['que.getMatrixDataResponse']['que.return'];    
+            returnObject = json['que.getMatrixDataResponse']['que.return'];
         } else {
             throw 'Failed to get results for query viewer ' + queryViewerId + '.\nRaw response body: ' + JSON.stringify(json);
         }
@@ -1086,7 +1086,12 @@ script:
         default:
             result = sendAndParse(command, pathDictionary[command], args);
     }
-    logout();
+    try {
+        logout();
+    } catch (err) {
+        demisto.error('Failed to logout ArcSight ESM session. Error: ' + err);
+    }
+
     return result;
   type: javascript
   commands:
@@ -1127,7 +1132,7 @@ script:
       defaultValue: "true"
     description: commands.server.arcsight.query.description
   - name: as-add-entries
-    description: Import/add new entries to Active List. 
+    description: Import/add new entries to Active List.
     arguments:
     - name: resourceId
       required: true
@@ -1231,3 +1236,5 @@ script:
     execution: true
   isfetch: true
 hidden: false
+tests:
+- No test

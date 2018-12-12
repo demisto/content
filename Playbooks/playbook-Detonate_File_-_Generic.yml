@@ -25,11 +25,12 @@ tasks:
       - "13"
       - "14"
       - "15"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 50
         }
       }
@@ -50,7 +51,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 370
         }
       }
@@ -363,13 +364,50 @@ tasks:
         }
       }
     note: false
+  "16":
+    id: "16"
+    taskid: e69051d8-12bd-440c-85de-3f3c713d1556
+    type: playbook
+    task:
+      id: e69051d8-12bd-440c-85de-3f3c713d1556
+      version: -1
+      name: Detonate File - SNDBOX
+      playbookName: Detonate File - SNDBOX
+      description: "Detonates a file using SNDBOX"
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2960,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
@@ -570,5 +608,37 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+- contextPath: SNDBOX.Analysis.ID
+  description: Analysis ID
+  type: string
+- contextPath: SNDBOX.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: SNDBOX.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: SNDBOX.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: SNDBOX.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: SNDBOX.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: SNDBOX.Analysis.Link
+  description: Analysis Link
+  type: string
+- contextPath: SNDBOX.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis
+  description: SNDBOX analysis
+  type: unknown
 tests:
-- Detonate File - Generic Test
+  - Detonate File - Generic Test

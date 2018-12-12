@@ -1,17 +1,51 @@
 {
     "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
+        {
+            "integrations": "OTRS",
+            "playbookID": "OTRS Test"
+        },
+        {
+            "integrations": "Cymon",
+            "playbookID": "playbook-Cymon_Test"
+        },
         {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
         },
         {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX"
+            ],
+            "playbookID" : "Detonate File - Generic Test",
+            "timeout" : 2400,
+            "nightly" : true
+        },
+        {
+            "integrations": "SNDBOX",
+            "playbookID": "SNDBOX_Test"
+        },
+        {
+            "integrations": "SNDBOX",
+            "playbookID": "Detonate File - SNDBOX - Test",
+            "timeout": 2400,
+            "nightly": true
+        },
+        {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
         },
         {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
-          "timeout": 240
+          "timeout": 240,
+          "nightly": true
         },
         {
             "integrations": "MimecastV2",
@@ -84,8 +118,16 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "InfoArmor VigilanteATI",
+            "playbookID": "InfoArmorVigilanteATITest"
+        },
+        {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "dnstwist",
+            "playbookID": "dnstwistTest"
         },
         {
             "integrations": "BitDam",
@@ -113,7 +155,8 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest"
+            "playbookID": "RedCanaryTest",
+            "nightly" : true
         },
         {
           "integrations": "Devo",
@@ -519,6 +562,10 @@
             "playbookID": "Cybereason Test"
         },
         {
+            "integrations": "Cisco Meraki",
+            "playbookID": "Cisco-Meraki-Test"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -632,6 +679,10 @@
             "timeout": 300
         },
         {
+            "integrations" : "jira",
+            "playbookID" : "JiraCreateIssue-example-test"
+        },
+        {
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
@@ -668,6 +719,10 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": "whois",
+            "playbookID": "whois_test"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -762,9 +817,19 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+        },
+        {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test"
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
+
+        }
     ],
     "skipped_tests": {
+        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
@@ -776,12 +841,15 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
-        "tenable-sc-scan-test": "Scan takes too long"
+        "tenable-sc-scan-test": "Scan takes too long",
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "FortiGate": "License expired, in the process of getting new one",
+        "Whois": "Server currently has Whois by default, need to deprecate",
+        "Skyformation": "Server installed by skyformation is down, waiting on reply",
+        "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
-        "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",

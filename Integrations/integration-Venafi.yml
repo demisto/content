@@ -93,15 +93,15 @@ script:
                 HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
             };
             return entry;
-        case 'venafi-get-details':
+        case 'venafi-get-certificate-details':
 
             var raw = sendRequest('GET', '/vedsdk/certificates/' + args.guid, undefined, auth.APIKey);
             raw.ParentDN = raw.ParentDn
             raw.ID = raw.Guid.substring(1, raw.Guid.length - 1)
-            ec = {
+            var ec = {
                 'Venafi.Certificate(val.ID==obj.ID)': raw
-            }
-            return JSON.stringify(raw)
+            };
+
             entry = {
                 Type: entryTypes.note,
                 Contents: raw,
@@ -208,8 +208,6 @@ script:
       description: Certificates that expire after the specified date
     - name: ValidToLess
       description: Certificates that expire before the specified date
-    - name: guid
-      description: Certificate Guid
     outputs:
     - contextPath: Venafi.Certificate.CreatedOn
       description: Certificate creation date

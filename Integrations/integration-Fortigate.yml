@@ -443,7 +443,7 @@ script:
 
                 contents.append({
                     'Name': policy.get('name'),
-                    'ID': policy.get('policyid'),
+                    'ID': int(policy.get('policyid')),
                     'Description': policy.get('comments'),
                     'Status': policy.get('status'),
                     'Source': src_address,
@@ -456,7 +456,7 @@ script:
                 })
                 policy_context.append({
                     'Name': policy.get('name'),
-                    'ID': policy.get('policyid'),
+                    'ID': int(policy.get('policyid')),
                     'Description': policy.get('comments'),
                     'Status': policy.get('status'),
                     'Source': src_address,
@@ -684,7 +684,7 @@ script:
         response = move_policy_request(policy_id, position, neighbour)
 
         policy_context = {
-            'ID': policy_id,
+            'ID': int(policy_id),
             'Moved': True
         }
         contents.append({
@@ -1104,7 +1104,7 @@ script:
       type: string
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
-      type: string
+      type: number
     - contextPath: Fortigate.Policy.Description
       description: Policy description
       type: string
@@ -1157,7 +1157,7 @@ script:
       type: string
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
-      type: string
+      type: number
     - contextPath: Fortigate.Policy.Description
       description: Policy description
       type: string
