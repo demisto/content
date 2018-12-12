@@ -47,6 +47,7 @@ script:
     import re
     import base64
     import shutil
+    import time
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -394,8 +395,8 @@ script:
         return res
 
     def file_upload(submitType, sample, vmProfileList,
-                                skipTaskId, analyzeAgain, xMode, messageId,
-                                filePriorityQ, srcIp, destIp, fileName):
+                                skipTaskId = None, analyzeAgain = None, xMode = None, messageId = None,
+                                filePriorityQ = None, srcIp = None, destIp = None, fileName = None):
         body = {}
         body['data'] = {}
         data = {}
@@ -523,7 +524,7 @@ script:
                 context['ATD']['Task(val.taskId == obj.taskId)'] = {
                     'status': status,
                     'taskId': uploadData['taskId'],
-                    'jobId': uploadData['subId'],
+                    'jobId': uploadData['subId'] if 'subId' in uploadData else None,
                     'messageId': uploadData['messageId'],
                     'url': uploadData['url'],
                     'srcIp': uploadData['srcIp'],
@@ -533,13 +534,12 @@ script:
                     'SHA256': uploadData['sha256'],
                     'Report':
                         {
-                        'Attachments': reportSummary['Attachments'],
-                        'Environment': reportSummar['Environment'],
-                        'Environment': reportSummary['Environment'],
-                        'Ips': reportSummary['Ips'],
-                        'Verdict':reportSummary['Verdict'],
-                        'Data': reportSummary['Data'],
-                        'Selectors': reportSummary['Selectors'],
+                        'Attachments': reportSummary['Attachments'] if 'Attachment' in reportSummary else None,
+                        'Environment': reportSummary['Environment'] if 'Environment' in reportSummary else None,
+                        'Ips': reportSummary['Ips'] if 'Ips' in reportSummary else None,
+                        'Verdict':reportSummary['Verdict'] if 'Verdict' in reportSummary else None,
+                        'Data': reportSummary['Data'] if 'Data' in reportSummary else None,
+                        'Selectors': reportSummary['Selectors'] if 'Selectors' in reportSummary else None,
                         }
                     }
         return context
@@ -566,18 +566,18 @@ script:
 
         if (report_type == 'pdf' or report_type == 'zip'):
             filename = str(filename) + '.' + report_type
-            return{
+            return {
                 'content': res,
                 'filename': filename,
                 'ec': ec
             }
 
         if (report_type == 'sample'):
-            return{
+            return {
                 'content': res,
                 'filename': filename + '.zip',
                 'ec': ec
-                }
+            }
         return res
 
     def get_report_command():
@@ -604,53 +604,56 @@ script:
         return uriSuffix;
 
     def detonate(submitType ,sample, timeout, report_type, threshold, fileName):
-        sys.exit(0)
         result = file_upload(submitType, sample, fileName)
         taskId = result['taskId']
         uploadData = result['resultObj']['results'][0]
 
         status = ''
-        start = datetime.utcnow()
-        diff = 0;
-
-        while (diff < timeout):
-            status = checkTaskStatusByTaskId([taskId])['status']
+        timeout = int(timeout)
+        while (0 < timeout):
+            status = str(check_task_status_by_taskId([taskId])['status'])
             if (status == 'Completed'):
-                uriSuffix = 'iTaskId=' + taskId
+                uriSuffix = 'iTaskId=' + str(taskId)
                 return_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
-            diff = ( datetime.utcnow() - start ) / 1000
+                sys.exit(0)
+            time.sleep(1)
+            timeout -= 1
+
         return_error("Timeout due to no answer after " + demisto.args()['timeout'] +
                 " seconds. Check the status using '!atd-check-status' in a while and if 'completed' execute '!atd-get-report'.")
 
     def return_report(uriSuffix, taskId, report_type, uploadData, status, threshold):
-
-        res = get_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
-
-        if report_type == 'json':
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': res['content'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': res['md'],
-                'EntryContext': res['ec']
-            })
-
-        elif report_type == 'pdf' or report_type == 'zip':
-            file_type = entryTypes['entryInfoFile']
-            result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'InfoFile' in the context.
-            result['EntryContext'] = res['ec']
-            demisto.results(result)
-
-
-        elif report_type == 'sample':
-            # used to retrieve a sample from McAfee ATD to demisto
-            file_type = entryTypes['file']
-            result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'File' in the context, can be farther investigated.
-            demisto.results(result)
-
+        current_status = check_task_status_by_taskId([taskId])['status']
+        if (current_status != 'Completed'):
+            demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
         else:
-            demisto.results(res)
+            res = get_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
+
+            if report_type == 'json':
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': res['content'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': res['md'],
+                    'EntryContext': res['ec']
+                })
+
+            elif report_type == 'pdf' or report_type == 'zip':
+                file_type = entryTypes['entryInfoFile']
+                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'InfoFile' in the context.
+                result['EntryContext'] = res['ec']
+                demisto.results(result)
+
+
+            elif report_type == 'sample':
+                # used to retrieve a sample from McAfee ATD to demisto
+                file_type = entryTypes['file']
+                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'File' in the context, can be farther investigated.
+                demisto.results(result)
+
+            else:
+                demisto.results(res)
 
     def logout():
         res = http_request('/php/session.php','delete', API_HEADERS)
@@ -686,16 +689,16 @@ script:
             get_report_command()
 
         elif demisto.command() == 'detonate-file': #deprecated, please use 'ATD - Detonate File' playbook
-            detonate(0, demisto.args()['upload'], demisto.args()['timeout'], demisto.args()['format'], demisto.args()['threshold'], demisto.args['fileName'])
-            #submit type for regular file is 0
+            detonate(0, demisto.args().get('upload'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), demisto.args().get('fileName'))
+            # submit type for regular file is 0
 
         elif demisto.command() == 'detonate-url': #deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
-            detonate(1, demisto.args()['url'], demisto.args()['timeout'], demisto.args()['format'], demisto.args()['threshold'], demisto.args['fileName'])
-            #submit type for url submission is 1
+            detonate(1, demisto.args().get('url'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), demisto.args().get('fileName'))
+            # submit type for url submission is 1
 
-        #elif demisto.command() == 'detonate-file-remote':
-            #return detonate(3, args.url, args.timeout, args.format, args.threshold);
-            #submit type for url-download is 3
+        # elif demisto.command() == 'detonate-file-remote':
+            # return detonate(3, args.url, args.timeout, args.format, args.threshold);
+            # submit type for url-download is 3
 
     except Exception, e:
         LOG(e.message)
@@ -1228,6 +1231,6 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Handle outputs for malicious files, fix get-reports for various types, fix rounding long numbers of taskId, jobId"
+releaseNotes: "Handle error when trying to get a report for unanalyzed submission. detonate-url, detonate-file fix"
 tests:
 - Test Playbook McAfee ATD
