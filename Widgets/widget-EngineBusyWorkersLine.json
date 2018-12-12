@@ -22,5 +22,6 @@
             "fromValue": 60,
             "field": ""
         }
-    }
+    },
+    "releaseNotes":"Fix title and description for widget time"
 }

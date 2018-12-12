@@ -21,5 +21,6 @@
     "params": {
         "timeFrame": "minutes"
     },
-    "size": 1440
+    "size": 1440,
+    "releaseNotes":"Fix title and description for widget time"
 }

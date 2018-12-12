@@ -9,7 +9,8 @@
 		"fromValue": 60,
 		"field": ""
 	},
-	"fromDateLicense": "0001-01-01T00:00:00Z",
+  "releaseNotes":"Fix title and description of health times",
+  "fromDateLicense": "0001-01-01T00:00:00Z",
 	"name": "System Health",
 	"description": "",
 	"layout": [
