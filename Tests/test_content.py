@@ -159,32 +159,26 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
 
 def set_integration_params(demisto_api_key, integrations, secret_params):
     for integration in integrations:
-        is_integration_found = False
+        integration_params = {}
         for item in secret_params:
             if item["name"] == integration['name']:
                 if integration['instance_name'] is None:
                     integration_params = item
-                    is_integration_found = True
                     break
                 elif integration['instance_name'] == item["instance_name"]:
                     integration_params = item
-                    is_integration_found = True
                     break
 
-        if not is_integration_found:
-            print_error("Integration {} was not found".format(integration['name']))
-            sys.exit(1)
-
-        if integration_params:
-            del integration['instance_name']
-            integration['params'] = integration_params.get('params', {})
-            integration['byoi'] = integration_params.get('byoi', True)
-        elif 'Demisto REST API' == integration['name']:
+        if 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
                 'apikey': demisto_api_key,
                 'insecure': True,
             }
+        else:
+            del integration['instance_name']
+            integration['params'] = integration_params.get('params', {})
+            integration['byoi'] = integration_params.get('byoi', True)
 
 
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
