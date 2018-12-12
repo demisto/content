@@ -151,7 +151,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1915
+          "y": 1740
         }
       }
     note: false
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4975
+          "y": 4800
         }
       }
     note: false
@@ -276,35 +276,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "19":
-    id: "19"
-    taskid: 82761bc1-b854-4ed2-867d-cc85e6c60bd5
-    type: regular
-    task:
-      id: 82761bc1-b854-4ed2-867d-cc85e6c60bd5
-      version: -1
-      name: panorama-get-address
-      description: Get address
-      script: '|||panorama-get-address'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      name:
-        simple: address_test_pb
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
   "20":
     id: "20"
     taskid: 95e78c82-9c46-4d32-8490-765aae871cae
@@ -328,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1740
+          "y": 1565
         }
       }
     note: false
@@ -353,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2060
+          "y": 1885
         }
       }
     note: false
@@ -388,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2380
+          "y": 2205
         }
       }
     note: false
@@ -425,7 +396,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2555
+          "y": 2380
         }
       }
     note: false
@@ -460,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3575
+          "y": 3400
         }
       }
     note: false
@@ -488,7 +459,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3080
+          "y": 2905
         }
       }
     note: false
@@ -516,7 +487,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3255
+          "y": 3080
         }
       }
     note: false
@@ -553,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4100
+          "y": 3925
         }
       }
     note: false
@@ -589,7 +560,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4275
+          "y": 4100
         }
       }
     note: false
@@ -626,7 +597,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4625
+          "y": 4450
         }
       }
     note: false
@@ -654,20 +625,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4800
+          "y": 4625
         }
       }
     note: false
     timertriggers: []
   "36":
     id: "36"
-    taskid: b3bd7bb5-5d75-430b-81ee-b195fd361ae4
+    taskid: de20ca6c-2687-4172-8e37-1b8d3b701736
     type: regular
     task:
-      id: b3bd7bb5-5d75-430b-81ee-b195fd361ae4
+      id: de20ca6c-2687-4172-8e37-1b8d3b701736
       version: -1
-      name: panorama-custom-url-category-get
-      script: '|||panorama-custom-url-category-get'
+      name: panorama-get-custom-url-category
+      script: '|||panorama-get-custom-url-category'
       type: regular
       iscommand: true
       brand: ""
@@ -682,7 +653,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5120
+          "y": 4945
         }
       }
     note: false
@@ -714,7 +685,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5295
+          "y": 5120
         }
       }
     note: false
@@ -743,17 +714,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2905
+          "y": 2730
         }
       }
     note: false
     timertriggers: []
   "40":
     id: "40"
-    taskid: d4b61fb1-7108-4981-8d05-ca3b70f64c87
+    taskid: 86ac45c9-386c-49eb-875c-e06f68e53cce
     type: regular
     task:
-      id: d4b61fb1-7108-4981-8d05-ca3b70f64c87
+      id: 86ac45c9-386c-49eb-875c-e06f68e53cce
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -763,10 +734,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "20"
     scriptarguments:
       seconds:
-        simple: "14"
+        simple: "16"
     separatecontext: false
     view: |-
       {
@@ -801,7 +772,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3750
+          "y": 3575
         }
       }
     note: false
@@ -830,20 +801,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4450
+          "y": 4275
         }
       }
     note: false
     timertriggers: []
   "48":
     id: "48"
-    taskid: 76bcf41b-f910-4a5a-82a6-782aad8392d7
+    taskid: 12edb0ee-7813-4e29-8c74-740a3f0c5fb3
     type: regular
     task:
-      id: 76bcf41b-f910-4a5a-82a6-782aad8392d7
+      id: 12edb0ee-7813-4e29-8c74-740a3f0c5fb3
       version: -1
-      name: panorama-url-category-get
-      script: '|||panorama-url-category-get'
+      name: panorama-get-url-category
+      script: '|||panorama-get-url-category'
       type: regular
       iscommand: true
       brand: ""
@@ -858,7 +829,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5615
+          "y": 5440
         }
       }
     note: false
@@ -876,7 +847,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+      - "74"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -895,7 +866,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5790
+          "y": 5615
         }
       }
     note: false
@@ -964,7 +935,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5470
+          "y": 5295
         }
       }
     note: false
@@ -1132,7 +1103,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2235
+          "y": 2060
         }
       }
     note: false
@@ -1156,7 +1127,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3430
+          "y": 3255
         }
       }
     note: false
@@ -1208,7 +1179,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2730
+          "y": 2555
         }
       }
     note: false
@@ -1234,17 +1205,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3925
+          "y": 3750
         }
       }
     note: false
     timertriggers: []
   "67":
     id: "67"
-    taskid: f516d661-05f2-4816-8420-2517043491f4
+    taskid: 036eae51-89ae-4db2-826b-2f1306b01b85
     type: regular
     task:
-      id: f516d661-05f2-4816-8420-2517043491f4
+      id: 036eae51-89ae-4db2-826b-2f1306b01b85
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -1285,17 +1256,17 @@ tasks:
     timertriggers: []
   "68":
     id: "68"
-    taskid: 5656aaa3-9570-452d-8cbd-aab04fa00be5
+    taskid: 286c37dd-a49c-43ef-839f-324562ab5b9e
     type: regular
     task:
-      id: 5656aaa3-9570-452d-8cbd-aab04fa00be5
+      id: 286c37dd-a49c-43ef-839f-324562ab5b9e
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
-      script: Panorama all2|||panorama-edit-rule
+      script: '|||panorama-edit-rule'
       type: regular
       iscommand: true
-      brand: Panorama all2
+      brand: ""
     nexttasks:
       '#none#':
       - "70"
@@ -1304,6 +1275,7 @@ tasks:
         simple: application
       element_value:
         simple: backweb
+      pre_post: {}
       rulename:
         simple: badagalatara
     separatecontext: false
@@ -1346,12 +1318,12 @@ tasks:
     timertriggers: []
   "70":
     id: "70"
-    taskid: b9889be0-7cb3-4126-860f-98165aa84006
+    taskid: c73c1afc-a5a8-4e9e-895c-fe28b2aede6c
     type: regular
     task:
-      id: b9889be0-7cb3-4126-860f-98165aa84006
+      id: c73c1afc-a5a8-4e9e-895c-fe28b2aede6c
       version: -1
-      name: panorama-delete-rule
+      name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
       script: '|||panorama-delete-rule'
       type: regular
@@ -1393,7 +1365,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 7800
         }
       }
@@ -1401,10 +1373,10 @@ tasks:
     timertriggers: []
   "72":
     id: "72"
-    taskid: 1d7ca064-5a51-4dd6-82f9-537a61cff213
+    taskid: 04ce8ee6-b8b7-47a9-8207-efe6a1940ff0
     type: regular
     task:
-      id: 1d7ca064-5a51-4dd6-82f9-537a61cff213
+      id: 04ce8ee6-b8b7-47a9-8207-efe6a1940ff0
       version: -1
       name: panorama-get-pcaps
       description: Get pcaps from Palo Alto Firewall or Panorama
@@ -1428,7 +1400,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 7800
         }
       }
@@ -1455,6 +1427,35 @@ tasks:
         "position": {
           "x": 265,
           "y": 7655
+        }
+      }
+    note: false
+    timertriggers: []
+  "74":
+    id: "74"
+    taskid: cbdf5bd7-2c8d-48b9-8713-bc4c60e3abdb
+    type: regular
+    task:
+      id: cbdf5bd7-2c8d-48b9-8713-bc4c60e3abdb
+      version: -1
+      name: panorama-get-url-filter
+      description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
+      script: '|||panorama-get-url-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      name:
+        simple: fw_test_pb_dont_delete
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5790
         }
       }
     note: false
