@@ -159,11 +159,22 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
 
 def set_integration_params(demisto_api_key, integrations, secret_params):
     for integration in integrations:
-        integration_params = [item for item in secret_params if
-                              item["name"] == integration['name']]
+        is_integration_found = False
+        for item in secret_params:
+            if item["name"] == integration['name']:
+                if not integration['instance_name']:
+                    integration_params = item
+                    is_integration_found = True
+                    break
+                elif integration['instance_name'] == item["instance_name"]:
+                    integration_params = item
+                    is_integration_found = True
+                    break
+
         if integration_params:
-            integration['params'] = integration_params[0].get('params', {})
-            integration['byoi'] = integration_params[0].get('byoi', True)
+            del integration['instance_name']
+            integration['params'] = integration_params.get('params', {})
+            integration['byoi'] = integration_params.get('byoi', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -171,22 +182,30 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                 'insecure': True,
             }
 
+        if not is_integration_found:
+            print_error("Integration {} was not found".format(integration['name']))
+
 
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
     is_nightly_integration = False
     has_skipped_integration = False
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf.keys():
+        if not isinstance(integration, tuple):
+            integration = (integration, None)
+
+        integration_id, integration_instance = integration
+        if integration_id in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
 
-        if integration in nightly_integrations:
+        if integration_id in nightly_integrations:
             is_nightly_integration = True
 
         # string description
         integrations.append({
             'name': integration,
+            'instance_name': integration_instance,
             'params': {}
         })
 
@@ -285,7 +304,7 @@ def main():
         }
 
         if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
+            integrations_conf = [(integrations_conf, None), ]
 
         has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
             integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
