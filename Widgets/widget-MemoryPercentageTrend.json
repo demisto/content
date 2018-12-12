@@ -3,11 +3,11 @@
     "version": -1,
     "fromVersion": "3.5.1",
     "modified": "2018-03-14T17:42:44.919467+02:00",
-    "name": "Server Memory Usage % (last 24h)",
+    "name": "Server Memory Usage % (last hour)",
     "dataType": "system",
     "widgetType": "line",
     "query": "memory.usedPercent",
-    "description": "Server memory usage % (previous 24 hours)",
+    "description": "Server memory usage % (last hour)",
     "isPredefined": true,
     "dateRange": {
         "period": {
