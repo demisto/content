@@ -311,8 +311,11 @@ view: |-
   }
 inputs:
 - key: URL
-  value: {}
-  required: true
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
   description: URL to detonate
 - key: interval
   value:

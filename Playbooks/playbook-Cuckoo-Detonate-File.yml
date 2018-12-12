@@ -353,7 +353,7 @@ inputs:
 - key: File
   value:
     simple: ${File}
-  required: true
+  required: false
   description: The file to detonate
 - key: interval
   value:

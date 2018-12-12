@@ -1,0 +1,26 @@
+commonfields:
+  id: ValidateErrorExistence
+  version: -1
+name: ValidateErrorExistence
+script: |-
+  res = []
+
+  entries = demisto.executeCommand("getEntries", {})
+  error_was_found = False
+
+  for entry in entries:
+      if isError(entry):
+          error_was_found = True
+          break
+
+
+  if error_was_found:
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "An error was found"})
+  else:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "No error was found"})
+
+  demisto.results(res)
+type: python
+tags: []
+releaseNotes: "Added script to check error existence"
+

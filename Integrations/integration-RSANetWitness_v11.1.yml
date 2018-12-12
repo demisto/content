@@ -1366,6 +1366,5 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-releaseNotes: "fix error parsing when encountering a bad response when trying to get token"
 tests:
   - RSA NetWitness Test
