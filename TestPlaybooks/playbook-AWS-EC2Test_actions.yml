@@ -1,14 +1,14 @@
 id: d66e5f86-e045-403f-819e-5058aa603c32
-version: 10
+version: 60
 name: AWS - EC2 Test Playbook actions
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: beb9e3f7-e982-4b36-8e24-76b309a29c2b
+    taskid: 365be7a9-574d-427c-8125-33f7bf932890
     type: start
     task:
-      id: beb9e3f7-e982-4b36-8e24-76b309a29c2b
+      id: 365be7a9-574d-427c-8125-33f7bf932890
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: ea1664c9-3d2d-4e1c-8ef5-ef5fafaf1558
+    taskid: 4aa07349-33b0-4ee9-851c-9e5fb15d8e70
     type: regular
     task:
-      id: ea1664c9-3d2d-4e1c-8ef5-ef5fafaf1558
+      id: 4aa07349-33b0-4ee9-851c-9e5fb15d8e70
       version: -1
       name: aws-ec2-allocate-address
       description: Allocates an Elastic IP address.
@@ -55,12 +56,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 788d0946-b8a1-4cef-85ca-361877f33754
+    taskid: 15f5580d-e1a9-439c-8550-4f1e5f19b330
     type: regular
     task:
-      id: 788d0946-b8a1-4cef-85ca-361877f33754
+      id: 15f5580d-e1a9-439c-8550-4f1e5f19b330
       version: -1
       name: aws-ec2-associate-address
       description: Associates an Elastic IP address with an instance or a network
@@ -89,15 +91,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2295
+          "y": 3170
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: c1f7ead8-7b2d-494e-8093-2e4aeeac1824
+    taskid: fca6d93b-45d1-488b-81a1-de3bab10b3c9
     type: regular
     task:
-      id: c1f7ead8-7b2d-494e-8093-2e4aeeac1824
+      id: fca6d93b-45d1-488b-81a1-de3bab10b3c9
       version: -1
       name: aws-ec2-create-snapshot
       description: Creates a snapshot of an EBS volume and stores it in Amazon S3.
@@ -127,15 +130,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2645
+          "y": 3695
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 6dbc4a3e-23ea-4f99-816c-8c6d6beed69c
+    taskid: e9482263-cd96-47cb-8489-ab9ad02306a2
     type: regular
     task:
-      id: 6dbc4a3e-23ea-4f99-816c-8c6d6beed69c
+      id: e9482263-cd96-47cb-8489-ab9ad02306a2
       version: -1
       name: aws-ec2-delete-snapshot
       description: Deletes the specified snapshot.
@@ -158,15 +162,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3170
+          "y": 4395
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: b6d3f586-90ea-49d1-8d97-3e9a141f02d0
+    taskid: 0abe0a82-afeb-4e9d-82d9-16df8b16fa30
     type: regular
     task:
-      id: b6d3f586-90ea-49d1-8d97-3e9a141f02d0
+      id: 0abe0a82-afeb-4e9d-82d9-16df8b16fa30
       version: -1
       name: aws-ec2-create-image
       description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
@@ -197,15 +202,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3695
+          "y": 4920
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 187eef3e-38bd-4b1e-8173-b08a6c7abd3a
+    taskid: ef2ecab1-df53-4912-8b10-b0d5ce69fae6
     type: regular
     task:
-      id: 187eef3e-38bd-4b1e-8173-b08a6c7abd3a
+      id: ef2ecab1-df53-4912-8b10-b0d5ce69fae6
       version: -1
       name: aws-ec2-deregister-image
       description: Deregisters the specified AMI.
@@ -228,15 +234,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4220
+          "y": 5620
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 263f24c2-5f2c-495d-89ce-ae0eba350327
+    taskid: e6b1a266-9ee0-4220-8b46-3f76ec91afa2
     type: regular
     task:
-      id: 263f24c2-5f2c-495d-89ce-ae0eba350327
+      id: e6b1a266-9ee0-4220-8b46-3f76ec91afa2
       version: -1
       name: aws-ec2-modify-volume
       description: You can modify several parameters of an existing EBS volume, including
@@ -266,15 +273,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3345
+          "y": 4570
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 760e306b-8acb-4d63-87d3-9bfc394da1c0
+    taskid: 69414416-c3ce-4fa7-8243-381e9814e8b5
     type: regular
     task:
-      id: 760e306b-8acb-4d63-87d3-9bfc394da1c0
+      id: 69414416-c3ce-4fa7-8243-381e9814e8b5
       version: -1
       name: aws-ec2-create-tags
       description: Adds or overwrites one or more tags for the specified Amazon EC2
@@ -300,15 +308,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 2995
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 006ebd46-cc2e-4fd0-82f5-800f2a25eb66
+    taskid: 1f24c3b0-8b3f-40f0-82e7-87df29133f63
     type: regular
     task:
-      id: 006ebd46-cc2e-4fd0-82f5-800f2a25eb66
+      id: 1f24c3b0-8b3f-40f0-82e7-87df29133f63
       version: -1
       name: aws-ec2-disassociate-address
       description: Disassociates an Elastic IP address from the instance or network
@@ -332,15 +341,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5620
+          "y": 7195
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: b0e6d39c-688d-49f0-822b-2990f1122fd9
+    taskid: 9b4d1372-5f9e-4a18-8f8a-f3dbbc02fb27
     type: regular
     task:
-      id: b0e6d39c-688d-49f0-822b-2990f1122fd9
+      id: 9b4d1372-5f9e-4a18-8f8a-f3dbbc02fb27
       version: -1
       name: aws-ec2-release-address
       description: Releases the specified Elastic IP address.
@@ -363,15 +373,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5795
+          "y": 7370
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: e7cb5396-d9b3-45e4-8591-66036df8b4b7
+    taskid: cd812038-6402-496e-8f44-c2a30d18b65a
     type: regular
     task:
-      id: e7cb5396-d9b3-45e4-8591-66036df8b4b7
+      id: cd812038-6402-496e-8f44-c2a30d18b65a
       version: -1
       name: aws-ec2-start-instances
       description: Starts an Amazon EBS-backed instance that you have previously stopped.
@@ -394,15 +405,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 6320
+          "y": 7895
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: 8c47f9c5-7f35-4264-8600-0bbb9b2264ca
+    taskid: 4aa82372-623f-485b-8b17-268ba3eaa3dc
     type: regular
     task:
-      id: 8c47f9c5-7f35-4264-8600-0bbb9b2264ca
+      id: 4aa82372-623f-485b-8b17-268ba3eaa3dc
       version: -1
       name: aws-ec2-stop-instances
       description: Stops an Amazon EBS-backed instance.
@@ -425,15 +437,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5970
+          "y": 7545
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 0c3e564a-0500-44e4-8e17-ae9fae894877
+    taskid: 8b7e1bb5-4dc7-44ac-873c-27f114859533
     type: regular
     task:
-      id: 0c3e564a-0500-44e4-8e17-ae9fae894877
+      id: 8b7e1bb5-4dc7-44ac-873c-27f114859533
       version: -1
       name: aws-ec2-terminate-instances
       description: Shuts down one or more instances. This operation is idempotent;
@@ -457,15 +470,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 6670
+          "y": 8245
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: f925a723-51ba-44ac-8866-cea0c398b780
+    taskid: 3bb812e2-2a34-4ed7-8f1a-733140c727bd
     type: regular
     task:
-      id: f925a723-51ba-44ac-8866-cea0c398b780
+      id: 3bb812e2-2a34-4ed7-8f1a-733140c727bd
       version: -1
       name: aws-ec2-create-volume
       description: Creates an EBS volume that can be attached to an instance in the
@@ -500,15 +514,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4395
+          "y": 5795
         }
       }
+    note: false
   "15":
     id: "15"
-    taskid: 16309c07-8586-442f-80fe-a961bdfc3d43
+    taskid: a2940b2b-7de9-4c3f-8979-95b6adc81069
     type: regular
     task:
-      id: 16309c07-8586-442f-80fe-a961bdfc3d43
+      id: a2940b2b-7de9-4c3f-8979-95b6adc81069
       version: -1
       name: aws-ec2-attach-volume
       description: Attaches an EBS volume to a running or stopped instance and exposes
@@ -538,15 +553,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4745
+          "y": 6145
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: 8e0d5377-d8a5-4b61-8e5a-90e3815ede0c
+    taskid: 72d8e6c9-14c2-4f33-8e2a-85c088708930
     type: regular
     task:
-      id: 8e0d5377-d8a5-4b61-8e5a-90e3815ede0c
+      id: 72d8e6c9-14c2-4f33-8e2a-85c088708930
       version: -1
       name: aws-ec2-detach-volume
       description: Detaches an EBS volume from an instance.
@@ -574,15 +590,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5095
+          "y": 6495
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: f49af2b2-4b3b-49ac-85ce-aef09cab2ff6
+    taskid: 97439a12-ceab-4840-8a71-4715b705fa1e
     type: regular
     task:
-      id: f49af2b2-4b3b-49ac-85ce-aef09cab2ff6
+      id: 97439a12-ceab-4840-8a71-4715b705fa1e
       version: -1
       name: aws-ec2-delete-volume
       description: Deletes the specified EBS volume. The volume must be in the available
@@ -593,7 +610,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "9"
+      - "63"
     scriptarguments:
       region: {}
       roleArn: {}
@@ -606,15 +623,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5445
+          "y": 6845
         }
       }
+    note: false
   "18":
     id: "18"
-    taskid: d010d4c1-0f71-4135-8ea3-f12ae8ce6a59
+    taskid: 0260c93e-a497-436b-8bfe-e06ef712d6bd
     type: regular
     task:
-      id: d010d4c1-0f71-4135-8ea3-f12ae8ce6a59
+      id: 0260c93e-a497-436b-8bfe-e06ef712d6bd
       version: -1
       name: aws-ec2-run-instances
       description: Launches the specified number of instances using an AMI for which
@@ -678,15 +696,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1420
+          "y": 1595
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: 38338691-f682-416c-84be-e42160b4ec26
+    taskid: a0d22c52-0f65-4730-826b-29aa05ce4eeb
     type: regular
     task:
-      id: 38338691-f682-416c-84be-e42160b4ec26
+      id: a0d22c52-0f65-4730-826b-29aa05ce4eeb
       version: -1
       name: aws-ec2-waiter-instance-running
       description: A waiter function that runs every 15  seconds until a successful
@@ -713,15 +732,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 6495
+          "y": 8070
         }
       }
+    note: false
   "20":
     id: "20"
-    taskid: 79b45b77-a95f-4e94-8012-e4268546f11c
+    taskid: 64f606bf-b770-44c1-8019-cebfa8f03397
     type: regular
     task:
-      id: 79b45b77-a95f-4e94-8012-e4268546f11c
+      id: 64f606bf-b770-44c1-8019-cebfa8f03397
       version: -1
       name: aws-ec2-waiter-instance-status-ok
       description: A waiter function that runs every 15  seconds until a successful
@@ -732,7 +752,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "62"
+      - "70"
     scriptarguments:
       filter: {}
       instanceIds:
@@ -748,15 +768,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1770
+          "y": 1945
         }
       }
+    note: false
   "21":
     id: "21"
-    taskid: 0b614353-bbda-4a0d-87c4-2e5bfc6a579f
+    taskid: 63febf06-96bd-4cb7-8435-2dba189f2f5d
     type: regular
     task:
-      id: 0b614353-bbda-4a0d-87c4-2e5bfc6a579f
+      id: 63febf06-96bd-4cb7-8435-2dba189f2f5d
       version: -1
       name: aws-ec2-waiter-instance-stopped
       description: A waiter function that runs every 15  seconds until a successful
@@ -783,15 +804,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 6145
+          "y": 7720
         }
       }
+    note: false
   "22":
     id: "22"
-    taskid: 500f4ee4-3069-428d-8d32-92fb22176520
+    taskid: a53f24dc-7981-4af9-89ba-1e95a95297be
     type: regular
     task:
-      id: 500f4ee4-3069-428d-8d32-92fb22176520
+      id: a53f24dc-7981-4af9-89ba-1e95a95297be
       version: -1
       name: aws-ec2-waiter-instance-terminated
       description: A waiter function that runs every 15  seconds until a successful
@@ -818,15 +840,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 6845
+          "y": 8420
         }
       }
+    note: false
   "23":
     id: "23"
-    taskid: ca2033d2-e089-4cfa-8a73-17a3f384bd17
+    taskid: 72261e80-f1d7-46ca-80f6-c150a0d29148
     type: regular
     task:
-      id: ca2033d2-e089-4cfa-8a73-17a3f384bd17
+      id: 72261e80-f1d7-46ca-80f6-c150a0d29148
       version: -1
       name: aws-ec2-waiter-image-available
       description: A waiter function that waits until image is avilable
@@ -836,7 +859,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "6"
+      - "66"
     scriptarguments:
       executableUsers: {}
       filters: {}
@@ -854,15 +877,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4045
+          "y": 5270
         }
       }
+    note: false
   "24":
     id: "24"
-    taskid: df7ed2fe-827c-4ae0-860c-c8eb1f15a41e
+    taskid: 3d68dea3-8e6e-49de-83b1-7962325062dd
     type: regular
     task:
-      id: df7ed2fe-827c-4ae0-860c-c8eb1f15a41e
+      id: 3d68dea3-8e6e-49de-83b1-7962325062dd
       version: -1
       name: aws-ec2-waiter-snapshot_completed
       description: A waiter function that waits until the snapshot is complate
@@ -872,7 +896,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "4"
+      - "67"
     scriptarguments:
       filters: {}
       ownerIds: {}
@@ -890,15 +914,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2995
+          "y": 4045
         }
       }
+    note: false
   "25":
     id: "25"
-    taskid: 4d4d74dc-59cd-4483-8c63-495868225a4a
+    taskid: 1be14a97-9bf5-4b67-8fd3-d60743a17f67
     type: regular
     task:
-      id: 4d4d74dc-59cd-4483-8c63-495868225a4a
+      id: 1be14a97-9bf5-4b67-8fd3-d60743a17f67
       version: -1
       name: aws-ec2-get-latest-ami
       description: Get The latest AMI
@@ -929,12 +954,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "26":
     id: "26"
-    taskid: 3f20a62e-da27-4cbf-8332-25ba2f152308
+    taskid: a812275d-aec3-41f3-8ecc-d79637a24f94
     type: regular
     task:
-      id: 3f20a62e-da27-4cbf-8332-25ba2f152308
+      id: a812275d-aec3-41f3-8ecc-d79637a24f94
       version: -1
       name: aws-ec2-create-security-group
       description: Creates a security group.
@@ -944,9 +970,9 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "38"
       - "37"
       - "36"
+      - "38"
     scriptarguments:
       description:
         simple: Demisto-PlaybookTest
@@ -966,12 +992,13 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "27":
     id: "27"
-    taskid: 7f6707cd-f894-4148-8e7d-370680691b8b
+    taskid: c2e32871-45ce-4677-800c-2342583b2c38
     type: regular
     task:
-      id: 7f6707cd-f894-4148-8e7d-370680691b8b
+      id: c2e32871-45ce-4677-800c-2342583b2c38
       version: -1
       name: aws-ec2-delete-security-group
       description: Deletes a security group.
@@ -992,15 +1019,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 7195
+          "y": 8770
         }
       }
+    note: false
   "28":
     id: "28"
-    taskid: a890cea5-8061-4e4c-8126-4851f44c6ef0
+    taskid: 0ad15846-9c50-4d9f-86e8-f4f66b5a42c8
     type: regular
     task:
-      id: a890cea5-8061-4e4c-8126-4851f44c6ef0
+      id: 0ad15846-9c50-4d9f-86e8-f4f66b5a42c8
       version: -1
       name: aws-ec2-authorize-security-group-ingress-rule
       description: Adds ingress rule to a security group.
@@ -1010,7 +1038,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "18"
+      - "69"
     scriptarguments:
       cidrIp:
         simple: 0.0.0.0/0
@@ -1035,12 +1063,13 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "29":
     id: "29"
-    taskid: bb5ab42f-b68d-49d9-863a-fa5eef4cb823
+    taskid: 692065ec-88f9-4160-852d-ebc94dfb93f9
     type: regular
     task:
-      id: bb5ab42f-b68d-49d9-863a-fa5eef4cb823
+      id: 692065ec-88f9-4160-852d-ebc94dfb93f9
       version: -1
       name: aws-ec2-revoke-security-group-ingress-rule
       description: Removes egress rule from a security group. To remove a rule, the
@@ -1074,15 +1103,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 7020
+          "y": 8595
         }
       }
+    note: false
   "30":
     id: "30"
-    taskid: c0faae7d-ad7d-437f-8360-4fb5a532ef9a
+    taskid: e9450631-5f3d-4dc8-87ad-c924b370ea5b
     type: regular
     task:
-      id: c0faae7d-ad7d-437f-8360-4fb5a532ef9a
+      id: e9450631-5f3d-4dc8-87ad-c924b370ea5b
       version: -1
       name: VerifyContext
       description: |-
@@ -1111,12 +1141,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "31":
     id: "31"
-    taskid: 998bebfa-9354-4122-8167-0e6762b309a6
+    taskid: 30669d1a-294b-47b1-8b99-6ea76e5a3cc5
     type: regular
     task:
-      id: 998bebfa-9354-4122-8167-0e6762b309a6
+      id: 30669d1a-294b-47b1-8b99-6ea76e5a3cc5
       version: -1
       name: VerifyContext
       description: |-
@@ -1145,12 +1176,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "32":
     id: "32"
-    taskid: b23e7234-ac94-44fe-839d-232af90346a2
+    taskid: c00b6c3b-35b4-486f-8c27-dfde0c92f65f
     type: regular
     task:
-      id: b23e7234-ac94-44fe-839d-232af90346a2
+      id: c00b6c3b-35b4-486f-8c27-dfde0c92f65f
       version: -1
       name: VerifyContext
       description: |-
@@ -1179,12 +1211,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "33":
     id: "33"
-    taskid: 8c65d0f0-49ec-4c9b-8a61-68f894d69aba
+    taskid: e316159b-21c6-448c-8a22-e0ee34d037b9
     type: regular
     task:
-      id: 8c65d0f0-49ec-4c9b-8a61-68f894d69aba
+      id: e316159b-21c6-448c-8a22-e0ee34d037b9
       version: -1
       name: VerifyContext
       description: |-
@@ -1213,12 +1246,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "34":
     id: "34"
-    taskid: b0bafea8-34cd-4462-8728-fbc7078eb557
+    taskid: 2d059368-16ff-4c9d-863d-2dae9c2ae662
     type: regular
     task:
-      id: b0bafea8-34cd-4462-8728-fbc7078eb557
+      id: 2d059368-16ff-4c9d-863d-2dae9c2ae662
       version: -1
       name: VerifyContext
       description: |-
@@ -1247,12 +1281,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "35":
     id: "35"
-    taskid: b38a5cae-8f82-41a5-8645-407311110010
+    taskid: ec427bd8-ca7f-4813-841b-1c1d6571e4b7
     type: regular
     task:
-      id: b38a5cae-8f82-41a5-8645-407311110010
+      id: ec427bd8-ca7f-4813-841b-1c1d6571e4b7
       version: -1
       name: VerifyContext
       description: |-
@@ -1281,12 +1316,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "36":
     id: "36"
-    taskid: 4aac4674-f9c3-49ce-837d-7ca38ecaec2d
+    taskid: c4b1f30e-11d9-4a9f-8055-a5e996db441c
     type: regular
     task:
-      id: 4aac4674-f9c3-49ce-837d-7ca38ecaec2d
+      id: c4b1f30e-11d9-4a9f-8055-a5e996db441c
       version: -1
       name: VerifyContext
       description: |-
@@ -1315,12 +1351,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "37":
     id: "37"
-    taskid: be8f464b-258c-4d72-8fe0-c04e6114dd61
+    taskid: db4ee8a3-01c1-4842-8d44-2d967e6e8ddd
     type: regular
     task:
-      id: be8f464b-258c-4d72-8fe0-c04e6114dd61
+      id: db4ee8a3-01c1-4842-8d44-2d967e6e8ddd
       version: -1
       name: VerifyContext
       description: |-
@@ -1349,12 +1386,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "38":
     id: "38"
-    taskid: b4392bdb-7c34-4f06-8902-ab41da666562
+    taskid: bab6b383-dd1d-4524-89db-473eedbb47b1
     type: regular
     task:
-      id: b4392bdb-7c34-4f06-8902-ab41da666562
+      id: bab6b383-dd1d-4524-89db-473eedbb47b1
       version: -1
       name: VerifyContext
       description: |-
@@ -1383,12 +1421,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "39":
     id: "39"
-    taskid: 4913e766-6ab9-4490-8a5b-0c0200ba8391
+    taskid: b198c853-5559-46ff-87ce-7cc57a63b99f
     type: regular
     task:
-      id: 4913e766-6ab9-4490-8a5b-0c0200ba8391
+      id: b198c853-5559-46ff-87ce-7cc57a63b99f
       version: -1
       name: VerifyContext
       description: |-
@@ -1414,15 +1453,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
+    note: false
   "40":
     id: "40"
-    taskid: d934d408-90c0-4402-828d-dcabbe2ea336
+    taskid: 9a56cbdc-a759-439d-8fe7-27033e30a3c0
     type: regular
     task:
-      id: d934d408-90c0-4402-828d-dcabbe2ea336
+      id: 9a56cbdc-a759-439d-8fe7-27033e30a3c0
       version: -1
       name: VerifyContext
       description: |-
@@ -1448,15 +1488,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1770
         }
       }
+    note: false
   "41":
     id: "41"
-    taskid: f36a7c64-c62c-4133-8983-1fa2333ce593
+    taskid: f17efbd4-8dde-42bf-8a2e-4ded2d456140
     type: regular
     task:
-      id: f36a7c64-c62c-4133-8983-1fa2333ce593
+      id: f17efbd4-8dde-42bf-8a2e-4ded2d456140
       version: -1
       name: VerifyContext
       description: |-
@@ -1482,15 +1523,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1595
+          "y": 1770
         }
       }
+    note: false
   "42":
     id: "42"
-    taskid: 1a42d949-5d4a-4cf7-812a-a269d2be8a6e
+    taskid: d58ae543-a310-430b-8978-055151d0d863
     type: regular
     task:
-      id: 1a42d949-5d4a-4cf7-812a-a269d2be8a6e
+      id: d58ae543-a310-430b-8978-055151d0d863
       version: -1
       name: VerifyContext
       description: |-
@@ -1516,15 +1558,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1595
+          "y": 1770
         }
       }
+    note: false
   "43":
     id: "43"
-    taskid: 616c31c0-4e44-4319-8f2d-431ca798618f
+    taskid: b4404c3f-98b2-4643-868a-1c8104b08d16
     type: regular
     task:
-      id: 616c31c0-4e44-4319-8f2d-431ca798618f
+      id: b4404c3f-98b2-4643-868a-1c8104b08d16
       version: -1
       name: VerifyContext
       description: |-
@@ -1550,15 +1593,16 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1595
+          "y": 1770
         }
       }
+    note: false
   "44":
     id: "44"
-    taskid: 7df4d0b3-a4de-461d-8476-374351e1dcd8
+    taskid: 6e4303be-a69f-430a-8777-9de8ce95a4fc
     type: regular
     task:
-      id: 7df4d0b3-a4de-461d-8476-374351e1dcd8
+      id: 6e4303be-a69f-430a-8777-9de8ce95a4fc
       version: -1
       name: VerifyContext
       description: |-
@@ -1573,7 +1617,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "68"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -1584,15 +1628,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2470
+          "y": 3345
         }
       }
+    note: false
   "45":
     id: "45"
-    taskid: 121bcd37-247b-4d50-86f4-dfdf1313e8e4
+    taskid: b30bea42-3071-44af-8949-eb58bcff48ff
     type: regular
     task:
-      id: 121bcd37-247b-4d50-86f4-dfdf1313e8e4
+      id: b30bea42-3071-44af-8949-eb58bcff48ff
       version: -1
       name: VerifyContext
       description: |-
@@ -1618,15 +1663,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2820
+          "y": 3870
         }
       }
+    note: false
   "46":
     id: "46"
-    taskid: a0fc4d4a-6fcf-4ec3-8390-6d68bffa5b29
+    taskid: 7b279655-bf6e-497d-8a94-bae5357c9cf7
     type: regular
     task:
-      id: a0fc4d4a-6fcf-4ec3-8390-6d68bffa5b29
+      id: 7b279655-bf6e-497d-8a94-bae5357c9cf7
       version: -1
       name: VerifyContext
       description: |-
@@ -1652,15 +1698,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2820
+          "y": 3870
         }
       }
+    note: false
   "47":
     id: "47"
-    taskid: 0db5d86f-8961-4536-8772-5f25388c4217
+    taskid: 2503e053-c276-4334-873c-0f7cc7a21634
     type: regular
     task:
-      id: 0db5d86f-8961-4536-8772-5f25388c4217
+      id: 2503e053-c276-4334-873c-0f7cc7a21634
       version: -1
       name: VerifyContext
       description: |-
@@ -1686,15 +1733,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 2820
+          "y": 3870
         }
       }
+    note: false
   "48":
     id: "48"
-    taskid: a08cf570-6cdf-45ed-856c-62cfa52e5a48
+    taskid: 95ab4445-6f47-4e43-8ab1-f3363d9d6d1f
     type: regular
     task:
-      id: a08cf570-6cdf-45ed-856c-62cfa52e5a48
+      id: 95ab4445-6f47-4e43-8ab1-f3363d9d6d1f
       version: -1
       name: VerifyContext
       description: |-
@@ -1720,15 +1768,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3520
+          "y": 4745
         }
       }
+    note: false
   "49":
     id: "49"
-    taskid: a0ef2184-adc0-4ec3-8b00-5c9642c5b4cc
+    taskid: ee49871f-fdb4-4ed2-886c-661d50870103
     type: regular
     task:
-      id: a0ef2184-adc0-4ec3-8b00-5c9642c5b4cc
+      id: ee49871f-fdb4-4ed2-886c-661d50870103
       version: -1
       name: VerifyContext
       description: |-
@@ -1754,15 +1803,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3520
+          "y": 4745
         }
       }
+    note: false
   "50":
     id: "50"
-    taskid: 5a7d1519-65ee-4e2c-8796-c480c4cd6940
+    taskid: b4491887-ab68-4240-8746-71cd62c48c62
     type: regular
     task:
-      id: 5a7d1519-65ee-4e2c-8796-c480c4cd6940
+      id: b4491887-ab68-4240-8746-71cd62c48c62
       version: -1
       name: VerifyContext
       description: |-
@@ -1788,15 +1838,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3520
+          "y": 4745
         }
       }
+    note: false
   "51":
     id: "51"
-    taskid: 3e51a3c4-1740-4ce8-8475-2cce8ef85449
+    taskid: c3bfe8c7-8a9b-4219-8900-57e57f8ef2d8
     type: regular
     task:
-      id: 3e51a3c4-1740-4ce8-8475-2cce8ef85449
+      id: c3bfe8c7-8a9b-4219-8900-57e57f8ef2d8
       version: -1
       name: VerifyContext
       description: |-
@@ -1822,15 +1873,16 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3870
+          "y": 5095
         }
       }
+    note: false
   "52":
     id: "52"
-    taskid: 1ab4659d-16d6-421b-87ca-f1100a2d7555
+    taskid: 4c1afaab-7582-42f8-8bd7-000b7476bb17
     type: regular
     task:
-      id: 1ab4659d-16d6-421b-87ca-f1100a2d7555
+      id: 4c1afaab-7582-42f8-8bd7-000b7476bb17
       version: -1
       name: VerifyContext
       description: |-
@@ -1856,15 +1908,16 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 3870
+          "y": 5095
         }
       }
+    note: false
   "53":
     id: "53"
-    taskid: ddee90c9-8dac-4177-8f52-b921f2b094ae
+    taskid: 06458db2-6ec1-4c06-8cdf-033e90885ffb
     type: regular
     task:
-      id: ddee90c9-8dac-4177-8f52-b921f2b094ae
+      id: 06458db2-6ec1-4c06-8cdf-033e90885ffb
       version: -1
       name: VerifyContext
       description: |-
@@ -1890,15 +1943,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 5970
         }
       }
+    note: false
   "54":
     id: "54"
-    taskid: 0a5a8edb-bed2-428b-85e3-9f29d975300a
+    taskid: 560a025e-1b13-4f9c-8d6b-78c5eba6ec85
     type: regular
     task:
-      id: 0a5a8edb-bed2-428b-85e3-9f29d975300a
+      id: 560a025e-1b13-4f9c-8d6b-78c5eba6ec85
       version: -1
       name: VerifyContext
       description: |-
@@ -1924,15 +1978,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4570
+          "y": 5970
         }
       }
+    note: false
   "55":
     id: "55"
-    taskid: 23b9217f-8f3d-47e6-8dc8-e83d389d0d70
+    taskid: 5acde28c-b1cc-4bc7-8a8b-47bda9c56e30
     type: regular
     task:
-      id: 23b9217f-8f3d-47e6-8dc8-e83d389d0d70
+      id: 5acde28c-b1cc-4bc7-8a8b-47bda9c56e30
       version: -1
       name: VerifyContext
       description: |-
@@ -1958,15 +2013,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 4570
+          "y": 5970
         }
       }
+    note: false
   "56":
     id: "56"
-    taskid: d244f43c-d951-406b-82e9-0d5098d72726
+    taskid: 38b9a152-8dd9-4a30-85eb-7433147f63b5
     type: regular
     task:
-      id: d244f43c-d951-406b-82e9-0d5098d72726
+      id: 38b9a152-8dd9-4a30-85eb-7433147f63b5
       version: -1
       name: VerifyContext
       description: |-
@@ -1992,15 +2048,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 6320
         }
       }
+    note: false
   "57":
     id: "57"
-    taskid: 995af8ff-b70d-49a6-83b2-4ad5edd8d5f9
+    taskid: cdb0ee85-30ed-4e29-89b0-7cd347837713
     type: regular
     task:
-      id: 995af8ff-b70d-49a6-83b2-4ad5edd8d5f9
+      id: cdb0ee85-30ed-4e29-89b0-7cd347837713
       version: -1
       name: VerifyContext
       description: |-
@@ -2026,15 +2083,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4920
+          "y": 6320
         }
       }
+    note: false
   "58":
     id: "58"
-    taskid: de423f76-952d-48ed-89e3-031a485a26c4
+    taskid: 1b8c5995-fc14-479d-82d4-535d33251a6e
     type: regular
     task:
-      id: de423f76-952d-48ed-89e3-031a485a26c4
+      id: 1b8c5995-fc14-479d-82d4-535d33251a6e
       version: -1
       name: VerifyContext
       description: |-
@@ -2060,15 +2118,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 4920
+          "y": 6320
         }
       }
+    note: false
   "59":
     id: "59"
-    taskid: b26216c8-40f1-41c8-848c-b5995d1a7634
+    taskid: 98d721ad-4800-4a7d-8f0f-3e55a45fc396
     type: regular
     task:
-      id: b26216c8-40f1-41c8-848c-b5995d1a7634
+      id: 98d721ad-4800-4a7d-8f0f-3e55a45fc396
       version: -1
       name: VerifyContext
       description: |-
@@ -2094,15 +2153,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5270
+          "y": 6670
         }
       }
+    note: false
   "60":
     id: "60"
-    taskid: e1577099-05e2-4614-804a-d643a7c709e3
+    taskid: 84074114-c438-40ad-8e3e-1cd41161584d
     type: regular
     task:
-      id: e1577099-05e2-4614-804a-d643a7c709e3
+      id: 84074114-c438-40ad-8e3e-1cd41161584d
       version: -1
       name: VerifyContext
       description: |-
@@ -2128,15 +2188,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 5270
+          "y": 6670
         }
       }
+    note: false
   "61":
     id: "61"
-    taskid: 9ee32eed-2033-4e59-8d86-30fe515c8c29
+    taskid: ba0ca8e6-d5fc-46b2-8849-37fdab3cc88d
     type: regular
     task:
-      id: 9ee32eed-2033-4e59-8d86-30fe515c8c29
+      id: ba0ca8e6-d5fc-46b2-8849-37fdab3cc88d
       version: -1
       name: VerifyContext
       description: |-
@@ -2162,15 +2223,16 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 5270
+          "y": 6670
         }
       }
+    note: false
   "62":
     id: "62"
-    taskid: 71cf959c-899a-41ad-8444-08519900e650
+    taskid: 81cca167-9479-4abb-8d66-47e370d93e81
     type: regular
     task:
-      id: 71cf959c-899a-41ad-8444-08519900e650
+      id: 81cca167-9479-4abb-8d66-47e370d93e81
       version: -1
       name: aws-ec2-describe-instances
       description: Describes one or more of your instances.
@@ -2194,15 +2256,314 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1939
+          "y": 2820
         }
       }
+    note: false
+  "63":
+    id: "63"
+    taskid: cd9f9a22-9431-418d-8f27-309b6ea25e65
+    type: regular
+    task:
+      id: cd9f9a22-9431-418d-8f27-309b6ea25e65
+      version: -1
+      name: aws-ec2-reboot-instances
+      description: Requests a reboot of one or more instances. This operation is asynchronous;
+        it only queues a request to reboot the specified instances. The operation
+        succeeds if the instances are valid and belong to you. Requests to reboot
+        terminated instances are ignored.  If an instance does not cleanly shut down
+        within four minutes, Amazon EC2 performs a hard reboot.
+      script: AWS - EC2_copy|||aws-ec2-reboot-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      instanceIds: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7020
+        }
+      }
+    note: false
+  "64":
+    id: "64"
+    taskid: 99e87193-f9fd-4766-8552-77919f5742a8
+    type: regular
+    task:
+      id: 99e87193-f9fd-4766-8552-77919f5742a8
+      version: -1
+      name: aws-ec2-unmonitor-instances
+      description: Disables detailed monitoring for a running instance.
+      script: AWS - EC2_copy|||aws-ec2-unmonitor-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      instancesIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+    note: false
+  "65":
+    id: "65"
+    taskid: 5845d4a8-632f-4c83-8e35-437f047bcbab
+    type: regular
+    task:
+      id: 5845d4a8-632f-4c83-8e35-437f047bcbab
+      version: -1
+      name: aws-ec2-monitor-instances
+      description: Enables detailed monitoring for a running instance.
+      script: AWS - EC2_copy|||aws-ec2-monitor-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      instancesIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
+        }
+      }
+    note: false
+  "66":
+    id: "66"
+    taskid: 54c89ed3-9696-49bb-8285-7cf09d0d19bb
+    type: regular
+    task:
+      id: 54c89ed3-9696-49bb-8285-7cf09d0d19bb
+      version: -1
+      name: aws-ec2-copy-image
+      description: Initiates the copy of an AMI from the specified source region to
+        the current region.
+      script: AWS - EC2_copy|||aws-ec2-copy-image
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      clientToken: {}
+      description: {}
+      encrypted: {}
+      kmsKeyId: {}
+      name:
+        simple: test2
+      sourceImageId:
+        simple: ${AWS.EC2.Images.ImageId}
+      sourceRegion:
+        simple: eu-central-1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5445
+        }
+      }
+    note: false
+  "67":
+    id: "67"
+    taskid: ccb58b2a-52f1-48a8-8aaa-6b591a5bad47
+    type: regular
+    task:
+      id: ccb58b2a-52f1-48a8-8aaa-6b591a5bad47
+      version: -1
+      name: aws-ec2-copy-snapshot
+      description: Copies a point-in-time snapshot of an EBS volume and stores it
+        in Amazon S3. You can copy the snapshot within the same region or from one
+        region to another.
+      script: AWS - EC2_copy|||aws-ec2-copy-snapshot
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description: {}
+      encrypted: {}
+      kmsKeyId: {}
+      sourceRegion:
+        simple: eu-central-1
+      sourceSnapshotId:
+        simple: ${AWS.EC2.Snapshots.SnapshotId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4220
+        }
+      }
+    note: false
+  "68":
+    id: "68"
+    taskid: 57ac74a5-4136-48f0-8b0b-2db68beacceb
+    type: regular
+    task:
+      id: 57ac74a5-4136-48f0-8b0b-2db68beacceb
+      version: -1
+      name: Delete context images
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all: {}
+      key:
+        simple: AWS.EC2.Images
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3520
+        }
+      }
+    note: false
+  "69":
+    id: "69"
+    taskid: 11405132-3995-4531-85f7-8d266a96195c
+    type: regular
+    task:
+      id: 11405132-3995-4531-85f7-8d266a96195c
+      version: -1
+      name: aws-ec2-create-security-group
+      description: Creates a security group.
+      script: AWS - EC2|||aws-ec2-create-security-group
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      description:
+        simple: Demisto-PlaybookTest2
+      groupName:
+        simple: Demisto-PlaybookTest2
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      vpcId:
+        simple: vpc-7bfc8e10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+  "70":
+    id: "70"
+    taskid: a21775a9-b8d2-4e48-866c-f3b811c83d8a
+    type: regular
+    task:
+      id: a21775a9-b8d2-4e48-866c-f3b811c83d8a
+      version: -1
+      name: aws-ec2-modify-instance-attribute
+      description: Modifies the specified attribute of the specified instance. You
+        can specify only one attribute at a time. Using this action to change the
+        security groups associated with an elastic network interface (ENI) attached
+        to an instance in a VPC can result in an error if the instance has more than
+        one ENI. To change the security groups associated with an ENI attached to
+        an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
+        action.
+      script: AWS - EC2_copy|||aws-ec2-modify-instance-attribute
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      disableApiTermination: {}
+      ebsOptimized: {}
+      enaSupport: {}
+      groups: {}
+      instanceId:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      instanceInitiatedShutdownBehavior: {}
+      instanceType: {}
+      sourceDestCheck: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+  "71":
+    id: "71"
+    taskid: 33f2ce33-747f-421b-8f22-224c5732f9d2
+    type: regular
+    task:
+      id: 33f2ce33-747f-421b-8f22-224c5732f9d2
+      version: -1
+      name: aws-ec2-modify-network-interface-attribute
+      description: Modifies the specified network interface attribute. You can specify
+        only one attribute at a time.
+      script: AWS - EC2_copy|||aws-ec2-modify-network-interface-attribute
+      type: regular
+      iscommand: true
+      brand: AWS - EC2_copy
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      attachmentId: {}
+      deleteOnTermination: {}
+      description: {}
+      groups: {}
+      networkInterfaceId:
+        simple: ${AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId}
+      sourceDestCheck: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7240,
+        "height": 8815,
         "width": 2100,
         "x": 50,
         "y": 50

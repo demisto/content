@@ -205,7 +205,6 @@ script:
             cont['Certificates'] = cert_ec
         url_cont['Data'] = url_query
         if 'urls' in scan_lists:
-            cont['RelatedURLs'] = scan_lists['urls']
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = url_query
@@ -535,7 +534,7 @@ script:
       defaultValue: "20"
     outputs:
     - contextPath: URLScan.URL
-      description: Bad URLs found
+      description: URL found
       type: string
     - contextPath: URLScan.Domain
       description: Domain of the url scanned
@@ -586,16 +585,13 @@ script:
       defaultValue: "20"
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: URL submitted
       type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
       type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
-      type: string
-    - contextPath: URLScan.URLs
-      description: Related URLs found from scanned URL
       type: string
     - contextPath: URLScan.RelatedIPs
       description: Related IPs found for the URL scanned
@@ -672,16 +668,13 @@ script:
       defaultValue: "20"
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: URL submitted
       type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
       type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
-      type: string
-    - contextPath: URLScan.URLs
-      description: Related URLs found from scanned URL
       type: string
     - contextPath: URLScan.RelatedIPs
       description: Related IPs found for the URL scanned

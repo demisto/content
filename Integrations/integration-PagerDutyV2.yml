@@ -88,6 +88,8 @@ script:
     '''TABLE NAMES'''
     SCHEDULES = 'All Schedules'
     TRIGGER_EVENT = 'Trigger Event'
+    RESOLVE_EVENT = 'Resolve Event'
+    ACKNOLWEDGE_EVENT = 'Acknowledge Event'
     USERS_ON_CALL = 'Users On Call'
     INCIDETS = 'PagerDuty Incidents'
     CONTACT_METHODS = 'Contact Methods'
@@ -118,7 +120,7 @@ script:
 
             return res.json()
 
-        except Exception, e:
+        except Exception as e:
             LOG(e)
             raise(e)
 
@@ -132,7 +134,7 @@ script:
     def test_module():
         try:
             get_on_call_now_users_command()
-        except Exception, e:
+        except Exception as e:
             raise Exception(e.message)
 
         demisto.results('ok')
@@ -376,7 +378,17 @@ script:
 
         return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
-    def extract_new_event_data(response):
+    def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
+        """Resolve or Acknowledge an incident in the PagerDuty instance."""
+        payload = {
+                        'routing_key': service_key,
+                        'event_action': action,
+                        'dedup_key': incident_key
+                  }
+
+        return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
+
+    def extract_new_event_data(table_name, response):
         """Extract the data from the response of creating a new command."""
         output = {}
         context = {}
@@ -394,7 +406,7 @@ script:
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
+            'HumanReadable': tableToMarkdown(table_name, output),
             'EntryContext': {
                 'PagerDuty.Event(val.incident_key==obj.dedup_key)': context,
                 'Event.ID(val.ID==obj.dedup_key)': context['incident_key']
@@ -524,7 +536,7 @@ script:
             raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
         res = create_new_incident(source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey)
-        return extract_new_event_data(res)
+        return extract_new_event_data(TRIGGER_EVENT, res)
 
     def get_all_schedules_command(query=None, limit=None):
         """Get all the schedules."""
@@ -574,6 +586,35 @@ script:
         user_notication_role = http_request('GET', url, {})
         return extract_users_notification_role(user_notication_role)
 
+
+    def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
+
+        action_response = resolve_or_ack_incident('resolve', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "resolved":
+            raise Exception('Could not resolve incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(RESOLVE_EVENT, action_response)
+
+
+    def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
+
+        action_response = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "acknowledged":
+            raise Exception('Could not acknowledge incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(ACKNOLWEDGE_EVENT, action_response)
+
+
     ''' EXECUTION CODE '''
 
     LOG('command is %s' % (demisto.command(), ))
@@ -597,9 +638,13 @@ script:
             demisto.results(get_users_contact_methods_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-notification':
             demisto.results(get_users_notification_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-resolve-event':
+            demisto.results(resolve_event(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-acknowledge-event':
+            demisto.results(acknowledge_event(**demisto.args()))
 
 
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         LOG.print_log()
         raise
@@ -848,8 +893,39 @@ script:
       description: The id of the notification rule
       type: string
     description: Get the users notification rules
+  - name: PagerDuty-resolve-event
+    arguments:
+    - name: incident_key
+      required: true
+      description: Incident key
+    - name: serviceKey
+      required: true
+      description: Service key for the integration
+    outputs:
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+      type: string
+    - contextPath: PagerDuty.Event.incident_key
+      description: Incident key
+      type: string
+    description: Resolves an existing event in PagerDuty
+  - name: PagerDuty-acknowledge-event
+    arguments:
+    - name: incident_key
+      required: true
+      description: Incident key
+    - name: serviceKey
+      required: true
+      description: Service key for the integration
+    outputs:
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+      type: string
+    - contextPath: PagerDuty.Event.incident_key
+      description: Incident key
+      type: string
+    description: Acknowledges an existing event in PagerDuty
   isfetch: true
   runonce: false
-hidden: false
 tests:
-  - PagerDuty Test
+- PagerDuty Test

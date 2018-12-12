@@ -1,0 +1,106 @@
+commonfields:
+  id: AWS Sagemaker
+  version: -1
+name: AWS Sagemaker
+display: AWS Sagemaker
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: AWS Sagemaker - Demisto Phishing Email Classifier
+configuration:
+- display: AWS access key
+  name: AWSAccessKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: AWS secret key
+  name: AWSSecretKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: AWS Region code
+  name: AWSRegion
+  defaultvalue: us-east-2
+  type: 0
+  required: false
+- display: Endpoint Name
+  name: EndpointName
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import json, boto3, sys, os
+
+    if not demisto.params()['proxy']:
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+
+    def invoke_enpoint(runtime, endpoint_name, payload):
+        return runtime.invoke_endpoint(EndpointName=endpoint_name, ContentType='application/json', Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
+
+    runtime = boto3.Session(aws_access_key_id=demisto.params()['AWSAccessKey'],
+    aws_secret_access_key=demisto.params()['AWSSecretKey'],
+    region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')
+    endpoint_name = demisto.params()['EndpointName']
+
+    def parse_results(result):
+        res = []
+        for r in result:
+            res.append({
+                'Label': r['label'][0],
+                'Probability': r['probability']
+            })
+        return res
+
+    if demisto.command() == 'test-module':
+        response = invoke_enpoint(runtime, endpoint_name, ["test"])
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'predict-phishing':
+        input_text = demisto.args()['inputText']
+        if type(input_text) != list:
+           input_text = [input_text]
+        response = invoke_enpoint(runtime, endpoint_name, input_text)
+        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise Exception("Failed to invoke enpoint")
+        result = json.loads(response['Body'].read().decode())
+        predictions = parse_results(result)
+
+        context = {
+            "DBotPhishingPrediction": predictions
+        }
+        demisto.results({
+                  'ContentsFormat': formats['json'],
+                  'Type': entryTypes['note'],
+                  'Contents': predictions,
+                  'EntryContext':context,
+                  "HumanReadable": tableToMarkdown('DBot label suggestion', predictions),
+                  "HumanReadableFormat" : formats["markdown"]
+        })
+        sys.exit(0)
+  type: python
+  commands:
+  - name: predict-phishing
+    arguments:
+    - name: inputText
+      description: The input text (usually email subject + body)
+    outputs:
+    - contextPath: DBotPhishingPrediction.Label
+      description: 'The predicated label: malicious \ other'
+      type: string
+    - contextPath: DBotPhishingPrediction.Probability
+      description: The predication probability (range 0-1)
+      type: number
+    description: Classify input text (usually email content)
+  dockerimage: demisto/boto3
+  runonce: false
+tests:
+- Test_Sagemaker

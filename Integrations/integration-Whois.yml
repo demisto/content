@@ -1,0 +1,196 @@
+commonfields:
+  id: Whois
+  version: -1
+name: Whois
+display: Whois
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Provides data enrichment for domains and IP addresses.
+defaultEnabled: true
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import socket
+    import socks
+    import whois
+    from urlparse import urlparse
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+    ''' GLOBAL VARS '''
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    PROXY = demisto.params()['proxy']
+    # Setting proxy to be used in Socks
+    if PROXY is True:
+        proxy_url = os.environ.get('HTTPS_PROXY', None)
+        if proxy_url:
+            uri = urlparse(proxy_url)
+            socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
+            socket.socket = socks.socksocket
+    DOMAIN = demisto.args().get('query')
+
+
+    ''' HELPER FUNCTIONS '''
+    # Returns an item in a list at a given index
+    def list_tool(item, list, number):
+        if isinstance(item, list):
+            return str(item[number])
+        else:
+            return item
+
+    # converts inputs into a string w/o u' prepended
+    def my_converter(obj):
+        if isinstance(obj, datetime):
+            return obj.__str__()
+        else:
+            return obj
+
+    # Converts a list of time objects into human readable format
+    def time_list_tool(obj):
+        tformat = '%m/%d/%Y %H:%M:%S %p'
+        if obj is not None and isinstance(obj, list):
+            for string in obj:
+                my_converter(string)
+            return string
+        else:
+            return obj
+
+
+    '''COMMANDS'''
+    def whois_command():
+        try:
+            whois_result = whois.whois(DOMAIN)
+            md = {}
+            for key in whois_result:
+                value = whois_result[key]
+                value = my_converter(value)
+                key = string_to_table_header(key)
+                md.update({key: value})
+            ec = {}
+            ec.update({
+                'Domain': {
+                    'Name': str(list_tool(whois_result.domain_name, list, 0)),
+                    'Whois': {
+                        'Domain': str(list_tool(whois_result.domain_name, list, 0)),
+                        'DomainStatus': whois_result.status,
+                        'DNSSec': str(whois_result.dnssec),
+                        'Raw': str(whois_result),
+                        'NameServers': whois_result.name_servers,
+                        'CreationDate': str(time_list_tool(whois_result.creation_date)),
+                        'UpdatedDate': str(time_list_tool(whois_result.updated_date)),
+                        'ExpirationDate': str(time_list_tool(whois_result.expiration_date)),
+                        'Registrar': {
+                            'Name': str(whois_result.registrar),
+                            'AbuseEmail': str(list_tool(whois_result.emails, list, 0))
+                        },
+                        'Registrant': {
+                            'Name': str(whois_result.get('name')),
+                            'Email': str(list_tool(whois_result.emails, list, 1))
+                        }
+                    }
+                }
+            })
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': str(whois_result),
+                'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
+                'EntryContext': createContext(ec, removeNull=True)
+                })
+        except:
+            demisto.results('No result found for {}'.format(DOMAIN))
+
+
+    def test_command():
+        try:
+            whois_result = whois.whois('google.com')
+
+            domain_test = list_tool(whois_result.domain_name, list, 1)
+
+            if domain_test == 'google.com':
+                demisto.results('ok')
+        except:
+            demisto.results('error')
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_command()
+        elif demisto.command() == 'whois':
+            whois_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+  type: python
+  commands:
+  - name: whois
+    arguments:
+    - name: query
+      required: true
+      description: URL, IP, or domain to be enriched
+    outputs:
+    - contextPath: Whois.Domain
+      description: Domain
+      type: string
+    - contextPath: Whois.DomainStatus
+      description: Domain Status
+      type: string
+    - contextPath: Whois.DNSSec
+      description: DNSSEC
+      type: string
+    - contextPath: Whois.NameServers
+      description: Name Servers
+      type: string
+    - contextPath: Whois.CreationDate
+      description: Creation Date
+      type: date
+    - contextPath: Whois.UpdatedDate
+      description: Updated Date
+      type: date
+    - contextPath: Whois.ExpirationDate
+      description: Expiration Date
+      type: date
+    - contextPath: Whois.Registrar.Name
+      description: Registrar's Name
+      type: string
+    - contextPath: Whois.Registrar.AbuseEmail
+      description: Registrar's Abuse Email
+      type: string
+    - contextPath: Whois.Registrant.Name
+      description: Registrant's Name
+      type: string
+    - contextPath: Whois.Registrant.Email
+      description: Registrant's Email
+      type: string
+    - contextPath: DNS.Name
+      description: Domain Name
+      type: string
+    - contextPath: DNS.RiskScore
+      description: Risk Score
+      type: number
+    - contextPath: Whois.Raw
+      description: Raw Output
+      type: string
+    description: Provides data enrichment for Domains, URLs, and IP addresses.
+  dockerimage: demisto/ippysocks
+  runonce: false
+fromversion: 4.1.0
+tests:
+  - whois_test

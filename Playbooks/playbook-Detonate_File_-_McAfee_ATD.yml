@@ -46,19 +46,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: aee19d15-75f0-4ad0-81dc-c0f771c31cdb
+    taskid: d146afc4-bfe2-492e-87a3-0f66f3af74d7
     type: regular
     task:
-      id: aee19d15-75f0-4ad0-81dc-c0f771c31cdb
+      id: d146afc4-bfe2-492e-87a3-0f66f3af74d7
       version: -1
       name: McafeeATD Upload File
       description: Uploads the submission to McAfee ATD.
-      script: McAfee Advanced Threat Defense|||atd-file-upload
+      script: '|||atd-file-upload'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -87,12 +88,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: de5e15a9-6849-40ca-8e5e-6c1a381867e4
+    taskid: 586df0a0-fceb-41e3-8e9d-124757b4a4bb
     type: playbook
     task:
-      id: de5e15a9-6849-40ca-8e5e-6c1a381867e4
+      id: 586df0a0-fceb-41e3-8e9d-124757b4a4bb
       version: -1
       name: GenericPolling
       description: |-
@@ -139,19 +141,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: b718a2bc-b2ce-4f56-8a3f-1a2d9e9bcec4
+    taskid: 6c564961-e548-4542-8056-6b98cc14286d
     type: regular
     task:
-      id: b718a2bc-b2ce-4f56-8a3f-1a2d9e9bcec4
+      id: 6c564961-e548-4542-8056-6b98cc14286d
       version: -1
       name: McAfeeATD Get Report
       description: Retrieve the reports from McAfee ATD.
-      script: McAfee Advanced Threat Defense|||atd-get-report
+      script: '|||atd-get-report'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -187,6 +190,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
@@ -208,6 +212,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: fddc93e3-f6fc-481c-8696-1bdaaf591562
@@ -262,12 +267,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 9b1f60b9-0dc4-4f40-8ed6-cefb9bad077d
+    taskid: ac109c6f-fb89-498f-8ba7-877e50ee9019
     type: condition
     task:
-      id: 9b1f60b9-0dc4-4f40-8ed6-cefb9bad077d
+      id: ac109c6f-fb89-498f-8ba7-877e50ee9019
       version: -1
       name: Filter taskId
       description: Checks that valid files only have been sent to detonation.
@@ -296,19 +302,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 51691a13-19c2-4a8e-8393-27357c63c659
+    taskid: 26e0e6b7-9804-434a-85d6-bb1a8aaff27d
     type: regular
     task:
-      id: 51691a13-19c2-4a8e-8393-27357c63c659
+      id: 26e0e6b7-9804-434a-85d6-bb1a8aaff27d
       version: -1
       name: atd-check-status
       description: Updates the status of the tasks in the context.
-      script: McAfee Advanced Threat Defense|||atd-check-status
+      script: '|||atd-check-status'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -326,6 +333,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
@@ -391,6 +399,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
@@ -423,6 +432,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
@@ -457,6 +467,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
@@ -465,7 +476,7 @@ tasks:
       id: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
       version: -1
       name: Set Context
-      description: "-"
+      description: '-'
       scriptName: Set
       type: regular
       iscommand: false
@@ -490,6 +501,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -520,22 +532,74 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
+- contextPath: ATD.Task.taskId
+  description: The task ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.jobId
+  description: The job ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.messageId
+  description: The message Id relevant to the sample uploaded
+  type: string
+- contextPath: ATD.Task.srcIp
+  description: Source IPv4 address
+  type: string
+- contextPath: ATD.Task.destIp
+  description: Destination IPv4 address
+  type: string
+- contextPath: ATD.Task.MD5
+  description: MD5 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA1
+  description: SHA1 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA256
+  description: SHA256 of the sample uploaded
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
 - contextPath: DBotScore.Type
   description: The type of the indicator (only in case of report type=json)
   type: string
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score (only in case of report type=json)
-  type: string
-- contextPath: IP.Address
-  description: IP's relevant to the sample
   type: string
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
-- contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
   type: string
 - contextPath: InfoFile.Extension
   description: The extension of the report file
@@ -552,3 +616,6 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+tests:
+- Test Playbook McAfee ATD
+- Detonate File - Generic Test
