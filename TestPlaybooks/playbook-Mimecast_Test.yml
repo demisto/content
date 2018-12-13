@@ -1069,7 +1069,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 40.107.78.135
+              simple: 40.107
     view: |-
       {
         "position": {
