@@ -3,9 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "test_date_to_timestamp"
-        },
-        {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
         },
