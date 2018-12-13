@@ -337,7 +337,7 @@ script: |-
       assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
 
-  def test_date_to_timestamp:
+  def test_date_to_timestamp():
       assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
       assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
 
