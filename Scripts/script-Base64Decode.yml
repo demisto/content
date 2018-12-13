@@ -1,0 +1,31 @@
+commonfields:
+  id: Base64Decode
+  version: -1
+name: Base64Decode
+script: |
+  from base64 import b64decode
+  input_string = demisto.args()["input"]
+
+  try:
+      demisto.results({
+      "ContentsFormat": formats["text"],
+      "Type": entryTypes["note"],
+      "Contents": b64decode(input_string)
+  })
+  except TypeError:
+      demisto.results({
+          "ContentsFormat": formats["text"],
+          "Type": entryTypes["note"],
+          "Contents": "String '{}' is an invalid base64 encoded string".format(input_string)
+      })
+type: python
+tags: []
+comment: Decode a base64 encoded string
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: Base64 encoded string
+scripttarget: 0
+runonce: false
