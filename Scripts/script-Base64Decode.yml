@@ -7,11 +7,14 @@ script: |
   input_string = demisto.args()["input"]
 
   try:
+      decoded = b64decode(input_string)
       demisto.results({
       "ContentsFormat": formats["text"],
       "Type": entryTypes["note"],
-      "Contents": b64decode(input_string)
-  })
+      "Contents": decoded,
+      "EntryContext": {"Base64.decoded": decoded}
+      })
+
   except TypeError:
       demisto.results({
           "ContentsFormat": formats["text"],
@@ -19,7 +22,8 @@ script: |
           "Contents": "String '{}' is an invalid base64 encoded string".format(input_string)
       })
 type: python
-tags: []
+tags:
+- Utility
 comment: Decode a base64 encoded string
 enabled: true
 args:
@@ -27,5 +31,8 @@ args:
   required: true
   default: true
   description: Base64 encoded string
+outputs:
+- contextPath: Base64.decoded
+  description: input decoded from Base64
 scripttarget: 0
 runonce: false
