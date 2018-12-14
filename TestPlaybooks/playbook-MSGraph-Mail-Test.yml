@@ -1,0 +1,544 @@
+id: c9c4844a-b72c-45b1-8c8e-1d772f2339ad
+version: 53
+name: Microsoft Graph Outlook Mail Integration Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 75599403-f807-43f7-83a8-0a33e92519f8
+    type: start
+    task:
+      id: 75599403-f807-43f7-83a8-0a33e92519f8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 43bf2008-2c78-4e5d-83ef-76ec48f3816f
+    type: regular
+    task:
+      id: 43bf2008-2c78-4e5d-83ef-76ec48f3816f
+      version: -1
+      name: List all users for the account configured.
+      description: Retrieve a list of user objects.
+      script: Microsoft Graph User|||msg-get-users
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+    nexttasks:
+      '#none#':
+      - "3"
+      - "7"
+      - "9"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: aae4acb8-1882-4587-8118-c76843d93efe
+    type: regular
+    task:
+      id: aae4acb8-1882-4587-8118-c76843d93efe
+      version: -1
+      name: List messages for a user.
+      description: List messages of the user.
+      script: Microsoft Graph Mail|||msg-list-messages
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filterQuery: {}
+      folderId: {}
+      fromAnEmailAddress: {}
+      searchString: {}
+      timeFrom: {}
+      timeTo: {}
+      top:
+        simple: "1"
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 31a071f8-64e9-4d92-8b80-73a41f5762f6
+    type: regular
+    task:
+      id: 31a071f8-64e9-4d92-8b80-73a41f5762f6
+      version: -1
+      name: List folders for the first user in the list.
+      description: Get folders information for a mailbox. Only folders with read permissions
+        will be return as a result. Notice that your visual folders on the mailbox
+        (like Inbox, etc) is under the folder "Top of Information Store".
+      script: Microsoft Graph Mail|||msg-list-folders
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: a868a116-8447-411a-877b-111fae203139
+    type: regular
+    task:
+      id: a868a116-8447-411a-877b-111fae203139
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 7b96bb01-d558-426f-8347-51674825176b
+    type: regular
+    task:
+      id: 7b96bb01-d558-426f-8347-51674825176b
+      version: -1
+      name: Get message details for a message.
+      description: Retrieve detail information of a message.
+      script: Microsoft Graph Mail|||msg-get-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    scriptarguments:
+      messageId:
+        simple: ${MsGraph.User.Mail.Message.[0].Id}
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 1fff0d3a-e2a7-4b3e-8774-45f852a1b207
+    type: regular
+    task:
+      id: 1fff0d3a-e2a7-4b3e-8774-45f852a1b207
+      version: -1
+      name: List drafts for the first user.
+      description: List drafts of message of a user.
+      script: Microsoft Graph Mail|||msg-list-drafts
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      filterQuery: {}
+      top:
+        simple: "1"
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: c211411c-c302-4872-8f2b-c046e5689dac
+    type: regular
+    task:
+      id: c211411c-c302-4872-8f2b-c046e5689dac
+      version: -1
+      name: Sending a message that was just created.
+      description: Send a message in the draft folder.
+      script: Microsoft Graph Mail|||msg-send-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      messageId:
+        complex:
+          root: MsGraph
+          accessor: User.Mail.Message(val.IsDraft==true).Id
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 80e1acc1-f2b8-4d66-83fa-a638e36f1c20
+    type: regular
+    task:
+      id: 80e1acc1-f2b8-4d66-83fa-a638e36f1c20
+      version: -1
+      name: Creating a message.
+      description: Create draft of a new message.
+      script: Microsoft Graph Mail|||msg-create-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      body:
+        simple: Hi Prasen
+      importance: {}
+      recipientEmail:
+        simple: prasen.shelar@gmail.com
+      subject:
+        simple: Test Email from Graph
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 7aabc077-c529-4c9c-8008-e21dcfe954f9
+    type: regular
+    task:
+      id: 7aabc077-c529-4c9c-8008-e21dcfe954f9
+      version: -1
+      name: Moving messages to a different folder.
+      description: Move a message to another folder.
+      script: Microsoft Graph Mail|||msg-move-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      folderName:
+        complex:
+          root: MsGraph
+          accessor: User.Mail.Folder.[0].Name
+      messageId:
+        simple: ${MsGraph.User.Mail.Message.[0].Id}
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 1e8a8d7d-6107-4327-801b-50662349b9a7
+    type: regular
+    task:
+      id: 1e8a8d7d-6107-4327-801b-50662349b9a7
+      version: -1
+      name: Forwarding a message.
+      description: Forward a message.
+      script: Microsoft Graph Mail|||msg-forward-message
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      comment: {}
+      messageId:
+        simple: ${MsGraph.User.Mail.Message.[0].Id}
+      recipientEmail:
+        simple: prasen.shelar@gmail.com
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 2276e8b9-9989-4d3c-8461-1c84c5f8c1d0
+    type: regular
+    task:
+      id: 2276e8b9-9989-4d3c-8461-1c84c5f8c1d0
+      version: -1
+      name: List message rules for a user.
+      description: List all mail rules for a specific user inbox.
+      script: Microsoft Graph Mail|||msg-list-rules
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    scriptarguments:
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: d1f94c6a-198d-4021-8281-5fe45d7dbc0b
+    type: regular
+    task:
+      id: d1f94c6a-198d-4021-8281-5fe45d7dbc0b
+      version: -1
+      name: Get attachments for a user
+      description: Get attachements of a message. If you don't provide attachment
+        id, all the attachments will be listed here.
+      script: Microsoft Graph Mail|||msg-get-attachments
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attachmentIds: {}
+      messageId:
+        simple: ${MsGraph.User.Mail.Message.Id}
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: b08faaed-2b8c-43a0-88a7-7210ad52b932
+    type: regular
+    task:
+      id: b08faaed-2b8c-43a0-88a7-7210ad52b932
+      version: -1
+      name: List folders for the first user in the list.
+      description: Get folders information for a mailbox. Only folders with read permissions
+        will be return as a result. Notice that your visual folders on the mailbox
+        (like Inbox, etc) is under the folder "Top of Information Store".
+      script: Microsoft Graph Mail|||msg-list-folders
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 2cb08cc9-3a60-4ea3-8675-2e9a065b5235
+    type: regular
+    task:
+      id: 2cb08cc9-3a60-4ea3-8675-2e9a065b5235
+      version: -1
+      name: Create a folder
+      description: Create a new mail folder in the root folder of the user's mailbox.
+      script: Microsoft Graph Mail|||msg-create-folder
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      folderName:
+        simple: TestDemisto
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 9f34c850-7819-4f4b-8605-33ad229c54e1
+    type: regular
+    task:
+      id: 9f34c850-7819-4f4b-8605-33ad229c54e1
+      version: -1
+      name: Delete a folder
+      description: Delete a folder.
+      script: Microsoft Graph Mail|||msg-del-folder
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail
+    scriptarguments:
+      folderId:
+        complex:
+          root: MsGraph
+          accessor: User.Mail.Folder(val.Name=="TestDemisto").Id
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 75da9dde-3246-41f7-8ee8-ea7dbf4baefd
+    type: regular
+    task:
+      id: 75da9dde-3246-41f7-8ee8-ea7dbf4baefd
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      duplicates: {}
+      id:
+        simple: ${incident.id}
+      internalemail: {}
+      jaskinsightdetails: {}
+      jaskinsightid: {}
+      killchain: {}
+      lob: {}
+      outcome: {}
+      phishingjoshtest: {}
+      shiftnotes: {}
+      syfintenralid: {}
+      testarr: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
