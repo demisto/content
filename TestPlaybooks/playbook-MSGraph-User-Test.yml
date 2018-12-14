@@ -1,0 +1,231 @@
+id: 689c206c-cf6a-41d7-8c5e-78f8d6262211
+version: 25
+name: Microsoft Graph User Integration Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5e1fd82-ecec-48ee-8e84-00662b70e5c1
+    type: start
+    task:
+      id: c5e1fd82-ecec-48ee-8e84-00662b70e5c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 1ccc0a95-26e8-4cea-8cc1-a516fb29e498
+    type: regular
+    task:
+      id: 1ccc0a95-26e8-4cea-8cc1-a516fb29e498
+      version: -1
+      name: List all users from the account configured.
+      description: Retrieve all users.
+      script: Microsoft Graph User|||msg-get-users
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 950fa242-beb4-49b4-8840-a1032bb5cd2e
+    type: regular
+    task:
+      id: 950fa242-beb4-49b4-8840-a1032bb5cd2e
+      version: -1
+      name: Get details for a specific user ID.
+      description: Retrieve detailed information of a user.
+      script: Microsoft Graph User|||msg-get-user
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      userId:
+        simple: ${MsGraph.User.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: e6e07085-b07a-485a-85da-b757aa1c89b6
+    type: regular
+    task:
+      id: e6e07085-b07a-485a-85da-b757aa1c89b6
+      version: -1
+      name: Creating a new user.
+      description: Create a new user.
+      script: Microsoft Graph User|||msg-create-user
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      accountEnabled: {}
+      displayName:
+        simple: Test4
+      mailNickname:
+        simple: Dbot
+      onPremisesImmutableId: {}
+      password:
+        simple: Perseus33#
+      userPrincipalName:
+        simple: test4@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: a0c12200-a647-4146-8beb-b380904164d5
+    type: regular
+    task:
+      id: a0c12200-a647-4146-8beb-b380904164d5
+      version: -1
+      name: Deleting a user.
+      description: Delete an existing user.
+      script: Microsoft Graph User|||msg-delete-user
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      userId:
+        complex:
+          root: MsGraph
+          accessor: User(val.Name=="Test4").Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: d86da41b-28ff-4133-8fc1-5c100f53a247
+    type: regular
+    task:
+      id: d86da41b-28ff-4133-8fc1-5c100f53a247
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 34cd0d2d-ca19-4519-87c7-9799a6c0a70a
+    type: regular
+    task:
+      id: 34cd0d2d-ca19-4519-87c7-9799a6c0a70a
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      duplicates: {}
+      id:
+        simple: ${incident.id}
+      internalemail: {}
+      jaskinsightdetails: {}
+      jaskinsightid: {}
+      killchain: {}
+      lob: {}
+      outcome: {}
+      phishingjoshtest: {}
+      shiftnotes: {}
+      syfintenralid: {}
+      testarr: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
