@@ -15,7 +15,7 @@ script: |-
   is_email = validate_email(inp)
   if is_email:
       domain = re.search("@[\w.|\-]+", inp)
-      if len(domain.group()) > 0:
+      if domain is not None:
           extractedDomain = domain.group()[1:]
           results.append(extractedDomain)
           _list = extractedDomain.split(".")
