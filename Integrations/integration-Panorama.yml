@@ -2070,279 +2070,6 @@ script:
       description: url category
       type: string
     description: Get URL category from URL Filtering
-  - name: panorama-move-rule
-    arguments:
-    - name: rulename
-      required: true
-      description: Rule name
-    - name: where
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - before
-      - after
-      - top
-      - bottom
-      description: Values for the "where" parameter include "before", "after", "top"
-        or "bottom"
-    - name: dst
-      description: Only necessary for before/after. Destination rule relative to the
-        desired rule
-    - name: pre_post
-      auto: PREDEFINED
-      predefined:
-      - pre-rulebase
-      - post-rulebase
-      description: Rule location. Mandatory for a Panorama instance
-    outputs:
-    - contextPath: Panorama.Rule.Name
-      description: Rule name
-      type: string
-    description: Move a policy rule in Palo Alto Firewall or Panorama
-    execution: true
-  - name: panorama-create-rule
-    arguments:
-    - name: rulename
-      description: Rule name
-    - name: description
-      description: Rule description
-    - name: action
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - allow
-      - deny
-      - drop
-      description: Action for the rule
-    - name: source
-      description: Source address (address, address group)
-    - name: destination
-      description: Destination address (address, address group)
-    - name: negate_source
-      auto: PREDEFINED
-      predefined:
-      - "Yes"
-      - "No"
-      description: Yes/No - whether to negate the source (address, address group)
-    - name: negate_destination
-      auto: PREDEFINED
-      predefined:
-      - "Yes"
-      - "No"
-      description: Yes/No - whether to negate the destination (address, address group)
-    - name: service
-      description: Service for the rule (service object)
-    - name: disable
-      auto: PREDEFINED
-      predefined:
-      - "Yes"
-      - "No"
-      description: Yes/No - whether to disable the rule
-      defaultValue: "No"
-    - name: application
-      description: Application for the rule
-    - name: source_user
-      description: Source user for the rule
-      defaultValue: any
-    - name: pre_post
-      auto: PREDEFINED
-      predefined:
-      - pre-rulebase
-      - post-rulebase
-      description: Only for Panorama instance, rule location
-    - name: target
-      description: Only for Panorama instance. Specify a target Firewall to the rule
-    outputs:
-    - contextPath: Panorama.Rule.Name
-      description: Rule name
-      type: string
-    - contextPath: Panorama.Rule.Description
-      description: Rule description
-      type: string
-    - contextPath: Panorama.Rule.Action
-      description: Action for the rule
-      type: string
-    - contextPath: Panorama.Rule.Source
-      description: Source address
-      type: string
-    - contextPath: Panorama.Rule.Destination
-      description: Destination address
-      type: string
-    - contextPath: Panorama.Rule.Negate.Source
-      description: Yes/No - whether to negate the source (address, address group)
-      type: boolean
-    - contextPath: Panorama.Rule.Negate.Destination
-      description: Yes/No - whether to negate the destination (address, address group)
-      type: boolean
-    - contextPath: Panorama.Rule.Service
-      description: Service for the rule
-      type: string
-    - contextPath: Panorama.Rule.State
-      description: Enabled/Disabled
-      type: string
-    - contextPath: Panorama.Rule.Application
-      description: Application for the rule
-      type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
-      type: string
-    - contextPath: Panorama.Rule.Target
-      description: Only for Panorama instance. Target Firewall
-      type: string
-    description: Create policy rule in Palo Alto Firewall or Panorama
-    execution: true
-  - name: panorama-edit-rule
-    arguments:
-    - name: rulename
-      required: true
-      description: Rule name
-    - name: element_to_change
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - source
-      - destination
-      - application
-      - action
-      - category
-      - description
-      - disabled
-      - target
-      description: Parameter in the security rule
-    - name: element_value
-      required: true
-      description: Parameter new value
-    - name: pre_post
-      auto: PREDEFINED
-      predefined:
-      - pre-rulebase
-      - post-rulebase
-      description: Only for Panorama instance
-    outputs:
-    - contextPath: Panorama.Rule.Name
-      description: Rule name
-      type: string
-    - contextPath: Panorama.Rule.Element
-      description: Edited element value
-      type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
-      type: string
-    description: Edit a policy rule in Palo Alto Firewall or Panorama
-    execution: true
-  - name: panorama-custom-block-rule
-    arguments:
-    - name: rulename
-      description: Rule Name
-    - name: object_type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - ip
-      - address-group
-      - application
-      - url-category
-      description: Type of the object to be blocked
-    - name: object_value
-      required: true
-      description: The object value
-    - name: direction
-      auto: PREDEFINED
-      predefined:
-      - to
-      - from
-      - both
-      description: Direction to block (relevant only to ip,address-group block)
-      defaultValue: both
-    - name: pre_post
-      auto: PREDEFINED
-      predefined:
-      - pre-rulebase
-      - post-rulebase
-      description: Only for Panorama instance
-    - name: target
-      description: Only for Panorama instance. Specify a target Firewall to the rule
-    outputs:
-    - contextPath: Panorama.Rule.Name
-      description: Rule name
-      type: string
-    - contextPath: Panorama.Rule.Object
-      description: Blocked object
-      type: string
-    - contextPath: Panorama.Rule.Direction
-      description: Direction blocked
-      type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
-      type: string
-    - contextPath: Panorama.Rule.Target
-      description: Only for Panorama instance. Target Firewall
-      type: string
-    description: Create a custom block policy rule in Palo Alto Firewall or Panorama
-    execution: true
-  - name: panorama-list-applications
-    arguments: []
-    outputs:
-    - contextPath: Panorama.Applications.Name
-      description: Application name
-      type: string
-    - contextPath: Panorama.Applications.Id
-      description: Application id
-      type: number
-    - contextPath: Panorama.Applications.Category
-      description: Application category
-      type: string
-    - contextPath: Panorama.Applications.SubCategory
-      description: Application sub category
-      type: string
-    - contextPath: Panorama.Applications.Technology
-      description: Application technology
-      type: string
-    - contextPath: Panorama.Applications.Risk
-      description: Application risk (1 to 5)
-      type: number
-    - contextPath: Panorama.Applications.Description
-      description: Application description
-      type: string
-    description: Get a list of applications from Palo Alto Firewall or Panorama
-  - name: panorama-get-pcaps
-    arguments:
-    - name: pcapType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - application-pcap
-      - filter-pcap
-      - dlp-pcap
-      - threat-pcap
-      description: Type of Packet Capture
-    - name: from
-      description: '"From" value for the rule'
-    - name: to
-      description: '"To" value for the rule'
-    - name: serialNo
-      description: Serial number for the request. For further information, see the
-        Panorama XML API Documentation.
-    - name: searchTime
-      description: Search time for the request. For further information, see the Panorama
-        XML API Documentation.
-    - name: pcapID
-      description: ' ID of the Pcap for the request. For further information, see
-        the Panorama XML API Documentation.'
-    - name: password
-      description: Password for Panorama
-    description: Get pcaps from Palo Alto Firewall or Panorama
-  - name: panorama-delete-rule
-    arguments:
-    - name: rulename
-      required: true
-      description: Rule name
-    outputs:
-    - contextPath: Panorama.Rule.Name
-      description: Rule name
-      type: string
-    description: Delete a policy rule from Palo Alto Firewall or Panorama
-    execution: true
   - name: panorama-get-url-filter
     arguments:
     - name: name
@@ -2469,6 +2196,279 @@ script:
       description: URL Filter name
       type: string
     description: Delete a URL Filtering rule from Palo Alto Firewall or Panorama
+  - name: panorama-create-rule
+    arguments:
+    - name: rulename
+      description: Rule name
+    - name: description
+      description: Rule description
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      - drop
+      description: Action for the rule
+    - name: source
+      description: Source address (address, address group)
+    - name: destination
+      description: Destination address (address, address group)
+    - name: negate_source
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Yes/No - whether to negate the source (address, address group)
+    - name: negate_destination
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Yes/No - whether to negate the destination (address, address group)
+    - name: service
+      description: Service for the rule (service object)
+    - name: disable
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Yes/No - whether to disable the rule
+      defaultValue: "No"
+    - name: application
+      description: Application for the rule
+    - name: source_user
+      description: Source user for the rule
+      defaultValue: any
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Only for Panorama instance, rule location
+    - name: target
+      description: Only for Panorama instance. Specify a target Firewall to the rule
+    outputs:
+    - contextPath: Panorama.Rule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.Rule.Description
+      description: Rule description
+      type: string
+    - contextPath: Panorama.Rule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.Rule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.Rule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.Rule.Negate.Source
+      description: Yes/No - whether to negate the source (address, address group)
+      type: boolean
+    - contextPath: Panorama.Rule.Negate.Destination
+      description: Yes/No - whether to negate the destination (address, address group)
+      type: boolean
+    - contextPath: Panorama.Rule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.Rule.State
+      description: Enabled/Disabled
+      type: string
+    - contextPath: Panorama.Rule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.Rule.Pre_Post
+      description: Only for Panorama instance, rule location
+      type: string
+    - contextPath: Panorama.Rule.Target
+      description: Only for Panorama instance. Target Firewall
+      type: string
+    description: Create policy rule in Palo Alto Firewall or Panorama
+    execution: true
+  - name: panorama-custom-block-rule
+    arguments:
+    - name: rulename
+      description: Rule Name
+    - name: object_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - address-group
+      - application
+      - url-category
+      description: Type of the object to be blocked
+    - name: object_value
+      required: true
+      description: The object value
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - to
+      - from
+      - both
+      description: Direction to block (relevant only to ip,address-group block)
+      defaultValue: both
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Only for Panorama instance
+    - name: target
+      description: Only for Panorama instance. Specify a target Firewall to the rule
+    outputs:
+    - contextPath: Panorama.Rule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.Rule.Object
+      description: Blocked object
+      type: string
+    - contextPath: Panorama.Rule.Direction
+      description: Direction blocked
+      type: string
+    - contextPath: Panorama.Rule.Pre_Post
+      description: Only for Panorama instance, rule location
+      type: string
+    - contextPath: Panorama.Rule.Target
+      description: Only for Panorama instance. Target Firewall
+      type: string
+    description: Create a custom block policy rule in Palo Alto Firewall or Panorama
+    execution: true
+  - name: panorama-move-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Rule name
+    - name: where
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+      description: Values for the "where" parameter include "before", "after", "top"
+        or "bottom"
+    - name: dst
+      description: Only necessary for before/after. Destination rule relative to the
+        desired rule
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Rule location. Mandatory for a Panorama instance
+    outputs:
+    - contextPath: Panorama.Rule.Name
+      description: Rule name
+      type: string
+    description: Move a policy rule in Palo Alto Firewall or Panorama
+    execution: true
+  - name: panorama-edit-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Rule name
+    - name: element_to_change
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - source
+      - destination
+      - application
+      - action
+      - category
+      - description
+      - disabled
+      - target
+      description: Parameter in the security rule
+    - name: element_value
+      required: true
+      description: Parameter new value
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Only for Panorama instance
+    outputs:
+    - contextPath: Panorama.Rule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.Rule.Element
+      description: Edited element value
+      type: string
+    - contextPath: Panorama.Rule.Pre_Post
+      description: Only for Panorama instance, rule location
+      type: string
+    description: Edit a policy rule in Palo Alto Firewall or Panorama
+    execution: true
+  - name: panorama-delete-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Rule name
+    outputs:
+    - contextPath: Panorama.Rule.Name
+      description: Rule name
+      type: string
+    description: Delete a policy rule from Palo Alto Firewall or Panorama
+    execution: true
+  - name: panorama-list-applications
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Applications.Name
+      description: Application name
+      type: string
+    - contextPath: Panorama.Applications.Id
+      description: Application id
+      type: number
+    - contextPath: Panorama.Applications.Category
+      description: Application category
+      type: string
+    - contextPath: Panorama.Applications.SubCategory
+      description: Application sub category
+      type: string
+    - contextPath: Panorama.Applications.Technology
+      description: Application technology
+      type: string
+    - contextPath: Panorama.Applications.Risk
+      description: Application risk (1 to 5)
+      type: number
+    - contextPath: Panorama.Applications.Description
+      description: Application description
+      type: string
+    description: Get a list of applications from Palo Alto Firewall or Panorama
+  - name: panorama-get-pcaps
+    arguments:
+    - name: pcapType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - dlp-pcap
+      - threat-pcap
+      description: Type of Packet Capture
+    - name: from
+      description: '"From" value for the rule'
+    - name: to
+      description: '"To" value for the rule'
+    - name: serialNo
+      description: Serial number for the request. For further information, see the
+        Panorama XML API Documentation.
+    - name: searchTime
+      description: Search time for the request. For further information, see the Panorama
+        XML API Documentation.
+    - name: pcapID
+      description: ' ID of the Pcap for the request. For further information, see
+        the Panorama XML API Documentation.'
+    - name: password
+      description: Password for Panorama
+    description: Get pcaps from Palo Alto Firewall or Panorama
   runonce: false
 releaseNotes: "test"
 tests:
