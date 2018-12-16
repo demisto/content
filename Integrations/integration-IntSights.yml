@@ -123,6 +123,23 @@ script:
         return alerts
 
 
+    def extract_mail(replies):
+        mails = []
+        for reply in replies:
+            mails.append(reply.get('Email'))
+
+        return '\n'.join(mails)
+
+
+    def extract_remediation(remidiations):
+        remdies = []
+        string_format = "{0} - Status: {1}"
+        for remdy in remidiations:
+            remdies.append(string_format.format(remdy.get('Value'), remdy.get('Status')))
+
+        return '\n'.join(remdies)
+
+
     def get_alerts():
         """
         Gets all alerts and returns as a list.
@@ -216,6 +233,7 @@ script:
         r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id).json()
         activities = []
 
+        human_readables = []
         alert = {'ID': alert_id, 'Activities': []}
         for k in r:
             alert['Activities'].append({
@@ -229,11 +247,22 @@ script:
                 'Mail': {'Replies': demisto.get(k,'AdditionalInformation.Mail.Replies')},
                 'ReadBy': demisto.get(k,'ReadBy')
             })
+            human_readables.append({
+                'ID': demisto.get(k,'_id'),
+                'Type': demisto.get(k, 'Type'),
+                'Initiator': demisto.get(k,'Initiator'),
+                'CreatedDate': demisto.get(k,'CreatedDate'),
+                'UpdateDate': demisto.get(k,'UpdateDate'),
+                'RemediationBlocklistUpdate': extract_remediation(demisto.get(k,'AdditionalInformation.RemediationBlocklistUpdate')),
+                'AskTheAnalyst': {'Replies': demisto.get(k,'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': extract_mail(demisto.get(k,'AdditionalInformation.Mail.Replies')),
+                'ReadBy': demisto.get(k,'ReadBy')
+            })
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
             'Contents': r,
-            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', alert['Activities'], ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate', 'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
+            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readables, ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate', 'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
             'ContentsFormat': formats['json']
         })
 
@@ -462,14 +491,27 @@ script:
             'LastSeen': demisto.get(r,'LastSeen'),
             'Domain': demisto.get(r,'Domain'),
             'Status': demisto.get(r,'Status'),
-            'Severity': demisto.get(r,'Severity'),
+            'Severity': demisto.get(r,'Severity').get('Value', 'None'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
             'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
             'Enrichment Date': demisto.get(r, 'Enrichment.Data')
         }
-        return ioc_context, ioc_readable
+        dbot_score = {
+            'Indicator': ioc_context['Value'],
+            'Type': ioc_context['Type'],
+            'Vendor': 'IntSights',
+            'Score': translate_severity(ioc_readable['Severity'])
+        }
+        domain = {}
+        if ioc_context['Domain']:
+            domain['Name'] = ioc_context['Domain']
+        ip_info = {}
+        if ioc_context['Type'] == 'IpAddresses':
+            ip_info['Address'] = ioc_context['Value']
+
+        return ioc_context, ioc_readable, dbot_score, domain, ip_info
 
 
     def search_for_IOC():
@@ -477,14 +519,37 @@ script:
         Search for IOC by value
         """
         value = demisto.getArg('value')
-        r = req('GET', 'public/v1/iocs/ioc-by-value', handle_filters()).json()
-        ioc_context, ioc_readable = IOC_to_readable(r)
+        r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
+
+        if r.status_code != 204:
+            r = r.json()
+            ioc_context, ioc_readable, dbot_score, domain, ip_info = IOC_to_readable(r)
+
+            demisto.results(
+                {
+                    'Type': entryTypes['note'],
+                    'EntryContext': {
+                        'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                        'DBotScore': dbot_score,
+                        'Domain': domain,
+                        'IP': ip_info
+                    },
+                    'Contents': r,
+                    'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                    'ContentsFormat': formats['json']
+                }
+            )
+        else:
+            results_for_no_content('IOC Information')
+
+
+    def results_for_no_content(cmd_name):
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': ioc_context},
-                'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'EntryContext': {'IntSights': {}},
+                'Contents': {},
+                'HumanReadable': '### {} \n\n Could not get any results.'.format(cmd_name),
                 'ContentsFormat': formats['json']
             }
         )
@@ -535,16 +600,27 @@ script:
         Gets all IOCs with the given filters
         """
         r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
+        domains = []
+        ip_infos = []
+        dbot_scores = []
         iocs_context = []
         iocs_readable = []
         for k in r:
-            ioc_context, ioc_readable = IOC_to_readable(k)
+            ioc_context, ioc_readable, dbot_score, domain, ip_info = IOC_to_readable(k)
             iocs_context.append(ioc_context)
             iocs_readable.append(ioc_readable)
+            dbot_scores.append(dbot_score)
+            domains.append(domain)
+            ip_infos.append(ip_info)
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': iocs_context},
+                'EntryContext': {
+                    'IntSights.Iocs': iocs_context,
+                    'DBotScore': dbot_scores,
+                    'Domain': domains,
+                    'IP': ip_infos
+                },
                 'Contents': r,
                 'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
                 'ContentsFormat': formats['json']
@@ -955,6 +1031,18 @@ script:
     - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Search for exact IOC value
   - name: intsights-get-iocs
     arguments:
@@ -978,17 +1066,17 @@ script:
     - name: source-ID
       description: Ioc source
     - name: first-seen-from
-      description: 'Beginning of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'Beginning of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: first-seen-to
-      description: 'End of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'End of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: last-seen-from
-      description: 'Beginning of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'Beginning of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: last-seen-to
-      description: 'End of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'End of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     outputs:
     - contextPath: IntSights.Iocs.ID
       description: The IOC ID
@@ -1035,6 +1123,18 @@ script:
     - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Get count totals of the available IOCs
   - name: intsights-get-alerts
     arguments:
@@ -1186,8 +1286,8 @@ script:
       required: true
       description: The alert ID
     - name: reason
-      auto: PREDEFINED
       required: true
+      auto: PREDEFINED
       predefined:
       - ProblemSolved
       - InformationalOnly
@@ -1215,3 +1315,4 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
+releaseNotes: "-"
