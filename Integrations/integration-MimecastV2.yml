@@ -69,11 +69,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 - display: Fetch URL incidents
   name: fetchURL
   defaultvalue: ""
@@ -88,6 +83,16 @@ configuration:
   name: fetchImpersonations
   defaultvalue: ""
   type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Hours before first fetch to retrieve incidents
+  name: fetchDelta
+  defaultvalue: "24"
+  type: 0
   required: false
 script:
   script: |-
@@ -109,8 +114,6 @@ script:
     from urllib2 import HTTPError
     from distutils.util import strtobool
 
-    # from datetime import datetime,timedelta
-
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -130,6 +133,7 @@ script:
     # Used to refresh token / discover available auth types / login
     EMAIL_ADDRESS = demisto.params().get('email')
     PASSWORD = demisto.params().get('password')
+    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
     # remove proxy if not set to true in params
@@ -192,7 +196,7 @@ script:
                 demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
-    def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True):
+    def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True, is_file=False):
         is_user_auth = True
         url = BASE_URL + api_endpoint
         # 2 types of auth, user and non user, mostly user is needed
@@ -241,6 +245,8 @@ script:
             )
 
             res.raise_for_status()
+            if is_file:
+                return res
             return res.json()
 
         except HTTPError as e:
@@ -863,7 +869,7 @@ script:
                     'Attachment Count': message.get('attachmentCount')
                 })
                 messages_context.append({
-                    'subject': message.get('subject'),
+                    'Subject': message.get('subject'),
                     'ID': message.get('id'),
                     'Size': message.get('size'),
                     'RecievedDate': message.get('received'),
@@ -962,7 +968,7 @@ script:
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Mimecast URL logs: ', contents, headers),
-            'EntryContext(val == obj)': context
+            'EntryContext': context
         }
 
         return results
@@ -1040,7 +1046,7 @@ script:
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Mimecast attachment logs: ', contents, headers),
-            'EntryContext(val == obj)': context
+            'EntryContext': context
         }
 
         return results
@@ -1138,7 +1144,7 @@ script:
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Mimecast impersonation logs: ', contents, headers),
-            'EntryContext(val == obj)': context
+            'EntryContext': context
         }
 
         return results
@@ -1170,7 +1176,7 @@ script:
 
         # handle first time fetch
         if last_fetch is None:
-            last_fetch = datetime.datetime.now() - datetime.timedelta(days=1)
+            last_fetch = datetime.datetime.now() - datetime.timedelta(hours=FETCH_DELTA)
             last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
         else:
             last_fetch = datetime.datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
@@ -1180,7 +1186,7 @@ script:
         incidents = []
         if FETCH_URL:
             search_params = {
-                'fromDate': last_fetch_date_time,
+                'from': last_fetch_date_time,
                 'scanResult': 'malicious'
             }
             url_logs = get_url_logs_request(search_params)
@@ -1197,7 +1203,7 @@ script:
 
         if FETCH_ATTACHMENTS:
             search_params = {
-                'fromDate': last_fetch_date_time,
+                'from': last_fetch_date_time,
                 'result': 'malicious'
             }
             attachment_logs = get_attachment_logs_request(search_params)
@@ -1350,10 +1356,11 @@ script:
 
 
     def login():
-        headers = ['Access Key','Secret Key','Duration (ms)','Duration (days)']
+        headers = ['Access Key','Secret Key']
         contents = []
 
         response = login_request()
+
         contents.append({
             'Access Key': response.get('accessKey'),
             'Secret Key': response.get('secretKey')
@@ -1387,10 +1394,192 @@ script:
         return response.get('data')[0]
 
 
+    def get_message():
+        context = {}
+        contents = {}
+        metadata_context = {}
+        results = []
+        message_id = demisto.args().get('messageID').encode('utf-8')
+        message_context = demisto.args().get('context').encode('utf-8')
+        message_type = demisto.args().get('type').encode('utf-8')
+        message_part = demisto.args().get('part')
+
+        if message_part == 'all' or message_part == 'metadata':
+            contents, metadata_context = get_message_metadata(message_id)
+
+            context['Mimecast.Message(val.ID && val.ID === obj.ID)'] = metadata_context
+
+            results.append({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contents,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Mimecast message details', contents, removeNull=True),
+                'EntryContext': context
+            })
+
+        if message_part == 'all' or message_part == 'message':
+            email_file = get_message_body_content_request(message_id, message_context, message_type)
+            results.append(fileResult(message_id, email_file))
+
+        return results
+
+
+    def get_message_body_content_request(message_id, message_context, message_type):
+        # Setup required variables
+        request_params = {}
+        api_endpoint = '/api/archive/get-message-part'
+
+        data = [{
+            'id': message_id,
+            'type': message_type,
+            'context': message_context
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload), is_file=True)
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.content
+
+
+    def get_message_metadata(message_id):
+        contents = {}
+        context = {}
+        message = get_message_metadata_request(message_id)
+
+        receivers = message.get('to', [])
+        to_context = []
+        to_contents = []
+        for receiver in receivers:
+            to_context.append({
+                'EmailAddress': receiver.get('emailAddress')
+            })
+            to_contents.append(
+                receiver.get('emailAddress')
+            )
+
+        copies = message.get('cc', [])
+        cc_context = []
+        cc_contents = []
+        for copy in copies:
+            cc_context.append({
+                'EmailAddress': copy.get('emailAddress')
+            })
+            cc_contents.append(
+                copy.get('emailAddress')
+            )
+
+        response_headers = message.get('headers', [])
+        headers_contents = []
+        headers_context = []
+        for header in response_headers:
+            values = header.get('values')
+            values = [value.encode('utf-8') for value in values]
+            headers_context.append({
+                'Name': header.get('name'),
+                'Values': values
+            })
+            headers_contents.append(
+                'Name: {}, Values: {}'.format(str(header.get('name')), str(values))
+            )
+
+        attachments = message.get('attachments', [])
+        attachments_context = []
+        attachments_contents = []
+        for attachment in attachments:
+            attachments_context.append({
+                'FileName': attachment.get('filename'),
+                'SHA256': attachment.get('sha256'),
+                'ID': attachment.get('id'),
+                'Size': attachment.get('size')
+            })
+            attachments_contents.append(
+                'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),str(attachment.get('sha256')),str(attachment.get('id')),str(attachment.get('size')))
+            )
+
+        contents = {
+            'Subject': message.get('subject'),
+            'Header Date': message.get('headerDate'),
+            'Size': message.get('size'),
+            'From': message.get('from', {}).get('emailAddress'),
+            'To': to_contents,
+            'Reply To': message.get('replyTo', {}).get('emailAddress'),
+            'CC': cc_contents,
+            'Envelope From': message.get('envelopeFrom', {}).get('emailAddress'),
+            'Headers': headers_contents,
+            'Attachments': attachments_contents,
+            'Processed': message.get('processed'),
+            'Has Html Body': message.get('hasHtmlBody'),
+            'ID': message.get('id')
+        }
+
+        context = {
+            'Subject': message.get('subject'),
+            'HeaderDate': message.get('headerDate'),
+            'Size': message.get('size'),
+            'From': message.get('from', {}).get('emailAddress'),
+            'To': to_context,
+            'ReplyTo': message.get('replyTo', {}).get('emailAddress'),
+            'CC': cc_context,
+            'EnvelopeFrom': message.get('envelopeFrom', {}).get('emailAddress'),
+            'Headers': headers_context,
+            'Attachments': attachments_context,
+            'Processed': message.get('processed'),
+            'HasHtmlBody': message.get('hasHtmlBody'),
+            'ID': message.get('id')
+        }
+
+        return contents, context
+
+
+    def get_message_metadata_request(message_id):
+        # Setup required variables
+        request_params = {}
+        api_endpoint = '/api/archive/get-message-detail'
+        data = [{
+            'id': message_id
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def download_attachment():
+        attachment_id = demisto.args().get('attachmentID').encode('utf-8')
+        attachment_file = download_attachment_request(attachment_id)
+        return fileResult(attachment_id, attachment_file)
+
+
+    def download_attachment_request(attachment_id):
+        # Setup required variables
+        request_params = {}
+        api_endpoint = '/api/archive/get-file'
+
+        data = [{
+            'id': attachment_id
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload), is_file=True)
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.content
+
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('command is %s' % (demisto.command(), ))
+
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
     auto_refresh_token()
 
@@ -1417,8 +1606,6 @@ script:
             demisto.results(list_managed_url())
         elif demisto.command() == 'mimecast-create-managed-url':
             demisto.results(create_managed_url())
-        elif demisto.command() == 'mimecast-get-message-content':
-            demisto.results(get_message_content())
         elif demisto.command() == 'mimecast-list-messages':
             demisto.results(list_messages())
         elif demisto.command() == 'mimecast-get-attachment-logs':
@@ -1435,6 +1622,10 @@ script:
             demisto.results(login())
         elif demisto.command() == 'mimecast-refresh-token':
             demisto.results(refresh_token())
+        elif demisto.command() == 'mimecast-get-message':
+            demisto.results(get_message())
+        elif demisto.command() == 'mimecast-download-attachments':
+            demisto.results(download_attachment())
 
 
     except Exception, e:
@@ -1578,6 +1769,12 @@ script:
     - contextPath: Mimecast.Policy.ToDate
       description: Policy expiration date
       type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: Block emails to Sender type
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: Block emails to Receiver type
+      type: string
     description: List all existing mimecast blocked sender policies
   - name: mimecast-get-policy
     arguments:
@@ -2125,7 +2322,158 @@ script:
   - name: mimecast-login
     arguments: []
     description: Login to generate Access Key and  Secret Key
+  - name: mimecast-get-message
+    arguments:
+    - name: messageID
+      required: true
+      description: Message ID
+    - name: context
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DELIVERED
+      - RECEIVED
+      description: 'Defines which copy of the message part to return, must be one
+        of: "delievered" the copy that has been processed by the Mimecast MTA with
+        policies such as URL rewriting applied, OR "received" - the copy of the message
+        that Mimecast originally received. (Only relevant for part argument = message
+        or all)'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - HTML
+      - PLAIN
+      - RFC822
+      - TRANSMISSION_MESSAGE_BODY
+      description: The message type to return. (Only relevant for part argument =
+        message or all)
+      defaultValue: PLAIN
+    - name: part
+      auto: PREDEFINED
+      predefined:
+      - message
+      - metadata
+      - all
+      description: Define what message part to return - download message, get metadata
+        or both.
+      defaultValue: all
+    outputs:
+    - contextPath: Mimecast.Message.ID
+      description: Message ID
+      type: string
+    - contextPath: Mimecast.Message.Subject
+      description: The message subject.
+      type: string
+    - contextPath: Mimecast.Message.HeaderDate
+      description: The date of the message as defined in the message headers.
+      type: date
+    - contextPath: Mimecast.Message.Size
+      description: The message size.
+      type: number
+    - contextPath: Mimecast.Message.From
+      description: Sender of the message as defined in the message header.
+      type: string
+    - contextPath: Mimecast.Message.To.EmailAddress
+      description: Recipient of the message.
+      type: string
+    - contextPath: Mimecast.Message.ReplyTo
+      description: The value of the Reply-To header.
+      type: string
+    - contextPath: Mimecast.Message.CC.EmailAddress
+      description: Each CC recipient of the message.
+      type: string
+    - contextPath: Mimecast.Message.EnvelopeFrom
+      description: Sender of the message as defined in the message envelope.
+      type: string
+    - contextPath: Mimecast.Message.Headers.Name
+      description: Header's name.
+      type: string
+    - contextPath: Mimecast.Message.Headers.Values
+      description: Header's value.
+      type: string
+    - contextPath: Mimecast.Message.Attachments.FileName
+      description: Message attachment's file name.
+      type: string
+    - contextPath: Mimecast.Message.Attachments.SHA256
+      description: Message attachment's SHA256.
+      type: string
+    - contextPath: Mimecast.Message.Attachments.ID
+      description: Message attachment's ID.
+      type: string
+    - contextPath: Mimecast.Message.Attachments.Size
+      description: Message attachment's file size.
+      type: number
+    - contextPath: Mimecast.Message.Processed
+      description: The date the message was processed by Mimecast in ISO 8601 format.
+      type: date
+    - contextPath: Mimecast.Message.HasHtmlBody
+      description: If the message has an HTML body part.
+      type: boolean
+    - contextPath: File.Size
+      description: File Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    description: Get the contents or metadata of a given message
+  - name: mimecast-download-attachments
+    arguments:
+    - name: attachmentID
+      required: true
+      description: The Mimecast ID of the message attachment to return. (Can be retrieved
+        from mimecast-get-message)
+    outputs:
+    - contextPath: File.Size
+      description: File Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    description: Download attachments from a specified message
   isfetch: true
   runonce: false
 tests:
  - Mimecast test
+releaseNotes: "Added get mail contents + metadata and download attachments. Do not use with Mimecast Authentication integration."
