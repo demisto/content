@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: 'servicenow-create-ticket, Summary: "Hello World"'
       description: Create new ServiceNow ticket
-      script: ServiceNow_python3|||servicenow-create-ticket
+      script: ServiceNow|||servicenow-create-ticket
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "6"
@@ -207,10 +207,10 @@ tasks:
       version: -1
       name: 'servicenow-create-ticket, Summary: "Lovely Day"'
       description: Create new ServiceNow ticket
-      script: ServiceNow_python3|||servicenow-create-ticket
+      script: ServiceNow|||servicenow-create-ticket
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "8"
@@ -393,10 +393,10 @@ tasks:
       id: f251fd5b-70b2-4e2c-89ec-c2e19077e617
       version: -1
       name: 'servicenow-query-tickets Ticket #0'
-      script: ServiceNow_python3|||servicenow-query-tickets
+      script: ServiceNow|||servicenow-query-tickets
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "37"
@@ -424,10 +424,10 @@ tasks:
       id: bf1d5660-169d-4eb1-89f5-219f2278b5e9
       version: -1
       name: 'servicenow-get-ticket Ticket #1'
-      script: ServiceNow_python3|||servicenow-get-ticket
+      script: ServiceNow|||servicenow-get-ticket
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "41"
@@ -450,10 +450,10 @@ tasks:
     timertriggers: []
   "26":
     id: "26"
-    taskid: 73b50b8d-6dc2-4bc1-80b9-a53f106a18e7
+    taskid: 694186d8-d41d-4d33-80ac-d2cb8e127915
     type: regular
     task:
-      id: 73b50b8d-6dc2-4bc1-80b9-a53f106a18e7
+      id: 694186d8-d41d-4d33-80ac-d2cb8e127915
       version: -1
       name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
         "New Assignee", State: "2 - In Progress"'
@@ -525,7 +525,7 @@ tasks:
         simple: Goodbye Please
       sla_due: {}
       state:
-        simple: 2 - In Progress
+        simple: 2 - Work In Progress
       subcategory: {}
       sys_updated_by: {}
       sys_updated_on: {}
@@ -582,10 +582,10 @@ tasks:
     timertriggers: []
   "29":
     id: "29"
-    taskid: 41b733d7-60eb-46c3-89fe-dcf7a70a6046
+    taskid: c265bed7-c166-4cfa-88d2-2ce471f2b614
     type: regular
     task:
-      id: 41b733d7-60eb-46c3-89fe-dcf7a70a6046
+      id: c265bed7-c166-4cfa-88d2-2ce471f2b614
       version: -1
       name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
       scriptName: VerifyContextFields
@@ -612,7 +612,7 @@ tasks:
       value3:
         simple: 4 - Low
       value4:
-        simple: "1"
+        simple: 2 - Work In Progress
       value5: {}
     separatecontext: false
     view: |-
@@ -632,10 +632,10 @@ tasks:
       id: b86f9705-3323-4522-846c-1b94042e88d5
       version: -1
       name: 'servicenow-add-comment Ticket #0'
-      script: ServiceNow_python3|||servicenow-add-comment
+      script: ServiceNow|||servicenow-add-comment
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "42"
@@ -665,10 +665,10 @@ tasks:
       id: aabc06ed-76ab-4042-899e-c17e6ecdeaf5
       version: -1
       name: 'servicenow-add-link Ticket #0'
-      script: ServiceNow_python3|||servicenow-add-link
+      script: ServiceNow|||servicenow-add-link
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "43"
@@ -971,10 +971,10 @@ tasks:
       id: 977be9cf-67fa-418e-8585-7de4ec2bd6fb
       version: -1
       name: 'servicenow-upload-file test_file.txt to Ticket #0'
-      script: ServiceNow_python3|||servicenow-upload-file
+      script: ServiceNow|||servicenow-upload-file
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "44"
@@ -1043,10 +1043,10 @@ tasks:
       version: -1
       name: Get group by name
       description: Return information about specific servicenow group
-      script: ServiceNow_python3|||servicenow-query-groups
+      script: ServiceNow|||servicenow-query-groups
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "49"
@@ -1111,10 +1111,10 @@ tasks:
       version: -1
       name: 'Get Ticket #0 with attachments'
       description: Retrieve ticket information by specific ticket ID
-      script: ServiceNow_python3|||servicenow-get-ticket
+      script: ServiceNow|||servicenow-get-ticket
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "51"
@@ -1214,10 +1214,10 @@ tasks:
       version: -1
       name: Query table
       description: Query a specified table in ServiceNow
-      script: ServiceNow_python3|||servicenow-query-table
+      script: ServiceNow|||servicenow-query-table
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "54"
@@ -1285,10 +1285,10 @@ tasks:
       version: -1
       name: Delete the tickets
       description: Delete a ticket from ServiceNow
-      script: ServiceNow_python3|||servicenow-delete-ticket
+      script: ServiceNow|||servicenow-delete-ticket
       type: regular
       iscommand: true
-      brand: ServiceNow_python3
+      brand: ServiceNow
     nexttasks:
       '#none#':
       - "69"
