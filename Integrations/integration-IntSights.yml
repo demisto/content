@@ -149,11 +149,11 @@ script:
 
 
     def hash_identifier(hash_val):
-        if md5Regex.fullmatch(hash_val):
+        if md5Regex.match(hash_val):
             return 'MD5'
-        elif sha1Regex.fullmatch(hash_val):
+        elif sha1Regex.match(hash_val):
             return 'SHA1'
-        elif sha256Regex.fullmatch(hash_val):
+        elif sha256Regex.match(hash_val):
             return 'SHA256'
         return 'Unknown'
 
@@ -601,12 +601,10 @@ script:
         """
         Translate alert severity to demisto
         """
-        if sev == 'High':
+        if sev == 'High' or sev == 'Medium':
             return 3
-        elif sev == 'Medium':
-            return 2
         elif sev == 'Low':
-            return 1
+            return 2
         return 0
 
 
@@ -1091,6 +1089,51 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Address
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Search for exact IOC value
   - name: intsights-get-iocs
     arguments:
@@ -1183,6 +1226,51 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Address
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Get count totals of the available IOCs
   - name: intsights-get-alerts
     arguments:
