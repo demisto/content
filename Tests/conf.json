@@ -3,7 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": [],
             "playbookID": "Test CommonServer"
         },
         {
