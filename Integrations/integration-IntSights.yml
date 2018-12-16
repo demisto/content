@@ -1107,7 +1107,7 @@ script:
     - contextPath: File.SHA256
       description: Bad hash SHA256
       type: string
-    - contextPath: URL.Address
+    - contextPath: URL.Data
       description: The URL that was searched
       type: string
     - contextPath: URL.Malicious.Vendor
@@ -1244,7 +1244,7 @@ script:
     - contextPath: File.SHA256
       description: Bad hash SHA256
       type: string
-    - contextPath: URL.Address
+    - contextPath: URL.Data
       description: The URL that was searched
       type: string
     - contextPath: URL.Malicious.Vendor
