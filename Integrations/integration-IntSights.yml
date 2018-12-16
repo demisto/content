@@ -70,6 +70,14 @@ script:
     encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
     HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json', 'Account-Id': demisto.getParam('credentials')['identifier']}
 
+    IOC_TYPE_TO_DBOT_TYPE = {
+        'IpAddresses': 'ip',
+        'Urls': 'url',
+        'Domains': 'domain',
+        'Hashes': 'hash'
+    }
+
+
     def req(method, path, json_data=None, params=None):
         """
         Send the request to IntSights and return the JSON response
@@ -138,6 +146,16 @@ script:
             remdies.append(string_format.format(remdy.get('Value'), remdy.get('Status')))
 
         return '\n'.join(remdies)
+
+
+    def hash_identifier(hash_val):
+        if md5Regex.fullmatch(hash_val):
+            return 'MD5'
+        elif sha1Regex.fullmatch(hash_val):
+            return 'SHA1'
+        elif sha256Regex.fullmatch(hash_val):
+            return 'SHA256'
+        return 'Unknown'
 
 
     def get_alerts():
@@ -491,7 +509,7 @@ script:
             'LastSeen': demisto.get(r,'LastSeen'),
             'Domain': demisto.get(r,'Domain'),
             'Status': demisto.get(r,'Status'),
-            'Severity': demisto.get(r,'Severity').get('Value', 'None'),
+            'Severity': demisto.get(r,'Severity').get('Value'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
@@ -500,18 +518,40 @@ script:
         }
         dbot_score = {
             'Indicator': ioc_context['Value'],
-            'Type': ioc_context['Type'],
+            'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
             'Vendor': 'IntSights',
             'Score': translate_severity(ioc_readable['Severity'])
+        }
+        malicious_dict = {
+            'Vendor': 'IntSights',
+            'Description': 'IntSights severity level is High'
         }
         domain = {}
         if ioc_context['Domain']:
             domain['Name'] = ioc_context['Domain']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                domain['Malicious'] = malicious_dict
+
         ip_info = {}
         if ioc_context['Type'] == 'IpAddresses':
             ip_info['Address'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                ip_info['Malicious'] = malicious_dict
 
-        return ioc_context, ioc_readable, dbot_score, domain, ip_info
+        url_info = {}
+        if ioc_context['Type'] == 'Urls':
+            url_info['Data'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                url_info['Malicious'] = malicious_dict
+
+        hash_info = {}
+        if ioc_context['Type'] == 'Hashes':
+            hash_info['Name'] = ioc_context['Value']
+            hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                hash_info['Malicious'] = malicious_dict
+
+        return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
 
 
     def search_for_IOC():
@@ -523,7 +563,7 @@ script:
 
         if r.status_code != 204:
             r = r.json()
-            ioc_context, ioc_readable, dbot_score, domain, ip_info = IOC_to_readable(r)
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(r)
 
             demisto.results(
                 {
@@ -532,7 +572,9 @@ script:
                         'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
                         'DBotScore': dbot_score,
                         'Domain': domain,
-                        'IP': ip_info
+                        'IP': ip_info,
+                        'URL': url_info,
+                        'File': hash_info
                     },
                     'Contents': r,
                     'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
@@ -602,16 +644,20 @@ script:
         r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
         domains = []
         ip_infos = []
+        url_infos = []
+        hash_infos = []
         dbot_scores = []
         iocs_context = []
         iocs_readable = []
         for k in r:
-            ioc_context, ioc_readable, dbot_score, domain, ip_info = IOC_to_readable(k)
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(k)
             iocs_context.append(ioc_context)
             iocs_readable.append(ioc_readable)
             dbot_scores.append(dbot_score)
             domains.append(domain)
             ip_infos.append(ip_info)
+            url_infos.append(url_info)
+            hash_infos.append(hash_info)
         demisto.results(
             {
                 'Type': entryTypes['note'],
@@ -619,7 +665,9 @@ script:
                     'IntSights.Iocs': iocs_context,
                     'DBotScore': dbot_scores,
                     'Domain': domains,
-                    'IP': ip_infos
+                    'IP': ip_infos,
+                    'URL': url_info,
+                    'File': hash_info
                 },
                 'Contents': r,
                 'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
