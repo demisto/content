@@ -496,8 +496,10 @@ script:
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
-            'Enrichment': {'Status': demisto.get(r, 'Enrichment.Status')},
-            'Enrichment': {'Date': demisto.get(r, 'Enrichment.Data')}
+            'Enrichment': {
+                  'Status': demisto.get(r, 'Enrichment.Status'),
+                  'Data': demisto.get(r, 'Enrichment.Data')
+            }
         }
         ioc_readable = {
             'ID': demisto.get(r,'_id'),
@@ -514,7 +516,7 @@ script:
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
             'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
-            'Enrichment Date': demisto.get(r, 'Enrichment.Data')
+            'Enrichment Data': demisto.get(r, 'Enrichment.Data')
         }
         dbot_score = {
             'Indicator': ioc_context['Value'],
@@ -577,7 +579,7 @@ script:
                         'File': hash_info
                     },
                     'Contents': r,
-                    'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                    'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
                     'ContentsFormat': formats['json']
                 }
             )
@@ -668,7 +670,7 @@ script:
                     'File': hash_info
                 },
                 'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
                 'ContentsFormat': formats['json']
             }
         )
