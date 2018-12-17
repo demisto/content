@@ -959,7 +959,7 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
-releaseNotes: "Handle quota error gracefully"
+releaseNotes: "Handle quota error gracefully. just adding something"
 tests:
 - Lastline - testplaybook
 - Detonate URL - Generic Test
