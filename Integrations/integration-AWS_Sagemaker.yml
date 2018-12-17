@@ -103,4 +103,4 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 tests:
-- Test_Sagemaker
+  - Test_Sagemaker
