@@ -7,6 +7,9 @@
             "playbookID": "OTRS Test"
         },
         {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
+        {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
         },
@@ -108,10 +111,6 @@
                 "Check Point"
             ],
             "playbookID": "blockip_test_playbook"
-        },
-        {
-          "integrations": "IntSights",
-          "playbookID": "IntSights Test"
         },
         {
             "integrations": "Palo Alto Minemeld",
