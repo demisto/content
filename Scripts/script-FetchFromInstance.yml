@@ -86,4 +86,3 @@ runonce: false
 deprecated: true
 tests:
   - No test - cannot create a dummy integration inorder to test that
-releaseNotes: ""

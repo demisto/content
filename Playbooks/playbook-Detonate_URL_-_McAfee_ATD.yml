@@ -539,4 +539,3 @@ outputs:
 tests:
 - Test Playbook McAfee ATD
 - Detonate URL - Generic Test
-releaseNotes: "Added outputs to the playbook"
