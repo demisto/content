@@ -864,5 +864,11 @@
     },
     "nigthly_integrations": [
         "Lastline"
+    ],
+    "delete_on_failure_integrations": [
+        "Lastline",
+        "VirusTotal",
+        "Joe Security"
     ]
+
 }

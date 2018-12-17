@@ -78,10 +78,10 @@ def update_test_msg(integrations, test_message):
 
 
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, is_delete_on_failure_integration):
     print '------ Test %s start ------' % (test_message,)
     # run test
-    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options, is_delete_on_failure_integration)
     # use results
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
@@ -172,10 +172,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
             }
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations, delete_on_failure_integrations):
     integrations = []
     is_nightly_integration = False
     has_skipped_integration = False
+    is_delete_on_failure_integrations = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
@@ -184,13 +185,16 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
         if integration in nightly_integrations:
             is_nightly_integration = True
 
+        if integration in delete_on_failure_integrations:
+            is_delete_on_failure_integrations = True
+
         # string description
         integrations.append({
             'name': integration,
             'params': {}
         })
 
-    return has_skipped_integration, integrations, is_nightly_integration
+    return has_skipped_integration, integrations, is_nightly_integration, is_delete_on_failure_integrations
 
 
 def extract_filtered_tests():
@@ -257,6 +261,7 @@ def main():
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nigthly_integrations']
+    delete_on_failure_integrations = conf['delete_on_failure_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
@@ -287,8 +292,8 @@ def main():
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
-        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+        has_skipped_integration, integrations, is_nightly_integration, is_delete_on_failure_integration = collect_integrations(
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations, delete_on_failure_integrations)
 
         skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
@@ -319,7 +324,7 @@ def main():
 
         run_test(c, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber, server, build_name)
+                 buildNumber, server, build_name, is_delete_on_failure_integration)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 

@@ -210,7 +210,7 @@ def __print_investigation_error(client, playbook_id, investigation_id):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return True if playbook completed successfully
-def test_integration(client, integrations, playbook_id, options={}):
+def test_integration(client, integrations, playbook_id, options={}, is_delete_on_failure_integration = False):
     # create integrations instances
     instance_ids = []
     for integration in integrations:
@@ -265,11 +265,14 @@ def test_integration(client, integrations, playbook_id, options={}):
         i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED
+
+
     if test_pass:
         # delete incident
         __delete_incident(client, incident)
 
-        # delete integration instance
+    if (is_delete_on_failure_integration and not test_pass) or test_pass:
+        # delete integration instance if test pass or if integration is in "delete_on_failure_integrations" list
         __delete_integrations_instances(client, instance_ids)
 
     return test_pass, inc_id
