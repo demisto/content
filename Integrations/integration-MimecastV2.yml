@@ -1581,7 +1581,8 @@ script:
     LOG('command is %s' % (demisto.command(), ))
 
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
-    auto_refresh_token()
+    if not demisto.command() == 'test-module':
+        auto_refresh_token()
 
     try:
         if demisto.command() == 'test-module':
