@@ -5,7 +5,11 @@ name: FetchFromInstance
 fromversion: 4.0.0
 script: |-
   import re
+  from distutils.util import strtobool
 
+  incidents_context = []
+  context = {}
+  add_to_context = bool(strtobool(demisto.args().get('add_to_context')))
   res = []
   brand_name = demisto.args().get("brand_name")
   instance_name = None
@@ -23,6 +27,7 @@ script: |-
   command = '!{0}-fetch'.format(instance_name)
 
   response = demisto.executeCommand(command, {})
+
   try:
       if not response and expect_data:
           raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
@@ -33,11 +38,22 @@ script: |-
               return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
           if re.match("invalid character \'[a-zA-Z]\' looking for beginning of value", str(contents), re.IGNORECASE):
               return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
+          if add_to_context:
+              try:
+                  for entry in contents:
+                      raw_json = ''
+                      if isinstance(entry, dict):
+                          raw_json = entry.get('rawJSON')
+                      if raw_json:
+                          incidents_context.append(json.loads(raw_json))
+              except TypeError:
+                  return_error('Could not retrieve JSON data from the response contents')
 
       if not response and not expect_data:
           response = "No data returned"
 
-      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
+      context['FetchedIncidents'] = incidents_context
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response, "EntryContext": context})
 
   except Exception as ex:
       res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})
@@ -45,6 +61,7 @@ script: |-
   demisto.results(res)
 type: python
 tags: []
+comment: Execute FetchIncident for a given instance
 enabled: true
 args:
 - name: instance_name
@@ -54,9 +71,18 @@ args:
   defaultValue: "true"
 - name: brand_name
   description: The name of the brand you want to fetch from
+- name: add_to_context
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Add the raw JSON of incidents to context
+  defaultValue: "false"
+outputs:
+- contextPath: FetchedIncidents
+  description: All incidents entries (raw JSON)
 scripttarget: 0
 runonce: false
 deprecated: true
-comment: Execute FetchIncident for a given instance
 tests:
   - No test - cannot create a dummy integration inorder to test that
