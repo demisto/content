@@ -7,6 +7,9 @@
             "playbookID": "OTRS Test"
         },
         {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
+        {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
         },
@@ -108,10 +111,6 @@
                 "Check Point"
             ],
             "playbookID": "blockip_test_playbook"
-        },
-        {
-          "integrations": "IntSights",
-          "playbookID": "IntSights Test"
         },
         {
             "integrations": "Palo Alto Minemeld",
@@ -826,6 +825,11 @@
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "Test_Sagemaker",
+            "integrations": "AWS Sagemaker"
+
         }
     ],
     "skipped_tests": {
@@ -860,7 +864,8 @@
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
-        "ServiceNow": "Instance goes to hibernate every few hours"
+        "ServiceNow": "Instance goes to hibernate every few hours",
+        "MimecastV2": "Several issues with instance"
     },
     "nigthly_integrations": [
         "Lastline"
