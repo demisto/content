@@ -3410,4 +3410,4 @@ script:
   runonce: false
 releaseNotes: "-"
 tests:
-- No test - Hibernating instance
+  - No test - Hibernating instance
