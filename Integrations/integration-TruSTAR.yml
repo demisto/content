@@ -135,6 +135,27 @@ script:
             ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
         return indicators, ec
 
+    def translate_specific_indicators(ts_indicators, specific_types):
+        res = []
+        for indicator in ts_indicators:
+            current_indicator = indicator.to_dict(remove_nones=True)
+            indicator_type = current_indicator['indicatorType']
+            priority_level = current_indicator.get('priorityLevel')
+            value = current_indicator['value']
+            whiteListed = current_indicator.get('whitelisted')
+            if indicator_type in specific_types:
+                res.append({'value': value, 'priorityLevel': priority_level, 'whitelisted': whiteListed, 'indicatorType': indicator_type})
+        return res
+
+    def priority_level_to_score(priority_level):
+        if priority_level == 'LOW':
+            return 1
+        elif priority_level == 'MEDIUM':
+            return 2
+        elif priority_level == 'HIGH':
+            return 3
+        return 0
+
     def normalize_time(timestamp):
         '''
         Converts unix epoch time to GMT
@@ -147,6 +168,94 @@ script:
         d = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         return int(d.strftime("%s")) * 1000
 
+    def create_file_ec(indicators, file, threshold):
+        trustar_ec = []
+        file_ec = []
+        dbot_ec = []
+        for indicator in indicators:
+            file_ec.append({
+                indicator['indicatorType']: indicator['value'],
+                # 'Malicious.Vendor': ???,
+                # 'Malicious.Detections': ???,
+            })
+            trustar_ec.append({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            dbot_ec.append({
+                'Indicator': file,
+                'Type': 'file',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            #TODO: Parse file_ec properly (union)
+        return {
+            'DBotScore': dbot_ec,
+            'File': file_ec,
+            'TruSTAR.URL': trustar_ec
+        }
+
+    def create_ip_ec(indicators, ip, threshold):
+        trustar_ec = []
+        ip_ec = []
+        dbot_ec = []
+        for indicator in indicators:
+            ip_ec.append({
+                'Address': indicator['value'],
+                # 'Malicious.Vendor': ???,
+                # 'Malicious.Description': ???,
+            })
+            trustar_ec.append({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            dbot_ec.append({
+                'Indicator': ip,
+                'Type': 'ip',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+        return {
+            'DBotScore': dbot_ec,
+            'IP': ip_ec,
+            'TruSTAR.IP': trustar_ec
+        }
+
+    def create_url_ec(indicators, url, threshold):
+        trustar_ec = []
+        url_ec = []
+        dbot_ec = []
+        for indicator in indicators:
+            url_ec.append({
+                'Data': indicator['value'],
+                # 'Malicious.Vendor': ???,
+                # 'Malicious.Description': ???,
+            })
+            trustar_ec.append({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            dbot_ec.append({
+                'Indicator': url,
+                'Type': 'url',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+        return {
+            'DBotScore': dbot_ec,
+            'URL': url_ec,
+            'TruSTAR.URL': trustar_ec
+        }
+
+    def create_domain_ec(indicators, url, threshold):
+        # TODO: Complete this
+        return
 
     ''' FUNCTIONS '''
     def get_related_indicators(indicators, enclave_ids, page_size, page_number):
@@ -207,6 +316,25 @@ script:
         indicators, ec = translate_indicators(response)
         if indicators:
             title = 'TruSTAR indicators that contain the term ' + search_term
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': indicators,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, indicators),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No indicators were found.'
+        return entry
+
+    def generic_search_indicator(search_term, threshold, search_type, ec_function):
+        response = ts.search_indicators_page(search_term=search_term)
+        indicators = translate_specific_indicators(response, search_type)
+        threshold = priority_level_to_score(threshold)
+        if indicators:
+            title = 'TruSTAR {0} indicators that relate to: {1}'.format(search_type[0], search_term)
+            ec = ec_function(indicators, search_term, threshold)
             entry = {
                 'Type': entryTypes['note'],
                 'Contents': indicators,
@@ -526,6 +654,18 @@ script:
 
         elif demisto.command() == 'trustar-get-enclaves':
             demisto.results(get_enclaves())
+
+        elif demisto.command() == 'file':
+            demisto.results(generic_search_indicator(demisto.args().get('file'), demisto.args().get('threshold'), ('File', 'MD5', 'SHA1', 'SHA256'), create_file_ec))
+
+        elif demisto.command() == 'ip':
+            demisto.results(generic_search_indicator(demisto.args().get('ip'), demisto.args().get('threshold'), ('IP',), create_ip_ec))
+
+        elif demisto.command() == 'url':
+            demisto.results(generic_search_indicator(demisto.args().get('url'), demisto.args().get('threshold'), ('URL',), create_url_ec))
+
+        elif demisto.command() == 'domain':
+            demisto.results(generic_search_indicator(demisto.args().get('url'), demisto.args().get('threshold'), ('URL',), create_domain_ec))
 
     except Exception, e:
         LOG(e.message)
@@ -910,4 +1050,194 @@ script:
     arguments: []
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: Enter file name, md5, sha1 or sha256
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: MEDIUM
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.File.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.File.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.File.Priority
+      description: Indicator's priority level by TruSTAR
+      type: string
+    description: Check file reputation on TruSTAR
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: Enter an ip address or a CIDR (1.1.1.0/18)
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: MEDIUM
+    outputs:
+    - contextPath: IP.Address
+      description: IP Address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.IP.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.IP.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.IP.Priority
+      description: Indicator's priority level by TruSTAR
+    description: Check IP Reputation on TruSTAR
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: Enter a URL to search
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: MEDIUM
+    outputs:
+    - contextPath: URL.Data
+      description: URL data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.URL.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.URL.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.URL.Priority
+      description: Indicator's priority level by TruSTAR
+      type: string
+    description: Check URL reputation on TruSTAR
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: Enter domain name to search
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: MEDIUM
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain Name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.Domain.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.Domain.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.Domain.Priority
+      description: Indicator's priority level by TruSTAR
+      type: string
+    description: Check Domain reputation on TruStar
   dockerimage: demisto/trustar
+releaseNotes: "Added 4 new commands: file, url, ip and domain"
