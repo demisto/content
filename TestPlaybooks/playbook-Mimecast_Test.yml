@@ -44,8 +44,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1940
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
@@ -83,7 +83,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1475
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -137,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -177,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -204,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -279,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1475
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1940
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -406,7 +406,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1475
+          "y": 1070
         }
       }
     note: false
@@ -438,7 +438,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1940
+          "y": 1420
         }
       }
     note: false
@@ -458,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3350
+          "y": 2775
         }
       }
     note: false
@@ -514,8 +514,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2375
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -539,7 +539,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2375
+          "y": 1770
         }
       }
     note: false
@@ -562,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2375
+          "x": 480,
+          "y": 1770
         }
       }
     note: false
@@ -596,7 +596,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2550
+          "y": 1945
         }
       }
     note: false
@@ -628,8 +628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2920
+          "x": 480,
+          "y": 2295
         }
       }
     note: false
@@ -655,8 +655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2550
+          "x": 480,
+          "y": 1945
         }
       }
     note: false
@@ -697,8 +697,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -731,8 +731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -765,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1270
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -799,8 +799,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1680
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -841,8 +841,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -875,8 +875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3120
+          "x": 480,
+          "y": 2470
         }
       }
     note: false
@@ -907,7 +907,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2750
+          "y": 2120
         }
       }
     note: false
@@ -940,8 +940,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2740
+          "x": 480,
+          "y": 2120
         }
       }
     note: false
@@ -974,8 +974,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2130
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
@@ -1009,7 +1009,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 1595
         }
       }
     note: false
@@ -1039,8 +1039,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1660
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -1069,12 +1069,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 40.107.78.135
+              simple: 40.107
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1660
+          "y": 1245
         }
       }
     note: false
@@ -1108,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1260
+          "y": 895
         }
       }
     note: false
@@ -1138,8 +1138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1270
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -1169,7 +1169,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -1210,10 +1210,10 @@ tasks:
     note: false
   "38":
     id: "38"
-    taskid: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+    taskid: 48e890bb-8382-453a-8f72-4147e1eeebf9
     type: regular
     task:
-      id: 3fdd9c2f-dba3-477b-83fe-e848e367bfae
+      id: 48e890bb-8382-453a-8f72-4147e1eeebf9
       version: -1
       name: Fetch incidents
       scriptName: FetchFromInstance
@@ -1222,8 +1222,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "39"
     scriptarguments:
+      add_to_context:
+        simple: "true"
       brand_name:
         simple: MimecastV2
       expect_data: {}
@@ -1233,7 +1235,38 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2930
+          "y": 2295
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: 86d796f0-0565-4918-87d5-8def5cabcb17
+    type: condition
+    task:
+      id: 86d796f0-0565-4918-87d5-8def5cabcb17
+      version: -1
+      name: Test Fetch Incidents Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FetchedIncidents.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
         }
       }
     note: false
@@ -1242,7 +1275,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3365,
+        "height": 2790,
         "width": 1240,
         "x": 50,
         "y": 50
