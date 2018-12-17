@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "CopyContextToField"
+            "playbookID": "CopyContextToFieldTest"
         },
         {
             "integrations": "OTRS",
