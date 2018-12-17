@@ -57,7 +57,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
-        return None
+        return None, False
 
     module_configuration = configuration['configuration']
     if not module_configuration:
@@ -106,7 +106,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     if res.status_code != 200:
         print_error('create instance failed with status code ' + str(res.status_code))
         print_error(pformat(res.json()))
-        return None
+        return None, False
 
     integration_config = res.json()
     module_instance['id'] = integration_config['id']
@@ -115,9 +115,9 @@ def __create_integration_instance(client, integration_name, integration_params, 
     test_succeed = __test_integration_instance(client, module_instance)
 
     if not test_succeed:
-        return
+        return module_instance['id'], False
 
-    return module_instance['id']
+    return module_instance['id'], True
 
 
 # create incident with given name & playbook, and then fetch & return the incident
@@ -218,10 +218,12 @@ def test_integration(client, integrations, playbook_id, options={}, is_delete_on
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
 
-        instance_id = __create_integration_instance(client, integration_name, integration_params, is_byoi)
-        if not instance_id:
+        instance_id, is_okay = __create_integration_instance(client, integration_name, integration_params, is_byoi)
+        if not is_okay:
             print_error('Failed to create instance')
-            __delete_integrations_instances(client, instance_ids)
+            if instance_id:
+                __delete_integrations_instances(client, instance_ids)
+
             return False, -1
 
         instance_ids.append(instance_id)

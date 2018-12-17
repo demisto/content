@@ -91,12 +91,16 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
-            if not instance_id:
+            instance_id, is_okay = __create_integration_instance(c, integration_name, integration_params, is_byoi)
+            if not is_okay:
                 print_error('Failed to create instance of %s' % (integration_name,))
+                if instance_id:
+                    __delete_integrations_instances(client, instance_ids)
+
                 failed_integration.append("{0} {1} - {2}".format(integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
+                __delete_integrations_instances(client, instance_ids)
                 print('Create integration %s succeed' % (integration_name,))
 
     return failed_integration, integrations_counter
