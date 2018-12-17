@@ -125,4 +125,3 @@ dependson:
   - qradar-searches
 tests:
 - No test
-releaseNotes: "QRadarGetOffenseCorrelations start_time field can now be either epoch time or date string"

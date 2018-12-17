@@ -733,6 +733,5 @@ script:
     description: Submit a url to scan
   runonce: false
 fromversion: 3.5.0
-releaseNotes: "Formatted context"
 tests:
   - urlscan_malicious_Test
