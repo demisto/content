@@ -2,8 +2,17 @@ ACCEPT_TYPE="Accept: application/json"
 SERVER_API_URI="https://circleci.com/api/v1/project/demisto/server"
 TOKEN_ATTR="circle-token=$1"
 
+if [ -n "${SERVER_BRANCH_NAME}" ]
+  then
+    _server_branch_name=${SERVER_BRANCH_NAME}
+
+  else
+    _server_branch_name="master"
+
+fi
+
 echo "Getting latest build num"
-TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=10&filter=successful&$TOKEN_ATTR")
+TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/${_server_branch_name}?limit=10&filter=successful&$TOKEN_ATTR")
 
 ARTIFACT_BUILD_NUM=
 for i in `seq 0 9`; do

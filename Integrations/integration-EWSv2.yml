@@ -520,12 +520,10 @@ script:
             all_mailboxes = get_searchable_mailboxes(protocol)[ENTRY_CONTEXT]['EWS.Mailboxes']
             for email_address in email_addresses:
                 for mailbox in all_mailboxes:
-                    if MAILBOX not in mailbox:
-                        continue
-                    if email_address.lower() == mailbox[MAILBOX].lower():
+                    if MAILBOX in mailbox and email_address.lower() == mailbox[MAILBOX].lower():
                         mailbox_ids.append(mailbox[MAILBOX_ID])
-            if len(mailbox_ids) != len(email_addresses):
-                raise Exception("Did not find one or more of the specified email addresses")
+            if len(mailbox_ids) == 0:
+                raise Exception("No searchable mailboxes were found for the provided email addresses.")
         elif mailbox_search_scope:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
@@ -1246,7 +1244,7 @@ script:
         limit = int(limit)
         is_public = is_default_folder(folder_path, is_public)
         folder = get_folder_by_path(account, folder_path, is_public)
-        qs = folder.filter().order_by('-datetime_created')
+        qs = folder.filter().order_by('-datetime_created')[:limit]
         items = get_limited_number_of_messages_from_qs(qs, limit)
         items_result = map(lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True), items)
         hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',

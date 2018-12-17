@@ -1,6 +1,11 @@
 {
     "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
+        {
+            "integrations": "OTRS",
+            "playbookID": "OTRS Test"
+        },
         {
             "playbookID": "CreatePhishingClassifierMLTest"
         },
@@ -34,6 +39,10 @@
         },
         {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
         },
         {
           "integrations": "Tenable.sc",
@@ -91,12 +100,6 @@
             "integrations": "Luminate"
         },
         {
-            "playbookID": "Test_Sagemaker",
-            "integrations": [
-                "AWS Sagemaker"
-            ]
-        },
-        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -110,12 +113,12 @@
             "playbookID": "blockip_test_playbook"
         },
         {
-          "integrations": "IntSights",
-          "playbookID": "IntSights Test"
-        },
-        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "InfoArmor VigilanteATI",
+            "playbookID": "InfoArmorVigilanteATITest"
         },
         {
             "integrations": "IntSights",
@@ -675,6 +678,10 @@
             "timeout": 300
         },
         {
+            "integrations" : "jira",
+            "playbookID" : "JiraCreateIssue-example-test"
+        },
+        {
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
@@ -823,13 +830,9 @@
     "skipped_tests": {
         "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
-        "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
-        "Centreon-Test-Playbook": "Need to check the reason for skipping",
-        "TruSTAR Test": "Need to check the reason for skipping",
-        "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
@@ -837,11 +840,11 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "FortiGate": "License expired, in the process of getting new one",
         "Whois": "Server currently has Whois by default, need to deprecate",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
-        "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
