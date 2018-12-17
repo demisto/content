@@ -107,7 +107,7 @@ tasks:
       - "16"
     scriptarguments:
       Ids:
-        simple: ${GoogleVault.Export.MatterID}#${GoogleVault.Export.ExportID}
+        simple: ${GoogleVault.Matter.MatterID}#${GoogleVault.Matter.Export.[0].ExportID}
       Interval:
         complex:
           root: inputs.pollInterval
@@ -119,8 +119,8 @@ tasks:
         complex:
           root: inputs.pollTimeout
       dt:
-        simple: GoogleVault.Export(val.Status != 'COMPLETED')=val.MatterID + '#' +
-          val.ExportID
+        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID
+          + '#' + val.ExportID
     separatecontext: true
     loop:
       iscommand: false
@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 550
         }
       }
     note: false
@@ -154,14 +154,14 @@ tasks:
       bucketName:
         complex:
           root: GoogleVault
-          accessor: Export.BucketName
+          accessor: Matter.Export.BucketName
       maxResult:
         complex:
           root: inputs.maxResultForDisplay
       viewID:
         complex:
           root: GoogleVault
-          accessor: Export.ViewID
+          accessor: Matter.Export.ViewID
     separatecontext: false
     view: |-
       {
@@ -557,11 +557,15 @@ tasks:
       exportID:
         complex:
           root: GoogleVault
-          accessor: Export.ExportID
+          accessor: Matter.Export.ExportID
+      exportIDS:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.ExportID
       matterId:
         complex:
           root: GoogleVault
-          accessor: Export.MatterID
+          accessor: Matter.Export.MatterID
       queryIDS: {}
     separatecontext: false
     view: |-
@@ -592,11 +596,11 @@ tasks:
       bucketName:
         complex:
           root: GoogleVault
-          accessor: Export.BucketName
+          accessor: Matter.Export.BucketName
       downloadID:
         complex:
           root: GoogleVault
-          accessor: Export.DownloadID
+          accessor: Matter.Export.DownloadID
     separatecontext: false
     view: |-
       {
@@ -632,7 +636,7 @@ tasks:
             value:
               complex:
                 root: GoogleVault
-                accessor: Export.Status
+                accessor: Matter.Export.Status
             iscontext: true
           right:
             value:

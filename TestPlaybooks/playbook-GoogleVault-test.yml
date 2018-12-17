@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": 25
         }
       }
     note: false
@@ -122,7 +122,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: GoogleVault.Matter.ID
+        simple: GoogleVault.Matter.MatterID
     separatecontext: false
     view: |-
       {
@@ -536,9 +536,14 @@ tasks:
       - "33"
     scriptarguments:
       exportID:
-        simple: ${GoogleVault.Export.ExportID}
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.ExportID
+      exportIDS:
+        simple: ${GoogleVault.Matter.Export.ExportID}
       matterId:
         simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+      queryIDS: {}
     separatecontext: false
     view: |-
       {
@@ -861,10 +866,10 @@ tasks:
       brand: ""
     scriptarguments:
       bucketName:
-        simple: 85d7cacf-5d93-44e5-8d37-4ba6da342d02
+        simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Export(val.Name.indexOf('drive') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1).ViewID}
     separatecontext: false
     view: |-
       {
@@ -888,10 +893,10 @@ tasks:
       brand: ""
     scriptarguments:
       bucketName:
-        simple: 85d7cacf-5d93-44e5-8d37-4ba6da342d02
+        simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Export(val.Name.indexOf('mail') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1).ViewID}
     separatecontext: false
     view: |-
       {
@@ -915,10 +920,10 @@ tasks:
       brand: ""
     scriptarguments:
       bucketName:
-        simple: 85d7cacf-5d93-44e5-8d37-4ba6da342d02
+        simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Export(val.Name.indexOf('groups') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1).ViewID}
     separatecontext: false
     view: |-
       {
@@ -961,10 +966,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2755,
+        "height": 2780,
         "width": 1780,
         "x": -850,
-        "y": 50
+        "y": 25
       }
     }
   }
