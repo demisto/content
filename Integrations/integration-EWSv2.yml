@@ -2201,6 +2201,5 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - pyEWS_Test
