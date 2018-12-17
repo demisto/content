@@ -137,7 +137,7 @@ def __create_incident_with_playbook(client, name, playbook_id):
     incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
 
     # poll up to 1 second
-    timeout = time.time() + 10
+    timeout = time.time() + 25
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
