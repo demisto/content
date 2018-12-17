@@ -778,28 +778,6 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -826,6 +804,28 @@
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
         }
     ],
     "skipped_tests": {
