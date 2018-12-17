@@ -619,4 +619,3 @@ outputs:
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test
-releaseNotes: "Added outputs to the playbook"

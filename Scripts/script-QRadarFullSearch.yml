@@ -100,6 +100,5 @@ dependson:
   - qradar-searches
   - qradar-get-search
   - qradar-get-search-results
-releaseNotes: "-"
 tests:
 - No test
