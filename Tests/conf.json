@@ -822,6 +822,11 @@
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "MaxMind Test",
+            "integrations": "MaxMind GeoIP2"
+
         }
     ],
     "skipped_tests": {
