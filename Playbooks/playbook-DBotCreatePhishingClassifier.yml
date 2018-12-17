@@ -337,7 +337,7 @@ inputs:
   description: Maximum number of incidents to fetch while training the model
 - key: isContextNeeded
   value:
-    simple: "yes"
+    simple: "no"
   required: false
   description: Is context data needed to get email text\subject\tag value?
 - key: historicalDataFileListName

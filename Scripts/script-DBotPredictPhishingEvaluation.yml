@@ -130,7 +130,7 @@ args:
   - "yes"
   - "no"
   description: Does one of the fields is in the context data?
-  defaultValue: "yes"
+  defaultValue: "no"
 - name: hashData
   auto: PREDEFINED
   predefined:
