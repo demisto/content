@@ -26,10 +26,6 @@ comment: |-
   Notice you have to run training playbook successfully first.
 enabled: true
 args:
-- name: warningThreshold
-  description: If the number of words in the input  text smaller then threshold a
-    warning will be displayed.
-  defaultValue: "30"
 - name: modelListName
   required: true
   description: Demisto list name that stores the machine learning model
@@ -52,9 +48,6 @@ outputs:
 - contextPath: DBotPredictPhishingLabel.Pobability
   description: 'The prediction probability '
   type: number
-- contextPath: DBotPredictPhishingLabel.AboveThreshold
-  description: Is the input text number of words above threshold?
-  type: boolean
 - contextPath: DBotPredictPhishingLabel.InputTextNumberOfTokens
   description: Number of tokens in the input text
   type: number

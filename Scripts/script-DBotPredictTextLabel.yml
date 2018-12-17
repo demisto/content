@@ -6,7 +6,6 @@ script: |+
   import sys, base64, re
   import demisto_ml
 
-  THRESHOLD = int(demisto.args().get('warning_threshold', 50))
   HASH_WORDS = (demisto.args()['hashData'] == 'yes')
   HASH_SEED = 5381
 
@@ -16,7 +15,6 @@ script: |+
       return {
           'Label': label,
           'Probability': "%.2f" % probability,
-          'AboveThreshold': len(input_text) >= THRESHOLD,
           'InputTextNumberOfTokens': number_of_tokens,
           'InputTextTokens': input_text
       }
@@ -82,10 +80,6 @@ args:
   required: true
   description: The input text to predict on
   isArray: true
-- name: warningThreshold
-  description: If the number of words in the input  text smaller then threshold a
-    warning will be displayed.
-  defaultValue: "30"
 - name: modelListName
   description: Demisto list name that stores the machine learning model
   defaultValue: phishing_model
@@ -103,9 +97,6 @@ outputs:
 - contextPath: DBotPredictTextLabel.Pobability
   description: 'The prediction probability '
   type: number
-- contextPath: DBotPredictTextLabel.AboveThreshold
-  description: Is the input text number of words above threshold?
-  type: boolean
 - contextPath: DBotPredictTextLabel.InputTextNumberOfTokens
   description: Number of tokens in the input text
   type: number
