@@ -170,7 +170,6 @@ outputs:
 - contextPath: Email.Subject
   description: The email subject
   type: string
-releaseNotes: "-"
 tests:
   - Phishing test - attachment
   - Phishing test - Inline

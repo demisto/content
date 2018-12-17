@@ -3395,6 +3395,5 @@ script:
     description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-releaseNotes: "Added command to retrieve table names, new ServiceNow logo, support of updating/creating tickets with states by context values"
 tests:
   - No test - Hibernating instance
