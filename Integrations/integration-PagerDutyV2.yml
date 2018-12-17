@@ -34,7 +34,6 @@ configuration:
   required: false
 script:
   script: |-
-    ''' testststst '''
     ''' IMPORTS '''
     import os
     import json
