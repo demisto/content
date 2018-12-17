@@ -45,7 +45,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -178,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -205,7 +205,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -236,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -280,7 +280,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -307,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -406,7 +406,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -438,7 +438,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -458,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2775
+          "y": 2995
         }
       }
     note: false
@@ -476,8 +476,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
-      - "10"
       - "2"
     scriptarguments:
       all:
@@ -515,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -539,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -563,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -596,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -629,7 +627,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -656,7 +654,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -698,7 +696,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -732,7 +730,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -766,7 +764,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -800,7 +798,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -842,7 +840,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -876,7 +874,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -907,7 +905,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -941,7 +939,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -975,7 +973,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -1009,7 +1007,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -1040,16 +1038,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
   "33":
     id: "33"
-    taskid: f260f7d3-71c4-40f4-8b7b-bfd7acd9af62
+    taskid: 88afb154-a1bf-4b8e-8f65-8bed3a05cb19
     type: condition
     task:
-      id: f260f7d3-71c4-40f4-8b7b-bfd7acd9af62
+      id: 88afb154-a1bf-4b8e-8f65-8bed3a05cb19
       version: -1
       name: Test mimecast-get-impersonation-logs context
       type: condition
@@ -1069,12 +1067,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 40.107
+              simple: "40.107"
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -1108,7 +1106,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -1139,7 +1137,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -1157,6 +1155,8 @@ tasks:
     nexttasks:
       "yes":
       - "4"
+      - "5"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1204,7 +1204,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -1227,7 +1227,7 @@ tasks:
       add_to_context:
         simple: "true"
       brand_name:
-        simple: MimecastV2
+        simple: MimecastV2_copy2
       expect_data: {}
       instance_name: {}
     separatecontext: false
@@ -1235,7 +1235,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -1266,7 +1266,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -1275,7 +1275,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2790,
+        "height": 3010,
         "width": 1240,
         "x": 50,
         "y": 50
