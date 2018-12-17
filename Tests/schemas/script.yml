@@ -69,6 +69,8 @@ mapping:
     - type: str
   sensitive:
     type: bool
+  runas:
+    type: str
 
 # script->args
 schema;argument_schema:
