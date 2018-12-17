@@ -147,13 +147,14 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 779f5b67-d538-4619-8c66-94d78925fa2e
+    taskid: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
     type: condition
     task:
-      id: 779f5b67-d538-4619-8c66-94d78925fa2e
+      id: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
       version: -1
       name: Is there a text-based file
-      description: Check if there is a text-based file in context.
+      description: Check if there is a text-based file in context Skips .msg and .eml
+        files.
       type: condition
       iscommand: false
       brand: ""
@@ -181,6 +182,38 @@ tasks:
                       value:
                         simple: ASCII text
                     ignorecase: true
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: news or mail
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: msg
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Composite Document File V2 Document, No summary info
                 accessor: EntryID
             iscontext: true
     view: |-
@@ -393,5 +426,6 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
+releaseNotes: "Fixed duplicate parsing of eml and msg files. Will now ignore them when extracting indicators from files."
 tests:
   - Extract Indicators From File - test
