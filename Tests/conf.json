@@ -7,6 +7,9 @@
             "playbookID": "OTRS Test"
         },
         {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
+        {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
         },
