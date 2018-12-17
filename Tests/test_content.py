@@ -188,6 +188,10 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
         if integration in delete_on_failure_integrations:
             is_delete_on_failure_integrations = True
 
+        print('111111')
+        print(str(integration))
+        print(is_delete_on_failure_integrations)
+
         # string description
         integrations.append({
             'name': integration,

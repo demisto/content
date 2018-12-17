@@ -271,8 +271,12 @@ def test_integration(client, integrations, playbook_id, options={}, is_delete_on
         # delete incident
         __delete_incident(client, incident)
 
+    print(playbook_id)
+    print(instance_ids)
+    print(is_delete_on_failure_integration)
+
     if is_delete_on_failure_integration or test_pass:
-        # delete integration instance if test_pass failed but integration is in "delete_on_failure_integrations" list
+        # delete integration instance if test_pass or if integration is in "delete_on_failure_integrations" list
         __delete_integrations_instances(client, instance_ids)
 
     return test_pass, inc_id
