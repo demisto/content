@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 04198bae-8295-434f-88c8-25db1edc72a2
+    taskid: 5ad1e361-21d6-4fce-83ae-9d0d9c4ef24f
     type: start
     task:
-      id: 04198bae-8295-434f-88c8-25db1edc72a2
+      id: 5ad1e361-21d6-4fce-83ae-9d0d9c4ef24f
       version: -1
       name: ""
       description: '-'
@@ -27,19 +27,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 48efed92-ae0d-48af-8f87-d56d6f0a54b2
+    taskid: 93f72f9a-6f0d-4252-852d-68e5cacf9062
     type: regular
     task:
-      id: 48efed92-ae0d-48af-8f87-d56d6f0a54b2
+      id: 93f72f9a-6f0d-4252-852d-68e5cacf9062
       version: -1
       name: atd-login
       description: Returns a logon result for ATD
-      script: McAfee Advanced Threat Defense|||atd-login
+      script: '|||atd-login'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -52,12 +53,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: a3f8ce43-0f84-4810-8ad1-cc46e8d0f3e9
+    taskid: 2444ef96-ae7d-463b-8342-467e915776b5
     type: regular
     task:
-      id: a3f8ce43-0f84-4810-8ad1-cc46e8d0f3e9
+      id: 2444ef96-ae7d-463b-8342-467e915776b5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -81,12 +83,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 15ebe28e-5230-4d00-821a-67deb15f65bb
+    taskid: 14c67466-163c-4575-8e87-c9d4f3b90dfe
     type: title
     task:
-      id: 15ebe28e-5230-4d00-821a-67deb15f65bb
+      id: 14c67466-163c-4575-8e87-c9d4f3b90dfe
       version: -1
       name: Test Playbook McAfee ATD
       type: title
@@ -104,12 +107,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 65dbdf66-a784-4adb-8411-9c886d7a9e3b
+    taskid: 44a69b4b-808b-46a9-8ac9-8fe2a63ac7ab
     type: condition
     task:
-      id: 65dbdf66-a784-4adb-8411-9c886d7a9e3b
+      id: 44a69b4b-808b-46a9-8ac9-8fe2a63ac7ab
       version: -1
       name: atd-login AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -137,20 +141,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: c63c25f2-cbda-4431-87cb-9fcc78f15d47
+    taskid: 6717e324-23bc-40fe-8299-70ecf1aec986
     type: regular
     task:
-      id: c63c25f2-cbda-4431-87cb-9fcc78f15d47
+      id: 6717e324-23bc-40fe-8299-70ecf1aec986
       version: -1
       name: atd-list-user
       description: ' displays the user profile information present on the McAfee Advanced
         Threat Defense.'
-      script: McAfee Advanced Threat Defense|||atd-list-user
+      script: '|||atd-list-user'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -165,12 +170,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 30d86cf7-8d27-43df-8e8f-068f8db3cd23
+    taskid: b5403b6b-3571-4bae-8866-f396f1c641c3
     type: condition
     task:
-      id: 30d86cf7-8d27-43df-8e8f-068f8db3cd23
+      id: b5403b6b-3571-4bae-8866-f396f1c641c3
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -187,17 +193,17 @@ tasks:
         complex:
           root: ATD
           filters:
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: ATD.Users.FullName
                 iscontext: true
               right:
                 value:
-                  simple: dxl
+                  simple: ATD upload Admin
           accessor: Users.FullName
       right:
-        simple: dxl
+        simple: ATD upload Admin
     results:
     - AreValuesEqual
     separatecontext: false
@@ -209,20 +215,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 9ef49262-294c-45e0-8fb1-db823f0c9090
+    taskid: 78ce8e32-9935-4d0d-8ae0-3a78b8c9c792
     type: regular
     task:
-      id: 9ef49262-294c-45e0-8fb1-db823f0c9090
+      id: 78ce8e32-9935-4d0d-8ae0-3a78b8c9c792
       version: -1
       name: atd-list-analyzer-profiles
       description: ' display the analyzer profiles. Only the analyzer profiles to
         which the user has access are displayed.'
-      script: McAfee Advanced Threat Defense|||atd-list-analyzer-profiles
+      script: '|||atd-list-analyzer-profiles'
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -235,12 +242,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 3e736727-b8ac-45c5-8c52-cfb62f009b9e
+    taskid: cea2229b-466a-4fdc-88a7-a97cf63c3500
     type: condition
     task:
-      id: 3e736727-b8ac-45c5-8c52-cfb62f009b9e
+      id: cea2229b-466a-4fdc-88a7-a97cf63c3500
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -265,12 +273,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: 41bce0df-8756-4b88-8c99-e5d3d8e7354d
+    taskid: ba669fdf-8eb3-410d-819f-6d5d3ed5b9e3
     type: regular
     task:
-      id: 41bce0df-8756-4b88-8c99-e5d3d8e7354d
+      id: ba669fdf-8eb3-410d-819f-6d5d3ed5b9e3
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -297,12 +306,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: bf75776e-db01-46df-843c-fc206177ec69
+    taskid: d60917a3-b82f-4450-8c31-d933f9da8992
     type: title
     task:
-      id: bf75776e-db01-46df-843c-fc206177ec69
+      id: d60917a3-b82f-4450-8c31-d933f9da8992
       version: -1
       name: Done
       description: finished
@@ -318,12 +328,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
-    taskid: 6db1c6dc-0b1d-465b-86ab-eb5757a1de1f
+    taskid: 110e1659-0dc7-444d-88fb-73ad813b0e3b
     type: playbook
     task:
-      id: 6db1c6dc-0b1d-465b-86ab-eb5757a1de1f
+      id: 110e1659-0dc7-444d-88fb-73ad813b0e3b
       version: -1
       name: ATD - Detonate File
       playbookName: ATD - Detonate File
@@ -342,12 +353,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
-    taskid: 3d12577d-a86a-486b-88b8-033baa2043fe
+    taskid: 4cfef8f4-bda1-4d4c-88f8-9d318c54741b
     type: playbook
     task:
-      id: 3d12577d-a86a-486b-88b8-033baa2043fe
+      id: 4cfef8f4-bda1-4d4c-88f8-9d318c54741b
       version: -1
       name: Detonate URL - McAfee ATD
       playbookName: Detonate URL - McAfee ATD
@@ -358,12 +370,12 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      URL:
-        simple: https://www.demisto.com
       Interval:
         simple: "1"
       Timeout:
         simple: "15"
+      URL:
+        simple: https://www.demisto.com
     separatecontext: true
     loop:
       iscommand: false
@@ -377,6 +389,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},

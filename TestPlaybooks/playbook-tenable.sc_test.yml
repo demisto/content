@@ -1,5 +1,5 @@
 id: tenable-sc-test
-version: 9
+version: -1
 name: Tenable.sc Test
 description: Test playbook for Tenable.sc integration
 starttaskid: "0"
@@ -978,10 +978,10 @@ tasks:
     timertriggers: []
   "29":
     id: "29"
-    taskid: 57391381-d653-477e-83dd-ad0194521eb6
+    taskid: 0c70d2a2-7bd7-4d76-8175-9b71ca3b6dfa
     type: regular
     task:
-      id: 57391381-d653-477e-83dd-ad0194521eb6
+      id: 0c70d2a2-7bd7-4d76-8175-9b71ca3b6dfa
       version: -1
       name: Get alert
       description: Get information about a given alert in tenabel.sc
@@ -991,24 +991,10 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "30"
+      - "41"
     scriptarguments:
       alert_id:
-        complex:
-          root: TenableSC
-          accessor: Alert
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: Test Alert
-              field:
-                value:
-                  simple: Name
-              getField:
-                value:
-                  simple: ID
+        simple: ${TenableSC.Alert.ID}
     separatecontext: false
     view: |-
       {
@@ -1053,7 +1039,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5295
+          "y": 5470
         }
       }
     note: false
@@ -1077,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5645
+          "y": 5820
         }
       }
     note: false
@@ -1106,7 +1092,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5790
+          "y": 5965
         }
       }
     note: false
@@ -1139,7 +1125,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5470
+          "y": 5645
         }
       }
     note: false
@@ -1169,7 +1155,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5965
+          "y": 6140
         }
       }
     note: false
@@ -1195,7 +1181,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6140
+          "y": 6315
         }
       }
     note: false
@@ -1232,7 +1218,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6315
+          "y": 6490
         }
       }
     note: false
@@ -1266,7 +1252,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6490
+          "y": 6665
         }
       }
     note: false
@@ -1300,12 +1286,49 @@ tasks:
       }
     note: false
     timertriggers: []
+  "41":
+    id: "41"
+    taskid: 8b839444-d18b-4988-8fe1-b9efd9ea4691
+    type: regular
+    task:
+      id: 8b839444-d18b-4988-8fe1-b9efd9ea4691
+      version: -1
+      name: Verify Alert
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Actions,Action
+      path:
+        simple: TenableSC.Alert
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6535,
+        "height": 6710,
         "width": 380,
         "x": 50,
         "y": 50
