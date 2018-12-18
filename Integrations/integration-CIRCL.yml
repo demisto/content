@@ -9,7 +9,7 @@ description: |-
   CIRCL Passive DNS is a database storing historical DNS records from various resources.
   CIRCL Passive SSL is a database storing historical X.509 certificates seen per IP address. The Passive SSL historical data is indexed per IP address.
 configuration:
-- display: Server URL
+- display: Server URL (e.g. https://www.circl.lu)
   name: url
   defaultvalue: https://www.circl.lu
   type: 0
@@ -18,7 +18,7 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-  required: false
+  required: true
 - display: Use system proxy settings
   name: isUsingProxy
   defaultvalue: ""
@@ -54,7 +54,7 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-    lastTimeKey = 'time_last'
+    last_time_key = 'time_last'
 
     def dnsGet(url):
         queryUrl = BASE_URL + '/pdns/query/' + url
@@ -90,7 +90,7 @@ script:
             key = e['rdata']
             other = resultsMap.get(key)
 
-            if other != None and other[lastTimeKey] > e[lastTimeKey]:
+            if other is not None and other[last_time_key] > e[last_time_key]:
                 e = other
 
             resultsMap[key] = e
@@ -101,7 +101,7 @@ script:
     def createDnsRecordContext(record):
         return {
             'Data': record['rdata'],
-            'LastTime': record[lastTimeKey],
+            'LastTime': record[last_time_key],
         }
 
     def listCertificates(queryValue):
@@ -205,28 +205,30 @@ script:
             'Seen': data.get('icsi', {}).get('times_seen'),
         }
 
-    try:
-        args = demisto.args()
-
-        if demisto.command() == 'test-module':
+    def executeCommand(command, args):
+        if command == 'test-module':
             responce = dnsGet('test.com')
-            demisto.results('ok')
+            return 'ok'
 
-        if demisto.command() == 'circl-dns-get':
-            demisto.results(dnsGet(args.get('queryValue')))
+        if command == 'circl-dns-get':
+            return dnsGet(args.get('queryValue'))
 
-        if demisto.command() == 'circl-ssl-list-certificates':
-            demisto.results(listCertificates(args.get('queryValue')))
+        if command == 'circl-ssl-list-certificates':
+            return listCertificates(args.get('queryValue'))
 
-        if demisto.command() == 'circl-ssl-query-certificate':
+        if command == 'circl-ssl-query-certificate':
             limit = int(args.get('limitResults', 100))
             sha1 = args.get('certificate')
 
-            demisto.results(listCertificateSeenIps(sha1, limit))
+            return listCertificateSeenIps(sha1, limit)
 
-        if demisto.command() == 'circl-ssl-get-certificate':
-            demisto.results(getCertificateDetails(args.get('certificate')))
+        if command == 'circl-ssl-get-certificate':
+            return getCertificateDetails(args.get('certificate'))
 
+    LOG('Executing command ' + demisto.command())
+    try:
+        demisto.results(executeCommand(demisto.command(), demisto.args()))
+        
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -259,7 +261,7 @@ script:
       description: IP address
       type: string
     - contextPath: CIRCLssl.IP.Certificate.Sha1
-      description: ' The SHA1 fingerprint of the certificate'
+      description: ' The SHA-1 fingerprint of the certificate'
       type: string
     - contextPath: CIRCLssl.IP.Certificate.Subjects
       description: Certificate subjects
@@ -270,13 +272,13 @@ script:
     arguments:
     - name: certificate
       required: true
-      description: SHA1 fingerprint of a certificate
+      description: SHA-1 fingerprint of a certificate
     - name: limitResults
       description: Limit the results number (Increasing number can cause browser slowdowns).
       defaultValue: "100"
     outputs:
     - contextPath: CIRCLssl.Certificate.Sha1
-      description: ' The SHA1 fingerprint of the certificate'
+      description: ' The SHA-1 fingerprint of the certificate'
       type: string
     - contextPath: CIRCLssl.Certificate.Hits
       description: Number of hits for the certificate (number of associated addresses)
@@ -289,10 +291,10 @@ script:
     arguments:
     - name: certificate
       required: true
-      description: SHA1 fingerprint of a certificate
+      description: SHA-1 fingerprint of a certificate
     outputs:
     - contextPath: CIRCLssl.Certificate.Sha1
-      description: ' The SHA1 fingerprint of the certificate'
+      description: ' The SHA-1 fingerprint of the certificate'
       type: string
     - contextPath: CIRCLssl.Certificate.Usage
       description: Extended key usage
