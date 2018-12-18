@@ -56,19 +56,19 @@ script:
 
     last_time_key = 'time_last'
 
-    def dnsGet(url):
-        queryUrl = BASE_URL + '/pdns/query/' + url
+    def dns_get(url):
+        query_url = BASE_URL + '/pdns/query/' + url
 
-        responce = requests.get(queryUrl, auth=AUTH)
+        responce = requests.get(query_url, auth=AUTH)
         responce.raise_for_status()
 
         results = list(map(lambda line: json.loads(line), responce.text.splitlines()))
-        results = mergeByRdata(results)
+        results = merge_by_rdata(results)
 
         records = []
 
         for result in results:
-            records.append(createDnsRecordContext(result))
+            records.append(create_dns_record_context(result))
 
         return {
             'Type': entryTypes['note'],
@@ -83,28 +83,28 @@ script:
             }
         }
 
-    def mergeByRdata(results):
-        resultsMap = dict()
+    def merge_by_rdata(results):
+        results_map = dict()
 
         for e in results:
             key = e['rdata']
-            other = resultsMap.get(key)
+            other = results_map.get(key)
 
             if other is not None and other[last_time_key] > e[last_time_key]:
                 e = other
 
-            resultsMap[key] = e
+            results_map[key] = e
 
-        return list(resultsMap.values())
+        return list(results_map.values())
 
 
-    def createDnsRecordContext(record):
+    def create_dns_record_context(record):
         return {
             'Data': record['rdata'],
             'LastTime': record[last_time_key],
         }
 
-    def listCertificates(queryValue):
+    def list_certificates(queryValue):
         queryUrl = BASE_URL + '/v2pssl/query/' + queryValue
 
         responce = requests.get(queryUrl, auth=AUTH)
@@ -114,7 +114,7 @@ script:
         records = []
 
         for ip, ipData in data.items():
-            records.append(createIpContext(ip, ipData))
+            records.append(create_ip_context(ip, ipData))
 
         return {
             'Type': entryTypes['note'],
@@ -126,32 +126,32 @@ script:
             }
         }
 
-    def createIpContext(ip, ipData):
+    def create_ip_context(ip, ipData):
         certificates = []
 
         for sha1 in ipData['certificates']:
             subjects = ipData['subjects'][sha1]['values']
-            certificates.append(createCertificateContext(sha1, subjects))
+            certificates.append(create_list_certificate_context(sha1, subjects))
 
         return {
             'Value': ip,
             'Certificate': certificates
         }
 
-    def createCertificateContext(sha1, subjects):
+    def create_list_certificate_context(sha1, subjects):
         return {
             'Sha1': sha1,
             'Subjects': subjects
         }
 
-    def listCertificateSeenIps(sha1, limit):
+    def list_certificate_seen_ips(sha1, limit):
         queryUrl = BASE_URL + '/v2pssl/cquery/' + sha1
 
         responce = requests.get(queryUrl, auth=AUTH)
         responce.raise_for_status()
 
         data = responce.json()
-        certificate = createCertificateSeenIpsContext(sha1, data, limit)
+        certificate = create_certificate_seen_ips_context(sha1, data, limit)
 
         return {
             'Type': entryTypes['note'],
@@ -163,21 +163,21 @@ script:
             }
         }
 
-    def createCertificateSeenIpsContext(sha1, data, limit):
+    def create_certificate_seen_ips_context(sha1, data, limit):
         return {
             'Sha1': sha1,
             'Hits': data['hits'],
             'IP': data['seen'][:limit],
         }
 
-    def getCertificateDetails(sha1):
+    def get_certificate_details(sha1):
         queryUrl = BASE_URL + '/v2pssl/cfetch/' + sha1
 
         responce = requests.get(queryUrl, auth=AUTH)
         responce.raise_for_status()
 
         data = responce.json()
-        certificate = createCertificateDetails(sha1, data)
+        certificate = create_certificate_details(sha1, data)
 
         return {
             'Type': entryTypes['note'],
@@ -189,7 +189,7 @@ script:
             }
         }
 
-    def createCertificateDetails(sha1, data):
+    def create_certificate_details(sha1, data):
         info = data['info']
         extension = info['extension']
 
@@ -205,29 +205,29 @@ script:
             'Seen': data.get('icsi', {}).get('times_seen'),
         }
 
-    def executeCommand(command, args):
+    def execute_command(command, args):
         if command == 'test-module':
-            responce = dnsGet('test.com')
+            responce = dns_get('test.com')
             return 'ok'
 
         if command == 'circl-dns-get':
-            return dnsGet(args.get('queryValue'))
+            return dns_get(args.get('queryValue'))
 
         if command == 'circl-ssl-list-certificates':
-            return listCertificates(args.get('queryValue'))
+            return list_certificates(args.get('queryValue'))
 
         if command == 'circl-ssl-query-certificate':
             limit = int(args.get('limitResults', 100))
             sha1 = args.get('certificate')
 
-            return listCertificateSeenIps(sha1, limit)
+            return list_certificate_seen_ips(sha1, limit)
 
         if command == 'circl-ssl-get-certificate':
-            return getCertificateDetails(args.get('certificate'))
+            return get_certificate_details(args.get('certificate'))
 
     LOG('Executing command ' + demisto.command())
     try:
-        demisto.results(executeCommand(demisto.command(), demisto.args()))
+        demisto.results(execute_command(demisto.command(), demisto.args()))
         
     except Exception, e:
         LOG(e.message)
