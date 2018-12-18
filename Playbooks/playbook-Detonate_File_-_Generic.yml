@@ -640,6 +640,5 @@ outputs:
 - contextPath: SNDBOX.Analysis
   description: SNDBOX analysis
   type: unknown
-releaseNotes: "added SNDBOX"
 tests:
   - Detonate File - Generic Test

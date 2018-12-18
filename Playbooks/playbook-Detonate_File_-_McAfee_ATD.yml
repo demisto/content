@@ -31,7 +31,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
-      description: "-"
+      description: '-'
       iscommand: false
       brand: ""
     nexttasks:
@@ -43,48 +43,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: d146afc4-bfe2-492e-87a3-0f66f3af74d7
-    type: regular
-    task:
-      id: d146afc4-bfe2-492e-87a3-0f66f3af74d7
-      version: -1
-      name: McafeeATD Upload File
-      description: Uploads the submission to McAfee ATD.
-      script: '|||atd-file-upload'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      analyzeAgain: {}
-      dstIp: {}
-      entryID:
-        complex:
-          root: inputs.File.EntryID
-      fileName: {}
-      filePriorityQ: {}
-      messageId: {}
-      skipTaskId: {}
-      srcIp: {}
-      submitType:
-        simple: "0"
-      url: {}
-      vmProfileList: {}
-      xMode: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 895
         }
       }
     note: false
@@ -144,12 +102,12 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 6c564961-e548-4542-8056-6b98cc14286d
+    taskid: b0cb6625-0e6c-44ae-835c-684b21d0a6c1
     type: regular
     task:
-      id: 6c564961-e548-4542-8056-6b98cc14286d
+      id: b0cb6625-0e6c-44ae-835c-684b21d0a6c1
       version: -1
-      name: McAfeeATD Get Report
+      name: McAfee ATD Get Report
       description: Retrieve the reports from McAfee ATD.
       script: '|||atd-get-report'
       type: regular
@@ -350,7 +308,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -502,6 +460,78 @@ tasks:
       }
     note: false
     timertriggers: []
+  "14":
+    id: "14"
+    taskid: 6e299488-408a-4b9d-82d0-cb053caf322e
+    type: regular
+    task:
+      id: 6e299488-408a-4b9d-82d0-cb053caf322e
+      version: -1
+      name: Mcafee ATD Upload File
+      description: upload a file/web URL for dynamic analysis by using the provided
+        Analyzer Profile. Only single file/web URL can be submitted at a time.
+      script: '|||atd-file-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+          accessor: EntryID
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "0"
+      url: {}
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -616,7 +646,7 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+releaseNotes: "Submit only supported files to McAfee ATD"
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test
-releaseNotes: "Added outputs to the playbook"

@@ -2476,4 +2476,3 @@ script:
   runonce: false
 tests:
  - Mimecast test
-releaseNotes: "Added get mail contents + metadata and download attachments. Do not use with Mimecast Authentication integration."

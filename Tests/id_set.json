@@ -294,6 +294,12 @@
         }
     }, 
     {
+        "Awake Security": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
         "Skyformation": {
             "toversion": "99.99.99", 
             "fromversion": "0"
@@ -780,12 +786,6 @@
         }
     }, 
     {
-        "McAfee Advanced Threat Defense": {
-            "toversion": "99.99.99", 
-            "fromversion": "0"
-        }
-    }, 
-    {
         "RSA NetWitness Endpoint": {
             "toversion": "99.99.99", 
             "fromversion": "0"
@@ -841,6 +841,12 @@
     }, 
     {
         "FireEye ETP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "InfoArmor VigilanteATI": {
             "toversion": "99.99.99", 
             "fromversion": "0"
         }
@@ -913,6 +919,12 @@
     }, 
     {
         "Devo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - Security Hub": {
             "toversion": "99.99.99", 
             "fromversion": "0"
         }
@@ -1172,7 +1184,7 @@
     {
         "McAfee Advanced Threat Defense": {
             "toversion": "99.99.99", 
-            "fromversion": "0"
+            "fromversion": "3.5.0"
         }
     }, 
     {
@@ -1257,6 +1269,12 @@
         "Symantec Messaging Gateway": {
             "toversion": "99.99.99", 
             "fromversion": "0"
+        }
+    }, 
+    {
+        "OTRS": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.1.0"
         }
     }, 
     {
@@ -5341,6 +5359,12 @@
     }, 
     {
         "TrendmicroSecurityProfileAssignToHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraCreateIssue-example": {
             "toversion": "99.99.99", 
             "fromversion": "0"
         }
