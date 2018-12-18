@@ -531,12 +531,8 @@ script: |-
       elif isinstance(data, list):
           string_list = []
           for d in data:
-              try:
-                  string_list.append(str(d))
-              except UnicodeEncodeError:
-                  string_list.append(d.encode('utf-8'))
-
-          return ',\n'.join(string_list)
+              string_list.append(str(d) if not isinstance(d, STRING_TYPES) else d)
+        return ',\n'.join(string_list)
       else:
           return json.dumps(data, indent=indent, ensure_ascii=False)
 
