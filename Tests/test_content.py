@@ -16,6 +16,7 @@ RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -77,9 +78,18 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
+def configure_proxy(c, proxy):
+    if proxy:
+        data = {"http_proxy": "http://" + proxy, "https_proxy": "https://" + proxy}
+    else:
+        data = {"http_proxy": '', "https_proxy": ''}
+    c.req('POST', '/system/config', data)
+
+
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
+    configure_proxy(c, 'localhost:9997')
     # run test
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     # use results
@@ -90,7 +100,7 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
         notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-
+    configure_proxy(c, '')
     print '------ Test %s end ------' % (test_message,)
 
 
