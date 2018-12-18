@@ -25,15 +25,15 @@ script: |+
       if comma_values == ALL_LABELS:
           return comma_values
       comma_values = comma_values.lower()
-      values = comma_values.split(",")
+      values = map(lambda x: x.strip(), comma_values.split(","))
       labels_dict = {}
       for v in values:
-          v = canonize_label(v)
+          v = v.strip()
           if ":" in v:
               splited = v.split(":")
-              labels_dict[splited[0].strip()] = canonize_label(splited[1])
+              labels_dict[canonize_label(splited[0].strip())] = canonize_label(splited[1].strip())
           else:
-              labels_dict[v] = canonize_label(v)
+              labels_dict[canonize_label(v)] = canonize_label(v)
       return labels_dict
 
   def get_incidents(query, size, is_context_data_needed):
@@ -50,9 +50,6 @@ script: |+
           i.update(custom_fields)
 
       return incident_list
-
-  def get_tag(category):
-     return tag.replace(" ","_")
 
 
   EMAIL_TEXT_DT = demisto.args()['emailTextKey']
