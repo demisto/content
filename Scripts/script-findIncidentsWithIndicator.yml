@@ -57,3 +57,5 @@ outputs:
 - contextPath: IncidentsWithIndicator.incidentIDs
   description: Incident IDs that the indicator was found in
 scripttarget: 0
+tests:
+  - No test
