@@ -1,0 +1,43 @@
+commonfields:
+  id: 310ed078-8188-443f-83cc-7cb80c55971d
+  version: -1
+  fromVersion: 4.1
+name: ChangeRemediationSLAOnSevChange
+script: |
+  import datetime
+
+  # ##### Help #####
+  # Triggered Field Name is in: demisto.args()['name']
+  # Field's old value is in: demisto.args()['old']
+  # Field's new value is in: demisto.args()['new']
+  # Printing argument structure: demisto.results(demisto.args())
+
+  # ##### Configuration #####
+  CRITICAL_SLA = 60  # In minutes
+  NONCRITICAL_SLA = 6 # In days
+
+  # ##### Logic #####
+  args_sev =  demisto.args()['new']
+  now = datetime.datetime.utcnow()
+
+  if args_sev == 'Critical':
+      demisto.log('Severity changed to Critical')
+      # newsla = now + datetime.timedelta(days=2)
+      demisto.executeCommand("setIncident",{'sla': CRITICAL_SLA, "slaField":"remediationsla"})
+
+  else:
+      demisto.log('Severity changed to Not Critical' )
+      newsla = now + datetime.timedelta(days=NONCRITICAL_SLA)
+      newsla = newsla.strftime('%Y-%m-%dT%H:%M:%S+00:00')
+      demisto.executeCommand("setIncident",{'sla': newsla, "slaField":"remediationsla"})
+type: python
+tags:
+- field-change-triggered
+- example
+comment: |-
+  Changes the remediation SLA once a change in incident severity occurs.
+  This is done automatically and the changes can be configured to your needs.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotRole

@@ -1,0 +1,22 @@
+commonfields:
+  id: 544f7e7f-a961-4ffb-8743-83be70cb1940
+  version: -1
+  fromVersion: 4.1
+name: SendEmailOnSLABreach
+script: |2-
+
+  ###### Configuration ######
+  EMAIL_TO = "someuser@demisto.com"
+  SUBJECT = "SLA breached!"
+  BODY = "We have detected a breach in SLA. Check the incident for more details."
+
+  ##### Send Email #####
+  demisto.executeCommand("SendEmail", {"to":EMAIL_TO, "subject":SUBJECT, "body":BODY})
+type: python
+tags: []
+comment: Sends an email to a user. Can be triggered on SLA breach, and customized
+  to your needs.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

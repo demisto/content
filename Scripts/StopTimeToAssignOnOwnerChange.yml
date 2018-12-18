@@ -1,0 +1,19 @@
+commonfields:
+  id: efa042a3-7017-4047-81e3-155e7065c88f
+  version: -1
+  fromVersion: 4.1
+name: StopTimeToAssignOnOwnerChange
+script: |2
+
+  if demisto.args()['old'] == "" and demisto.args()['new'] != "":  # If owner was no-one and is now someone:
+      demisto.executeCommand("stopTimer", {"timerField":"timetoassignment"})
+      demisto.results("Assignment of the incident was successful and so the Time To Assignment timer has been stopped.")
+type: python
+tags:
+- field-change-triggered
+- example
+comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
