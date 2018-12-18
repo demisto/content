@@ -169,56 +169,64 @@ script:
         return int(d.strftime("%s")) * 1000
 
     def create_file_ec(indicators, file, threshold):
-        trustar_ec = []
-        file_ec = []
-        dbot_ec = []
+        trustar_ec = {}
+        file_ec = {}
+        dbot_ec = {}
         for indicator in indicators:
-            file_ec.append({
+            file_ec.update({
                 indicator['indicatorType']: indicator['value'],
-                # 'Malicious.Vendor': ???,
-                # 'Malicious.Detections': ???,
             })
-            trustar_ec.append({
+            trustar_ec.update({
                 'Value': indicator['value'],
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
             indicator_score = priority_level_to_score(indicator["priorityLevel"])
-            dbot_ec.append({
+            dbot_ec.update({
                 'Indicator': file,
                 'Type': 'file',
                 'Vendor': 'TruSTAR',
                 'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
             })
-            #TODO: Parse file_ec properly (union)
+            if threshold <= indicator_score:
+                file_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR'
+                    }
+                })
         return {
             'DBotScore': dbot_ec,
             'File': file_ec,
-            'TruSTAR.URL': trustar_ec
+            'TruSTAR.File': trustar_ec
         }
 
     def create_ip_ec(indicators, ip, threshold):
-        trustar_ec = []
-        ip_ec = []
-        dbot_ec = []
+        trustar_ec = {}
+        ip_ec = {}
+        dbot_ec = {}
         for indicator in indicators:
-            ip_ec.append({
+            ip_ec.update({
                 'Address': indicator['value'],
-                # 'Malicious.Vendor': ???,
-                # 'Malicious.Description': ???,
             })
-            trustar_ec.append({
+            trustar_ec.update({
                 'Value': indicator['value'],
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
             indicator_score = priority_level_to_score(indicator["priorityLevel"])
-            dbot_ec.append({
+            dbot_ec.update({
                 'Indicator': ip,
                 'Type': 'ip',
                 'Vendor': 'TruSTAR',
                 'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
             })
+            if threshold <= indicator_score:
+                ip_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': indicator['priorityLevel']
+                    }
+                })
         return {
             'DBotScore': dbot_ec,
             'IP': ip_ec,
@@ -226,27 +234,32 @@ script:
         }
 
     def create_url_ec(indicators, url, threshold):
-        trustar_ec = []
-        url_ec = []
-        dbot_ec = []
+        trustar_ec = {}
+        url_ec = {}
+        dbot_ec = {}
         for indicator in indicators:
-            url_ec.append({
+            url_ec.update({
                 'Data': indicator['value'],
-                # 'Malicious.Vendor': ???,
-                # 'Malicious.Description': ???,
             })
-            trustar_ec.append({
+            trustar_ec.update({
                 'Value': indicator['value'],
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
             indicator_score = priority_level_to_score(indicator["priorityLevel"])
-            dbot_ec.append({
+            dbot_ec.update({
                 'Indicator': url,
                 'Type': 'url',
                 'Vendor': 'TruSTAR',
                 'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
             })
+            if threshold <= indicator_score:
+                url_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': indicator['priorityLevel']
+                    }
+                })
         return {
             'DBotScore': dbot_ec,
             'URL': url_ec,
@@ -254,8 +267,37 @@ script:
         }
 
     def create_domain_ec(indicators, url, threshold):
-        # TODO: Complete this
-        return
+        trustar_ec = {}
+        domain_ec = {}
+        dbot_ec = {}
+        for indicator in indicators:
+            domain_ec.update({
+                'Name': indicator['value'],
+            })
+            trustar_ec.update({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            dbot_ec.update({
+                'Indicator': url,
+                'Type': 'url',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            if threshold <= indicator_score:
+                domain_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': indicator['priorityLevel']
+                    }
+                })
+        return {
+            'DBotScore': dbot_ec,
+            'Domain': domain_ec,
+            'TruSTAR.URL': trustar_ec
+        }
 
     ''' FUNCTIONS '''
     def get_related_indicators(indicators, enclave_ids, page_size, page_number):
@@ -665,7 +707,7 @@ script:
             demisto.results(generic_search_indicator(demisto.args().get('url'), demisto.args().get('threshold'), ('URL',), create_url_ec))
 
         elif demisto.command() == 'domain':
-            demisto.results(generic_search_indicator(demisto.args().get('url'), demisto.args().get('threshold'), ('URL',), create_domain_ec))
+            demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.args().get('threshold'), ('Domain', 'URL',), create_domain_ec))
 
     except Exception, e:
         LOG(e.message)
@@ -1076,9 +1118,6 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-      type: string
-    - contextPath: File.Malicious.Detections
-      description: For malicious files. Total detections.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
