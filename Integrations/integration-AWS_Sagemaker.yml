@@ -102,6 +102,5 @@ script:
     description: Classify input text (usually email content)
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Adding AWS SageMaker machine learning service integration"
 tests:
-- Test_Sagemaker
+  - Test_Sagemaker
