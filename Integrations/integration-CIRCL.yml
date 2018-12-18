@@ -11,7 +11,7 @@ description: |-
 configuration:
 - display: Server URL
   name: url
-  defaultvalue: https://www.circl.lu/pdns/query/
+  defaultvalue: https://www.circl.lu
   type: 0
   required: true
 - display: Username
