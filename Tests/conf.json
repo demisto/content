@@ -777,28 +777,6 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -830,6 +808,28 @@
             "playbookID": "Test_Sagemaker",
             "integrations": "AWS Sagemaker"
 
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
         }
     ],
     "skipped_tests": {
@@ -842,7 +842,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "ParseEmailFiles": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
