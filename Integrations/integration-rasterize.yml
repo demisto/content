@@ -4,6 +4,7 @@ commonfields:
 name: Rasterize
 display: Rasterize
 category: Utilities
+releaseNotes: Better error handling for Rasterize errors
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAA10lEQVR4Ae3TYQ3CQAwFYCQgAQlIOCmTMAnnYBJOAhImYRImYRJKSfrrBXoXDkrJtcnLEtaQr9fdiYhcJ4AugAHkIgdJAfwrYAC/eTO51nGAv1x7AAPoH2h4w02AXFdOfjyVngtnNQdyTdC3vOgr8j5ZA/dan5weSbYuICdLWoFHA3CBnqkHiKkBcZgbvD8/GWI3AcJ3mDmzrHPGATAmQDwpWGXBT8AcKKgkzw378bd3gFmJCpRVHtXBOoBq9D/FE/MHLBxyCfx0RgDaJ4AB9AJ0nAAOALwDFV7f8k1w4yAAAAAASUVORK5CYII=
 description: Rasterize URLs or emails given to it
 detaileddescription: Take a URL or HTML body and create an image or PDF out of it
@@ -45,7 +46,7 @@ script:
           error_message = subprocess.check_output(command)
       except Exception as e:
           return_code = -1
-          error_message = e.output
+          error_message = e.message
 
 
     if demisto.command() == 'test-module':
@@ -78,7 +79,7 @@ script:
             error_message = subprocess.check_output(command)
         except Exception as e:
             return_code = -1
-            error_message = e.output
+            error_message = e.message
 
         if return_code == 0:
             file = file_result_existing_file(friendlyName)
@@ -131,7 +132,7 @@ script:
             error_message = subprocess.check_output(command);
         except Exception as e:
             return_code = -1
-            error_message = e.output
+            error_message = e.message
 
         if return_code == 0:
             file = file_result_existing_file(friendlyName)

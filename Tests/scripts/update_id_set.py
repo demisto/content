@@ -192,3 +192,6 @@ def update_id_set(git_sha):
             json.dump(id_list, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
+
+if __name__ == '__main__':
+    re_create_id_set()
