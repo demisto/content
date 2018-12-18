@@ -86,6 +86,6 @@ dependson:
   must:
   - panorama
 timeout: 0s
-releaseNotes: "test"
+releaseNotes: "Deprecated, use !panorama-create-rule instead"
 tests:
 - palo_alto_firewall_test_pb

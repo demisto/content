@@ -14,9 +14,13 @@ detaileddescription: |-
   and copy the resulting key.
   For more information, visit: https://www.paloaltonetworks.com/documentation
 
-  Please create a separate instance for the Firewall and the Panorama products.
-  For the Firewall, configure a vsys.
+  Please create a separate instance for the Firewall and the Panorama products:
+
+  For the Firewall, configure the vsys.
+  Can be found in the Firewall url; e.g, https://<server>#device::<vsys>::device/setup
+
   For the Panorama, configure a device group.
+  Can be found in the Panorama UI: Panorama --> Device Groups choose a device group name
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -109,9 +113,26 @@ script:
     else:
         XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
-
     COMMIT_TIMEOUT = demisto.params().get('commit_timeout')
     COMMIT_BY_DEFAULT = demisto.params().get('default_commit')
+
+    # Security rule arguments for output handling
+    SECURITY_RULE_ARGS = {
+        'rulename': 'Name',
+        'source': 'Source',
+        'destination': 'Destination',
+        'negate_source': 'NegateSource',
+        'negate_destination': 'NegateDestination',
+        'action': 'Action',
+        'service': 'Service',
+        'disable': 'Disabled',
+        'application': 'Application',
+        'source_user': 'SourceUser',
+        'disable_server_response_inspection': 'DisableServerResponseInspection',
+        'descripton': 'Description',
+        'target': 'Target'
+    }
+
     ''' HELPERS '''
     def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
         ''' Makes an API call with the given arguments '''
@@ -125,7 +146,7 @@ script:
             files=files
         )
         if result.status_code < 200 or result.status_code >= 300:
-            return_error('Request Failed.\nStatus code: ' + str(result.status_code) + ' with body ' + result.content + ' with headers ' + str(result.headers))
+            return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
         jresult = json.loads(xml2json(result.text))
         if jresult['response']['@status'] != 'success':
@@ -217,7 +238,6 @@ script:
             if 'pre_post' not in demisto.args():
                 return_error('Please provide the pre_post argument when configuring a security rule in Panorama instance.')
             else:
-                #post-rulebase/security/rules/entry"
                 params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
@@ -264,11 +284,11 @@ script:
         ''' Commit '''
         params = {
             'type': 'commit',
+            'cmd': '<commit></commit>',
             'key': API_KEY
         }
-        params['cmd'] = "<commit></commit>"
 
-        # default is 10s
+        # default commit timeout is 10s
         timeout = int(COMMIT_TIMEOUT)
 
         while timeout > 0:
@@ -293,7 +313,7 @@ script:
 
 
     def panorama_commit_command():
-        ''' Commit and shows message in warroom '''
+        ''' Commit and show message in warroom '''
         params = {
             'type': 'commit',
             'cmd': '<commit></commit>',
@@ -306,7 +326,7 @@ script:
         )
         if 'result' in result['response']:
             if 'dir-listing' not in result['response']['result']:
-                return_error('Commit failed.')
+                return_error('Commit failed. Please check that the configuration is valid.')
         else:
             demisto.results({
                 'Type': entryTypes['note'],
@@ -317,7 +337,7 @@ script:
             })
 
     def panorama_push_to_device_group():
-        ''' Commit and shows message in warroom '''
+        ''' Push Panorama configuration and show message in warroom '''
         params = {
             'type': 'commit',
             'action': 'all',
@@ -365,7 +385,7 @@ script:
         return pretty_addresses_arr;
 
     def panorama_list_addresses_command():
-        ''' Gets addresses '''
+        ''' Get all addresses '''
         params = {
             'action': 'get',
             'type': 'config',
@@ -411,7 +431,7 @@ script:
         return pretty_address
 
     def panorama_get_address_command():
-        ''' Gets a configured address '''
+        ''' Get an address '''
         params = {
             'action': 'show',
             'type': 'config',
@@ -463,9 +483,7 @@ script:
             params = params,
         )
 
-        address_output = {
-            'Name': address_name,
-        }
+        address_output = {'Name': address_name}
         if fqdn:
             address_output['FQDN'] = fqdn
         if ip_netmask:
@@ -489,15 +507,13 @@ script:
     def panorama_delete_address_command():
         ''' Delete an address '''
         address_name = demisto.args()['name']
-
         params = {
             'action': 'delete',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+            'element': "<entry name='" + address_name + "'></entry>",
             'key': API_KEY
         }
-        params['element'] = "<entry name='" + address_name + "'></entry>"
-
         result = http_request(
             URL,
             'POST',
@@ -596,7 +612,7 @@ script:
         return result['response']['result']['entry']
 
     def panorama_get_address_group_command():
-        ''' Gets configured address group '''
+        ''' Get an address group '''
         address_group_name = demisto.args()['name']
 
         result = panorama_get_address_group(address_group_name)
@@ -617,9 +633,9 @@ script:
             'action': 'set',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<static>" + add_argument_list(addresses, 'member', True) + "</static>" + add_argument(description, 'description', False),
             'key': API_KEY
         }
-        params['element'] = "<static>" + add_argument_list(addresses, 'member', True) + "</static>" + add_argument(description, 'description', False)
         result = http_request(
             URL,
             'POST',
@@ -632,9 +648,9 @@ script:
             'action': 'set',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<dynamic>" + add_argument(match, 'filter', False) + "</dynamic>" + add_argument(description, 'description', False),
             'key': API_KEY
         }
-        params['element'] = "<dynamic>" + add_argument(match, 'filter', False) + "</dynamic>" + add_argument(description, 'description', False)
         result = http_request(
             URL,
             'POST',
@@ -693,10 +709,9 @@ script:
             'action': 'delete',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<entry name='" + address_group_name + "'></entry>",
             'key': API_KEY
         }
-        params['element'] = "<entry name='" + address_group_name + "'></entry>"
-
         result = http_request(
             URL,
             'POST',
@@ -798,7 +813,7 @@ script:
 
         return pretty_custom_url_category
 
-    def panorama_custom_url_category_get(name):
+    def panorama_get_custom_url_category(name):
         params = {
             'action': 'get',
             'type': 'config',
@@ -806,17 +821,17 @@ script:
             'key': API_KEY
         }
         result = http_request(
-                URL,
-                'GET',
-                params = params,
-                )
+            URL,
+            'GET',
+            params = params,
+        )
 
         return result['response']['result']['entry']
 
-    def panorama_custom_url_category_get_command():
-        ''' Gets configured custom url category'''
+    def panorama_get_custom_url_category_command():
+        ''' Get a custom url category'''
         name = demisto.args()['name']
-        result = panorama_custom_url_category_get(name)
+        result = panorama_get_custom_url_category(name)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -829,24 +844,21 @@ script:
             }
         })
 
-    def panorama_custom_url_category_create(custom_url_category_name, sites = None, description = None):
+    def panorama_create_custom_url_category(custom_url_category_name, sites = None, description = None):
         params = {
             'action': 'set',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
             'key': API_KEY
         }
-        params['element'] = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
         result = http_request(
-                URL,
-                'POST',
-                params = params,
-                )
+            URL,
+            'POST',
+            params = params,
+        )
 
-        custom_url_category_output = {
-            'Name': custom_url_category_name,
-        }
-
+        custom_url_category_output = {'Name': custom_url_category_name}
         if sites:
             custom_url_category_output['Sites'] = sites
         if description:
@@ -854,12 +866,12 @@ script:
 
         return result, custom_url_category_output
 
-    def panorama_custom_url_category_create_command():
+    def panorama_create_custom_url_category_command():
         ''' Create a custom URL category '''
         custom_url_category_name = demisto.args()['name']
         sites = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else None
         description = demisto.args().get('description')
-        result, custom_url_category_output = panorama_custom_url_category_create(custom_url_category_name, sites, description)
+        result, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name, sites, description)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -872,26 +884,26 @@ script:
             }
         })
 
-    def panorama_custom_url_category_delete(custom_url_category_name):
+    def panorama_delete_custom_url_category(custom_url_category_name):
         params = {
             'action': 'delete',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': "<entry name='" + custom_url_category_name + "'></entry>",
             'key': API_KEY
         }
-        params['element'] = "<entry name='" + custom_url_category_name + "'></entry>"
-
         result = http_request(
-                URL,
-                'POST',
-                params = params,
-                )
+            URL,
+            'POST',
+            params = params,
+        )
         return result
 
-    def panorama_custom_url_category_delete_command():
+    def panorama_delete_custom_url_category_command():
         ''' Delete a custom url category '''
         custom_url_category_name = demisto.args()['name']
-        result = panorama_custom_url_category_delete(custom_url_category_name)
+        result = panorama_delete_custom_url_category(custom_url_category_name)
+
         custom_url_category_output = {'Name': custom_url_category_name}
         demisto.results({
             'Type': entryTypes['note'],
@@ -904,24 +916,21 @@ script:
             }
         })
 
-    def panorama_custom_url_category_edit(custom_url_category_name, sites, description = None):
+    def panorama_edit_custom_url_category(custom_url_category_name, sites, description = None):
         params = {
             'action': 'edit',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': "<entry name='" + custom_url_category_name + "'>" + add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + "</entry>",
             'key': API_KEY
         }
-        params['element'] = "<entry name='" + custom_url_category_name + "'>" + add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + "</entry>"
         result = http_request(
-                URL,
-                'POST',
-                params = params,
-            )
+            URL,
+            'POST',
+            params = params,
+        )
 
-        custom_url_category_output = {
-            'Name': custom_url_category_name,
-        }
-
+        custom_url_category_output = {'Name': custom_url_category_name}
         if sites:
             custom_url_category_output['Sites'] = sites
         if description:
@@ -933,7 +942,7 @@ script:
         ''' Add sites to a configured custom url category'''
         custom_url_category_name = demisto.args()['name']
 
-        custom_url_category = panorama_custom_url_category_get(custom_url_category_name)
+        custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
 
         description = custom_url_category.get('description')
 
@@ -945,7 +954,7 @@ script:
         sites = argToList(demisto.args()['list'])
         merged_sites = list((set(sites)).union(set(custom_url_category_sites)))
 
-        result, custom_url_category_output = panorama_custom_url_category_edit(custom_url_category_name, merged_sites, description)
+        result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, merged_sites, description)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -962,7 +971,7 @@ script:
         ''' Add sites to a configured custom url category'''
         custom_url_category_name = demisto.args()['name']
 
-        custom_url_category = panorama_custom_url_category_get(custom_url_category_name)
+        custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
         description = custom_url_category.get('description')
 
         custom_url_category_list = []
@@ -973,7 +982,7 @@ script:
         sites = argToList(demisto.args()['sites'])
 
         substructed_sites = [item for item in custom_url_category_lsites if item not in sites]
-        result, custom_url_category_output = panorama_custom_url_category_edit(custom_url_category_name, substructed_sites, description)
+        result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, substructed_sites, description)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -995,18 +1004,16 @@ script:
             'cmd': '<test><url>' + url + '</url></test>'
         }
         result = http_request(
-                URL,
-                'POST',
-                params = params,
-            )
+            URL,
+            'POST',
+            params = params,
+        )
 
-        url_category_output = {
-            'URL': url,
-        }
+        url_category_output = {'URL': url}
         return result, url_category_output
 
     def panorama_get_url_category_command():
-        ''' Get url category from panoram URL Filtering '''
+        ''' Get the url category from Palo Alto URL Filtering '''
         url = demisto.args()['url']
         result, url_category_output = panorama_get_url_category(url)
 
@@ -1026,9 +1033,7 @@ script:
         })
 
     def prettify_get_url_filter(url_filter):
-        pretty_url_filter = {
-            'Name': url_filter['@name'],
-        }
+        pretty_url_filter = {'Name': url_filter['@name']}
         if 'description' in url_filter:
             pretty_url_filter['Description'] = url_filter['description']
 
@@ -1082,16 +1087,17 @@ script:
         return result['response']['result']['entry']
 
     def panorama_get_url_filter_command():
-        ''' Gets configured URL Filter '''
+        ''' Get a URL Filter '''
         name = demisto.args()['name']
         result = panorama_get_url_filter(name)
+        md = tableToMarkdown('URL Filter:', prettify_get_url_filter(result), ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'], None, True)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('URL Filter:', prettify_get_url_filter(result),
-                ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'], None, True),
+            'HumanReadable': md,
             'EntryContext': {
                   "Panorama.URLFilter(val.Name == obj.Name)": prettify_get_url_filter(result)
             }
@@ -1103,10 +1109,9 @@ script:
             'action': 'set',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+            'element': add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list', True) + add_argument_list(override_block_list, 'block-list', True) + add_argument(description, 'description', False) + "<action>block</action>",
             'key': API_KEY
         }
-        params['element'] = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list', True) + add_argument_list(override_block_list, 'block-list', True) + add_argument(description, 'description', False) + "<action>block</action>"
-
         result = http_request(
             URL,
             'POST',
@@ -1125,9 +1130,7 @@ script:
 
         result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list, override_block_list, description)
 
-        url_filter_output = {
-            'Name': url_filter_name,
-        }
+        url_filter_output = {'Name': url_filter_name}
         url_filter_output['Category'] = []
         for category in url_category_list:
             url_filter_output['Category'].append({
@@ -1155,7 +1158,7 @@ script:
     def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element = None):
         url_filter_prev = panorama_get_url_filter(url_filter_name)
         if '@dirtyId' in url_filter_prev:
-            return_error('Please commit the instance prior to edittingthe URL Filter')
+            return_error('Please commit the instance prior to editting the URL Filter')
         url_filter_output = {'Name': url_filter_name}
         params = {
             'action': 'edit',
@@ -1221,21 +1224,22 @@ script:
             'action': 'delete',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+            'element': "<entry name='" + url_filter_name + "'></entry>",
             'key': API_KEY
         }
-        params['element'] = "<entry name='" + url_filter_name + "'></entry>"
-
         result = http_request(
             URL,
             'POST',
             params = params,
         )
+
         return result
 
     def panorama_delete_url_filter_command():
         ''' Delete a custom url category '''
         url_filter_name = demisto.args()['name']
         result = panorama_delete_url_filter(url_filter_name)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -1247,7 +1251,7 @@ script:
 
     ''' Security Rules Managing '''
     def panorama_move_rule_command():
-        ''' Moves a security rule'''
+        ''' Move a security rule'''
         rulename = demisto.args()['rulename']
         params = {
             'type': 'config',
@@ -1276,7 +1280,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Rule ' + rulename + ' moved successfully',
             'EntryContext': {
-                  "Panorama.Rule(val.Name == obj.Name)": rule_output
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
             }
         })
 
@@ -1286,8 +1290,8 @@ script:
         rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
         source =  demisto.args().get('source')
         destination =  demisto.args().get('destination')
-        negate_source =  demisto.args().get('negate_source')
-        negate_destination =  demisto.args().get('negate_destination')
+        negate_source = demisto.args().get('negate_source')
+        negate_destination = demisto.args().get('negate_destination')
         action =  demisto.args().get('action')
         service =  demisto.args().get('service')
         disable =  demisto.args().get('disable')
@@ -1304,13 +1308,13 @@ script:
                     disable = disable, application = application, source_user = source_user,
                     disable_server_response_inspection = disable_server_response_inspection,
                     description = description, target = target)
-
         result = http_request(
             URL,
             'POST',
             params = params
         )
-        rule_output = {'Name': rulename}
+
+        rule_output = {SECURITY_RULE_ARGS[key] : value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1319,7 +1323,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Rule configured successfully',
             'EntryContext': {
-                  "PanoramaRule(val.Name == obj.Name)": rule_output
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
             }
         })
 
@@ -1342,7 +1346,7 @@ script:
         elif element_to_change in ['source', 'destination', 'application', 'categry', 'source-user', 'service']:
             params['element'] = add_argument_open(element_value, element_to_change, True)
         else:
-            # element_to_change in ['negate_source', 'negate_destination', 'disabled']
+            # element_to_change in ['negate_source', 'negate_destination', 'disable']
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if target:
@@ -1363,6 +1367,7 @@ script:
             params = params
         )
         rule_output = {'Name': rulename}
+        rule_output[SECURITY_RULE_ARGS[element_to_change]] = element_value
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1371,7 +1376,7 @@ script:
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Rule editted successfully',
             'EntryContext': {
-                  "Panorama.Rule(val.Name == obj.Name)": rule_output
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
             }
         })
 
@@ -1433,7 +1438,6 @@ script:
                 result = http_request(URL, 'POST', params = params)
             custom_block_output['IP'] = object_value
 
-
         elif object_type == 'address-group':
             if block_source:
                 params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target)
@@ -1486,7 +1490,6 @@ script:
             'command': '<show><objects></objects></show>',
             'key': API_KEY
         }
-
         result = http_request(
             URL,
             'POST',
@@ -1494,12 +1497,7 @@ script:
         )
 
         applications_arr = result['response']['result']['config']['shared']['content-preview']['application']['entry']
-
-        md = tableToMarkdown(
-            'Applications',
-            prettify_applications_arr(applications_arr),
-            ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
-        )
+        md = tableToMarkdown('Applications', prettify_applications_arr(applications_arr), ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description'])
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1614,15 +1612,15 @@ script:
 
         # Custom Url Category commands
         elif demisto.command() == 'panorama-custom-get-url-category':
-            panorama_custom_url_category_get_command()
+            panorama_custom_get_url_category_command()
 
         elif demisto.command() == 'panorama-create-custom-url-category':
-            panorama_custom_url_category_create_command()
+            panorama_create_custom_url_category_command()
             if COMMIT_BY_DEFAULT:
                 panorama_commit()
 
         elif demisto.command() == 'panorama-delete-custom-url-category':
-            panorama_custom_url_category_delete_command()
+            panorama_delete_custom_url_category_command()
             if COMMIT_BY_DEFAULT:
                 panorama_commit()
 
@@ -1669,6 +1667,11 @@ script:
             if COMMIT_BY_DEFAULT:
                 panorama_commit()
 
+        elif demisto.command() == 'panorama-custom-block-rule':
+            panorama_custom_block_rule_command()
+            if COMMIT_BY_DEFAULT:
+                panorama_commit()
+
         elif demisto.command() == 'panorama-edit-rule':
             panorama_edit_rule_command()
             if COMMIT_BY_DEFAULT:
@@ -1676,16 +1679,6 @@ script:
 
         elif demisto.command() == 'panorama-delete-rule':
             panorama_delete_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
-
-        elif demisto.command() == 'panorama-custom-block-rule':
-            panorama_custom_block_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
-
-        elif demisto.command() == 'panorama-block-url-category':
-            panorama_block_url_category_command()
             if COMMIT_BY_DEFAULT:
                 panorama_commit()
 
@@ -1699,7 +1692,7 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
+        return_error(e.message)
   type: python
   commands:
   - name: panorama
@@ -2040,7 +2033,7 @@ script:
       isArray: true
     - name: action
       required: true
-      description: Add or remove a site
+      description: Add or Remove site
       auto: PREDEFINED
       predefined:
       - add
@@ -2249,40 +2242,37 @@ script:
     - name: target
       description: Only for Panorama instance. Specify a target Firewall to the rule
     outputs:
-    - contextPath: Panorama.Rule.Name
+    - contextPath: Panorama.SecurityRule.Name
       description: Rule name
       type: string
-    - contextPath: Panorama.Rule.Description
+    - contextPath: Panorama.SecurityRule.Description
       description: Rule description
       type: string
-    - contextPath: Panorama.Rule.Action
+    - contextPath: Panorama.SecurityRule.Action
       description: Action for the rule
       type: string
-    - contextPath: Panorama.Rule.Source
+    - contextPath: Panorama.SecurityRule.Source
       description: Source address
       type: string
-    - contextPath: Panorama.Rule.Destination
+    - contextPath: Panorama.SecurityRule.Destination
       description: Destination address
       type: string
-    - contextPath: Panorama.Rule.Negate.Source
+    - contextPath: Panorama.SecurityRule.NegateSource
       description: Yes/No - whether to negate the source (address, address group)
       type: boolean
-    - contextPath: Panorama.Rule.Negate.Destination
+    - contextPath: Panorama.SecurityRule.NegateDestination
       description: Yes/No - whether to negate the destination (address, address group)
       type: boolean
-    - contextPath: Panorama.Rule.Service
+    - contextPath: Panorama.SecurityRule.Service
       description: Service for the rule
       type: string
-    - contextPath: Panorama.Rule.State
-      description: Enabled/Disabled
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Yes/No
       type: string
-    - contextPath: Panorama.Rule.Application
+    - contextPath: Panorama.SecurityRule.Application
       description: Application for the rule
       type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
-      type: string
-    - contextPath: Panorama.Rule.Target
+    - contextPath: Panorama.SecurityRule.Target
       description: Only for Panorama instance. Target Firewall
       type: string
     description: Create policy rule in Palo Alto Firewall or Panorama
@@ -2328,9 +2318,6 @@ script:
       type: string
     - contextPath: Panorama.Rule.Direction
       description: Direction blocked
-      type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
       type: string
     - contextPath: Panorama.Rule.Target
       description: Only for Panorama instance. Target Firewall
@@ -2395,14 +2382,38 @@ script:
       - post-rulebase
       description: Only for Panorama instance
     outputs:
-    - contextPath: Panorama.Rule.Name
+    - contextPath: Panorama.SecurityRule.Name
       description: Rule name
       type: string
-    - contextPath: Panorama.Rule.Element
-      description: Edited element value
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description
       type: string
-    - contextPath: Panorama.Rule.Pre_Post
-      description: Only for Panorama instance, rule location
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Yes/No - whether to negate the source (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Yes/No - whether to negate the destination (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Yes/No
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Only for Panorama instance. Target Firewall
       type: string
     description: Edit a policy rule in Palo Alto Firewall or Panorama
     execution: true
@@ -2412,7 +2423,7 @@ script:
       required: true
       description: Rule name
     outputs:
-    - contextPath: Panorama.Rule.Name
+    - contextPath: Panorama.SecurityRule.Name
       description: Rule name
       type: string
     description: Delete a policy rule from Palo Alto Firewall or Panorama
@@ -2441,7 +2452,8 @@ script:
     - contextPath: Panorama.Applications.Description
       description: Application description
       type: string
-    description: Get a list of applications from Palo Alto Firewall or Panorama
+    description: Get a list of pre-defined applications from Palo Alto Firewall or
+      Panorama
   - name: panorama-get-pcaps
     arguments:
     - name: pcapType
@@ -2470,6 +2482,6 @@ script:
       description: Password for Panorama
     description: Get pcaps from Palo Alto Firewall or Panorama
   runonce: false
-releaseNotes: "test"
+releaseNotes: "Add support for Firewall and Panorama instances. object handling: Address, Address-groups, Custom URL Groups, URL Filtering and Security Rule managing."
 tests:
 - palo_alto_firewall_test_pb
