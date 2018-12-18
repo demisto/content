@@ -252,10 +252,10 @@ def find_tests_for_modified_files(modified_files):
     return tests
 
 
-def get_test_from_conf():
+def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master Tests/conf.json")
+    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -290,7 +290,7 @@ def get_test_from_conf():
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
+def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name):
     """Create a test list that should run"""
     tests = set([])
     if modified_files:
@@ -302,7 +302,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
             tests.add(test)
 
     if is_conf_json:
-        tests = tests.union(get_test_from_conf())
+        tests = tests.union(get_test_from_conf(branch_name))
 
     if all_tests:
         tests.add("Run all tests")
@@ -332,7 +332,7 @@ def create_test_file(is_nightly):
             files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json)
+        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)
 
         tests_string = '\n'.join(tests)
         if tests_string:
