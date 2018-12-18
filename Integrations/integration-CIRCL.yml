@@ -20,7 +20,7 @@ configuration:
   type: 9
   required: true
 - display: Use system proxy settings
-  name: isUsingProxy
+  name: proxy
   defaultvalue: ""
   type: 8
   required: false
@@ -46,7 +46,7 @@ script:
     PASSWORD = demisto.getParam('credentials')['password']
     AUTH = (USERNAME, PASSWORD)
     USE_SSL = True if demisto.params().get('insecure') else False
-    IS_USING_PROXY = demisto.params()['isUsingProxy']
+    IS_USING_PROXY = True if demisto.params().get('proxy') else False
 
     if not IS_USING_PROXY:
         del os.environ['HTTP_PROXY']
