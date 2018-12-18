@@ -8,8 +8,8 @@
         {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
-		},
-		{
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
