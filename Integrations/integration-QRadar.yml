@@ -1858,8 +1858,5 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
-releaseNotes: "This version reverts the output paths of the QRadar commands to be as they were prior to content version 18.11.0.
-    These changes may affect users who created a QRadar custom script after that content release. If you are having issues with your QRadar
-    custom scripts, please contact customer support for assistance."
 tests:
   - test_Qradar

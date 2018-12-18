@@ -373,6 +373,5 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "Fixed table separator"
 tests:
   - Test CommonServer
