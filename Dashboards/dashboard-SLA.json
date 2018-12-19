@@ -2,16 +2,8 @@
 	"id": "2b542873-793f-4eaa-8114-d855bb49cbc9",
 	"version": -1,
 	"fromVersion": 4.1,
-	"modified": "2018-12-18T08:51:53.305960048Z",
-	"commitMessage": "",
-	"shouldPublish": false,
 	"shouldCommit": false,
 	"shouldPush": false,
-	"versionedDiff": {
-		"action": "",
-		"addedLines": 0,
-		"deletedLines": 0
-	},
 	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"period": {
@@ -23,7 +15,6 @@
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
 	"name": "SLA",
-	"prevName": "SLA",
 	"layout": [
 		{
 			"id": "25a2e8f0-fd4e-11e8-a656-2b6c8cbabaee",
@@ -36,18 +27,9 @@
 			"widget": {
 				"id": "fddd62ff-a411-4e6a-8213-e0277a9b95b5",
 				"version": 1,
-				"modified": "2018-12-11T14:07:48.30355312Z",
-				"commitMessage": "",
-				"shouldPublish": false,
 				"shouldCommit": false,
 				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "Mean Time to Detection",
-				"prevName": "Mean Time to Detection",
 				"dataType": "incidents",
 				"widgetType": "duration",
 				"query": "-category:job and detectionsla.runStatus:ended",
@@ -86,18 +68,9 @@
 			"widget": {
 				"id": "1e54092d-1ed0-47a6-862d-893adc05e612",
 				"version": 1,
-				"modified": "2018-12-11T14:08:17.885080182Z",
-				"commitMessage": "",
-				"shouldPublish": false,
 				"shouldCommit": false,
 				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "Detection SLA by Status",
-				"prevName": "Detection SLA by Status",
 				"dataType": "incidents",
 				"widgetType": "pie",
 				"query": "-category:job and -detectionsla.runStatus:idle",
@@ -136,18 +109,9 @@
 			"widget": {
 				"id": "1767dee0-7f8c-48a5-8988-c58b9e713ab6",
 				"version": 1,
-				"modified": "2018-12-11T14:08:29.989409603Z",
-				"commitMessage": "",
-				"shouldPublish": false,
 				"shouldCommit": false,
 				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "Remediation SLA by Status",
-				"prevName": "Remediation SLA by Status",
 				"dataType": "incidents",
 				"widgetType": "pie",
 				"query": "-category:job and -remediationsla.runStatus:idle",
@@ -186,18 +150,9 @@
 			"widget": {
 				"id": "mean-time-to-resolution",
 				"version": 169,
-				"modified": "2018-11-18T19:16:55.198631575Z",
-				"commitMessage": "",
-				"shouldPublish": false,
 				"shouldCommit": false,
 				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "Mean Time To Resolution",
-				"prevName": "",
 				"dataType": "incidents",
 				"widgetType": "duration",
 				"query": "-category:job and status:closed",
@@ -235,19 +190,10 @@
 			"h": 2,
 			"widget": {
 				"id": "mttd-by-type",
-				"version": 1,
-				"modified": "2018-12-17T14:48:47.850059634Z",
-				"commitMessage": "Widget imported",
-				"shouldPublish": true,
+				"version": 1, ,
 				"shouldCommit": true,
 				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "MTTD by Type",
-				"prevName": "MTTD by Type",
 				"dataType": "incidents",
 				"widgetType": "line",
 				"query": "-category:job and detectionsla.runStatus:ended",
@@ -289,18 +235,7 @@
 			"widget": {
 				"id": "mttr-by-type",
 				"version": 168,
-				"modified": "2018-11-18T19:16:55.198656485Z",
-				"commitMessage": "",
-				"shouldPublish": false,
-				"shouldCommit": false,
-				"shouldPush": false,
-				"versionedDiff": {
-					"action": "",
-					"addedLines": 0,
-					"deletedLines": 0
-				},
 				"name": "MTTR by Type",
-				"prevName": "",
 				"dataType": "incidents",
 				"widgetType": "line",
 				"query": "-category:job and status:closed",
@@ -332,7 +267,5 @@
 			}
 		}
 	],
-	"isPredefined": false,
-	"shared": false,
-	"owner": "idov@demisto.com"
+	"isPredefined": false
 }
