@@ -475,7 +475,6 @@ tasks:
     scriptarguments:
       issueId:
         simple: ${Ticket.Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -508,7 +507,31 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2800
+          "y": 2645
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: de947b49-a588-4983-8176-b3677c8575cd
+    type: regular
+    task:
+      id: de947b49-a588-4983-8176-b3677c8575cd
+      version: -1
+      name: delete-issue
+      script: '|||jira-delete-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      issueIdOrKey:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2810
         }
       }
     note: false

@@ -12,8 +12,8 @@ tasks:
     task:
       id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
       version: -1
-      description: ""
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -27,6 +27,8 @@ tasks:
           "y": 51
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
@@ -34,8 +36,8 @@ tasks:
     task:
       id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
       version: -1
-      description: ""
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -47,6 +49,8 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: 6b7bfc47-d31a-4296-8cc5-0522912daa56
@@ -68,7 +72,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: FalconHostDevices
@@ -80,24 +84,25 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
+    taskid: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
     type: regular
     task:
-      id: c1b53ae3-bebd-4a3b-813d-bf7132f2d659
+      id: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
       version: -1
       name: Get host information from CrowdStrike Falcon Host
       description: Get host information from CrowdStrike Falcon Host
-      script: FalconHost|||cs-device-details
+      script: '|||cs-device-details'
       type: regular
       iscommand: true
-      brand: FalconHost
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      extend-context: {}
       ids:
         simple: ${FalconHostDevices}
     separatecontext: false
@@ -108,19 +113,21 @@ tasks:
           "y": 550
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: c5e5f2e9-8731-4367-8e19-5535f6f00139
+    taskid: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
     type: regular
     task:
-      id: c5e5f2e9-8731-4367-8e19-5535f6f00139
+      id: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
       version: -1
       name: Get device ID
       description: Get CrowdStrike device id
-      script: FalconHost|||cs-device-search
+      script: '|||cs-device-search'
       type: regular
       iscommand: true
-      brand: FalconHost
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -129,7 +136,7 @@ tasks:
         complex:
           root: inputs.Hostname
           transformers:
-          - operator: string.concat
+          - operator: concat
             args:
               prefix:
                 value:
@@ -148,6 +155,8 @@ tasks:
           "y": 210
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -167,16 +176,29 @@ inputs:
   required: false
   description: The hostname to enrich
 outputs:
-- contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+- contextPath: Endpoint.ID
+  description: Unique ID of the endpoint in FalconHost
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: IPAddress of the endpoint
+  type: string
+- contextPath: Endpoint.Domain
+  description: Domain of the endpoint
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: MACAddress of the endpoint
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: OS of the endpoint
   type: string
-- contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
-- contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
-- contextPath: Endpoint.Domain
-  description: Endpoint domain name
+- contextPath: Endpoint.OSVersion
+  description: OSVersion of the endpoint
   type: string
+- contextPath: Endpoint.BIOSVersion
+  description: BIOSVersion of the endpoint
+  type: string
+- contextPath: Endpoint.HostName
+  description: The host of the endpoint
+  type: string
+tests:
+- No test

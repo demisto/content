@@ -519,4 +519,3 @@ outputs:
 tests:
   - Phishing test - attachment
   - Phishing test - Inline
-releaseNotes: "-"

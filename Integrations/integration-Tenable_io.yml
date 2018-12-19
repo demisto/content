@@ -53,7 +53,7 @@ script:
     ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name', 'Count': 'VulnerabilityOccurences'}
 
     # Output Headers / Context Keys
-    GET_SCANS_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner', 'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
+    GET_SCANS_HEADERS = ['FolderId', 'Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner', 'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
     LAUNCH_SCAN_HEADERS = ['Id', 'Targets', 'Status']
     SCAN_REPORT_INFO_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy']
     SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'VulnerabilityOccurences']
@@ -321,6 +321,8 @@ script:
             scan_details['info'] = replace_keys(scan_details['info'])
             results.append(get_entry_for_object('Scan basic info', 'TenableIO.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
 
+        if 'vulnerabilities' not in scan_details:
+            return "No vulnerabilities found."
         vuln_info, vulns_not_found = get_vuln_info(scan_details['vulnerabilities'])
         vuln_info = convert_severity_values(replace_keys(vuln_info))
         results.append(get_entry_for_object('Vulnerabilities', 'TenableIO.Vulnerabilities', vuln_info, SCAN_REPORT_VULNERABILITIES_HEADERS))
@@ -434,6 +436,9 @@ script:
     - contextPath: TenableIO.Scan.LastModificationDate
       description: The last modification date for the scan in Unix time.
       type: date
+    - contextPath: TenableIO.Scan.FolderId
+      description: The unique id of the folder where the scan has been stored.
+      type: number
     description: Retrive scans from the Tenable platform.
   - name: tenable-io-launch-scan
     arguments:

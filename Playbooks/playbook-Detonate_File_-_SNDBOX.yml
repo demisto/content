@@ -38,37 +38,7 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: f19dcf74-9e66-4389-8f37-bf17bca542fd
-    type: regular
-    task:
-      id: f19dcf74-9e66-4389-8f37-bf17bca542fd
-      version: -1
-      name: SNDBOX Upload File
-      description: Uploads the submission to McAfee ATD.
-      script: SNDBOX|||sndbox-analysis-submit-sample
-      type: regular
-      iscommand: true
-      brand: SNDBOX
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      file_id:
-        complex:
-          root: inputs.File
-          accessor: EntryID
-      should_wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 895
-        }
-      }
-    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: cf1337d2-c99c-450b-8901-49614b2d9c39
@@ -122,19 +92,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: ea41c6c0-0f07-4a68-8d33-1d55bedb8f6b
+    taskid: ff8f8315-a4a4-4fe8-8008-c8ed819d3787
     type: regular
     task:
-      id: ea41c6c0-0f07-4a68-8d33-1d55bedb8f6b
+      id: ff8f8315-a4a4-4fe8-8008-c8ed819d3787
       version: -1
       name: SNDBOX Get Report
       description: Retrieve the reports from McAfee ATD.
-      script: SNDBOX|||sndbox-download-report
+      script: '|||sndbox-download-report'
       type: regular
       iscommand: true
-      brand: SNDBOX
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -163,11 +134,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 500,
           "y": 1770
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
@@ -184,11 +156,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 70,
           "y": 1945
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 638f2725-3b53-453a-8c6d-6924686d24fa
@@ -243,19 +216,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: f85c1378-7d87-43ee-8e31-f2789b7b9bcb
+    taskid: 105ec989-1fbe-4631-8eb8-4a1e10c68c85
     type: regular
     task:
-      id: f85c1378-7d87-43ee-8e31-f2789b7b9bcb
+      id: 105ec989-1fbe-4631-8eb8-4a1e10c68c85
       version: -1
       name: SNDBOX Get Info
       description: Updates the status of the tasks in the context.
-      script: SNDBOX|||sndbox-analysis-info
+      script: '|||sndbox-analysis-info'
       type: regular
       iscommand: true
-      brand: SNDBOX
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -273,6 +247,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: ecc6003d-d40d-48d4-85fc-b7ffa076196d
@@ -289,7 +264,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -338,6 +313,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
@@ -370,6 +346,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
@@ -404,6 +381,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 4076e5e1-d0fc-4bb0-8008-409053367a9e
@@ -437,6 +415,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: 9caed2f8-0d19-4950-8c2c-5bfdf48f54b0
@@ -481,13 +460,73 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 06783b62-db07-4a32-8b18-17b530538c51
+    type: regular
+    task:
+      id: 06783b62-db07-4a32-8b18-17b530538c51
+      version: -1
+      name: SNDBOX Upload File
+      description: Uploads the submission to SNDBOX.
+      script: '|||sndbox-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file_id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+              ignorecase: true
+          accessor: EntryID
+      should_wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1960,
-        "width": 717.5,
+        "width": 830,
         "x": 50,
         "y": 50
       }
@@ -608,6 +647,6 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
-releaseNotes: "-"
+releaseNotes: "Submit only supported files to SNDBOX"
 tests:
   - Detonate File - SNDBOX - Test

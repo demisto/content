@@ -2214,4 +2214,3 @@ script:
   runonce: false
 tests:
   - Cylance Protect v2 Test
-releaseNotes: "-"
