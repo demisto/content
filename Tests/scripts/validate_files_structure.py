@@ -331,7 +331,7 @@ def changed_command_name_or_arg(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     search_groups = re.search("-([ ]+)?- name: .*", change_string)
     if search_groups:
-        print_error("You've changed the name of a command or its arg in the file {0} please undo, the line is:\n{1}".format(file_path, search_groups.group(0)[1:]))
+        print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in the file {0} please undo, the line is:\n{1}".format(file_path, search_groups.group(0)[1:]))
         return True
 
     return False
@@ -341,7 +341,7 @@ def changed_context(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     search_groups = re.search("-([ ]+)?- contextPath: .*", change_string)
     if search_groups:
-        print_error("You've changed the context in the file {0} please undo, the line is:\n{1}".format(file_path, search_groups.group(0)[1:]))
+        print_error("Possible backwards compatibility break, You've changed the context in the file {0} please undo, the line is:\n{1}".format(file_path, search_groups.group(0)[1:]))
         return True
 
     return False
