@@ -1,9 +1,8 @@
 {
 	"id": "2b542873-793f-4eaa-8114-d855bb49cbc9",
+	"description": ""
 	"version": -1,
 	"fromVersion": "4.1.0",
-	"shouldCommit": false,
-	"shouldPush": false,
 	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"period": {
