@@ -11,6 +11,7 @@ SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
+TEST_SCRIPT_REGEX = "TestPlaybooks.*script-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_PLAYBOOK_REGEX]
 
@@ -146,10 +147,9 @@ def get_playbooks_implementing_ids(playbook_id):
     pass
 
 
-def get_ids_from_playbook(param_to_enrich_by, file_path):
+def get_ids_from_playbook(param_to_enrich_by, data_dict):
     implementing_ids = []
-    data_dict = get_json(file_path)
-    tasks = data_dict.get('tasks', [])
+    tasks = data_dict.get('tasks', {})
 
     for task in tasks.values():
         task_details = task.get('task', {})
@@ -161,9 +161,8 @@ def get_ids_from_playbook(param_to_enrich_by, file_path):
     return implementing_ids
 
 
-def get_commmands_from_playbook(file_path):
+def get_commmands_from_playbook(data_dict):
     commands = []
-    data_dict = get_json(file_path)
     tasks = data_dict.get('tasks', [])
 
     for task in tasks.values():
@@ -184,58 +183,104 @@ def get_commmands_from_playbook(file_path):
 #
 #     return implementing_ids
 
-def get_depends_on(file_path):
-    data_dict = get_json(file_path)
+def get_integration_data(file_path):
+    integration_data = {}
+    data_dictionary = get_json(file_path)
+    id = data_dictionary.get('commonfields', {}).get('id', '-')
+
+    toversion = data_dictionary.get('toversion')
+    fromversion = data_dictionary.get('fromversion')
+    commands = data_dictionary.get('script', {}).get('commands', [])
+    cmd_list = [command.get('name') for command in commands]
+
+    if toversion:
+        integration_data['toversion'] = toversion
+    if fromversion:
+        integration_data['fromversion'] = fromversion
+    if cmd_list:
+        integration_data['commands'] = cmd_list
+
+    return {id: integration_data}
+
+
+def get_playbook_data(file_path):
+    playbook_data = {}
+    data_dictionary = get_json(file_path)
+    id = data_dictionary.get('id', '-')
+
+    toversion = data_dictionary.get('toversion')
+    fromversion = data_dictionary.get('fromversion')
+    implementing_scripts = get_ids_from_playbook('scriptName', data_dictionary)
+    implementing_playbooks = get_ids_from_playbook('playbookName', data_dictionary)
+    implementing_commands = get_commmands_from_playbook(data_dictionary)
+
+    if toversion:
+        playbook_data['toversion'] = toversion
+    if fromversion:
+        playbook_data['fromversion'] = fromversion
+    if implementing_scripts:
+        playbook_data['implementing_scripts'] = implementing_scripts
+    if implementing_playbooks:
+        playbook_data['implementing_playbooks'] = implementing_playbooks
+    if implementing_commands:
+        playbook_data['implementing_commands'] = implementing_commands
+
+    return {id: playbook_data}
+
+
+def get_script_data(file_path):
+    script_data = {}
+    data_dictionary = get_json(file_path)
+    id = data_dictionary.get('commonfields', {}).get('id', '-')
+
+    toversion = data_dictionary.get('toversion')
+    fromversion = data_dictionary.get('fromversion')
+    depends_on = get_depends_on(data_dictionary)
+
+    if toversion:
+        script_data['toversion'] = toversion
+    if fromversion:
+        script_data['fromversion'] = fromversion
+    if depends_on:
+        script_data['depends_on'] = depends_on
+
+    return {id: script_data}
+
+
+def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
     return [cmd.split('|')[-1] for cmd in depends_on]
 
 
 def re_create_id_set():
-    id_list = []
+    scripts_list = []
+    playbooks_list = []
+    integration_list = []
+    testplaybooks_list = []
     for file in glob.glob(os.path.join('Integrations', '*')):
-        id = get_script_or_integration_id(file)
-        versioning = {
-            "fromversion": get_from_version(file),
-            "toversion": get_to_version(file),
-            # "implementing": get_integration_implementing_ids(id),
-            # "implemented_by": get_integration_implemented_by(id),
-            "commands:": get_integration_commands(file)
-        }
-        id_dict = {
-            id: versioning
-        }
-        id_list.append(id_dict)
+        integration_list.append(get_integration_data(file))
 
     for file in glob.glob(os.path.join('Playbooks', '*')):
-        id = collect_ids(file)
-        versioning = {
-            "fromversion": get_from_version(file),
-            "toversion": get_to_version(file),
-            # "implemnted_by": get_playbooks_implementing_ids(id),
-            "implementing_scripts": get_ids_from_playbook('scriptName', file),
-            "implementing_playbooks": get_ids_from_playbook('playbookName', file),
-            "implementing_commands": get_commmands_from_playbook(file),
-        }
-        id_dict = {
-            id: versioning
-        }
-        id_list.append(id_dict)
+        playbooks_list.append(get_playbook_data(file))
 
     for file in glob.glob(os.path.join('Scripts', '*')):
-        id = get_script_or_integration_id(file)
-        versioning = {
-            "fromversion": get_from_version(file),
-            "toversion": get_to_version(file),
-            "depends_on": get_depends_on(file)
-            # "implemnted_by": get_scripts_implementing_ids(id)
-        }
-        id_dict = {
-            id: versioning
-        }
-        id_list.append(id_dict)
+        scripts_list.append(get_script_data(file))
+
+    for file in glob.glob(os.path.join('TestPlaybooks', '*')):
+        if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
+            testplaybooks_list.append(get_script_data(file))
+        elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
+            testplaybooks_list.append(get_playbook_data(file))
+
+    ids_dict = {
+        "scripts": scripts_list,
+        "playbooks": playbooks_list,
+        "integrations": integration_list,
+        "TestPlaybooks": testplaybooks_list
+    }
 
     with open('./Tests/id_set.json', 'w') as id_set_file:
-        json.dump(id_list, id_set_file, indent=4)
+        json.dump(ids_dict, id_set_file, indent=4)
 
 
 def update_id_set(git_sha):
