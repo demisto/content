@@ -219,12 +219,19 @@ script:
 
     def create_certificate_details(sha1, data):
         info = data['info']
-        extension = info['extension']
+        usage = ''
+        distribution = ''
+
+        extension = info.get('extension', {})
+        
+        usage = extension.get('keyUsage', usage)
+        usage = extension.get('extendedKeyUsage', usage)
+        distribution = extension.get('crlDistributionPoints', distribution)
 
         return {
             'SHA1': sha1,
-            'Usage': extension['extendedKeyUsage'],
-            'Distribution': extension['crlDistributionPoints'],
+            'Usage': usage,
+            'Distribution': distribution,
             'Issuer': info['issuer'],
             'Time': info['not_before'],
             'Subject': info['subject'],
