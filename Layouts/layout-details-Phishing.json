@@ -1,6 +1,5 @@
 {
 	"releaseNotes": "New SLA content",
-	"description": "Phishing layout",
 	"typeId": "Phishing",
 	"kind": "details",
 	"layout": {
