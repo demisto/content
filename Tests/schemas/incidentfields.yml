@@ -64,6 +64,14 @@ schema;field_schema:
       type: number
     hidden:
       type: bool
+    columns:
+      type: any
+    defaultRows:
+      type: any
+    threshold:
+      type: number
+    sla:
+      type: number
     associatedTypes:
       type: any
     systemAssociatedTypes:
