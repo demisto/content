@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
@@ -389,10 +392,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         },
         {
             "integrations": "VirusTotal",
