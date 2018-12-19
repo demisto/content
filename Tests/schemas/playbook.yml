@@ -232,14 +232,9 @@ schema;arg_filter_schema:
           type: bool
 
 schema;timertriggers_schema:
-  type: seq
-  sequence:
-    - include: timertrigger_schema
-
-schema;timertrigger_schema:
   type: map
   mapping:
-    fieldName:
+    fieldname:
       type: str
     action:
       type: str
