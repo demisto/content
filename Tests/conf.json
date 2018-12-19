@@ -1,6 +1,17 @@
 {
     "testTimeout": 160,
+    "testInterval": 20,
     "tests": [
+        {
+            "playbookID": "Test CommonServer"
+        },
+        {
+            "integrations": "OTRS",
+            "playbookID": "OTRS Test"
+        },
+        {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
         {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
@@ -31,6 +42,10 @@
         },
         {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "Awake Security",
+            "playbookID": "awake_security_test_pb"
         },
         {
           "integrations": "Tenable.sc",
@@ -88,16 +103,13 @@
             "integrations": "Luminate"
         },
         {
-            "playbookID": "Test_Sagemaker",
-            "integrations": [
-                "AWS Sagemaker"
-            ]
-        },
-        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
             "playbookID": "ParseExcel-test"
+        },
+        {
+            "playbookID": "Detonate File - No Files test"
         },
         {
             "integrations": [
@@ -107,12 +119,12 @@
             "playbookID": "blockip_test_playbook"
         },
         {
-          "integrations": "IntSights",
-          "playbookID": "IntSights Test"
-        },
-        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "InfoArmor VigilanteATI",
+            "playbookID": "InfoArmorVigilanteATITest"
         },
         {
             "integrations": "IntSights",
@@ -148,7 +160,8 @@
         },
         {
             "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest"
+            "playbookID": "RedCanaryTest",
+            "nightly" : true
         },
         {
           "integrations": "Devo",
@@ -379,10 +392,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         },
         {
             "integrations": "VirusTotal",
@@ -671,6 +680,10 @@
             "timeout": 300
         },
         {
+            "integrations" : "jira",
+            "playbookID" : "JiraCreateIssue-example-test"
+        },
+        {
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
@@ -766,28 +779,6 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -814,30 +805,54 @@
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "Test_Sagemaker",
+            "integrations": "AWS Sagemaker"
+
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
         }
     ],
     "skipped_tests": {
         "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
-        "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
-        "Centreon-Test-Playbook": "Need to check the reason for skipping",
-        "TruSTAR Test": "Need to check the reason for skipping",
-        "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "ParseEmailFiles": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
+        "FortiGate": "License expired, in the process of getting new one",
         "Whois": "Server currently has Whois by default, need to deprecate",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
-        "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
@@ -852,7 +867,8 @@
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
-        "ServiceNow": "Instance goes to hibernate every few hours"
+        "ServiceNow": "Instance goes to hibernate every few hours",
+        "MimecastV2": "Several issues with instance"
     },
     "nigthly_integrations": [
         "Lastline"

@@ -604,6 +604,5 @@ outputs:
 - contextPath: File
   description: Original attachments
   type: unknown
-releaseNotes: "-"
 tests:
   - No test

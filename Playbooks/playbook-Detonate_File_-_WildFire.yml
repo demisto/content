@@ -32,35 +32,7 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: 24797d30-9a36-4241-8093-4d65c89156a4
-    type: regular
-    task:
-      id: 24797d30-9a36-4241-8093-4d65c89156a4
-      version: -1
-      name: WildFire Upload File
-      description: ""
-      script: WildFire|||wildfire-upload
-      type: regular
-      iscommand: true
-      brand: WildFire
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      upload:
-        complex:
-          root: inputs.File.EntryID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 895
-        }
-      }
-    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 15b7c096-8b60-403c-857b-703dc230d659
@@ -114,19 +86,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 4f9d282f-30e2-42da-8a51-fa1d549337b8
+    taskid: f97bc658-fbb7-4793-8ad2-9b9f6244d221
     type: regular
     task:
-      id: 4f9d282f-30e2-42da-8a51-fa1d549337b8
+      id: f97bc658-fbb7-4793-8ad2-9b9f6244d221
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
-      script: WildFire|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -149,6 +122,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
@@ -170,6 +144,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
@@ -206,6 +181,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 1cee486c-4dbe-44ec-8b62-195a75ebed2e
@@ -259,6 +235,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: 09aec71d-10ce-419d-836b-88f9d41a52eb
@@ -275,7 +252,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -315,6 +292,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 16c9088e-43fa-494a-80f2-646461c74a66
@@ -347,6 +325,66 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 9be683c0-b4f2-4622-8308-c0a2b8ee2539
+    type: regular
+    task:
+      id: 9be683c0-b4f2-4622-8308-c0a2b8ee2539
+      version: -1
+      name: WildFire Upload File
+      description: Upload file to WildFire for analysis.
+      script: WildFire|||wildfire-upload
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      upload:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -463,3 +501,6 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
+releaseNotes: "Submit only supported files to WildFire"
+tests:
+- Wildfire Test

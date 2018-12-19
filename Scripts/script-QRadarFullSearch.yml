@@ -32,7 +32,7 @@ script: |-
   if (isError(query_res[0])) {
       return query_res;
   } else {
-      search_id = dq(query_res[0], "Contents.ID");
+      search_id = dq(query_res[0], "Contents.search_id");
       search_args.search_id = search_id;
 
       //polling stage
@@ -43,7 +43,7 @@ script: |-
               return status_res;
           }
 
-          var q_status = dq(status_res[0], "Contents.Status");
+          var q_status = dq(status_res[0], "Contents.status");
 
           if (q_status && ['WAIT', 'EXECUTE', 'SORTING'].indexOf(q_status) !== -1) {
               // Not finished

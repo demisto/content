@@ -674,6 +674,5 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
-releaseNotes: Add proxy to http post request
 tests:
 - sep_-_test_endpoint_search

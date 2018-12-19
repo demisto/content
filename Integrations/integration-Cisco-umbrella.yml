@@ -2914,4 +2914,3 @@ script:
   runonce: false
 tests:
   - Cisco Umbrella Test
-releaseNotes: "-"

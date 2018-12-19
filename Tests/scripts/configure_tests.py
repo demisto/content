@@ -26,9 +26,11 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
+BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
+BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
 
 
 # File type regex
@@ -107,6 +109,8 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+            elif file_status.lower() == 'm':
+                all_tests.append(file_path)
 
     return modified_files_list, modified_tests_list, all_tests, is_conf_json
 
@@ -252,10 +256,10 @@ def find_tests_for_modified_files(modified_files):
     return tests
 
 
-def get_test_from_conf():
+def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master Tests/conf.json")
+    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -290,7 +294,7 @@ def get_test_from_conf():
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
+def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name):
     """Create a test list that should run"""
     tests = set([])
     if modified_files:
@@ -302,7 +306,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
             tests.add(test)
 
     if is_conf_json:
-        tests = tests.union(get_test_from_conf())
+        tests = tests.union(get_test_from_conf(branch_name))
 
     if all_tests:
         tests.add("Run all tests")
@@ -332,7 +336,7 @@ def create_test_file(is_nightly):
             files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json)
+        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)
 
         tests_string = '\n'.join(tests)
         if tests_string:

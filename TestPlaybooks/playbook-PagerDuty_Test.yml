@@ -144,7 +144,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     scriptarguments:
       since: {}
       sortBy: {}
@@ -159,38 +159,13 @@ tasks:
         }
       }
     note: false
-  "6":
-    id: "6"
-    taskid: 264477b8-5c63-4d53-8874-276b316e2b6d
-    type: regular
-    task:
-      id: 264477b8-5c63-4d53-8874-276b316e2b6d
-      version: -1
-      name: Verify Context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: PagerDuty.Incidents
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 515
-        }
-      }
-    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: ef319398-78f9-4c70-8e3a-d846929cb16d
+    taskid: 7fdf0e18-3eb6-46b6-8da3-d99fbdee35a9
     type: title
     task:
-      id: ef319398-78f9-4c70-8e3a-d846929cb16d
+      id: 7fdf0e18-3eb6-46b6-8da3-d99fbdee35a9
       version: -1
       name: PagerDuty Commands
       type: title
@@ -207,6 +182,27 @@ tasks:
         "position": {
           "x": 480,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 7a2c4ce5-a31d-41e7-8f9f-69a13d13d277
+    type: title
+    task:
+      id: ef319398-78f9-4c70-8e3a-d846929cb16d
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 530
         }
       }
     note: false

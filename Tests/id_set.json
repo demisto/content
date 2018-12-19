@@ -1,895 +1,5540 @@
 [
-    "Cybereason",
-    "Giphy",
-    "RSA NetWitness Packets and Logs",
-    "ReversingLabs A1000",
-    "VMware",
-    "RSA Archer",
-    "vmray",
-    "jira",
-    "Verodin",
-    "EWS",
-    "OpenPhish",
-    "McAfee NSM",
-    "ipinfo",
-    "Cuckoo Sandbox",
-    "Moloch",
-    "Demisto REST API",
-    "Symantec Advanced Threat Protection",
-    "McAfee Active Response",
-    "Aella Star Light",
-    "Zendesk",
-    "Cisco CloudLock",
-    "carbonblackliveresponse",
-    "Check Point Sandblast Appliance",
-    "Pipl",
-    "Forcepoint",
-    "FireEye HX",
-    "Threat Crowd",
-    "Palo Alto AppFramework",
-    "Phishme Intelligence",
-    "Remedy AR",
-    "Intezer",
-    "AlgoSec",
-    "Zoom",
-    "Cuckoo Sandbox",
-    "Threat Grid",
-    "QRadar",
-    "SplunkPy",
-    "TruSTAR",
-    "LogRhythm",
-    "Service Manager",
-    "Trend Micro",
-    "Netskope",
-    "McAfee Web Gateway",
-    "ArcSight Logger",
-    "carbonblack-v2",
-    "Zscaler",
-    "Check Point Sandblast",
-    "fireeye",
-    "Skyformation",
-    "Cisco Spark",
-    "ArcSight ESM",
-    "Rapid7 Nexpose",
-    "Cylance Protect v2",
-    "Cyber Triage",
-    "Endgame",
-    "Kenna",
-    "Cisco Meraki",
-    "WildFire",
-    "VxStream",
-    "DomainTools",
-    "Jask",
-    "McAfee ESM-v10",
-    "nmap",
-    "ReversingLabs Titanium Cloud",
-    "Farsight DNSDB",
-    "Symantec MSS",
-    "EWS Mail Sender",
-    "WildFire",
-    "WildFire",
-    "AlienVault OTX",
-    "Windows Defender Advanced Threat Protection",
-    "Mail Sender (New)",
-    "Sample Incident Generator",
-    "Hybrid Analysis",
-    "Anomali ThreatStream",
-    "PacketMail",
-    "Qualys",
-    "Cisco Umbrella Investigate",
-    "Carbon Black Defense",
-    "Lockpath KeyLight",
-    "OPSWAT-Metadefender",
-    "ActiveMQ",
-    "Cisco Email Security Appliance (IronPort)",
-    "Qualys",
-    "IsItPhishing",
-    "okta",
-    "AWS - EC2",
-    "Blockade.io",
-    "AlphaSOC Network Behavior Analytics",
-    "Recorded Future",
-    "CVE Search",
-    "Demisto Lock",
-    "F5 firewall",
-    "MimecastV2",
-    "Zendesk",
-    "RedCanary",
-    "Joe Security",
-    "AWS - CloudTrail",
-    "ThreatExchange",
-    "Dell Secureworks",
-    "Amazon Web Services",
-    "ArcSight XML",
-    "VirusTotal",
-    "MxToolBox",
-    "Check Point Sandblast Appliance",
-    "LightCyber Magna",
-    "Packetsled",
-    "Censys",
-    "Imperva Skyfence",
-    "ProtectWise",
-    "Palo Alto Minemeld",
-    "GoogleSafeBrowsing",
-    "Salesforce",
-    "SCADAfence CNM",
-    "Proofpoint TAP",
-    "Threat Grid",
-    "iDefense",
-    "FalconIntel",
-    "Venafi",
-    "CyberArkAIM",
-    "Autofocus",
-    "McAfee Threat Intelligence Exchange",
-    "Check Point",
-    "PagerDuty v2",
-    "Gmail",
-    "Centreon",
-    "McAfee Advanced Threat Defense",
-    "RSA NetWitness Endpoint",
-    "PassiveTotal",
-    "ProtectWise",
-    "SentinelOne",
-    "AMP",
-    "AWS - SQS",
-    "carbonblackliveresponse",
-    "AWS - Route53",
-    "Tanium",
-    "FireEye ETP",
-    "IBM Resilient Systems",
-    "AWS - IAM",
-    "Symantec Endpoint Protection",
-    "SumoLogic",
-    "Pwned",
-    "urlscan.io",
-    "Lastline",
-    "urlscan.io",
-    "OpsGenie",
-    "McAfeeDAM",
-    "okta",
-    "Devo",
-    "Moloch",
-    "RedLock",
-    "SafeBreach",
-    "AlphaSOC Wisdom",
-    "jamf",
-    "Panorama",
-    "icebrg",
-    "EasyVista",
-    "ThreatConnect",
-    "BitDam",
-    "AWS - S3",
-    "McAfee Advanced Threat Defense",
-    "GuardiCore",
-    "Mimecast",
-    "Shodan",
-    "AWS - GuardDuty",
-    "Mimecast Authentication",
-    "malwr",
-    "FalconHost",
-    "ServiceNow",
-    "google-vault",
-    "AlienValut OTX",
-    "MISP",
-    "FalconIntel",
-    "Box",
-    "Remedy On-Demand",
-    "Rasterize",
-    "RTIR",
-    "Tenable.io",
-    "EWS v2",
-    "Lockpath KeyLight",
-    "Dell Secureworks",
-    "Luminate",
-    "VirusTotal - Private API",
-    "Guidance Encase Endpoint",
-    "Incapsula",
-    "XFE",
-    "McAfee Advanced Threat Defense",
-    "AWS - CloudWatchLogs",
-    "Microsoft Graph",
-    "Secdo",
-    "Preempt",
-    "PostgreSQL",
-    "epo",
-    "GRR",
-    "Nessus",
-    "GuardiCore",
-    "Digital Shadows",
-    "fireeye",
-    "RSA NetWitness Packets and Logs",
-    "RSA NetWitness v11.1",
-    "Symantec Messaging Gateway",
-    "Check Point Sandblast",
-    "Cylance Protect",
-    "TCPIPUtils",
-    "RSA NetWitness Security Analytics",
-    "Where is the egg?",
-    "jira",
-    "Vectra",
-    "Twilio",
-    "PhishTank",
-    "FireEye iSIGHT",
-    "BigFix",
-    "Phish.AI",
-    "Koodous",
-    "IntSights",
-    "search_and_delete_emails_-_generic",
-    "email_address_enrichment_-_generic",
-    "process_email_-_generic",
-    "playbook12",
-    "get_original_email_-_generic",
-    "get_file_sample_by_hash_-_generic",
-    "search_endpoints_by_hash_-_crowdstrike",
-    "get_file_sample_from_path_-_generic",
-    "process_email_-_generic",
-    "Detonate File - Lastline",
-    "url_enrichment_-_generic",
-    "GenericPolling",
-    "playbook1",
-    "Calculate Severity - Generic",
-    "search_endpoints_by_hash_-_carbon_black_protection",
-    "Incident Enrichment",
-    "playbook16",
-    "CrowdStrike Falcon Sandbox - Detonate file",
-    "Enrich McAfee DXL using 3rd party sandbox",
-    "Get File Sample From Hash - Carbon Black Enterprise Response",
-    "Calculate Severity - Generic",
-    "Tenable.io Scan",
-    "block_indicators_-_generic",
-    "detonate_url_-_threatgrid",
-    "TrendMicro Malware Alert Playbook",
-    "calculate_severity_-_3rd-party_integrations",
-    "Phishing Investigation - Generic",
-    "detonate_url_-_joesecurity",
-    "CrowdStrike Falcon Sandbox - Detonate file",
-    "crowdstrike_endpoint_enrichment",
-    "cve_enrichment_-_generic",
-    "get_file_sample_by_hash_-_cylance_protect",
-    "dedup_incidents_-_ml",
-    "playbook5",
-    "TIE - IOC Hunt",
-    "vulnerability_management_-_qualys_Job",
-    "get_original_email_-_gmail",
-    "detonate_url_-_mcafee_atd",
-    "Detonate URL - Lastline",
-    "Detonate File - Generic",
-    "process_email_-_ews",
-    "playbook7",
-    "get_file_sample_from_path_-_d2",
-    "get_original_email_-_ews",
-    "playbook17",
-    "calculate_severity_-_critical_assets",
-    "playbook14",
-    "endpoint_enrichment_-_generic",
-    "access_investigation_-_qradar",
-    "detonate_url_-_generic",
-    "detonate_file_from_url_-_wildfire",
-    "block_endpoint_-_carbon_black_response",
-    "close_incident_if_duplicate_found",
-    "scan_assets_nexpose",
-    "extract_indicators_-_generic",
-    "playbook0",
-    "TestPacketsled",
-    "dedup_-_generic",
-    "malware_investigation-_generic_-_setup",
-    "block_file_-_carbon_black_response",
-    "search_and_delete_emails_-_ews",
-    "Detonate File - BitDam",
-    "MAR - Endpoint data collection",
-    "process_email_-_add_custom_fields",
-    "detonate_url_-_crowdstrike",
-    "ip_enrichment_generic",
-    "domain_enrichment_generic",
-    "QRadarFullSearch",
-    "Arcsight - Get events related to the Case",
-    "Account Enrichment",
-    "malware_investigation-_generic",
-    "QRadar - Get offense correlations ",
-    "QRadar - Get offense correlations ",
-    "block_ip_-_generic",
-    "vulnerability_handling_-_qualys_-_add _ustom_fields_to_default_layout",
-    "playbook3",
-    "Enrich DXL with ATD verdict",
-    "Phishing Investigation - Generic",
-    "playbook2",
-    "Hunt for bad IOCs",
-    "extract_indicators_from_file_-_generic",
-    "Sentinel One - Endpoint data collection",
-    "process_email_-_generic",
-    "playbook13",
-    "vulnerability_handling_-_nexpose",
-    "Calculate Severity - Generic",
-    "playbook8",
-    "vulnerability_handling_-_qualys",
-    "playbook10",
-    "search_endpoints_by_hash_-_carbon_black_response",
-    "scan_site_nexpose",
-    "Failed Login Playbook With Slack",
-    "WildFire - Detonate file",
-    "File Enrichment - Generic",
-    "vulnerability_management_-_nexpose_job",
-    "Archer initiate incident",
-    "block_file_-_generic",
-    "calculate_severity_-_critical_assets",
-    "add_indicator_to_miner_-_palo_alto_mineMeld",
-    "domain_enrichment_generic",
-    "playbook11",
-    "url_enrichment_-_generic",
-    "entity_enrichment_generic",
-    "search_endpoints_by_hash_-_generic",
-    "malware_investigation-_generic",
-    "calculate_severity_-_indicators_dbotscore",
-    "Account Enrichment",
-    "entity_enrichment_generic",
-    "Phishing Investigation - Generic",
-    "playbook5",
-    "Demisto_Self-Defense_-_Account_policy_monitoring_playbook",
-    "ATD - Detonate File",
-    "block_account_-_generic",
-    "file_enrichment_-_virus_total_private_api",
-    "file_enrichment_-_file_reputation",
-    "block_url_-_generic",
-    "Process Email",
-    "playbook15",
-    "get_file_sample_by_hash_-_carbon_black_enterprise_Response",
-    "Get File Sample From Hash - Cylance Protect",
-    "access_investigation_-_generic",
-    "search_endpoints_by_hash_-_tie",
-    "get_file_sample_from_path_-_carbon_black_enterprise_response",
-    "WildFire - Detonate file",
-    "Detonate File - Generic",
-    "D2 - Endpoint data collection",
-    "Enrichment Playbook",
-    "Office 365 Search and Delete",
-    "dbot_indicator_enrichment_-_generic",
-    "playbook0",
-    "File Enrichment - Generic",
-    "ATD - Detonate File",
-    "account_enrichment_-_generic",
-    "detonatefile_-_joesecurity",
-    "ip_enrichment_generic",
-    "Detonate files",
-    "detonate_file_from_url_-_joesecurity",
-    "Carbon Black Rapid IOC Hunting",
-    "email_address_enrichment_-_generic",
-    "Endpoint data collection",
-    "Get File Sample From Hash - Generic",
-    "WildFire - Detonate file",
-    "detonate_file_-_threatgrid",
-    "AwsStopInstance",
-    "PWFindEvents",
-    "QRadarClassifier",
-    "VolLDRModules",
-    "CPShowHosts",
-    "PWSensors",
-    "ADListComputers",
-    "CheckWhitelist",
-    "VectraHosts",
-    "SetContext",
-    "D2Autoruns",
-    "MathUtil",
-    "CBFindHash",
-    "SendEmailToManager",
-    "FileCreateAndUpload",
-    "DecodeMimeHeader",
-    "WildfireUpload",
-    "CYFileRep",
-    "PanoramaPcaps",
-    "ExtractDomain",
-    "ExposeUsers",
-    "Print",
-    "CSIndicators",
-    "PWEventPcapInfo",
-    "JiraIssueQuery",
-    "ADGetAllUsersEmail",
-    "CuckooDetonateFile",
-    "EPORepoList",
-    "GrrSetFlows",
-    "VectraGetDetetctionsById",
-    "CommonD2",
-    "FilterByList",
-    "ExtractHash",
-    "120c861a-e0ae-417e-8dcf-c3ee1dc15a42",
-    "ConvertXmlFileToJson",
-    "IPExtract",
-    "DBotAverageScore",
-    "NessusCreateScan",
-    "StixParser",
-    "NessusShowEditorTemplates",
-    "QrFullSearch",
-    "a6e348f4-1e40-4365-870c-52139c60779a",
-    "VolConnscan",
-    "840aa9a7-04b2-4505-8238-8fe85f010dde",
-    "CBLiveGetFile",
-    "ScheduleGenericPolling",
-    "AddEvidence",
-    "Ping",
-    "EncodeToAscii",
-    "TriagePhishing",
-    "LessThanPercentage",
-    "TrendmicroAlertStatus",
-    "SandboxDetonateFile",
-    "ParseEmailFiles",
-    "ConferSetSeverity",
-    "ReverseList",
-    "ImpSfListEndpoints",
-    "9364c36f-b1d6-4233-88c2-75008b106c31",
-    "InviteUser",
-    "VectraDetections",
-    "StaticAnalyze",
-    "GetContextValue",
-    "TaniumFilterComputersByIndexQueryFileDetails",
-    "D2O365ComplianceSearch",
-    "SearchIncidents",
-    "CuckooDisplayReport",
-    "VolPSList",
-    "CBLiveProcessList",
-    "GoogleappsGmailGetMail",
-    "PTEnrich",
-    "ResolveShortenedURL",
-    "CommonServerUserPython",
-    "5edd0c8e-4e6e-4afe-8f43-67bb9ebc4fd3",
-    "RunSqlQuery",
-    "d98506ea-fd06-49d6-8f1e-bb29ab06766e",
-    "TimeStampToDate",
-    "SlackAskUser",
-    "CPShowAccessRulebase",
-    "VolNetworkConnections",
-    "DemistoDeleteIncident",
-    "SSDeepReputation",
-    "GrrGetHunt",
-    "findIncidentsWithIndicator",
-    "ExifRead",
-    "AlgosecGetTicket",
-    "IncapGetDomainApproverEmail",
-    "ElasticSearchDisplay",
-    "ContextGetIps",
-    "D2Hardware",
-    "82764532-0a4f-4b59-8cf9-fe1a00cabdae",
-    "TrendmicroSecurityProfileRetrieveAll",
-    "PanoramaConfig",
-    "RepopulateFiles",
-    "SendMessageToOnlineUsers",
-    "SetIncidentCustomFields",
-    "CEFParser",
-    "ADSetNewPassword",
-    "misp_upload_sample",
-    "IsValueInArray",
-    "displayhtml",
-    "VectraClassifier",
-    "ConferIncidentDetails",
-    "ScheduleCommand",
-    "XBTimeline",
-    "EmailAskUser",
-    "IncidentSet",
-    "DataIPReputation",
-    "URLSSLVerification",
-    "EmailDomainSquattingReputation",
-    "XBUser",
-    "SNUpdateTicket",
-    "ticksToTime",
-    "dbbdc2e4-6105-4ee9-8e83-563a4b991a89",
-    "TopMaliciousRatioIndicators",
-    "SetMultipleValues",
-    "PanoramaCommit",
-    "CloseInvestigation",
-    "CrowdStrikeUrlParse",
-    "MarkRelatedIncidents",
-    "DemistoSendInvite",
-    "CommonIntegrationPython",
-    "RunDockerCommand",
-    "GoogleappsGmailSearch",
-    "EPODetermineRepository",
-    "emailFieldTriggered",
-    "TrendMicroGetPolicyID",
-    "AquatoneDiscover",
-    "ExtractDomainFromURL",
-    "NetwitnessSAUpdateIncident",
-    "UnzipFile",
-    "NetwitnessSAGetAvailableAssignees",
-    "QualysCreateIncidentFromReport",
-    "CuckooDetonateURL",
-    "UserEnrichAD",
-    "da8594b8-0b57-4cb2-8578-94754bb577c6",
-    "IsContextSet",
-    "Set",
-    "ArcherCreateSecurityIncident",
-    "VolMalfindDumpAgent",
-    "TrendmicroSystemEventRetrieve",
-    "MimecastFindEmail",
-    "D2Drop",
-    "TaniumFindRunningProcesses",
-    "NessusScanDetails",
-    "CBPCatalogFindHash",
-    "checkValue",
-    "WhileLoop",
-    "D2GetSystemLog",
-    "CopyFileD2",
-    "CheckFilesWildfirePy",
-    "ADGetGroupMembers",
-    "SCPPullFiles",
-    "ReadFile",
-    "VectraSensors",
-    "QRadarFullSearch",
-    "CSActors",
-    "NessusGetReport",
-    "VolRaw",
-    "Base64Encode",
-    "LCMAcknowledgeHost",
-    "ExtractEmail",
-    "NexposeVulnExtractor",
-    "XBTriggeredRules",
-    "LoadJSON",
-    "CommonUserServer",
-    "IsMaliciousIndicatorFound",
-    "D2ActiveUsers",
-    "BuildEWSQuery",
-    "da330ce7-3a93-430c-8454-03b96cf5184e",
-    "JiraIssueUploadFile",
-    "PanoramaDynamicAddressGroup",
-    "ActiveUsersD2",
-    "ParseExcel",
-    "MatchRegex",
-    "ip_to_host",
-    "AlgosecGetNetworkObject",
-    "Autoruns",
-    "VectraTriage",
-    "ATDDetonate",
-    "XBInfo",
-    "NetwitnessSACreateIncident",
-    "ExchangeSearchMailbox",
-    "ed24d63f-4134-49c4-82c0-96885a7a1cc3",
-    "5d44a5d9-d91a-4420-801f-755f26b60c47",
-    "ad7de731-cadc-4f49-81cd-522cd4b7bfa5",
-    "DemistoLogsBundle",
-    "ContextGetEmails",
-    "nexpose_create_incidents_from_assets",
-    "bffdcf72-2061-4767-83d5-3ff2a9e8afe7",
-    "ExchangeSearch",
-    "CPSetRule",
-    "VolGetProcWithMalNetConn",
-    "ConvertTableToHTML",
-    "StringLength",
-    "CuckooGetScreenshot",
-    "VolMalfind",
-    "ExposeModules",
-    "GrrGetFlows",
-    "IsTrue",
-    "SplunkSearchJsonPy",
-    "UnEscapeURLs",
-    "ProofpointDecodeURL",
-    "ReadPDFFile",
-    "ContextContains",
-    "ADIsUserMember",
-    "PanoramaMove",
-    "ADGetUserGroups",
-    "ADUserLogonInfo",
-    "Osxcollector",
-    "PWObservationPcapInfo",
-    "QrSearches",
-    "ExtractIndicatorsFromTextFile",
-    "CheckIPs",
-    "VolDlllist",
-    "FPSetRule",
-    "TrendMicroClassifier",
-    "TrendMicroGetHostID",
-    "ExtractDomainFromUrlAndEmail",
-    "VectraSettings",
-    "GenerateInvestigationSummaryReport",
-    "DataDomainReputation",
-    "EPORepositoryComplianceCheck",
-    "PWObservations",
-    "InRange",
-    "IngestCSV",
-    "TrendmicroHostAntimalwareScan",
-    "QrGetSearchResults",
-    "NessusHostDetails",
-    "WhereFieldEquals",
-    "OSQueryUsers",
-    "CrowdStrikeStreamingPreProcessing",
-    "Strings",
-    "QrOffenses",
-    "LCMHosts",
-    "RegProbeBasic",
-    "ContextGetHashes",
-    "NexposeEmailParser",
-    "7b5c080e-f3b1-411a-83b0-e1f53c21bef8",
-    "SlackMirror",
-    "CheckFiles",
-    "IsIPInRanges",
-    "CBSessions",
-    "GeneratePassword",
-    "IncidentSet",
-    "GoogleAuthURL",
-    "DataURLReputation",
-    "IPReputation",
-    "AwsCreateImage",
-    "WildfireReport",
-    "LCMIndicatorsForEntity",
-    "hideFieldsOnNewIncident",
-    "ImpSfScheduleTask",
-    "DataIPReputation",
-    "SetDateField",
-    "ADGetEmailForUser",
-    "EmailAskUser",
-    "PWEventDetails",
-    "CheckSenderDomainDistance",
-    "7b02fa0f-94ff-48c7-8350-b4e353702e73",
-    "PWObservationPcapDownload",
-    "b695f044-fbdd-4d4b-89ce-9066cb0e165a",
-    "ParseEmailHeader",
-    "IndicatorMaliciousRatioCalculation",
-    "BinaryReputationPy",
-    "ArcherUpdateSecurityIncident",
-    "IsListExist",
-    "CSCountDevicesForIOC",
-    "LCMSetHostComment",
-    "D2Exec",
-    "OSQueryProcesses",
-    "NessusScanStatus",
-    "DemistoLinkIncidents",
-    "JiraCreateIssue",
-    "LocateAttachment",
-    "ADGetComputerGroups",
-    "MapValues",
-    "QrGetSearch",
-    "EmailAskUser",
-    "AwsGetInstanceInfo",
-    "CreateArray",
-    "ADListUsers",
-    "CBPFindRule",
-    "GoogleappsListUsers",
-    "ParseCSV",
-    "D2Winpmem",
-    "AlgosecGetApplications",
-    "Elasticsearch",
-    "EPOUpdateRepository",
-    "ZipFile",
-    "VectraSummary",
-    "MattermostAskUser",
-    "WhoisSummary",
-    "AssignAnalystToIncident",
-    "Base64ListToFile",
-    "LCMPathFinderScanHost",
-    "IncapScheduleTask",
-    "SbQuery",
-    "GetStringsDistance",
-    "CSHuntByIOC",
-    "FireEyeDetonateFile",
-    "514ec833-c02c-49a3-8ac6-d982198f5fa0",
-    "JoinIfSingleElementOnly",
-    "PWObservationDetails",
-    "SNOpenTicket",
-    "IPInfoQuery",
-    "RegCollectValues",
-    "MD5Extract",
-    "CommonIntegration",
-    "CBPBanHash",
-    "AwsRunInstance",
-    "EPORetrieveCurrentDATVersion",
-    "TaniumShowPendingActions",
-    "PrintErrorEntry",
-    "SEPCheckOutdatedEndpoints",
-    "URLNumberOfAds",
-    "IncidentToContext",
-    "D2Users",
-    "StripChars",
-    "RegPathReputationBasicLists",
-    "IsIntegrationAvailable",
-    "ExposeIncidentOwner",
-    "EmailReputation",
-    "AwsCreateVolumeSnapshot",
-    "CreateEmailHtmlBody",
-    "listExecutedCommands",
-    "EPOUpdateEndpoints",
-    "CheckSender",
-    "NessusLaunchScan",
-    "ADGetGroupUsers",
-    "CPTaskStatus",
-    "80b5c44c-4eac-4e00-812f-6d409d57be31",
-    "NetwitnessSAAddEventsToIncident",
-    "StopScheduledTask",
-    "SalesforceAskUser",
-    "ADListUsersEx",
-    "OSQueryOpenSockets",
-    "EsmExample",
-    "SetSeverityByScore",
-    "RSAArcherManualFetch",
-    "CheckpointFWBackupStatus",
-    "VolImageinfo",
-    "CBPApproveHash",
-    "ParseEmailFile",
-    "GoogleappsRevokeUserRole",
-    "DemistoUploadFile",
-    "SNListTickets",
-    "JiraIssueAddComment",
-    "AlgosecCreateTicket",
-    "DeleteContext",
-    "ADGetUsersByEmail",
-    "LanguageDetect",
-    "IncapGetAppInfo",
-    "SplunkEmailParser",
-    "GetTime",
-    "PortListenCheck",
-    "f99a85a6-c572-4c3a-8afd-5b4ac539000a",
-    "PanoramaBlockIP",
-    "IdentifyAttachedEmail",
-    "D2Services",
-    "AlgosecQuery",
-    "AwsStartInstance",
-    "DomainReputation",
-    "GetDuplicatesMlv2",
-    "JIRAPrintIssue",
-    "FPDeleteRule",
-    "isError",
-    "CommonServerPython",
-    "10cb3486-48f3-4d93-88af-b6be84ffd432",
-    "DocumentationAutomation",
-    "FileReputation",
-    "AreValuesEqual",
-    "LCMDetectedEntities",
-    "UtilAnyResults",
-    "ExampleJSScript",
-    "UnEscapeIPs",
-    "OSQueryLoggedInUsers",
-    "FindSimilarIncidentsByText",
-    "IncapWhitelistCompliance",
-    "c99e196b-e05e-41f2-82cb-6798f33cb653",
-    "5e125fdd-72f1-455f-89fa-e6f9405174a4",
-    "ExtractDomain",
-    "DemistoCreateList",
-    "MimecastQuery",
-    "misp_download_sample",
-    "ExchangeDeleteIDsFromContext",
-    "DumpJSON",
-    "ADGetGroupComputers",
-    "TrendmicroAntiMalwareEventRetrieve",
-    "Sleep",
-    "AdSearch",
-    "XBNotable",
-    "GoogleappsGetUser",
-    "CBLiveFetchFiles",
-    "JiraIssueAddLink",
-    "ContextSearchForString",
-    "ShowOnMap",
-    "CBFindIP",
-    "D2Rekall",
-    "CuckooGetReport",
-    "BinarySearchPy",
-    "Volatility",
-    "GrrGetFiles",
-    "FetchFileD2",
-    "ToTable",
-    "XBLockouts",
-    "ExchangeAssignRole",
-    "GrrSetHunts",
-    "MaliciousRatioReputation",
-    "EPOFindSystem",
-    "TaniumAskQuestionComplex",
-    "DataURLReputation",
-    "DataHashReputation",
-    "GetIndicatorDBotScore",
-    "HTTPListRedirects",
-    "DataHashReputation",
-    "CBEvents",
-    "MarkAsNoteByTag",
-    "TaniumApprovePendingActions",
-    "GenericPollingScheduledTask",
-    "NessusListScans",
-    "TaniumAskQuestion",
-    "ExportToCSV",
-    "URLReputation",
-    "IncidentAddSystem",
-    "FindSimilarIncidents",
-    "CPDeleteRule",
-    "RegexGroups",
-    "RemoteExec",
-    "PublishEntriesToContext",
-    "http",
-    "GoogleappsGetUserRoles",
-    "ExchangeDeleteMail",
-    "SbUpload",
-    "3dd62013-4fed-43eb-8ae4-91b1b4250599",
-    "D2Processes",
-    "IncapListSites",
-    "ADGetEmailForAllUsers",
-    "CuckooTaskStatus",
-    "PWEvents",
-    "NexposeEmailParserForVuln",
-    "CloseInvestigationAsDuplicate",
-    "GetDuplicatesMl",
-    "FailedInstances",
-    "UnPackFile",
-    "http",
-    "CPCreateBackup",
-    "ExtractIP",
-    "CheckURLs",
-    "SplunkPySearch",
-    "GrrGetHunts",
-    "ImpSfSetEndpointStatus",
-    "PCAPMiner",
-    "D2GetFile",
-    "PagerDutyAssignOnCallUser",
-    "ExtractHTMLTables",
-    "ContainsCreditCardInfo",
-    "CBSearch",
-    "DataDomainReputation",
-    "DBotClosedIncidentsPercentage",
-    "CBAlerts",
-    "ParseWordDoc",
-    "VolJson",
-    "SlackSend",
-    "ExposeList",
-    "VectraHealth",
-    "D2ExecuteCommand",
-    "dfa728bb-8291-4f8c-8185-53fad210f1b5",
-    "ContextGetPathForString",
-    "LCMResolveHost",
-    "IsGreaterThan",
-    "SbQuota",
-    "ContextFilter",
-    "O365SearchEmails",
-    "AnalyzeOSX",
-    "PWEventPcapDownload",
-    "AnalyzeMemImage",
-    "8bb47409-fffb-40c4-8601-d5fd20384e26",
-    "JiraGetIssue",
-    "ADExpirePassword",
-    "ImpSfRevokeUnaccessedDevices",
-    "ADGetUser",
-    "SendEmail",
-    "EPOCheckLatestDAT",
-    "PagerDutyAlertOnIncident",
-    "URLExtract",
-    "TaniumDeployAction",
-    "SendEmailToManager",
-    "StringReplace",
-    "TextFromHTML",
-    "CPShowBackupStatus",
-    "RunPollingCommand",
-    "CBWatchlists",
-    "DamSensorDown",
-    "94f72ed9-49c8-40e5-89bb-7c98f914d2cc",
-    "34f0498c-d3da-4ac3-8cad-a28804bf1f21",
-    "CBSensors",
-    "VolRunCmds",
-    "ADGetComputer",
-    "SbDownload",
-    "OSQueryBasicQuery",
-    "AggregateIOCs",
-    "PDFUnlocker",
-    "D2RegQuery",
-    "ExtractURL",
-    "StringContains",
-    "CPBlockIP",
-    "TrendmicroSecurityProfileAssignToHost",
-    "VolApihooks",
-    "ADGetCommonGroups",
-    "NetwitnessSAGetComponents",
-    "QRadarGetCorrelationLogs",
-    "CountArraySize",
-    "ConvertXmlToJson",
-    "D2PEDump",
-    "CBPFindComputer",
-    "ClassifierNotifyAdmin",
-    "SlackAskUser",
-    "Exists",
-    "NetwitnessSAGetEvents",
-    "CommonServer",
-    "LCMDetectedIndicators",
-    "SplunkSearch",
-    "IsIPInSubnet",
-    "TrendmicroHostRetrieveAll",
-    "getMlFeatures",
-    "2aa9f737-8c7c-42f5-815f-4d104bb3af06",
-    "PrintContext",
-    "D2O365SearchAndDelete",
-    "QRadarGetOffenseCorrelations",
-    "ShowScheduledEntries",
-    "EmailAskUserResponse",
-    "IsEmailAddressInternal",
-    "DemistoGetIncidentTasksByState",
-    "VectraGetHostById",
-    "DefaultIncidentClassifier"
+    {
+        "Cybereason": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Giphy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RSA NetWitness Packets and Logs": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ReversingLabs A1000": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VMware": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RSA Archer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "vmray": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "jira": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.6.0"
+        }
+    }, 
+    {
+        "Verodin": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "dnstwist": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EWS": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OpenPhish": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee NSM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ipinfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cuckoo Sandbox": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Moloch": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Demisto REST API": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Symantec Advanced Threat Protection": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee Active Response": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Aella Star Light": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Zendesk": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Cisco CloudLock": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "carbonblackliveresponse": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Check Point Sandblast Appliance": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Pipl": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Forcepoint": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FireEye HX": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Threat Crowd": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Palo Alto AppFramework": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Phishme Intelligence": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Remedy AR": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Intezer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgoSec": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Zoom": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cuckoo Sandbox": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Threat Grid": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QRadar": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SplunkPy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TruSTAR": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LogRhythm": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Service Manager": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Trend Micro": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Netskope": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee Web Gateway": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ArcSight Logger": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "carbonblack-v2": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Zscaler": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Check Point Sandblast": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "fireeye": {
+            "toversion": "3.1.0", 
+            "fromversion": "3.0.0"
+        }
+    }, 
+    {
+        "Awake Security": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Skyformation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cisco Spark": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ArcSight ESM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Rapid7 Nexpose": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Cylance Protect v2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cyber Triage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Endgame": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Kenna": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cisco Meraki": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WildFire": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "AWS Sagemaker": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VxStream": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DomainTools": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.0.0"
+        }
+    }, 
+    {
+        "Jask": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Server Message Block (SMB)": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee ESM-v10": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "nmap": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ReversingLabs Titanium Cloud": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Farsight DNSDB": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Symantec MSS": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EWS Mail Sender": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WildFire": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "WildFire": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "AlienVault OTX": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.0.1"
+        }
+    }, 
+    {
+        "Windows Defender Advanced Threat Protection": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Mail Sender (New)": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Sample Incident Generator": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Hybrid Analysis": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.1"
+        }
+    }, 
+    {
+        "Anomali ThreatStream": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PacketMail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Qualys": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cisco Umbrella Investigate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Carbon Black Defense": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Lockpath KeyLight": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OPSWAT-Metadefender": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ActiveMQ": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Cisco Email Security Appliance (IronPort)": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Qualys": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "IsItPhishing": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "okta": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.1.0"
+        }
+    }, 
+    {
+        "AWS - EC2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Blockade.io": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlphaSOC Network Behavior Analytics": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Recorded Future": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CVE Search": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SNDBOX": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Demisto Lock": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "F5 firewall": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MimecastV2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Zendesk": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RedCanary": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Joe Security": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - CloudTrail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ThreatExchange": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Dell Secureworks": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.1.0"
+        }
+    }, 
+    {
+        "Amazon Web Services": {
+            "toversion": "99.99.99", 
+            "fromversion": "1.6.2"
+        }
+    }, 
+    {
+        "ArcSight XML": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VirusTotal": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MxToolBox": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Check Point Sandblast Appliance": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "LightCyber Magna": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Packetsled": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Censys": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Imperva Skyfence": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ProtectWise": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Palo Alto Minemeld": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleSafeBrowsing": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Salesforce": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SCADAfence CNM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Proofpoint TAP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Threat Grid": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "iDefense": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FalconIntel": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Venafi": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CyberArkAIM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Autofocus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee Threat Intelligence Exchange": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Check Point": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PagerDuty v2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Gmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Centreon": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RSA NetWitness Endpoint": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PassiveTotal": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ProtectWise": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SentinelOne": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.1.0"
+        }
+    }, 
+    {
+        "AMP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - SQS": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "carbonblackliveresponse": {
+            "toversion": "3.6.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - Route53": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Tanium": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FireEye ETP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "InfoArmor VigilanteATI": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IBM Resilient Systems": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - IAM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Symantec Endpoint Protection": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SumoLogic": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Pwned": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "urlscan.io": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Lastline": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "urlscan.io": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "OpsGenie": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfeeDAM": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "okta": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Devo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - Security Hub": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Moloch": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "RedLock": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Whois": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.1.0"
+        }
+    }, 
+    {
+        "SafeBreach": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlphaSOC Wisdom": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "jamf": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Panorama": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.0.0"
+        }
+    }, 
+    {
+        "icebrg": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EasyVista": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ThreatConnect": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "BitDam": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - S3": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee Advanced Threat Defense": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.0.4"
+        }
+    }, 
+    {
+        "GuardiCore": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Mimecast": {
+            "toversion": "99.99.99", 
+            "fromversion": "1.6.2"
+        }
+    }, 
+    {
+        "Shodan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AWS - GuardDuty": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Mimecast Authentication": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "malwr": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.0.0"
+        }
+    }, 
+    {
+        "FalconHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "ServiceNow": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Tenable.sc": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "google-vault": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlienValut OTX": {
+            "toversion": "3.0.1", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MISP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FalconIntel": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Box": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Remedy On-Demand": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Rasterize": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FortiGate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RTIR": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Tenable.io": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Stealthwatch Cloud": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EWS v2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Lockpath KeyLight": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Dell Secureworks": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Luminate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0.0.0"
+        }
+    }, 
+    {
+        "VirusTotal - Private API": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Guidance Encase Endpoint": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Incapsula": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XFE": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Cymon": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "McAfee Advanced Threat Defense": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "AWS - CloudWatchLogs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Microsoft Graph": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Secdo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Preempt": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PostgreSQL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "epo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GRR": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Nessus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GuardiCore": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Digital Shadows": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "fireeye": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "RSA NetWitness Packets and Logs": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "RSA NetWitness v11.1": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Symantec Messaging Gateway": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OTRS": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.1.0"
+        }
+    }, 
+    {
+        "Check Point Sandblast": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Cylance Protect": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.0.1"
+        }
+    }, 
+    {
+        "TCPIPUtils": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RSA NetWitness Security Analytics": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.0.0"
+        }
+    }, 
+    {
+        "Where is the egg?": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "jira": {
+            "toversion": "2.5.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Vectra": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Twilio": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "PhishTank": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FireEye iSIGHT": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "BigFix": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Phish.AI": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Koodous": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IntSights": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "search_and_delete_emails_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "email_address_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "process_email_-_generic": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook12": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "get_original_email_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": 4.0
+        }
+    }, 
+    {
+        "Detonate URL - Phish.AI": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Detonate URL - Cuckoo": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "get_file_sample_by_hash_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "search_endpoints_by_hash_-_crowdstrike": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "get_file_sample_from_path_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "process_email_-_generic": {
+            "toversion": "3.5.9", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Detonate File - Lastline": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "url_enrichment_-_generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "GenericPolling": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "playbook1": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Calculate Severity - Generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "search_endpoints_by_hash_-_carbon_black_protection": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Incident Enrichment": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "playbook16": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "CrowdStrike Falcon Sandbox - Detonate file": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Enrich McAfee DXL using 3rd party sandbox": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "Get File Sample From Hash - Carbon Black Enterprise Response": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Calculate Severity - Generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Tenable.io Scan": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "block_indicators_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "detonate_url_-_threatgrid": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "TrendMicro Malware Alert Playbook": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "calculate_severity_-_3rd-party_integrations": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Phishing Investigation - Generic": {
+            "toversion": "3.5.9", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "detonate_url_-_joesecurity": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "CrowdStrike Falcon Sandbox - Detonate file": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "crowdstrike_endpoint_enrichment": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "cve_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "get_file_sample_by_hash_-_cylance_protect": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "dedup_incidents_-_ml": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "playbook5": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "TIE - IOC Hunt": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "vulnerability_management_-_qualys_Job": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "get_original_email_-_gmail": {
+            "toversion": "99.99.99", 
+            "fromversion": 4.0
+        }
+    }, 
+    {
+        "detonate_url_-_mcafee_atd": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Detonate URL - Lastline": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Detonate File - Generic": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "process_email_-_ews": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook7": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "get_file_sample_from_path_-_d2": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "get_original_email_-_ews": {
+            "toversion": "99.99.99", 
+            "fromversion": 4.0
+        }
+    }, 
+    {
+        "playbook17": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "calculate_severity_-_critical_assets": {
+            "toversion": "3.6.1", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook14": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "endpoint_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "access_investigation_-_qradar": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "detonate_url_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "tenable-sc-scan": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "detonate_file_from_url_-_wildfire": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "block_endpoint_-_carbon_black_response": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "close_incident_if_duplicate_found": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "scan_assets_nexpose": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "extract_indicators_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "playbook0": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "TestPacketsled": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "dedup_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "malware_investigation-_generic_-_setup": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "block_file_-_carbon_black_response": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "search_and_delete_emails_-_ews": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Detonate File - BitDam": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "MAR - Endpoint data collection": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "process_email_-_add_custom_fields": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "detonate_url_-_crowdstrike": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "ip_enrichment_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "domain_enrichment_generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "QRadarFullSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Arcsight - Get events related to the Case": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "Account Enrichment": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "malware_investigation-_generic": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "QRadar - Get offense correlations ": {
+            "toversion": "3.1.0", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "QRadar - Get offense correlations ": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "block_ip_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "vulnerability_handling_-_qualys_-_add _ustom_fields_to_default_layout": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook3": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Enrich DXL with ATD verdict": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "Detonate File - SNDBOX": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Phishing Investigation - Generic": {
+            "toversion": "99.99.99", 
+            "fromversion": 4.0
+        }
+    }, 
+    {
+        "playbook2": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Hunt for bad IOCs": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "extract_indicators_from_file_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Sentinel One - Endpoint data collection": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "process_email_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "playbook13": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "vulnerability_handling_-_nexpose": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Calculate Severity - Generic": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "playbook8": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "vulnerability_handling_-_qualys": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook10": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "search_endpoints_by_hash_-_carbon_black_response": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "scan_site_nexpose": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Failed Login Playbook With Slack": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "WildFire - Detonate file": {
+            "toversion": "3.1.0", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "File Enrichment - Generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "vulnerability_management_-_nexpose_job": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Archer initiate incident": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "block_file_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "calculate_severity_-_critical_assets": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "add_indicator_to_miner_-_palo_alto_mineMeld": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "domain_enrichment_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook11": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "url_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "entity_enrichment_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "search_endpoints_by_hash_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "malware_investigation-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "calculate_severity_-_indicators_dbotscore": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "Detonate File - Cuckoo": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Account Enrichment": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "entity_enrichment_generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Phishing Investigation - Generic": {
+            "toversion": "3.9.9", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "playbook5": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Demisto_Self-Defense_-_Account_policy_monitoring_playbook": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "ATD - Detonate File": {
+            "toversion": "3.6.0", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "block_account_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "file_enrichment_-_virus_total_private_api": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "file_enrichment_-_file_reputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "block_url_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Process Email": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "playbook15": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "get_file_sample_by_hash_-_carbon_black_enterprise_Response": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Get File Sample From Hash - Cylance Protect": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "access_investigation_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "search_endpoints_by_hash_-_tie": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "get_file_sample_from_path_-_carbon_black_enterprise_response": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "WildFire - Detonate file": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Detonate File - Generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "D2 - Endpoint data collection": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "Enrichment Playbook": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Office 365 Search and Delete": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "dbot_indicator_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "playbook0": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "File Enrichment - Generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "ATD - Detonate File": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "account_enrichment_-_generic": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "detonatefile_-_joesecurity": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "ip_enrichment_generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Detonate files": {
+            "toversion": "3.1.0", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "detonate_file_from_url_-_joesecurity": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "Carbon Black Rapid IOC Hunting": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "email_address_enrichment_-_generic": {
+            "toversion": "3.5.1", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Endpoint data collection": {
+            "toversion": "99.99.99", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "Get File Sample From Hash - Generic": {
+            "toversion": "3.1.0", 
+            "fromversion": ""
+        }
+    }, 
+    {
+        "WildFire - Detonate file": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "detonate_file_-_threatgrid": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "AwsStopInstance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWFindEvents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QRadarClassifier": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolLDRModules": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPShowHosts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWSensors": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADListComputers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckWhitelist": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraHosts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SetContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Autoruns": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MathUtil": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBFindHash": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SendEmailToManager": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "FileCreateAndUpload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DecodeMimeHeader": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WildfireUpload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CYFileRep": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaPcaps": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractDomain": {
+            "toversion": "3.0.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExposeUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Print": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CSIndicators": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWEventPcapInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraIssueQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetAllUsersEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooDetonateFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPORepoList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrSetFlows": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraGetDetetctionsById": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonD2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FilterByList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractHash": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "120c861a-e0ae-417e-8dcf-c3ee1dc15a42": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ConvertXmlFileToJson": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IPExtract": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DBotAverageScore": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusCreateScan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StixParser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusShowEditorTemplates": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QrFullSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FetchFromInstance": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "a6e348f4-1e40-4365-870c-52139c60779a": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolConnscan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "840aa9a7-04b2-4505-8238-8fe85f010dde": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBLiveGetFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ScheduleGenericPolling": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "AddEvidence": {
+            "toversion": "99.99.99", 
+            "fromversion": "2.5.0"
+        }
+    }, 
+    {
+        "Ping": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EncodeToAscii": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ServiceNowCreateIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TriagePhishing": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LessThanPercentage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroAlertStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SandboxDetonateFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseEmailFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ConferSetSeverity": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ReverseList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ImpSfListEndpoints": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "9364c36f-b1d6-4233-88c2-75008b106c31": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "InviteUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraDetections": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StaticAnalyze": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetContextValue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumFilterComputersByIndexQueryFileDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2O365ComplianceSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SearchIncidents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooDisplayReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolPSList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBLiveProcessList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsGmailGetMail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PTEnrich": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ResolveShortenedURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonServerUserPython": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "5edd0c8e-4e6e-4afe-8f43-67bb9ebc4fd3": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RunSqlQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "d98506ea-fd06-49d6-8f1e-bb29ab06766e": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TimeStampToDate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SlackAskUser": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPShowAccessRulebase": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolNetworkConnections": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoDeleteIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SSDeepReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrGetHunt": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "findIncidentsWithIndicator": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExifRead": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgosecGetTicket": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncapGetDomainApproverEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ElasticSearchDisplay": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextGetIps": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Hardware": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "82764532-0a4f-4b59-8cf9-fe1a00cabdae": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroSecurityProfileRetrieveAll": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaConfig": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RepopulateFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SendMessageToOnlineUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SetIncidentCustomFields": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CEFParser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADSetNewPassword": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "misp_upload_sample": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsValueInArray": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "displayhtml": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraClassifier": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JSONtoCSV": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ConferIncidentDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseJSON": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ScheduleCommand": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBTimeline": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailAskUser": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncidentSet": {
+            "toversion": "3.5.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataIPReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "URLSSLVerification": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailDomainSquattingReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SNUpdateTicket": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ticksToTime": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "dbbdc2e4-6105-4ee9-8e83-563a4b991a89": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TopMaliciousRatioIndicators": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "SetMultipleValues": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaCommit": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CloseInvestigation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CrowdStrikeUrlParse": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MarkRelatedIncidents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoSendInvite": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonIntegrationPython": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RunDockerCommand": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsGmailSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPODetermineRepository": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "emailFieldTriggered": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendMicroGetPolicyID": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AquatoneDiscover": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractDomainFromURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSAUpdateIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "UnzipFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSAGetAvailableAssignees": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QualysCreateIncidentFromReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooDetonateURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "UserEnrichAD": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WordTokenizer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "da8594b8-0b57-4cb2-8578-94754bb577c6": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsContextSet": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Set": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ArcherCreateSecurityIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolMalfindDumpAgent": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroSystemEventRetrieve": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MimecastFindEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Drop": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumFindRunningProcesses": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusScanDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBPCatalogFindHash": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "checkValue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WhileLoop": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2GetSystemLog": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CopyFileD2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckFilesWildfirePy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetGroupMembers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SCPPullFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ReadFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraSensors": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QRadarFullSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CSActors": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusGetReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolRaw": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Base64Encode": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMAcknowledgeHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NexposeVulnExtractor": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBTriggeredRules": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LoadJSON": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonUserServer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsMaliciousIndicatorFound": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2ActiveUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "BuildEWSQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "da330ce7-3a93-430c-8454-03b96cf5184e": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraIssueUploadFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaDynamicAddressGroup": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ActiveUsersD2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseExcel": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MatchRegex": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ip_to_host": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgosecGetNetworkObject": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Autoruns": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraTriage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ATDDetonate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSACreateIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExchangeSearchMailbox": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ed24d63f-4134-49c4-82c0-96885a7a1cc3": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "5d44a5d9-d91a-4420-801f-755f26b60c47": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ad7de731-cadc-4f49-81cd-522cd4b7bfa5": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoLogsBundle": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextGetEmails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "nexpose_create_incidents_from_assets": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "bffdcf72-2061-4767-83d5-3ff2a9e8afe7": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExchangeSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPSetRule": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolGetProcWithMalNetConn": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ConvertTableToHTML": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StringLength": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooGetScreenshot": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolMalfind": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExposeModules": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrGetFlows": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsTrue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SplunkSearchJsonPy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "UnEscapeURLs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ProofpointDecodeURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ReadPDFFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextContains": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADIsUserMember": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaMove": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetUserGroups": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADUserLogonInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Osxcollector": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWObservationPcapInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QrSearches": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractIndicatorsFromTextFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckIPs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolDlllist": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FPSetRule": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendMicroClassifier": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendMicroGetHostID": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractDomainFromUrlAndEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraSettings": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GenerateInvestigationSummaryReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "DataDomainReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.1.0"
+        }
+    }, 
+    {
+        "EPORepositoryComplianceCheck": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWObservations": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "InRange": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IngestCSV": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroHostAntimalwareScan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QrGetSearchResults": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusHostDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WhereFieldEquals": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OSQueryUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CrowdStrikeStreamingPreProcessing": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Strings": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QrOffenses": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMHosts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RegProbeBasic": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextGetHashes": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NexposeEmailParser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "7b5c080e-f3b1-411a-83b0-e1f53c21bef8": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SlackMirror": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsIPInRanges": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBSessions": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JSONFileToCSV": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GeneratePassword": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncidentSet": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.1"
+        }
+    }, 
+    {
+        "GoogleAuthURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataURLReputation": {
+            "toversion": "3.0.1", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IPReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AwsCreateImage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WildfireReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMIndicatorsForEntity": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "hideFieldsOnNewIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.6.0"
+        }
+    }, 
+    {
+        "ImpSfScheduleTask": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ServiceNowUpdateIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataIPReputation": {
+            "toversion": "3.0.1", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SetDateField": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetEmailForUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailAskUser": {
+            "toversion": "3.6.0", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "PWEventDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckSenderDomainDistance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "7b02fa0f-94ff-48c7-8350-b4e353702e73": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWObservationPcapDownload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "b695f044-fbdd-4d4b-89ce-9066cb0e165a": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseEmailHeader": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IndicatorMaliciousRatioCalculation": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "BinaryReputationPy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ArcherUpdateSecurityIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsListExist": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CSCountDevicesForIOC": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMSetHostComment": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Exec": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OSQueryProcesses": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusScanStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoLinkIncidents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraCreateIssue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LocateAttachment": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetComputerGroups": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MapValues": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QrGetSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailAskUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "AwsGetInstanceInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CreateArray": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADListUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBPFindRule": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsListUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseCSV": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Winpmem": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgosecGetApplications": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Elasticsearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPOUpdateRepository": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ZipFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraSummary": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MattermostAskUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "WhoisSummary": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AssignAnalystToIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Base64ListToFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMPathFinderScanHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncapScheduleTask": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SbQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetStringsDistance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CSHuntByIOC": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FireEyeDetonateFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "514ec833-c02c-49a3-8ac6-d982198f5fa0": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JoinIfSingleElementOnly": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWObservationDetails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SNOpenTicket": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IPInfoQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RegCollectValues": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MD5Extract": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonIntegration": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBPBanHash": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "URLDecode": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AwsRunInstance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPORetrieveCurrentDATVersion": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumShowPendingActions": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PrintErrorEntry": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "SEPCheckOutdatedEndpoints": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "URLNumberOfAds": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncidentToContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Users": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StripChars": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RegPathReputationBasicLists": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsIntegrationAvailable": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExposeIncidentOwner": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AwsCreateVolumeSnapshot": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CreateEmailHtmlBody": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "listExecutedCommands": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPOUpdateEndpoints": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckSender": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusLaunchScan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetGroupUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPTaskStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "80b5c44c-4eac-4e00-812f-6d409d57be31": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSAAddEventsToIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StopScheduledTask": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SalesforceAskUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADListUsersEx": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OSQueryOpenSockets": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EsmExample": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SetSeverityByScore": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RSAArcherManualFetch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckpointFWBackupStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolImageinfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBPApproveHash": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseEmailFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsRevokeUserRole": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoUploadFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SNListTickets": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraIssueAddComment": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgosecCreateTicket": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DeleteContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetUsersByEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LanguageDetect": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncapGetAppInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SplunkEmailParser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetTime": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PortListenCheck": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "f99a85a6-c572-4c3a-8afd-5b4ac539000a": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaBlockIP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IdentifyAttachedEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Services": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AlgosecQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AwsStartInstance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DomainReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetDuplicatesMlv2": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "JIRAPrintIssue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FPDeleteRule": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "isError": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonServerPython": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "10cb3486-48f3-4d93-88af-b6be84ffd432": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DocumentationAutomation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FileReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AreValuesEqual": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMDetectedEntities": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "UtilAnyResults": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExampleJSScript": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "UnEscapeIPs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OSQueryLoggedInUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FindSimilarIncidentsByText": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncapWhitelistCompliance": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "c99e196b-e05e-41f2-82cb-6798f33cb653": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "5e125fdd-72f1-455f-89fa-e6f9405174a4": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractDomain": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoCreateList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ServiceNowQueryIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MimecastQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "misp_download_sample": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExchangeDeleteIDsFromContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DumpJSON": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetGroupComputers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroAntiMalwareEventRetrieve": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Sleep": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AdSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBNotable": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsGetUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBLiveFetchFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraIssueAddLink": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextSearchForString": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ShowOnMap": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBFindIP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Rekall": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooGetReport": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "BinarySearchPy": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Volatility": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrGetFiles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FetchFileD2": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ToTable": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "XBLockouts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExchangeAssignRole": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrSetHunts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MaliciousRatioReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "EPOFindSystem": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumAskQuestionComplex": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataURLReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataHashReputation": {
+            "toversion": "3.0.1", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetIndicatorDBotScore": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "HTTPListRedirects": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataHashReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBEvents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Whois": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "MarkAsNoteByTag": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumApprovePendingActions": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GenericPollingScheduledTask": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NessusListScans": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumAskQuestion": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExportToCSV": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "URLReputation": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncidentAddSystem": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "FindSimilarIncidents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPDeleteRule": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RegexGroups": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RemoteExec": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PublishEntriesToContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "http": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GoogleappsGetUserRoles": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExchangeDeleteMail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SbUpload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "3dd62013-4fed-43eb-8ae4-91b1b4250599": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2Processes": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IncapListSites": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetEmailForAllUsers": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CuckooTaskStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWEvents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NexposeEmailParserForVuln": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CloseInvestigationAsDuplicate": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GetDuplicatesMl": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "FailedInstances": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "UnPackFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "http": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "CPCreateBackup": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractIP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CheckURLs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SplunkPySearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "GrrGetHunts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ImpSfSetEndpointStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PCAPMiner": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2GetFile": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PagerDutyAssignOnCallUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractHTMLTables": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContainsCreditCardInfo": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DataDomainReputation": {
+            "toversion": "3.0.1", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DBotClosedIncidentsPercentage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBAlerts": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ParseWordDoc": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolJson": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SlackSend": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExposeList": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraHealth": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2ExecuteCommand": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "46e2109c-b735-458e-884f-030229a20830": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "dfa728bb-8291-4f8c-8185-53fad210f1b5": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextGetPathForString": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMResolveHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsGreaterThan": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SbQuota": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ContextFilter": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "O365SearchEmails": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AnalyzeOSX": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PWEventPcapDownload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AnalyzeMemImage": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "8bb47409-fffb-40c4-8601-d5fd20384e26": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraGetIssue": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADExpirePassword": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ImpSfRevokeUnaccessedDevices": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SendEmail": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EPOCheckLatestDAT": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PagerDutyAlertOnIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "URLExtract": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TaniumDeployAction": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SendEmailToManager": {
+            "toversion": "3.1.0", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StringReplace": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TextFromHTML": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPShowBackupStatus": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "RunPollingCommand": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "CBWatchlists": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DamSensorDown": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "94f72ed9-49c8-40e5-89bb-7c98f914d2cc": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "34f0498c-d3da-4ac3-8cad-a28804bf1f21": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBSensors": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolRunCmds": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetComputer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoUploadFileToIncident": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SbDownload": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "OSQueryBasicQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AggregateIOCs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PDFUnlocker": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2RegQuery": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ExtractURL": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "StringContains": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CPBlockIP": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroSecurityProfileAssignToHost": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "JiraCreateIssue-example": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VolApihooks": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ADGetCommonGroups": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSAGetComponents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QRadarGetCorrelationLogs": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CountArraySize": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ConvertXmlToJson": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2PEDump": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CBPFindComputer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ClassifierNotifyAdmin": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SlackAskUser": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "Exists": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "NetwitnessSAGetEvents": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "CommonServer": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "LCMDetectedIndicators": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "SplunkSearch": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsIPInSubnet": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "TrendmicroHostRetrieveAll": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "getMlFeatures": {
+            "toversion": "99.99.99", 
+            "fromversion": "3.5.0"
+        }
+    }, 
+    {
+        "2aa9f737-8c7c-42f5-815f-4d104bb3af06": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PrintContext": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "D2O365SearchAndDelete": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "QRadarGetOffenseCorrelations": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "ShowScheduledEntries": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "EmailAskUserResponse": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "IsEmailAddressInternal": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DemistoGetIncidentTasksByState": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "VectraGetHostById": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "DefaultIncidentClassifier": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }
 ]
