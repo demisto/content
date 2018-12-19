@@ -61,6 +61,10 @@ script:
         
         return responce
 
+    
+    def dns_get_command(url):
+        demisto.results(dns_get(url))
+
     def dns_get(url):
         responce = http_dns_get(url)
 
@@ -120,7 +124,7 @@ script:
         for ip, ipData in data.items():
             records.append(create_ip_context(ip, ipData))
 
-        return {
+        result = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': data,
@@ -129,6 +133,8 @@ script:
                 'CIRCLssl.IPAddress(val.Value===obj.Value)': records
             }
         }
+
+        demisto.results(result)
     
     def http_list_certificates(queryValue):
         query_url = BASE_URL + '/v2pssl/query/' + queryValue
@@ -159,7 +165,7 @@ script:
         data = responce.json()
         certificate = create_certificate_seen_ips_context(sha1, data, limit)
 
-        return {
+        result = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': data,
@@ -168,6 +174,8 @@ script:
                 'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
             }
         }
+
+        demisto.results(result)
 
     def http_list_certificate_seen_ips(sha1):
         query_url = BASE_URL + '/v2pssl/cquery/' + sha1
@@ -187,15 +195,17 @@ script:
         data = responce.json()
         certificate = create_certificate_details(sha1, data)
 
-        return {
+        result = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': data,
             'HumanReadable': certificate,
             'EntryContext': {
-                'CIRCLssl.Certificate(val.Sha1===obj.Sha1)': certificate,
+                'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
             }
         }
+
+        demisto.results(result)
    
     def http_get_certificate_details(sha1):
         query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
@@ -218,32 +228,32 @@ script:
             'Seen': data.get('icsi', {}).get('times_seen'),
         }
 
-    def execute_command(command, args):
-        if command == 'test-module':
-            responce = dns_get('test.com')
-            return 'ok'
-
-        if command == 'circl-dns-get':
-            return dns_get(args.get('queryValue'))
-
-        if command == 'circl-ssl-list-certificates':
-            return list_certificates(args.get('queryValue'))
-
-        if command == 'circl-ssl-query-certificate':
-            limit = int(args.get('limitResults', 100))
-            sha1 = args.get('certificate')
-
-            return list_certificate_seen_ips(sha1, limit)
-
-        if command == 'circl-ssl-get-certificate':
-            return get_certificate_details(args.get('certificate'))
-
     ''' EXECUTION CODE '''
 
     LOG('command is %s' % (demisto.command(), ))
 
     try:
-        demisto.results(execute_command(demisto.command(), demisto.args()))
+        command = demisto.command()
+        args = demisto.args()
+
+        if command == 'test-module':
+            result = dns_get('test.com')
+            demisto.results('ok')
+
+        if command == 'circl-dns-get':
+            dns_get_command(args.get('queryValue'))
+
+        if command == 'circl-ssl-list-certificates':
+            list_certificates(args.get('queryValue'))
+
+        if command == 'circl-ssl-query-certificate':
+            limit = int(args.get('limitResults', 100))
+            sha1 = args.get('certificate')
+
+            list_certificate_seen_ips(sha1, limit)
+
+        if command == 'circl-ssl-get-certificate':
+            get_certificate_details(args.get('certificate'))
         
     except Exception, e:
         LOG(e.message)
