@@ -1655,6 +1655,7 @@
 		{
 			"id": "incident_remediationsla",
 			"version": 3,
+			"fromVersion": "4.1.0",
 			"modified": "2018-12-11T12:53:56.816268002Z",
 			"name": "Remediation SLA",
 			"ownerOnly": false,
@@ -1690,6 +1691,7 @@
 		{
 			"id": "incident_detectionsla",
 			"version": 2,
+			"fromVersion": "4.1.0",
 			"modified": "2018-12-11T12:53:48.369705659Z",
 			"name": "Detection SLA",
 			"ownerOnly": false,
@@ -1725,6 +1727,7 @@
 		{
 			"id": "incident_timetoassignment",
 			"version": 1,
+			"fromVersion": "4.1.0",
 			"modified": "2018-12-11T12:55:38.305896432Z",
 			"name": "Time to Assignment",
 			"ownerOnly": false,

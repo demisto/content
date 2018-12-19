@@ -1,7 +1,7 @@
 {
 	"id": "2b542873-793f-4eaa-8114-d855bb49cbc9",
 	"version": -1,
-	"fromVersion": 4.1,
+	"fromVersion": "4.1.0",
 	"shouldCommit": false,
 	"shouldPush": false,
 	"fromDate": "0001-01-01T00:00:00Z",
@@ -190,7 +190,7 @@
 			"h": 2,
 			"widget": {
 				"id": "mttd-by-type",
-				"version": 1, ,
+				"version": 1,
 				"shouldCommit": true,
 				"shouldPush": false,
 				"name": "MTTD by Type",

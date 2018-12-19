@@ -1,7 +1,7 @@
 commonfields:
   id: efa042a3-7017-4047-81e3-155e7065c88f
   version: -1
-  fromVersion: 4.1
+  fromVersion: 4.1.0
 name: StopTimeToAssignOnOwnerChange
 script: |2
 

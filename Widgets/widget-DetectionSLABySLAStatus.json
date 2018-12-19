@@ -1,7 +1,7 @@
 {
   "id": "detection-sla-by-status",
   "version": -1,
-  "fromVersion": "4.1",
+  "fromVersion": "4.1.0",
   "name": "Detection SLA by Status",
   "dataType": "incidents",
   "widgetType": "pie",
