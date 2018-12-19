@@ -1,9 +1,13 @@
 {
+	"typeId": "Phishing",
+	"kind": "quickView",
 	"layout": {
 		"id": "Phishing",
-		"version": 1,
+		"version": -1,
 		"modified": "2018-12-18T09:27:21.43610162Z",
 		"name": "",
+		"kind": "quickView",
+		"typeId": "Phishing",
 		"sections": [
 			{
 				"id": "",
