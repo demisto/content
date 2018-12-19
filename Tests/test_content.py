@@ -333,7 +333,7 @@ def main():
 
         are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf)
         if not are_params_set:
-            print_error("{} Failed to run, Couldn't match instance name to the integration provided")
+            print_error("{} Failed to run, Couldn't match instance name to the integration provided".format(playbook_id))
             failed_playbooks.append(playbook_id)
             continue
 
