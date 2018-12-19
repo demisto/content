@@ -72,6 +72,10 @@ schema;field_schema:
       type: number
     sla:
       type: number
+    caseInsensitive:
+      type: bool
+    breachScript:
+      type: str
     associatedTypes:
       type: any
     systemAssociatedTypes:
