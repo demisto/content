@@ -204,7 +204,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': data,
-            'HumanReadable': certificate,
+            'HumanReadable': tableToMarkdown("CIRCL ssl certificate - " + sha1, certificate),
             'EntryContext': {
                 'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
             }
