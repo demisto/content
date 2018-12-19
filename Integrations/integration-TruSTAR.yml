@@ -33,6 +33,15 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Threshold
+  name: threshold
+  defaultvalue: MEDIUM
+  type: 15
+  required: false
+  options:
+  - LOW
+  - MEDIUM
+  - HIGH
 script:
   script: |+
     ''' IMPORTS '''
@@ -412,10 +421,12 @@ script:
         return entry
 
     def generic_search_indicator(search_term, threshold, search_type, ec_function):
+        if not threshold:
+            threshold = demisto.params().get('threshold')
         response = ts.search_indicators_page(search_term=search_term)
         indicators = translate_specific_indicators(response, search_type)
         threshold = priority_level_to_score(threshold)
-        title = 'TruSTAR {0} indicators that relate to: {1}'.format(search_type[0], search_term)
+        title = 'TruSTAR results for {0} indicator: {1}'.format(search_type[0], search_term)
         ec = ec_function(indicators, search_term, threshold)
         entry = {
             'Type': entryTypes['note'],
@@ -1143,7 +1154,6 @@ script:
       - HIGH
       description: If ThreatScore is greater or equal than the threshold, then ip
         will be considered malicious
-      defaultValue: MEDIUM
     outputs:
     - contextPath: File.MD5
       description: File MD5
@@ -1192,7 +1202,6 @@ script:
       - HIGH
       description: If ThreatScore is greater or equal than the threshold, then ip
         will be considered malicious
-      defaultValue: MEDIUM
     outputs:
     - contextPath: IP.Address
       description: IP Address
@@ -1237,7 +1246,6 @@ script:
       - HIGH
       description: If ThreatScore is greater or equal than the threshold, then ip
         will be considered malicious
-      defaultValue: MEDIUM
     outputs:
     - contextPath: URL.Data
       description: URL data
@@ -1283,7 +1291,6 @@ script:
       - HIGH
       description: If ThreatScore is greater or equal than the threshold, then ip
         will be considered malicious
-      defaultValue: MEDIUM
     outputs:
     - contextPath: Domain.Name
       description: Domain Name
