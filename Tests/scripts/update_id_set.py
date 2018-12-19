@@ -109,13 +109,26 @@ def get_to_version(file_path):
         return data_dictionary.get('toversion', '99.99.99')
 
 
+def get_integration_implementing_ids(integration_id):
+    pass
+
+
+def get_playbooks_implementing_ids(playbook_id):
+    pass
+
+
+def get_scripts_implementing_ids(script_id):
+    pass
+
+
 def re_create_id_set():
     id_list = []
     for file in glob.glob(os.path.join('Integrations', '*')):
         id = get_script_or_integration_id(file)
         versioning = {
             "fromversion": get_from_version(file),
-            "toversion": get_to_version(file)
+            "toversion": get_to_version(file),
+            "implemnting_ids": get_integration_implementing_ids(id)
         }
         id_dict = {
             id: versioning
@@ -126,7 +139,8 @@ def re_create_id_set():
         id = collect_ids(file)
         versioning = {
             "fromversion": get_from_version(file),
-            "toversion": get_to_version(file)
+            "toversion": get_to_version(file),
+            "implemnting_ids": get_playbooks_implementing_ids(id)
         }
         id_dict = {
             id: versioning
@@ -137,7 +151,8 @@ def re_create_id_set():
         id = get_script_or_integration_id(file)
         versioning = {
             "fromversion": get_from_version(file),
-            "toversion": get_to_version(file)
+            "toversion": get_to_version(file),
+            "implemnting_ids": get_scripts_implementing_ids(id)
         }
         id_dict = {
             id: versioning
