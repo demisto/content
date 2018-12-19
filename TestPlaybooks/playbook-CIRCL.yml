@@ -314,7 +314,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.Certificate.Sha1
+              simple: CIRCLssl.Certificate.SHA1
             iscontext: true
       - - operator: isExists
           left:
@@ -367,7 +367,7 @@ tasks:
     task:
       id: e045a038-980a-4d35-8b80-dff8be0ccc07
       version: -1
-      name: Sha1 value equals the queried.
+      name: SHA1 value equals the queried.
       type: condition
       iscommand: false
       brand: ""
@@ -383,7 +383,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CIRCLssl.Certificate.Sha1
+              simple: CIRCLssl.Certificate.SHA1
             iscontext: true
           right:
             value:
@@ -457,7 +457,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Sha1 does NOT equal to the queried sha1
+        simple: SHA1 does NOT equal to the queried SHA1
     separatecontext: false
     view: |-
       {
@@ -491,17 +491,17 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.IP.Value
+              simple: CIRCLssl.IPAddress.Value
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.IP.Certificate.Sha1
+              simple: CIRCLssl.IPAddress.Certificate.SHA1
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.IP.Certificate.Subjects
+              simple: CIRCLssl.IPAddress.Certificate.Subjects
             iscontext: true
     view: |-
       {
@@ -581,7 +581,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.Certificate.Sha1
+              simple: CIRCLssl.Certificate.SHA1
             iscontext: true
       - - operator: isExists
           left:
@@ -591,7 +591,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CIRCLssl.Certificate.IP
+              simple: CIRCLssl.Certificate.IPAddress
             iscontext: true
     view: |-
       {
@@ -634,7 +634,7 @@ tasks:
     task:
       id: 0d334867-3073-4626-8095-45d776580f91
       version: -1
-      name: Sha1 value equals the queried.
+      name: SHA1 value equals the queried.
       type: condition
       iscommand: false
       brand: ""
@@ -650,7 +650,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CIRCLssl.Certificate.Sha1
+              simple: CIRCLssl.Certificate.SHA1
             iscontext: true
           right:
             value:
@@ -678,7 +678,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: ssl-query-certificate - Certificate.Sha1 is different than queried.
+        simple: ssl-query-certificate - Certificate.SHA1 is different than queried.
     separatecontext: false
     view: |-
       {
@@ -712,7 +712,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: CIRCLssl.Certificate.IP
+              simple: CIRCLssl.Certificate.IPAddress
             iscontext: true
           right:
             value:

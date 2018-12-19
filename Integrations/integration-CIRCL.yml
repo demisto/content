@@ -47,14 +47,13 @@ script:
     AUTH = (USERNAME, PASSWORD)
     USE_SSL = True if demisto.params().get('insecure') else False
     IS_USING_PROXY = True if demisto.params().get('proxy') else False
+    LAST_TIME_KEY = 'time_last'
 
     if not IS_USING_PROXY:
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
-
-    last_time_key = 'time_last'
 
     def http_get(url):
         responce = requests.get(url, auth=AUTH)
@@ -98,7 +97,7 @@ script:
             key = e['rdata']
             other = results_map.get(key)
 
-            if other is not None and other[last_time_key] > e[last_time_key]:
+            if other is not None and other[LAST_TIME_KEY] > e[LAST_TIME_KEY]:
                 e = other
 
             results_map[key] = e
@@ -109,7 +108,7 @@ script:
     def create_dns_record_context(record):
         return {
             'Data': record['rdata'],
-            'LastTime': record[last_time_key],
+            'LastTime': record[LAST_TIME_KEY],
         }
 
     def list_certificates(queryValue):
@@ -127,7 +126,7 @@ script:
             'Contents': data,
             'HumanReadable': '```json\n' + json.dumps(records, indent=4) + '\n```',
             'EntryContext': {
-                'CIRCLssl.IP(val.Value===obj.Value)': records
+                'CIRCLssl.IPAddress(val.Value===obj.Value)': records
             }
         }
     
@@ -150,7 +149,7 @@ script:
 
     def create_list_certificate_context(sha1, subjects):
         return {
-            'Sha1': sha1,
+            'SHA1': sha1,
             'Subjects': subjects
         }
 
@@ -166,7 +165,7 @@ script:
             'Contents': data,
             'HumanReadable': 'Hits: ' + str(certificate['Hits']),
             'EntryContext': {
-                'CIRCLssl.Certificate(val.Sha1===obj.Sha1)': certificate,
+                'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
             }
         }
 
@@ -177,9 +176,9 @@ script:
 
     def create_certificate_seen_ips_context(sha1, data, limit):
         return {
-            'Sha1': sha1,
+            'SHA1': sha1,
             'Hits': data['hits'],
-            'IP': data['seen'][:limit],
+            'IPAddress': data['seen'][:limit],
         }
 
     def get_certificate_details(sha1):
@@ -208,7 +207,7 @@ script:
         extension = info['extension']
 
         return {
-            'Sha1': sha1,
+            'SHA1': sha1,
             'Usage': extension['extendedKeyUsage'],
             'Distribution': extension['crlDistributionPoints'],
             'Issuer': info['issuer'],
@@ -274,13 +273,13 @@ script:
       required: true
       description: IP address or CIDR block
     outputs:
-    - contextPath: CIRCLssl.IP.Value
+    - contextPath: CIRCLssl.IPAddress.Value
       description: IP address
       type: string
-    - contextPath: CIRCLssl.IP.Certificate.Sha1
+    - contextPath: CIRCLssl.IPAddress.Certificate.SHA1
       description: ' The SHA-1 fingerprint of the certificate'
       type: string
-    - contextPath: CIRCLssl.IP.Certificate.Subjects
+    - contextPath: CIRCLssl.IPAddress.Certificate.Subjects
       description: Certificate subjects
       type: string
     description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates
@@ -294,13 +293,13 @@ script:
       description: Limit the results number (Increasing number can cause browser slowdowns).
       defaultValue: "100"
     outputs:
-    - contextPath: CIRCLssl.Certificate.Sha1
+    - contextPath: CIRCLssl.Certificate.SHA1
       description: ' The SHA-1 fingerprint of the certificate'
       type: string
     - contextPath: CIRCLssl.Certificate.Hits
       description: Number of hits for the certificate (number of associated addresses)
       type: number
-    - contextPath: CIRCLssl.Certificate.IP
+    - contextPath: CIRCLssl.Certificate.IPAddress
       description: IP address associated to the certificate
       type: string
     description: Query a certificate value to get all associated addresses
@@ -310,8 +309,8 @@ script:
       required: true
       description: SHA-1 fingerprint of a certificate
     outputs:
-    - contextPath: CIRCLssl.Certificate.Sha1
-      description: ' The SHA-1 fingerprint of the certificate'
+    - contextPath: CIRCLssl.Certificate.SHA1
+      description: 'The SHA-1 fingerprint of the certificate'
       type: string
     - contextPath: CIRCLssl.Certificate.Usage
       description: Extended key usage
