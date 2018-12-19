@@ -133,7 +133,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': data,
-            'HumanReadable': '```json\n' + json.dumps(records, indent=4) + '\n```',
+            'HumanReadable': tableToMarkdown('List certificates for ' + queryValue, records),
             'EntryContext': {
                 'CIRCLssl.IPAddress(val.Value===obj.Value)': records
             }
@@ -150,7 +150,7 @@ script:
         certificates = []
 
         for sha1 in ipData['certificates']:
-            subjects = ipData['subjects'][sha1]['values']
+            subjects = ipData['subjects'].get(sha1, {}).get('values', [])
             certificates.append(create_list_certificate_context(sha1, subjects))
 
         return {
