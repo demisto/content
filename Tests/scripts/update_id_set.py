@@ -109,7 +109,36 @@ def get_to_version(file_path):
         return data_dictionary.get('toversion', '99.99.99')
 
 
-def get_integration_implementing_ids(integration_id):
+def get_integration_commands(file_path):
+    cmd_list = []
+    data_dictionary = get_json(file_path)
+    commands = data_dictionary.get('script', {}).get('commands', [])
+    for command in commands:
+        cmd_list.append(command.get('name'))
+
+    return cmd_list
+
+
+def get_integration_implemented_by(integration_id):
+    # for filename in os.listdir('./Playbooks'):
+    #     file_path = 'Playbooks/' + filename
+    #
+    #     if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+    #         data_dict = get_json(file_path)
+    #         tasks = data_dict.get('tasks', [])
+    #
+    #         for task in tasks.values():
+    #             task_details = task.get('task', {})
+    #
+    #             script_name = task_details.get('scriptName', '')
+    #             if script_name in script_ids:
+    #                 tests.add(data_dict.get('id'))
+    #                 catched_scripts.add(script_name)
+    #
+    #             playbook_name = task_details.get('playbookName', '')
+    #             if playbook_name in playbook_ids:
+    #                 tests.add(data_dict.get('id'))
+    #                 catched_playbooks.add(playbook_name)
     pass
 
 
@@ -117,8 +146,48 @@ def get_playbooks_implementing_ids(playbook_id):
     pass
 
 
-def get_scripts_implementing_ids(script_id):
-    pass
+def get_ids_from_playbook(param_to_enrich_by, file_path):
+    implementing_ids = []
+    data_dict = get_json(file_path)
+    tasks = data_dict.get('tasks', [])
+
+    for task in tasks.values():
+        task_details = task.get('task', {})
+
+        enriched_id = task_details.get(param_to_enrich_by)
+        if enriched_id:
+            implementing_ids.append(enriched_id)
+
+    return implementing_ids
+
+
+def get_commmands_from_playbook(file_path):
+    commands = []
+    data_dict = get_json(file_path)
+    tasks = data_dict.get('tasks', [])
+
+    for task in tasks.values():
+        task_details = task.get('task', {})
+
+        command = task_details.get('script')
+        if command:
+            command = command.split('|')[-1]
+            commands.append(command)
+
+    return commands
+
+
+# def get_scripts_implementing_ids(script_id):
+#     implementing_ids = []
+#     enrich_from_playbook('scriptName', 'TestPlaybooks', implementing_ids, script_id)
+#     enrich_from_playbook('scriptName', 'Playbooks', implementing_ids, script_id)
+#
+#     return implementing_ids
+
+def get_depends_on(file_path):
+    data_dict = get_json(file_path)
+    depends_on = data_dict.get('dependson', {}).get('must', [])
+    return [cmd.split('|')[-1] for cmd in depends_on]
 
 
 def re_create_id_set():
@@ -128,7 +197,9 @@ def re_create_id_set():
         versioning = {
             "fromversion": get_from_version(file),
             "toversion": get_to_version(file),
-            "implemnting_ids": get_integration_implementing_ids(id)
+            # "implementing": get_integration_implementing_ids(id),
+            # "implemented_by": get_integration_implemented_by(id),
+            "commands:": get_integration_commands(file)
         }
         id_dict = {
             id: versioning
@@ -140,7 +211,10 @@ def re_create_id_set():
         versioning = {
             "fromversion": get_from_version(file),
             "toversion": get_to_version(file),
-            "implemnting_ids": get_playbooks_implementing_ids(id)
+            # "implemnted_by": get_playbooks_implementing_ids(id),
+            "implementing_scripts": get_ids_from_playbook('scriptName', file),
+            "implementing_playbooks": get_ids_from_playbook('playbookName', file),
+            "implementing_commands": get_commmands_from_playbook(file),
         }
         id_dict = {
             id: versioning
@@ -152,7 +226,8 @@ def re_create_id_set():
         versioning = {
             "fromversion": get_from_version(file),
             "toversion": get_to_version(file),
-            "implemnting_ids": get_scripts_implementing_ids(id)
+            "depends_on": get_depends_on(file)
+            # "implemnted_by": get_scripts_implementing_ids(id)
         }
         id_dict = {
             id: versioning
@@ -207,6 +282,7 @@ def update_id_set(git_sha):
             json.dump(id_list, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
+
 
 if __name__ == '__main__':
     re_create_id_set()
