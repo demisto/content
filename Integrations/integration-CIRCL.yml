@@ -40,7 +40,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    # Params
+    ''' GLOBAL VARS '''
     BASE_URL = demisto.getParam('url')
     USERNAME = demisto.getParam('credentials')['identifier']
     PASSWORD = demisto.getParam('credentials')['password']
@@ -227,7 +227,10 @@ script:
         if command == 'circl-ssl-get-certificate':
             return get_certificate_details(args.get('certificate'))
 
-    LOG('Executing command ' + demisto.command())
+    ''' EXECUTION CODE '''
+
+    LOG('command is %s' % (demisto.command(), ))
+
     try:
         demisto.results(execute_command(demisto.command(), demisto.args()))
         
