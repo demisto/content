@@ -63,9 +63,7 @@ script:
         return responce
 
     def dns_get(url):
-        query_url = BASE_URL + '/pdns/query/' + url
-
-        responce = http_get(query_url)
+        responce = http_dns_get(url)
 
         results = list(map(lambda line: json.loads(line), responce.text.splitlines()))
         results = merge_by_rdata(results)
@@ -87,6 +85,11 @@ script:
                 }
             }
         }
+    
+    def http_dns_get(url):
+        query_url = BASE_URL + '/pdns/query/' + url
+
+        return http_get(query_url)
 
     def merge_by_rdata(results):
         results_map = dict()
@@ -110,9 +113,7 @@ script:
         }
 
     def list_certificates(queryValue):
-        query_url = BASE_URL + '/v2pssl/query/' + queryValue
-        
-        responce = http_get(query_url)
+        responce = http_list_certificates(queryValue)
 
         data = responce.json()
         records = []
@@ -129,6 +130,11 @@ script:
                 'CIRCLssl.IP(val.Value===obj.Value)': records
             }
         }
+    
+    def http_list_certificates(queryValue):
+        query_url = BASE_URL + '/v2pssl/query/' + queryValue
+
+        return http_get(query_url)
 
     def create_ip_context(ip, ipData):
         certificates = []
@@ -149,9 +155,7 @@ script:
         }
 
     def list_certificate_seen_ips(sha1, limit):
-        query_url = BASE_URL + '/v2pssl/cquery/' + sha1
-
-        responce = http_get(query_url)
+        responce = http_list_certificate_seen_ips(sha1)
 
         data = responce.json()
         certificate = create_certificate_seen_ips_context(sha1, data, limit)
@@ -166,6 +170,11 @@ script:
             }
         }
 
+    def http_list_certificate_seen_ips(sha1):
+        query_url = BASE_URL + '/v2pssl/cquery/' + sha1
+
+        return http_get(query_url)
+
     def create_certificate_seen_ips_context(sha1, data, limit):
         return {
             'Sha1': sha1,
@@ -174,9 +183,7 @@ script:
         }
 
     def get_certificate_details(sha1):
-        query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
-
-        responce = http_get(query_url)
+        responce = http_get_certificate_details(sha1)
 
         data = responce.json()
         certificate = create_certificate_details(sha1, data)
@@ -190,6 +197,11 @@ script:
                 'CIRCLssl.Certificate(val.Sha1===obj.Sha1)': certificate,
             }
         }
+   
+    def http_get_certificate_details(sha1):
+        query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
+
+        return http_get(query_url)
 
     def create_certificate_details(sha1, data):
         info = data['info']
