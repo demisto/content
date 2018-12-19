@@ -142,9 +142,14 @@ script:
             indicator_type = current_indicator['indicatorType']
             priority_level = current_indicator.get('priorityLevel')
             value = current_indicator['value']
-            whiteListed = current_indicator.get('whitelisted')
+            whitelisted = current_indicator.get('whitelisted')
             if indicator_type in specific_types:
-                res.append({'value': value, 'priorityLevel': priority_level, 'whitelisted': whiteListed, 'indicatorType': indicator_type})
+                res.append({
+                    'value': value,
+                    'priorityLevel': priority_level,
+                    'whitelisted': whitelisted,
+                    'indicatorType': indicator_type
+                })
         return res
 
     def priority_level_to_score(priority_level):
@@ -169,6 +174,15 @@ script:
         return int(d.strftime("%s")) * 1000
 
     def create_file_ec(indicators, file, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': file,
+                    'Type': 'file',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
         trustar_ec = {}
         file_ec = {}
         dbot_ec = {}
@@ -181,7 +195,7 @@ script:
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
-            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
             dbot_ec.update({
                 'Indicator': file,
                 'Type': 'file',
@@ -195,12 +209,21 @@ script:
                     }
                 })
         return {
-            'DBotScore': dbot_ec,
-            'File': file_ec,
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['file']: file_ec,
             'TruSTAR.File': trustar_ec
         }
 
     def create_ip_ec(indicators, ip, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': ip,
+                    'Type': 'ip',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
         trustar_ec = {}
         ip_ec = {}
         dbot_ec = {}
@@ -213,7 +236,7 @@ script:
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
-            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
             dbot_ec.update({
                 'Indicator': ip,
                 'Type': 'ip',
@@ -228,12 +251,21 @@ script:
                     }
                 })
         return {
-            'DBotScore': dbot_ec,
-            'IP': ip_ec,
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['ip']: ip_ec,
             'TruSTAR.IP': trustar_ec
         }
 
     def create_url_ec(indicators, url, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': url,
+                    'Type': 'url',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
         trustar_ec = {}
         url_ec = {}
         dbot_ec = {}
@@ -246,7 +278,7 @@ script:
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
-            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
             dbot_ec.update({
                 'Indicator': url,
                 'Type': 'url',
@@ -261,12 +293,21 @@ script:
                     }
                 })
         return {
-            'DBotScore': dbot_ec,
-            'URL': url_ec,
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['url']: url_ec,
             'TruSTAR.URL': trustar_ec
         }
 
     def create_domain_ec(indicators, url, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': url,
+                    'Type': 'domain',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
         trustar_ec = {}
         domain_ec = {}
         dbot_ec = {}
@@ -279,10 +320,10 @@ script:
                 'Whitelisted': indicator['whitelisted'],
                 'Priority': indicator['priorityLevel']
             })
-            indicator_score = priority_level_to_score(indicator["priorityLevel"])
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
             dbot_ec.update({
                 'Indicator': url,
-                'Type': 'url',
+                'Type': 'domain',
                 'Vendor': 'TruSTAR',
                 'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
             })
@@ -294,9 +335,9 @@ script:
                     }
                 })
         return {
-            'DBotScore': dbot_ec,
-            'Domain': domain_ec,
-            'TruSTAR.URL': trustar_ec
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['domain']: domain_ec,
+            'TruSTAR.Domain': trustar_ec
         }
 
     ''' FUNCTIONS '''
@@ -374,19 +415,16 @@ script:
         response = ts.search_indicators_page(search_term=search_term)
         indicators = translate_specific_indicators(response, search_type)
         threshold = priority_level_to_score(threshold)
-        if indicators:
-            title = 'TruSTAR {0} indicators that relate to: {1}'.format(search_type[0], search_term)
-            ec = ec_function(indicators, search_term, threshold)
-            entry = {
-                'Type': entryTypes['note'],
-                'Contents': indicators,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(title, indicators),
-                'EntryContext': ec
-            }
-        else:
-            entry = 'No indicators were found.'
+        title = 'TruSTAR {0} indicators that relate to: {1}'.format(search_type[0], search_term)
+        ec = ec_function(indicators, search_term, threshold)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': indicators,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, indicators),
+            'EntryContext': ec
+        }
         return entry
 
     def submit_report(title, report_body, enclave_ids, external_url, time_began, distribution_type):
@@ -1096,7 +1134,7 @@ script:
     arguments:
     - name: file
       required: true
-      description: Enter file name, md5, sha1 or sha256
+      description: File hash - MD5, SHA1 or SHA256
     - name: threshold
       auto: PREDEFINED
       predefined:
@@ -1130,7 +1168,7 @@ script:
       type: string
     - contextPath: DBotScore.Score
       description: The actual score
-      type: string
+      type: number
     - contextPath: TruSTAR.File.Value
       description: Indicator value
       type: string
@@ -1145,7 +1183,7 @@ script:
     arguments:
     - name: ip
       required: true
-      description: Enter an ip address or a CIDR (1.1.1.0/18)
+      description: IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
     - name: threshold
       auto: PREDEFINED
       predefined:
