@@ -1,25 +1,9 @@
 {
-	"typeId": "Phishing",
-	"kind": "details",
 	"layout": {
 		"id": "Phishing",
 		"version": 1,
 		"modified": "2018-12-18T09:26:45.523902097Z",
-		"commitMessage": "",
-		"shouldPublish": false,
-		"shouldCommit": false,
-		"shouldPush": false,
-		"versionedDiff": {
-			"action": "",
-			"addedLines": 0,
-			"deletedLines": 0
-		},
 		"name": "",
-		"kind": "details",
-		"prevKind": "details",
-		"typeId": "Phishing",
-		"prevTypeId": "Phishing",
-		"system": false,
 		"sections": [
 			{
 				"id": "",

@@ -16,6 +16,7 @@ tasks:
       id: 44927568-9dcf-4acb-84c2-1466eb224729
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -74,6 +75,7 @@ tasks:
       id: c3cd10bc-d79e-4471-8b28-82613ac05418
       version: -1
       name: ""
+      description: ""
       playbookName: Calculate Severity - Generic
       type: playbook
       iscommand: false
@@ -267,6 +269,7 @@ tasks:
       id: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
       version: -1
       name: Email Address Enrichment - Generic
+      description: ""
       playbookName: Email Address Enrichment - Generic
       type: playbook
       iscommand: false
@@ -447,6 +450,7 @@ tasks:
       id: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
       version: -1
       name: Detonate File - Generic
+      description: ""
       playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
@@ -472,6 +476,7 @@ tasks:
       id: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
       version: -1
       name: Entity Enrichment - Generic
+      description: ""
       playbookName: Entity Enrichment - Generic
       type: playbook
       iscommand: false
@@ -497,6 +502,7 @@ tasks:
       id: 87a23c95-84b5-4343-8a01-d70c6f97702a
       version: -1
       name: Process Email - Generic
+      description: ""
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
@@ -548,6 +554,7 @@ tasks:
       id: 2f89f21c-0088-460a-81b2-b0c3f021b89c
       version: -1
       name: Search And Delete Emails - Generic
+      description: ""
       playbookName: Search And Delete Emails - Generic
       type: playbook
       iscommand: false
@@ -700,6 +707,7 @@ tasks:
       id: cd577642-8baf-4aba-87d9-29f0366aa173
       version: -1
       name: Extract Indicators From File - Generic
+      description: ""
       playbookName: Extract Indicators From File - Generic
       type: playbook
       iscommand: false
@@ -817,6 +825,7 @@ tasks:
       id: cfb76a8d-e926-41a3-8036-6d4d54abf96d
       version: -1
       name: Block Indicators - Generic
+      description: ""
       playbookName: Block Indicators - Generic
       type: playbook
       iscommand: false
