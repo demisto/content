@@ -9,7 +9,7 @@ description: LearnUpon is a powerful LMS that instantly simplifies online learni
 configuration:
 - display: Portal URL
   name: url
-  defaultvalue: https://YOURPORTAL.learnupon.com/api/v1
+  defaultvalue: https://YOURPORTAL.learnupon.com
   type: 0
   required: true
 - display: Username
@@ -19,40 +19,54 @@ configuration:
   required: true
 - display: Use system proxy
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "1"
+  type: 8
+  required: false
+- display: Validate server TLS certificate (recommended)
+  name: verifycert
+  defaultvalue: "1"
   type: 8
   required: false
 script:
   script: |
+    import urllib3
     import requests
     from requests.compat import urljoin
 
-    url = demisto.getParam('url') + '/'
-    credentials = demisto.getParam('credentials')
-    proxy = demisto.getParam('proxy')
+    urllib3.disable_warnings()
 
-    user_type = { 'Learner': 1, 'Admin': 2, 'Instructor': 3, 'Manager': 4 }
+    proxy = bool(demisto.getParam('proxy'))
+    credentials = demisto.getParam('credentials')
+    verifycert = bool(demisto.getParam('verifycert'))
+    url = urljoin(demisto.getParam('url'), '/api/v1/')
+
+    user_type = {'Learner': 1, 'Admin': 2, 'Instructor': 3, 'Manager': 4}
 
     s = requests.Session()
+    s.auth = (credentials['identifier'], credentials['password'])
+    s.verify = verifycert
+
+    if not proxy:
+        s.proxies = {'http_proxy': '', 'https_proxy': ''}
 
 
-    def request(method, endpoint, data=None):
-        r = s.request(method,
-                      auth=(credentials['identifier'], credentials['password']),
-                      url=urljoin(url, endpoint),
-                      json=data)
+    def request(method, endpoint, data=None, ret=False):
+        r = s.request(method, url=urljoin(url, endpoint), json=data)
         try:
             r.raise_for_status()
-        except Exception:
-            demisto.results({'Type': entryTypes['error'], 'Contents': r.json(), 'ContentsFormat': formats['text']})
-            sys.exit(0)
+        except Exception as e:
+            if not ret:
+                return_error(r.json())
+            raise
         return r.json()
 
 
-    def search_user():
-        users = request('GET', 'users/search?email=' + demisto.getArg('email'))
+    def search_user(email=None):
+        users = request('GET', 'users/search?email={}'.format(email or demisto.getArg('email')))
         md = tableToMarkdown('LearnUpon User', users['user'], ['id', 'first_name', 'last_name', 'user_type']);
-        ec = { 'LearnUpon': { 'Users': users['user'] } }
+        ec = {'LearnUpon': {'Users': users['user']}}
+        if email:
+            return users['user']
         demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': users['user'], 'HumanReadable': md, 'EntryContext': ec})
 
 
@@ -61,24 +75,31 @@ script:
 
 
     def invite_user():
-        data = {'GroupInvite': { 'email_addresses': demisto.getArg('email'), 'group_membership_type_id': user_type[demisto.getArg('user_type')] } }
+        data = {'GroupInvite': {'email_addresses': demisto.getArg('email'), 'group_membership_type_id': user_type[demisto.getArg('user_type')]}}
 
         res = request('POST', 'group_invites', data)
         md = tableToMarkdown('LearnUpon Invites', res['group_invites'], ['id', 'invite_email_address']);
-        ec = { 'LearnUpon': { 'InvitedUser': res['group_invites'] } }
+        ec = {'LearnUpon': {'InvitedUser': res['group_invites']}}
         demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res['group_invites'], 'HumanReadable': md, 'EntryContext': ec})
+
+
+    def delete_user():
+        user = search_user(demisto.getArg('email'))
+        demisto.results(request('DELETE', 'users', {'id': user[0]['id']}))
 
 
     if demisto.command() == 'test-module':
         list_users()
         demisto.results('ok')
-        sys.exit(0)
 
-    if demisto.command() == 'learnupon-invite-user':
+    elif demisto.command() == 'learnupon-invite-user':
         demisto.results(invite_user())
 
-    if demisto.command() == 'learnupon-search-user':
+    elif demisto.command() == 'learnupon-search-user':
         demisto.results(search_user())
+
+    elif demisto.command() == 'learnupon-delete-user':
+        demisto.results(delete_user())
   type: python
   commands:
   - name: learnupon-invite-user
@@ -87,7 +108,6 @@ script:
       required: true
       description: User Email
     - name: user_type
-      description: User Type
       auto: PREDEFINED
       predefined:
       - Learner
@@ -108,6 +128,13 @@ script:
     - contextPath: LearnUpon.Users.id
       description: LearnUpon search result user ID
       type: string
-    description: 'Search user on LearnUpon'
+    description: 'Search user on LearnUpon '
+  - name: learnupon-delete-user
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: User Email
+    description: Delete user from LearnUpon
+    execution: true
   runonce: false
-releaseNotes: "LearnUpon integration with two basic commands: Search & Invite"
