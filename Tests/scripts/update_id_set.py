@@ -148,7 +148,7 @@ def get_playbooks_implementing_ids(playbook_id):
 
 
 def get_ids_from_playbook(param_to_enrich_by, data_dict):
-    implementing_ids = []
+    implementing_ids = set([])
     tasks = data_dict.get('tasks', {})
 
     for task in tasks.values():
@@ -156,13 +156,13 @@ def get_ids_from_playbook(param_to_enrich_by, data_dict):
 
         enriched_id = task_details.get(param_to_enrich_by)
         if enriched_id:
-            implementing_ids.append(enriched_id)
+            implementing_ids.add(enriched_id)
 
-    return implementing_ids
+    return list(implementing_ids)
 
 
 def get_commmands_from_playbook(data_dict):
-    commands = []
+    commands = set([])
     tasks = data_dict.get('tasks', [])
 
     for task in tasks.values():
@@ -171,9 +171,9 @@ def get_commmands_from_playbook(data_dict):
         command = task_details.get('script')
         if command:
             command = command.split('|')[-1]
-            commands.append(command)
+            commands.add(command)
 
-    return commands
+    return list(commands)
 
 
 # def get_scripts_implementing_ids(script_id):
@@ -249,7 +249,7 @@ def get_script_data(file_path):
 
 def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
-    return [cmd.split('|')[-1] for cmd in depends_on]
+    return list(set([cmd.split('|')[-1] for cmd in depends_on]))
 
 
 def re_create_id_set():
