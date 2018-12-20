@@ -36,7 +36,10 @@ script: |
       return query_components
 
   try:
-      results = ppdecode(demisto.args()['url'])
+      try:
+          results = ppdecode(demisto.args()['url'])
+      except:
+          raise RuntimeError('A URL was not detected in the query.')
       ec = {'URL': {'Data': results['decoded_url']}}
       demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': results, 'EntryContext': ec, 'HumanReadable': '#### Decoded URL\n' + results['decoded_url']})
 
