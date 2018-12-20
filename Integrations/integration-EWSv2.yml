@@ -1741,7 +1741,12 @@ script:
       description: The item ids to delete.
     - name: delete-type
       required: true
-      description: 'Deletion type, choose one of: trash, soft, hard.'
+      auto: PREDEFINED
+      predefined:
+      - soft
+      - hard
+      - trash
+      description: 'trash - move items to trash. soft - delete items with recovery option. hard -  delete items without recovery option.'
       defaultValue: soft
     - name: target-mailbox
       description: The mailbox to apply the command on.
