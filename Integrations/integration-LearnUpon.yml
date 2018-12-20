@@ -139,3 +139,4 @@ script:
     description: Delete user from LearnUpon
     execution: true
   runonce: false
+releaseNotes: "First releast of LearnUpon with basic user Search, Invite and Delete commands"
