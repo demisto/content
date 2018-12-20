@@ -44,7 +44,7 @@ script:
     URL_URL = BASE_URL + '/urls/'
     FILE_URL = BASE_URL + '/files/'
     USAGE_URL = BASE_URL + '/application/usage_limit_status/'
-    DBOTSCOREKEY = 'DbotScore(val.Vendor && val.Indicator && val.Type && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator && val.Type == obj.Type)'
+    DBOTSCOREKEY = 'DBotScore(val.Vendor && val.Indicator && val.Type && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator && val.Type == obj.Type)'
 
     if not demisto.getParam('proxy'):
         del os.environ['HTTP_PROXY']
@@ -70,27 +70,33 @@ script:
             return "429: License count usage has been exceeded."
         return "503: Server is overloaded.  Try again later"
 
+    #Output Headers / Contextkeys
+    DOMAIN_REPORT_HEADERS = {}
+    IP_REPORT_HEADERS = {}
+    URL_REPORT_HEADERS = {}
+    FILE_REPORT_HEADERS= {}
 
     ''' Functions '''
     # Build Markdown contextual data for human readable data in war room output
     def build_md(jsondata, searchItem):
-        mdOutput = "## Symantec Deepsight Intelligence: " + str(searchItem)
+        mdOutput = "## Symantec Deepsight Intelligence: " + str(searchItem).upper()
         for key in jsondata.keys():
             if isinstance(jsondata[key],dict):
-                mdOutput += "\n### " + key
+                mdOutput += "\n\n__" + key.upper() + "__"
                 for k in jsondata[key]:
-                    mdOutput += "\n- " + str(k) + ": " + str(jsondata[key][k])
+                    if str(k) != 'uri':
+                        mdOutput += "\n- __" + (str(k)).upper() + "__: " + str(jsondata[key][k])
             elif isinstance(jsondata[key], list):
-                mdOutput += "\n### " + key
+                mdOutput += "\n\n__" + key.upper() + "__"
                 for i in range(len(jsondata[key])):
                     if isinstance(jsondata[key][i], dict):
-                        mdOutput += "\n- " + key + " " + str(i)
                         for x in jsondata[key][i]:
-                            mdOutput += "\n - " + str(x) + ": " + str(jsondata[key][i][x])
+                            if str(x) != 'uri':
+                                mdOutput += "\n- __" + (str(x)).upper() + "__: " + str(jsondata[key][i][x])
                     else:
-                        mdOutput += "\n- " + str(jsondata[key][i])
+                        mdOutput += "\n- __" + (str(i)).upper() + "__: " + str(jsondata[key][i])
             else:
-                mdOutput += "\n### " + key + ": " + str(jsondata[key])
+                mdOutput += "\n\n__" + key.upper() + "__: " + str(jsondata[key])
         return mdOutput
 
 
@@ -98,9 +104,9 @@ script:
     def request_status():
         req_status = requests.get(USAGE_URL, headers=headers, verify=VERIFY)
         json_req_status = json.loads(req_status.content)
-        #md = build_md(json_req_status, "Request Status")
+        md = build_md(json_req_status, "Request Status")
         return {
-            'Type' : entrytype['note'],
+            'Type' : entryTypes['note'],
             'Contents' : json_req_status,
             'ContentsFormat' : formats['json'],
             'ReadableContentsFormat' : formats['markdown'],
@@ -123,21 +129,14 @@ script:
                 dbotscore = 3
             else:
                 dbotscore = 2
-        context = {
-            'DBotScore' : {
-                'Indicator' : domain,
-                'Score' : dbotscore,
-                'Type' : 'domain',
-                'Vendor' : 'Symantec Deepsight Intelligence'
-                }
-        }
+        context = {'Indicator' : domain,'Score' : dbotscore,'Type' : 'domain','Vendor' : 'Symantec Deepsight Intelligence'}
         return {
             'Type' : entryTypes['note'],
             'Contents' : json_req_domain,
             'ContentsFormat' : formats['json'],
             'HumanReadable' : md, # not sure if need to build the md first?
             'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : {DBOTSCOREKEY: context}
+            'EntryContext' : {DBOTSCOREKEY: context,'Deepsight.Domain(val.domain === obj.domain)':json_req_domain}
         }
 
 
@@ -156,12 +155,10 @@ script:
             else:
                 dbotscore = 2
         context = {
-            'DBotScore' : {
-                'Indicator' : ip,
-                'Score' : dbotscore,
-                'Type' : 'ip',
-                'Vendor' : 'Symantec Deepsight Intelligence'
-            }
+            'Indicator' : ip,
+            'Score' : dbotscore,
+            'Type' : 'ip',
+            'Vendor' : 'Symantec Deepsight Intelligence'
         }
         return {
             'Type' : entryTypes['note'],
@@ -169,7 +166,7 @@ script:
             'ContentsFormat' : formats['json'],
             'HumanReadable' : md, # not sure if need to build the md first?
             'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : {DBOTSCOREKEY: context}
+            'EntryContext' : {DBOTSCOREKEY: context,'Deepsight.IP(val.ip === obj.ip)':json_req_ip}
         }
 
 
@@ -178,7 +175,7 @@ script:
         filehash = demisto.args()['hash']
         req_filehash = requests.get(FILE_URL + filehash, headers=headers, verify=VERIFY)
         json_req_filehash = json.loads(req_filehash.content)
-        md = build_md(json_req_filehash, filehash)
+        md = tableToMarkdown(filehash, json_req_filehash, headers=None, headerTransform=None, removeNull=False, metadata=None)
         dbotscore = 0
         if 'reputation' in json_req_filehash.keys():
             file_rep = json_req_filehash['reputation']
@@ -189,12 +186,10 @@ script:
             elif file_rep  == "Malicious":
                 dbotscore = 3
         context = {
-            'DBotScore' : {
                 'Indicator' : filehash,
                 'Score' : dbotscore,
                 'Type' : 'hash',
                 'Vendor' : 'Symantec Deepsight Intelligence'
-            }
         }
         return {
             'Type' : entryTypes['note'],
@@ -202,7 +197,7 @@ script:
             'ContentsFormat' : formats['json'],
             'HumanReadable' : md, # not sure if need to build the md first?
             'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : {DBOTSCOREKEY: context}
+            'EntryContext' : {DBOTSCOREKEY: context, 'Deepsight.File(val.file === obj.file)':json_req_filehash}
         }
 
 
@@ -244,7 +239,7 @@ script:
             'ContentsFormat' : formats['json'],
             'HumanReadable' : md, # not sure if need to build the md first?
             'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : {DBOTSCOREKEY: context}
+            'EntryContext' : {DBOTSCOREKEY: context,'Deepsight.URL(val.url === obj.url)':json_url}
         }
 
 
