@@ -1765,7 +1765,6 @@ script:
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
         in the mailbox.
-      defaultValue: Inbox
     - name: limit
       description: Maximum number of results.
       defaultValue: "100"
