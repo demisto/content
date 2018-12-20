@@ -74,11 +74,6 @@
           "playbookID": "URLDecode-Test"
         },
         {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
-        },
-        {
           "playbookID": "GetTime-Test"
         },
         {
@@ -753,6 +748,11 @@
         },
         {
             "playbookID": "ExifReadTest"
+        },
+        {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
         },
         {
            "playbookID": "Detonate File - Generic Test",
