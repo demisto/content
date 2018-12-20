@@ -246,6 +246,11 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
+            "integrations": ["EWS v2","EWS Mail Sender"],
+            "playbookID": "EWS search-mailbox test",
+            "timeout": 300
+        },
+        {
             "integrations": "PagerDuty v2",
             "playbookID": "PagerDuty Test"
         },

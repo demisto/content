@@ -2207,3 +2207,4 @@ script:
 releaseNotes: "Improved error messages."
 tests:
   - pyEWS_Test
+  - 'EWS search-mailbox test'
