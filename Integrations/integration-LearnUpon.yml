@@ -118,6 +118,7 @@ script:
     outputs:
     - contextPath: LearnUpon.InvitedUser.id
       description: User ID of invited user
+      type: number
     description: Add new user to LearnUpon portal
   - name: learnupon-search-user
     arguments:
