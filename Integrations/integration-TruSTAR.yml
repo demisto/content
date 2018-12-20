@@ -1198,7 +1198,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.File.Priority
-      description: Indicator's priority level by TruSTAR
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
@@ -1245,7 +1245,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.IP.Priority
-      description: Indicator's priority level by TruSTAR
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
     description: Check IP Reputation on TruSTAR
   - name: url
     arguments:
@@ -1289,7 +1289,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.URL.Priority
-      description: Indicator's priority level by TruSTAR
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
       type: string
     description: Check URL reputation on TruSTAR
   - name: domain
@@ -1334,7 +1334,7 @@ script:
       description: Is the indicator whitelisted
       type: boolean
     - contextPath: TruSTAR.Domain.Priority
-      description: Indicator's priority level by TruSTAR
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
       type: string
     description: Check Domain reputation on TruStar
   dockerimage: demisto/trustar
