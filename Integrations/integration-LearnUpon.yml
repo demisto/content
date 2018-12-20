@@ -108,6 +108,7 @@ script:
       required: true
       description: User Email
     - name: user_type
+      description: User Type
       auto: PREDEFINED
       predefined:
       - Learner
