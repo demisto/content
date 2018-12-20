@@ -728,7 +728,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': raw_indicators,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': '\n'.join('Indicator {} Updated Successfully'.format(ind['id']) for ind in indicators),
+            'HumanReadable': '\n'.join('Indicator {} Updated Successfully'.format(ind['ID']) for ind in indicators),
             'EntryContext': ec,
         })
 
