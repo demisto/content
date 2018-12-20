@@ -111,7 +111,7 @@ script:
 
             if confidence >= confidence_threshold and rating >= rating_threshold:
                 dbotScore = 3
-                desc = ''#TODO: check this
+                desc = ''
                 if hasattr(ind, 'description'):
                     desc = ind.description
                 mal = {
@@ -465,7 +465,8 @@ script:
     def tc_get_indicators_by_tag_command():
         args = demisto.args()
         tag = args['tag']
-        raw_indicators = tc_get_indicators_by_tag(tag)
+        owner = args.get('owner')
+        raw_indicators = tc_get_indicators_by_tag(tag, owner)
         ec, indicators = create_context(raw_indicators)
 
         demisto.results({
@@ -479,11 +480,15 @@ script:
 
 
     @logger
-    def tc_get_indicators_by_tag(tag):
+    def tc_get_indicators_by_tag(tag, owner):
         tc = get_client()
         ro = RequestObject()
         ro.set_http_method('GET')
-        ro.set_request_uri('/v2/tags/{}/indicators'.format(tag))
+        cmd = '/v2/tags/{}/indicators'.format(tag)
+        if owner is not None:
+            cmd += '?owner={}'.format(owner)
+
+        ro.set_request_uri(cmd)
 
         return tc.api_request(ro).json()['data']['indicator']
 
@@ -1041,8 +1046,8 @@ script:
         'tc-fetch-incidents' : tc_fetch_incidents_command,
         'tc-get-incident-associate-indicators' : tc_get_incident_associate_indicators_command,
         'tc-incident-associate-indicator' : tc_incident_associate_indicator_command,
-        'tc-update-indicator' : tc_update_indicator_command,#TODO
-        'tc-delete-indicator' : tc_delete_indicator_command,#VALIDATE
+        'tc-update-indicator' : tc_update_indicator_command,
+        'tc-delete-indicator' : tc_delete_indicator_command,
         'tc-delete-indicator-tag' : tc_delete_indicator_tag_command,
         'tc-create-campaign' : tc_create_campaign_command,
         'tc-create-event' : tc_create_event_command,
@@ -1059,8 +1064,8 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        # return_error('error has occurred: {}'.format(e.message, ))
-        raise
+        return_error('error has occurred: {}'.format(e.message, ))
+
   type: python
   commands:
   - name: ip
@@ -1546,6 +1551,8 @@ script:
       required: true
       default: true
       description: Tag value to filter by
+    - name: owner
+      description: Filter by owner
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
