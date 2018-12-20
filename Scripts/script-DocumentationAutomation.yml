@@ -258,6 +258,5 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/docs
-releaseNotes: "-"
 tests:
   - No test - Test not needed

@@ -247,7 +247,7 @@ script:
         return res.json()
 
     # Generic function that receives a result json, and turns it into an entryObject
-    def get_entry_for_object(title, obj, contents, headers=None, contextKey=None):
+    def get_entry_for_object(title, obj, contents, headers=None, contextKey=None, humanReadable=None):
         if len(obj) == 0:
             return {
                 'Type': entryTypes['note'],
@@ -267,7 +267,7 @@ script:
             'Contents': contents,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, obj, headers),
+            'HumanReadable': humanReadable if humanReadable else tableToMarkdown(title, obj, headers),
             'EntryContext': ec
         }
 
@@ -661,7 +661,9 @@ script:
         result_key = raw_search_results.keys()[0]
         title = 'QRadar Search Results from ' + result_key
         context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
-        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), raw_search_results, demisto.args().get('headers'), context_key)
+        context_obj = unicode_to_str_recur(raw_search_results[result_key])
+        humanReadable = tableToMarkdown(title, context_obj, None).replace('\t','\n')
+        return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key, humanReadable=humanReadable)
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -1856,8 +1858,5 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
-releaseNotes: "This version reverts the output paths of the QRadar commands to be as they were prior to content version 18.11.0.
-    These changes may affect users who created a QRadar custom script after that content release. If you are having issues with your QRadar
-    custom scripts, please contact customer support for assistance."
 tests:
   - test_Qradar

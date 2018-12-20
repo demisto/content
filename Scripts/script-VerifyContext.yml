@@ -64,6 +64,5 @@ args:
     ''{"a": 1, "b": ["hello", "world" ]}'
 scripttarget: 0
 deprecated: true
-releaseNotes: "Deprecated in favor of playbook filters."
 tests:
   - No test

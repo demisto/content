@@ -1236,6 +1236,5 @@ script:
     execution: true
   isfetch: true
 hidden: false
-releaseNotes: "Added logout handling"
 tests:
 - No test
