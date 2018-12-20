@@ -18,9 +18,9 @@ tasks:
       id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
-      description: "Start"
     nexttasks:
       '#none#':
       - "5"
@@ -28,11 +28,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 60
+          "x": 162.5,
+          "y": 50
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
@@ -83,11 +84,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
+          "x": 162.5,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
@@ -96,32 +98,33 @@ tasks:
       id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
-      description: "Done"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 1450
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 2ef569c7-fa31-45cc-80a0-e03b12b49815
+    taskid: 80dc5945-a851-469d-8445-3930393aa5d0
     type: regular
     task:
-      id: 2ef569c7-fa31-45cc-80a0-e03b12b49815
+      id: 80dc5945-a851-469d-8445-3930393aa5d0
       version: -1
       name: ThreatGrid Get Samples State
       description: Get the sample state.
-      script: Threat Grid|||threat-grid-get-samples-state
+      script: '|||threat-grid-get-samples-state'
       type: regular
       iscommand: true
-      brand: Threat Grid
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -134,11 +137,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": 50,
           "y": 1245
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
@@ -166,59 +170,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 555
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
-  "13":
-    id: "13"
-    taskid: 0245c2ab-485d-4994-8da0-63d10d247a77
-    type: regular
-    task:
-      id: 0245c2ab-485d-4994-8da0-63d10d247a77
-      version: -1
-      name: ThreatGrid Upload File
-      description: Uploads a file to Threat Grid
-      script: Threat Grid|||threat-grid-upload-sample
-      type: regular
-      iscommand: true
-      brand: Threat Grid
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      file-id:
-        complex:
-          root: File
-          accessor: EntryID
-      filename:
-        complex:
-          root: inputs.FileName
-      playbook:
-        complex:
-          root: inputs.Playbook
-      private:
-        complex:
-          root: inputs.Private
-      source:
-        complex:
-          root: inputs.Source
-      tags:
-        complex:
-          root: inputs.Tags
-      vm:
-        complex:
-          root: inputs.VM
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 10,
-          "y": 920
-        }
-      }
-    note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: c1d5b196-d934-4ef2-8e01-3487eae58533
@@ -235,7 +192,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "13"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -266,11 +223,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
+          "x": 162.5,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
     taskid: 97fcf073-c63a-42d4-8e65-ba6d4814d859
@@ -319,11 +277,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 1080
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
     taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
@@ -354,23 +313,97 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 380
+          "x": 275,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 2665035c-2428-430e-8552-7ed3ee3c893b
+    type: regular
+    task:
+      id: 2665035c-2428-430e-8552-7ed3ee3c893b
+      version: -1
+      name: ThreatGrid Upload File
+      description: Submits a sample to threat grid for analysis
+      script: '|||threat-grid-upload-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file-id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+          accessor: EntryID
+      filename:
+        complex:
+          root: inputs.FileName
+      playbook:
+        complex:
+          root: inputs.playbook
+      private:
+        complex:
+          root: inputs.Private
+      tags:
+        complex:
+          root: inputs.Tags
+      vm:
+        complex:
+          root: inputs.VM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
-      "14_13_yes": 0.52,
-      "5_6_#default#": 0.37
+      "14_17_yes": 0.76,
+      "5_6_#default#": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 1455,
-        "width": 390,
-        "x": 10,
-        "y": 60
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -465,3 +498,6 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
+releaseNotes: "Submit only supported files to ThreatGrid"
+tests:
+- Detonate File - Generic Test
