@@ -3,8 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
+        },
+        {
+            "playbookID": "CreatePhishingClassifierMLTest"
         },
         {
             "integrations": "Cymon",
@@ -68,11 +74,6 @@
           "playbookID": "URLDecode-Test"
         },
         {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
-        },
-        {
           "playbookID": "GetTime-Test"
         },
         {
@@ -103,15 +104,14 @@
             "playbookID": "ParseExcel-test"
         },
         {
+            "playbookID": "Detonate File - No Files test"
+        },
+        {
             "integrations": [
                 "Panorama",
                 "Check Point"
             ],
             "playbookID": "blockip_test_playbook"
-        },
-        {
-          "integrations": "IntSights",
-          "playbookID": "IntSights Test"
         },
         {
             "integrations": "Palo Alto Minemeld",
@@ -387,10 +387,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         },
         {
             "integrations": "VirusTotal",
@@ -754,6 +750,11 @@
             "playbookID": "ExifReadTest"
         },
         {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
+        },
+        {
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,
@@ -778,28 +779,6 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ]
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -820,12 +799,40 @@
         },
         {
             "integrations": "Zscaler",
-            "playbookID": "Zscaler Test"
+            "playbookID": "Zscaler Test",
+            "nightly": true
         },
         {
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "Test_Sagemaker",
+            "integrations": "AWS Sagemaker"
+
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
         }
     ],
     "skipped_tests": {
@@ -838,7 +845,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "ParseEmailFiles-test": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -860,7 +868,8 @@
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
-        "ServiceNow": "Instance goes to hibernate every few hours"
+        "ServiceNow": "Instance goes to hibernate every few hours",
+        "MimecastV2": "Several issues with instance"
     },
     "nigthly_integrations": [
         "Lastline"

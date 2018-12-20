@@ -605,6 +605,5 @@ script:
     description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Fix bug with aws-s3-create-bucket"
 tests:
   - No Tests

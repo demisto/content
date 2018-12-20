@@ -26,47 +26,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 60,
           "y": 50
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
-    type: regular
-    task:
-      id: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
-      version: -1
-      name: Lastline Upload File
-      description: Uploads the submission to Lastline.
-      script: Lastline|||lastline-upload-file
-      type: regular
-      iscommand: true
-      brand: Lastline
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      EntryID:
-        complex:
-          root: inputs.File
-          accessor: EntryID
-      entryID:
-        complex:
-          root: inputs.File
-          accessor: EntryID
-      pushToPortal: {}
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 895
-        }
-      }
-    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
@@ -115,11 +80,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 510,
           "y": 1245
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: d372022a-88a0-4312-8ee7-6f0ebe64533e
@@ -146,11 +112,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 397.5,
           "y": 1420
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
@@ -172,6 +139,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
@@ -221,11 +189,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 60,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: fea8caab-2280-4b3a-81ca-0477bc5d1854
@@ -242,7 +211,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -286,11 +255,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 285,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 880a4474-6ff0-4426-83c3-38bbf36f090e
@@ -318,11 +288,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 285,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
@@ -352,11 +323,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 172.5,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: cec4ac98-aed7-4400-824b-2244a72dcc1a
@@ -397,18 +369,79 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 397.5,
           "y": 1070
         }
       }
     note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 224d3a13-cd7a-405a-8241-4624625ab3d1
+    type: regular
+    task:
+      id: 224d3a13-cd7a-405a-8241-4624625ab3d1
+      version: -1
+      name: Lastline Upload File
+      description: Upload file for analysis
+      script: '|||lastline-upload-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+              ignorecase: true
+          accessor: EntryID
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 830,
+        "width": 840,
         "x": 50,
         "y": 50
       }
@@ -535,5 +568,6 @@ outputs:
 - contextPath: Lastline.Submission.YaraSignatures.internal
   description: True if the signature is only for internal usage
   type: boolean
+releaseNotes: "Submit only supported files to Lastline"
 tests:
 - Lastline - testplaybook
