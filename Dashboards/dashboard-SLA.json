@@ -1,6 +1,6 @@
 {
 	"id": "2b542873-793f-4eaa-8114-d855bb49cbc9",
-	"description": "",
+	"description": "A new dashboard to give you a good overview of your SLAs.",
 	"version": -1,
 	"fromVersion": "4.1.0",
 	"fromDate": "0001-01-01T00:00:00Z",

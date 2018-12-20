@@ -22,5 +22,5 @@
      "keys":["avg|detectionsla.totalDuration / 60"],
      "groupBy" : ["occurred(d)", "type"]
   },
-  "description": ""
+  "description": "A widget that shows the Mean Time to Detection, by incident type."
 }
