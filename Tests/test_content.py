@@ -157,7 +157,7 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
-def set_integration_params(demisto_api_key, integrations, secret_params, instance_names):
+def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
     for integration in integrations:
         integration_params = [item for item in secret_params if item['name'] == integration['name']]
 
@@ -171,6 +171,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
                         found_matching_instance = True
 
                 if not found_matching_instance:
+                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in integration_params]
+                    print_error("{} Failed to run\n, There are {} instances of {},"
+                                "please select of them by using the instance_name"
+                                "argument in conf.json the options are:\n{}".format(playbook_id, len(integration_params),
+                                                                                  integration['name'], '\n'.join(optional_instance_names)))
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
@@ -331,9 +336,8 @@ def main():
         if has_skipped_integration:
             continue
 
-        are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf)
+        are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf, playbook_id)
         if not are_params_set:
-            print_error("{} Failed to run, Couldn't match instance name to the integration provided".format(playbook_id))
             failed_playbooks.append(playbook_id)
             continue
 
