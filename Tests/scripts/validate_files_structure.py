@@ -22,12 +22,13 @@ except ImportError:
     sys.exit(1)
 import re
 import os
-import glob
 import json
 import argparse
 from pykwalify.core import Core
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+
+from update_id_set import get_script_data, get_playbook_data, get_integration_data
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -248,6 +249,7 @@ def is_test_in_conf_json(file_path):
         if file_id == playbook_id:
             return True
 
+    print_error("You've failed to add the {0} to conf.json".format(file_path))
     return False
 
 
@@ -262,36 +264,6 @@ def oversize_image(file_path):
          return True
 
     return False
-
-
-def non_valid_versioning(id_to_file, my_id, id_list):
-    has_duplicate = False
-    from_version = get_from_version(id_to_file[my_id])
-    for id_obj in id_list:
-        id = id_obj.keys()[0]
-        versioning = id_obj[id]
-        if my_id == id:
-            if LooseVersion(from_version) <= LooseVersion(versioning['toversion']):
-                print_error("The ID {0} already exists, please update the file {1} or update the id_set.json toversion field of this id to match the old occurrence of this id".format(id, id_to_file[id]))
-                has_duplicate = True
-
-    return has_duplicate
-
-
-def has_duplicated_ids(id_to_file):
-    ids_list = []
-    has_duplicate = False
-    with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_list = json.load(id_set_file)
-
-    for objec in id_list:
-        ids_list.append(objec.keys()[0])
-
-    for id in id_to_file.keys():
-        if id in ids_list and non_valid_versioning(id_to_file, id, id_list):
-            has_duplicate = True
-
-    return has_duplicate
 
 
 def get_modified_and_added_files(branch_name, is_circle):
@@ -317,14 +289,14 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', 'beginning')
+        return data_dictionary.get('fromversion', '0.0.0')
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', 'current')
+        return data_dictionary.get('toversion', '99.99.99')
 
 
 def changed_command_name_or_arg(file_path):
@@ -351,47 +323,174 @@ def changed_context(file_path):
     return False
 
 
+def playbook_valid_in_id_set(file_path, playbook_set):
+    playbook_data = get_playbook_data(file_path)
+    file_id = playbook_data.keys()[0]
+
+    is_found = False
+    for playbook in playbook_set:
+        playbook_id = playbook.keys()[0]
+        if playbook_id == file_id:
+            is_found = True
+            if playbook != playbook_data:
+                print_error("You have failed to update id_set.json with the data of {} "
+                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                return False
+
+    if not is_found:
+        print_error("You have failed to update id_set.json with the data of {} "
+                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+
+    return is_found
+
+
+def script_valid_in_id_set(file_path, script_set):
+    script_data = get_script_data(file_path)
+    file_id = script_data.keys()[0]
+
+    is_found = False
+    for script in script_set:
+        script_id = script.keys()[0]
+        if script_id == file_id:
+            is_found = True
+            if script != script_data:
+                print_error("You have failed to update id_set.json with the data of {} "
+                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                return False
+
+    if not is_found:
+        print_error("You have failed to update id_set.json with the data of {} "
+                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+
+    return is_found
+
+
+def integration_valid_in_id_set(file_path, integration_set):
+    integration_data = get_integration_data(file_path)
+    file_id = integration_data.keys()[0]
+
+    is_found = False
+    for integration in integration_set:
+        integration_id = integration.keys()[0]
+        if integration_id == file_id:
+            is_found = True
+            if integration != integration_data:
+                print_error("You have failed to update id_set.json with the data of {} "
+                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                return False
+
+    if not is_found:
+        print_error("You have failed to update id_set.json with the data of {} "
+                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+
+    return is_found
+
+
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
 
+    with open('./Tests/id_set.json', 'r') as id_set_file:
+        id_set = json.load(id_set_file)
+
+    script_set = id_set['scripts']
+    playbook_set = id_set['playbooks']
+    integration_set = id_set['integrations']
+    test_playbook_set = id_set['TestPlaybooks']
+
+    has_schema_problem = validate_modified_files(integration_set, modified_files,
+                                                 playbook_set, script_set, test_playbook_set, is_circle)
+
+    has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
+                                              script_set, test_playbook_set, is_circle) and has_schema_problem
+
+    if has_schema_problem:
+        sys.exit(1)
+
+
+def is_valid_id(objects_set, compared_id, file_path):
+    from_version = get_from_version(file_path)
+    
+    for obj in objects_set:
+        obj_id = obj.keys()[0]
+        obj_data = obj.values()[0]
+        if obj_id == compared_id:
+            if LooseVersion(from_version) <= LooseVersion(obj_data.get('toversion', '99.99.99')):
+                print_error("The ID {0} already exists, please update the file {1} or update the "
+                            "id_set.json toversion field of this id to match the "
+                            "old occurrence of this id".format(compared_id, file_path))
+                return False
+
+    return True
+
+
+def validate_added_files(added_files, integration_set, playbook_set, script_set, test_playbook_set, is_circle):
     has_schema_problem = False
-    for file_path in modified_files:
-        print "Validating {}".format(file_path)
-        if not validate_schema(file_path):
-            has_schema_problem = True
-        if not is_release_branch() and not validate_file_release_notes(file_path):
-            has_schema_problem = True
-
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path):
-                has_schema_problem = True
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
-                has_schema_problem = True
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path) or oversize_image(file_path) or is_added_required_fields(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
-                has_schema_problem = True
-
-    id_to_file = {}
     for file_path in added_files:
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
             has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if not is_test_in_conf_json(file_path):
+            if not is_test_in_conf_json(file_path) or \
+                    (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)):
                 has_schema_problem = True
-                print_error("You've failed to add the {0} to conf.json".format(file_path))
 
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            id = get_script_or_integration_id(file_path)
-            id_to_file[id] = file_path
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            id = collect_ids(file_path)
-            id_to_file[id] = file_path
+            if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
+                has_schema_problem = True
 
-    if has_schema_problem or has_duplicated_ids(id_to_file):
-        sys.exit(1)
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not script_valid_in_id_set(file_path, script_set):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
+                has_schema_problem = True
+
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not integration_valid_in_id_set(file_path, integration_set):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(integration_set, get_script_or_integration_id(file_path), file_path):
+                has_schema_problem = True
+
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
+                has_schema_problem = True
+
+    return has_schema_problem
+
+
+def validate_modified_files(integration_set, modified_files, playbook_set, script_set, test_playbook_set, is_circle):
+    has_schema_problem = False
+    for file_path in modified_files:
+        print "Validating {}".format(file_path)
+        if not validate_schema(file_path) or changed_id(file_path):
+            has_schema_problem = True
+        if not is_release_branch() and not validate_file_release_notes(file_path):
+            has_schema_problem = True
+
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
+                has_schema_problem = True
+
+        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
+                has_schema_problem = True
+
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
+                    (is_circle and not script_valid_in_id_set(file_path, script_set)):
+                has_schema_problem = True
+
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path) or is_added_required_fields(file_path) or \
+                    changed_command_name_or_arg(file_path) or changed_context(file_path) or \
+                    (is_circle and not integration_valid_in_id_set(file_path, integration_set)):
+                has_schema_problem = True
+
+    return has_schema_problem
 
 
 def validate_all_files():
