@@ -10,6 +10,8 @@ then
     exit 1
 fi
 
+python Tests/scripts/update_id_set.py
+
 # prevent push to master
 if [ -z "$1"  ]; then
     protected_branch='master'

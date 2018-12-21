@@ -1,4 +1,3 @@
-version: 2.0
 jobs:
   build:
     docker:
@@ -113,3 +112,24 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+
+workflows:
+  version: 2.0
+  commit:
+    environment:
+      IS_NIGHTLY: false
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 5 * * *" # UTC time
+          filters:
+            branches:
+              only:
+                - master
+    environment:
+      IS_NIGHTLY: true
+    jobs:
+      - build
+

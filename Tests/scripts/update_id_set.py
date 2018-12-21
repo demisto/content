@@ -47,9 +47,10 @@ def checked_type(file_path):
     return False
 
 
-def get_added_files(files_string):
+def get_changed_files(files_string):
     all_files = files_string.split('\n')
     added_files_list = set([])
+    modified_files_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
@@ -60,8 +61,10 @@ def get_added_files(files_string):
 
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
+        elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
+            modified_files_list.add(file_path)
 
-    return added_files_list
+    return added_files_list, modified_files_list
 
 
 def get_json(file_path):
@@ -120,33 +123,6 @@ def get_integration_commands(file_path):
     return cmd_list
 
 
-def get_integration_implemented_by(integration_id):
-    # for filename in os.listdir('./Playbooks'):
-    #     file_path = 'Playbooks/' + filename
-    #
-    #     if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-    #         data_dict = get_json(file_path)
-    #         tasks = data_dict.get('tasks', [])
-    #
-    #         for task in tasks.values():
-    #             task_details = task.get('task', {})
-    #
-    #             script_name = task_details.get('scriptName', '')
-    #             if script_name in script_ids:
-    #                 tests.add(data_dict.get('id'))
-    #                 catched_scripts.add(script_name)
-    #
-    #             playbook_name = task_details.get('playbookName', '')
-    #             if playbook_name in playbook_ids:
-    #                 tests.add(data_dict.get('id'))
-    #                 catched_playbooks.add(playbook_name)
-    pass
-
-
-def get_playbooks_implementing_ids(playbook_id):
-    pass
-
-
 def get_ids_from_playbook(param_to_enrich_by, data_dict):
     implementing_ids = set([])
     tasks = data_dict.get('tasks', {})
@@ -176,23 +152,18 @@ def get_commmands_from_playbook(data_dict):
     return list(commands)
 
 
-# def get_scripts_implementing_ids(script_id):
-#     implementing_ids = []
-#     enrich_from_playbook('scriptName', 'TestPlaybooks', implementing_ids, script_id)
-#     enrich_from_playbook('scriptName', 'Playbooks', implementing_ids, script_id)
-#
-#     return implementing_ids
-
 def get_integration_data(file_path):
     integration_data = {}
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
+    name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     commands = data_dictionary.get('script', {}).get('commands', [])
     cmd_list = [command.get('name') for command in commands]
 
+    integration_data['name'] = name
     if toversion:
         integration_data['toversion'] = toversion
     if fromversion:
@@ -207,6 +178,7 @@ def get_playbook_data(file_path):
     playbook_data = {}
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('id', '-')
+    name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
@@ -214,6 +186,7 @@ def get_playbook_data(file_path):
     implementing_playbooks = get_ids_from_playbook('playbookName', data_dictionary)
     implementing_commands = get_commmands_from_playbook(data_dictionary)
 
+    playbook_data['name'] = name
     if toversion:
         playbook_data['toversion'] = toversion
     if fromversion:
@@ -232,11 +205,13 @@ def get_script_data(file_path):
     script_data = {}
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
+    name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     depends_on = get_depends_on(data_dictionary)
 
+    script_data['name'] = name
     if toversion:
         script_data['toversion'] = toversion
     if fromversion:
@@ -283,51 +258,91 @@ def re_create_id_set():
         json.dump(ids_dict, id_set_file, indent=4)
 
 
-def update_id_set(git_sha):
+def update_id_set():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status {}".format(git_sha))
+    files_string = run_git_command("git diff --name-status HEAD")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-    added_files = get_added_files(files_string + '\n' + second_files_string)
+    added_files, modified_files = get_changed_files(files_string + '\n' + second_files_string)
 
-    if added_files:
+    if added_files or modified_files:
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            id_list = json.load(id_set_file)
+            ids_dict = json.load(id_set_file)
 
+        test_playbook_set = ids_dict['TestPlaybooks']
+        integration_set = ids_dict['integrations']
+        playbook_set = ids_dict['playbooks']
+        script_set = ids_dict['scripts']
+
+    if added_files:
         for file_path in added_files:
-            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-                id = get_script_or_integration_id(file_path)
-                versioning = {
-                    "fromversion": get_from_version(file_path),
-                    "toversion": get_to_version(file_path)
-                }
-                id_dict = {
-                    id: versioning
-                }
-                id_list.append(id_dict)
-                print("Adding {0} to id_set".format(id))
-            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                id = collect_ids(file_path)
-                versioning = {
-                    "fromversion": get_from_version(file_path),
-                    "toversion": get_to_version(file_path)
-                }
-                id_dict = {
-                    id: versioning
-                }
-                id_list.append(id_dict)
-                print("Adding {0} to id_set".format(id))
+            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                integration_set.append(get_integration_data(file_path))
+                print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
+            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+                script_set.append(get_script_data(file_path))
+                print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
+            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                playbook_set.append(get_playbook_data(file_path))
+                print("Adding {0} to id_set".format(collect_ids(file_path)))
+            if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                test_playbook_set.append(get_playbook_data(file_path))
+                print("Adding {0} to id_set".format(collect_ids(file_path)))
 
+    if modified_files:
+        for file_path in modified_files:
+            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                id = get_script_or_integration_id(file_path)
+                integration_data = get_integration_data(file_path)
+                integration_data_value = integration_data.values()[0]
+                for integration in integration_set:
+                    integration_id = integration.keys()[0]
+                    if id == integration_id:
+                        integration[id] = integration_data_value
+
+                print("updated {0} in id_set".format(id))
+            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+                id = get_script_or_integration_id(file_path)
+                script_data = get_script_data(file_path)
+                script_data_value = script_data.values()[0]
+                for script in script_set:
+                    script_id = script.keys()[0]
+                    if id == script_id:
+                        script[id] = script_data_value
+
+                print("updated {0} in id_set".format(id))
+            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                id = collect_ids(file_path)
+                playbook_data = get_script_data(file_path)
+                playbook_data_value = playbook_data.values()[0]
+                for playbook in playbook_set:
+                    playbook_id = playbook.keys()[0]
+                    if id == playbook_id:
+                        playbook[id] = playbook_data_value
+
+                print("updated {0} in id_set".format(id))
+            if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                id = collect_ids(file_path)
+                playbook_data = get_script_data(file_path)
+                playbook_data_value = playbook_data.values()[0]
+                for playbook in test_playbook_set:
+                    playbook_id = playbook.keys()[0]
+                    if id == playbook_id:
+                        playbook[id] = playbook_data_value
+
+                print("updated {0} in id_set".format(id))
+
+    if added_files or modified_files:
         with open('./Tests/id_set.json', 'w') as id_set_file:
-            json.dump(id_list, id_set_file, indent=4)
+            json.dump(ids_dict, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
 
 
 if __name__ == '__main__':
-    re_create_id_set()
+    update_id_set()
