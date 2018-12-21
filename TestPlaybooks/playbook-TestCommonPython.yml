@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3e125f96-9572-4238-82bb-8156f7d704d8
+    taskid: 32dbc6af-a813-4f70-8c04-edb7f711e219
     type: start
     task:
-      id: 3e125f96-9572-4238-82bb-8156f7d704d8
+      id: 32dbc6af-a813-4f70-8c04-edb7f711e219
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 6398bbcc-ac42-4468-8693-489d0e6a037f
+    taskid: 66fe6670-6c3e-48dc-8f1b-2e4f626c0765
     type: regular
     task:
-      id: 6398bbcc-ac42-4468-8693-489d0e6a037f
+      id: 66fe6670-6c3e-48dc-8f1b-2e4f626c0765
       version: -1
       name: Test DQ
       scriptName: TestPYCommonServer
@@ -54,10 +54,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: adbd4194-10e5-4f0d-8331-01b250983002
+    taskid: 8f584545-013a-4e5b-86bc-5455f211dd14
     type: regular
     task:
-      id: adbd4194-10e5-4f0d-8331-01b250983002
+      id: 8f584545-013a-4e5b-86bc-5455f211dd14
       version: -1
       name: Test MarkDown
       description: Tests for common functions createEntry and TableToMarkDown
@@ -82,10 +82,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 286eab76-1d7f-4653-8b62-9e92051f900f
+    taskid: a7af76b1-8c3b-4490-83ac-bda43999fa59
     type: regular
     task:
-      id: 286eab76-1d7f-4653-8b62-9e92051f900f
+      id: a7af76b1-8c3b-4490-83ac-bda43999fa59
       version: -1
       name: Test XML JSON relations
       description: 'Tests for common functions xml2json and json2xml '
@@ -110,10 +110,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+    taskid: b4367baf-5bc8-45da-8007-4b4304b8cbcd
     type: regular
     task:
-      id: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+      id: b4367baf-5bc8-45da-8007-4b4304b8cbcd
       version: -1
       name: Test tableToMarkdown
       description: Tests underscoreToCamelCase and tableToMarkDown with and without
@@ -122,6 +122,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       extend-context: {}
       test_type:
@@ -137,10 +140,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+    taskid: 652e5336-bc11-46e1-800f-ac0eb6f972dd
     type: regular
     task:
-      id: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+      id: 652e5336-bc11-46e1-800f-ac0eb6f972dd
       version: -1
       name: Test hash function
       scriptName: TestPYCommonServer
@@ -162,12 +165,63 @@ tasks:
         }
       }
     note: false
+  "8":
+    id: "8"
+    taskid: 9d6f4db3-15b4-44f1-8c22-56668b570cca
+    type: regular
+    task:
+      id: 9d6f4db3-15b4-44f1-8c22-56668b570cca
+      version: -1
+      name: Test date_to_timestamp
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      test_type:
+        simple: DATE_TO_TIMESTAMP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 7fbc4a53-f92c-4e89-8c91-10676c018598
+    type: regular
+    task:
+      id: 7fbc4a53-f92c-4e89-8c91-10676c018598
+      version: -1
+      name: Test camelize
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      test_type:
+        simple: CAMELIZE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1290,
         "width": 380,
         "x": 50,
         "y": 50
