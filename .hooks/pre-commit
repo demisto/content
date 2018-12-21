@@ -11,6 +11,7 @@ then
 fi
 
 python Tests/scripts/update_id_set.py
+git add Tests/id_set.json
 
 # prevent push to master
 if [ -z "$1"  ]; then
