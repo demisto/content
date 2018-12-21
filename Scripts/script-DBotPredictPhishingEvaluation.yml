@@ -1,0 +1,165 @@
+commonfields:
+  id: DBotPredictPhishingEvaluation
+  version: -1
+name: DBotPredictPhishingEvaluation
+script: |+
+  import pandas as pd
+  from sklearn import metrics
+  import sys
+
+  # disable warnings
+  import warnings
+  warnings.filterwarnings('always')
+
+  def get_threshold_precision(df, threshold, predicted_col, original_col, threshold_col):
+      skipped_count = len(df[df[threshold_col] < threshold])
+      if skipped_count == len(df):
+          percentage_skipped = 100
+          precision_score = 0
+          recall_score = 0
+          f1_score = 0
+      else:
+          precision_score = metrics.precision_score(df[df[threshold_col] >= threshold][original_col], df[df[threshold_col] >= threshold][predicted_col], average='micro') * 100
+          recall_score = metrics.recall_score(df[df[threshold_col] >= threshold][original_col], df[df[threshold_col] >= threshold][predicted_col], average='micro') * 100
+          f1_score = metrics.f1_score(df[df[threshold_col] >= threshold][original_col], df[df[threshold_col] >= threshold][predicted_col], average='micro') * 100
+          percentage_skipped = (float(skipped_count) / len(df)) * 100
+
+      return {
+          'Threshold': threshold,
+          'Precision': '%.2f%%' % precision_score,
+          'Recall': '%.2f%%' % recall_score,
+          'Below Threshold': '%d (%.2f%%)' % (skipped_count, percentage_skipped),
+          'Count': '%d (%.2f%%)' % (len(df) - skipped_count, 100 - percentage_skipped),
+          'F1 Score': '%.2f%%' % f1_score,
+      }
+
+  entries = demisto.executeCommand('DBotPreparePhishingData', demisto.args())
+  if isError(entries[0]):
+      return_error(entries[0]['Contents'])
+  else:
+      entries = [e for e in entries if e['ContentsFormat'] == formats['json']]
+      labeled_data = entries[0]['Contents']
+  if len(labeled_data) == 0:
+      return_error("there is no data to evaluate")
+  max_number_of_incidents = int(demisto.args()['maxNumberOfIncidents'])
+  if len(labeled_data) == max_number_of_incidents:
+      demisto.log('Results from incidentsQuery has reached to the maximum (maxNumberOfIncidents=%d). Consider increasing maxNumberOfIncidents to get better results' % max_number_of_incidents)
+  demisto.log("Evaluating %d samples" % len(labeled_data))
+  res = demisto.executeCommand('DBotPredictTextLabel', {
+      'inputText': map(lambda x: x['txt'], labeled_data),
+      'modelListName': demisto.args()['modelListName']
+  })
+  if isError(res[0]):
+      return_error(res[0]['Contents'])
+
+  predictions = res[0]['Contents']
+
+  df = pd.DataFrame.from_dict(predictions)
+  df.loc[:, 'Original'] = pd.Series(map(lambda x: x['label'], labeled_data))
+
+  result = []
+  for i in xrange(60, 80, 10):
+      result.append(get_threshold_precision(df, float(i)/100, 'Label', 'Original', 'Probability'))
+  for i in xrange(80, 100, 5):
+      result.append(get_threshold_precision(df, float(i)/100, 'Label', 'Original', 'Probability'))
+
+  table_headers = ['Threshold', 'Below Threshold', 'Count', 'F1 Score', 'Precision', 'Recall']
+  hr1 = tableToMarkdown('Evaluation probablity with different thresholds', result, headers=table_headers)
+  result = []
+  for i in xrange(0, 110, 10):
+      result.append(get_threshold_precision(df, i, 'Label', 'Original', 'InputTextNumberOfTokens'))
+
+  hr2 = tableToMarkdown('Evaluation input text length with different thresholds', result, headers=table_headers)
+  precision_score = metrics.precision_score(df['Original'], df['Label'], average='micro')
+  recall_score = metrics.recall_score(df['Original'], df['Label'], average='micro')
+  f1_score = metrics.f1_score(df['Original'], df['Label'], average='micro')
+  eval_result = {
+      'Precision': precision_score,
+      'Recall': recall_score,
+      'F1': f1_score,
+      'Size': len(labeled_data)
+  }
+  demisto.results({
+      'ContentsFormat': formats['json'],
+      'Type': entryTypes['note'],
+      'Contents': eval_result,
+      'EntryContext': {
+          'DBotPredictPhishingEvaluation': eval_result
+      },
+      'HumanReadable': hr1 + "\n\n" + hr2,
+      'HumanReadableFormat': formats["markdown"]
+  })
+  details_string = 'F1:%.2f | Precision:%.2f | Recall:%.2f | SamplesCount: %d' % (f1_score, precision_score, recall_score, len(labeled_data))
+  demisto.executeCommand("setIncident", {'details': details_string})
+
+type: python
+tags:
+- ml
+- phishing
+comment: Evaluate phishing model created by text classification ml automation.
+enabled: true
+args:
+- name: incidentsQuery
+  description: Query of the phishing incidents.
+  defaultValue: created:>="3 days ago" and type:"Phishing"
+- name: maxNumberOfIncidents
+  description: Maximum number of incidents
+  defaultValue: "100"
+- name: emailTextKey
+  description: Incident key to extract email text
+  defaultValue: details
+- name: emailSubjectKey
+  description: Incident key to extract email subject
+  defaultValue: name
+- name: tagKey
+  description: Incident key to extract tag
+  defaultValue: closeReason
+- name: phishingLabels
+  description: 'Comma-separated values of email tags values and mapping. The script
+    going to consider only the tags specify in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
+    4 values in email tag: malicious, credentials harvesting, inner communitcation,
+    external legit email, unclassified. While training, we want to ignore "unclassified"
+    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
+    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  defaultValue: '*'
+- name: isContextNeeded
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Does one of the fields is in the context data?
+  defaultValue: "no"
+- name: hashData
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Is phishing model based on hashed data?
+  defaultValue: "no"
+- name: modelListName
+  required: true
+  description: Demisto list name that stores the machine learning model
+outputs:
+- contextPath: DBotPredictPhishingEvaluation.Precision
+  description: Precision score (0-1)
+  type: number
+- contextPath: DBotPredictPhishingEvaluation.Recall
+  description: Recall score (0-1)
+  type: number
+- contextPath: DBotPredictPhishingEvaluation.F1
+  description: F1 score (0-1)
+  type: number
+- contextPath: DBotPredictPhishingEvaluation.Size
+  description: Test data size
+  type: number
+scripttarget: 0
+timeout: 6µs
+runonce: true
+dockerimage: demisto/dl:1.1
+fromversion: 4.1.0
+releaseNotes: "New script: Evaluate pre-trained machine learning phishing model in Demisto"
+tests:
+  - CreatePhishingClassifierMLTest

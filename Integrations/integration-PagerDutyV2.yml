@@ -927,6 +927,5 @@ script:
     description: Acknowledges an existing event in PagerDuty
   isfetch: true
   runonce: false
-releaseNotes: "Adding PagerDuty-acknowledge-event, PagerDuty-resolve-event commands"
 tests:
 - PagerDuty Test

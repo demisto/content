@@ -1355,4 +1355,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Created integration testing to Cymon service"

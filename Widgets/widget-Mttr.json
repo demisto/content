@@ -2,7 +2,7 @@
   "id": "mean-time-to-resolution",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "Mean Time To Resolution",
+  "name": "Mean Time to Resolution",
   "dataType": "incidents",
   "widgetType": "duration",
   "query": "-category:job and status:closed",
@@ -24,5 +24,6 @@
       "count|1"
     ]
   },
-  "description": ""
+  "description": "",
+  "releaseNotes": "-"
 }
