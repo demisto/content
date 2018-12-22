@@ -29,7 +29,6 @@ jobs:
       - run:
           name: Configure Test Filter
           command: |
-              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
@@ -113,3 +112,24 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+
+
+workflows:
+  version: 2.0
+  commit:
+    environment:
+      IS_NIGHTLY: false
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 5 * * *" # UTC time
+          filters:
+            branches:
+              only:
+                - update-nighly-trigger
+    environment:
+      IS_NIGHTLY: true
+    jobs:
+      - build
