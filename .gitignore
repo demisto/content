@@ -4,7 +4,9 @@
 _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
-*.pyc
+bundle_pre
+bundle_post
+bundle_test
 
 CommonServerPython.py
 CommonServerUserPython.py
