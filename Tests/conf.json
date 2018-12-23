@@ -6,6 +6,9 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "test-LinkIncidentsWithRetry"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
