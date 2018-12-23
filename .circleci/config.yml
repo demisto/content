@@ -134,7 +134,9 @@ workflows:
   commit:
     jobs:
       - set_nigthly_false
-      - build
+      - build:
+          requires:
+            - set_nigthly_false
   nightly:
     triggers:
       - schedule:
@@ -145,4 +147,6 @@ workflows:
                 - master
     jobs:
       - set_nigthly_true
-      - build
+      - build:
+          requires:
+            - set_nigthly_true
