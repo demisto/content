@@ -118,7 +118,9 @@ workflows:
   version: 2
   commit:
     jobs:
-      - content_build
+      - content_build:
+        environment:
+          IS_NIGHTLY: false
   nightly:
     triggers:
       - schedule:
@@ -128,4 +130,6 @@ workflows:
               only:
                 - master
     jobs:
-      - content_build
+      - content_build:
+        environment:
+          IS_NIGHTLY: true
