@@ -1,8 +1,8 @@
-id: gvault-search-groups
+id: Google-Vault-Search-Groups
 version: -1
 fromversion: 4.0.0
 name: Google Vault - Search Groups
-description: ''
+description: This is a playbook for performing Google Vault search in Groups and display the results.
 starttaskid: "0"
 tasks:
   "0":
@@ -508,4 +508,4 @@ outputs:
   type: unknown
 releaseNotes: "Created new playbook for performing search and get results on Google vault"
 tests:
-  - No test - no test needed
+  - Google_Vault-Search_And_Display_Results_test
