@@ -128,7 +128,7 @@ workflows:
           filters:
             branches:
               only:
-                - update-nighly-trigger
+                - master
     environment:
       IS_NIGHTLY: true
     jobs:
