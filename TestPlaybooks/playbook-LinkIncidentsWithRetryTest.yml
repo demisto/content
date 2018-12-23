@@ -1,5 +1,5 @@
 id: test-LinkIncidentsWithRetry
-version: 1
+version: -1
 name: test-LinkIncidentsWithRetry
 starttaskid: "0"
 tasks:
