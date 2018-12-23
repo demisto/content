@@ -1,7 +1,7 @@
 id: gvault-search-groups
 version: -1
 fromversion: 4.0.0
-name: gvault-search-groups
+name: Google Vault - Search Groups
 description: ''
 starttaskid: "0"
 tasks:
@@ -18,13 +18,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": -820
+          "y": 200
         }
       }
     note: false
@@ -35,7 +35,7 @@ tasks:
     task:
       id: 40d47276-5b8c-4a16-8bfc-986b89a39382
       version: -1
-      name: gvault-create-export-group
+      name: Create Group Export
       description: Creates a Google Vault export in order to perform search actions
         on emails.
       script: google-vault_workingOnDownload_copy|||gvault-create-export-groups
@@ -141,7 +141,7 @@ tasks:
     task:
       id: 31d85c78-3d02-4ef9-8734-3d41200a8857
       version: -1
-      name: gvault-get-mail-results
+      name: Get Groups results
       description: Get the results of a given mail export
       script: google-vault_workingOnDownload_copy|||gvault-get-groups-results
       type: regular
@@ -171,59 +171,6 @@ tasks:
         }
       }
     note: false
-  "4":
-    id: "4"
-    taskid: 566b7ab9-431f-4cab-8572-811f3d3bcf1e
-    type: condition
-    task:
-      id: 566b7ab9-431f-4cab-8572-811f3d3bcf1e
-      version: -1
-      name: Validate scope
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.dataScope
-            iscontext: true
-          right:
-            value:
-              simple: All Data
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.dataScope
-            iscontext: true
-          right:
-            value:
-              simple: Held Data
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.dataScope
-            iscontext: true
-          right:
-            value:
-              simple: Unprocessed Data
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 140
-        }
-      }
-    note: false
   "5":
     id: "5"
     taskid: 9ed8fed0-adb4-4d5a-8de3-4390979be049
@@ -242,261 +189,6 @@ tasks:
         "position": {
           "x": 780,
           "y": 1760
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: f40a8e8d-3cad-46fe-82d3-e099deff4c47
-    type: regular
-    task:
-      id: f40a8e8d-3cad-46fe-82d3-e099deff4c47
-      version: -1
-      name: Invalid dataScope
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      message:
-        simple: 'Invalid dataScope: ${inputs.dataScope}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 310
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
-    type: condition
-    task:
-      id: 1ffd90b0-66f2-4f74-8ee8-85764ad280c8
-      version: -1
-      name: validate searchMethod
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.searchMethod
-            iscontext: true
-          right:
-            value:
-              simple: All Accounts
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.searchMethod
-            iscontext: true
-          right:
-            value:
-              simple: Specific Accounts(requires emails argument)
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.searchMethod
-            iscontext: true
-          right:
-            value:
-              simple: Organizational Unit(requires ou argument)
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -80
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: d4e0183d-19b7-465b-8cf0-61a09ecc9fd2
-    type: regular
-    task:
-      id: d4e0183d-19b7-465b-8cf0-61a09ecc9fd2
-      version: -1
-      name: Invalid searchMethod
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      message:
-        simple: 'Invalid searchMethod: ${inputs.searchMethod}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 110
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: f359a495-d591-43a7-89ba-fad3d43c428b
-    type: condition
-    task:
-      id: f359a495-d591-43a7-89ba-fad3d43c428b
-      version: -1
-      name: validate exportPST
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.exportPST
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.exportPST
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -490
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: 8ce0b9b7-2d4e-4463-8ded-db8732cecc3e
-    type: regular
-    task:
-      id: 8ce0b9b7-2d4e-4463-8ded-db8732cecc3e
-      version: -1
-      name: Invalid exportPST
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      message:
-        simple: 'Invalid input for exportPST: ${inputs.exportPST}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": -310
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: fe2a296f-bdd8-4870-8e32-ce312034ef8e
-    type: condition
-    task:
-      id: fe2a296f-bdd8-4870-8e32-ce312034ef8e
-      version: -1
-      name: validate exportMBOX
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.exportMBOX
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.exportMBOX
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -670
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 003c3b26-f5e8-498b-8cd2-949c7d43def8
-    type: regular
-    task:
-      id: 003c3b26-f5e8-498b-8cd2-949c7d43def8
-      version: -1
-      name: Invalid exportMBOX
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      message:
-        simple: 'Invalid input for exportMBOX: ${inputs.exportMBOX}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": -500
         }
       }
     note: false
@@ -667,7 +359,10 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: 'Polling time out: increase polling time out'
+        simple: 'Polling time out: Your search is taking a bit more time. To see your
+          results please run playbook ''Google Vault - Display Results'' with a grater
+          ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID}
+          and MatterID: ${GoogleVault.Matter.Export.MatterID}'
     separatecontext: false
     view: |-
       {
@@ -682,10 +377,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2645,
+        "height": 1625,
         "width": 1110,
         "x": 50,
-        "y": -820
+        "y": 200
       }
     }
   }
@@ -763,51 +458,54 @@ inputs:
   description: If set to true the export file created will be downloaded into the
     War Room
 outputs:
-- contextPath: GoogleVault.Export.MatterID
+- contextPath: GoogleVault.Matter.Export.MatterID
   description: Matter ID
   type: string
-- contextPath: GoogleVault.Export.ExportID
+- contextPath: GoogleVault.Matter.Export.ExportID
   description: Export ID
   type: string
-- contextPath: GoogleVault.Export.Name
+- contextPath: GoogleVault.Matter.Export.Name
   description: Export's name
   type: string
-- contextPath: GoogleVault.Export.CreateTime
+- contextPath: GoogleVault.Matter.Export.CreateTime
   description: Export's creation time
   type: string
-- contextPath: GoogleVault.Export.Results.CC
+- contextPath: GoogleVault.Matter.Export.Results.CC
   description: CC of the message
   type: string
-- contextPath: GoogleVault.Export.Results.BCC
+- contextPath: GoogleVault.Matter.Export.Results.BCC
   description: BCC of the message
   type: string
-- contextPath: GoogleVault.Export.Results.DateSent
+- contextPath: GoogleVault.Matter.Export.Results.DateSent
   description: The date the message
   type: string
-- contextPath: GoogleVault.Export.Results.From
+- contextPath: GoogleVault.Matter.Export.Results.From
   description: The sender of the message
   type: string
-- contextPath: GoogleVault.Export.Results.Subject
+- contextPath: GoogleVault.Matter.Export.Results.Subject
   description: The subject of the message
   type: string
-- contextPath: GoogleVault.Export.Results.DateReceived
+- contextPath: GoogleVault.Matter.Export.Results.DateReceived
   description: The date the message was received
   type: string
-- contextPath: GoogleVault.Export.Results.To
+- contextPath: GoogleVault.Matter.Export.Results.To
   description: The address the message was sent to
   type: string
-- contextPath: GoogleVault.Export.Status
+- contextPath: GoogleVault.Matter.Export.Status
   description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
   type: string
-- contextPath: GoogleVault.Export.BucketName
+- contextPath: GoogleVault.Matter.Export.BucketName
   description: Bucket holder name for this export
   type: string
-- contextPath: GoogleVault.Export.DownloadID
+- contextPath: GoogleVault.Matter.Export.DownloadID
   description: ID to be used by the download-export command
   type: string
-- contextPath: GoogleVault.Export.ViewID
+- contextPath: GoogleVault.Matter.Export.ViewID
   description: ID to be used by the get-X-results command (X=drive/mail/groups)
   type: string
+- contextPath: GoogleVault.Matter
+  description: Matter object
+  type: unknown
 releaseNotes: "Created new playbook for performing search and get results on Google vault"
 tests:
   - No test - no test needed
