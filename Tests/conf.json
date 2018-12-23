@@ -74,11 +74,6 @@
           "playbookID": "URLDecode-Test"
         },
         {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
-        },
-        {
           "playbookID": "GetTime-Test"
         },
         {
@@ -760,6 +755,11 @@
             "playbookID": "ExifReadTest"
         },
         {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
+        },
+        {
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,
@@ -851,7 +851,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "ParseEmailFiles": "Will be handled by yaakovi later this week"
+        "ParseEmailFiles-test": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
