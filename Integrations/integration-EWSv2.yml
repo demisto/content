@@ -98,7 +98,7 @@ script:
 
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest, MalformedResponseError
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -1492,9 +1492,10 @@ script:
         error_message_simple = ""
         error_message = ""
 
-        if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-            error_message_simple = """Got invalid response from the server.
-    Verify that the Hostname or IP address is entered correctly"""
+        if exchangelib.__version__ == "1.12.0":
+            from exchangelib.errors import MalformedResponseError
+            if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
+                error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is entered correctly"
 
         # Office365 regular maintenance case
         if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
