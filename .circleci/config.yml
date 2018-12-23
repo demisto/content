@@ -113,12 +113,16 @@ jobs:
           destination: artifacts
           when: always
   set_nigthly_true:
+    machine:
+        enabled: true
     steps:
       - run:
           name: Prepare Environment
           command: |
               export IS_NIGHTLY=true
   set_nigthly_false:
+    machine:
+        enabled: true
     steps:
       - run:
           name: Prepare Environment
