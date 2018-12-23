@@ -1,6 +1,6 @@
-version: 2.0
+version: 2
 jobs:
-  build:
+  content_build:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
@@ -115,12 +115,12 @@ jobs:
 
 
 workflows:
-  version: 2.0
+  version: 2
   commit:
     environment:
       IS_NIGHTLY: false
     jobs:
-      - build
+      - content_build
   nightly:
     triggers:
       - schedule:
@@ -132,4 +132,4 @@ workflows:
     environment:
       IS_NIGHTLY: true
     jobs:
-      - build
+      - content_build
