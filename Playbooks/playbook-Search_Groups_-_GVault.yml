@@ -38,10 +38,10 @@ tasks:
       name: Create Group Export
       description: Creates a Google Vault export in order to perform search actions
         on emails.
-      script: google-vault_workingOnDownload_copy|||gvault-create-export-groups
+      script: '|||gvault-create-export-groups'
       type: regular
       iscommand: true
-      brand: google-vault_workingOnDownload_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -143,10 +143,10 @@ tasks:
       version: -1
       name: Get Groups results
       description: Get the results of a given mail export
-      script: google-vault_workingOnDownload_copy|||gvault-get-groups-results
+      script: '|||gvault-get-groups-results'
       type: regular
       iscommand: true
-      brand: google-vault_workingOnDownload_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -400,11 +400,6 @@ inputs:
     simple: All Data
   required: false
   description: Choice of Search scope
-- key: searchMethod
-  value:
-    simple: All Accounts
-  required: false
-  description: Choice of Search method
 - key: groups
   value: {}
   required: false

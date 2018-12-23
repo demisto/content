@@ -38,10 +38,10 @@ tasks:
       name: Create Drive Export
       description: Creates a Google Vault export in order to perform search actions
         on emails.
-      script: google-vault_workingOnDownload_copy|||gvault-create-export-drive
+      script: '|||gvault-create-export-drive'
       type: regular
       iscommand: true
-      brand: google-vault_workingOnDownload_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -151,10 +151,10 @@ tasks:
       version: -1
       name: Get Drive results
       description: Get the results of a given mail export
-      script: google-vault_workingOnDownload_copy|||gvault-get-drive-results
+      script: '|||gvault-get-drive-results'
       type: regular
       iscommand: true
-      brand: google-vault_workingOnDownload_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "15"

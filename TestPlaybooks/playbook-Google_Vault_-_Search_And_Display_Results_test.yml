@@ -1,5 +1,5 @@
 id: Google_Vault-Search_And_Display_Results_test
-version: 130
+version: -1
 name: Google Vault - Search And Display Results test
 description: 'This is a test for Google Vault playbooks. It calls all search commands:
   Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Search

@@ -89,10 +89,10 @@ tasks:
       version: -1
       name: Get Mail results
       description: Get the results of a given mail export
-      script: google-vault_workingOnDownload_copy|||gvault-get-mail-results
+      script: '|||gvault-get-mail-results'
       type: regular
       iscommand: true
-      brand: google-vault_workingOnDownload_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -387,7 +387,7 @@ tasks:
     task:
       id: 976638c2-22e7-400e-8a33-d35b13ad9cc5
       version: -1
-      name: Get Mail results
+      name: Get Groups results
       description: Get the results of a given mail export
       script: '|||gvault-get-groups-results'
       type: regular
@@ -424,7 +424,7 @@ tasks:
     task:
       id: b8f65130-b7ff-4a37-81c9-385a68caf2f4
       version: -1
-      name: Get Mail results
+      name: Get Drive results
       description: Get the results of a given mail export
       script: '|||gvault-get-drive-results'
       type: regular
