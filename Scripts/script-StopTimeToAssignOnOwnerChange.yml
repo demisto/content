@@ -1,9 +1,9 @@
+fromversion: 4.1.0
 commonfields:
-  id: efa042a3-7017-4047-81e3-155e7065c88f
+  id: stoptimetoassignonownerchange
   version: -1
-  fromVersion: 4.1.0
 name: StopTimeToAssignOnOwnerChange
-script: |2
+script: |
 
   if demisto.args()['old'] == "" and demisto.args()['new'] != "":  # If owner was no-one and is now someone:
       demisto.executeCommand("stopTimer", {"timerField":"timetoassignment"})

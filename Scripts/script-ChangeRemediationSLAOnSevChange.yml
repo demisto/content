@@ -1,7 +1,7 @@
+fromversion: 4.1.0
 commonfields:
-  id: 310ed078-8188-443f-83cc-7cb80c55971d
+  id: changeremediationslaonsevchange
   version: -1
-  fromVersion: 4.1.0
 name: ChangeRemediationSLAOnSevChange
 script: |
   import datetime
