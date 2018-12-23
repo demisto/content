@@ -41,3 +41,5 @@ enabled: true
 scripttarget: 0
 runonce: false
 runas: DBotRole
+tests:
+  - No test - will be manually tested before release (only useful as a triggered script)
