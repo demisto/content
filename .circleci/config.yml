@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  content_build:
+  build:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
@@ -112,15 +112,25 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-
+  set_nigthly_true:
+    steps:
+      - run:
+          name: Prepare Environment
+          command: |
+              export IS_NIGHTLY=true
+  set_nigthly_false:
+    steps:
+      - run:
+          name: Prepare Environment
+          command: |
+              export IS_NIGHTLY=false
 
 workflows:
   version: 2
   commit:
     jobs:
-      - content_build:
-        environment:
-          IS_NIGHTLY: false
+      - set_nigthly_false
+      - build
   nightly:
     triggers:
       - schedule:
@@ -130,6 +140,5 @@ workflows:
               only:
                 - master
     jobs:
-      - content_build:
-        environment:
-          IS_NIGHTLY: true
+      - set_nigthly_true
+      - build
