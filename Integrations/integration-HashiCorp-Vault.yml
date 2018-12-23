@@ -32,6 +32,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Secrets engines to fetch secrets from (e.g. KV, secret, All)
+  name: engines
+  defaultvalue: All
+  type: 0
+  required: false
 script:
   script: |-
     import requests
@@ -101,7 +106,9 @@ script:
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             return_error('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        return res.json()
+        if res.content:
+            return res.json()
+        return ''
 
 
     def list_secrets_engines_command():
@@ -163,8 +170,125 @@ script:
             }
         })
 
+
+    def get_secret_metadata_command():
+        engine_path = demisto.args()['engine_path']
+        secret_path = demisto.args()['secret_path']
+
+        res = get_secret_metadata(engine_path, secret_path)
+
+        if not res or 'data' not in res:
+            return_error('Secret not found')
+
+        data = res['data']
+
+        secret_headers = ['Engine','Created','Updated','CurrentVersion']
+        version_headers = ['Number','Created','Deleted','Destroyed']
+
+        mapped_secret = {
+            'Path': secret_path,
+            'Engine': engine_path,
+            'Created': data.get('created_time'),
+            'Updated': data.get('updated_time'),
+            'CurrentVersion': data.get('current_version')
+        }
+
+        mapped_versions = [{
+            'Number': k,
+            'Created': v['created_time'],
+            'Deleted': v['deletion_time'],
+            'Destroyed': v['destroyed']
+        } for k, v in data.get('versions', {}).iteritems()]
+
+        hr = tableToMarkdown('Secret metadata', mapped_secret, headers=secret_headers, removeNull=True)
+        if mapped_versions:
+            hr += tableToMarkdown('Versions', mapped_versions, headers=version_headers, removeNull=True)
+            mapped_secret['Version'] = mapped_versions
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': {
+                  'HashiCorp.SecretMetadata(val.Path===obj.Path)': createContext(mapped_secret, removeNull=True)
+            }
+        })
+
+    def delete_secret_command():
+        engine_path = demisto.args()['engine_path']
+        secret_path = demisto.args()['secret_path']
+        versions = argToList(demisto.args()['versions'])
+
+        res = delete_secret(engine_path, secret_path, versions)
+
+        demisto.results('Secret versions deleted successfully')
+
+
+    def delete_secret(engine_path, secret_path, versions):
+        path = engine_path + '/delete/' + secret_path
+
+        if not isinstance(versions, list):
+            versions = [versions]
+
+        body = {
+            'versions': versions
+        }
+
+        return send_request(path, 'post', body=body)
+
+    def undelete_secret_command():
+        engine_path = demisto.args()['engine_path']
+        secret_path = demisto.args()['secret_path']
+        versions = argToList(demisto.args()['versions'])
+
+        res = undelete_secret(engine_path, secret_path, versions)
+
+        demisto.results('Secret versions undeleted successfully')
+
+    def undelete_secret(engine_path, secret_path, versions):
+        path = engine_path + '/undelete/' + secret_path
+
+        if not isinstance(versions, list):
+            versions = [versions]
+
+        body = {
+            'versions': versions
+        }
+
+        return send_request(path, 'post', body=body)
+
+    def destroy_secret_command():
+        engine_path = demisto.args()['engine_path']
+        secret_path = demisto.args()['secret_path']
+        versions = argToList(demisto.args()['versions'])
+
+        res = destroy_secret(engine_path, secret_path, versions)
+
+        demisto.results('Secret versions destroyed successfully')
+
+    def destroy_secret(engine_path, secret_path, versions):
+        path = engine_path + '/destroy/' + secret_path
+
+        if not isinstance(versions, list):
+            versions = [versions]
+
+        body = {
+            'versions': versions
+        }
+
+        return send_request(path, 'post', body=body)
+
+
+    def get_secret_metadata(engine_path, secret_path):
+        path = engine_path + '/metadata/' + secret_path
+
+        return send_request(path, 'get')
+
+
     def list_secrets(engine_path):
-        path = engine_path
+        path = engine_path + '/metadata'
 
         params = {
             'list': 'true'
@@ -232,6 +356,207 @@ script:
 
         return send_request(path, 'get')
 
+    def disable_engine_command():
+        path = demisto.args()['path']
+
+        res = disable_engine(path)
+
+        demisto.results('Engine disabled successfully')
+
+    def disable_engine(engine_path):
+        path = 'sys/mounts/' + engine_path
+
+        return send_request(path, 'delete')
+
+
+    def enable_engine_command():
+        path = demisto.args()['path']
+        engine_type = demisto.args()['type']
+        description = demisto.args().get('description')
+        default_lease_ttl = demisto.args().get('default_lease_ttl')
+        max_lease_ttl = demisto.args().get('max_lease_ttl')
+        force_no_cache = demisto.args().get('force_no_cache')
+        audit_non_hmac_request_keys = demisto.args().get('audit_non_hmac_request_keys')
+        audit_non_hmac_response_keys = demisto.args().get('audit_non_hmac_response_keys')
+        listing_visibility = demisto.args().get('listing_visibility')
+        passthrough_request_headers = demisto.args().get('passthrough_request_headers')
+        kv_version = demisto.args().get('kv_version')
+        local = demisto.args().get('local')
+        seal_wrap = demisto.args().get('seal_wrap')
+
+        res = enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache, audit_non_hmac_request_keys,
+                      audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local, seal_wrap)
+
+        demisto.results('Engine enabled successfully')
+
+    def enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache, audit_non_hmac_request_keys,
+                      audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local, seal_wrap):
+            path = 'sys/mounts/' + path
+
+            body = {
+                'type': engine_type,
+                'config': {}
+            }
+            if description:
+                body['description'] = description
+
+            if default_lease_ttl:
+                body['config']['default_lease_ttl'] = default_lease_ttl
+            if max_lease_ttl:
+                body['config']['max_lease_ttl'] = max_lease_ttl
+            if force_no_cache:
+                body['config']['force_no_cache'] = force_no_cache
+            if audit_non_hmac_request_keys:
+                body['config']['audit_non_hmac_request_keys'] = audit_non_hmac_request_keys
+            if audit_non_hmac_response_keys:
+                body['config']['audit_non_hmac_response_keys'] = audit_non_hmac_response_keys
+            if listing_visibility:
+                body['config']['listing_visibility'] = listing_visibility
+            if passthrough_request_headers:
+                body['config']['passthrough_request_headers'] = passthrough_request_headers
+            if kv_version:
+                body['options'] = {
+                    'version': kv_version
+                }
+            if local:
+                body['local'] = local
+            if seal_wrap:
+                body['seal_wrap'] = seal_wrap
+
+            if not body['config']:
+                del body['config']
+
+            return send_request(path, 'post', body=body)
+
+
+    def seal_vault_command():
+        res = seal_vault()
+
+        demisto.results('Vault sealed successfully')
+
+
+    def seal_vault():
+        path = 'sys/seal'
+
+        return send_request(path, 'put')
+
+
+    def unseal_vault_command():
+        reset = demisto.args().get('reset')
+        key = demisto.args().get('key')
+
+        if not key and not reset:
+            return_error('Either key or reset must be provided')
+
+        res = unseal_vault(key, reset)
+
+        if not res:
+            return_error('Could not retrieve unseal state')
+
+        headers = ['Sealed', 'Threshold', 'Shares', 'Progress']
+
+        mapped_unseal = {
+            'Sealed': res.get('sealed'),
+            'Threshold': res.get('t'),
+            'Shares': res.get('n'),
+            'Progress': res.get('progress')
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('HashiCorp Vault Unseal', mapped_unseal, removeNull=True),
+            'EntryContext': {
+                  'HashiCorp.Unseal(val.Sealed===obj.Sealed)': createContext(mapped_unseal, removeNull=True)
+            }
+        })
+
+
+    def unseal_vault(key, reset):
+        body = {}
+        if reset:
+            body['reset'] = reset
+        elif key:
+            body['key'] = key
+
+        return send_request(path, 'put', body=body)
+
+
+    def create_token_command():
+        role_name = demisto.args().get('role_name')
+        policies = argToList(demisto.args().get('policies', []))
+        meta = demisto.args().get('meta')
+        no_parent = demisto.args().get('no_parent')
+        no_default_policy = demisto.args().get('no_default_policy')
+        renewable = demisto.args().get('renewable')
+        ttl = demisto.args().get('ttl')
+        explicit_max_ttl = demisto.args().get('explicit_max_ttl')
+        display_name = demisto.args().get('display_name')
+        num_uses = demisto.args().get('num_uses')
+        period = demisto.args().get('period')
+
+        res = create_token(role_name, policies, meta, no_parent, no_default_policy, renewable, ttl, explicit_max_ttl,
+                    display_name, num_uses, period)
+
+        if not res or 'auth' not in res:
+            return_error('Could not get authentication token')
+
+        auth = res['auth']
+
+        headers = ['Token', 'Policies', 'LeaseDuration']
+
+        mapped_auth = {
+            'Token': auth.get('client_token'),
+            'Policies': auth.get('policies'),
+            'LeaseDuration': auth.get('lease_duration')
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Token successfully created', mapped_auth, removeNull=True),
+            'EntryContext': {
+                  'HashiCorp.Auth(val.Token===obj.Token)': createContext(mapped_auth, removeNull=True)
+            }
+        })
+
+
+    def create_token(role_name, policies, meta, no_parent, no_default_policy, renewable, ttl, explicit_max_ttl,
+                    display_name, num_uses, period):
+        path = 'auth/token/create'
+        body = {}
+        if role_name:
+            body['role_name'] = role_name
+        if policies:
+            body['policies'] = policies
+        if meta:
+            body['meta'] = meta
+        if no_parent:
+            body['no_parent'] = no_parent
+        if no_default_policy:
+            body['no_default_policy'] = no_default_policy
+        if renewable:
+            body['renewable'] = renewable
+        if ttl:
+            body['ttl'] = ttl
+        if explicit_max_ttl:
+            body['explicit_max_ttl'] = explicit_max_ttl
+        if display_name:
+            body['display_name'] = display_name
+        if num_uses:
+            body['num_uses'] = num_uses
+        if period:
+            body['period'] = period
+
+        return send_request(path, 'post', body=body)
+
+
+    #def fetch_credentials:
+
 
     if USERNAME and PASSWORD:
         TOKEN = login()
@@ -242,6 +567,8 @@ script:
         path = 'sys/health'
         send_request(path)
         demisto.results('ok')
+    if demisto.command() == 'fetch-credentials':
+        fetch_credentials()
     elif demisto.command() == 'fetch-incidents':
         sys.exit(0)
     elif demisto.command() == 'hashicorp-list-secrets-engines':
@@ -252,6 +579,25 @@ script:
         list_policies_command()
     elif demisto.command() == 'hashicorp-get-policy':
         get_policy_command()
+    elif demisto.command() == 'hashicorp-get-secret-metadata':
+        get_secret_metadata_command()
+    elif demisto.command() == 'hashicorp-delete-secret':
+        delete_secret_command()
+    elif demisto.command() == 'hashicorp-undelete-secret':
+        undelete_secret_command()
+    elif demisto.command() == 'hashicorp-destroy-secret':
+        destroy_secret_command()
+    elif demisto.command() == 'hashicorp-disable-engine':
+        disable_engine_command()
+    elif demisto.command() == 'hashicorp-enable-engine':
+        enable_engine_command()
+    elif demisto.command() == 'seal_vault_command':
+        seal_vault_command()
+    elif demisto.command() == 'unseal_vault_command':
+        unseal_vault_command()
+    elif demisto.command() == 'hashicorp-create-token':
+        create_token_command()
+
     # You can use demisto.args()[argName] to get a specific arg. args are strings.
     # You can use demisto.params()[paramName] to get a specific params.
     # Params are of the type given in the integration page creation.
@@ -275,37 +621,41 @@ script:
     description: List all secrets engine types that exist in HashiCorp Vault.
   - name: hashicorp-get-secret-metadata
     arguments:
-    - name: name
-      required: true
-      description: Secret name
-    - name: path
+    - name: engine_path
       required: true
       description: KV Engine path (engine path - for example - /kv)
+    - name: secret_path
+      required: true
+      description: Secret path
     outputs:
     - contextPath: HashiCorp.Secret.Created
       description: Secret created time
       type: date
-    - contextPath: HashiCorp.Secret.State
-      description: Destroyed - true or false
+    - contextPath: HashiCorp.Secret.Version.Destroyed
+      description: Whether the version is destroyed
       type: boolean
-    - contextPath: HashiCorp.Secret.Version
-      description: Version amount
+    - contextPath: HashiCorp.Secret.Version.Created
+      description: Version creation time
       type: number
-    - contextPath: HashiCorp.Secret.DeletedTime
-      description: If deleted - returns deleted time
+    - contextPath: HashiCorp.Secret.Version.Deleted
+      description: Version deletion time
       type: date
-    - contextPath: HashiCorp.Secret.UpdatedTime
-      description: Secret's last updated time
+    - contextPath: HashiCorp.Secret.Updated
+      description: Secret last updated time
       type: date
     - contextPath: HashiCorp.Secret.Engine
-      description: Secrets engine type
+      description: Secret engine type
       type: string
+    - contextPath: HashiCorp.Secret.CurrentVersion
+      description: Secret current version
+    - contextPath: HashiCorp.Secret.Path
+      description: Secret path
     description: Get information about a specified secret in a specified K/V V2 engine
   - name: hashicorp-list-secrets
     arguments:
     - name: engine
       required: true
-      description: Engine path  (for example - kv/)
+      description: Engine path  (for example - secret/)
     outputs:
     - contextPath: HashiCorp.Secret.Name
       description: Secret name
@@ -316,89 +666,53 @@ script:
     - contextPath: HashiCorp.Secret.Engine
       description: Secrets engine type
       type: string
-    description: List secrets (names) for a specified engine
+    description: List secrets (names) for a specified KV engine
   - name: hashicorp-delete-secret
     arguments:
-    - name: name
+    - name: secret_path
       required: true
-      description: Secret name
-    - name: path
+      description: Secret path
+    - name: engine_path
       required: true
-      description: Secret's path (engine path - for example - /kv)
-    outputs:
-    - contextPath: HashiCorp.Secret.Name
-      description: Secret name
-      type: string
-    - contextPath: HashiCorp.Secret.Path
-      description: Secrets engine path in HashiCorp
-      type: string
-    - contextPath: HashiCorp.Secret.Engine
-      description: Secrets engine type
-      type: string
-    - contextPath: HashiCorp.Secret.State
-      description: Secret's state
-      type: string
+      description: Engine path (engine path - for example - secret/)
+    - name: versions
+      required: true
+      description: Comma separated secret versions to delete
+      isArray: true
     description: Deletes the data under a specified secret given the secret path.
-      Performs a soft delete that allows the undelete command if necessary
+      Performs a soft delete that allows the undelete command if necessary (for the
+      KV V2 engine)
   - name: hashicorp-undelete-secret
     arguments:
-    - name: name
+    - name: secret_path
       required: true
-      description: Secret name
-    - name: path
+      description: Secret path
+    - name: engine_path
       required: true
-      description: Secret's path (engine path - for example - /kv)
-    outputs:
-    - contextPath: HashiCorp.Secret.Name
-      description: Secret name
-      type: string
-    - contextPath: HashiCorp.Secret.Path
-      description: Secrets engine path in HashiCorp
-      type: string
-    - contextPath: HashiCorp.Secret.Engine
-      description: Secrets engine type
-      type: string
-    - contextPath: HashiCorp.Secret.State
-      description: Secret's state
-      type: string
-    description: Undelete a secret on HashiCorp
+      description: Engine path - for example - secret/
+    - name: versions
+      required: true
+      description: Comma separated secret versions
+      isArray: true
+    description: Undelete a secret on HashiCorp (for KV engine version 2)
   - name: hashicorp-destroy-secret
     arguments:
-    - name: name
+    - name: secret_path
       required: true
-      description: Secret name
-    - name: path
+      description: Secret path
+    - name: engine_path
       required: true
-      description: Secret's path (engine path - for example - /kv)
-    outputs:
-    - contextPath: HashiCorp.Secret.Name
-      description: Secret name
-      type: string
-    - contextPath: HashiCorp.Secret.Path
-      description: Secrets engine path in HashiCorp
-      type: string
-    - contextPath: HashiCorp.Secret.Engine
-      description: Secrets engine type
-      type: string
-    - contextPath: HashiCorp.Secret.State
-      description: Secret's state
-      type: string
-    description: Destroy a secret - delete permanently
-  - name: hashicorp-disable-secrets-engine
+      description: Engine path - for example - secret/
+    - name: versions
+      required: true
+      description: Comma separated secret versions to delete
+      isArray: true
+    description: Delete a secret permanently
+  - name: hashicorp-disable-engine
     arguments:
     - name: path
       required: true
       description: Secrets engine path
-    outputs:
-    - contextPath: HashiCorp.Engine.Type
-      description: Secrets engine type
-      type: string
-    - contextPath: HashiCorp.Engine.Path
-      description: Secrets engine path in HashiCorp
-      type: string
-    - contextPath: HashiCorp.Engine.State
-      description: Enabled or Disabled
-      type: string
     description: When a secrets engine is no longer needed, it can be disabled. All
       secrets under the engine are revoked and the corresponding Vault data and configuration
       is removed.
@@ -421,41 +735,95 @@ script:
     description: https://www.vaultproject.io/docs/commands/index.html
   - name: hashicorp-seal-vault
     arguments: []
-    outputs:
-    - contextPath: HashiCorp.Key
-      description: Unseal key
-      type: string
-    - contextPath: HashiCorp.Root.Token
-      description: Initial root token
-      type: string
     description: If you suspect your data has been compromised, you can seal your
       vault to prevent access to your secrets
     execution: true
   - name: hashicorp-unseal-vault
     arguments:
-    - name: keys
-      required: true
-      description: Unsealing keys separated by comma
-    - name: root_token
-      required: true
-      description: Authenticate as the initial root token
+    - name: key
+      description: 'Single master key '
+    - name: reset
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      description: Reset the unseal project
     outputs:
-    - contextPath: HashiCorp.State
-      description: Vault state (sealed/unsealed)
-      type: string
-    description: 'Unseal HashiCorp vault that has been sealed '
-  - name: hashicorp-create-authentication
+    - contextPath: HashiCorp.Unseal.Sealed
+      description: Whether the vault is sealed
+      type: boolean
+    - contextPath: HashiCorp.Unseal.Threshold
+      description: Vault unseal threshold
+      type: number
+    - contextPath: HashiCorp.Unseal.Shares
+      description: Vault unseal shares
+      type: number
+    - contextPath: HashiCorp.Unseal.Progress
+      description: Unseal progress
+      type: number
+    description: Use a single master key share to progress the unsealing of the Vault.
+      If the threshold number of master key shares is reached, Vault will attempt
+      to unseal the Vault. Otherwise, this API must be called multiple times until
+      that threshold is met.
+  - name: hashicorp-create-token
     arguments:
-    - name: read
-      description: 'Accepts paths the token will have READ access to. Can accept more
-        than one path, separated by comma. (for example: secret/*)'
-    - name: create
-      description: 'Accepts paths the token will have CREATE access to. Can accept
-        more than one path, separated by comma. (for example: secret/*)'
+    - name: role_name
+      description: The name of the token role.
+    - name: policies
+      description: A comma separated list of policies for the token. This must be
+        a subset of the policies belonging to the token making the request, unless
+        root. If not specified, defaults to all the policies of the calling token.
+      isArray: true
+    - name: meta
+      description: A map of string to string valued metadata. This is passed through
+        to the audit devices.
+    - name: no_parent
+      description: If true and set by a root caller, the token will not have the parent
+        token of the caller. This creates a token with no parent.
+    - name: no_default_policy
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' If true the default policy will not be contained in this token''s
+        policy set.'
+    - name: renewable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to false to disable the ability of the token to be renewed
+        past its initial TTL. Setting the value to true will allow the token to be
+        renewable up to the system/mount maximum TTL.
+    - name: ttl
+      description: The TTL(lease duration) period of the token, provided as "1h",
+        where hour is the largest suffix. If not provided, the token is valid for
+        the default lease TTL, or indefinitely if the root policy is used.
+    - name: explicit_max_ttl
+      description: ' If set, the token will have an explicit max TTL set upon it.
+        This maximum token TTL cannot be changed later, and unlike with normal tokens,
+        updates to the system/mount max TTL value will have no effect at renewal time
+        -- the token will never be able to be renewed or used past the value set at
+        issue time.'
+    - name: display_name
+      description: The display name of the token.
+    - name: num_uses
+      description: The maximum uses for the given token. This can be used to create
+        a one-time-token or limited use token. The value of 0 has no limit to the
+        number of uses.
+    - name: period
+      description: If specified, the token will be periodic; it will have no maximum
+        TTL (unless an "explicit-max-ttl" is also set) but every renewal will use
+        the given period. Requires a root/sudo token to use.
     outputs:
-    - contextPath: HashiCorp.Token
+    - contextPath: HashiCorp.Auth.Token
       description: Authentication token
-    description: Create an authentication policy and receive an authentication token.
+      type: string
+    - contextPath: HashiCorp.Auth.Policies
+      description: Authentication policies
+    - contextPath: HashiCorp.Auth.LeaseDuration
+      description: 'Authentication lease duration in seconds, 0 if indefinitely '
+      type: number
+    description: Creates a new token.
   - name: hashicorp-get-policy
     arguments:
     - name: name
@@ -465,12 +833,57 @@ script:
     - contextPath: HashiCorp.Policy.Name
       description: Policy name
       type: string
-    - contextPath: HashiCorp.Policy.Path
-      description: Policy path
+    - contextPath: 'HashiCorp.Policy.Rule.Path '
+      description: Policy rule path
       type: string
-    - contextPath: 'HashiCorp.Policy.Path.Capabilities '
-      description: Policy capabilities for a path
+    - contextPath: HashiCorp.Policy.Rule.Capabilities
+      description: Policy rule capabilities
     description: Get a policy with a specified name
+  - name: hashicorp-enable-engine
+    arguments:
+    - name: path
+      required: true
+      description: The path where the secrets engine will be mounted.
+    - name: type
+      required: true
+      description: Type of the backend, e.g. "aws".
+    - name: description
+      description: Human-friendly description of the mount.
+    - name: default_lease_ttl
+      description: The default lease duration, specified as a string duration like
+                     "5s" or "30m".
+    - name: max_lease_ttl
+      description: The maximum lease duration, specified as a string duration like
+                     "5s" or "30m".
+    - name: force_no_cache
+      description: Disable caching.
+    - name: audit_non_hmac_request_keys
+      description: Comma-separated list of keys that will not be HMAC'd by audit devices
+        in the request data object.
+      isArray: true
+    - name: audit_non_hmac_response_keys
+      description: Comma-separated list of keys that will not be HMAC'd by audit devices
+        in the response data object.
+      isArray: true
+    - name: listing_visibility
+      auto: PREDEFINED
+      predefined:
+      - unauth
+      - hidden
+      description: Whether to show this mount in the UI-specific listing endpoint.
+        Default is hidden.
+    - name: passthrough_request_headers
+      description: Comma-separated list of headers to whitelist and pass from the
+        request to the backend.
+      isArray: true
+    - name: kv_version
+      description: The version of the KV to mount. Set to "2" for mount KV v2.
+    - name: local
+      description: Specifies if the secrets engine is a local mount only. Local mounts
+        are not replicated nor (if a secondary) removed by replication. Supported
+        only in Vault Enterprise.
+    - name: seal_wrap
+      description: Enable seal wrapping for the mount. Supported only in Vault Enterprise.
+    description: Enables a new secrets engine at the given path.
   dockerimage: blob
   runonce: false
-releaseNotes: "-"
