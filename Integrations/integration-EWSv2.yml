@@ -1765,7 +1765,6 @@ script:
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
         in the mailbox.
-      defaultValue: Inbox
     - name: limit
       description: Maximum number of results.
       defaultValue: "100"
@@ -2208,3 +2207,4 @@ script:
 releaseNotes: "Improved error messages."
 tests:
   - pyEWS_Test
+  - 'EWS search-mailbox test'
