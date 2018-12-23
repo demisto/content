@@ -681,9 +681,8 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB test",
-            "timeout": 300
-        }
+            "playbookID": "AbuseIPDB test"
+        },
         {
             "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
