@@ -1511,11 +1511,11 @@ script:
             e.message = str(e.message)
 
         if isinstance(e, ConnectionError):
-            error_message_simple = "Could not connect to the server.\nVerify that the Hostname or IP address is entered correctly."
+            error_message_simple = "Could not connect to the server.\nVerify that the Hostname or IP address is correct.\n\nAdditional information: {}".format(e.message)
         elif exchangelib.__version__ == "1.12.0":
             from exchangelib.errors import MalformedResponseError
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-                error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is entered correctly"
+                error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
