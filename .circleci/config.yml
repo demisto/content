@@ -116,9 +116,7 @@ jobs:
 
 workflows:
   version: 2
-  commit-workflow:
-    environment:
-      IS_NIGHTLY: false
+  commit:
     jobs:
       - content_build
   nightly:
@@ -129,7 +127,5 @@ workflows:
             branches:
               only:
                 - master
-    environment:
-      IS_NIGHTLY: true
     jobs:
       - content_build
