@@ -32,5 +32,6 @@
     "fieldCalcScript": "", 
     "selectValues": [], 
     "validationRegex": "", 
-    "sla": 7200
+    "sla": 7200,
+    "releaseNotes": "Added Remediation SLA field"
   }
