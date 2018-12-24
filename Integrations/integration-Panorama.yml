@@ -27,16 +27,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API Key
-  name: key
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: Port
   name: port
   defaultvalue: ""
   type: 0
   required: false
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -56,16 +56,6 @@ configuration:
   name: vsys
   defaultvalue: ""
   type: 0
-  required: false
-- display: Commit timeout in seconds
-  name: commit_timeout
-  defaultvalue: "300"
-  type: 0
-  required: true
-- display: Commit by default every command to the instance. Default is False.
-  name: default_commit
-  defaultvalue: ""
-  type: 8
   required: false
 script:
   script: |-
@@ -113,9 +103,6 @@ script:
     else:
         XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
-    COMMIT_TIMEOUT = demisto.params().get('commit_timeout')
-    COMMIT_BY_DEFAULT = demisto.params().get('default_commit')
-
     # Security rule arguments for output handling
     SECURITY_RULE_ARGS = {
         'rulename': 'Name',
@@ -145,6 +132,7 @@ script:
             params=params,
             files=files
         )
+
         if result.status_code < 200 or result.status_code >= 300:
             return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
@@ -212,7 +200,7 @@ script:
                     fromm = None, to = None, disable_server_response_inspection = None,
                     description = None, target = None):
 
-        rulename = rulename if rulename else uuid.uuid4()
+        rulename = rulename if rulename else ('demisto-' + uuid.uuid4()[:8])
         params = {
             'type': 'config',
             'action': api_action,
@@ -280,38 +268,6 @@ script:
             'HumanReadable': 'Command was executed successfully',
         })
 
-    def panorama_commit():
-        ''' Commit '''
-        params = {
-            'type': 'commit',
-            'cmd': '<commit></commit>',
-            'key': API_KEY
-        }
-
-        # default commit timeout is 10s
-        timeout = int(COMMIT_TIMEOUT)
-
-        while timeout > 0:
-            result = http_request(
-                URL,
-                'POST',
-                params = params
-            )
-
-            if ('result' not in result['response']):
-                # if no result than nothing left to commit. thus commit was successful.
-                break
-            # 2s between each commit
-            time.sleep(2)
-            timeout = timeout - 2
-
-        if timeout <= 0:
-            # configuration wasn't fully commited. low chances that commit time > timeout.
-            return_error('Commit failed. Please check that the configuration is valid.')
-        # 2s between commands
-        time.sleep(2)
-
-
     def panorama_commit_command():
         ''' Commit and show message in warroom '''
         params = {
@@ -325,19 +281,63 @@ script:
             params = params
         )
         if 'result' in result['response']:
-            if 'dir-listing' not in result['response']['result']:
-                return_error('Commit failed. Please check that the configuration is valid.')
-        else:
+            # commit has been given a jobid
+            commit_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
             demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['text'],
-                'HumanReadable': 'Commit was successful',
-            })
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Commit Status:',commit_output, ['JobID', 'Status'], None, True),
+            'EntryContext': {"Panorama.Commit(val.jobID == obj.jobID)": commit_output}
+        })
+        else:
+            # no changes to commit
+            demisto.results(result['response']['msg'])
 
-    def panorama_push_to_device_group():
+    def panorama_commit_status_command():
+        ''' Check jobID of commit status '''
+        params = {
+            'type': 'op',
+            'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+        )
+        if (result['response']['result']['job']['type'] != 'Commit'):
+            return_error('JobID given is not of a commit')
+
+        commit_status_output = {'JobID' : result['response']['result']['job']['id']}
+        if (result['response']['result']['job']['status'] == 'FIN'):
+            if (result['response']['result']['job']['result'] == 'OK'):
+                commit_status_output['Status'] = 'Completed'
+            else:
+            # result['response']['job']['result'] == 'FAIL'
+                commit_status_output['Status'] = 'Failed'
+            commit_status_output['Details'] = result['response']['result']['job']['details']['line']
+
+        if (result['response']['result']['job']['status'] == 'PEND'):
+            push_status_output['Status'] = 'Pending'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Commit Status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
+        })
+
+    def panorama_push_to_device_group_command():
         ''' Push Panorama configuration and show message in warroom '''
+        if not DEVICE_GROUP:
+            return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
         params = {
             'type': 'commit',
             'action': 'all',
@@ -349,16 +349,59 @@ script:
             'POST',
             params = params
         )
+        if 'result' in result['response']:
+            # commit has been given a jobid
+            push_output = {
+                'DeviceGroup': DEVICE_GROUP,
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+            demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Device Group Status:',push_output, ['JobID', 'Status'], None, True),
+            'EntryContext': {"Panorama.Push(val.jobID == obj.jobID)": push_output}
+        })
+        else:
+            # no changes to commit
+            demisto.results(result['response']['msg']['line'])
+
+    def panorama_push_status_command():
+        ''' Check jobID of push status '''
+        params = {
+            'type': 'op',
+            'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+        )
+        if (result['response']['result']['job']['type'] != 'CommitAll'):
+            return_error('JobID given is not of a Push')
+
+        push_status_output = {'JobID' : result['response']['result']['job']['id']}
+        if (result['response']['result']['job']['status'] == 'FIN'):
+            if (result['response']['result']['job']['result'] == 'OK'):
+                push_status_output['Status'] = 'Completed'
+            else:
+            # result['response']['job']['result'] == 'FAIL'
+                push_status_output['Status'] = 'Failed'
+            push_status_output['Details'] = result['response']['result']['job']['devices']['entry']['status']
+
+        if (result['response']['result']['job']['status'] == 'PEND'):
+            push_status_output['Status'] = 'Pending'
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': result,
-            'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Panorama configuration was pushed to the Device Group successfully',
-            'EntryContext': {
-              "Panorama(val.DeviceGroup == obj.DeviceGroup)": {'DeviceGroup': DEVICE_GROUP}
-            }
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Commit Status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
         })
 
     ''' Addresses Commands '''
@@ -1259,11 +1302,12 @@ script:
             'key': API_KEY,
             'where': demisto.args()['where'],
         }
+
         if DEVICE_GROUP:
             if 'pre_post' not in demisto.args():
                 return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
             else:
-                params['xpath'] = XPATH_SECURITY_RULES + demisto.args['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
@@ -1287,7 +1331,7 @@ script:
     ''' Security Rule Configuration '''
     def panorama_create_rule_command():
         ''' Create a security rule '''
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
         source =  demisto.args().get('source')
         destination =  demisto.args().get('destination')
         negate_source = demisto.args().get('negate_source')
@@ -1356,7 +1400,7 @@ script:
             if 'pre_post' not in demisto.args():
                 return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
             else:
-                params['xpath'] = XPATH_SECURITY_RULES + demisto.args['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
         params['xpath'] = params['xpath'] + '/' + element_to_change
@@ -1393,7 +1437,7 @@ script:
             if 'pre_post' not in demisto.args():
                 return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
             else:
-                params['xpath'] = XPATH_SECURITY_RULES + demisto.args['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
@@ -1416,7 +1460,7 @@ script:
         object_type = demisto.args()['object_type']
         object_value = demisto.args()['object_value']
         direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
         block_destination = False if direction == 'from' else True
         block_source =  False if direction == 'to' else True
         target = demisto.args().get('target')
@@ -1561,15 +1605,18 @@ script:
 
         elif demisto.command() == 'panorama':
             panorama_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-commit':
-            panorama_commit()
             panorama_commit_command()
 
+        elif demisto.command() == 'panorama-commit-status':
+            panorama_commit_status_command()
+
         elif demisto.command() == 'panorama-push-to-device-group':
-            panorama_push_to_device_group()
+            panorama_push_to_device_group_command()
+
+        elif demisto.command() == 'panorama-push-status':
+            panorama_push_status_command()
 
         # Addresses commands
         elif demisto.command() == 'panorama-list-addresses':
@@ -1580,13 +1627,9 @@ script:
 
         elif demisto.command() == 'panorama-create-address':
             panorama_create_address_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-delete-address':
             panorama_delete_address_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         # Address groups commands
         elif demisto.command() == 'panorama-list-address-groups':
@@ -1597,18 +1640,12 @@ script:
 
         elif demisto.command() == 'panorama-create-address-group':
             panorama_create_address_group_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-delete-address-group':
             panorama_delete_address_group_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-edit-address-group':
             panorama_edit_address_group_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         # Custom Url Category commands
         elif demisto.command() == 'panorama-custom-get-url-category':
@@ -1616,22 +1653,15 @@ script:
 
         elif demisto.command() == 'panorama-create-custom-url-category':
             panorama_create_custom_url_category_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-delete-custom-url-category':
             panorama_delete_custom_url_category_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-edit-custom-url-category':
             if demisto.args()['action'] == 'remove':
                 panorama_custom_url_category_remove_sites_command()
             else:
                 panorama_custom_url_category_add_sites_command()
-
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         # URL Filtering capabilities
         elif demisto.command() == 'panorama-get-url-category':
@@ -1642,52 +1672,36 @@ script:
 
         elif demisto.command() == 'panorama-create-url-filter':
             panorama_create_url_filter_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-edit-url-filter':
             panorama_edit_url_filter_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-delete-url-filter':
             panorama_delete_url_filter_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         # Security Rules Managing
         elif demisto.command() == 'panorama-move-rule':
             panorama_move_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         # Security Rules Configuration
         elif demisto.command() == 'panorama-create-rule':
             panorama_create_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-custom-block-rule':
             panorama_custom_block_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-edit-rule':
             panorama_edit_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
         elif demisto.command() == 'panorama-delete-rule':
             panorama_delete_rule_command()
-            if COMMIT_BY_DEFAULT:
-                panorama_commit()
 
     # ------------------------------------------------------------------------ #
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
 
-        elif demisto.command() == 'panorama-get-pcaps':
-            panorama_get_pcaps_command()
+        # elif demisto.command() == 'panorama-get-pcaps':
+        #     panorama_get_pcaps_command()
 
     except Exception, e:
         LOG(e.message)
@@ -1761,14 +1775,27 @@ script:
     description: Run any command supported in the API in Palo Alto Firewall or Panorama
   - name: panorama-commit
     arguments: []
-    description: Commit Palo Alto Firewall or Panorama. Commiting Panorama will not
-      push the configuration to the Firewalls, this requires panorama-push-to-device-group
-      command
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+    description: Commit Palo Alto Firewall or Panorama, Does not validate if commit
+      was successful. Commiting Panorama will not push the configuration to the Firewalls,
+      this requires panorama-push-to-device-group command
   - name: panorama-push-to-device-group
     arguments: []
     outputs:
-    - contextPath: Panorama.DeviceGroup
-      description: Device group the policy was pushed into
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status
       type: string
     description: Push rules from panorama to Palo Alto configured device group
   - name: panorama-list-addresses
@@ -2033,11 +2060,11 @@ script:
       isArray: true
     - name: action
       required: true
-      description: Add or Remove site
       auto: PREDEFINED
       predefined:
       - add
       - remove
+      description: Add or Remove site
       isArray: true
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -2238,7 +2265,7 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-      description: Only for Panorama instance, rule location
+      description: Pre rule or Post rule, Only for Panorama instance
     - name: target
       description: Only for Panorama instance. Specify a target Firewall to the rule
     outputs:
@@ -2306,7 +2333,7 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-      description: Only for Panorama instance
+      description: Pre rule or Post rule, Only for Panorama instance
     - name: target
       description: Only for Panorama instance. Specify a target Firewall to the rule
     outputs:
@@ -2349,7 +2376,7 @@ script:
       - post-rulebase
       description: Rule location. Mandatory for a Panorama instance
     outputs:
-    - contextPath: Panorama.Rule.Name
+    - contextPath: Panorama.SecurityRule.Name
       description: Rule name
       type: string
     description: Move a policy rule in Palo Alto Firewall or Panorama
@@ -2380,7 +2407,7 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-      description: Only for Panorama instance
+      description: Pre rule or Post rule, Only for Panorama instance
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
@@ -2422,6 +2449,12 @@ script:
     - name: rulename
       required: true
       description: Rule name
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Pre rule or Post rule, Only for Panorama instance
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
@@ -2454,34 +2487,39 @@ script:
       type: string
     description: Get a list of pre-defined applications from Palo Alto Firewall or
       Panorama
-  - name: panorama-get-pcaps
+  - name: panorama-commit-status
     arguments:
-    - name: pcapType
+    - name: job_id
       required: true
-      auto: PREDEFINED
-      predefined:
-      - application-pcap
-      - filter-pcap
-      - dlp-pcap
-      - threat-pcap
-      description: Type of Packet Capture
-    - name: from
-      description: '"From" value for the rule'
-    - name: to
-      description: '"To" value for the rule'
-    - name: serialNo
-      description: Serial number for the request. For further information, see the
-        Panorama XML API Documentation.
-    - name: searchTime
-      description: Search time for the request. For further information, see the Panorama
-        XML API Documentation.
-    - name: pcapID
-      description: ' ID of the Pcap for the request. For further information, see
-        the Panorama XML API Documentation.'
-    - name: password
-      description: Password for Panorama
-    description: Get pcaps from Palo Alto Firewall or Panorama
+      description: Job ID to be checked
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+    - contextPath: Panorama.Commit.Details
+      description: Job ID details
+      type: string
+    description: Get commit status
+  - name: panorama-push-status
+    arguments:
+    - name: job_id
+      required: true
+      description: Job ID to be checked
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+    - contextPath: Panorama.Push.Status
+      description: Push status
+    - contextPath: Panorama.Push.Details
+      description: Job ID details
+    description: Get push status
   runonce: false
-releaseNotes: "Add support for Firewall and Panorama instances. object handling: Address, Address-groups, Custom URL Groups, URL Filtering and Security Rule managing."
+releaseNotes:  "new integration"
 tests:
 - palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
