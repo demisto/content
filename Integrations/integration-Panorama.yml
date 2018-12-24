@@ -77,17 +77,17 @@ script:
         del os.environ["http_proxy"]
         del os.environ["https_proxy"]
 
+
     ''' GLOBALS '''
     URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
     API_KEY = str(demisto.params()['key']);
     USE_SSL = not demisto.params()['insecure']
-    #HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 
     # determine a vsys or a device-group
     VSYS = demisto.params().get('vsys')
     DEVICE_GROUP = demisto.params().get('device_group')
     if DEVICE_GROUP and VSYS:
-            return_error('Please configure a separate instance for Palo Alto Firewall Palo Alto Panorama.\n Configure a vsys for the Firewall or a device group for the Panorama')
+        return_error('Can not configure both vsys and Device Group. Set vsys for Firewall, set Device Group for Panorama')
 
     # setting security xpath relevant to FW or panorama managment
     XPATH_SECURITY_RULES = None
@@ -120,6 +120,7 @@ script:
         'target': 'Target'
     }
 
+
     ''' HELPERS '''
     def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
         ''' Makes an API call with the given arguments '''
@@ -147,6 +148,7 @@ script:
 
         return jresult
 
+
     def add_argument_list(arg, field_name, member):
         member_stringify_list = ''
         if arg:
@@ -161,6 +163,7 @@ script:
         else:
             return ''
 
+
     def add_argument(arg, field_name, member):
         if arg:
             if member:
@@ -169,6 +172,7 @@ script:
                 return '<' + field_name + '>' + arg + '</' + field_name + '>'
         else:
             return ''
+
 
     def add_argument_open(arg, field_name, member):
         if arg:
@@ -182,17 +186,20 @@ script:
             else:
                 return '<' + field_name + '>any</' + field_name + '>'
 
+
     def add_argument_yes_no(arg, field_name):
         if (arg and arg == 'No'):
             return '<' + field_name + '>' + 'no' + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
 
+
     def add_argument_target(arg, field_name):
         if arg:
             return '<' + field_name + '>' +  '<devices>' + '<entry name=\"' + arg + '\"/>' +'</devices>' + '</' + field_name + '>'
         else:
             return ''
+
 
     def prepare_security_rule_params(api_action = None, xpath = None, rulename = None, source = None, destination = None,
                     negate_source = None, negate_destination = None, action = None, service = None,
@@ -205,22 +212,21 @@ script:
             'type': 'config',
             'action': api_action,
             'key': API_KEY,
-            'element': add_argument_open(action, 'action', False) +
-                add_argument_target(target, 'target') +
-                add_argument_open(description, 'description', False) +
-                add_argument_open(source, 'source', True) +
-                add_argument_open(destination, 'destination', True) +
-                add_argument_open(application, 'application', True) +
-                add_argument_open(category, 'category', True) +
-                add_argument_open(source_user, 'source-user', True) +
-                # default from, to will always be any
-                add_argument_open(fromm, 'from', True) +
-                add_argument_open(to, 'to', True) +
-
-                add_argument_open(service, 'service', True) +
-                add_argument_yes_no(negate_source, 'negate-source') +
-                add_argument_yes_no(negate_destination, 'negate-destination') +
-                add_argument_yes_no(disable, 'disabled')
+            'element': add_argument_open(action, 'action', False)
+                    + add_argument_target(target, 'target')
+                    + add_argument_open(description, 'description', False)
+                    + add_argument_open(source, 'source', True)
+                    + add_argument_open(destination, 'destination', True)
+                    + add_argument_open(application, 'application', True)
+                    + add_argument_open(category, 'category', True)
+                    + add_argument_open(source_user, 'source-user', True)
+                    # default from, to will always be any
+                    + add_argument_open(fromm, 'from', True)
+                    + add_argument_open(to, 'to', True)
+                    + add_argument_open(service, 'service', True)
+                    + add_argument_yes_no(negate_source, 'negate-source')
+                    + add_argument_yes_no(negate_destination, 'negate-destination')
+                    + add_argument_yes_no(disable, 'disabled')
         }
         if DEVICE_GROUP:
             if 'pre_post' not in demisto.args():
@@ -231,6 +237,7 @@ script:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
         return params
+
 
     ''' FUNCTIONS'''
     def panorama_test():
@@ -247,6 +254,8 @@ script:
         )
         demisto.results('ok')
 
+
+    @logger
     def panorama_command():
         ''' Executes a command '''
         params = {}
@@ -268,8 +277,9 @@ script:
             'HumanReadable': 'Command was executed successfully',
         })
 
-    def panorama_commit_command():
-        ''' Commit and show message in warroom '''
+
+    @logger
+    def panorama_commit():
         params = {
             'type': 'commit',
             'cmd': '<commit></commit>',
@@ -280,6 +290,14 @@ script:
             'POST',
             params = params
         )
+
+        return result
+
+
+    def panorama_commit_command():
+        ''' Commit and show message in warroom '''
+        result = panorama_commit()
+
         if 'result' in result['response']:
             # commit has been given a jobid
             commit_output = {
@@ -292,14 +310,17 @@ script:
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Commit Status:',commit_output, ['JobID', 'Status'], None, True),
-            'EntryContext': {"Panorama.Commit(val.jobID == obj.jobID)": commit_output}
+            'EntryContext': {
+                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
+            }
         })
         else:
             # no changes to commit
             demisto.results(result['response']['msg'])
 
-    def panorama_commit_status_command():
-        ''' Check jobID of commit status '''
+
+    @logger
+    def panorama_commit_status():
         params = {
             'type': 'op',
             'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
@@ -310,6 +331,14 @@ script:
             'GET',
             params = params
         )
+
+        return result
+
+
+    def panorama_commit_status_command():
+        ''' Check jobID of commit status '''
+        result = panorama_commit_status()
+
         if (result['response']['result']['job']['type'] != 'Commit'):
             return_error('JobID given is not of a commit')
 
@@ -334,10 +363,9 @@ script:
             'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
         })
 
-    def panorama_push_to_device_group_command():
-        ''' Push Panorama configuration and show message in warroom '''
-        if not DEVICE_GROUP:
-            return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
+
+    @logger
+    def panorama_push_to_device_group():
         params = {
             'type': 'commit',
             'action': 'all',
@@ -349,6 +377,15 @@ script:
             'POST',
             params = params
         )
+
+        return result
+
+
+    def panorama_push_to_device_group_command():
+        ''' Push Panorama configuration and show message in warroom '''
+        if not DEVICE_GROUP:
+            return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
+
         if 'result' in result['response']:
             # commit has been given a jobid
             push_output = {
@@ -357,19 +394,22 @@ script:
                 'Status': 'Pending'
             }
             demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Push to Device Group Status:',push_output, ['JobID', 'Status'], None, True),
-            'EntryContext': {"Panorama.Push(val.jobID == obj.jobID)": push_output}
-        })
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Push to Device Group Status:',push_output, ['JobID', 'Status'], None, True),
+                'EntryContext': {
+                    "Panorama.Push(val.JobID == obj.JobID)": push_output
+                }
+            })
         else:
             # no changes to commit
             demisto.results(result['response']['msg']['line'])
 
-    def panorama_push_status_command():
-        ''' Check jobID of push status '''
+
+    @logger
+    def panorama_push_status():
         params = {
             'type': 'op',
             'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
@@ -380,6 +420,13 @@ script:
             'GET',
             params = params
         )
+
+        return result
+
+
+    def panorama_push_status_command():
+        ''' Check jobID of push status '''
+
         if (result['response']['result']['job']['type'] != 'CommitAll'):
             return_error('JobID given is not of a Push')
 
@@ -404,11 +451,11 @@ script:
             'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
         })
 
+
     ''' Addresses Commands '''
     def prettify_addresses_arr(addresses_arr):
         pretty_addresses_arr = []
-        for i in range (len(addresses_arr)):
-            address = addresses_arr[i]
+        for address in addresses_arr:
             pretty_address = {
                 'Name': address['@name'],
             }
@@ -425,10 +472,12 @@ script:
                 pretty_address['FQDN'] = address['fqdn']
 
             pretty_addresses_arr.append(pretty_address)
-        return pretty_addresses_arr;
 
-    def panorama_list_addresses_command():
-        ''' Get all addresses '''
+        return pretty_addresses_arr
+
+
+    @logger
+    def panorama_list_addresses():
         params = {
             'action': 'get',
             'type': 'config',
@@ -441,19 +490,25 @@ script:
             params = params,
         )
 
-        result = result['response']['result']
-        addresses_arr = result['entry']
+        return result['response']['result']['entry']
+
+
+    def panorama_list_addresses_command():
+        ''' Get all addresses '''
+        addresses_arr = panorama_list_addresses()
+        addresses_output = prettify_addresses_arr(addresses_arr)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': addresses_arr,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Addresses:', prettify_addresses_arr(addresses_arr), ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
+            'HumanReadable': tableToMarkdown('Addresses:', addresses_output, ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
             'EntryContext': {
-                  "Panorama.Addresses(val.Name == obj.Name)": prettify_addresses_arr(addresses_arr)
+                  "Panorama.Addresses(val.Name == obj.Name)": addresses_output
             }
         })
+
 
     def prettify_address(address):
         pretty_address = {
@@ -473,12 +528,13 @@ script:
 
         return pretty_address
 
-    def panorama_get_address_command():
-        ''' Get an address '''
+
+    @logger
+    def panorama_get_address(address_name):
         params = {
             'action': 'show',
             'type': 'config',
-            'xpath': XPATH_OBJECTS + "address/entry[@name='" + demisto.args()['name'] + "']",
+            'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
             'key': API_KEY
         }
         result = http_request(
@@ -487,32 +543,30 @@ script:
             params = params,
         )
 
-        result = result['response']['result']['entry']
+        return result['response']['result']['entry']
+
+
+    def panorama_get_address_command():
+        ''' Get an address '''
+        address_name = demisto.args()['name']
+
+        address = panorama_get_address(address_name)
+        address_output = prettify_address(result)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': address,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Address:', prettify_address(result), ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
+            'HumanReadable': tableToMarkdown('Address:', address_output, ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
             'EntryContext': {
-                  "Panorama.Addresses(val.Name == obj.Name)": prettify_address(result)
+                  "Panorama.Addresses(val.Name == obj.Name)": address_output
             }
         })
 
-    def panorama_create_address_command():
-        ''' Create an address object '''
-        address_name = demisto.args()['name']
-        description = demisto.args().get('description')
 
-        fqdn = demisto.args().get('fqdn')
-        ip_netmask = demisto.args().get('ip_netmask')
-        ip_range = demisto.args().get('ip_range')
-        if (not fqdn and not ip_netmask and not ip_range):
-            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
-        if ((fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range)):
-            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
-
+    @logger
+    def panorama_create_address(address_name, fqdn = None, ip_netmask = None, ip_range = None, description = None):
         params = {
             'action': 'set',
             'type': 'config',
@@ -525,6 +579,24 @@ script:
             'POST',
             params = params,
         )
+
+
+    def panorama_create_address_command():
+        ''' Create an address object '''
+        address_name = demisto.args()['name']
+        description = demisto.args().get('description')
+
+        fqdn = demisto.args().get('fqdn')
+        ip_netmask = demisto.args().get('ip_netmask')
+        ip_range = demisto.args().get('ip_range')
+
+        if (not fqdn and not ip_netmask and not ip_range):
+            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
+
+        if ((fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range)):
+            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
+
+        address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description)
 
         address_output = {'Name': address_name}
         if fqdn:
@@ -539,7 +611,7 @@ script:
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': address,
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Address was added successfully',
             'EntryContext': {
@@ -547,9 +619,9 @@ script:
             }
         })
 
-    def panorama_delete_address_command():
-        ''' Delete an address '''
-        address_name = demisto.args()['name']
+
+    @logger
+    def panorama_delete_address(address_name):
         params = {
             'action': 'delete',
             'type': 'config',
@@ -562,12 +634,21 @@ script:
             'POST',
             params = params,
         )
+
+        return result
+
+
+    def panorama_delete_address_command():
+        ''' Delete an address '''
+        address_name = demisto.args()['name']
+
+        address = panorama_delete_address(address_name)
         address_output = {'Name': address_name}
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': address,
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Address was deleted successfully',
             'EntryContext': {
@@ -575,11 +656,11 @@ script:
             }
         })
 
+
     ''' Address Group Commands '''
     def prettify_address_groups_arr(address_groups_arr):
         pretty_address_groups_arr = []
-        for i in range (len(address_groups_arr)):
-            address_group = address_groups_arr[i]
+        for address_group in address_groups_arr:
             pretty_address_group = {
                 'Name': address_group['@name'],
                 'Type': 'static' if 'static'in address_group else 'dynamic',
@@ -593,11 +674,14 @@ script:
                     pretty_address_group['Addresses'] = address_group['static']['member']
             else:
                 pretty_address_group['Match'] = address_group['dynamic']['filter']
+
             pretty_address_groups_arr.append(pretty_address_group)
+
         return pretty_address_groups_arr;
 
-    def panorama_list_address_groups_command():
-        ''' Get all address groups '''
+
+    @logger
+    def panorama_list_address_groups():
         params = {
             'action': 'get',
             'type': 'config',
@@ -610,18 +694,25 @@ script:
             params = params,
         )
 
-        result = result['response']['result']
-        address_groups_arr = result['entry']
+        return result['response']['result']['entry']
+
+
+    def panorama_list_address_groups_command():
+        ''' Get all address groups '''
+        address_groups_arr = panorama_list_address_groups()
+        address_groups_output = prettify_address_groups_arr(address_groups_arr)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': address_groups_arr,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Address groups:', prettify_address_groups_arr(address_groups_arr), ['Name', 'Type', 'Addresses', 'Match', 'Description'], None, True),
+            'HumanReadable': tableToMarkdown('Address groups:', address_groups_output, ['Name', 'Type', 'Addresses', 'Match', 'Description'], None, True),
             'EntryContext': {
-                  "Panorama.AddressGroups(val.Name == obj.Name)": prettify_address_groups_arr(address_groups_arr)
+                  "Panorama.AddressGroups(val.Name == obj.Name)": address_groups_output
             }
         })
+
 
     def prettify_address_group(address_group):
         pretty_address_group = {
@@ -639,6 +730,8 @@ script:
 
         return pretty_address_group
 
+
+    @logger
     def panorama_get_address_group(address_group_name):
         params = {
             'action': 'show',
@@ -653,6 +746,7 @@ script:
         )
 
         return result['response']['result']['entry']
+
 
     def panorama_get_address_group_command():
         ''' Get an address group '''
@@ -671,6 +765,8 @@ script:
             }
         })
 
+
+    @logger
     def panorama_create_static_address_group(address_group_name, addresses, description = None):
         params = {
             'action': 'set',
@@ -686,6 +782,7 @@ script:
         )
         return result
 
+
     def panorama_create_dynamic_address_group(address_group_name, match, description = None):
         params = {
             'action': 'set',
@@ -700,6 +797,7 @@ script:
             params = params,
         )
         return result
+
 
     def panorama_create_address_group_command():
         ''' Create an address group '''
@@ -744,10 +842,9 @@ script:
             }
         })
 
-    def panorama_delete_address_group_command():
-        ''' Delete an address group '''
-        address_group_name = demisto.args()['name']
 
+    @logger
+    def panorama_delete_address_group(address_group_name):
         params = {
             'action': 'delete',
             'type': 'config',
@@ -760,18 +857,28 @@ script:
             'POST',
             params = params,
         )
+
+        return result
+
+
+    def panorama_delete_address_group_command():
+        ''' Delete an address group '''
+        address_group_name = demisto.args()['name']
+
+        address_group = panorama_delete_address_group(address_group_name)
         address_group_output = {'Name': address_group_name}
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': address_group,
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Address group was deleted successfully',
             'EntryContext': {
                   "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
             }
         })
+
 
     def panorama_edit_address_group_command():
         ''' Edit an address group '''
@@ -842,6 +949,7 @@ script:
             }
         })
 
+
     ''' Custom URL Category Commands '''
     def prettify_custom_url_category(custom_url_category):
         pretty_custom_url_category = {
@@ -856,6 +964,8 @@ script:
 
         return pretty_custom_url_category
 
+
+    @logger
     def panorama_get_custom_url_category(name):
         params = {
             'action': 'get',
@@ -871,22 +981,27 @@ script:
 
         return result['response']['result']['entry']
 
+
     def panorama_get_custom_url_category_command():
         ''' Get a custom url category'''
         name = demisto.args()['name']
-        result = panorama_get_custom_url_category(name)
+
+        custom_url_category = panorama_get_custom_url_category(name)
+        custom_url_category_output = prettify_custom_url_category(result)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': custom_url_category,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Custom URL Category:', prettify_custom_url_category(result), ['Name', 'Sites', 'Description'], None, True),
+            'HumanReadable': tableToMarkdown('Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
             'EntryContext': {
-                  "Panorama.CustomURLCategory(val.Name == obj.Name)": prettify_custom_url_category(result)
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
             }
         })
 
+
+    @logger
     def panorama_create_custom_url_category(custom_url_category_name, sites = None, description = None):
         params = {
             'action': 'set',
@@ -909,17 +1024,19 @@ script:
 
         return result, custom_url_category_output
 
+
     def panorama_create_custom_url_category_command():
         ''' Create a custom URL category '''
         custom_url_category_name = demisto.args()['name']
         sites = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else None
         description = demisto.args().get('description')
-        result, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name, sites, description)
+
+        custom_url_category, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name, sites, description)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': custom_url_category,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Created Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
             'EntryContext': {
@@ -927,6 +1044,8 @@ script:
             }
         })
 
+
+    @logger
     def panorama_delete_custom_url_category(custom_url_category_name):
         params = {
             'action': 'delete',
@@ -940,14 +1059,17 @@ script:
             'POST',
             params = params,
         )
+
         return result
+
 
     def panorama_delete_custom_url_category_command():
         ''' Delete a custom url category '''
         custom_url_category_name = demisto.args()['name']
-        result = panorama_delete_custom_url_category(custom_url_category_name)
 
+        result = panorama_delete_custom_url_category(custom_url_category_name)
         custom_url_category_output = {'Name': custom_url_category_name}
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -959,6 +1081,7 @@ script:
             }
         })
 
+    @logger
     def panorama_edit_custom_url_category(custom_url_category_name, sites, description = None):
         params = {
             'action': 'edit',
@@ -980,6 +1103,7 @@ script:
             custom_url_category_output['Description'] = description
 
         return result, custom_url_category_output
+
 
     def panorama_custom_url_category_add_sites_command():
         ''' Add sites to a configured custom url category'''
@@ -1038,7 +1162,9 @@ script:
             }
         })
 
+
     ''' URL Filtering '''
+    @logger
     def panorama_get_url_category(url):
         params = {
             'action': 'show',
@@ -1052,28 +1178,32 @@ script:
             params = params,
         )
 
-        url_category_output = {'URL': url}
-        return result, url_category_output
+        s = result['response']['result'].splitlines()[1]
+        return s.split(' ')[1]
+
 
     def panorama_get_url_category_command():
         ''' Get the url category from Palo Alto URL Filtering '''
         url = demisto.args()['url']
-        result, url_category_output = panorama_get_url_category(url)
 
-        s = result['response']['result'].splitlines()[1]
-        category = s.split(' ')[1]
-        url_category_output['Category'] = category
+        category = panorama_get_url_category(url)
+
+        url_category_output = {
+            'URL': url,
+            'Category': category
+        }
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': category,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'URL: ' + url + ' category is ' + category,
             'EntryContext': {
-                  "Panorama.URLFiltering(val.URL == obj.URL)": url_category_output
+                  "Panorama.URLFilter(val.URL == obj.URL)": url_category_output
             }
         })
+
 
     def prettify_get_url_filter(url_filter):
         pretty_url_filter = {'Name': url_filter['@name']}
@@ -1114,6 +1244,7 @@ script:
 
         return pretty_url_filter
 
+    @logger
     def panorama_get_url_filter(name):
         params = {
             'action': 'get',
@@ -1129,30 +1260,42 @@ script:
 
         return result['response']['result']['entry']
 
+
     def panorama_get_url_filter_command():
         ''' Get a URL Filter '''
         name = demisto.args()['name']
-        result = panorama_get_url_filter(name)
-        md = tableToMarkdown('URL Filter:', prettify_get_url_filter(result), ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'], None, True)
+
+        url_filter = panorama_get_url_filter(name)
+
+        url_filter_output = prettify_get_url_filter(url_filter)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': url_filter,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': tableToMarkdown('URL Filter:', url_filter_output, ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'], None, True),
             'EntryContext': {
-                  "Panorama.URLFilter(val.Name == obj.Name)": prettify_get_url_filter(result)
+                  "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
             }
         })
 
-    def panorama_create_url_filter(url_filter_name, action, url_category_list,
-                                override_allow_list = None, override_block_list = None, description = None):
+
+    @logger
+    def panorama_create_url_filter(
+        url_filter_name, action,
+        url_category_list,
+        override_allow_list = None,
+        override_block_list = None,
+        description = None):
+
+        element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list', True) + add_argument_list(override_block_list, 'block-list', True) + add_argument(description, 'description', False) + "<action>block</action>"
+
         params = {
             'action': 'set',
             'type': 'config',
             'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
-            'element': add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list', True) + add_argument_list(override_block_list, 'block-list', True) + add_argument(description, 'description', False) + "<action>block</action>",
+            'element': element,
             'key': API_KEY
         }
         result = http_request(
@@ -1161,6 +1304,7 @@ script:
             params = params,
         )
         return result
+
 
     def panorama_create_url_filter_command():
         ''' Create a URL Filter '''
@@ -1198,10 +1342,13 @@ script:
             }
         })
 
+    @logger
     def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element = None):
+
         url_filter_prev = panorama_get_url_filter(url_filter_name)
         if '@dirtyId' in url_filter_prev:
             return_error('Please commit the instance prior to editting the URL Filter')
+
         url_filter_output = {'Name': url_filter_name}
         params = {
             'action': 'edit',
@@ -1242,6 +1389,7 @@ script:
 
         return result, url_filter_output
 
+
     def panorama_edit_url_filter_command():
         ''' Edit a URL Filter '''
         url_filter_name = demisto.args()['name']
@@ -1262,6 +1410,8 @@ script:
             }
         })
 
+
+    @logger
     def panorama_delete_url_filter(url_filter_name):
         params = {
             'action': 'delete',
@@ -1278,6 +1428,7 @@ script:
 
         return result
 
+
     def panorama_delete_url_filter_command():
         ''' Delete a custom url category '''
         url_filter_name = demisto.args()['name']
@@ -1293,6 +1444,7 @@ script:
 
 
     ''' Security Rules Managing '''
+    @logger
     def panorama_move_rule_command():
         ''' Move a security rule'''
         rulename = demisto.args()['rulename']
@@ -1305,7 +1457,7 @@ script:
 
         if DEVICE_GROUP:
             if 'pre_post' not in demisto.args():
-                return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
+                return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
             else:
                 params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
@@ -1328,7 +1480,9 @@ script:
             }
         })
 
+
     ''' Security Rule Configuration '''
+    @logger
     def panorama_create_rule_command():
         ''' Create a security rule '''
         rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
@@ -1371,6 +1525,8 @@ script:
             }
         })
 
+
+    @logger
     def panorama_edit_rule_command():
         ''' Edit a security rule '''
         rulename =  demisto.args()['rulename']
@@ -1403,6 +1559,7 @@ script:
                 params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
         params['xpath'] = params['xpath'] + '/' + element_to_change
 
         result = http_request(
@@ -1424,6 +1581,8 @@ script:
             }
         })
 
+
+    @logger
     def panorama_delete_rule_command():
         ''' Delete a security rule '''
         rulename =  demisto.args()['rulename']
@@ -1455,6 +1614,8 @@ script:
             'HumanReadable': 'Rule deleted successfully',
         })
 
+
+    @logger
     def panorama_custom_block_rule_command():
         ''' Block an object in Panorama '''
         object_type = demisto.args()['object_type']
@@ -1512,6 +1673,7 @@ script:
             }
         })
 
+
     # ------------------------------------------------------------------------ #
     def prettify_applications_arr(applications_arr):
         pretty_application_arr = []
@@ -1527,8 +1689,9 @@ script:
             })
         return pretty_application_arr;
 
-    def panorama_list_applications_command():
-        ''' List all applications '''
+
+    @logger
+    def panorama_list_applications():
         params = {
             'type': 'op',
             'command': '<show><objects></objects></show>',
@@ -1539,21 +1702,28 @@ script:
             'POST',
             params = params
         )
+        return result['response']['result']['config']['shared']['content-preview']['application']['entry']
 
-        applications_arr = result['response']['result']['config']['shared']['content-preview']['application']['entry']
-        md = tableToMarkdown('Applications', prettify_applications_arr(applications_arr), ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description'])
+
+    def panorama_list_applications_command():
+        ''' List all applications '''
+        applications_arr = panorama_list_applications()
+
+        applications_arr_output = prettify_applications_arr(applications_arr)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': applications_arr,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': tableToMarkdown('Applications', applications_arr_output, ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']),
             'EntryContext': {
-                  "Panorama.Applications(val.Id == obj.Id)": prettify_applications_arr(applications_arr)
+                  "Panorama.Applications(val.Id == obj.Id)": applications_arr_output
             }
         })
 
+
+    @logger
     def panorama_get_pcaps_command():
         ''' Get pcaps '''
         params = {
@@ -2519,7 +2689,7 @@ script:
       description: Job ID details
     description: Get push status
   runonce: false
-releaseNotes:  "new integration"
+releaseNotes: "Add support for Firewall and Panorama instances. object handling: Address, Address-groups, Custom URL Groups, URL Filtering and Security Rule managing."
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
