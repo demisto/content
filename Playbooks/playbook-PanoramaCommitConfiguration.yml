@@ -1,6 +1,7 @@
 id: PanoramaCommitConfiguration
 version: -1
 name: PanoramaCommitConfiguration
+fromversion: 3.0.0
 description: "Commit Palo Alto Firewall and Panorama Configuration.\nIf specified
   as Panorama, will also push the Policies to the specified Device Group in the instance "
 starttaskid: "0"
