@@ -4,6 +4,8 @@ import json
 import string
 import random
 import argparse
+from subprocess import Popen, PIPE
+
 import requests
 
 import demisto
@@ -86,10 +88,22 @@ def configure_proxy(c, proxy):
     c.req('POST', '/system/config', data)
 
 
+def start_proxy(c, playbook_id, record=False):
+    configure_proxy(c, 'localhost:9997')
+    action = '--server-replay' if not record else '--save-stream-file'
+    return Popen('mitmdump -p 9997 {} "{}.mock"'.format(action, playbook_id).split(), stdout=PIPE, stderr=PIPE)
+
+
+def stop_proxy(c, p):
+    configure_proxy(c, '')
+    p.terminate()
+
+
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
-    configure_proxy(c, 'localhost:9997')
+    # TODO: download mock file from repo
+    proxy_proc = start_proxy(c, playbook_id)
     # run test
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     # use results
@@ -97,10 +111,19 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
     else:
-        print 'Failed: %s failed' % (test_message,)
-        failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-    configure_proxy(c, '')
+        # bypass proxy
+        stop_proxy(c, proxy_proc)
+        proxy_proc = start_proxy(c, playbook_id, record=True)
+        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+        if succeed:
+            print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
+            # TODO: upload mock file to repo
+        else:
+            print 'Failed: %s failed' % (test_message,)
+            failed_playbooks.append(playbook_id)
+            notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+    stop_proxy(c, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
 

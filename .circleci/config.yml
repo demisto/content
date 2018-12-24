@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip install mitmproxy
+            apt-get -y install mitmproxy
             chmod +x ./Tests/scripts/*
             chmod +x ./Tests/lastest_server_build_scripts/*
       - add_ssh_keys:
