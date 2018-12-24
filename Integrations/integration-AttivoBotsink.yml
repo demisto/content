@@ -22,7 +22,7 @@ configuration:
   defaultvalue: "False"
   type: 8
   required: false
-- display: Minimum severity when fetching events (Very High, High, Medium)
+- display: Minimum severity when fetching events; "Very High", "High", "Medium"
   name: fetch_severity
   defaultvalue: High
   type: 0
@@ -37,8 +37,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Number of days to go back for the first fetch.  '0' means only get new
-    incidents.
+- display: Number of days to go back for the initial fetch. Use "0" to only retrieve new incidents.
   name: first_fetch
   defaultvalue: "0"
   type: 0
@@ -302,7 +301,7 @@ script:
                 'Target OS': event['details']['Target OS'],
                 'Timestamp': event['details']['Timestamp'],
             })
-            context.append(event['details'])
+            context.append({k.replace(' ', ''):v for k,v in event['details'].items()})
 
         headers = ['Attack Name', 'Severity', 'Timestamp', 'Target IP', 'Target OS']
         entry = {
@@ -331,22 +330,16 @@ script:
             severity_start = 7 # Medium
         severity_end = 15 # Very High
 
-        # TEST CODE
-        #demisto.setLastRun({'time': None})
-        #demisto.info("FIRST FETCH {}".format(FIRST_FETCH))
-        #TEST CODE
 
         # When run for the first time, get events from the specified number of days
         one_day = 24 * 60 * 60
         first_fetch_seconds = (int(time.time()) - (one_day * FIRST_FETCH)) * 1000
-        #last_run_time = demisto.getLastRun().get('time', first_fetch_seconds)
         last_run_time = demisto.getLastRun().get('time', None)
 
         if last_run_time is None or last_run_time == 0:
             last_run_time = first_fetch_seconds
 
         demisto.info("Attivo fetch-incidents: Last run time {}, severity {}:{}".format(last_run_time, FETCH_SEVERITY, severity_start))
-        #sys.exit()
 
         new_last_run = 0
         incidents = []
@@ -805,27 +798,27 @@ script:
       description: Is the user part of the Deception environment
       type: boolean
     - contextPath: Attivo.User.Groups
-      description: If the user is part of the Deception environment, it is a member
+      description: If the user is part of the Deception environment, the member is a member
         of these groups
-    description: Check whether a user is deceptive
+    description: Checks whether a user is deceptive
   - name: attivo-check-host
     arguments:
     - name: host
       required: true
       default: true
-      description: Host name or IP to validate
+      description: Hostname or IP to validate
     outputs:
     - contextPath: Attivo.Host.IsDeceptive
       description: Is the IP or hostname part of the Decpetion environment
       type: boolean
     - contextPath: Attivo.Host.IPAddress
-      description: IP Address of deceptive host
+      description: IP Address of the deceptive host
     - contextPath: Attivo.Host.Name
-      description: Hostname of deceptive host
+      description: Hostname of the deceptive host
     - contextPath: Attivo.Host.MACAddress
-      description: MAC Address of deceptive host
+      description: MAC address of the deceptive host
     - contextPath: Attivo.Host.VLAN
-      description: VLAN of deceptive host
+      description: VLAN of the deceptive host
     - contextPath: Attivo.Host.UserDefined
       description: Was this host manually defined
       type: boolean
@@ -836,7 +829,7 @@ script:
       description: Name of the ThreatDirect device projecting this deceptive host
     - contextPath: Attivo.Host.ThreatDirect.Type
       description: The type of ThreatDirect device projecting the deceptive host
-    description: Check whether a host is deceptive
+    description: Checks whether a host is deceptive
   - name: attivo-run-playbook
     arguments:
     - name: playbook_name
@@ -850,9 +843,9 @@ script:
       description: Complete status message
       type: string
     - contextPath: Attivo.Playbook.Status
-      description: Success or failure boolean
+      description: Was the playbook successful
       type: boolean
-    description: Run a pre-built playbook on the BOTsink appliance
+    description: Runs a prebuilt playbook on the BOTsink appliance
   - name: attivo-deploy-decoy
     arguments:
     - name: vulnerable_ip
@@ -860,21 +853,21 @@ script:
       description: Used to determine which subnet to deploy to
     - name: decoy_number
       default: true
-      description: The number of decoys to deploy
+      description: The number of decoys to deploy, default is "1"
       defaultValue: "1"
     outputs:
     - contextPath: Attivo.DeployDecoy.Status
-      description: Success or failure boolean
+      description: Was the network decoy successfully deployed
       type: boolean
     - contextPath: Attivo.DeployDecoy.Message
       description: Complete status message
       type: string
-    description: 'Deploy a new network decoy '
+    description: 'Deploys a new network decoy '
   - name: attivo-get-events
     arguments:
     - name: attacker_ip
       required: true
-      description: Source IP
+      description: Source IP address
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -884,31 +877,31 @@ script:
       - Low
       - VeryLow
       - SystemActivity
-      description: The minimum Attivo severity
+      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
       defaultValue: Medium
     - name: alerts_start_date
-      description: Timeframe to start looking for events. For example,  2018-12-10
+      description: Date and time to start looking for events, e.g.,  2018-12-10
         or 2018-12-10T13:59:05Z
     - name: alerts_end_date
-      description: Timeframe to stop looking for events. For example,  2018-12-10
+      description: Date and time to stop looking for events, e.g.,  2018-12-10
         or 2018-12-10T13:59:05Z
     outputs:
     - contextPath: Attivo.Events.Count
       description: Total number of events retrieved
       type: number
-    - contextPath: Attivo.Events.List.Attack Name
+    - contextPath: Attivo.Events.List.AttackName
       description: Short name of the attack
     - contextPath: Attivo.Events.List.Attack Phase
-      description: Kill chain phase of hte attack
+      description: Kill chain phase of the attack
       type: string
     - contextPath: Attivo.Events.List.Server
-      description: Internal name for target decoy
+      description: Internal name of the target decoy
       type: string
-    - contextPath: Attivo.Events.List.Targert
-      description: External name for target decoy
+    - contextPath: Attivo.Events.List.Target
+      description: Display name of the target decoy
       type: string
-    - contextPath: Attivo.Events.List.Target OS
-      description: Operating system of target decoy
+    - contextPath: Attivo.Events.List.TargetOS
+      description: Operating system of the target decoy
       type: string
     - contextPath: Attivo.Events.List.Attacker
       description: Attacker IP address
@@ -919,13 +912,13 @@ script:
     - contextPath: Attivo.Events.List.Timestamp
       description: Time of the attack
       type: string
-    - contextPath: Attivo.Events.List.Target IP
+    - contextPath: Attivo.Events.List.TargetIP
       description: IP address of the target decoy
       type: string
     - contextPath: Attivo.Events.List.Severity
       description: Attivo severity of the attack
       type: string
-    description: Retrieve events for a specific source IP
+    description: Retrieves events for a specified source IP
   - name: attivo-list-playbooks
     arguments: []
     description: List information about playbooks configured on the Attivo device
