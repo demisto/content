@@ -11,7 +11,7 @@ configuration:
   name: server
   defaultvalue: ""
   type: 0
-  required: false
+  required: true
 - display: Username
   name: credentials
   defaultvalue: ""
@@ -20,7 +20,7 @@ configuration:
 - display: Authentication token
   name: token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 - display: Trust any certificate (unsecure)
   name: unsecure
@@ -32,9 +32,14 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Secrets engines to fetch secrets from (e.g. KV, secret, All)
+- display: Fetches credentials
+  name: isFetchCredentials
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Comma separated secrets engines types to fetch secrets from
   name: engines
-  defaultvalue: All
+  defaultvalue: KV,Cubbyhole
   type: 0
   required: false
 script:
@@ -53,6 +58,8 @@ script:
         del os.environ['https_proxy']
 
 
+    ''' GLOBAL VARIABLES '''
+
     CREDENTIALS = demisto.params().get('credentials', {})
     USERNAME = CREDENTIALS.get('identifier')
     PASSWORD = CREDENTIALS.get('password')
@@ -68,6 +75,8 @@ script:
 
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/v1'
+
+    ''' HELPER FUNCTIONS '''
 
     def get_headers():
         headers =  {
@@ -96,7 +105,7 @@ script:
 
         return auth_res['auth']['client_token']
 
-    def send_request(path, method = 'get', body=None, params=None, headers=None):
+    def send_request(path, method='get', body=None, params=None, headers=None):
         body = body if body is not None else {}
         params = params if params is not None else {}
 
@@ -110,12 +119,13 @@ script:
             return res.json()
         return ''
 
+    ''' FUNCTIONS '''
 
     def list_secrets_engines_command():
         res = list_secrets_engines()
 
         if not res:
-            return 'No engines found'
+            return_error('No engines found')
 
         mapped_engines = [{
             'Path': k,
@@ -133,7 +143,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets Engines', mapped_engines, headers=headers, removeNull=True),
             'EntryContext': {
-                  'HashiCorp.Engine(val.Path===obj.Path)': createContext(mapped_engines)
+                  'HashiCorp.Engine(val.Path===obj.Path)': createContext(mapped_engines, removeNull=True)
             }
         })
 
@@ -142,10 +152,6 @@ script:
 
         return send_request(path)
 
-    #def get_secret_metadata_command():
-
-    #def get_secret_metadata(engine_path, secret_name):
-
 
     def list_secrets_command():
         engine = demisto.args()['engine']
@@ -153,7 +159,7 @@ script:
         res = list_secrets(engine)
 
         if not res or 'data' not in res:
-            return_error('Engine not found')
+            return_error('Secrets not found')
 
         mapped_secrets = [{
             'Name': k
@@ -169,6 +175,16 @@ script:
                   'HashiCorp.Secret(val.Name===obj.Name)': createContext(mapped_secrets)
             }
         })
+
+
+    def list_secrets(engine_path):
+        path = engine_path + '/metadata'
+
+        params = {
+            'list': 'true'
+        }
+
+        return send_request(path, 'get', params=params)
 
 
     def get_secret_metadata_command():
@@ -216,6 +232,12 @@ script:
             }
         })
 
+    def get_secret_metadata(engine_path, secret_path):
+        path = engine_path + '/metadata/' + secret_path
+
+        return send_request(path, 'get')
+
+
     def delete_secret_command():
         engine_path = demisto.args()['engine_path']
         secret_path = demisto.args()['secret_path']
@@ -227,10 +249,7 @@ script:
 
 
     def delete_secret(engine_path, secret_path, versions):
-        path = engine_path + '/delete/' + secret_path
-
-        if not isinstance(versions, list):
-            versions = [versions]
+        path = engine_path + 'delete/' + secret_path
 
         body = {
             'versions': versions
@@ -248,10 +267,7 @@ script:
         demisto.results('Secret versions undeleted successfully')
 
     def undelete_secret(engine_path, secret_path, versions):
-        path = engine_path + '/undelete/' + secret_path
-
-        if not isinstance(versions, list):
-            versions = [versions]
+        path = engine_path + 'undelete/' + secret_path
 
         body = {
             'versions': versions
@@ -269,10 +285,7 @@ script:
         demisto.results('Secret versions destroyed successfully')
 
     def destroy_secret(engine_path, secret_path, versions):
-        path = engine_path + '/destroy/' + secret_path
-
-        if not isinstance(versions, list):
-            versions = [versions]
+        path = engine_path + 'destroy/' + secret_path
 
         body = {
             'versions': versions
@@ -280,21 +293,6 @@ script:
 
         return send_request(path, 'post', body=body)
 
-
-    def get_secret_metadata(engine_path, secret_path):
-        path = engine_path + '/metadata/' + secret_path
-
-        return send_request(path, 'get')
-
-
-    def list_secrets(engine_path):
-        path = engine_path + '/metadata'
-
-        params = {
-            'list': 'true'
-        }
-
-        return send_request(path, 'get', params=params)
 
     def list_policies_command():
         res = list_policies()
@@ -313,7 +311,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('HashiCorp Vault Policies', mapped_policies, removeNull=True),
             'EntryContext': {
-                  'HashiCorp.Policy(val.Name===obj.Name)': createContext(mapped_policies)
+                  'HashiCorp.Policy(val.Name===obj.Name)': createContext(mapped_policies, removeNull=True)
             }
         })
 
@@ -346,7 +344,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('HashiCorp Vault Policy - ' + name, mapped_rules, removeNull=True),
             'EntryContext': {
-                  'HashiCorp.Policy(val.Name===obj.Name)': createContext(mapped_policy)
+                  'HashiCorp.Policy(val.Name===obj.Name)': createContext(mapped_policy, removeNull=True)
             }
         })
 
@@ -505,11 +503,11 @@ script:
 
         auth = res['auth']
 
-        headers = ['Token', 'Policies', 'LeaseDuration']
+        headers = ['Token', 'Policy', 'LeaseDuration']
 
         mapped_auth = {
             'Token': auth.get('client_token'),
-            'Policies': auth.get('policies'),
+            'Policy': auth.get('policies'),
             'LeaseDuration': auth.get('lease_duration')
         }
 
@@ -554,23 +552,162 @@ script:
 
         return send_request(path, 'post', body=body)
 
+    def configure_engine_command():
+        engine_path = demisto.args()['path']
+        engine_type = demisto.args()['type']
+        version = demisto.args().get('version')
 
-    #def fetch_credentials:
+        configure_engine(engine_path, engine_type, version)
 
+        demisto.results('Engine configured successfully')
+
+    def reset_config_command():
+        demisto.setIntegrationContext({'configs': []})
+
+        demisto.results('Successfully reset the engines configuration')
+
+    def configure_engine(engine_path, engine_type, version):
+        engine_conf = {
+            'type': engine_type,
+            'path': engine_path
+        }
+        if version:
+            engine_conf['version'] = str(version)
+
+        ENGINE_CONFIGS.append(engine_conf)
+
+        demisto.setIntegrationContext({'configs': ENGINE_CONFIGS})
+
+
+    def fetch_credentials():
+        credentials = []
+        engines_to_fetch_from = []
+        ENGINES = argToList(demisto.params().get('engines', []))
+        if not isinstance(ENGINES, list):
+            ENGINES = [ENGINES]
+
+        if len(ENGINES) == 0:
+            return_error('No secrets engines specified')
+
+        for engine_type in ENGINES:
+            engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
+            if len(engines_to_fetch) == 0:
+                return_error('Engine type not configured')
+            engines_to_fetch_from += engines_to_fetch
+
+        for engine in engines_to_fetch_from:
+            if engine['type'] == 'KV':
+                if engine['version'] == '1':
+                    credentials += get_kv1_secrets(engine['path'])
+                elif engine['version'] == '2':
+                    credentials += get_kv2_secrets(engine['path'])
+            elif engine['type'] == 'Cubbyhole':
+                credentials += get_ch_secrets(engine['path'])
+
+        demisto.credentials(credentials)
+
+
+    def get_kv1_secrets(engine_path):
+        path = engine_path
+        params = {
+            'list': 'true'
+        }
+
+        res = send_request(path, 'get', params=params)
+
+        secrets = []
+
+        if not res or 'data' not in res:
+            return []
+
+        for secret in res['data'].get('keys', []):
+            secret_data = get_kv1_secret(engine_path, secret)
+            for k,v in secret_data.get('data', {}).iteritems():
+                secrets.append({
+                        'user': k,
+                        'password': v,
+                        'name': secret
+                    })
+
+        return secrets
+
+    def get_kv1_secret(engine_path, secret):
+        path = engine_path + secret
+
+        return send_request(path, 'get')
+
+    def get_kv2_secrets(engine_path):
+        secrets = []
+        res = list_secrets(engine_path)
+        if not res or 'data' not in res:
+            return []
+
+        for secret in res['data'].get('keys', []):
+            secret_data = get_kv2_secret(engine_path, secret)
+            for k,v in secret_data.get('data', {}).get('data', {}).iteritems():
+                secrets.append({
+                        'user': k,
+                        'password': v,
+                        'name': secret
+                    })
+
+        return secrets
+
+    def get_kv2_secret(engine_path, secret):
+        path = engine_path + 'data/' + secret
+
+        return send_request(path, 'get')
+
+
+    def get_ch_secrets(engine_path):
+        path = engine_path
+
+        params = {
+            'list': 'true'
+        }
+
+        res = send_request(path, 'get', params=params)
+
+        secrets = []
+
+        if not res or 'data' not in res:
+            return []
+
+        for secret in res['data'].get('keys', []):
+            secret_data = get_ch_secret(engine_path, secret)
+            for k,v in secret_data.get('data', {}).iteritems():
+                secrets.append({
+                        'user': k,
+                        'password': v,
+                        'name': secret
+                    })
+
+        return secrets
+
+    def get_ch_secret(engine_path, secret):
+        path = engine_path + secret
+
+        return send_request(path, 'get')
+
+    ''' EXECUTION CODE '''
 
     if USERNAME and PASSWORD:
         TOKEN = login()
     elif not TOKEN:
         return_error('Either an authentication token or user credentials must be provided')
 
+    integ_context = demisto.getIntegrationContext()
+    if not integ_context or 'configs' not in integ_context:
+        integ_context['configs'] = []
+
+    ENGINE_CONFIGS = integ_context['configs']
+
     if demisto.command() == 'test-module':
         path = 'sys/health'
         send_request(path)
         demisto.results('ok')
-    if demisto.command() == 'fetch-credentials':
+    elif demisto.command() == 'fetch-credentials':
         fetch_credentials()
-    elif demisto.command() == 'fetch-incidents':
-        sys.exit(0)
     elif demisto.command() == 'hashicorp-list-secrets-engines':
         list_secrets_engines_command()
     elif demisto.command() == 'hashicorp-list-secrets':
@@ -597,10 +734,10 @@ script:
         unseal_vault_command()
     elif demisto.command() == 'hashicorp-create-token':
         create_token_command()
-
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
+    elif demisto.command() == 'hashicorp-configure-engine':
+        configure_engine_command()
+    elif demisto.command() == 'hashicorp-reset-configuration':
+        reset_config_command()
   type: python
   commands:
   - name: hashicorp-list-secrets-engines
@@ -618,7 +755,7 @@ script:
     - contextPath: HashiCorp.Engine.Accessor
       description: Secrets engine accessor
       type: string
-    description: List all secrets engine types that exist in HashiCorp Vault.
+    description: List all secrets engines that exist in HashiCorp Vault.
   - name: hashicorp-get-secret-metadata
     arguments:
     - name: engine_path
@@ -655,7 +792,9 @@ script:
     arguments:
     - name: engine
       required: true
-      description: Engine path  (for example - secret/)
+      default: true
+      description: Engine path (for example - secret/), retrieve from list-secrets-engines
+        command.
     outputs:
     - contextPath: HashiCorp.Secret.Name
       description: Secret name
@@ -666,7 +805,7 @@ script:
     - contextPath: HashiCorp.Secret.Engine
       description: Secrets engine type
       type: string
-    description: List secrets (names) for a specified KV engine
+    description: List secrets (names) for a specified K/V V2 engine
   - name: hashicorp-delete-secret
     arguments:
     - name: secret_path
@@ -679,9 +818,9 @@ script:
       required: true
       description: Comma separated secret versions to delete
       isArray: true
-    description: Deletes the data under a specified secret given the secret path.
-      Performs a soft delete that allows the undelete command if necessary (for the
-      KV V2 engine)
+    description: Delete the data under a specified secret given the secret path. Performs
+      a soft delete that allows the undelete command if necessary (for KV engine version
+      2)
   - name: hashicorp-undelete-secret
     arguments:
     - name: secret_path
@@ -694,7 +833,7 @@ script:
       required: true
       description: Comma separated secret versions
       isArray: true
-    description: Undelete a secret on HashiCorp (for KV engine version 2)
+    description: Undelete a secret on HashiCorp (for K/V engine version 2)
   - name: hashicorp-destroy-secret
     arguments:
     - name: secret_path
@@ -707,11 +846,12 @@ script:
       required: true
       description: Comma separated secret versions to delete
       isArray: true
-    description: Delete a secret permanently
+    description: Delete a secret permanently (for K/V engine version 2)
   - name: hashicorp-disable-engine
     arguments:
     - name: path
       required: true
+      default: true
       description: Secrets engine path
     description: When a secrets engine is no longer needed, it can be disabled. All
       secrets under the engine are revoked and the corresponding Vault data and configuration
@@ -723,16 +863,6 @@ script:
       description: Policy name
       type: string
     description: List all configured policies.
-  - name: hashicorp-run-cli-command
-    arguments:
-    - name: command
-      required: true
-      description: HashiCorp CLI command
-    outputs:
-    - contextPath: HashiCorp.CLI.Output
-      description: CLI Command output
-      type: string
-    description: https://www.vaultproject.io/docs/commands/index.html
   - name: hashicorp-seal-vault
     arguments: []
     description: If you suspect your data has been compromised, you can seal your
@@ -777,6 +907,10 @@ script:
       description: A map of string to string valued metadata. This is passed through
         to the audit devices.
     - name: no_parent
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: If true and set by a root caller, the token will not have the parent
         token of the caller. This creates a token with no parent.
     - name: no_default_policy
@@ -818,12 +952,12 @@ script:
     - contextPath: HashiCorp.Auth.Token
       description: Authentication token
       type: string
-    - contextPath: HashiCorp.Auth.Policies
+    - contextPath: HashiCorp.Auth.Policy
       description: Authentication policies
     - contextPath: HashiCorp.Auth.LeaseDuration
       description: 'Authentication lease duration in seconds, 0 if indefinitely '
       type: number
-    description: Creates a new token.
+    description: Create a new token.
   - name: hashicorp-get-policy
     arguments:
     - name: name
@@ -884,6 +1018,24 @@ script:
         only in Vault Enterprise.
     - name: seal_wrap
       description: Enable seal wrapping for the mount. Supported only in Vault Enterprise.
-    description: Enables a new secrets engine at the given path.
+    description: Enable a new secrets engine at the given path.
+  - name: hashicorp-configure-engine
+    arguments:
+    - name: path
+      required: true
+      description: The engine path, e.g. secret/
+    - name: type
+      required: true
+      description: The engine type, e.g. KV
+    - name: version
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      description: The engine version (for KV engines)
+    description: Configure a secrets engine to fetch secrets from.
+  - name: hashicorp-reset-configuration
+    arguments: []
+    description: Reset the engines configuration
   dockerimage: blob
   runonce: false
