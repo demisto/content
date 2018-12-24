@@ -238,16 +238,16 @@ script:
             return False
 
     def date_to_epoch(date):
-        date_pattern1 = '\d{8}$'
-        date_format1 = '%Y%m%d'
-        date_pattern2 = '\d{8}T\d{6}Z$'
-        date_format2 = '%Y%m%dT%H%M%SZ'
+        date_pattern1 = '\d{4}-\d{2}-\d{2}$'
+        date_format1 = '%Y-%m-%d'
+        date_pattern2 = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+        date_format2 = '%Y-%m-%dT%H:%M:%SZ'
 
         epoch = None
         if re.match(date_pattern2, date):
-            epoch = int(time.mktime(time.strptime(date,date_format2))) * 1000
+            epoch = int(time.mktime(time.strptime(date, date_format2))) * 1000
         elif re.match(date_pattern1, date):
-            epoch = int(time.mktime(time.strptime(date,date_format1))) * 1000
+            epoch = int(time.mktime(time.strptime(date, date_format1))) * 1000
 
         return epoch
 
@@ -255,32 +255,31 @@ script:
     attivo_api = BSAPI(SERVER, verify_ssl=VERIFY_SSL)
 
     if demisto.command() == 'attivo-get-events':
+        args = demisto.args()
         login_status = attivo_api.login(API_USER, API_PASS)
-        attacker_ip = demisto.args()['attacker_ip']
-        severity_string = demisto.args()['severity']
+        attacker_ip = args['attacker_ip']
+        severity_string = args['severity']
 
-        if 'alerts_start_date' in demisto.args():
-            start_date = demisto.args()['alerts_start_date']
+        start_date = args.get('alerts_start_date')
+        if start_date is not None:
             timestampStart = date_to_epoch(start_date)
         else:
             one_day = 24 * 60 * 60
             timestampStart = (int(time.time()) - one_day) * 1000
 
-        if 'alerts_end_date' in demisto.args():
-            end_date = demisto.args()['alerts_end_date']
+        end_date = args.get('alerts_end_date')
+        if end_date is not None:
             timestampEnd = date_to_epoch(end_date)
         else:
             timestampEnd = int(time.time()) * 1000
 
         if timestampEnd is None:
-            demisto.info("Bad date: {}\nDate should be of the format yyyymmdd or yyyymmddThhmmssZ".format(end_date))
-            demisto.results("Bad date: {}\nDate should be of the format yyyymmdd or yyyymmddThhmmssZ".format(end_date))
-            sys.exit()
+            demisto.info("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
+            return_error("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
 
         if timestampStart is None:
-            demisto.info("\nBad date: {}\nDate should be of the format yyyymmdd or yyyymmddThhmmssZ".format(start_date))
-            demisto.results("\nBad date: {}\nDate should be of the format yyyymmdd or yyyymmddThhmmssZ".format(start_date))
-            sys.exit()
+            demisto.info("\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
+            return_error("\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
 
         severity_end = "15"
         severity_start = attivo_api.convert_severity_string(severity_string)
@@ -290,7 +289,6 @@ script:
 
         events = attivo_api.get_events(severity_start=severity_start, severity_end=severity_end, timestamp_start=timestampStart, timestamp_end=timestampEnd, attacker_ip=attacker_ips)
 
-        #events = {};  events['eventdata']=[]
         attivo_api.logout()
 
         brief_events = []
@@ -309,7 +307,7 @@ script:
         entry = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': context,
+            'Contents': events['eventdata'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Found {} events:'.format(len(brief_events)), brief_events, headers=headers),
             'EntryContext': {'Attivo.Events.Count': len(events['eventdata']),
@@ -378,11 +376,11 @@ script:
         if len(incidents) > 0:
             demisto.info("Setting new last run value to {}".format(new_last_run))
             demisto.setLastRun({'time': new_last_run})
-            demisto.incidents(incidents)
         else:
             demisto.info("No new Attivo incidents to add")
 
         logout_status = attivo_api.logout()
+        demisto.incidents(incidents)
 
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -593,7 +591,6 @@ script:
             for user_object in users_in_group['objGroup']['objects']:
                 this_user = user_object['username']
                 if this_user == user:
-                    # demisto.info("Attivo BOTSink user match ({}) ({})".format(this_user, user_group['name']))
                     this_user_object = user_object
                     is_deceptive = True
                     in_groups.append(user_group['name'])
@@ -889,9 +886,11 @@ script:
       description: The minimum Attivo severity
       defaultValue: Medium
     - name: alerts_start_date
-      description: Timeframe to start looking for events
+      description: Timeframe to start looking for events. For example,  2018-12-10
+        or 2018-12-10T13:59:05Z
     - name: alerts_end_date
-      description: Timeframe to stop looking for events
+      description: Timeframe to stop looking for events. For example,  2018-12-10
+        or 2018-12-10T13:59:05Z
     outputs:
     - contextPath: Attivo.Events.Count
       description: Total number of events retrieved
@@ -937,3 +936,6 @@ script:
     description: List all deceptive users
   isfetch: true
   runonce: false
+releaseNotes: new integration
+tests:
+  - AttivoBotsinkTest
