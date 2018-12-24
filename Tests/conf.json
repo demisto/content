@@ -123,6 +123,7 @@
                 "Panorama",
                 "Check Point"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "blockip_test_playbook"
         },
         {
@@ -155,6 +156,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {

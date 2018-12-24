@@ -158,7 +158,6 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
 
 
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
-    print(instance_names)
     for integration in integrations:
         integration_params = [item for item in secret_params if item['name'] == integration['name']]
 
@@ -167,8 +166,6 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
-                    print(item.get('name'))
-                    print(item.get('instance_name'))
                     if item.get('instance_name', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
