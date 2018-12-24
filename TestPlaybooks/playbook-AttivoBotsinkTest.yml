@@ -302,34 +302,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "12":
-    id: "12"
-    taskid: 65be9334-04cd-41b6-80ff-91ef4508c1f7
-    type: regular
-    task:
-      id: 65be9334-04cd-41b6-80ff-91ef4508c1f7
-      version: -1
-      name: Validate fetch incidents
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      brand_name:
-        simple: Attivo Botsink
-      expect_data:
-        simple: "false"
-      instance_name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
