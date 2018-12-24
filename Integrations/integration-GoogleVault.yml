@@ -1746,7 +1746,7 @@ script:
     - name: matterId
       description: Matter ID
     - name: exportIDS
-      description: Export ID list
+      description: Export ID list (a non-list single value is also an option)
       isArray: true
     - name: queryIDS
       description: 'MatterID and ExportID concatenation separated by ''#'' (used only
