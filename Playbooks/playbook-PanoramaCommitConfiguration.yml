@@ -1,5 +1,6 @@
 id: PanoramaCommitConfiguration
 version: -1
+system: true
 name: PanoramaCommitConfiguration
 fromversion: 3.0.0
 description: "Commit Palo Alto Firewall and Panorama Configuration.\nIf specified
