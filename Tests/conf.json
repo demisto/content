@@ -68,7 +68,14 @@
         },
         {
             "integrations": "Panorama",
+            "instance_name": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_name": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 300
         },
         {
