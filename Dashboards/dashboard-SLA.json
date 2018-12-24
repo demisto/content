@@ -26,8 +26,6 @@
 			"widget": {
 				"id": "fddd62ff-a411-4e6a-8213-e0277a9b95b5",
 				"version": 1,
-				"shouldCommit": false,
-				"shouldPush": false,
 				"name": "Mean Time to Detection",
 				"dataType": "incidents",
 				"widgetType": "duration",
@@ -67,8 +65,6 @@
 			"widget": {
 				"id": "1e54092d-1ed0-47a6-862d-893adc05e612",
 				"version": 1,
-				"shouldCommit": false,
-				"shouldPush": false,
 				"name": "Detection SLA by Status",
 				"dataType": "incidents",
 				"widgetType": "pie",
@@ -108,8 +104,6 @@
 			"widget": {
 				"id": "1767dee0-7f8c-48a5-8988-c58b9e713ab6",
 				"version": 1,
-				"shouldCommit": false,
-				"shouldPush": false,
 				"name": "Remediation SLA by Status",
 				"dataType": "incidents",
 				"widgetType": "pie",
@@ -149,8 +143,6 @@
 			"widget": {
 				"id": "mean-time-to-resolution",
 				"version": 169,
-				"shouldCommit": false,
-				"shouldPush": false,
 				"name": "Mean Time To Resolution",
 				"dataType": "incidents",
 				"widgetType": "duration",
@@ -190,8 +182,6 @@
 			"widget": {
 				"id": "mttd-by-type",
 				"version": 1,
-				"shouldCommit": true,
-				"shouldPush": false,
 				"name": "MTTD by Type",
 				"dataType": "incidents",
 				"widgetType": "line",
