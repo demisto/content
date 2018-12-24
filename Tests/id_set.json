@@ -2224,7 +2224,8 @@
                     "PagerDuty-get-contact-methods", 
                     "PagerDuty-get-users-notification", 
                     "PagerDuty-resolve-event", 
-                    "PagerDuty-acknowledge-event"
+                    "PagerDuty-acknowledge-event", 
+                    "TESTINGTESTING"
                 ], 
                 "name": "PagerDuty v2"
             }
