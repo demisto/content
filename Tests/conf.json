@@ -143,6 +143,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_name": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -560,7 +561,8 @@
         },
         {
             "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
+            "playbookID": "Cybereason Test",
+            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
