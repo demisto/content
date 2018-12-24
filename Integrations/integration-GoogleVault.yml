@@ -519,214 +519,235 @@ script:
           '''
           Lists all matters in the project, with their corresponding state.
           '''
-          service = connect()
-          state = demisto.args().get('state', 'STATE_UNSPECIFIED')
-          validate_input_values([state],['All','Open','Closed','Deleted','STATE_UNSPECIFIED',''])
-          matters = (get_matters_by_state(service, state))['matters']
+          try:
+              service = connect()
+              state = demisto.args().get('state', 'STATE_UNSPECIFIED')
+              validate_input_values([state],['All','Open','Closed','Deleted','STATE_UNSPECIFIED',''])
+              matters = (get_matters_by_state(service, state))['matters']
 
-          if not matters:
-              demisto.results('No matters found.')
-          else:
-              output = []
-              context_output = []
-              for matter in matters:
-                  output.append({
-                      'Matter Name': matter.get('name'),
-                      'Matter ID': matter.get('matterId'),
-                      'Matter State': matter.get('state')
-                  })
-                  context_output.append({
-                      'Name': matter.get('name'),
-                      'MatterID': matter.get('matterId'),
-                      'State': matter.get('state')  # Getting new state
-                      })
-              markdown = '' # Use this to add extra line
-              title = ""
-              if state == 'All' or not state:
-                  title = 'Here are all your matters'
+              if not matters:
+                  demisto.results('No matters found.')
               else:
-                  title = 'Here are your {} matters'.format(state.lower())
-              markdown += tableToMarkdown(title, output, ['Matter Name', 'Matter ID', 'Matter State'])
+                  output = []
+                  context_output = []
+                  for matter in matters:
+                      output.append({
+                          'Matter Name': matter.get('name'),
+                          'Matter ID': matter.get('matterId'),
+                          'Matter State': matter.get('state')
+                      })
+                      context_output.append({
+                          'Name': matter.get('name'),
+                          'MatterID': matter.get('matterId'),
+                          'State': matter.get('state')  # Getting new state
+                          })
+                  markdown = '' # Use this to add extra line
+                  title = ""
+                  if state == 'All' or not state:
+                      title = 'Here are all your matters'
+                  else:
+                      title = 'Here are your {} matters'.format(state.lower())
+                  markdown += tableToMarkdown(title, output, ['Matter Name', 'Matter ID', 'Matter State'])
+
+                  demisto.results( {
+                      'Type': entryTypes['note'],
+                      'ContentsFormat': formats['json'],
+                      'Contents': matters,
+                      'HumanReadable': markdown,
+                      'EntryContext': {
+                          'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
+                                   }
+                  } )
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to list amatters. Error: {}'.format(ex))
+
+
+      def create_matter_command():
+          try:
+              service = connect()
+              matter_name = demisto.getArg('name')
+              matter_description = demisto.getArg('description')
+              matter_content =   {
+                'name': matter_name,
+                'description': matter_description,
+              }
+              matter = service.matters().create(body=matter_content).execute()
+              markdown = ""
+              if matter_description:
+                  markdown = 'Matter: {} was created successfully with description: {}.\nID: {}.'.format(matter_name, matter_description, matter.get('matterId'))
+              else:
+                  markdown = 'Matter: {} was created successfully without a description.\nID: {}.'.format(matter_name, matter.get('matterId'))
+              title = 'Matter creation successful.'
+              markdown_matter = []
+              markdown_matter.append({
+              'Matter Name': matter.get('name'),
+              'Matter ID': matter.get('matterId'),
+              'Matter State': matter.get('state')
+              })
+              markdown += tableToMarkdown(title, markdown_matter, ['Matter Name', 'Matter ID', 'Matter State']) #  Why is the title displayed in a weird way?
+
+              output_context = []
+              output_context.append({
+              'Name': matter.get('name'),
+              'MatterID': matter.get('matterId'),
+              'State': matter.get('state')
+              })
 
               demisto.results( {
                   'Type': entryTypes['note'],
                   'ContentsFormat': formats['json'],
-                  'Contents': matters,
+                  'Contents': matter,
                   'HumanReadable': markdown,
                   'EntryContext': {
-                      'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
-                               }
-              } )
-
-
-      def create_matter_command():
-          service = connect()
-          matter_name = demisto.getArg('name')
-          matter_description = demisto.getArg('description')
-          matter_content =   {
-            'name': matter_name,
-            'description': matter_description,
-          }
-          matter = service.matters().create(body=matter_content).execute()
-          markdown = ""
-          if matter_description:
-              markdown = 'Matter: {} was created successfully with description: {}.\nID: {}.'.format(matter_name, matter_description, matter.get('matterId'))
-          else:
-              markdown = 'Matter: {} was created successfully without a description.\nID: {}.'.format(matter_name, matter.get('matterId'))
-          title = 'Matter creation successful.'
-          markdown_matter = []
-          markdown_matter.append({
-          'Matter Name': matter.get('name'),
-          'Matter ID': matter.get('matterId'),
-          'Matter State': matter.get('state')
-          })
-          markdown += tableToMarkdown(title, markdown_matter, ['Matter Name', 'Matter ID', 'Matter State']) #  Why is the title displayed in a weird way?
-
-          output_context = []
-          output_context.append({
-          'Name': matter.get('name'),
-          'MatterID': matter.get('matterId'),
-          'State': matter.get('state')
-          })
-
-          demisto.results( {
-              'Type': entryTypes['note'],
-              'ContentsFormat': formats['json'],
-              'Contents': matter,
-              'HumanReadable': markdown,
-              'EntryContext': {
-              'GoogleVault.Matter(val.MatterID === obj.MatterID)': output_context
-             }
-          })
+                  'GoogleVault.Matter(val.MatterID === obj.MatterID)': output_context
+                 }
+              })
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to create matter. Error: {}'.format(ex))
 
 
       def update_matter_state_command():
           """
           * Note: This updates context only if a change in the current state was successful
           """
-          service = connect()
-          matter_id = demisto.getArg('matterID')
-          wanted_state = demisto.getArg('state')
+          try:
+              service = connect()
+              matter_id = demisto.getArg('matterID')
+              wanted_state = demisto.getArg('state')
 
-          validate_input_values([wanted_state],['CLOSE','DELETE','REOPEN','UNDELETE'])
-          matter_found = get_matter_by_id(service, matter_id)
-          current_state = matter_found.get('state')
+              validate_input_values([wanted_state],['CLOSE','DELETE','REOPEN','UNDELETE'])
+              matter_found = get_matter_by_id(service, matter_id)
+              current_state = matter_found.get('state')
 
-          if current_state: # if a matter was found with that ID:
-              context_output = []
-              result_of_update = ""
-              # Dealing with CLOSE:
-              if wanted_state ==  'CLOSE':
-                  if current_state == 'DELETED':
-                      result_of_update = 'Matter is deleted and so it cannot be closed. It is possible to re-open it and then close.'
-                  elif current_state == 'CLOSED':
-                      demisto.results('Matter is already closed.')
-                  elif current_state == 'OPEN':
-                      try:
-                          close_response = close_matter(service, matter_id)
-                          result_of_update = 'Matter was successfully closed.'
-                      except Exception, ex:
-                          if 'Matters have users on hold' in str(ex):
-                              demisto.log('{}'.format(ex))
-                              return_error('The matter has holds that prevent it from being closed.')
-                          if 'Quota exceeded for quota metric' in str(ex):
-                              return_error('Quota for Google Vault API exceeded')
+              if current_state: # if a matter was found with that ID:
+                  context_output = []
+                  result_of_update = ""
+                  # Dealing with CLOSE:
+                  if wanted_state ==  'CLOSE':
+                      if current_state == 'DELETED':
+                          result_of_update = 'Matter is deleted and so it cannot be closed. It is possible to re-open it and then close.'
+                      elif current_state == 'CLOSED':
+                          demisto.results('Matter is already closed.')
+                      elif current_state == 'OPEN':
+                          try:
+                              close_response = close_matter(service, matter_id)
+                              result_of_update = 'Matter was successfully closed.'
+                          except Exception, ex:
+                              if 'Matters have users on hold' in str(ex):
+                                  demisto.log('{}'.format(ex))
+                                  return_error('The matter has holds that prevent it from being closed.')
+                              if 'Quota exceeded for quota metric' in str(ex):
+                                  return_error('Quota for Google Vault API exceeded')
 
-              # Dealing with DELETE:
-              elif wanted_state == 'DELETE':
-                  if current_state == 'OPEN':
-                      try:
-                          close_response = close_matter(service, matter_id) # Todo: check if contains holds. If it does, return error to user
-                          delete_response = delete_matter(service, matter_id)
-                          result_of_update = 'Matter was {} and is now DELETED.'.format(current_state)
-                      except Exception, ex:
-                          if 'Matters have users on hold' in str(ex):
-                              demisto.log('{}'.format(ex))
-                              return_error('The matter has holds that prevent it from being deleted.')
-                          if 'Quota exceeded for quota metric' in str(ex):
-                              return_error('Quota for Google Vault API exceeded')
+                  # Dealing with DELETE:
+                  elif wanted_state == 'DELETE':
+                      if current_state == 'OPEN':
+                          try:
+                              close_response = close_matter(service, matter_id) # Todo: check if contains holds. If it does, return error to user
+                              delete_response = delete_matter(service, matter_id)
+                              result_of_update = 'Matter was {} and is now DELETED.'.format(current_state)
+                          except Exception, ex:
+                              if 'Matters have users on hold' in str(ex):
+                                  demisto.log('{}'.format(ex))
+                                  return_error('The matter has holds that prevent it from being deleted.')
+                              if 'Quota exceeded for quota metric' in str(ex):
+                                  return_error('Quota for Google Vault API exceeded')
 
-                  elif current_state == 'CLOSED':
-                      try:
-                          delete_response = delete_matter(service, matter_id)
-                          result_of_update = 'Matter was {} and is not DELETED.'.format(current_state)
-                      except Exception, ex:
-                          if 'Matters have users on hold' in str(ex):
-                              demisto.log('{}'.format(ex))
-                              return_error('The matter has holds that prevent it from being deleted.')
-                          if 'Quota exceeded for quota metric' in str(ex):
-                              return_error('Quota for Google Vault API exceeded')
+                      elif current_state == 'CLOSED':
+                          try:
+                              delete_response = delete_matter(service, matter_id)
+                              result_of_update = 'Matter was {} and is not DELETED.'.format(current_state)
+                          except Exception, ex:
+                              if 'Matters have users on hold' in str(ex):
+                                  demisto.log('{}'.format(ex))
+                                  return_error('The matter has holds that prevent it from being deleted.')
+                              if 'Quota exceeded for quota metric' in str(ex):
+                                  return_error('Quota for Google Vault API exceeded')
 
-                  elif current_state == 'DELETED':
-                      demisto.results('Matter is already deleted.')
+                      elif current_state == 'DELETED':
+                          demisto.results('Matter is already deleted.')
 
-              # Dealing with REOPEN:
-              elif wanted_state == 'REOPEN':
-                  if current_state == 'OPEN':
-                      demisto.results('Matter is already open.')
-                  elif current_state == 'CLOSED':
-                      reopen_response = reopen_matter(service, matter_id)
-                      result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
-                  elif current_state == 'DELETED':
-                      undelete_response = undelete_matter(service, matter_id)
-                      reopen_response = reopen_matter(service, matter_id)
-                      result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
+                  # Dealing with REOPEN:
+                  elif wanted_state == 'REOPEN':
+                      if current_state == 'OPEN':
+                          demisto.results('Matter is already open.')
+                      elif current_state == 'CLOSED':
+                          reopen_response = reopen_matter(service, matter_id)
+                          result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
+                      elif current_state == 'DELETED':
+                          undelete_response = undelete_matter(service, matter_id)
+                          reopen_response = reopen_matter(service, matter_id)
+                          result_of_update = 'Matter was {} and is now OPEN.'.format(current_state)
 
-              # Dealing with UNDELETE:
-              elif wanted_state == 'UNDELETE':
-                  if current_state == 'OPEN':
-                      demisto.results('Matter is already open.')
-                  elif current_state == 'CLOSED':
-                      demisto.results('Matter is closed at the moment.')
-                  elif current_state == 'DELETED':
-                      undelete_response = undelete_matter(service, matter_id)
-                      result_of_update = 'Matter was {} and is now CLOSED.'.format(current_state)
+                  # Dealing with UNDELETE:
+                  elif wanted_state == 'UNDELETE':
+                      if current_state == 'OPEN':
+                          demisto.results('Matter is already open.')
+                      elif current_state == 'CLOSED':
+                          demisto.results('Matter is closed at the moment.')
+                      elif current_state == 'DELETED':
+                          undelete_response = undelete_matter(service, matter_id)
+                          result_of_update = 'Matter was {} and is now CLOSED.'.format(current_state)
 
-              if result_of_update:  # If an update was done then update context:
-                  context_output.append({
-                  'Name': matter_found.get('name'),
-                  'MatterID': matter_found.get('matterId'),
-                  'State': get_matter_by_id(service, matter_id).get('state')  # Getting new state
-                      })
+                  if result_of_update:  # If an update was done then update context:
+                      context_output.append({
+                      'Name': matter_found.get('name'),
+                      'MatterID': matter_found.get('matterId'),
+                      'State': get_matter_by_id(service, matter_id).get('state')  # Getting new state
+                          })
 
-                  demisto.results( {
-                      'Type': entryTypes['note'],
-                      'ContentsFormat': formats['text'],
-                      'Contents': result_of_update,
-                      'EntryContext': {
-                      'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
-                                   }
-                   })
-          else:
-              demisto.results('No matter was found with that ID.')  # Todo: never gets here. Gotta catch the exception
+                      demisto.results( {
+                          'Type': entryTypes['note'],
+                          'ContentsFormat': formats['text'],
+                          'Contents': result_of_update,
+                          'EntryContext': {
+                          'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
+                                       }
+                       })
+              else:
+                  demisto.results('No matter was found with that ID.')  # Todo: never gets here. Gotta catch the exception
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to update matter. Error: {}'.format(ex))
 
 
       def add_account_to_hold_command():  # Todo: Not sure if context is good (It works, but maybe not according to conventions)
-          service = connect()
-          matter_id = demisto.getArg('matterID')
-          hold_id = demisto.getArg('holdID')
-          account_id = demisto.getArg('accountID')
-          response = add_held_account(service, matter_id, hold_id, account_id)
+          try:
+              service = connect()
+              matter_id = demisto.getArg('matterID')
+              hold_id = demisto.getArg('holdID')
+              account_id = demisto.getArg('accountID')
+              response = add_held_account(service, matter_id, hold_id, account_id)
 
-          msg_to_usr = 'Account {} was successfully added to hold {} in matter {}'.format(account_id, hold_id, matter_id)
-          context_output = []
-          context_output.append({
-              'ID': hold_id,
-              'matterID': matter_id,
-              'HeldAccount': {
-                  'accountID': account_id,
-                  'IsHeld': True
+              msg_to_usr = 'Account {} was successfully added to hold {} in matter {}'.format(account_id, hold_id, matter_id)
+              context_output = []
+              context_output.append({
+                  'ID': hold_id,
+                  'matterID': matter_id,
+                  'HeldAccount': {
+                      'accountID': account_id,
+                      'IsHeld': True
+                      }
+              })
+
+              demisto.results( {
+                  'Type': entryTypes['note'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': msg_to_usr,
+                  'EntryContext': {
+                  'GoogleVault.Hold(val.ID === obj.ID)': context_output
                   }
-          })
+              })
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to add account to hold. Error: {}'.format(ex))
 
-          demisto.results( {
-              'Type': entryTypes['note'],
-              'ContentsFormat': formats['text'],
-              'Contents': msg_to_usr,
-              'EntryContext': {
-              'GoogleVault.Hold(val.ID === obj.ID)': context_output
-                           }
-           })
 
 
       def search_matter_command():
@@ -735,127 +756,148 @@ script:
           * If a matter with an ID is found, there's no need to keep on searching. This can be optimized too.
           * Note - this is case INSENSITIVE. Searching for 'MatTER1' will find 'matter1' too.
           """
-          service = connect()
-          wanted_name = demisto.getArg('matterName')
-          wanted_id = demisto.getArg('matterID')
-          if wanted_name or wanted_id:
-              if wanted_name:
-                  wanted_name = wanted_name.lower()
-              if wanted_id:
-                  wanted_id = wanted_id.lower()
-          else:
-              demisto.results('No name or ID were specified. Please specify at least one of them.')
-              sys.exit(0)
-          matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')['matters']
-          output = []
-          markdown_matters = []
-          found_anything = False
-          for matter in matters:
-              if matter.get('name').lower() == wanted_name or matter.get('matterId').lower() == wanted_id:
-                  found_anything = True
-                  markdown_matters.append({
-                      'Matter Name': matter.get('name'),
-                      'Matter ID': matter.get('matterId'),
-                      'Matter State': matter.get('state')
-                  })
-                  output.append({
-                      'Name': matter.get('name'),
-                      'MatterID': matter.get('matterId'),
-                      'State': matter.get('state')
-                  })
-          if not found_anything: # If finished for loop through matters and no matter was found
-              demisto.results('No matters found.')
-          else:
-              markdown = '' # Use this to add extra line
-              if wanted_name:
-                  title = 'Here are matters that have the name {}'.format(wanted_name)
+          try:
+              service = connect()
+              wanted_name = demisto.getArg('matterName')
+              wanted_id = demisto.getArg('matterID')
+              if wanted_name or wanted_id:
+                  if wanted_name:
+                      wanted_name = wanted_name.lower()
+                  if wanted_id:
+                      wanted_id = wanted_id.lower()
               else:
-                  title = 'Here is the matter with ID {}'.format(wanted_id)
-              markdown += tableToMarkdown(title, markdown_matters, ['Matter Name', 'Matter ID', 'Matter State'])
-              demisto.results( {
-                  'Type': entryTypes['note'],
-                  'ContentsFormat': formats['json'],
-                  'Contents': markdown_matters,
-                  'HumanReadable': markdown,
-                  'EntryContext': {
-                      'GoogleVault.Matter(val.MatterID === obj.MatterID)': output
-                  }
-              } )
+                  demisto.results('No name or ID were specified. Please specify at least one of them.')
+                  sys.exit(0)
+              matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')['matters']
+              output = []
+              markdown_matters = []
+              found_anything = False
+              for matter in matters:
+                  if matter.get('name').lower() == wanted_name or matter.get('matterId').lower() == wanted_id:
+                      found_anything = True
+                      markdown_matters.append({
+                          'Matter Name': matter.get('name'),
+                          'Matter ID': matter.get('matterId'),
+                          'Matter State': matter.get('state')
+                      })
+                      output.append({
+                          'Name': matter.get('name'),
+                          'MatterID': matter.get('matterId'),
+                          'State': matter.get('state')
+                      })
+              if not found_anything: # If finished for loop through matters and no matter was found
+                  demisto.results('No matters found.')
+              else:
+                  markdown = '' # Use this to add extra line
+                  if wanted_name:
+                      title = 'Here are matters that have the name {}'.format(wanted_name)
+                  else:
+                      title = 'Here is the matter with ID {}'.format(wanted_id)
+                  markdown += tableToMarkdown(title, markdown_matters, ['Matter Name', 'Matter ID', 'Matter State'])
+                  demisto.results( {
+                      'Type': entryTypes['note'],
+                      'ContentsFormat': formats['json'],
+                      'Contents': markdown_matters,
+                      'HumanReadable': markdown,
+                      'EntryContext': {
+                          'GoogleVault.Matter(val.MatterID === obj.MatterID)': output
+                      }
+                  } )
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to search matter. Error: {}'.format(ex))
 
 
       def remove_account_from_hold_command():
-          service = connect()
-          matter_id = demisto.getArg('matterID')
-          hold_id = demisto.getArg('holdID')
-          account_id = demisto.getArg('accountID')
-          response = remove_held_account(service, matter_id, hold_id, account_id)
+          try:
+              service = connect()
+              matter_id = demisto.getArg('matterID')
+              hold_id = demisto.getArg('holdID')
+              account_id = demisto.getArg('accountID')
+              response = remove_held_account(service, matter_id, hold_id, account_id)
 
-          msg_to_usr = 'Account {} was successfully removed from hold {} in matter {}'.format(account_id, hold_id, matter_id)
-          context_output = []
-          context_output.append({
-          'matterID': matter_id,
-          'ID': hold_id,
-          'HeldAccount': {  # Does this allow only 1 HeldAccount to exist in a hold?
-              'ID': account_id,
-              'IsHeld': False
-              },
-          })
-          demisto.results( {
-              'Type': entryTypes['note'],
-              'ContentsFormat': formats['text'],
-              'Contents': msg_to_usr,
-              'EntryContext': {
-              'GoogleVault.Hold(val.ID === obj.ID)': context_output
-                           }
-           })
+              msg_to_usr = 'Account {} was successfully removed from hold {} in matter {}'.format(account_id, hold_id, matter_id)
+              context_output = []
+              context_output.append({
+              'matterID': matter_id,
+              'ID': hold_id,
+              'HeldAccount': {  # Does this allow only 1 HeldAccount to exist in a hold?
+                  'ID': account_id,
+                  'IsHeld': False
+                  },
+              })
+              demisto.results( {
+                  'Type': entryTypes['note'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': msg_to_usr,
+                  'EntryContext': {
+                  'GoogleVault.Hold(val.ID === obj.ID)': context_output
+                               }
+               })
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to remove account from hold. Error: {}'.format(ex))
 
 
       def delete_hold_command():
-          service = connect()
-          matter_id = demisto.getArg('matterID')
-          hold_id = demisto.getArg('holdID')
-          response = remove_hold(service, matter_id, hold_id)
-          msg_to_usr = 'Hold {} was successfully deleted from matter {}'.format(hold_id, matter_id)
-          demisto.results( {
-              'Type': entryTypes['note'],
-              'ContentsFormat': formats['text'],
-              'Contents': msg_to_usr,
-           })
+          try:
+              service = connect()
+              matter_id = demisto.getArg('matterID')
+              hold_id = demisto.getArg('holdID')
+              response = remove_hold(service, matter_id, hold_id)
+              msg_to_usr = 'Hold {} was successfully deleted from matter {}'.format(hold_id, matter_id)
+              demisto.results( {
+                  'Type': entryTypes['note'],
+                  'ContentsFormat': formats['text'],
+                  'Contents': msg_to_usr,
+              })
+
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to delete hold. Error: {}'.format(ex))
 
 
       def list_holds_command():
-          service = connect()
-          matter_id = demisto.getArg('matterID')
-          holds = list_holds(service, matter_id)
-          if not holds:
-              demisto.results('No holds found.')
-          else:
-              output = []
-              context_output = []
-              for hold in holds:
-                  output.append({
-                      'Matter ID': matter_id,
-                      'Hold Name': hold.get('name'),
-                      'Hold ID': hold.get('holdId')
-                  })
-                  context_output.append({
-                      'name': hold.get('name'),
-                      'ID': hold.get('holdId'),
-                      'MatterID': matter_id
+          try:
+              service = connect()
+              matter_id = demisto.getArg('matterID')
+              holds = list_holds(service, matter_id)
+              if not holds:
+                  demisto.results('No holds found.')
+              else:
+                  output = []
+                  context_output = []
+                  for hold in holds:
+                      output.append({
+                          'Matter ID': matter_id,
+                          'Hold Name': hold.get('name'),
+                          'Hold ID': hold.get('holdId')
                       })
-              markdown = '' # Use this to add extra line
-              title = 'Here are all the holds under matter {}.'.format(matter_id)
-              markdown += tableToMarkdown(title, output, ['Hold Name', 'Hold ID', 'Matter ID'])
+                      context_output.append({
+                          'name': hold.get('name'),
+                          'ID': hold.get('holdId'),
+                          'MatterID': matter_id
+                          })
+                  markdown = '' # Use this to add extra line
+                  title = 'Here are all the holds under matter {}.'.format(matter_id)
+                  markdown += tableToMarkdown(title, output, ['Hold Name', 'Hold ID', 'Matter ID'])
 
-              demisto.results( {
-                  'Type': entryTypes['note'],
-                  'ContentsFormat': formats['json'],
-                  'Contents': holds,
-                  'HumanReadable': markdown,
-                  'EntryContext': {
-                      'GoogleVault.Hold(val.ID === obj.ID)': context_output
-                               }
-              } )
+                  demisto.results( {
+                      'Type': entryTypes['note'],
+                      'ContentsFormat': formats['json'],
+                      'Contents': holds,
+                      'HumanReadable': markdown,
+                      'EntryContext': {
+                          'GoogleVault.Hold(val.ID === obj.ID)': context_output
+                                   }
+                  })
+          except Exception, ex:
+              if 'Quota exceeded for quota metric' in str(ex):
+                  ex = 'Quota for Google Vault API exceeded'
+              return_error('Unable to list holds. Error: {}'.format(ex))
 
 
       def create_hold_command():
@@ -1092,7 +1134,7 @@ script:
           id_concatenation = demisto.getArg('queryIDS')
           if id_concatenation:
               if '#' not in id_concatenation:
-                  return_error('Should enter a concatenation of MatterID and ExportID with comma delimeter such: <Matter_ID>#<ExportID>')
+                  return_error('Should enter a concatenation of MatterID and ExportID with "#" delimeter such: <Matter_ID>#<ExportID>')
 
               matter_id, export_id = id_concatenation.split('#')
               export_IDs = [export_id]
