@@ -1039,3 +1039,4 @@ script:
     description: Reset the engines configuration
   dockerimage: blob
   runonce: false
+releaseNotes: "HashiCorp integration"
