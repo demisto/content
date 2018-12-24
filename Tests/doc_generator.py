@@ -13,71 +13,89 @@ def return_error(error):
     sys.exit(1)
 
 
+def get_list_of_commands(integration):
+    """
+    Returns list of commands as a string
+
+    :param integration: integration dictionary - contains all the metadata of the integration
+    :return: string of all the commands in the integration
+    """
+    list_of_commands_str = ''
+    for i in range(len(integration['script']['commands'])):
+        list_of_commands_str += str(i + 1) + '. ' + integration['script']['commands'][i]['name'] + '\n'
+
+    return list_of_commands_str
+
+
+def get_all_commands_details_string(integration):
+    """
+    Return all integration commands details. Inputs, outputs, descriptions, etc
+
+    :param integration: integration dictionary - contains all the metadata of the integration
+    :return: string of all the commands details in the integration
+    """
+    commands_string = ''
+    for i in range(len(integration['script']['commands'])):
+        try:
+            commands_string += '### ' + integration['script']['commands'][i]['name'] + '\n'
+            commands_string += '---\n'
+            commands_string += str(integration['script']['commands'][i].get('description', " ")) + '\n'
+            commands_string += '##### Base Command\n'
+            commands_string += '`' + integration['script']['commands'][i]['name'] + '`' + '\n'
+            # Inputs
+            commands_string += '##### Input\n'
+            commands_string += '| **Argument Name** | **Description** | **Required** |\n'
+            commands_string += '| --- | --- | --- |\n'
+            if len(integration['script']['commands'][i]['arguments']) != 0:
+                for j in range(len(integration['script']['commands'][i]['arguments'])):
+                    commands_string += '| ' + integration['script']['commands'][i]['arguments'][j]['name'] + ' | '
+                    if not (integration['script']['commands'][i]['arguments'][j].get('description', False)):
+                        return_error("Error! You are missing description in input " + integration['script']['commands'][i]['arguments'][j]['name'] +\
+                        " of command " + integration['script']['commands'][i]['name'])
+                        sys.exit(0)
+                        commands_string += integration['script']['commands'][i]['arguments'][j]['description'] + ' | '
+                        commands_string += str(integration['script']['commands'][i]['arguments'][j].get('required', 'False')) + ' | \n'
+            else:
+                commands_string += '-\n'
+
+            # Context output
+            commands_string += '##### Context Output\n'
+            if 'outputs' in integration['script']['commands'][i]:
+                commands_string += '| **Path** | **Type** | **Description** |\n'
+                commands_string += '| --- | --- | --- |\n'
+                for k in range(len(integration['script']['commands'][i]['outputs'])):
+                    commands_string += '| ' + integration['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
+                    commands_string += str(integration['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
+                    if not (integration['script']['commands'][i]['outputs'][k].get('description', False)):
+                        return_error("Error! You are missing description in output {} of command {}"
+                                     .format(integration['script']['commands'][i]['outputs'][j]['name'],
+                                             integration['script']['commands'][i]['name']))
+                        sys.exit(0)
+
+                    commands_string += integration['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
+            else:
+                commands_string += 'There is no context output for this command.\n'
+
+            # Raw output:
+            commands_string += '##### Command Example\n'
+            commands_string += '##### Context Example\n'
+            commands_string += '##### Human Readable Output\n'
+            commands_string += '\n'
+        except Exception as e:
+            return_error("Error encountered in the processing of command {} error was missing a {}. "
+                         "Please check your command inputs and outputs".format(integration['script']['commands'][i]['name'], str(e)))
+            sys.exit(0)
+
+
 # load the integration yml file
 if len(sys.argv) < 2:
     print("You must provide full path of integration yml file")
     exit(1)
 
 path = sys.argv[1]
-yamlFile  = open(path)
-data_map = yaml.safe_load(yamlFile)
-yamlFile.close()
-
-
-def add_lines(line):
-    output = ''
-    last_digit = 0
-    for i in range(len(line)):
-        if line[i].isdigit():
-            if line[i+1] == '.':
-                output += line[last_digit:i] + '\n'
-                last_digit = i
-
-    output += line[last_digit:len(line)] + '\n'
-    return output
-
-
-def add_error_lines(script_to_scan, script_type):
-    res = ''
-    if 'python' in script_type:
-        error_keys = ['return_error', 'raise ']
-    elif 'javascript' in script_type:
-        error_keys = ['throw ']
-    # Unsupported script type
-    else:
-        return res
-    lines_to_skip = 0
-    script_lines = script_to_scan.splitlines()
-    for idx in range(len(script_lines)):
-        # Skip lines that were already scanned
-        if lines_to_skip > 0:
-            lines_to_skip -= 1
-            continue
-        line = script_lines[idx]
-        if any(key in line for key in error_keys):
-            if '(' in line:
-                bracket_open_idx = line.index('(') + 1
-                if ')' in line:
-                    bracket_close_idx = line.index(')')
-                    res += '* ' + line[bracket_open_idx:bracket_close_idx] + '\n'
-                # Handle multi line error
-                else:
-                    res += '*' + ('' if len(line[bracket_open_idx:].lstrip()) < 1 else ' ' + line[bracket_open_idx:] + '\n')
-                    while not ')' in script_lines[idx + lines_to_skip + 1]:
-                        lines_to_skip += 1
-                        line = script_lines[idx + lines_to_skip]
-                        res += ' ' + line.lstrip() + '\n'
-                    # Adding last line of error
-                    lines_to_skip += 1
-                    line = script_lines[idx + lines_to_skip]
-                    bracket_close_idx = line.index(')')
-                    res += line[:bracket_close_idx].lstrip() + '\n'
-            else:
-                first_matching_error_key = next((key for key in error_keys if key in line), False)
-                after_error_key_idx = line.index(first_matching_error_key) + len(first_matching_error_key)
-                res += '* ' + line[after_error_key_idx:] + '\n'
-    return res
-
+yaml_file = open(path)
+data_map = yaml.safe_load(yaml_file)
+yaml_file.close()
 
 name = data_map['name']
 doc = ''
@@ -129,54 +147,10 @@ doc += '\n## Commands\n'
 doc += '---\n'
 doc += 'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.\n'
 doc += 'After you successfully execute a command, a DBot message appears in the War Room with the command details.\n'
-for i in range(len(data_map['script']['commands'])):
-    doc += str(i+1) + '. ' + data_map['script']['commands'][i]['name'] + '\n'
-for i in range(len(data_map['script']['commands'])):
-    try:
-        doc += '### ' + data_map['script']['commands'][i]['name'] + '\n'
-        doc += '---\n'
-        doc += str(data_map['script']['commands'][i].get('description', " ")) + '\n'
-        doc += '##### Base Command\n'
-        doc += '`' + data_map['script']['commands'][i]['name'] + '`' + '\n'
-        # Inputs
-        doc += '##### Input\n'
-        doc += '| **Argument Name** | **Description** | **Required** |\n'
-        doc += '| --- | --- | --- |\n'
-        if len(data_map['script']['commands'][i]['arguments']) != 0:
-            for j in range(len(data_map['script']['commands'][i]['arguments'])):
-                doc += '| ' + data_map['script']['commands'][i]['arguments'][j]['name'] + ' | '
-                if not (data_map['script']['commands'][i]['arguments'][j].get('description', False)):
-                    return_error("Error! You are missing description in input " + data_map['script']['commands'][i]['arguments'][j]['name'] +\
-                    " of command " + data_map['script']['commands'][i]['name'])
-                    sys.exit(0)
-                doc += data_map['script']['commands'][i]['arguments'][j]['description'] + ' | '
-                doc += str(data_map['script']['commands'][i]['arguments'][j].get('required', 'False')) + ' | \n'
-        else:
-            doc += '-\n'
-        # Context output
-        doc += '##### Context Output\n'
-        if 'outputs' in data_map['script']['commands'][i]:
-            doc += '| **Path** | **Type** | **Description** |\n'
-            doc += '| --- | --- | --- |\n'
-            for k in range(len(data_map['script']['commands'][i]['outputs'])):
-                doc += '| ' + data_map['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
-                doc += str(data_map['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
-                if not (data_map['script']['commands'][i]['outputs'][k].get('description', False)):
-                    return_error("Error! You are missing description in output " + data_map['script']['commands'][i]['outputs'][j]['name'] + \
-                    " of command " + data_map['script']['commands'][i]['name'])
-                    sys.exit(0)
-                doc += data_map['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
-        else:
-            doc += 'There is no context output for this command.\n'
 
-        # Raw output:
-        doc += '##### Command Example\n'
-        doc += '##### Context Example\n'
-        doc += '##### Human Readable Output\n'
-        doc += '\n'
-    except Exception as e:
-        return_error("Error encountered in the processing of command {} error was missing a {}. Please check your command inputs and outputs".format(data_map['script']['commands'][i]['name'], str(e)))
-        sys.exit(0)
+doc += get_list_of_commands(data_map)
+doc += get_all_commands_details_string(data_map)
+
 # Additional info
 doc += '\n## Additional information:\n'
 
@@ -185,11 +159,6 @@ doc += '\n## Known limitations:'
 
 # Troubleshooting
 doc += '\n## Troubleshooting:\n'
-
-# Possible Errors
-# if 'True' == demisto.args()['withErrors']:
-#     doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
-#     doc += add_error_lines(data_map['script']['script'], data_map['script']['type'])
 
 filename = os.path.basename(sys.argv[1]).replace('documentation-', 'integration-').replace('.yml', '.txt').replace('.yaml', '.txt')  # strip all the spaces
 
