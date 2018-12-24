@@ -46,13 +46,16 @@ script:
     API_KEY = demisto.params().get('apikey')
     MAX_AGE = demisto.params().get('days')
     THRESHOLD = demisto.params().get('threshold')
-    TEST_IP = "127.0.0.2"
 
+    TEST_IP = "127.0.0.2"
+    BLACKLIST_SCORE = 3
     CHECK_CMD = "check"
     CHECK_BLOCK_CMD = "check-block"
     REPORT_CMD = "report"
     BLACKLIST_CMD = 'blacklist'
     ANALYSIS_TITLE = "AbuseIPDB Analysis"
+    BLACKLIST_TITLE = "AbuseIPDB Blacklist"
+
 
     HEADERS = {
         'Key': API_KEY,
@@ -112,7 +115,7 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THRESHOLD, json=True):
+    def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THRESHOLD):
         LOG('running request with url=%s' % (SERVER + url_suffix))
         try:
             analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params)
@@ -126,7 +129,7 @@ script:
                 else:
                     return_error('Too many requests (possibly bad API key). Status code: ' + str(analysis.status_code))
 
-            return analysis.json() if json else analysis.content
+            return analysis.json()
         except Exception as e:
             LOG(e)
             return_error(e.message)
@@ -142,7 +145,7 @@ script:
                 "IP" : {
                     "Address" : analysis.get("ipAddress"),
                     'AbuseConfidenceScore'  : analysis.get('abuseConfidenceScore'),
-                    "Total Reports" : analysis.get("totalReports") or analysis.get("numReports"),
+                    "TotalReports" : analysis.get("totalReports") or analysis.get("numReports"),
                     "Geo" : { "Country" : analysis.get("countryName") }
                     }
                 }
@@ -157,7 +160,7 @@ script:
             if dbot_score == 3:
                 analysis_info["IP"]["Malicious"] = {
                     'Vendor' : "AbuseIPDB",
-                    'Detections' : 'The address was reported as Malicious in AbuseIPDB.'
+                    'Detections' : 'The address was reported as Malicious by AbuseIPDB.'
                 }
             dbot_scores.append({
                 "Score"     : dbot_score,
@@ -167,19 +170,37 @@ script:
             })
             context.append(analysis_info)
 
-        entry = {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(ANALYSIS_TITLE, table, removeNull=True),
-            'EntryContext': {'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)' : createContext(context, removeNull=True),
-                'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
-                    createContext(dbot_scores, removeNull=True),
-            }
-        }
+        return createEntry(context, table, dbot_scores, title=ANALYSIS_TITLE)
 
-        return entry
+
+    def blacklist_to_entry(info):
+        if not isinstance(info, list):
+            info = [info]
+
+        context, table, dbot_scores = [], [], []
+        for analysis in info:
+            context.append({
+                "IP" : {
+                    "Address" : analysis.get("ipAddress"),
+                    'Malicious'  : {
+                        'Vendor' : "AbuseIPDB",
+                        'Detections' : 'The address was reported as Malicious by AbuseIPDB.'
+                        }
+                    }
+                })
+            dbot_scores.append({
+                "Score"     : BLACKLIST_SCORE,
+                "Vendor"    : "AbuseIPDB",
+                "Indicator" : analysis.get("ipAddress"),
+                "Type"      : "ip"
+            })
+            table.append({
+                "IP Address" : analysis.get("ipAddress"),
+                'Abuse Confidence Score'  : analysis.get('abuseConfidenceScore'),
+                "Total Reports" : analysis.get("totalReports") or analysis.get("numReports")
+            })
+
+        return createEntry(context, table, dbot_scores, title=BLACKLIST_TITLE)
 
 
     def getDBotScore(analysis, threshold=THRESHOLD):
@@ -188,6 +209,20 @@ script:
         dbot_score = 0 if total_reports == 0 else 1 if abuse_score < 20 else 2 if abuse_score < threshold else 3
         return dbot_score
 
+
+    def createEntry(context, table, dbot_scores, title):
+        entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, table, removeNull=True),
+            'EntryContext': {'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)' : createContext(context, removeNull=True),
+                'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
+                    createContext(dbot_scores, removeNull=True),
+            }
+        }
+        return entry
 
 
     ''' FUNCTIONS '''
@@ -226,23 +261,8 @@ script:
             'maxAgeInDays' : days,
             "limit" : limit
         }
-        headers = {
-            'Key': API_KEY,
-            'Accept':'text/plain'
-        }
-        analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params, headers=headers, json=False).split()
-        if analysis:
-            entry = {
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': context,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': demisto.results('\n'.join(analysis)),
-                'EntryContext': {
-                    'AbuseIPDB(val.Blacklist && val.Blacklist == obj.Blacklist)' : {'Blacklist' :analysis}
-                }
-            }
-            return entry
+        analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params).get("data")
+        return blacklist_to_entry(analysis)
 
 
     def test_module():
@@ -370,7 +390,7 @@ script:
       defaultValue: "30"
     - name: limit
       description: 'Max amount of IPs to receive. '
-      defaultValue: "40"
+      defaultValue: "50"
     outputs:
     - contextPath: AbuseIPDB.Blacklist
       description: List of blacklisted IPs
