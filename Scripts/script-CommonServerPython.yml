@@ -58,6 +58,7 @@ script: |-
 
       return url + suffix
 
+
   def positiveUrl(entry):
       """
          Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
@@ -396,6 +397,7 @@ script: |-
       for k in dSub:
           if strRegistryPath[:len(k)] == k:
               return dSub[k] + strRegistryPath[len(k):]
+
       return strRegistryPath
 
 
@@ -435,14 +437,17 @@ script: |-
       def __init__(self, ):
           self.messages = []
 
+
       def __call__(self, message):
           self.messages.append('%s' % (message, ))
+
 
       def print_log(self, verbose=False):
           text = 'Full Integration Log:\n' + '\n'.join(self.messages)
           if verbose:
             demisto.log(text)
           demisto.info(text)
+
 
   """
   a logger for python integrations:
@@ -574,6 +579,7 @@ script: |-
           return [s.strip() for s in arg.split(',')]
       return arg
 
+
   def appendContext(key, data, dedup=False):
       """
          Append data to the investigation context
@@ -606,6 +612,7 @@ script: |-
           demisto.setContext(key, newVal)
       else:
           demisto.setContext(key, data)
+
 
   def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
       """
@@ -697,20 +704,8 @@ script: |-
 
       return mdResult
 
+
   tblToMd = tableToMarkdown
-
-  def underscoreToCamelCase(s):
-      """
-         Convert an underscore separated string to camel case
-
-         :type s: ``str``
-         :param s: The string to convert (e.g. hello_world) (required)
-
-         :return: The converted string (e.g. HelloWorld)
-         :rtype: ``str``
-      """
-      components = s.split('_')
-      return ''.join(x.title() for x in components)
 
 
   def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
@@ -748,6 +743,7 @@ script: |-
 
       if id is not None:
           res.setdefault('ID', id)
+
       return res
 
 
@@ -794,6 +790,7 @@ script: |-
                   data = [data]
               data = [{k: formatCell(row[k]) for k in row} for row in data]
               mdResult += tblToMd(section, data)
+
       return mdResult
 
 
@@ -838,6 +835,7 @@ script: |-
     for x in s:
         hash = (( hash << 5) + hash) + ord(x)
     return hash & 0xFFFFFFFF
+
 
   def file_result_existing_file(filename, saveFilename=None):
       """
@@ -936,6 +934,7 @@ script: |-
       else:
           return item
 
+
   def isCommandAvailable(cmd):
       """
          Check the list of available modules to see whether a command is currently available to be run.
@@ -957,10 +956,12 @@ script: |-
   def epochToTimestamp(epoch):
       return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
+
   def formatTimeColumns(data, timeColumnNames):
       for row in data:
           for k in timeColumnNames:
               row[k] = epochToTimestamp(row[k])
+
 
   def strip_tag(tag):
       strip_ns_tag = tag
@@ -1114,6 +1115,7 @@ script: |-
       elem = internal_to_elem(json_data, factory)
       return ET.tostring(elem, encoding='unicode')
 
+
   def get_hash_type(hash_file):
       """
          Checks the type of the given hash. Returns 'md5', 'sha1', 'sha256' or 'Unknown'.
@@ -1133,6 +1135,7 @@ script: |-
           return 'sha256'
       else:
           return 'Unknown'
+
 
   def is_ip_valid(s):
       """
@@ -1155,6 +1158,7 @@ script: |-
               return False
       return True
 
+
   def return_error(message):
       """
          Returns error entry with given message and exits the script
@@ -1171,6 +1175,7 @@ script: |-
           'Contents': message
       })
       sys.exit(0)
+
 
   def camelize(src, delim=' '):
       """
@@ -1193,6 +1198,7 @@ script: |-
           return map(lambda x: camelize(x, delim), src)
       src = {camelize_str(k, delim): v for k,v in src.iteritems()}
       return src
+
 
   # Constants for common merge paths
   outputPaths = {
@@ -1218,7 +1224,52 @@ script: |-
   sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
   sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
+  pascalRegex = re.compile('([A-Z]?[a-z]+)')
+
   ############################### REGEX FORMATTING end ###############################
+
+
+  def underscoreToCamelCase(s):
+      """
+         Convert an underscore separated string to camel case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. hello_world) (required)
+
+         :return: The converted string (e.g. HelloWorld)
+         :rtype: ``str``
+      """
+      if not isinstance(s, STRING_TYPES):
+          return s
+
+      components = s.split('_')
+      return ''.join(x.title() for x in components)
+
+
+  def pascalToSpace(s):
+      """
+         Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score", "thisIsIPAddressName" -> "This Is IP Address Name").
+         Could be used as headerTransform
+
+         :type s: ``str``
+         :param s: The string to be converted (required)
+
+         :return: The converted string
+         :rtype: ``str``
+      """
+
+      if not isinstance(s, STRING_TYPES):
+          return s
+
+      tokens = pascalRegex.findall(s)
+      for t in tokens:
+          # double space to handle capital words like IP/URL/DNS that not included in the regex
+          s = s.replace(t, ' {} '.format(t.title()))
+
+      # split and join: to remove double spacing caused by previous workaround
+      s = ' '.join(s.split())
+      return s
+
 
   def string_to_table_header(string):
       """
@@ -1236,6 +1287,7 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
+
   def string_to_context_key(string):
       """
        Checks if string, removes underscores, capitalize every word.
@@ -1251,6 +1303,7 @@ script: |-
           return "".join(word.capitalize() for word in string.split('_'))
       else:
           raise Exception('The key is not a string: {}'.format(string))
+
 
   def parse_date_range(date_range, date_format = None, to_timestamp = False):
       """
@@ -1299,6 +1352,7 @@ script: |-
 
       return start_time, end_time
 
+
   def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       """
         Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
@@ -1314,6 +1368,7 @@ script: |-
         :rtype: ``str``
       """
       return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+
 
   def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       """
@@ -1333,7 +1388,7 @@ script: |-
           return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
 
       # otherwise datetime.datetime
-      return int(time.mktime(date_str_or_dt.timetuple()*1000))
+      return int(time.mktime(date_str_or_dt.timetuple())*1000)
 
 type: python
 tags:
@@ -1344,5 +1399,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: added pascalToSpace headerTransformer
 tests:
   - TestPYCommonServer
+releaseNotes: "-"

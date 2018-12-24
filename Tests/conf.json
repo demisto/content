@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test CommonServer"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
@@ -76,11 +79,6 @@
           "playbookID": "URLDecode-Test"
         },
         {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
-        },
-        {
           "playbookID": "GetTime-Test"
         },
         {
@@ -109,6 +107,9 @@
         },
         {
             "playbookID": "ParseExcel-test"
+        },
+        {
+            "playbookID": "Detonate File - No Files test"
         },
         {
             "integrations": [
@@ -243,6 +244,11 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "integrations": ["EWS v2","EWS Mail Sender"],
+            "playbookID": "EWS search-mailbox test",
+            "timeout": 300
         },
         {
             "integrations": "PagerDuty v2",
@@ -391,10 +397,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         },
         {
             "integrations": "VirusTotal",
@@ -758,6 +760,11 @@
             "playbookID": "ExifReadTest"
         },
         {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
+        },
+        {
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,
@@ -802,7 +809,8 @@
         },
         {
             "integrations": "Zscaler",
-            "playbookID": "Zscaler Test"
+            "playbookID": "Zscaler Test",
+            "nightly": true
         },
         {
             "playbookID": "DemistoUploadFileToIncident Test",
@@ -848,7 +856,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "ParseEmailFiles": "Will be handled by yaakovi later this week"
+        "ParseEmailFiles-test": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -863,7 +871,6 @@
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
-        "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
