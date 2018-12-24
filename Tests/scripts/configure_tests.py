@@ -235,12 +235,12 @@ def get_integration_commands(intergration_ids, integration_set):
 
 
 def find_tests_for_modified_files(modified_files):
-    script_ids = set([])
-    playbook_ids = set([])
+    script_names = set([])
+    playbook_names = set([])
     intergration_ids = set([])
 
-    collect_changed_ids(intergration_ids, playbook_ids, script_ids, modified_files)
-    tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
+    collect_changed_ids(intergration_ids, playbook_names, script_names, modified_files)
+    tests, test_names, missing_ids = collect_tests(script_names, playbook_names, intergration_ids)
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests)
 
     if len(missing_ids) > 0:
@@ -278,20 +278,17 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
     return missing_ids
 
 
-def collect_changed_ids(intergration_ids, playbook_ids, script_ids, modified_files):
+def collect_changed_ids(intergration_ids, playbook_names, script_names, modified_files):
     for file_path in modified_files:
         if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
-            # id = get_script_or_integration_id(file_path)
             name = get_name(file_path)
-            script_ids.add(name)
+            script_names.add(name)
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            # id = collect_ids(file_path)
             name = get_name(file_path)
-            playbook_ids.add(name)
+            playbook_names.add(name)
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             id = get_script_or_integration_id(file_path)
-            # name = get_name(file_path)
             intergration_ids.add(id)
 
     with open("./Tests/id_set.json", 'r') as conf_file:
@@ -301,37 +298,36 @@ def collect_changed_ids(intergration_ids, playbook_ids, script_ids, modified_fil
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
 
-    updated_script_ids = set([])
-    updated_playbook_ids = set([])
+    updated_script_names = set([])
+    updated_playbook_names = set([])
 
-    for script_id in script_ids:
-        enrich_for_script_id(script_id, script_ids, script_set, playbook_set, playbook_ids, updated_script_ids, updated_playbook_ids)
+    for script_id in script_names:
+        enrich_for_script_id(script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names)
 
     integration_to_command = get_integration_commands(intergration_ids, integration_set)
     for _, integration_commands in integration_to_command.items():
-        enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_ids, script_ids, updated_script_ids, updated_playbook_ids)
+        enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names)
 
-    # playbook_ids.add('Extract Indicators From File - Generic')
-    for playbook_id in playbook_ids:
-        enrich_for_playbook_id(playbook_id, playbook_ids, script_set, playbook_set, updated_playbook_ids)
+    for playbook_id in playbook_names:
+        enrich_for_playbook_id(playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names)
 
-    for playbook_id in updated_playbook_ids:
-        playbook_ids.add(playbook_id)
+    for playbook_id in updated_playbook_names:
+        playbook_names.add(playbook_id)
 
-    for script_id in updated_script_ids:
-        script_ids.add(script_id)
+    for script_id in updated_script_names:
+        script_names.add(script_id)
 
 
-def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_ids, script_ids, updated_script_ids, updated_playbook_ids):
+def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names):
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         for integration_command in integration_commands:
             if integration_command in playbook_data.get('implementing_commands', []):
                 playbook_name = playbook_data.get('name')
-                if playbook_name not in playbook_ids and playbook_name not in updated_playbook_ids:
-                    updated_playbook_ids.add(playbook_name)
-                    enrich_for_playbook_id(playbook_name, playbook_ids, script_set, playbook_set, updated_playbook_ids)
+                if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                    updated_playbook_names.add(playbook_name)
+                    enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names)
 
     for script in script_set:
         script_id = script.keys()[0]
@@ -339,40 +335,40 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
         for integration_command in integration_commands:
             script_name = script_data.get('name')
             if integration_command in script_data.get('depends_on', []):
-                if script_name not in script_ids and script_name not in updated_script_ids:
-                    updated_script_ids.add(script_name)
-                    enrich_for_script_id(script_name, script_ids, script_set, playbook_set, playbook_ids, updated_script_ids, updated_playbook_ids)
+                if script_name not in script_names and script_name not in updated_script_names:
+                    updated_script_names.add(script_name)
+                    enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names)
 
 
-def enrich_for_playbook_id(given_playbook_id, playbook_ids, script_set, playbook_set, updated_playbook_ids):
+def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names):
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         if given_playbook_id in playbook_data.get('implementing_playbooks', []):
             playbook_name = playbook_data.get('name')
-            if playbook_name not in playbook_ids and playbook_name not in updated_playbook_ids:
-                updated_playbook_ids.add(playbook_name)
-                enrich_for_playbook_id(playbook_name, playbook_ids, script_set, playbook_set, updated_playbook_ids)
+            if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                updated_playbook_names.add(playbook_name)
+                enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names)
 
 
-def enrich_for_script_id(given_script_id, script_ids, script_set, playbook_set, playbook_ids, updated_script_ids, updated_playbook_ids):
+def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names):
     for script in script_set:
         script_id = script.keys()[0]
         script_data = script.values()[0]
-        if given_script_id in script_data.get('depends_on', []):
+        if given_script_id in script_data.get('script_executions', []):
             script_name = script_data.get('name')
-            if script_name not in script_ids and script_name not in updated_script_ids:
-                updated_script_ids.add(script_name)
-                enrich_for_script_id(script_name, script_ids, script_set, playbook_set, updated_script_ids, updated_playbook_ids)
+            if script_name not in script_names and script_name not in updated_script_names:
+                updated_script_names.add(script_name)
+                enrich_for_script_id(script_name, script_names, script_set, playbook_set, updated_script_names, updated_playbook_names)
 
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         if given_script_id in playbook_data.get('implementing_scripts', []):
             playbook_name = playbook_data.get('name')
-            if playbook_name not in playbook_ids and playbook_name not in updated_playbook_ids:
-                updated_playbook_ids.add(playbook_name)
-                enrich_for_playbook_id(playbook_name, playbook_ids, script_set, playbook_set, updated_script_ids, updated_playbook_ids)
+            if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                updated_playbook_names.add(playbook_name)
+                enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_script_names, updated_playbook_names)
 
 
 def get_test_from_conf(branch_name):

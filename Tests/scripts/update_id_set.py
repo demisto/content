@@ -205,11 +205,13 @@ def get_script_data(file_path):
     script_data = {}
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
+    script_code = data_dictionary.get('script', '')
     name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     depends_on = get_depends_on(data_dictionary)
+    script_executions = re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code)
 
     script_data['name'] = name
     if toversion:
@@ -218,6 +220,8 @@ def get_script_data(file_path):
         script_data['fromversion'] = fromversion
     if depends_on:
         script_data['depends_on'] = depends_on
+    if script_executions:
+        script_data['script_executions'] = script_executions
 
     return {id: script_data}
 
@@ -232,16 +236,26 @@ def re_create_id_set():
     playbooks_list = []
     integration_list = []
     testplaybooks_list = []
+
+    print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
+    print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Integrations', '*')):
+        print("adding {0} to id_set".format(file))
         integration_list.append(get_integration_data(file))
 
+    print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Playbooks', '*')):
+        print("adding {0} to id_set".format(file))
         playbooks_list.append(get_playbook_data(file))
 
+    print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Scripts', '*')):
+        print("adding {0} to id_set".format(file))
         scripts_list.append(get_script_data(file))
 
+    print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('TestPlaybooks', '*')):
+        print("adding {0}".format(file))
         if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
             testplaybooks_list.append(get_script_data(file))
         elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
@@ -254,6 +268,7 @@ def re_create_id_set():
         "TestPlaybooks": testplaybooks_list
     }
 
+    print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(ids_dict, id_set_file, indent=4)
 
@@ -345,4 +360,4 @@ def update_id_set():
 
 
 if __name__ == '__main__':
-    update_id_set()
+    re_create_id_set()
