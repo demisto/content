@@ -556,7 +556,7 @@ script:
         address_name = demisto.args()['name']
 
         address = panorama_get_address(address_name)
-        address_output = prettify_address(result)
+        address_output = prettify_address(address)
 
         demisto.results({
             'Type': entryTypes['note'],
