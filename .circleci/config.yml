@@ -8,7 +8,6 @@ jobs:
   build:
     docker:
       - image: ronykoz/content-build-node911:latest
-    working_directory: /tmp
     environment:
       CONTENT_VERSION: "18.12.1"
       GIT_SHA1: "4df02ca52f0cd2709cbeef6fda31ba81ec37408d" # guardrails-disable-line
