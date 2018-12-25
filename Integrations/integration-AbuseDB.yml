@@ -141,7 +141,7 @@ script:
     def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THRESHOLD):
         LOG('running request with url=%s' % (SERVER + url_suffix))
         try:
-            analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params, verify=INSECURE)
+            analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params, verify=not INSECURE)
 
             if analysis.status_code not in {200, 204, 429}:
                 return_error('Bad connection attempet. Status code: ' + str(analysis.status_code))
