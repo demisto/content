@@ -136,7 +136,7 @@ jobs:
           name: Create nightly parameter
           command: echo "Nightly Mode" > workspace/nightly.txt
       - persist_to_workspace:
-          root: workspace
+          root: /tmp/workspace
           paths:
             - nightly.txt
 
@@ -152,7 +152,7 @@ jobs:
           name: Create nightly parameter
           command: echo "Regular Mode" > workspace/nightly.txt
       - persist_to_workspace:
-          root: workspace
+          root: /tmp/workspace
           paths:
             - nightly.txt
 
