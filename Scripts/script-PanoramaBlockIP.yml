@@ -85,9 +85,12 @@ outputs:
   description: The IP the Panorama rule blocks
   type: string
 scripttarget: 0
+deprecated: true
 runonce: false
 dependson:
   must:
   - panorama
+releaseNotes: "Deprecated, use !panorama-custom-block-rule instead"
 tests:
+- palo_alto_firewall_test_pb
 - blockip_test_playbook
