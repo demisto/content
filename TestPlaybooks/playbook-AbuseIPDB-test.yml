@@ -65,10 +65,10 @@ tasks:
       id: 09ee2f82-9976-4ced-8022-49e6c339094f
       version: -1
       name: check IP
-      script: '|||ip'
+      script: AbuseIPDB|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: AbuseIPDB
     nexttasks:
       '#none#':
       - "4"
@@ -82,8 +82,6 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
-      using:
-        simple: AbuseIPDB_instance_1
       verbose:
         simple: "true"
       wait: {}
