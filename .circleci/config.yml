@@ -1,9 +1,4 @@
 version: 2
-
-executors:
-  my-executor:
-
-
 jobs:
   build:
     docker:
