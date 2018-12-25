@@ -14,8 +14,12 @@ tags:
 - firewall
 comment: Commit configuration to panorama
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: "Deprecated, use !panorama-commit instead"
+tests:
+- palo_alto_firewall_test_pb

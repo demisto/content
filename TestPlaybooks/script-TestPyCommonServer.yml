@@ -273,14 +273,8 @@ script: |-
                   demisto.results(toEntry(expected))
 
           demisto.results(str(results))
-          demisto.results(return_error('failure'))
+          return_error('failure')
 
-  def test_hash_djb2():
-      assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
-
-  def test_camelize():
-      assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
-      assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
 
   def test_flatten_cell():
       returned = []
@@ -328,20 +322,40 @@ script: |-
                   demisto.results(toEntry(expected))
 
           demisto.results(str(results))
-          demisto.results(return_error('failure'))
+          return_error('failure')
+
 
   def test_hash_djb2():
       assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
+
 
   def test_camelize():
       assert str(camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert str(camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_')) == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
       demisto.results("Camelize test finished successfuly!")
 
+
   def test_date_to_timestamp():
       assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
       assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
       demisto.results("date_to_timestamp test finished successfuly!")
+
+
+  def test_pascalToSpace():
+      use_cases = [
+          ('Validate', 'Validate'),
+          ('validate', 'Validate'),
+          ('TCP', 'TCP'),
+          ('eventType', 'Event Type'),
+          ('eventID', 'Event ID'),
+          ('eventId', 'Event Id'),
+          ('IPAddress', 'IP Address'),
+      ]
+      for s, expected in use_cases:
+          if pascalToSpace(s) != expected:
+              return_error('Error on {} != {}'.format(pascalToSpace(s), expected))
+
+      demisto.results('ok')
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
@@ -352,7 +366,8 @@ script: |-
       'TBLMD' : test_tbl_to_md,
       'HASH'  : test_hash_djb2,
       'CAMELIZE': test_camelize,
-      'DATE_TO_TIMESTAMP': test_date_to_timestamp
+      'DATE_TO_TIMESTAMP': test_date_to_timestamp,
+      'PASCAL_TO_SPACE' : test_pascalToSpace,
   }
 
   test_type = demisto.args()['test_type']
@@ -378,6 +393,7 @@ args:
   - HASH
   - CAMELIZE
   - DATE_TO_TIMESTAMP
+  - PASCAL_TO_SPACE
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0

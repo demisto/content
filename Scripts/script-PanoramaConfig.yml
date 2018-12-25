@@ -46,6 +46,7 @@ tags:
 - firewall
 comment: Set panorama configuration
 system: true
+deprecated: true
 args:
 - name: ruleName
   description: Name for the rule to be configured
@@ -85,3 +86,6 @@ dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: "Deprecated, use !panorama-create-rule instead"
+tests:
+- palo_alto_firewall_test_pb

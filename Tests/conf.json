@@ -3,11 +3,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "HashiCorp Vault",
+            "playbookID": "hashicorp_test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
+        },
+        {
+            "integrations": "Attivo Botsink",
+            "playbookID": "AttivoBotsinkTest"
         },
         {
             "playbookID": "CreatePhishingClassifierMLTest"
@@ -67,16 +75,23 @@
           "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 300
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
         {
           "playbookID": "URLDecode-Test"
-        },
-        {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
         },
         {
           "playbookID": "GetTime-Test"
@@ -116,6 +131,7 @@
                 "Panorama",
                 "Check Point"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "blockip_test_playbook"
         },
         {
@@ -148,6 +164,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -685,6 +702,10 @@
             "timeout": 300
         },
         {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB Test"
+        },
+        {
             "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
         },
@@ -758,6 +779,11 @@
         },
         {
             "playbookID": "ExifReadTest"
+        },
+        {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
         },
         {
            "playbookID": "Detonate File - Generic Test",
@@ -851,7 +877,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "ParseEmailFiles": "Will be handled by yaakovi later this week"
+        "ParseEmailFiles-test": "Will be handled by yaakovi later this week"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -866,7 +892,6 @@
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
-        "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
