@@ -1,0 +1,698 @@
+commonfields:
+  id: Anomali ThreatStream
+  version: -1
+name: Anomali ThreatStream
+display: Anomali ThreatStream
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Use Anomali ThreatStream to query and submit threats
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.threatstream.com
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    var BASE_URL = params.server.replace(/[\/]+$/, '') + '/api/';
+    var USERNAME = params.username;
+    var API_KEY = params.apikey;
+
+    var commandDict = {
+        'test-module': {
+            method: 'GET',
+            url: 'intelligence/',
+            version: 'v2',
+        },
+        'threatstream-intelligence': {
+            method: 'GET',
+            url: 'intelligence/',
+            version: 'v2',
+        },
+        'threatstream-import': {
+            method: 'PATCH',
+            url: 'intelligence/',
+            version: 'v1',
+            headers: { 'Content-Type': ['application/json'] }
+        }
+    }
+
+    var sendRequest = function(method, url, version, args, headers, multipart) {
+        var fullurl = BASE_URL + version + '/' + url;
+        if (method === 'GET') {
+            args.username = USERNAME;
+            args.api_key = API_KEY;
+            fullurl += encodeToURLQuery(args);
+        } else {
+            var cred = {
+                username: USERNAME,
+                api_key: API_KEY
+            };
+            fullurl += encodeToURLQuery(cred);
+        }
+
+        var res = !multipart ?
+            http(
+                fullurl,
+                {
+                    Method: method,
+                    Headers: headers,
+                    Body: method !== 'GET' ? JSON.stringify(args) : '',
+                },
+                params.insecure,
+                params.proxy
+            ) :
+            httpMultipart(
+                fullurl,
+                args.file_id,
+                {
+                    Method: method,
+                    Headers: headers,
+                },
+                args,
+                params.insecure,
+                params.proxy
+            );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (res.StatusCode === 404) {
+                return undefined;
+            }
+            if (res.StatusCode === -1) {
+                throw res.Status;
+            }
+            var urlWithoutApiKey = fullurl.replace(API_KEY, '*******');
+            throw 'Failed to reach ' + urlWithoutApiKey + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        if (res.Body) {
+            return JSON.parse(res.Body);
+        } else {
+            return JSON.parse(JSON.stringify(res));
+        }
+    }
+
+    var buildEmptyEntryContext = function() {
+        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
+    }
+
+    var isStandardCommand = function(command) {
+        return (command == 'ip' || command == 'file' || command == 'domain');
+    }
+
+    var fillReputationOutput = function(command, object) {
+        var output = {};
+
+        output['Confidence'] = object.confidence;
+        output['Severity'] = object.meta.severity;
+        output['Created'] = object.created_ts;
+        output['Modified'] = object.modified_ts;
+        output['itype'] = object.itype;
+        output['Source'] = object.source;
+        output['Status'] = object.status;
+        output['Threat Score'] = object.threatscore;
+
+        if (command == 'ip' || command == 'domain') {
+            if (object.asn) {
+                output['ASN'] = object.asn;
+            }
+            output['Country'] = object.country;
+            output['Latitude'] = object.latitude;
+            output['Longitude'] = object.longitude;
+            output['Organization'] = object.org;
+            output['IP Address'] = object.ip;
+            if (command == 'ip') {
+                output['Hostname'] = object.rdns;
+            }
+        }
+
+        output['Details'] = '';
+        if (object.meta.detail !== undefined) {
+            output['Details'] += object.meta.detail;
+            if (object.meta.detail2 !== undefined) {
+                output['Details'] += '<br>' + object.meta.detail;
+            }
+        } else {
+            if (object.meta.detail2 !== undefined) {
+                output['Details'] += object.meta.detail2;
+            }
+        }
+
+        return output;
+    }
+
+    var createMapEntry = function(output) {
+        var mapEntry;
+        var lat = parseFloat(output.Latitude);
+        var lng = parseFloat(output.Longitude);
+        if (!isNaN(lat) && !isNaN(lng)) {
+            var location = {lat: parseFloat(output.Latitude), lng: parseFloat(output.Longitude)};
+            mapEntry = {Type: entryTypes.map, Contents: location, ContentsFormat: formats.json};
+        }
+
+        return mapEntry;
+    }
+
+    var parseReputationResult = function(command, result) {
+        var outputs = [];
+        var contexts = [];
+        var objects = dq(result, 'objects');
+        objects.sort(function(x, y) {return x.created_ts < y.created_ts});
+        for (var i = 0; i < objects.length; i++) {
+            var output = fillReputationOutput(command, objects[i]);
+
+            if (!isStandardCommand(command)) {
+                var context = convertKeysToPascalCase(output);
+                delete context.Details;
+                context.Details1 = objects[i].meta.detail;
+                context.Details2 = objects[i].meta.detail2;
+                context.Id = objects[i].id;
+                context['Malware Type'] = objects[i].maltype;
+                if (command == 'threatstream-email-reputation') {
+                    context['Email'] = args.value;
+                }
+                contexts.push(context);
+            }
+
+            outputs.push(output);
+        }
+
+        // create human readable
+        var entry = buildEmptyEntryContext();
+        entry.Contents = result;
+        entry.ContentsFormat = formats.json;
+        var commandTitle = isStandardCommand(command) ? command : (command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1)));
+        commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
+        entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
+
+        // set the context according to the newest data
+        var output = outputs[0];
+        var context;
+        var contextKey;
+        if (isStandardCommand(command)) {
+            var context = {};
+            if (command == 'ip' || command == 'domain') {
+                var ipContext = {};
+                if (output['ASN']) {
+                    ipContext.ASN = output['ASN'];
+                }
+                ipContext.Geo = {};
+                ipContext.Geo.Country = output['Country'];
+                ipContext.Geo.Organization = output['Organization'];
+                ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
+                ipContext.Hostname = output['Hostname'];
+                if (output['Threat Score'] >= args.threshold) {
+                    ipContext.Malicious = {};
+                    ipContext.Malicious.Vendor = output['Source'];
+                }
+                ipContext.Address = output['IP Address'];
+                ipContext.Score = output['Threat Score'];
+                if (command == 'domain') {
+                    context.Name = args.value;
+                    context.DNS = output['IP Address'];
+                    context.Score = output['Threat Score']
+                    entry.EntryContext['Domain'] = context;
+                }
+
+                entry.EntryContext['IP'] = ipContext;
+
+            } else if (command == 'file') {
+                context.MD5 = args.value;
+                if (output['Threat Score'] >= args.threshold) {
+                    context.Malicious = {};
+                    context.Malicious.Vendor = output['Source'];
+                }
+                context.Score = output['Threat Score']
+                entry.EntryContext['File'] = context;
+            }
+
+            if (command == 'ip' || command == 'domain') {
+                var mapEntry = createMapEntry(output);
+            }
+        } else {
+            contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
+            entry.EntryContext[contextKey] = contexts;
+        }
+
+        var dbotScore = 1;
+        if (output['Threat Score'] >= args.threshold) {
+            dbotScore = 3;
+        } else if (output['Threat Score'] > 0) {
+            dbotScore = 2;
+        }
+
+        entry.EntryContext.DBotScore = {
+            Indicator: args.value,
+            Type: args.type,
+            Vendor: 'ThreatStream',
+            Score: dbotScore
+        };
+
+        var entries = [entry];
+        if (mapEntry) {
+            entries.push(mapEntry);
+        }
+
+        return entries;
+    }
+
+    function isObjectEmpty (obj) {
+        return Object.keys(obj).length === 0;
+    }
+
+    var parseResult = function(command, result) {
+        if(result && !(isObjectEmpty(result)) && !(result['objects'] instanceof Array)){
+            result['objects'] = [result['objects']];
+        }
+
+        if (dq(result, 'objects').length == 0) {
+            return 'Anomali ThreatStream - No records found.';
+        }
+
+        var entry;
+        switch (command) {
+            case 'ip':
+            case 'file':
+            case 'domain':
+            case 'threatstream-email-reputation':
+            case 'threatstream-checksum-reputation':
+                entry = parseReputationResult(command, result);
+                break;
+            case 'threatstream-push-indicator':
+            default:
+                entry = result;
+        }
+
+        return entry;
+    }
+
+    var apiCommand = command;
+
+    switch (command) {
+        case 'ip':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'ip';
+            args.value = args.ip;
+            delete args.ip;
+            break;
+
+        case 'file':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'md5';
+            args.value = args.file;
+            delete args.checksum;
+            break;
+
+        case 'domain':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'domain';
+            args.value = args.domain;
+            delete args.domain;
+            break;
+
+        case 'threatstream-email-reputation':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'email';
+            args.value = args.email;
+            delete args.email;
+            break;
+
+        case 'threatstream-file-reputation':
+            apiCommand = 'threatstream-intelligence';
+            args.type = 'md5';
+            args.value = args.file_md5;
+            delete args.md5;
+            break;
+
+        case 'threatstream-push-indicator':
+            apiCommand = 'threatstream-import';
+            args = { "meta": { "source_confidence_weight": args.confidenceWeight }, "objects": [ {
+                [args.indicatorType]: args.indicator,
+                "classification": args.classification,
+                "itype": args.itype,
+                "confidence": args.confidence,
+                "severity": args.severity } ] };
+            break;
+    }
+
+    var commandData = commandDict[apiCommand];
+
+    var result = sendRequest(
+        commandData.method,
+        replaceInTemplatesAndRemove(commandData.url, args),
+        commandData.version,
+        args,
+        commandData.headers,
+        commandData.multipart
+    );
+
+
+    if (command === 'test-module') {
+        return 'ok';
+    }
+
+    if (result && result.meta && result.meta.next) {
+        // hide the api key
+        result.meta.next = result.meta.next.replace(API_KEY, '*******');
+    }
+    return parseResult(command, result);
+  type: javascript
+  commands:
+  - name: threatstream-intelligence
+    arguments:
+    - name: limit
+      description: limit the amount of records in response
+      defaultValue: "20"
+    - name: asn
+      description: Autonomous System (AS) number associated with the indicator
+    - name: confidence
+      description: Confidence value assigned to the indicator
+    - name: country
+      description: Country associated with the indicator
+    - name: created_ts
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - name: expiration_ts
+      description: Time stamp of when intelligence will expire on ThreatStream, in
+        UTC time
+    - name: feed_id
+      description: Numeric ID of the threat feed that generated the indicator
+    - name: id
+      description: Unique ID for the indicator
+    - name: import_session_ id
+      description: ID of import session in which the indicator was imported
+    - name: ip
+      description: The IP address associated with the indicator if the imported indicator
+        is a domain or a URL
+    - name: is_public
+      description: Classification of the indicator—public or private
+    - name: itype
+      description: Indicator type
+    - name: latitude
+      description: Latitude associated with the Geo location of the IP
+    - name: longitude
+      description: Longitude associated with the Geo location of the IP
+    - name: meta.detail
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators
+    - name: meta.detail2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive
+    - name: meta.maltype
+      description: Tag that specifies the malware associated with an indicator
+    - name: meta.severity
+      description: Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys
+    - name: modified_ts
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - name: org
+      description: Registered owner (organization) of the IP address associated with
+        the indicator
+    - name: owner_ organization_id
+      description: ID of the (ThreatStream)organization that brought in the indicator,
+        either through a threat feed or through the import process
+    - name: rdns
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator
+    - name: source_reported_ confidence
+      description: A risk score from 0 to 100, provided by the source of the indicator
+    - name: status
+      description: Status assigned to the indicator
+    - name: tags.name
+      description: Tag assigned to the indicator
+    - name: threat_type
+      description: Summarized threat type of the indicator. For example, malware,
+        compromised, apt, c2, and so on
+    - name: trusted_circle_ids
+      description: IDs of the trusted circles with which the indicator is shared
+    - name: type
+      description: Type of indicator—domain, email, ip, md5, string, url
+    - name: update_id
+      description: An incrementing numeric identifier associated with each update
+        to intelligence on ThreatStream
+    - name: value
+      description: Value of the indicator
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: To retrieve threat intelligence from the ThreatStream cloud
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then domain
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Domain.DNS
+      description: Domain IP Address
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Address
+      description: Domain IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    description: Checks the reputation of the given IP or domain name
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: The checksum to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then file
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: File.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    description: Checks the reputation of the given checksum
+  - name: threatstream-email-reputation
+    arguments:
+    - name: email
+      required: true
+      description: The email address to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then email
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: ThreatStream.EmailReputation.Itype
+      description: The indicator type.
+    - contextPath: ThreatStream.EmailReputation.Created
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - contextPath: ThreatStream.EmailReputation.Modified
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - contextPath: ThreatStream.EmailReputation.Confidence
+      description: Confidence value assigned to the indicator. Confidence score can
+        range from 0-100, in increasing order of confidence.
+    - contextPath: ThreatStream.EmailReputation.Details1
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators.
+    - contextPath: ThreatStream.EmailReputation.Details2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive.
+    - contextPath: ThreatStream.EmailReputation.Status
+      description: Status assigned to the indicator
+    - contextPath: ThreatStream.EmailReputation.ThreatScore
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: ThreatStream.EmailReputation.Email
+      description: The email address
+    - contextPath: ThreatStream.EmailReputation.Severity
+      description: 'Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Possible values: low, medium, high, very high'
+    description: Checks the reputation of the given email
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.ASN
+      description: Autonomous System (AS) number associated with the indicator
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
+    description: Checks the reputation of the given IP
+  - name: threatstream-push-indicator
+    arguments:
+    - name: confidenceWeight
+      required: true
+      description: To use your source's confidence entirely, set source_confidence_
+        weight to 100.
+      defaultValue: "100"
+    - name: indicator
+      required: true
+      description: indicator value (1.2.3.4/google.com etc)
+    - name: indicatorType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - srcip
+      - domain
+      - url
+      - email
+      - md5
+      description: type of indicator to insert
+    - name: itype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - bot_ip
+      - mal_domain
+      - mal_url
+      - compromised_email
+      - apt_md5
+      description: indicator type (internal by threat stream, complete list can be
+        found in API docs)
+    - name: classification
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Classification of the indicator—public or private
+      defaultValue: private
+    - name: confidence
+      required: true
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence
+      defaultValue: "100"
+    - name: severity
+      required: true
+      description: 'Severity you want to assign to the indicator when it is imported.
+        Possible values: low, medium, high, very-high'
+      defaultValue: "100"
+    description: Push indicator into ThreatStream
+  runonce: false
+releaseNotes: "Added push indicator command"
+tests:
+- No test
