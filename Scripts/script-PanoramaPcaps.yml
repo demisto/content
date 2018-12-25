@@ -60,7 +60,11 @@ args:
 - name: password
   description: Password for Panorama.
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: "Deprecated"
+tests:
+- palo_alto_firewall_test_pb
