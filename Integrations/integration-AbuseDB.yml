@@ -6,19 +6,19 @@ display: AbuseIPDB
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAEoFJREFUeAHtWgt0VEWa/qtu3dvdSYCk84IkgIjIAh5eQUH0jALrg2HGOS4bBF3n6I7oeHZcHzO+1l1tx6OIoKPozM7oqqzOKg+dZXytjq6CQkRARB2XBEwC5B3yoEO6O337VtV+1UmHEHHOzp6zI2f21knl1q13ff+7bhP5yUfAR8BHwEfAR8BHwEfAR8BHwEfAR8BHwEfAR8BHwEfAR8BHwEfAR8BH4P8WAfbHTF9HlBu26fSgorEOp1BmrGQkexS19Xi0t5KoeQmRzLT5z5MfAXY4QKdHBd2TtGmPsimhbdJDM+plSlBDwqZnWwQt2EWUdfIf7c9/h39QgvcTFY60aVmA6O9sotMNHEpTLyS2ySOqR/koqhy0jRSMxnKiEf19OnoZvZxM0eNhot+bOj+dZAi0BWhCwqJfSpuOGmn1bDrYY9NjzUTnf0aUp4kGmAOqO9jk0KSoTTdCyrdjjAuJ1q6grZD8iyJEoL2fThoEjEoGodaCSEkQK4nyui6iaYM2aKGcj2ykeiIyBLWP4IeyqKRH0J2eQ3WGMVI27YhZtCjTjqefvkkEWoiK4oJWg7AxQyAQOdUp6K1/sugasqzlnPPHsL93kQ8h9yAnkGuRf4Y8GZlgf+0jDi0BY3yaJjLGdwiaa9r89A0iALXLoYavch2q9QQlkoI6oJpjRt2+bpGezZm2LEsHAgGdnZ2ts7KyVCgU0sFgUOOpUP8Gtj/bHCFCJHocugISXGU0QS/UO7ig2LT56U+HgBi8VL1DkwsUfQeV41JEm5o1PRXQdHEup+ULOQUtpfW9UtKHUlEqlSLbtskQ2xAZhGfRaPSCZDLZgDlbIkQHr3Dp1TJBp3FGt8AIzy+06AMEUC8NXtOUIxHin4hwaY5NpYrrOPNU/Qt3RmEVjqWKB0YWBkKJ0VrzVKxb12+KHDlyrPWbKVVsICtUm1eaZKyEW+xIz7DAoeHNvcLNoTLLo1ymCDKDBC+UMe4yqVrdRGfbxgi5pnrZ6pICnYqPJsZD6b7oxzHG1TqWHdD1a28+dkazllMXHqVtVqJ7tTGRfQljLM2TcZuarcr2to0bjw9RB5yfDeg3XNNcVMyRmlpcRm8vk/TetzU1/kKSa9C8kBO7D1OfwzQppTSIqbu7u6m1tZU1NTXpWAzWlugi5AuQrQlE3ZjnLcWoEg0TLUbnVBMVoO24tDeraFxWgN2nLFbJyHrTY+Jyc6DBnQRPXaTJXs+4eNIJ8rSWGNz+TZSH1RVkuYz/EMTdAv5eEYzGT1dBa6rN2WNc8G1k4zwBZMZwPaA/wvl22dn5qy57oCAdkZByL+C2tS7d10E/ziq1xT600S/pWR8sW114w6UPDDO+DgUPFgcl5z/QHswj5uWYlwc4xvBKCMWOgKd32LMK7ql4JL90MBYDBJ6UTQVghqk2o5G4pdgTI9r9Ieb9RFHhCkVZa1DZgZELDJEx6jzOGHG8cK5xgD5OxSnQZTTyPOTxyNSQot97ij5C0QXFJuUKAt2PT5huOly0ckyJifQoi7M5/MCIU47vlZ487blrfcyDH9rnT/3+tXthWmpFB7SntypJ25WiFhyuEKK8nAt99VU/y81FO+s/SQJyV608/YHy6GOpeBTQngFo73aEs7wiUpiTPtex/i3Soy2eq1/Tnnob5TpoySJoih8Kl1228AYKZHAYUNHDXCoFycaARGAi2vtWiurRyThG5e2Qxsc1U1JqdoNFbB62NRw2+MnSUvYOxL2pvl73JoyvNZBmoDQded8UOGJxTlXo1mDmz1JYgwi805euiuTmJknO0oqNhwXoJQtU5jSDeZaZoybTzzxBXeyOpCW4VbE6PBmcXgKmaayPdtRtjlCv6VPxYN4IO+DkC+0leXdHx1rUVzxSFgpRIqyl5xyNsa6Mer98xZg8ZsdO00oVpiTvtaVT0+Q1N2IuhPl96dpfldvRaP0Yrr1TpbaSAStR9fytPW2Zdpwpw9yZKtDQFFlMa/2r/XmdD++6lrylK4umklB3gYUXc8GmxHrFeAG/BoQxQWSDp9lP193a8YLRXGJ/3hTNrdsZ10uEYN+WIbUTnbajH4QJJca3JaV378Y7uz43K122Ku8Mpfk9JPVitE/IGV2YR3QY/rKZuj+FNIXBYWGuqet1RXnXED2IpueRz0PWHWDVJwDvo5J0GxYpT8TYVXU1dFpdLQ0hrpHo8bDJuLGkM5FFUlErnq2YOx8rFhtzgPd06h3mTLZsKrcsxNuMXgJem4HYaVANsy9fMQIbHZQULlqUHoN/9zuMbQUvvI2DfVCSXXD/0hW5p0QixM26THnvaeJPJkJhw2TkpFLTwPxPast+LxjkFQbEJQ+GL9JW/GUw01YrYL3uBNh/UjBVWRIquHPZ/dlpZ/CKleGynuiBuy2utlkB/jsnoDd7LPDuspXhq78bKckatLMTFjUnNaw5TRQ9olfsh4RWQ/mkcL4Qs2Rw8KC0NKNi4xKSL97V9RlkaRM4uhqwnw64J/ZmKYbyADNxMEdmPCebg1GgTlkvKjuSsOGZNpEphC0SliJru6YRP1d0OZwsu6ysjObNm8di8Rht2byFOjs79RqIWRxA/5hpdrb02D2gCGwseweLOw5uOyZNovnz5ztVVVWL33zzzdng4qdf0fTplRy3XpqCOZqyK0B0rCsrNlRYdODdGSDsVAC9n1JsnUd6hs31uSRYOYgyFf22ZPaIAxqWHA2zkIA2WSelClucL0CdCeG6vigsfFTEASsjB3PaYNg0A0t4ZoKbgI052CanmsJxdkD9DfYzW6bYb5jH/0MqOcsO0F8xi13mqkDVlaty3khp9X1LqB9h1U4vSU8xUjmWYy0goW/KomQUUvp2Zm9Dn9gqaED5xaH8CYtXKfuoSp4LG/sdXPIGcK7D0FCHgYLRZidMYIQm7L8JZxmH/kW9h+1gdnavNmBLUudybf3z0pUFEAqcS8mxUAWlkPg3JGO/eeW2dnPDmE4DBEYB+pFosyYHRE5zR15enl60aBE7e+7ZrGpvFX355ZdUjdzV0EBbDtbS9/btp7nd3ezhnBzafcklbMwPrqGZM2dSdVUVPOMIaKuNwb/9aUX1k+GFl0MAofvUgfTS4KDG98fiAGehMh+qa71UyR0WgbFt/V9QN1OVEuUVEfow43WCCUw65Gm1csNtnc8se7SoWLvenVDr10NtT9Nx7xQocKMfzP7TZ0iPMP/MmVADkEFhPRyqbDjWNg1CKn2YC/qFTqqnFBe98WRnI1kFf4EgYQ4A1WCkJ+SuzjVidkmeksl/hLRdi3Fz4sS2Ywqw+/EpzYiKsnH+W0DnGx3NbW7DY8HWIBM1WrJ3Wt3DtaNEASA5ceJMQmszD3NhlHYk4aa/PwGH4nRO7x//zFPhUkqSIzwZwjmNbU+ff2DQEXjKAN81sp3sm0hXV1fTmjVrVEtLCz/zzDNpwYIFbOHChZSbl0d5OD3967NEq1fR1PoGmnroIDUeqKOXamr0M888Qzt37swAHEDPCUZ3wE9rhlcdhZcFBYF315tuCZoBkUvgOHlcBBYypUeqFCkQIB9tZ/Gc/FOhdapMf2N/kA7CrTtoCl7Jee3iwLs1UNVRUC8PHH+8SjedhiRwPAsJrxZB/h5h6/NEkP011P5i5VKn4tZOeKS/HhYY8YbkrBiRAlQ1C0LorxKzwn8J4sI9YRMsoUMWt4qBaK4FcTJoDk2ogRJhUei3KDaeUh47qiQYV/MXg/HDmzfDzi97aOioY++WxukJ103EgAVLWWSDPLIPA5gnmaTnEVHVMsRI+EAwnnFrGRhoEQtZsMkFkfXUvtvMNkDgbk5txfjkNwU7A6JkEHVdlyorK2nXrl2qqKiIxo4dy8LhMIVB4OG5uUTxOE3JzmGLwCyllduoeds2vQmE/LBfA5gFkHQJ5izBTnHiVhfeJOqUcYbgKc4CN09AIBe0g+xKcOWVhu/AieiBUEzTDO2xmXhLExhPMwtAxqEGJSNCBuKBuLO/DeF6hskGeqMPW3vTkeglDxWsDkm2k0taipXOQahTAim+mEmaJZldrKWqNegYQpnNaNgF+BDGDO4BsXZooXbYKdmroNMHJu8vpBmR4YJI6zXJwPA1o60Dicc7wdSRr0r70LGZd6m9UfBnR+G9G6u2spAL02osLcSTsRatvMoNd3UNfMhZurLQhRY8BZhNBDgTMe54Ane61JgvqPZCRu4BWO1HjKHoXw2E1g1Qy8hfASwbAHwOEbwVeRZY9j6822C0V4GEoVMYx5+GXIYMCatzJdWZaYVlT+ZclgMxBiJuhfrYhb0rZTxFrQtwiLmwKePAFLMrHshJ27o+1cfGQWlNOD9C7wUPvh+GzR4PEoxA/w7FeAfm6E86G/3S4QW3ZCEoVGRIBSbSVzwULoUZOFN6PA/2a0UW44cSxOdoV92CxS+2OJ0qldrLmNUG0BLY+lpvZ/vjwbOKg0mmyoWCipRsDxbCZQxmPFFKq0jm1mcdiG26rk9jnahbps7sy5TTXnt77USo5+/idQKYZVtKyi8QGkCx4TteX+IK1DfFSIT4brsI4Zc0cjkCUhRVWqY1pGkHj/alGUTRTk6fZIMIP4Ijg13vv0eRA7tsuMEcwmxgAL6+UURGpT8LSTFxxW0g8gwQOWLcfxD5tyDeLIyZizqhqQdzfYaQq+b8yPlC689nYofGuapJKbVm/W2dGzNzGukWmt8BqbqZwcOGzzTdrIx4EpqIRkFp/WRkVn55SqZyhMPngfBxOF174onAweys1BFwfBR10yFb1y99MP9b4OoLIITTQPwWzIEwwy6D83QdRPIC12XvJkitxwFyta0LcYSj0lOtPOjuVsngp0zQfCb49XxWuMzDF+9A0PoedjLcS7IHswL66VgSQGdgzxyg72k0Fju1mdjHx9cPvMGWwyKBRRTuDhT9FHv9++5oXQjrlUJB52OCFjDaa3BNd+BrO1QxhAFraS3PR6T466Ur8+N74TNlc5kPsR4Jm4/4V3+mJccHv740mPt0G6ePQKjtWYxCkMjuFyxaiW4/QUYclo4zTf+v5DjqnsPiK6Ara7BhSCy7G9u5g1PLck6tkGwNlvoUeesUxMUlgb1jMMssdC/EAT71PJaO5zB3Om28oysKSfoYfLMPhJmsiE+HUhaQJnN5sAdEOggAFjshvgTLWYixn9WefPHVSFPc0nIb+Oo1KBDPDvBLrQC7CZojDnB2GB4xjk5jYtIur8db43n0vhD0LfR7yg7RKmiBcWCU5zjz1r14U6xVSfYcRjwD0Aqx1o9FiN8Iex2SLv0ySepFnXJSkCRslcFcAwTD2HDisA6wTvsRKH59Skut0VpEAZxtPEzEbEB3BqTWUQp21tN3eFI/vfGWhvQlA+pNX/yxPJDaCMcc1M3AWmUQgG6ozH+Trn50/T+078usOpT3WJdDl2Zpijh9X4Y2QLnch05NGADa0NnIJrYci2ziwMEHwBUstdyLcOt6i2Yiri5DuxFs0IiO4vL14X0ePToNQv+3KwuGxRxdxhI0XHLVTB93NQ69QzW3N4FcXQrPNs/ldissWoIPY7ivw8WJSrVzW5/ClCgTnDdEj7btfzUCIvanip8X5tjdeqJ0aJQlWUOOGlbXIzpzuRL53U6i8RUQz3TFBUjYkokJ4NiRIKYnharL7umsXdt/adLfJ+So+DiQbZzSQqe0rqFEe53x7E08be0Ll/AsNoqncBWfcOoLQ65lziZ6KQeOWuO629ohw8fh1L9Lou8/UZqf7ImVCdxFSwnuBYNAMnttJ3Wkq6ur/bgzYa1QQ/7IZJJKoFW4ubOGPUuBoZPM4jLuULcVbe8w+xpY4ESFL4hy8D33dnwFOoyvQG6voJe6+oh6ou5fqQPFxVGbrsOXqPrM50YXP+NpM5cXfjo5EGjJoSIQ+QF8KuwynwpBoN1dNl1d3/dh/2s3uQtS3STowpigf4eDfxTZA6Ff7vkjGORrJ/cb/lcIDFXRA5NU46tPoaDl2fg9lsOoFHo+kWL0OeLZ37matkPf7wPhunEtEQwIKoVneZbgtDAArxdmbgTUcgy/y9qQSNGqAqK9AxP7hZMHAXy9D+CXGBdDTb8FaRz4NSWkWuIHATEpqB31UeSUUccmo2wkvhoSf/OX+HXIyXOa/587+VoJHgxHdDiFcX09DxJagV9PzrU1jYRjgluWvgS3Du4tCM3oM9yk/zbh0aZiotpMu//85hD4HxE4s70NCEkQL4cPW3QO1O41RYzm41a7Dl+X/iWYolfhSDXM6wunMkP8p4+Aj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI+Aj4CPgI/AnzkC/w1FMhrWkp06JAAAAABJRU5ErkJggg==
 description: Central repository to report and identify IP addresses that have been
-  associated with malicious activity online.
-detaileddescription: "*Minimum score threshold - Minimum score from AbuseIPDB for
-  the IP to be considered malicious. (Must be above 20).   \n\n\n*Searching an entire
+  associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.-
+detaileddescription: "- Minimum score threshold - Minimum score from AbuseIPDB for
+  the IP to be considered malicious. (Must be above 20).   \n\n\n- Searching an entire
   subnet far back in time (e.g. Days=365) will likely cause a server timeout, and
-  you will receive a 500 Internal Server Error response from AbuseIPDB server.   \n\n\n[Report
-  Categories](https://www.abuseipdb.com/categories).\n\n"
+  you will receive a 500 Internal Server Error response from AbuseIPDB server.   \n\n\n-
+  [Report Categories](https://www.abuseipdb.com/categories).\n\n"
 configuration:
-- display: Server URL
+- display: AbuseIP server URL
   name: server
   defaultvalue: https://api.abuseipdb.com/api/v2/
   type: 0
   required: true
-- display: API Key (v2).
+- display: API Key (v2)
   name: apikey
   defaultvalue: ""
   type: 4
@@ -28,7 +28,7 @@ configuration:
   defaultvalue: "80"
   type: 0
   required: false
-- display: Max reports age (in days)
+- display: Maximum reports age (in days)
   name: days
   defaultvalue: "30"
   type: 0
@@ -332,111 +332,109 @@ script:
     arguments:
     - name: ip
       required: true
-      description: ' IP address to check.'
+      description: ' IP address to check'
     - name: days
-      description: Reports within the last x amount of days.
+      description: Time range to return reports for (in days), default is 30
       defaultValue: "30"
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Set false for shorter report.
+      description: Report length, "true" returns the full report, "false" does not return reported categories, default is "true"
       defaultValue: "true"
     - name: threshold
-      description: IP Threshold. Minimum score from VT analysis to consider the IP  malicious.
-        (>20).
+      description: Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80
       defaultValue: "80"
     outputs:
     - contextPath: AbuseIPDB.IP.Address
-      description: IP Address
+      description: IP address
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
-      description: Confidence Score fetched from AbuseIPDB
+      description: Confidence score fetched from AbuseIPDB
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported
     - contextPath: AbuseIPDB.IP.Geo.Country
-      description: Country associated with IP Address
+      description: Country associated with this IP Address
     - contextPath: AbuseIPDB.IP.Address.Reports
-      description: Reports summary (for Verbose reports)
+      description: Reports summary (for "verbose" reports)
     - contextPath: DBotScore.Score
       description: Analysis score
     - contextPath: DBotScore.Vendor
-      description: Vendor name, i.e. AbuseIPDB
+      description: Vendor name (AbuseIPDB)
     - contextPath: DBotScore.Indicator
       description: The IP address
     - contextPath: DBotScore.Type
-      description: The type, i.e. ip
+      description: The type (ip)
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
-      description: This IP was found to be Malicious by this Vendor
+      description: The vendor that determined this IP address to be malicious
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict
-    description: Check IP address against the database.
+    description: Checks the specified IP address against the AbuseIP database
   - name: abuseipdb-check-cidr-block
     arguments:
     - name: network
       required: true
       description: IPv4 Address Block in CIDR notation.
     - name: days
-      description: Reports within the last x amount of days.
+      description: Time range to return reports for (in days), default is 30
       defaultValue: "30"
     - name: limit
-      description: Max amount of IPs to check.
+      description: Maximum number of IPs to check, default is 40
       defaultValue: "40"
     - name: threshold
-      description: IP Threshold. Minimum score from VT analysis to consider the IP  malicious.
-        (>20).
+      description: Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80
       defaultValue: "80"
     outputs:
     - contextPath: AbuseIPDB.IP.Address
-      description: IP Address
+      description: IP address
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
-      description: Confidence Score fetched from AbuseIPDB
+      description: Confidence score fetched from AbuseIPDB
     - contextPath: AbuseIPDB.IP.Geo.Country
-      description: Country associated with IP Address
+      description: Country associated with this IP Address
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported
     - contextPath: DBotScore.Score
       description: Analysis score
     - contextPath: DBotScore.Vendor
-      description: Vendor name, i.e. AbuseIPDB
+      description: Vendor name (AbuseIPDB)
     - contextPath: DBotScore.Indicator
       description: The IP address
     - contextPath: DBotScore.Type
-      description: The type, i.e. ip
+      description: The type (ip)
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
-      description: This IP was found to be Malicious by this Vendor
+      description: The vendor that determined this IP address to be malicious
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict
-    description: query a block of IPs to check against the database.
+    description: Queries a block of IPs to check against the database
   - name: abuseipdb-report-ip
     arguments:
     - name: ip
       required: true
-      description: ' IP address to report.'
+      description: ' The IP address to report'
     - name: categories
       required: true
-      description: Comma delineated list of category IDs.  (numerical representation
+      description: CSV list of category IDs (numerical representation
         or in their name)
-    description: report an IP address.
+    description: Report an IP address to AbuseIPDB
   - name: abuseipdb-get-blacklist
     arguments:
     - name: days
-      description: Reports within the last x amount of days.
+      description: Time range to return reports for (in days), default is 30
       defaultValue: "30"
     - name: limit
-      description: 'Max amount of IPs to receive. '
+      description: 'Maximum number of IPs to retrieve, default is 50 '
       defaultValue: "50"
     outputs:
     - contextPath: AbuseIPDB.Blacklist
       description: List of blacklisted IPs
-    description: Get a list of the most reported IP addresses.
+    description: Returns a list of the most reported IP addresses
   - name: abuseipdb-get-categories
     arguments: []
     outputs:
     - contextPath: AbuseIPDB.Categories
-      description: AbuseIPDB Categories
+      description: List of AbuseIPDB categories
       type: string
-    description: Get a list of report categories from AbuseIPDB
+    description: Returns a list of report categories from AbuseIPDB
   runonce: false
 releaseNotes: "Added 4 new commands. Commands related to: check and report IPs, and getting list of IPs that have been associated with malicious activity online"
 tests:
