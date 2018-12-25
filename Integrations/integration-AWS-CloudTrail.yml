@@ -817,6 +817,6 @@ script:
       the last seven days.
   dockerimage: demisto/boto3
   runonce: false
-releasenotes: "Fix bug in aws-cloudtrail-lookup-events"
+releaseNotes: "Fix bug in aws-cloudtrail-lookup-events"
 tests:
   - No Tests
