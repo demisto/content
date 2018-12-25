@@ -583,8 +583,6 @@ script:
         credentials = []
         engines_to_fetch_from = []
         ENGINES = argToList(demisto.params().get('engines', []))
-        if not isinstance(ENGINES, list):
-            ENGINES = [ENGINES]
 
         if len(ENGINES) == 0:
             return_error('No secrets engines specified')
@@ -592,7 +590,7 @@ script:
         for engine_type in ENGINES:
             engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
             if len(engines_to_fetch) == 0:
-                return_error('Engine type not configured')
+                return_error('Engine type not configured, please use the configure-engine command to configure a secrets engine.')
             engines_to_fetch_from += engines_to_fetch
 
         for engine in engines_to_fetch_from:
@@ -690,7 +688,6 @@ script:
         return send_request(path, 'get')
 
     ''' EXECUTION CODE '''
-
     if USERNAME and PASSWORD:
         TOKEN = login()
     elif not TOKEN:
@@ -1032,7 +1029,8 @@ script:
       predefined:
       - "1"
       - "2"
-      description: The engine version (for KV engines)
+      description: The engine version (for K/V engines)
+      defaultValue: "2"
     description: Configure a secrets engine to fetch secrets from.
   - name: hashicorp-reset-configuration
     arguments: []
