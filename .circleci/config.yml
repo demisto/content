@@ -13,8 +13,6 @@ jobs:
       GIT_SHA1: "4df02ca52f0cd2709cbeef6fda31ba81ec37408d" # guardrails-disable-line
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
       - run:
           name: Prepare Environment
           command: |
@@ -23,17 +21,6 @@ jobs:
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-
-              cat /tmp/workspace/nightly.txt >> run_mode
-              if [ run_mode = "Nightly Mode" ]
-                then
-                  IS_NIGHTLY=True
-                  echo "Setting nightly true"
-
-                else
-                  IS_NIGHTLY=False
-                  echo "Setting nightly false"
-              fi
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
@@ -44,6 +31,7 @@ jobs:
       - run:
           name: Configure Test Filter
           command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Build Content Descriptor
@@ -127,46 +115,23 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-  set_nigthly_true:
-    docker:
-      - image: ronykoz/content-build-node911:latest
-    working_directory: /tmp
-    steps:
-      - run:
-          name: Create workspace dir
-          command: mkdir -p workspace
-      - run:
-          name: Create nightly parameter
-          command: echo "Nightly Mode" > workspace/nightly.txt
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - nightly.txt
 
-  set_nigthly_false:
-    docker:
-      - image: ronykoz/content-build-node911:latest
-    working_directory: /tmp
+  run_nightly_build:
+    machine: true
     steps:
+      - checkout
       - run:
-          name: Create workspace dir
-          command: mkdir -p workspace
+          name: Prepare Enviornement
+          command: chmod +x ./Utils/*
       - run:
-          name: Create nightly parameter
-          command: echo "Regular Mode" > workspace/nightly.txt
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - nightly.txt
+          name: Trigger nightly run
+          command: ./Utils/trigger_content_nightly_build.sh master "$CIRCLECI_TOKEN"
 
 workflows:
   version: 2
   commit:
     jobs:
-      - set_nigthly_false
       - build:
-          requires:
-            - set_nigthly_false
   nightly:
     triggers:
       - schedule:
@@ -176,7 +141,4 @@ workflows:
               only:
                 - master
     jobs:
-      - set_nigthly_true
-      - build:
-          requires:
-            - set_nigthly_true
+      - run_nightly_build
