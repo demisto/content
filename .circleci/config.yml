@@ -131,7 +131,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build:
+      - build
   nightly:
     triggers:
       - schedule:
