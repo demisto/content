@@ -139,16 +139,16 @@ jobs:
         enabled: true
     steps:
       steps:
-      - run:
-          name: Create workspace dir
-          command: mkdir -p workspace
-      - run:
-          name: Create nightly parameter
-          command: echo "Regular Mode" > workspace/nightly.txt
-      - persist_to_workspace:
-          root: workspace
-          paths:
-          - nightly.txt
+        - run:
+            name: Create workspace dir
+            command: mkdir -p workspace
+        - run:
+            name: Create nightly parameter
+            command: echo "Regular Mode" > workspace/nightly.txt
+        - persist_to_workspace:
+            root: workspace
+            paths:
+            - nightly.txt
 
 workflows:
   version: 2
