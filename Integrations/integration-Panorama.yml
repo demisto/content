@@ -391,6 +391,7 @@ script:
         if not DEVICE_GROUP:
             return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
+        result = panorama_push_to_device_group()
         if 'result' in result['response']:
             # commit has been given a jobid
             push_output = {
@@ -432,6 +433,7 @@ script:
     def panorama_push_status_command():
         ''' Check jobID of push status '''
 
+        result = panorama_push_status()
         if (result['response']['result']['job']['type'] != 'CommitAll'):
             return_error('JobID given is not of a Push')
 
