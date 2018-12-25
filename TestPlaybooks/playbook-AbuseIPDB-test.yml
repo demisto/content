@@ -1,7 +1,7 @@
 id: AbuseIPDB Test
 version: -1
 rolename: []
-name: AbuseIPDB test
+name: AbuseIPDB Test
 starttaskid: "0"
 tasks:
   "0":
