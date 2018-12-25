@@ -1,9 +1,15 @@
 version: 2
-jobs:
-  build:
+
+executors:
+  my-executor:
     docker:
       - image: ronykoz/content-build-node911:latest
-    environment:
+    working_directory: /tmp
+
+jobs:
+  build:
+      executor: my-executor
+      environment:
       CONTENT_VERSION: "18.12.1"
       GIT_SHA1: "4df02ca52f0cd2709cbeef6fda31ba81ec37408d" # guardrails-disable-line
     steps:
@@ -120,8 +126,7 @@ jobs:
           destination: artifacts
           when: always
   set_nigthly_true:
-    machine:
-        enabled: true
+    executor: my-executor
     steps:
       - run:
           name: Create workspace dir
@@ -135,8 +140,7 @@ jobs:
             - nightly.txt
 
   set_nigthly_false:
-    machine:
-        enabled: true
+    executor: my-executor
     steps:
       - run:
           name: Create workspace dir
