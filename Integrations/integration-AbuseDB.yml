@@ -240,7 +240,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, table, removeNull=True),
             'EntryContext': {'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)' : createContext(context, removeNull=True),
-                'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
+                'DBotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
                     createContext(dbot_scores, removeNull=True),
             }
         }
