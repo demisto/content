@@ -143,7 +143,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
-            "instance_name": "palo_alto_firewall",
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
