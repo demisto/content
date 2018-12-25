@@ -994,7 +994,7 @@ script:
         name = demisto.args()['name']
 
         custom_url_category = panorama_get_custom_url_category(name)
-        custom_url_category_output = prettify_custom_url_category(result)
+        custom_url_category_output = prettify_custom_url_category(custom_url_category)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1844,8 +1844,8 @@ script:
             panorama_edit_address_group_command()
 
         # Custom Url Category commands
-        elif demisto.command() == 'panorama-custom-get-url-category':
-            panorama_custom_get_url_category_command()
+        elif demisto.command() == 'panorama-get-custom-url-category':
+            panorama_get_custom_url_category_command()
 
         elif demisto.command() == 'panorama-create-custom-url-category':
             panorama_create_custom_url_category_command()
