@@ -8,9 +8,10 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Central repository to report and identify IP addresses that have been
   associated with malicious activity online.
 detaileddescription: "*Minimum score threshold - Minimum score from AbuseIPDB for
-  the IP to be considered malicious. (Must be above 20).   \n\n\nSearching an entire
+  the IP to be considered malicious. (Must be above 20).   \n\n\n*Searching an entire
   subnet far back in time (e.g. Days=365) will likely cause a server timeout, and
-  you will receive a 500 Internal Server Error response.   \n\n\n[Report Categories](https://www.abuseipdb.com/categories).\n\n"
+  you will receive a 500 Internal Server Error response from AbuseIPDB server.   \n\n\n[Report
+  Categories](https://www.abuseipdb.com/categories).\n\n"
 configuration:
 - display: Server URL
   name: server
@@ -27,7 +28,7 @@ configuration:
   defaultvalue: "80"
   type: 0
   required: false
-- display: Max reports age
+- display: Max reports age (in days)
   name: days
   defaultvalue: "30"
   type: 0
@@ -42,10 +43,10 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ""
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 script:
   script: |+
@@ -167,7 +168,7 @@ script:
                     "Address" : analysis.get("ipAddress"),
                     'AbuseConfidenceScore'  : analysis.get('abuseConfidenceScore'),
                     "TotalReports" : analysis.get("totalReports") or analysis.get("numReports") or "0",
-                    "Geo" : { "Country" : analysis.get("countryName") }
+                    "Geo" : { "Country" : analysis.get("countryName") or analysis.get("countryCode") }
                     }
                 }
             if verbose:
@@ -225,7 +226,7 @@ script:
 
 
     def getDBotScore(analysis, threshold=THRESHOLD):
-        total_reports = analysis.get("totalReports") or 0
+        total_reports = analysis.get("totalReports") or analysis.get("numReports") or 0
         abuse_score = int(analysis.get("abuseConfidenceScore"))
         dbot_score = 0 if total_reports == 0 else 1 if abuse_score < 20 else 2 if abuse_score < int(threshold) else 3
         return dbot_score
@@ -293,6 +294,18 @@ script:
             return_error(e.message)
         demisto.results('ok')
 
+    def get_categories_command():
+        categories = { str(key) : value for key,value in CATEGORIES_NAME.items() }
+        entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': categories,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("AbuseIPDB report categories", categories, removeNull=True),
+            'EntryContext': {'AbuseIPDB.Categories(val && val == obj)' : createContext(categories, removeNull=True),
+            }
+        }
+        return entry
 
     try:
         if demisto.command() == 'test-module':
@@ -306,7 +319,8 @@ script:
             demisto.results(report_ip_command(**demisto.args()))
         elif demisto.command() == 'abuseipdb-get-blacklist':
             demisto.results(get_blacklist_command(**demisto.args()))
-
+        elif demisto.command() == 'abuseipdb-get-categories':
+            demisto.results(get_categories_command(**demisto.args()))
 
     except Exception as e:
         LOG.print_log()
@@ -416,6 +430,13 @@ script:
     - contextPath: AbuseIPDB.Blacklist
       description: List of blacklisted IPs
     description: Get a list of the most reported IP addresses.
+  - name: abuseipdb-get-categories
+    arguments: []
+    outputs:
+    - contextPath: AbuseIPDB.Categories
+      description: AbuseIPDB Categories
+      type: string
+    description: Get a list of report categories from AbuseIPDB
   runonce: false
 releaseNotes: "Added 4 new commands. Commands related to: check and report IPs, and getting list of IPs that have been associated with malicious activity online"
 tests:
