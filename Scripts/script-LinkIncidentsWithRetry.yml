@@ -18,7 +18,7 @@ enabled: true
 args:
 - name: linkedIncidentIDs
   required: true
-  description: The list of other incidents to link
+  description: The list of other incidents. Accepts comma-delimited
     IDs.
 - name: retryLimit
   description: How many retries to do after failure
