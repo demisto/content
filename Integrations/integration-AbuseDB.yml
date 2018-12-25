@@ -282,8 +282,8 @@ script:
             'maxAgeInDays' : days,
             "limit" : limit
         }
-        analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params).get("data")
-        return blacklist_to_entry(analysis)
+        analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params)
+        return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"))
 
 
     def test_module():
