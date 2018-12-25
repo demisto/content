@@ -314,7 +314,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:',commit_output, ['JobID', 'Status'], None, True),
+            'HumanReadable': tableToMarkdown('Commit:',commit_output, ['JobID', 'Status'], None, True),
             'EntryContext': {
                 "Panorama.Commit(val.JobID == obj.JobID)": commit_output
             }
@@ -364,7 +364,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'HumanReadable': tableToMarkdown('Commit status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
             'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
         })
 
@@ -404,7 +404,7 @@ script:
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Push to Device Group Status:',push_output, ['JobID', 'Status'], None, True),
+                'HumanReadable': tableToMarkdown('Push to Device Group:',push_output, ['JobID', 'Status'], None, True),
                 'EntryContext': {
                     "Panorama.Push(val.JobID == obj.JobID)": push_output
                 }
@@ -454,7 +454,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
             'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
         })
 
