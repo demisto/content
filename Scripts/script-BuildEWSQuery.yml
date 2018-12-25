@@ -4,6 +4,9 @@ commonfields:
 name: BuildEWSQuery
 script: |-
   import re
+  import sys
+  reload(sys)
+  sys.setdefaultencoding("utf-8")
 
   # Regex for removing forward/replay prefixes
   p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
@@ -81,3 +84,6 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
+tests:
+  - buildewsquery_test
