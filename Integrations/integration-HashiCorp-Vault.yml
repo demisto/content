@@ -61,8 +61,11 @@ script:
     ''' GLOBAL VARIABLES '''
 
     CREDENTIALS = demisto.params().get('credentials', {})
-    USERNAME = CREDENTIALS.get('identifier')
-    PASSWORD = CREDENTIALS.get('password')
+    USERNAME = None
+    PASSWORD = None
+    if CREDENTIALS:
+        USERNAME = CREDENTIALS.get('identifier')
+        PASSWORD = CREDENTIALS.get('password')
     VERIFY_SSL = not demisto.params().get('unsecure', False)
     TOKEN = demisto.params().get('token')
 
