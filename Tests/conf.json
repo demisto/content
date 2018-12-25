@@ -107,7 +107,12 @@
         {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
-            "timeout": 500
+            "nightly": true
+        },
+        {
+            "integrations": "google-vault",
+            "playbookID": "Google_Vault-Search_And_Display_Results_test",
+            "nightly": true
         },
         {
             "playbookID": "Luminate-TestPlaybook",
