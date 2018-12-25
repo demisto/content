@@ -136,6 +136,9 @@ script:
           return service.matters().holds().delete(matterId=matter_id, holdId=hold_id).execute()
 
       def list_holds(service, matter_id):
+          '''
+           Return a list of existing holds
+          '''
           done_paginating = False
           holds = []
           response = service.matters().holds().list(
@@ -420,10 +423,9 @@ script:
       def remove_held_accounts(service, matter_id, hold_id):
           pass
 
-      def download_storage_object(objectID):
-          bucket_name = demisto.getArg('bucketName');
+      def download_storage_object(object_ID, bucket_name):
           service = connect_to_storage()
-          req = service.objects().get_media(bucket=bucket_name, object=objectID)
+          req = service.objects().get_media(bucket=bucket_name, object=object_ID)
           out_file = io.BytesIO()
           downloader = googleapiclient.http.MediaIoBaseDownload(out_file, req)
           done = False
@@ -1212,17 +1214,19 @@ script:
 
       def download_export_command():
           try:
-              out_file = download_storage_object(demisto.getArg('downloadID'))
+              bucket_name = demisto.getArg('bucketName')
+              download_ID = demisto.getArg('downloadID')
+              out_file = download_storage_object(download_ID, bucket_name)
               demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
-
           except Exception, ex:
               if 'Quota exceeded for quota metric' in str(ex):
                   ex = 'Quota for Google Vault API exceeded'
               return_error('Unable to download export. Error: {}'.format(ex))
 
-      def download_and_sanitize_export_results():
 
-          out_file = download_storage_object(demisto.getArg('viewID'))
+      def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
+
+          out_file = download_storage_object(object_ID, bucket_name)
           out_file_json = json.loads(xml2json(out_file.getvalue()))
 
           if not out_file_json['Root']['Batch'].get('Documents'):
@@ -1235,15 +1239,17 @@ script:
 
           dictList = build_dict_list(documents)
 
-          maxResult = int(demisto.getArg('maxResult'))
-          if len(dictList) > maxResult:
-              return dictList[0: maxResult]
+          if len(dictList) > max_results:
+              return dictList[0:max_results]
 
           return dictList
 
       def get_drive_results_command():
           try:
-              output = download_and_sanitize_export_results()
+              max_results = int(demisto.getArg('maxResult'))
+              view_ID = demisto.getArg('viewID')
+              bucket_name = demisto.getArg('bucketName')
+              output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
 
               if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
                   return_error('Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
@@ -1263,8 +1269,8 @@ script:
               headers = ['Title', 'Author', 'Collaborators', 'Others', 'Labels', 'Viewers', 'DateCreated', 'DateModified','DocType', 'MD5']
               markdown = tableToMarkdown(title, markedown_output, headers)
 
-              exportID = str(demisto.getArg('viewID')).split('/')[1]
-              contextOutput  = {'ExportID': exportID, 'Results': markedown_output}
+              exportID = str(view_ID).split('/')[1]
+              contextOutput = {'ExportID': exportID, 'Results': markedown_output}
 
               demisto.results( {
               'Type': entryTypes['note'],
@@ -1283,7 +1289,10 @@ script:
 
       def get_mail_and_groups_results_command(inquiryType):
           try:
-              output = download_and_sanitize_export_results()
+              max_results = int(demisto.getArg('maxResult'))
+              view_ID = demisto.getArg('viewID')
+              bucket_name = demisto.getArg('bucketName')
+              output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
 
               if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')) :
                   return_error('Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
@@ -1302,8 +1311,8 @@ script:
               headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent']
               markdown = tableToMarkdown(title, markedown_output, headers)
 
-              exportID = str(demisto.getArg('viewID')).split('/')[1]
-              contextOutput  = {'ExportID': exportID, 'Results': markedown_output}
+              exportID = str(view_ID).split('/')[1]
+              contextOutput = {'ExportID': exportID, 'Results': markedown_output}
 
               demisto.results( {
                   'Type': entryTypes['note'],
@@ -1375,7 +1384,7 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: exportName
       required: true
       description: Export Name
@@ -1385,7 +1394,7 @@ script:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: Choice of Search scope
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: searchMethod
       auto: PREDEFINED
@@ -1393,42 +1402,41 @@ script:
       - All Accounts
       - Specific Accounts(requires emails argument)
       - Organizational Unit(requires ou argument)
-      description: Choice of Search method
+      description: Search method, default is "All Accounts"; "All Accounts", "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument)
       defaultValue: All Accounts
     - name: emails
-      description: If the search method is set to Specific Accounts (separated by
-        comma)
+      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
     - name: ou
-      description: The organizational unit (specify only if the search method is set
-        to Organizational Unit)
+      description: The organizational unit. Only use this argument if the "searchMethod" argument is set
+        to "Organizational Unit"
     - name: includeDrafts
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Include/Exclude drafts in the search
+      description: Whether to include drafts in the search, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: timeFrame
-      description: 'Search time frame. E.g: "1 min ago","2 weeks ago","3 months ago"'
+      description: 'Search time frame, e.g., "1 min ago","2 weeks ago","3 months ago"'
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search (subject:example)
+      description: Apply specific terms to the search, e.g., (subject:example)
     - name: exportPST
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in PST format, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: exportMBOX
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in MBOX format, default is "false"; "true" or "false"
       defaultValue: "false"
     outputs:
     - contextPath: GoogleVault.Matter.Export.MatterID
@@ -1444,17 +1452,17 @@ script:
       description: Export's creation time
       type: string
     description: Creates a Google Vault export in order to perform search actions
-      on emails.
+      on emails
   - name: gvault-create-matter
     arguments:
     - name: name
       required: true
-      description: New matter's name
+      description: A name for the new matter
     - name: description
-      description: Description for the matter
+      description: A description for the matter
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: Matter name
       type: string
     - contextPath: GoogleVault.Matter.ID
       description: Matter ID
@@ -1462,7 +1470,7 @@ script:
     - contextPath: GoogleVault.Matter.State
       description: Matter's state
       type: string
-    description: Creates a new matter with the given name and description. The initial
+    description: Creates a new matter with the specified name and description. The initial
       state is open, and the owner is the method caller. First, checks if a matter
       with the same name already exists.
   - name: gvault-create-export-drive
@@ -1479,7 +1487,7 @@ script:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: Choice of Search scope
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: searchMethod
       auto: PREDEFINED
@@ -1487,31 +1495,30 @@ script:
       - Specific Accounts(requires emails argument)
       - Organizational Unit(requires ou argument)
       - Team Drive
-      description: Choice of Search method
+      description: Search method, default is "Specific Accounts"; "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument), "Team Drive"
       defaultValue: Specific Accounts(requires emails argument)
     - name: emails
-      description: If the search method is set to Specific Accounts (separated by
-        comma)
+      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
     - name: ou
-      description: The organizational unit (specify only if the search method is set
-        to Organizational Unit)
+      description: The organizational unit. Only use this argument if the "searchMethod" argument is set
+        to "Organizational Unit"
     - name: teamDrive
-      description: If the search method is set to Team Drives
+      description: If the searchMethod is set to Team Drives
     - name: includeTeamDrives
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Include/Exclude team drives
+      description: Whether to include team drives, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: timeFrame
       description: Search time frame
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search
+      description: Apply specific terms to the search
     outputs:
     - contextPath: GoogleVault.Matter.Export.MatterID
       description: Matter ID
@@ -1531,7 +1538,7 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: state
       required: true
       auto: PREDEFINED
@@ -1540,7 +1547,7 @@ script:
       - DELETE
       - REOPEN
       - UNDELETE
-      description: New matter state
+      description: New matter state; "CLOSE", "DELETE", "REOPEN", "UNDELETE"
     outputs:
     - contextPath: GoogleVault.Matter.Name
       description: Matter name
@@ -1551,49 +1558,48 @@ script:
     - contextPath: GoogleVault.Matter.State
       description: Matter's state
       type: string
-    description: Change the matter's state
+    description: Matter's updated state
   - name: gvault-create-export-groups
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: exportName
       required: true
-      description: Export Name
+      description: Export name
     - name: dataScope
       auto: PREDEFINED
       predefined:
       - All Data
       - Held Data
       - Unprocessed Data
-      description: 'Choice of Search scope '
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
       defaultValue: All Data
     - name: groups
       required: true
-      description: Enter one or more Groups separated by commas. You can search up
-        to 50 Groups.
+      description: CSV list of groups, maximum of 50 groups
     - name: timeFrame
       description: Search time frame
     - name: startTime
-      description: UTC start time (2018-10-16T12:59:02.584000Z)
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
     - name: endTime
-      description: UTC end time (2018-10-16T12:59:02.584000Z)
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
     - name: terms
-      description: Add specific terms for the search
+      description: Apply specific terms to the search
     - name: exportPST
       default: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in PST format, default is "true"; "true" or "false"
       defaultValue: "true"
     - name: exportMBOX
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Export format
+      description: Export in MBOX format, default is "false"; "true" or "false"
       defaultValue: "false"
     outputs:
     - contextPath: GoogleVault.Matter.Export.MatterID
@@ -1614,10 +1620,10 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdName
       required: true
-      description: New hold's name
+      description: Name of the new hold
     - name: corpus
       required: true
       auto: PREDEFINED
@@ -1625,19 +1631,19 @@ script:
       - Mail
       - Drive
       - Groups
-      description: New hold's corpus type
+      description: New hold's corpus type; "Mail", "Drive", "Groups"
     - name: accountID
       required: true
-      description: At least one account/group ID to place in the hold (comma separated)
+      description: CSV list of accounts/group IDs to place in the hold, requires at least one account/group ID
       isArray: true
     - name: timeFrame
-      description: User's choice for search time.
+      description: Search timeframe
     - name: startTime
-      description: UTC start time (1994-11-05T13:15:30Z )
+      description: Search start time in UTC (1994-11-05T13:15:30Z )
     - name: endTime
-      description: UTC end time (1994-11-05T13:15:30Z )
+      description: Search end time in UTC (1994-11-05T13:15:30Z )
     - name: terms
-      description: The terms that must be met for a message to be covered by this
+      description: The terms that must be matched for a message to be covered by this
         hold.
     outputs:
     - contextPath: GoogleVaulty.Hold.Name
@@ -1655,37 +1661,37 @@ script:
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Hold ID
+      description: The hold ID
     - name: accountID
       required: true
-      description: Account/group ID to place in hold
+      description: The account/group ID to place in hold
     outputs:
     - contextPath: GoogleVault.Matter.Hold.Account.ID
-      description: Held account ID
+      description: The held account ID
     description: 'Adds a Held Account to a hold. This structure is immutable. '
   - name: gvault-remove-heldAccount
     arguments:
     - name: matterID
       required: true
-      description: Provide the wanted matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Provide the wanted hold ID
+      description: The hold ID
     - name: accountID
       required: true
       description: Account ID to remove from hold
-    description: Removes a Held Account from a hold.
+    description: Removes a Held Account from a hold
   - name: gvault-delete-hold
     arguments:
     - name: matterID
       required: true
-      description: Matter ID
+      description: The matter ID
     - name: holdID
       required: true
-      description: Hold ID
+      description: The hold ID
     description: Removes a hold by ID. This will release any Held Accounts on this
       Hold.
   - name: gvault-list-matters
@@ -1697,12 +1703,11 @@ script:
       - Open
       - Closed
       - Deleted
-      description: 'If set, list only matters with that specific state. The default
-        is listing matters of all states. '
+      description: If set, list only matters with that specific state, default is "ALL"; "ALL", "OPEN", "CLOSED", "DELETED"
       defaultValue: All
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: The matter name
       type: string
     - contextPath: GoogleVault.Matter.MatterID
       description: Matter ID
@@ -1714,17 +1719,17 @@ script:
   - name: gvault-get-matter
     arguments:
     - name: matterName
-      description: Search by matter name (More than one matter with the same name
+      description: Search by matter name (multiple matters with the same name
         can exist)
     - name: matterID
-      description: Search by matter ID (Unique Identifier)
+      description: Search by matter ID
     outputs:
     - contextPath: GoogleVault.Matter.Name
-      description: Matter Name
+      description: Matter name
     - contextPath: GoogleVault.Matter.ID
       description: Matter ID
     - contextPath: GoogleVault.Matter.State
-      description: Matter's state(OPEN,CLOSED,DELETED)
+      description: Matter's state
     description: Search for a matter by name or by ID
   - name: gvault-list-holds
     arguments:
@@ -1740,13 +1745,13 @@ script:
     - contextPath: GoogleVault.Matter.Hold.ID
       description: Hold ID
       type: string
-    description: Lists all holds for a given matter
+    description: Lists all holds for a specified matter
   - name: gvault-export-status
     arguments:
     - name: matterId
-      description: Matter ID
+      description: The matter ID
     - name: exportIDS
-      description: Export ID list (a non-list single value is also an option)
+      description: CSV list of one or more export IDs
       isArray: true
     - name: queryIDS
       description: 'MatterID and ExportID concatenation separated by ''#'' (used only
@@ -1759,42 +1764,42 @@ script:
       description: Export ID
       type: string
     - contextPath: GoogleVault.Matter.Export.Name
-      description: Export Name
+      description: Export name
       type: string
     - contextPath: GoogleVault.Matter.Export.Status
-      description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
+      description: Export status
       type: string
     - contextPath: GoogleVault.Matter.Export.BucketName
       description: Bucket holder name for this export
       type: string
     - contextPath: GoogleVault.Matter.Export.DownloadID
-      description: ID to be used by the download-export command
+      description: ID to be used by the "download-export" command
       type: string
     - contextPath: GoogleVault.Matter.Export.ViewID
-      description: ID to be used by the get-X-results command (X=drive/mail/groups)
+      description: ID to be used by the "get-X-results" command (X=drive/mail/groups)
       type: string
-    description: Gets a specified Export status
+    description: Gets the status of one or more specified exports
   - name: gvault-download-results
     arguments:
     - name: bucketName
       required: true
-      description: name of the bucket that holds the export
+      description: Name of the bucket that holds the export
     - name: downloadID
       required: true
-      description: the export download ID
-    description: Download an export given a bucket name and object name
+      description: The export download ID
+    description: Downloads an export by bucket name and download ID
   - name: gvault-get-drive-results
     arguments:
     - name: bucketName
       required: true
-      description: name of the bucket that holds the export
+      description: Name of the bucket that holds the export
     - name: viewID
       required: true
-      description: the export view ID
+      description: The export view ID
     - name: maxResult
       default: true
-      description: Set the threshold of result to be returned (High threshold can
-        slow down your browser)
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
       defaultValue: "30"
     outputs:
     - contextPath: GoogleVault.Matter.Export.Results.Title
@@ -1810,37 +1815,37 @@ script:
       description: Viewers of the file
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.DateModified
-      description: The date the file was modified
+      description: The date the file was last modified
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.DateCreated
       description: The date the file was created
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.DocType
-      description: The type of the file (extension)
+      description: File type (extension)
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.MD5
-      description: The MD5 of the file (SHA1)
+      description: The MD5 of the file (SHA-1)
       type: string
-    description: 'Get the results of a given drive export '
+    description: 'Get the results of a specified drive export '
   - name: gvault-get-mail-results
     arguments:
     - name: bucketName
       required: true
-      description: name of the bucket that holds the export
+      description: Name of the bucket that holds the export
     - name: viewID
       required: true
-      description: the export view ID
+      description: The export view ID
     - name: maxResult
       default: true
-      description: Set the threshold of result to be returned (High threshold can
-        slow down your browser)
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
       defaultValue: "30"
     outputs:
     - contextPath: GoogleVault.Matter.Export.Results.CC
-      description: CC of the mail
+      description: Email addresses CCed on the mail
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.BCC
-      description: 'BCC of the mail '
+      description: Email addresses BCCed on the mail
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.DateSent
       description: The date the email was sent
@@ -1857,29 +1862,29 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the email was sent to
       type: string
-    description: Get the results of a given mail export
+    description: Get the results of a specified mail export
   - name: gvault-get-groups-results
     arguments:
     - name: bucketName
       required: true
-      description: name of the bucket that holds the export
+      description: Name of the bucket that holds the export
     - name: viewID
       required: true
-      description: the export view ID
+      description: The export view ID
     - name: maxResult
       default: true
-      description: Set the threshold of result to be returned (High threshold can
-        slow down your browser)
+      description: Maximum number of results to return (a high threshold can
+        slow down your browser), default is "30"
       defaultValue: "30"
     outputs:
     - contextPath: GoogleVault.Matter.Export.Results.CC
-      description: CC of the message
+      description: Email addresses CCed on the message
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.BCC
-      description: BCC of the message
+      description: Email addresses BCCed on the message
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.DateSent
-      description: The date the message
+      description: The date the message was sent
       type: string
     - contextPath: GoogleVault.Matter.Export.Results.From
       description: The sender of the message
@@ -1893,10 +1898,10 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-    description: Get the results of a given group export
+    description: Get the results of a specified group export
   dockerimage: demisto/gvault
   runonce: false
-releaseNotes: 'New commands: gvault-get-drive-results, gvault-get-mail-results, gvault-get-groups-results, download-export.
+releaseNotes: 'New commands: gvault-get-drive-results, gvault-get-mail-results, gvault-get-groups-results, gvault-download-results.
 New playbooks: Google Vault - Search Mail, Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Display Results
 BREAKING COMPATIBILITY: context formation changed - Export objects moved into matching Matter objects'
 tests:
