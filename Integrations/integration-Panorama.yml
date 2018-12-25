@@ -812,7 +812,7 @@ script:
         match = demisto.args().get('match')
         addresses = argToList(demisto.args()['addresses']) if 'addresses' in demisto.args() else None
         if match and addresses:
-                return_error('Please specify only one of the fllowing: addresses, match')
+                return_error('Please specify only one of the following: addresses, match')
         if typee == 'static':
             if not addresses:
                 return_error('Please specify addresses in order to create a static address group')
@@ -1187,25 +1187,44 @@ script:
         return s.split(' ')[1]
 
 
+    def populate_url_filter_category_from_context(url_category_hr):
+        url_filter_category = demisto.dt(demisto.context(), 'Panorama.URLFilter(val.Category === "{0}")'.format(url_category_hr['Category']))
+
+        if not url_filter_category:
+            url_filter_category = {
+                'Category': url_category_hr['Category'],
+                'URL': []
+            }
+
+        if type(url_filter_category) is dict:
+            url_filter_category = [url_filter_category]
+
+        url_filter_category[0]['URL'] += [url_category_hr['URL']]
+
+        return url_filter_category
+
+
     def panorama_get_url_category_command():
         ''' Get the url category from Palo Alto URL Filtering '''
         url = demisto.args()['url']
 
         category = panorama_get_url_category(url)
 
-        url_category_output = {
+        url_category_hr = {
             'URL': url,
             'Category': category
         }
+
+        url_category_output = populate_url_filter_category_from_context(url_category_hr)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': category,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'URL: ' + url + ' category is ' + category,
+            'HumanReadable': tableToMarkdown('URL Filtering:', url_category_hr, ['URL', 'Category'], None, True),
             'EntryContext': {
-                  "Panorama.URLFilter(val.URL == obj.URL)": url_category_output
+                  "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
             }
         })
 
@@ -1352,7 +1371,7 @@ script:
 
         url_filter_prev = panorama_get_url_filter(url_filter_name)
         if '@dirtyId' in url_filter_prev:
-            return_error('Please commit the instance prior to editting the URL Filter')
+            return_error('Please commit the instance prior to editing the URL Filter')
 
         url_filter_output = {'Name': url_filter_name}
         params = {
@@ -1901,7 +1920,8 @@ script:
       - complete
       - show
       - get
-      description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
+      description: Choose an available  action(show, get, set, edit, delete, rename,
+        clone, move, override)
     - name: category
       description: Category parameter. e.g. when exporting a configuration file use
         category=configuration
@@ -1934,7 +1954,7 @@ script:
     - name: serialno
       description: Specifies the device serial number
     - name: reporttype
-      description: Choose dynamic,predefined or custom report
+      description: Choose dynamic, predefined or custom report
     - name: reportname
       description: The report name
     - name: log-type
@@ -2260,10 +2280,10 @@ script:
       required: true
       description: URL to check
     outputs:
-    - contextPath: Panorama.URLFiltering.URL
+    - contextPath: Panorama.URLFilter.URL
       description: URL
       type: string
-    - contextPath: Panorama.URLFiltering.Category
+    - contextPath: Panorama.URLFilter.Category
       description: URL category
       type: string
     description: Get a URL category from URL Filtering
