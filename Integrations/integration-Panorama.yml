@@ -314,7 +314,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:',commit_output, ['JobID', 'Status'], None, True),
+            'HumanReadable': tableToMarkdown('Commit:',commit_output, ['JobID', 'Status'], None, True),
             'EntryContext': {
                 "Panorama.Commit(val.JobID == obj.JobID)": commit_output
             }
@@ -364,7 +364,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'HumanReadable': tableToMarkdown('Commit status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
             'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
         })
 
@@ -391,6 +391,7 @@ script:
         if not DEVICE_GROUP:
             return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
+        result = panorama_push_to_device_group()
         if 'result' in result['response']:
             # commit has been given a jobid
             push_output = {
@@ -403,7 +404,7 @@ script:
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Push to Device Group Status:',push_output, ['JobID', 'Status'], None, True),
+                'HumanReadable': tableToMarkdown('Push to Device Group:',push_output, ['JobID', 'Status'], None, True),
                 'EntryContext': {
                     "Panorama.Push(val.JobID == obj.JobID)": push_output
                 }
@@ -432,6 +433,7 @@ script:
     def panorama_push_status_command():
         ''' Check jobID of push status '''
 
+        result = panorama_push_status()
         if (result['response']['result']['job']['type'] != 'CommitAll'):
             return_error('JobID given is not of a Push')
 
@@ -452,7 +454,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit Status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
             'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
         })
 
@@ -992,7 +994,7 @@ script:
         name = demisto.args()['name']
 
         custom_url_category = panorama_get_custom_url_category(name)
-        custom_url_category_output = prettify_custom_url_category(result)
+        custom_url_category_output = prettify_custom_url_category(custom_url_category)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1829,7 +1831,7 @@ script:
         elif demisto.command() == 'panorama-list-address-groups':
             panorama_list_address_groups_command()
 
-        elif demisto.command() == 'panorama-get_address-group':
+        elif demisto.command() == 'panorama-get-address-group':
             panorama_get_address_group_command()
 
         elif demisto.command() == 'panorama-create-address-group':
@@ -1842,8 +1844,8 @@ script:
             panorama_edit_address_group_command()
 
         # Custom Url Category commands
-        elif demisto.command() == 'panorama-custom-get-url-category':
-            panorama_custom_get_url_category_command()
+        elif demisto.command() == 'panorama-get-custom-url-category':
+            panorama_get_custom_url_category_command()
 
         elif demisto.command() == 'panorama-create-custom-url-category':
             panorama_create_custom_url_category_command()
