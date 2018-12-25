@@ -315,8 +315,8 @@ script:
                 'Description': ticket.get('description'),
                 'Opened at': ticket.get('opened_at'),
                 'Due date': ticket.get('due_date'),
-                # This field refers to a record in the database, the valus is its system ID.
-                'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket['closed_by'], dict) else ticket['closed_by'],
+                # This field refers to a record in the database, the value is its system ID.
+                'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict) else ticket.get('closed_by'),
                 'Resolved at': ticket.get('resolved_at'),
                 'SLA due': ticket.get('sla_due'),
                 'Short description': ticket.get('short_description'),
