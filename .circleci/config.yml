@@ -24,7 +24,7 @@ jobs:
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
 
-              cat workspace/nightly.txt >> run_mode
+              cat /tmp/workspace/nightly.txt >> run_mode
               if [ run_mode = "Nightly Mode" ]
                 then
                   export IS_NIGHTLY=True
