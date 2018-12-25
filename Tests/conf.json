@@ -681,7 +681,7 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB test"
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations" : "jira",
