@@ -8,17 +8,24 @@ jobs:
       GIT_SHA1: "4df02ca52f0cd2709cbeef6fda31ba81ec37408d" # guardrails-disable-line
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Prepare Environment
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-      - run:
-          name: Install dependencies
-          command: |
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
+              chmod +x ./Tests/scripts/*
+              chmod +x ./Tests/lastest_server_build_scripts/*
+
+              cat workspace/nightly.txt >> run_mode
+              if [ run_mode = "Nightly Mode" ]
+                then
+                  export IS_NIGHTLY=True
+                else
+                  export IS_NIGHTLY=False
+              fi
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
@@ -117,17 +124,31 @@ jobs:
         enabled: true
     steps:
       - run:
-          name: Prepare Environment
-          command: |
-              export IS_NIGHTLY=true
+          name: Create workspace dir
+          command: mkdir -p workspace
+      - run:
+          name: Create nightly parameter
+          command: echo "Nightly Mode" > workspace/nightly.txt
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - nightly.txt
+
   set_nigthly_false:
     machine:
         enabled: true
     steps:
+      steps:
       - run:
-          name: Prepare Environment
-          command: |
-              export IS_NIGHTLY=false
+          name: Create workspace dir
+          command: mkdir -p workspace
+      - run:
+          name: Create nightly parameter
+          command: echo "Regular Mode" > workspace/nightly.txt
+      - persist_to_workspace:
+          root: workspace
+          paths:
+          - nightly.txt
 
 workflows:
   version: 2
