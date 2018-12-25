@@ -1831,7 +1831,7 @@ script:
         elif demisto.command() == 'panorama-list-address-groups':
             panorama_list_address_groups_command()
 
-        elif demisto.command() == 'panorama-get_address-group':
+        elif demisto.command() == 'panorama-get-address-group':
             panorama_get_address_group_command()
 
         elif demisto.command() == 'panorama-create-address-group':
