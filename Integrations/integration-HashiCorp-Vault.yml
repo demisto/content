@@ -4,10 +4,10 @@ commonfields:
 name: HashiCorp Vault
 display: HashiCorp Vault
 category: Authentication
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault
 configuration:
-- display: Server URL (e.g. https://192.168.0.1:8200)
+- display: HashiCorps server URL (e.g., https://192.168.0.1:8200)
   name: server
   defaultvalue: ""
   type: 0
@@ -37,7 +37,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Comma separated secrets engines types to fetch secrets from
+- display: CSV list of secrets engine types to fetch secrets from
   name: engines
   defaultvalue: KV,Cubbyhole
   type: 0
@@ -97,7 +97,13 @@ script:
         url = '{}/{}'.format(SERVER_URL, path)
         res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
-            return_error('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            try:
+                error_body = res.json()
+                if 'errors' in error_body and isinstance(error_body['errors'], list):
+                    error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
+            except:
+                error_body = res.content
+            return_error('Login failed. Status code: {}, details: {}'.format(str(res.status_code), error_body))
 
         auth_res = res.json()
         if not auth_res or 'auth' not in auth_res or 'client_token' not in auth_res['auth']:
@@ -114,7 +120,13 @@ script:
         headers = headers if headers is not None else get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
-            return_error('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            try:
+                error_body = res.json()
+                if 'errors' in error_body and isinstance(error_body['errors'], list):
+                    error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
+            except:
+                error_body = res.content
+            return_error('Request failed. Status code: {}, details: {}'.format(str(res.status_code), error_body))
         if res.content:
             return res.json()
         return ''
@@ -162,7 +174,7 @@ script:
             return_error('Secrets not found')
 
         mapped_secrets = [{
-            'Name': k
+            'Path': k
         } for k in res['data'].get('keys', [])]
 
         demisto.results({
@@ -172,7 +184,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets in engine path: ' + engine, mapped_secrets, removeNull=True),
             'EntryContext': {
-                  'HashiCorp.Secret(val.Name===obj.Name)': createContext(mapped_secrets)
+                  'HashiCorp.Secret(val.Path===obj.Path)': createContext(mapped_secrets)
             }
         })
 
@@ -228,7 +240,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                  'HashiCorp.SecretMetadata(val.Path===obj.Path)': createContext(mapped_secret, removeNull=True)
+                  'HashiCorp.Secret(val.Path===obj.Path)': createContext(mapped_secret, removeNull=True)
             }
         })
 
@@ -374,10 +386,10 @@ script:
         default_lease_ttl = demisto.args().get('default_lease_ttl')
         max_lease_ttl = demisto.args().get('max_lease_ttl')
         force_no_cache = demisto.args().get('force_no_cache')
-        audit_non_hmac_request_keys = demisto.args().get('audit_non_hmac_request_keys')
-        audit_non_hmac_response_keys = demisto.args().get('audit_non_hmac_response_keys')
+        audit_non_hmac_request_keys = argToList(demisto.args().get('audit_non_hmac_request_keys', []))
+        audit_non_hmac_response_keys = argToList(demisto.args().get('audit_non_hmac_response_keys', []))
         listing_visibility = demisto.args().get('listing_visibility')
-        passthrough_request_headers = demisto.args().get('passthrough_request_headers')
+        passthrough_request_headers = argToList(demisto.args().get('passthrough_request_headers', []))
         kv_version = demisto.args().get('kv_version')
         local = demisto.args().get('local')
         seal_wrap = demisto.args().get('seal_wrap')
@@ -466,13 +478,11 @@ script:
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('HashiCorp Vault Unseal', mapped_unseal, removeNull=True),
-            'EntryContext': {
-                  'HashiCorp.Unseal(val.Sealed===obj.Sealed)': createContext(mapped_unseal, removeNull=True)
-            }
         })
 
 
     def unseal_vault(key, reset):
+        path = 'sys/unseal'
         body = {}
         if reset:
             body['reset'] = reset
@@ -688,6 +698,9 @@ script:
         return send_request(path, 'get')
 
     ''' EXECUTION CODE '''
+
+    LOG('Executing command: ' + demisto.command())
+
     if USERNAME and PASSWORD:
         TOKEN = login()
     elif not TOKEN:
@@ -699,42 +712,47 @@ script:
 
     ENGINE_CONFIGS = integ_context['configs']
 
-    if demisto.command() == 'test-module':
-        path = 'sys/health'
-        send_request(path)
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-credentials':
-        fetch_credentials()
-    elif demisto.command() == 'hashicorp-list-secrets-engines':
-        list_secrets_engines_command()
-    elif demisto.command() == 'hashicorp-list-secrets':
-        list_secrets_command()
-    elif demisto.command() == 'hashicorp-list-policies':
-        list_policies_command()
-    elif demisto.command() == 'hashicorp-get-policy':
-        get_policy_command()
-    elif demisto.command() == 'hashicorp-get-secret-metadata':
-        get_secret_metadata_command()
-    elif demisto.command() == 'hashicorp-delete-secret':
-        delete_secret_command()
-    elif demisto.command() == 'hashicorp-undelete-secret':
-        undelete_secret_command()
-    elif demisto.command() == 'hashicorp-destroy-secret':
-        destroy_secret_command()
-    elif demisto.command() == 'hashicorp-disable-engine':
-        disable_engine_command()
-    elif demisto.command() == 'hashicorp-enable-engine':
-        enable_engine_command()
-    elif demisto.command() == 'seal_vault_command':
-        seal_vault_command()
-    elif demisto.command() == 'unseal_vault_command':
-        unseal_vault_command()
-    elif demisto.command() == 'hashicorp-create-token':
-        create_token_command()
-    elif demisto.command() == 'hashicorp-configure-engine':
-        configure_engine_command()
-    elif demisto.command() == 'hashicorp-reset-configuration':
-        reset_config_command()
+    try:
+        if demisto.command() == 'test-module':
+            path = 'sys/health'
+            send_request(path)
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-credentials':
+            fetch_credentials()
+        elif demisto.command() == 'hashicorp-list-secrets-engines':
+            list_secrets_engines_command()
+        elif demisto.command() == 'hashicorp-list-secrets':
+            list_secrets_command()
+        elif demisto.command() == 'hashicorp-list-policies':
+            list_policies_command()
+        elif demisto.command() == 'hashicorp-get-policy':
+            get_policy_command()
+        elif demisto.command() == 'hashicorp-get-secret-metadata':
+            get_secret_metadata_command()
+        elif demisto.command() == 'hashicorp-delete-secret':
+            delete_secret_command()
+        elif demisto.command() == 'hashicorp-undelete-secret':
+            undelete_secret_command()
+        elif demisto.command() == 'hashicorp-destroy-secret':
+            destroy_secret_command()
+        elif demisto.command() == 'hashicorp-disable-engine':
+            disable_engine_command()
+        elif demisto.command() == 'hashicorp-enable-engine':
+            enable_engine_command()
+        elif demisto.command() == 'hashicorp-seal-vault':
+            seal_vault_command()
+        elif demisto.command() == 'hashicorp-unseal-vault':
+            unseal_vault_command()
+        elif demisto.command() == 'hashicorp-create-token':
+            create_token_command()
+        elif demisto.command() == 'hashicorp-configure-engine':
+            configure_engine_command()
+        elif demisto.command() == 'hashicorp-reset-configuration':
+            reset_config_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        return_error(e.message)
   type: python
   commands:
   - name: hashicorp-list-secrets-engines
@@ -752,21 +770,33 @@ script:
     - contextPath: HashiCorp.Engine.Accessor
       description: Secrets engine accessor
       type: string
-    description: List all secrets engines that exist in HashiCorp Vault.
+    description: List all secrets engines that exist in HashiCorp Vault
+  - name: hashicorp-list-secrets
+    arguments:
+    - name: engine
+      required: true
+      default: true
+      description: Engine path, e.g.,"secret/". Use the list-secrets-engines command
+        to retrieve the engine path. command.
+    outputs:
+    - contextPath: HashiCorp.Secret.Path
+      description: Secret path
+      type: string
+    description: List secrets (names) for a specified KV V2 engine
   - name: hashicorp-get-secret-metadata
     arguments:
     - name: engine_path
       required: true
-      description: KV Engine path (engine path - for example - /kv)
+      description: KV Engine path, e.g., "kv/"
     - name: secret_path
       required: true
-      description: Secret path
+      description: Secret path, e.g., "secret"
     outputs:
     - contextPath: HashiCorp.Secret.Created
       description: Secret created time
       type: date
     - contextPath: HashiCorp.Secret.Version.Destroyed
-      description: Whether the version is destroyed
+      description: Is the version destroyed
       type: boolean
     - contextPath: HashiCorp.Secret.Version.Created
       description: Version creation time
@@ -782,179 +812,119 @@ script:
       type: string
     - contextPath: HashiCorp.Secret.CurrentVersion
       description: Secret current version
+      type: number
     - contextPath: HashiCorp.Secret.Path
       description: Secret path
-    description: Get information about a specified secret in a specified K/V V2 engine
-  - name: hashicorp-list-secrets
-    arguments:
-    - name: engine
-      required: true
-      default: true
-      description: Engine path (for example - secret/), retrieve from list-secrets-engines
-        command.
-    outputs:
-    - contextPath: HashiCorp.Secret.Name
-      description: Secret name
       type: string
-    - contextPath: HashiCorp.Secret.Path
-      description: Secrets engine path in HashiCorp
-      type: string
-    - contextPath: HashiCorp.Secret.Engine
-      description: Secrets engine type
-      type: string
-    description: List secrets (names) for a specified K/V V2 engine
+    description: 'Returns information about a specified secret in a specified KV V2
+      engine '
   - name: hashicorp-delete-secret
     arguments:
     - name: secret_path
       required: true
-      description: Secret path
+      description: Secret path, e.g., "secret"
     - name: engine_path
       required: true
-      description: Engine path (engine path - for example - secret/)
+      description: Engine path, e.g.,"secret/"
     - name: versions
       required: true
-      description: Comma separated secret versions to delete
+      description: CSV list of secret versions to delete
       isArray: true
-    description: Delete the data under a specified secret given the secret path. Performs
-      a soft delete that allows the undelete command if necessary (for KV engine version
-      2)
+    description: Deletes the data under a specified secret given the secret path.
+      Performs a soft delete that allows you to run the hashicorp-undelete-secret
+      command if necessary (for KV V2 engine)
   - name: hashicorp-undelete-secret
     arguments:
     - name: secret_path
       required: true
-      description: Secret path
+      description: Secret path, e.g., "secret"
     - name: engine_path
       required: true
-      description: Engine path - for example - secret/
+      description: Engine path, e.g.,"secret/"
     - name: versions
       required: true
-      description: Comma separated secret versions
+      description: CSV list of secret versions to undelete (restore)
       isArray: true
-    description: Undelete a secret on HashiCorp (for K/V engine version 2)
+    description: Undeletes (restores) a secret on HashiCorp (for KV V2 engine)
   - name: hashicorp-destroy-secret
     arguments:
     - name: secret_path
       required: true
-      description: Secret path
+      description: Secret path, .e.g., "secret"
     - name: engine_path
       required: true
-      description: Engine path - for example - secret/
+      description: Engine path, e.g.,"secret/"
     - name: versions
       required: true
-      description: Comma separated secret versions to delete
+      description: CSV list of secret versions to permanently delete
       isArray: true
-    description: Delete a secret permanently (for K/V engine version 2)
+    description: Permanently deletes a secret (for KV V2 engine)
   - name: hashicorp-disable-engine
     arguments:
     - name: path
       required: true
       default: true
-      description: Secrets engine path
+      description: Path of the secrets engine to disable
     description: When a secrets engine is no longer needed, it can be disabled. All
-      secrets under the engine are revoked and the corresponding Vault data and configuration
-      is removed.
+      secrets under the engine are revoked and the corresponding vault data and configurations
+      are removed.
+  - name: hashicorp-enable-engine
+    arguments:
+    - name: path
+      required: true
+      description: The path where the secrets engine will be mounted
+    - name: type
+      required: true
+      description: Type of backend, e.g., "aws"
+    - name: description
+      description: Human-friendly description of the mount
+    - name: default_lease_ttl
+      description: The default lease duration, specified as a string duration, e.g.,
+                     "5s" or "30m"
+    - name: max_lease_ttl
+      description: The maximum lease duration, specified as a string duration, e.g.,
+                     "5s" or "30m"
+    - name: force_no_cache
+      description: Disable caching
+    - name: audit_non_hmac_request_keys
+      description: CSV list of keys that will not be HMAC'd by audit devices in the
+        request data object
+      isArray: true
+    - name: audit_non_hmac_response_keys
+      description: CSV list of keys that will not be HMAC'd by audit devices in the
+        response data object
+      isArray: true
+    - name: listing_visibility
+      auto: PREDEFINED
+      predefined:
+      - unauth
+      - hidden
+      description: Whether to show this mount in the UI-specific listing endpoint;
+                     "unauth" or "hidden", default is "hidden" Default is hidden.
+    - name: passthrough_request_headers
+      description: CSV list of headers to whitelist and pass from the request to the
+        backend
+      isArray: true
+    - name: kv_version
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      description: KV version to mount. Set to "2" for mount KV V2.
+    - name: local
+      description: Specifies if the secrets engine is a local mount only. Local mounts
+        are not replicated, nor (if a secondary) removed by replication. Supported
+        only in Vault Enterprise.
+    - name: seal_wrap
+      description: Enable seal wrapping for the mount. Supported only in Vault Enterprise.
+    description: Enables a new secrets engine at the specified path
   - name: hashicorp-list-policies
     arguments: []
     outputs:
     - contextPath: HashiCorp.Policy.Name
       description: Policy name
       type: string
-    description: List all configured policies.
-  - name: hashicorp-seal-vault
-    arguments: []
-    description: If you suspect your data has been compromised, you can seal your
-      vault to prevent access to your secrets
-    execution: true
-  - name: hashicorp-unseal-vault
-    arguments:
-    - name: key
-      description: 'Single master key '
-    - name: reset
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      description: Reset the unseal project
-    outputs:
-    - contextPath: HashiCorp.Unseal.Sealed
-      description: Whether the vault is sealed
-      type: boolean
-    - contextPath: HashiCorp.Unseal.Threshold
-      description: Vault unseal threshold
-      type: number
-    - contextPath: HashiCorp.Unseal.Shares
-      description: Vault unseal shares
-      type: number
-    - contextPath: HashiCorp.Unseal.Progress
-      description: Unseal progress
-      type: number
-    description: Use a single master key share to progress the unsealing of the Vault.
-      If the threshold number of master key shares is reached, Vault will attempt
-      to unseal the Vault. Otherwise, this API must be called multiple times until
-      that threshold is met.
-  - name: hashicorp-create-token
-    arguments:
-    - name: role_name
-      description: The name of the token role.
-    - name: policies
-      description: A comma separated list of policies for the token. This must be
-        a subset of the policies belonging to the token making the request, unless
-        root. If not specified, defaults to all the policies of the calling token.
-      isArray: true
-    - name: meta
-      description: A map of string to string valued metadata. This is passed through
-        to the audit devices.
-    - name: no_parent
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: If true and set by a root caller, the token will not have the parent
-        token of the caller. This creates a token with no parent.
-    - name: no_default_policy
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: ' If true the default policy will not be contained in this token''s
-        policy set.'
-    - name: renewable
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Set to false to disable the ability of the token to be renewed
-        past its initial TTL. Setting the value to true will allow the token to be
-        renewable up to the system/mount maximum TTL.
-    - name: ttl
-      description: The TTL(lease duration) period of the token, provided as "1h",
-        where hour is the largest suffix. If not provided, the token is valid for
-        the default lease TTL, or indefinitely if the root policy is used.
-    - name: explicit_max_ttl
-      description: ' If set, the token will have an explicit max TTL set upon it.
-        This maximum token TTL cannot be changed later, and unlike with normal tokens,
-        updates to the system/mount max TTL value will have no effect at renewal time
-        -- the token will never be able to be renewed or used past the value set at
-        issue time.'
-    - name: display_name
-      description: The display name of the token.
-    - name: num_uses
-      description: The maximum uses for the given token. This can be used to create
-        a one-time-token or limited use token. The value of 0 has no limit to the
-        number of uses.
-    - name: period
-      description: If specified, the token will be periodic; it will have no maximum
-        TTL (unless an "explicit-max-ttl" is also set) but every renewal will use
-        the given period. Requires a root/sudo token to use.
-    outputs:
-    - contextPath: HashiCorp.Auth.Token
-      description: Authentication token
-      type: string
-    - contextPath: HashiCorp.Auth.Policy
-      description: Authentication policies
-    - contextPath: HashiCorp.Auth.LeaseDuration
-      description: 'Authentication lease duration in seconds, 0 if indefinitely '
-      type: number
-    description: Create a new token.
+    description: Lists all configured policies
   - name: hashicorp-get-policy
     arguments:
     - name: name
@@ -969,72 +939,108 @@ script:
       type: string
     - contextPath: HashiCorp.Policy.Rule.Capabilities
       description: Policy rule capabilities
-    description: Get a policy with a specified name
-  - name: hashicorp-enable-engine
+    description: Get information for a policy
+  - name: hashicorp-seal-vault
+    arguments: []
+    description: If you suspect your data has been compromised, you can seal your
+      vault to prevent access to your secrets
+    execution: true
+  - name: hashicorp-unseal-vault
     arguments:
-    - name: path
-      required: true
-      description: The path where the secrets engine will be mounted.
-    - name: type
-      required: true
-      description: Type of the backend, e.g. "aws".
-    - name: description
-      description: Human-friendly description of the mount.
-    - name: default_lease_ttl
-      description: The default lease duration, specified as a string duration like
-                     "5s" or "30m".
-    - name: max_lease_ttl
-      description: The maximum lease duration, specified as a string duration like
-                     "5s" or "30m".
-    - name: force_no_cache
-      description: Disable caching.
-    - name: audit_non_hmac_request_keys
-      description: Comma-separated list of keys that will not be HMAC'd by audit devices
-        in the request data object.
-      isArray: true
-    - name: audit_non_hmac_response_keys
-      description: Comma-separated list of keys that will not be HMAC'd by audit devices
-        in the response data object.
-      isArray: true
-    - name: listing_visibility
+    - name: key
+      description: 'Single master key '
+    - name: reset
       auto: PREDEFINED
       predefined:
-      - unauth
-      - hidden
-      description: Whether to show this mount in the UI-specific listing endpoint.
-        Default is hidden.
-    - name: passthrough_request_headers
-      description: Comma-separated list of headers to whitelist and pass from the
-        request to the backend.
-      isArray: true
-    - name: kv_version
-      description: The version of the KV to mount. Set to "2" for mount KV v2.
-    - name: local
-      description: Specifies if the secrets engine is a local mount only. Local mounts
-        are not replicated nor (if a secondary) removed by replication. Supported
-        only in Vault Enterprise.
-    - name: seal_wrap
-      description: Enable seal wrapping for the mount. Supported only in Vault Enterprise.
-    description: Enable a new secrets engine at the given path.
+      - "true"
+      description: Reset the unseal project
+    description: Use a single master key share to unseal the vault. If the master
+      key shares threshold is met, vault will attempt to unseal the vault. Otherwise,
+      this API must be called until the threshold is met.
   - name: hashicorp-configure-engine
     arguments:
     - name: path
       required: true
-      description: The engine path, e.g. secret/
+      description: The engine path, e.g., "secret/"
     - name: type
       required: true
-      description: The engine type, e.g. KV
+      description: The engine type, e.g., "KV"
     - name: version
       auto: PREDEFINED
       predefined:
       - "1"
       - "2"
-      description: The engine version (for K/V engines)
-      defaultValue: "2"
-    description: Configure a secrets engine to fetch secrets from.
+      description: The engine version (for KV engines); "1" or "2"
+    description: Configure a secrets engine to fetch secrets from
   - name: hashicorp-reset-configuration
     arguments: []
     description: Reset the engines configuration
-  dockerimage: blob
+  - name: hashicorp-create-token
+    arguments:
+    - name: role_name
+      description: The name of the token role
+    - name: policies
+      description: CSV list of policies for the token. This must be a subset of the
+        policies belonging to the token making the request, unless root. If policies
+        are not specified, all policies of the calling token are applied to the new
+        token.
+      isArray: true
+    - name: meta
+      description: A map of string-to-string valued metadata. This is passed through
+        to the audit devices.
+    - name: no_parent
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true and set by a root caller, the token will not have the parent
+        token of the caller. This creates a token with no parent.
+    - name: no_default_policy
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true the default policy will not be included in this token's
+        policy set; "true" or "false"
+    - name: renewable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If set to false, the token cannot be renewed past its initial TTL.
+                     If set to true, the token can be renewed up to the system/mount maximum TTL.
+                     "true" or "false"
+    - name: ttl
+      description: The TTL(lease duration) period of the token, provided as "10m"
+        or "1h", where hour is the largest suffix. If not provided, the token is valid
+        for the default lease TTL, or indefinitely if the root policy is used.
+    - name: explicit_max_ttl
+      description: ' If set, the token will have an explicit max TTL applied to it.
+        The maximum token TTL cannot be changed later, and unlike with normal tokens,
+        updates to the system/mount max TTL value will have no effect at renewal time.
+        The token can never be renewed or used past the value set at issue time.'
+    - name: display_name
+      description: The display name of the token
+    - name: num_uses
+      description: The maximum number of times the token can be used. Supply this
+        argument to create a one-time-token, or limited use token. The value of 0
+        has no limit to the number of uses.
+    - name: period
+      description: If specified, the token will be periodic; it will not have a maximum
+        TTL (unless an "explicit-max-ttl" is also set), but every renewal will use
+        the given period. Requires a root/sudo token to use.
+    outputs:
+    - contextPath: HashiCorp.Auth.Token
+      description: Authentication token
+      type: string
+    - contextPath: HashiCorp.Auth.Policy
+      description: Authentication policies
+    - contextPath: HashiCorp.Auth.LeaseDuration
+      description: 'Authentication lease duration in seconds, 0 if indefinitely '
+      type: number
+    description: Creates a new authentication token
+  dockerimage: demisto/hashicorp:1.0.0.39
   runonce: false
-releaseNotes: "HashiCorp integration"
+releaseNotes: 'HashiCorp integration'
+tests:
+  - hashicorp_test
