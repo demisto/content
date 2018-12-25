@@ -27,9 +27,12 @@ jobs:
               cat /tmp/workspace/nightly.txt >> run_mode
               if [ run_mode = "Nightly Mode" ]
                 then
-                  export IS_NIGHTLY=True
+                  IS_NIGHTLY=True
+                  echo "Setting nightly true"
+
                 else
-                  export IS_NIGHTLY=False
+                  IS_NIGHTLY=False
+                  echo "Setting nightly false"
               fi
       - add_ssh_keys:
           fingerprints:
