@@ -14,6 +14,10 @@
             "playbookID": "OTRS Test"
         },
         {
+            "integrations": "Attivo Botsink",
+            "playbookID": "AttivoBotsinkTest"
+        },
+        {
             "playbookID": "CreatePhishingClassifierMLTest"
         },
         {
@@ -71,6 +75,18 @@
           "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 300
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
@@ -115,6 +131,7 @@
                 "Panorama",
                 "Check Point"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "blockip_test_playbook"
         },
         {
@@ -147,6 +164,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -682,6 +700,10 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations" : "jira",
