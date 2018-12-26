@@ -237,7 +237,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 
     for instance in instances_set:
         instance_id = instance.keys()[0]
-        integration_to_version = instance[instance_id].get('fromversion', '0.0.0')
+        integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
         if obj_id == instance_id and file_from_version == integration_from_version and \
                 file_to_version == integration_to_version:
