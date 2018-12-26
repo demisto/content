@@ -1,14 +1,14 @@
-id: buildewsquery_test
-version: 6
-name: BuildEWSQuery Test
+id: Detonate File - No Files test
+version: -1
+name: Detonate File - No Files test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
+    taskid: 5582e6af-5671-4da2-8797-817dd974b35a
     type: start
     task:
-      id: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
+      id: 5582e6af-5671-4da2-8797-817dd974b35a
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,15 +24,17 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: ad4f0f93-2d75-4125-8044-195cbaf6466f
+    taskid: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
     type: regular
     task:
-      id: ad4f0f93-2d75-4125-8044-195cbaf6466f
+      id: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
       version: -1
-      name: Build EWS Query
-      scriptName: BuildEWSQuery
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
@@ -41,17 +42,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      attachmentName: {}
-      body: {}
-      from:
-        simple: jondoe@acme.com
-      searchThisWeek:
-        simple: "true"
-      stripSubject:
-        simple: "true"
-      subject:
-        simple: 'RE: RE: FWD: hello RE: w’orld'
-    reputationcalc: 0
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -60,30 +56,24 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 77878e94-c11b-415c-8cf7-d0dbaef65626
-    type: regular
+    taskid: a84f5fa7-70c6-4ad2-8526-29bea5198794
+    type: playbook
     task:
-      id: 77878e94-c11b-415c-8cf7-d0dbaef65626
+      id: a84f5fa7-70c6-4ad2-8526-29bea5198794
       version: -1
-      name: Verify query
-      scriptName: VerifyContext
-      type: regular
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      expectedValue:
-        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this
-          week"'
-      fields: {}
-      path:
-        simple: EWS.Query
-    reputationcalc: 0
-    separatecontext: false
+    separatecontext: true
     view: |-
       {
         "position": {
@@ -91,18 +81,19 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
+    taskid: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
     type: title
     task:
-      id: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
+      id: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -111,6 +102,8 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},

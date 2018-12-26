@@ -197,8 +197,8 @@ def changed_id(file_path):
 
 def is_added_required_fields(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\-  name: .*\n.*\n.*\n-  required: true", change_string) or re.search("\+  required: true", change_string):
-        print_error("You've changed the required fields in the integration file {}".format(file_path))
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\+[ ]+required: true", change_string):
+        print_error("You've added required fields in the integration file {}".format(file_path))
         return True
 
     return False
@@ -327,6 +327,30 @@ def get_to_version(file_path):
         return data_dictionary.get('toversion', 'current')
 
 
+def changed_command_name_or_arg(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
+    added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
+    if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
+        print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
+                    " the file {0} please undo, the line was:\n{1}".format(file_path, deleted_groups.group(0)[1:]))
+        return True
+
+    return False
+
+
+def changed_context(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    deleted_groups = re.search("-([ ]+)?- contextPath: (.*)", change_string)
+    added_groups = re.search("\+([ ]+)?- contextPath: (.*)", change_string)
+    if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
+        print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
+                    "undo, the line was:\n{1}".format(file_path, deleted_groups.group(0)[1:]))
+        return True
+
+    return False
+
+
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
 
@@ -338,15 +362,14 @@ def validate_committed_files(branch_name, is_circle):
         if not is_release_branch() and not validate_file_release_notes(file_path):
             has_schema_problem = True
 
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
+                has_schema_problem = True
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
                 has_schema_problem = True
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path):
-                has_schema_problem = True
-            if oversize_image(file_path):
-                has_schema_problem = True
-            if is_added_required_fields(file_path):
+            if changed_id(file_path) or oversize_image(file_path) or is_added_required_fields(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
                 has_schema_problem = True
 
     id_to_file = {}
