@@ -65,6 +65,5 @@ dependson:
   must:
   - panorama
 timeout: 0s
-releaseNotes: "Deprecated"
 tests:
 - palo_alto_firewall_test_pb

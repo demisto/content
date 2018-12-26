@@ -41,6 +41,5 @@ dependson:
   must:
   - panorama
 timeout: 0s
-releaseNotes: "Deprecated, use !panorama-move-rule instead"
 tests:
 - palo_alto_firewall_test_pb
