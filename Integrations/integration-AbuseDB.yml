@@ -436,6 +436,5 @@ script:
       type: string
     description: Returns a list of report categories from AbuseIPDB
   runonce: false
-releaseNotes: "Added 4 new commands. Commands related to: check and report IPs, and getting list of IPs that have been associated with malicious activity online"
 tests:
   - AbuseIPDB Test
