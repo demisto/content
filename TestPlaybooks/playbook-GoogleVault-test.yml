@@ -486,7 +486,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
@@ -653,7 +653,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
@@ -706,7 +706,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
@@ -980,7 +980,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
@@ -1064,7 +1064,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
@@ -1120,7 +1120,7 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
+          - operator: DT
             args:
               dt:
                 value:
