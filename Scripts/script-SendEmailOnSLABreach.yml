@@ -4,9 +4,13 @@ commonfields:
   version: -1
 name: SendEmailOnSLABreach
 script: |
+  # ##### Help #####
+  # This is an example script. The script is used to send an email once an SLA is breached. Please copy this script and make changes to your liking.
+  # The Configuration section is there to help you easily configure the script with your desired email recipient, the subject of the email, and the body.
+  # If you want to use this script, you should go to the SLA field that would trigger it, and set this script as the script to run on SLA breach.
 
   ###### Configuration ######
-  EMAIL_TO = "someuser@demisto.com"
+  EMAIL_TO = "someuser@yourdomain.com"
   SUBJECT = "SLA breached!"
   BODY = "We have detected a breach in SLA. Check the incident for more details."
 
