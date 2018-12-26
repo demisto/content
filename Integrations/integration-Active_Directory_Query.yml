@@ -1,0 +1,1205 @@
+commonfields:
+  id: Active Directory Query
+  version: -1
+name: Active Directory Query
+display: Active Directory Query
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Active Direcory Query integration enables accessing and managing Active Directory objects (users,contacts and computers).
+configuration:
+- display: The server IP address
+  name: server_ip
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Base DN
+  name: base_dn
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Page size
+  name: page_size
+  defaultvalue: "500"
+  type: 0
+  required: true
+- display: Secure Connection
+  name: secure_connection
+  defaultvalue: None
+  type: 15
+  required: true
+  options:
+  - None
+  - SSL
+  - TLS
+script:
+  script: |+
+    from ldap3 import Server, Connection, NTLM, SUBTREE, ALL, ALL_ATTRIBUTES
+    from ldap3.extend import microsoft
+    from datetime import datetime, timedelta
+
+
+    ''' INSTANCE CONFIGURATION '''
+    SERVER_IP = demisto.params().get('server_ip')
+    PORT = demisto.params().get('port')
+    USERNAME = demisto.params().get('credentials')['identifier']
+    PASSWORD = demisto.params().get('credentials')['password']
+    DEFAULT_BASE_DN = demisto.params().get('base_dn')
+    SECURE_CONNECTION = demisto.params().get('secure_connection')
+    DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
+
+    if PORT:
+        PORT = int(PORT)
+
+    ''' GLOBAL VARS '''
+
+    # userAccountControl is a bitmask used to store a number of settings.
+    # find more at https://support.microsoft.com/en-gb/help/305144/how-to-use-the-useraccountcontrol-flags-to-manipulate-user-account-pro
+
+    COOMON_ACCOUNT_CONTROL_FLAGS = {
+        512: "Enabled Account",
+        514: "Disabled account",
+        544: "Account Enabled - Require user to change password at first logon",
+        4096: "Workstation/server",
+        66048: "Enabled, password never expires",
+        66050: "Disabled, password never expires",
+        66080: "Enables, password never expires, password not required.",
+        532480: "Domain controller"
+    }
+    NORMAL_ACCOUNT = 512
+    DISABLED_ACCOUNT = 514
+
+    # common attributes for specific AD objects
+    DEFAULT_PERSON_ATTRIBUTES = [
+        'name',
+        'displayName',
+        'memberOf',
+        'mail',
+        'samAccountName',
+        'manager',
+        'userAccountControl'
+    ]
+    DEFAULT_COMPUTER_ATTRIBUTES = [
+        'name',
+        'memberOf'
+    ]
+
+    ''' HELPER FUNCTIONS '''
+
+    def error_entry(message):
+        return {
+            'Type': entryTypes['error'],
+            'Contents': message,
+            'ContentsFormat': formats['text']
+        }
+
+    def initialize_server():
+        """
+        uses the instance configuration to initialize the LDAP server
+        """
+        if SECURE_CONNECTION == "SSL":
+            # intialize server with ssl
+            # uses the ssl.PROTOCOL_SSLv23 and performs no validation of the server certificate
+            demisto.debug("Initializing server with SSL")
+            if PORT:
+                return Server(SERVER_IP, port=PORT, use_ssl=True)
+            return Server(SERVER_IP, port=PORT, use_ssl=True)
+        if SECURE_CONNECTION == 'TLS':
+            # initialize with tls
+            # uses sl.PROTOCOL_TLSv1 and validates server certificate
+            demisto.debug("Initializing server with TLS")
+            tls_configuration = Tls(validate=ssl.CERT_REQUIRED, version=ssl.PROTOCOL_TLSv1)
+            if PORT:
+                return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls_configuration)
+            return Server(SERVER_IP, use_ssl=True, tls=tls_configuration)
+        # default cleartext
+        demisto.debug("Initializing server without secure connection")
+        if PORT:
+            return Server(SERVER_IP, port=PORT)
+        return Server(SERVER_IP)
+
+    def account_entry(person_object, custome_attributes):
+        # create an account entry from a person objects
+        account = {
+            'Type': 'AD',
+            'ID': person_object.get('dn'),
+            'Email': person_object.get('email'),
+            'Username': person_object.get('samAccountName'),
+            'DisplayName': person_object.get('displayName'),
+            'Managr': person_object.get('manager'),
+            'Groups': person_object.get('memberOf')
+        }
+
+        for attr in custome_attributes:
+            account[attr] = person_object[attr]
+
+        return account
+
+    def endpoint_entry(computer_object, custome_attributes):
+        # create an endpoint entry from a computer object
+        endpoint = {
+            'Type': 'AD',
+            'ID': user.get('dn'),
+            'Hostname': user.get('name'),
+            'Groups': user.get('memberOf')
+        }
+
+        for attr in custome_attributes:
+            account[attr] = user[attr]
+
+        return endpoint
+
+
+    ''' COMMANDS '''
+
+    ''' SEARCH '''
+
+    def search(search_filter, search_base,  attributes=None, size_limit=0, time_limit=0):
+        """
+        find entries in the DIT
+
+        Args:
+            search_base: the location in the DIT where the search will start
+            search_filte: LDAP query string
+            attributes: the attributes to specify for each entry found in the DIT
+
+        """
+        success = conn.search(
+            search_base = search_base,
+            search_filter = search_filter,
+            attributes = attributes,
+            size_limit = size_limit,
+            time_limit = time_limit
+        )
+
+        if not success:
+            raise("Search failed")
+        return conn.entries
+
+    def search_with_paging(search_filter, search_base, attributes=None, page_size=100, size_limit=0, time_limit=0):
+        """
+        find entries in the DIT
+
+        Args:
+            search_base: the location in the DIT where the search will start
+            search_filte: LDAP query string
+            attributes: the attributes to specify for each entrxy found in the DIT
+
+        """
+
+        total_entries = 0
+        cookie = None
+        start = datetime.now()
+
+        entries = []
+
+        while True:
+            if size_limit and size_limit < page_size:
+                page_size = size_limit
+
+            conn.search(
+                search_base,
+                search_filter,
+                search_scope = SUBTREE,
+                attributes = attributes,
+                paged_size = page_size,
+                paged_cookie = cookie
+            )
+
+            total_entries += len(conn.entries)
+            cookie = conn.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+            time_diff = (start - datetime.now()).seconds
+
+            entries.extend(conn.entries)
+
+            # stop when: 1.reached size limit 2.reached time limit 3. no cookie
+            if (size_limit and size_limit >= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
+                break
+
+        # keep the raw entry for raw content (backward compatability)
+        raw = []
+        # flaten the entries
+        flat = []
+
+        for entry in entries:
+            entry = json.loads(entry.entry_to_json())
+
+            flat_entry = {
+                'dn': entry['dn']
+            }
+
+            for attr in entry.get('attributes', {}):
+                flat_entry[attr] = entry['attributes'][attr]
+
+            raw.append(entry)
+            flat.append(flat_entry)
+
+        return {
+            "raw": raw,
+            "flat": flat
+        }
+
+
+    def user_dn(sam_account_name, search_base):
+        search_filter = '(&(objectClass=user)(sAMAccountName={}))'.format(sam_account_name)
+        entries = search(
+            search_filter,
+            search_base
+        )
+        if not entries:
+            raise Exception("Could not get full DN for user with sAMAccountName '{}'".format(sam_account_name))
+        entry = json.loads(entries[0].entry_to_json())
+        return entry['dn']
+
+    def computer_dn(compuer_name, search_base):
+        search_filter = '(&(objectClass=user)(objectCategory=computer)(name={}))'.format(compuer_name)
+        entries = search(
+            search_filter,
+            search_base
+        )
+        if not entries:
+            raise Exception("Could not get full DN for computer with name '{}'".format(compuer_name))
+        entry = json.loads(entries[0].entry_to_json())
+        return entry['dn']
+
+    def group_dn(group_name, search_base):
+        search_filter = '(&(objectClass=group)(cn={}))'.format(group_name)
+        entries = search(
+            search_filter,
+            search_base
+        )
+        if not entries:
+            raise Exception("Could not get full DN for group with name '{}'".format(group_name))
+        entry = json.loads(entries[0].entry_to_json())
+        return entry['dn']
+
+    def free_search():
+
+        args = demisto.args()
+
+        search_filter = args.get('filter')
+        size_limit = int(args.get('size-limit', '0'))
+        time_limit = int(args.get('time-limit', '0'))
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        attributes = args.get('attributes')
+
+        # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
+        if attributes:
+            attributes = ALL_ATTRIBUTES if attributes == 'ALL' else attributes.split(',')
+
+        entries = search_with_paging(
+            search_filter,
+            search_base,
+            attributes = attributes,
+            size_limit = size_limit,
+            time_limit = time_limit,
+            page_size = DEFAULT_PAGE_SIZE
+        )
+
+        demisto_entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': entries['raw'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Active Directory Search", entries['flat']),
+            'EntryContext': {
+                'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat']
+            }
+        }
+        demisto.results(demisto_entry)
+
+    def search_users():
+        # this command is equivalant to script ADGetUser
+        # will preform a custom search to find users by a specific (one) attribute specified by the user
+
+        args = demisto.args()
+
+        attributes = []
+        custome_attributes = []
+
+        # zero is actually no limitation
+        limit = int(args.get('limit','0'))
+
+        # default query - list all users
+        query = "(objectClass=User)(objectCategory=person)"
+
+        # query by user DN
+        if args.get('dn'):
+            query = "(&(objectClass=User)(objectCategory=person)(dn={}))".format(args['dn'])
+
+        # query by name
+        if args.get('name'):
+            query = "(&(objectClass=User)(objectCategory=person)(cn={}))".format(args['name'])
+
+        # query by email
+        if args.get('email'):
+            query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(args['email'])
+
+        # query by sAMAccountName
+        if args.get('username'):
+            query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(args['username'])
+
+        # query by custom object attribute
+        if args.get('custom-field-type'):
+            if not args.get('custom-field-data'):
+                raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
+            query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
+
+        if args.get('attributes'):
+            custome_attributes = args['attributes'].split(",")
+
+        attributes = set(custome_attributes + DEFAULT_PERSON_ATTRIBUTES)
+
+        entries = search_with_paging(
+            query,
+            DEFAULT_BASE_DN,
+            attributes=attributes,
+            size_limit=limit,
+            page_size=DEFAULT_PAGE_SIZE
+        )
+
+        accounts = [account_entry(entry, custome_attributes) for entry in entries['flat']]
+
+        if args.get('user-account-control-out', '') == 'true':
+            # display a literal translation of the numeric account control flag
+            for i,user in enumerate(entries['flat']):
+                flag_no = user.get('userAccountControl')[0]
+                entries['flat'][i]['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(flag_no) or flag_no
+
+        demisto_entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': entries['raw'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Active Directory - Get Users", entries['flat']),
+            'EntryContext': {
+                'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
+                # 'backward compatability' with ADGetUser script
+                'Account(obj.ID == val.ID)': accounts
+            }
+        }
+        demisto.results(demisto_entry)
+
+    def search_computers():
+        # this command is equivalent to ADGetComputer script
+
+        args = demisto.args()
+
+        attributes = []
+        custome_attributes = []
+
+        # default query - list all users (computer category)
+        query = "(&(objectClass=user)(objectCategory=computer))"
+
+        # query by user DN
+        if args.get('dn'):
+            query = "(&(objectClass=User)(objectCategory=computer)(dn={}))".format(args['dn'])
+
+        # query by name
+        if args.get('name'):
+            query = "(&(objectClass=User)(objectCategory=computer)(name={}))".format(args['name'])
+
+        # query by custom object attribute
+        if args.get('custom-field-type'):
+            if not args.get('custom-field-data'):
+                raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
+            query = "(&(objectClass=User)(objectCategory=computer)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
+
+        if args.get('attributes'):
+            custome_attributes = args['attributes'].split(",")
+
+        attributes = set(custome_attributes + DEFAULT_COMPUTER_ATTRIBUTES)
+
+        entries = search_with_paging(
+            query,
+            DEFAULT_BASE_DN,
+            attributes=attributes,
+            page_size=DEFAULT_PAGE_SIZE
+        )
+
+        endpoints = [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
+
+        demisto_entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': entries['raw'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Active Directory - Get Computers", entries['flat']),
+            'EntryContext': {
+                'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
+                # 'backward compatability' with ADGetComputer script
+                'Endpoint(obj.ID == val.ID)': endpoints
+            }
+        }
+        demisto.results(demisto_entry)
+
+    def search_group_members():
+        # this command is equivalent to ADGetGroupMembers script
+
+        args = demisto.args()
+        member_type = args.get('member-type')
+        group_dn = args.get('group-dn')
+
+        custome_attributes = []
+        default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
+
+        if args.get('attributes'):
+            custome_attributes = args['attributes'].split(",")
+
+        attributes = set(custome_attributes + default_attributes)
+
+        # neasted search
+        query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type, group_dn)
+
+        entries = search_with_paging(
+            query,
+            DEFAULT_BASE_DN,
+            attributes=attributes,
+            page_size=DEFAULT_PAGE_SIZE
+        )
+
+        demisto_entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': entries['raw'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Active Directory - Get Group Members", entries['flat']),
+            'EntryContext': {
+
+            }
+        }
+
+        if member_type == 'person':
+            demisto_entry['EntryContext'] = {
+                'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
+                'Account': [account_entry(entry, custome_attributes) for entry in entries['flat']]
+            }
+        else:
+            demisto_entry['EntryContext'] = {
+                'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
+                'Endpoint': [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
+            }
+
+        demisto.results(demisto_entry)
+
+    ''' DATABASE OPERATIONS '''
+
+    ''' CREATE OBJECT'''
+
+    def create_user():
+        args = demisto.args()
+
+        object_classes = ["top", "person", "organizationalPerson", "user"]
+        user_dn = args.get('user-dn')
+        username = args.get("username")
+        password = args.get("password")
+        custome_attributes = args.get('custom-attributes')
+        attributes = {
+            "samAccountName": username
+        }
+
+        # set common user attributes
+        if args.get('diaply-name'):
+            attributes['displayName'] = args['diaply-name']
+        if args.get('description'):
+            attributes['description'] = args['description']
+        if args.get('email'):
+            attributes['mail'] = args['email']
+        if args.get('telephone-number'):
+            attributes['telephoneNumber'] = args['telephone-number']
+        if args.get('title'):
+            attributes['title'] = args['title']
+
+        # set user custome attributes
+        if custome_attributes:
+            try:
+                custome_attributes = json.loads(custome_attributes)
+            except Exception as e:
+                demisto.info(e.message)
+                raise Exception("Failed to parse custom attributes argument. Please see an example of this argument in the argument description.")
+            for attribute_name, attribute_value in custome_attributes.items():
+                # can run default attribute stting
+                attributes[attribute_name] = attribute_value
+
+        # add user
+        success = conn.add(user_dn, object_classes, attributes)
+        if not success:
+            raise Exception("Failed to create user")
+
+        # set user password
+        success = conn.extend.microsoft.modify_password(user_dn, password)
+        if not success:
+            raise Exception("Failed to reset user password")
+
+        # enable user and expire password
+        modification =  {
+            # enable user
+            'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)],
+            # set to 0, to force password change on next login
+            "pwdLastSet": [('MODIFY_REPLACE', "0")]
+        }
+        modify_object(user_dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Created user with DN: {}".format(user_dn)
+        }
+        demisto.results(demisto_entry)
+
+    def create_contact():
+        args = demisto.args()
+
+        object_classes = ["top", "person", "organizationalPerson", "contact"]
+        contact_dn = args.get('contact-dn')
+
+        # set contact attributes
+        attributes = {}
+        if args.get('custom-attributes'):
+            try:
+                attributes = json.loads(args['custom-attributes'])
+            except Exception as e:
+                demisto.info(e.message)
+                raise Exception('Failed to parse custom attributes argument. Please see an example of this argument in the argument description. ')
+
+        # set common user attributes
+        if args.get('diaply-name'):
+            attributes['displayName'] = args['diaply-name']
+        if args.get('description'):
+            attributes['description'] = args['description']
+        if args.get('email'):
+            attributes['mail'] = args['email']
+        if args.get('telephone-number'):
+            attributes['telephoneNumber'] = args['telephone-number']
+        if args.get('title'):
+            attributes['title'] = args['title']
+
+        # add contact
+
+        success = conn.add(contact_dn, object_classes, attributes)
+        if not success:
+            raise Exception("Failed to create contact")
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Created contact with DN: {}".format(contact_dn)
+        }
+        demisto.results(demisto_entry)
+
+
+    ''' UPDATE OBJECT '''
+
+    def modify_object(dn, modification):
+        """
+        modifys object in the DIT
+        """
+        success = conn.modify(dn, modification)
+        if not success:
+            raise Exception("Failed to update object {} with the following modofication: {}".format(dn, json.dumps(modification)))
+
+    def update_user():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        attribute_name = args.get('attribute-name')
+        attribute_value = args.get('attribute-value')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        modification = {}
+        modification[attribute_name] = [('MODIFY_REPLACE', attribute_value)]
+
+        # modify user
+        modify_object(dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Updated user's {} to ".format(attribute_name, attribute_value)
+        }
+        demisto.results(demisto_entry)
+
+    def update_contact():
+        args = demisto.args()
+
+        contact_dn = args.get('contact-dn')
+        modification = {}
+        modification[args.get('attribute-name')] = [('MODIFY_REPLACE', args.get('attribute-value'))]
+
+        # modify
+        modify_object(contact_dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Updated contact's {} to ".format(args.get('attribute-name'), args.get('attribute-value'))
+        }
+        demisto.results(demisto_entry)
+
+    def modify_computer_ou():
+        args = demisto.args()
+
+        computer_name = args.get('computer-name')
+        dn = computer_dn(computer_name, args.get('base-dn') or DEFAULT_BASE_DN)
+
+        success = conn.modify_dn(dn, "CN={}".format(computer_name), new_superior=args.get('full-superior-dn'))
+        if not success:
+            raise Exception("Failed to modify computer OU")
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Moved computer {} to {}".format(computer_name, args.get('full-superior-dn'))
+        }
+        demisto.results(demisto_entry)
+
+    def expire_user_password():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        modification = {
+            # set to 0, to force password change on next login
+            "pwdLastSet": [('MODIFY_REPLACE', "0")]
+        }
+
+        # modify user
+        modify_object(dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Expired password successfully"
+        }
+        demisto.results(demisto_entry)
+
+    def set_user_password():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        password = args.get('password')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        # set user password
+        success = conn.extend.microsoft.modify_password(dn, password)
+        if not success:
+            raise Exception("Failed to reset user password")
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "User password successfully set"
+        }
+        demisto.results(demisto_entry)
+
+    def enable_user():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        # modify user
+        modification =  {
+            'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+        }
+        modify_object(dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "User {} was enabled".format(sam_account_name)
+        }
+        demisto.results(demisto_entry)
+
+    def disable_user():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        # modify user
+        modification =  {
+            'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
+        }
+        modify_object(dn, modification)
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "User {} was disabled".format(sam_account_name)
+        }
+        demisto.results(demisto_entry)
+
+    def add_member_to_group():
+
+        args = demisto.args()
+
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+
+        # get the dn of the member - either user or computer
+        args_err = "Pleade provide either username or computer-name"
+        member_dn = ''
+
+        if args.get('username') and args.get('computer-name'):
+            # both arguments passed
+            raise Exception(args_err)
+        if args.get('username'):
+            member_dn = user_dn(args['username'], search_base)
+        elif args.get('computer-name'):
+            member_dn = computer_dn(args['computer-name'], search_base)
+        else:
+            # none of the arguments passed
+            raise Exception(args_err)
+
+        grp_dn = group_dn(args.get('group-cn'), search_base)
+
+        success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [member_dn], [grp_dn])
+        if not success:
+            raise Exception("Failed to add {} to group {]}".format(
+                args.get('username') or args.get('computer-name'),
+                args.get('group_name')
+            ))
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Object with dn {} was added to group {}".format(member_dn, args.get('group-cn'))
+        }
+        demisto.results(demisto_entry)
+
+    def remove_member_from_group():
+
+        args = demisto.args()
+
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+
+        # get the dn of the member - either user or computer
+        args_err = "Pleade provide either username or computer-name"
+        member_dn = ''
+
+        if args.get('username') and args.get('computer-name'):
+            # both arguments passed
+            raise Exception(args_err)
+        if args.get('username'):
+            member_dn = user_dn(args['username'], search_base)
+        elif args.get('computer-name'):
+            member_dn = computer_dn(args['computer-name'], search_base)
+        else:
+            # none of the arguments passed
+            raise Exception(args_err)
+
+        grp_dn = group_dn(args.get('group-cn'), search_base)
+
+        success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [member_dn], [grp_dn], True)
+        if not success:
+            raise Exception("Failed to remove {member} from group {group_name}".format({
+                "member": args.get('username') or args.get('computer-name'),
+                "group_name": args.get('group_name')
+            }))
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Object with dn {} removed from group {}".format(member_dn, args.get('group-cn'))
+        }
+        demisto.results(demisto_entry)
+
+    def unlock_account():
+        args = demisto.args()
+
+        # get user DN
+        sam_account_name = args.get('username')
+        search_base = args.get('base-dn') or DEFAULT_BASE_DN
+        dn = user_dn(sam_account_name, search_base)
+
+        success = microsoft.unlockAccount.ad_unlock_account(conn, dn)
+        if not success:
+            raise Exception("Failed to unlock user {}".format(sam_account_name))
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Unlocked user {}".format(sam_account_name)
+        }
+        demisto.results(demisto_entry)
+
+    ''' DELETE OBJECT '''
+
+    def delete_user():
+        # can acually delete any object...
+        success = conn.delete(demisto.args().get('user-dn'))
+        if not success:
+            raise Exception('Failed to delete user')
+
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': "Deleted object with dn {}".format(demisto.args().get('user-dn'))
+        }
+        demisto.results(demisto_entry)
+
+
+    ''' EXECUTION '''
+
+    # intialize connection to LDAP server with NTLM authentication
+    server = initialize_server()
+    conn = Connection(server, user=SERVER_IP + '\\' + USERNAME, password=PASSWORD, authentication=NTLM)
+
+    try:
+        # open socket and bind to server
+        if not conn.bind():
+            demisto.results(error_entry('Failed to bind to server'))
+    except LDAPSocketOpenError as e:
+    # except Exception as e:
+        demisto.info(e.message)
+        message = "Failed to access LDAP server."
+        if SECURE_CONNECTION == 'TLS':
+            # probably failed to verify certificate
+            message += ' Consider not using TLS'
+        demisto.results(error_entry(message))
+        sys.exit(0)
+
+    demisto.info('Established connection with AD LDAP server')
+
+    try:
+        if demisto.command() == 'test-module':
+            if conn.user == '':
+                # Empty response means you have no authentication status on the server, so you are an anonymous user.
+                raise Exception("Failed to authenticate user")
+            demisto.results('ok')
+
+        if demisto.command() == 'ad-search':
+            free_search()
+
+        if demisto.command() == 'ad-expire-password':
+            expire_user_password()
+
+        if demisto.command() == 'ad-set-new-password':
+            set_user_password()
+
+        if demisto.command() == 'ad-unlock-account':
+            unlock_account()
+
+        if demisto.command() == 'ad-disable-account':
+            disable_user()
+
+        if demisto.command() == 'ad-enable-account':
+            enable_user()
+
+        if demisto.command() == 'ad-remove-from-group':
+            remove_member_from_group()
+
+        if demisto.command() == 'ad-add-to-group':
+            add_member_to_group()
+
+        if demisto.command() == 'ad-create-user':
+            create_user()
+
+        if demisto.command() == 'ad-delete-user':
+            delete_user()
+
+        if demisto.command() == 'ad-update-user':
+           update_user()
+
+        if demisto.command() == 'ad-modify-computer-ou':
+            modify_computer_ou()
+
+        if demisto.command() == 'ad-create-contact':
+            create_contact()
+
+        if demisto.command() == 'ad-update-contact':
+            update_contact()
+
+        if demisto.command() == 'ad-get-user':
+            search_users()
+
+        if demisto.command() == 'ad-get-computer':
+            search_computers()
+
+        if demisto.command() == 'ad-get-group-members':
+            search_group_members()
+
+    except Exception as e:
+        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(e.message, json.dumps(conn.result), conn.last_error)
+        demisto.info(message)
+        demisto.results(error_entry(message))
+    finally:
+        # disconnect and close the connection
+        conn.unbind()
+        sys.exit(0)
+
+  type: python
+  commands:
+  - name: ad-expire-password
+    arguments:
+    - name: username
+      required: true
+      description: The username (samAccountName) of the user to be modified
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com)
+    description: Expire the password of an Active Directory user
+  - name: ad-create-user
+    arguments:
+    - name: username
+      required: true
+      description: The username (samAccountName) of the user to be modified
+    - name: password
+      required: true
+      description: ' The initial password to set for the user. The user will be asked
+        to change the password after login.'
+    - name: user-dn
+      required: true
+      description: The user DN
+    - name: display-name
+      description: The display name for the user.
+    - name: description
+      description: Short description of the user
+    - name: email
+      description: User email.
+    - name: telephone-number
+      description: The telephone number of the user.
+    - name: title
+      description: The user's job title.
+    - name: custom-attributes
+      description: Use to set basic or custom attributes of the user object. e.g.
+        custom-attributes="{"notes":"some note about the contact","company":"some
+        company"}"
+    description: Create an Active Directory User. The connection must be secure (SSL,TLS)
+      in order to use this command.
+  - name: ad-search
+    arguments:
+    - name: filter
+      required: true
+      description: ' (mandatory) Query the AD in AD syntax. E.g. "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
+        will find all user objects except andy'
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    - name: attributes
+      description: comma separated list of the object attributes to be returned e.g.
+        "dn,memberOf". Or specify 'ALL' to get all the objects attributes.
+    - name: size-limit
+      description: Max number of returned records
+    - name: time-limit
+      description: Max time pull records (in seconds)
+    description: Run Active Directory queries
+  - name: ad-add-to-group
+    arguments:
+    - name: username
+      description: "The name of the user to add to the group. If this is not specified,
+        the computer name must be specified.\t"
+    - name: computer-name
+      description: The name of the computer to add to the group. If this is not specified,
+        the user name must be specified.
+    - name: group-cn
+      required: true
+      description: The name of the group the user should be added to
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Add an Active Directory User or computer to a group
+  - name: ad-remove-from-group
+    arguments:
+    - name: username
+      description: "The name of the user to add to the group. If this is not specified,
+        the computer name must be specified.\t"
+    - name: computer-name
+      description: The name of the computer to add to the group. If this is not specified,
+        the user name must be specified.
+    - name: group-cn
+      required: true
+      description: "The name of the group the user should be added to\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Remove an Active Directory user or computer from a group
+  - name: ad-update-user
+    arguments:
+    - name: username
+      required: true
+      description: "The username of the account to be disabled (sAMAccountName)\t"
+    - name: attribute-name
+      required: true
+      description: The name of the attribute to modify (e.g. sn, displayName, mail,
+        etc.)
+    - name: attribute-value
+      required: true
+      description: "The value to which the attribute should be changed\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Update an existing active directory user
+  - name: ad-delete-user
+    arguments:
+    - name: user-dn
+      required: true
+      description: The DN of the user to be deleted
+    description: Delete an Active Directory User
+  - name: ad-create-contact
+    arguments:
+    - name: contact-dn
+      required: true
+      description: "The DN of the contact\t"
+    - name: display-name
+      description: "The contact display name\t"
+    - name: description
+      description: Short description of the contact
+    - name: email
+      description: The email address of the contact.
+    - name: telephone-number
+      description: The contact's telephone number.
+    - name: custom-attributes
+      description: Use to set basic or custom attributes of the contact object. e.g.
+        custom-attributes="{"notes":"some note about the contact","company":"some
+        company"}"
+    - name: title
+      description: The contact's job title.
+    description: Create an Active Directory Contact
+  - name: ad-update-contact
+    arguments:
+    - name: contact-dn
+      required: true
+      description: "The DN of the contact\t"
+    - name: attribute-name
+      required: true
+      description: "The attribute name to be updated\t"
+    - name: attribute-value
+      required: true
+      description: "The attribute value to be updated\t"
+    description: Update an Active Directory Contact
+  - name: ad-disable-account
+    arguments:
+    - name: username
+      required: true
+      description: "The username of the account to be disabled (sAMAccountName)\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Disable an Active Directory user account
+  - name: ad-enable-account
+    arguments:
+    - name: username
+      required: true
+      description: "The username of the account to be enabled (sAMAccountName)\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: ad-enable-account
+  - name: ad-unlock-account
+    arguments:
+    - name: username
+      required: true
+      description: "The username of the account to unlock (sAMAccountName)\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Unlock an Active Directory user account
+  - name: ad-set-new-password
+    arguments:
+    - name: username
+      required: true
+      description: "The username of the account to be disabled (sAMAccountName)\t"
+    - name: password
+      required: true
+      description: "The password to set for the user\t"
+    - name: base-dn
+      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
+        will be used as default.
+    description: Set a new password for an Active Directory user. The connection must
+      be secure (SSL,TLS) in order to use this command.
+  - name: ad-modify-computer-ou
+    arguments:
+    - name: computer-name
+      required: true
+      description: "The computer name\t"
+    - name: full-superior-dn
+      description: superior DN. e.g. OU=computers,DC=domain,DC=com (The domain specified
+        must be the same as the current computer domain)
+    description: Modify computer organizational unit within a domain
+  - name: ad-get-user
+    arguments:
+    - name: dn
+      default: true
+      description: Query by Active Directory Distinguished Name for the desired user.
+    - name: name
+      description: Query by the name of the desired user.
+    - name: attributes
+      description: Include these AD attributes of the resulting objects in addition
+        to the default ones.
+    - name: custom-field-type
+      description: Query users by this custom field type.
+    - name: custom-field-data
+      description: Query users by this custom field data (relevant only if `custom-field-type`
+        is provided)
+    - name: username
+      description: Query users by samAccountName.
+    - name: limit
+      description: Maximum number of objects to return (default is 20)
+    - name: email
+      description: Query by mail.
+    - name: user-account-control-out
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include verbose translation for UserAccountControl flags
+      defaultValue: "false"
+    description: Retrieve detailed information about a user account. The user can
+      be specified by name, email or as an Active Directory Distinguished Name (DN).
+      If no filter is provided, the result will show all users.
+  - name: ad-get-computer
+    arguments:
+    - name: dn
+      description: The DN of the computer.
+    - name: name
+      description: Name of the desired computer
+    - name: attributes
+      description: Include these AD attributes of the resulting objects in addition
+        to the default ones.
+    - name: custom-field-data
+      description: Search computer by this custom field data (relevant only if `customFieldType`
+        is provided)
+    - name: custom-field-type
+      description: Search computer by this custom field type
+    description: 'Retrieve detailed information about a computer account. The computer
+      can be specified by name, email or as an Active Directory Distinguished Name
+      (DN). If no filters are provided, the result will show all computers. '
+  - name: ad-get-group-members
+    arguments:
+    - name: group-dn
+      required: true
+      description: ' Active Directory Distinguished Name for the desired group'
+    - name: member-type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - person
+      - computer
+      description: Which members type to query
+      defaultValue: person
+    - name: attributes
+      description: Comma separated list of attributes to Include in addition to the
+        default ones
+    description: Retrieve the list of persons or computers that are members of the
+      specified group.
+  runonce: false
