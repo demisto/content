@@ -37,6 +37,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Rating threshold for Malicious Indicators
+  name: rating
+  defaultvalue: "3"
+  type: 0
+  required: false
+- display: Confidence threshold for Malicious Indicators
+  name: confidence
+  defaultvalue: "50"
+  type: 0
+  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -67,7 +77,7 @@ script:
         return tc
 
 
-    def create_context(indicators, rating_threshold=50, confidence_threshold=3):
+    def create_context(indicators, rating_threshold=3, confidence_threshold=50, include_dbot_score=False):
         context = {
             'DBotScore' : [],
             outputPaths['ip'] : [],
@@ -83,31 +93,31 @@ script:
             'File' : 'file'
         }
         type_to_value_field = {
-            'ip' : 'ip',
-            'url' : 'text',
-            'domain' : 'hostName',
-            'file' : 'md5',
+            'Address' : 'ip',
+            'URL' : 'text',
+            'Host' : 'hostName',
+            'File' : 'md5',
         }
 
         for ind in indicators:
             dbotScore = 0
             indicator_type = tc_type_to_demisto_type.get(ind['type'], ind['type'])
-            value_field = type_to_value_field.get(indicator_type, 'summary')
+            value_field = type_to_value_field.get(ind['type'], 'summary')
             value = ind.get(value_field, ind.get('summary', ''))
 
             confidence = 0
-            if ind.get('confidence') is not None: # returned in specific indicator request
+            if ind.get('confidence') is not None: # returned in specific indicator request - SDK
                 confidence = int(ind['confidence'])
             else:
-                # returned in general indicator request
+                # returned in general indicator request - REST API
                 confidence = int(ind.get('threatAssessConfidence', 0))
 
             rating = 0
-            if ind.get('rating') is not None: # returned in specific indicator request
-                rating = float(ind['rating'])
+            if ind.get('rating') is not None: # returned in specific indicator request - SDK
+                rating = int(ind['rating'])
             else:
-                # returned in general indicator request
-                rating = float(ind.get('threatAssessRating', 0))
+                # returned in general indicator request - REST API
+                rating = int(ind.get('threatAssessRating', 0))
 
             if confidence >= confidence_threshold and rating >= rating_threshold:
                 dbotScore = 3
@@ -184,11 +194,9 @@ script:
         if indicator_type is not None:
             _filter.add_pf_type(indicator_type, FilterOperator.EQ)
 
-        if owners is None:
-            owners = [owner['Name'] for owner in tc_owners()]
-        else:
+        if owners is not None:
             owners = owners.split(",")
-        _filter.add_owner(owners)
+            _filter.add_owner(owners)
 
         if rating_threshold != -1:
             _filter.add_pf_rating(rating_threshold, FilterOperator.GE)
@@ -224,7 +232,7 @@ script:
     @logger
     def ip(ip_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold)
+        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
 
         return indicators, ec
 
@@ -253,7 +261,7 @@ script:
     @logger
     def url(url_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold)
+        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
 
         return indicators, ec
 
@@ -279,7 +287,7 @@ script:
     @logger
     def _file(url_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold)
+        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
 
         return indicators, ec
 
@@ -305,18 +313,25 @@ script:
     @logger
     def domain(domain_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold)
+        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
 
         return indicators, ec
 
 
     def tc_owners_command():
-        owners = tc_owners()
+        raw_owners = tc_owners()
+        owners = []
+        for owner in raw_owners['data']['owner']:
+            owners.append({
+                'ID' : owner['id'],
+                'Type' : owner['type'],
+                'Name' : owner['name'],
+            })
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': owners,
+            'Contents': raw_owners,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ThreatConnect Owners:', owners),
             'EntryContext': {'TC.Owner(val.ID && val.ID === obj.ID)' : owners},
@@ -326,29 +341,24 @@ script:
     @logger
     def tc_owners():
         tc = get_client()
-        raw_owners = tc.owners().retrieve()
-        owners = []
-        for o in raw_owners:
-            owner = json.loads(o.json)
-            owners.append({
-                'ID' : owner['id'],
-                'Type' : owner['type'],
-                'Name' : owner['name'],
-            })
+        ro = RequestObject()
+        ro.set_http_method('GET')
+        ro.set_request_uri('/v2/owners')
+        results = tc.api_request(ro)
 
-        return owners
+        return results.json()
 
 
     def tc_indicators_command():
         args = demisto.args()
         limit = int(args.get('limit', 500))
-        owners = args.get('owners', [])
-        indicators, ec = tc_indicators(owners, limit)
+        owners = args.get('owners')
+        ec, indicators, raw_response = tc_indicators(owners, limit)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': indicators,
+            'Contents': raw_response,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ThreatConnect Indicators:', indicators, headerTransform=pascalToSpace),
             'EntryContext': ec,
@@ -363,27 +373,28 @@ script:
         ro.set_http_method('GET')
         ro.set_request_uri('/v2/indicators?resultLimit={}'.format(limit))
 
-        if len(owners) > 0:
+        if owners is not None:
             ro.set_owner(owners)
             ro.set_owner_allowed(True)
 
-        indicators = tc.api_request(ro).json()['data']['indicator']
-        ec, indicators = create_context(indicators)
+        response = tc.api_request(ro).json()
+        indicators = response['data']['indicator']
+        ec, indicators = create_context(indicators, include_dbot_score=True)
 
-        return indicators, ec
+        return ec, indicators, response
 
 
     def tc_get_tags_command():
-        tags = tc_get_tags()
-        tags = [{'Name' : t['name']} for t in tags]
+        raw_response = tc_get_tags()
+        tags = [t['name'] for t in raw_response['data']['tag']]
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': tags,
+            'Contents': raw_response,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ThreatConnect Tags:', tags, headerTransform=pascalToSpace),
-            'EntryContext': {'TC.Tag(val.Name && val.Name === obj.Name)' : tags},
+            'HumanReadable': tableToMarkdown('ThreatConnect Tags:', tags, headers='Name'),
+            'EntryContext': {'TC.Tags' : tags},
         })
 
 
@@ -394,7 +405,7 @@ script:
         ro.set_http_method('GET')
         ro.set_request_uri('/v2/tags')
 
-        return tc.api_request(ro).json()['data']['tag']
+        return tc.api_request(ro).json()
 
 
     def tc_tag_indicator_command():
@@ -421,11 +432,9 @@ script:
         filter1 = indicators.add_filter()
         filter1.add_indicator(indicator)
 
-        if owners is None:
-            owners = [owner['Name'] for owner in tc_owners()]
-        else:
+        if owners is not None:
             owners = owners.split(",")
-        filter1.add_owner(owners)
+            filter1.add_owner(owners)
 
         indicators = indicators.retrieve()
         for indicator in indicators:
@@ -442,37 +451,38 @@ script:
         confidence_threshold = int(args.get('confidenceThreshold', -1))
         indicator = args['indicator']
 
-        indicators, ec = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold)
+        ec, indicators, raw_indicators = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': indicators,
+            'Contents': raw_indicators,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ThreatConnect indicators for: {}'.format(indicator), indicators, headerTransform=pascalToSpace),
+            'HumanReadable': tableToMarkdown('ThreatConnect indicator for: {}'.format(indicator), indicators, headerTransform=pascalToSpace),
             'EntryContext': ec,
         })
 
 
     @logger
     def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold):
-        indicators = get_indicators(indicator, owners=owners, rating_threshold=rating_threshold, confidence_threshold=confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold)
+        raw_indicators = get_indicators(indicator, owners=owners, rating_threshold=rating_threshold, confidence_threshold=confidence_threshold)
+        ec, indicators = create_context(raw_indicators, rating_threshold, confidence_threshold)
 
-        return indicators, ec
+        return ec, indicators, raw_indicators
 
 
     def tc_get_indicators_by_tag_command():
         args = demisto.args()
         tag = args['tag']
         owner = args.get('owner')
-        raw_indicators = tc_get_indicators_by_tag(tag, owner)
+        response = tc_get_indicators_by_tag(tag, owner)
+        raw_indicators = response['data']['indicator']
         ec, indicators = create_context(raw_indicators)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': raw_indicators,
+            'Contents': response,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ThreatConnect Indicators with tag: {}'.format(tag), indicators, headerTransform=pascalToSpace),
             'EntryContext': ec,
@@ -490,17 +500,17 @@ script:
 
         ro.set_request_uri(cmd)
 
-        return tc.api_request(ro).json()['data']['indicator']
+        return tc.api_request(ro).json()
 
 
     def tc_add_indicator_command():
         args = demisto.args()
         indicator = args['indicator']
-        organization = demisto.params()['defaultOrg']
+        owner = args.get('owner', demisto.params()['defaultOrg'])
         rating = int(args.get('rating', 0))
         confidence = int(args.get('confidence', 0))
 
-        _indicator = tc_add_indicator(indicator, organization, rating, confidence)
+        _indicator = tc_add_indicator(indicator, owner, rating, confidence)
         # get the indicator for full object data
         raw_indicators = get_indicators(indicator)
         ec, indicators = create_context(raw_indicators)
@@ -613,9 +623,7 @@ script:
         args = demisto.args()
         incident_id = int(args['incidentId'])
         owners = args.get('owner')
-        if owners is None:
-            owners = [owner['Name'] for owner in tc_owners()]
-        else:
+        if owners is not None:
             owners = owners.split(",")
 
         raw_indicators = tc_get_incident_associate_indicators(incident_id, owners)
@@ -636,7 +644,6 @@ script:
         incidents = tc.incidents()
         _filter = incidents.add_filter()
         _filter.add_id(incident_id)
-        _filter.add_owner(owners)
 
         incidents = incidents.retrieve()
         indicators = []
@@ -651,7 +658,8 @@ script:
 
         indicators_obj = tc.indicators()
         _filter = indicators_obj.add_filter()
-        _filter.add_owner(owners)
+        if owners is not None:
+            _filter.add_owner(owners)
         for ind in indicators:
             _filter.add_indicator(ind)
 
@@ -672,9 +680,7 @@ script:
         }
         indicator_type = types.get(args['indicatorType'], args['indicatorType'])
         owners = args.get('owner')
-        if owners is None:
-            owners = [owner['Name'] for owner in tc_owners()]
-        else:
+        if owners is not None:
             owners = owners.split(",")
 
         incidents = tc_incident_associate_indicator(incident_id, indicator_type, indicator, owners)
@@ -700,7 +706,8 @@ script:
         incidents = tc.incidents()
         filter1 = incidents.add_filter()
         filter1.add_id(incident_id)
-        filter1.add_owner(owners)
+        if owners is not None:
+            filter1.add_owner(owners)
         raw_incidents = incidents.retrieve()
 
         incidents = []
@@ -739,7 +746,6 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(indicator)
-        filter1.add_owner([owner['Name'] for owner in tc_owners()])
 
         raw_indicators = []
         for ind in indicators.retrieve():
@@ -778,7 +784,6 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(indicator)
-        filter1.add_owner([owner['Name'] for owner in tc_owners()])
         indicators = indicators.retrieve()
         for ind in indicators:
             ind.delete()
@@ -816,11 +821,9 @@ script:
         filter1 = indicators.add_filter()
         filter1.add_indicator(indicator)
 
-        if owners is None:
-            owners = [owner['Name'] for owner in tc_owners()]
-        else:
+        if owners is not None:
             owners = owners.split(",")
-        filter1.add_owner(owners)
+            filter1.add_owner(owners)
 
         indicators = indicators.retrieve()
         for indicator in indicators:
@@ -1111,18 +1114,6 @@ script:
     - contextPath: TC.Indicator.Confidence
       description: Indicator's confidence
       type: number
-    - contextPath: TC.Indicator.WhoisActive
-      description: Indicator's Whois Active. Relevant for domains only
-      type: string
-    - contextPath: TC.Indicator.File.MD5
-      description: Indicator's md5. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA1
-      description: Indicator's sha1. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA256
-      description: Indicator's sha256. Relevant for files only
-      type: string
     - contextPath: DBotScore.Indicator
       description: Indicator's value
       type: string
@@ -1188,18 +1179,6 @@ script:
     - contextPath: TC.Indicator.Confidence
       description: Indicator's confidence
       type: number
-    - contextPath: TC.Indicator.WhoisActive
-      description: Indicator's Whois Active. Relevant for domains only
-      type: string
-    - contextPath: TC.Indicator.File.MD5
-      description: Indicator's md5. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA1
-      description: Indicator's sha1. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA256
-      description: Indicator's sha256. Relevant for files only
-      type: string
     - contextPath: DBotScore.Indicator
       description: Indicator's value
       type: string
@@ -1265,9 +1244,6 @@ script:
     - contextPath: TC.Indicator.Confidence
       description: Indicator's confidence
       type: number
-    - contextPath: TC.Indicator.WhoisActive
-      description: Indicator's Whois Active. Relevant for domains only
-      type: string
     - contextPath: TC.Indicator.File.MD5
       description: Indicator's md5. Relevant for files only
       type: string
@@ -1418,12 +1394,12 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious Files, the full Description
       type: string
-    description: 'Retrieve a list of all indicators '
+    description: Retrieve a list of all indicators
   - name: tc-get-tags
     arguments: []
     outputs:
-    - contextPath: TC.Tag.Name
-      description: Tag's name
+    - contextPath: TC.Tags
+      description: A list of tag names
     description: Get a list of all ThreatConnect Tags
   - name: tc-tag-indicator
     arguments:
@@ -1658,6 +1634,8 @@ script:
       description: indicator rating, like 2.5
     - name: confidence
       description: confidence in indicator, in scale of 1-100
+    - name: owner
+      description: Owner of new indicator, default will be defaultOrg param
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
@@ -1968,15 +1946,6 @@ script:
     - contextPath: TC.Indicator.WhoisActive
       description: Indicator's Whois Active. Relevant for domains only
       type: string
-    - contextPath: TC.Indicator.File.MD5
-      description: Indicator's md5. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA1
-      description: Indicator's sha1. Relevant for files only
-      type: string
-    - contextPath: TC.Indicator.File.SHA256
-      description: Indicator's sha256. Relevant for files only
-      type: string
     - contextPath: DBotScore.Indicator
       description: Indicator's value
       type: string
@@ -2006,7 +1975,7 @@ script:
       default: true
       description: incident ID
     - name: owner
-      description: filter by owner too
+      description: filter indicators by owner
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
