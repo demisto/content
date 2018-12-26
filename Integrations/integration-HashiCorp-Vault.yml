@@ -1044,6 +1044,5 @@ script:
     description: Creates a new authentication token
   dockerimage: demisto/hashicorp:1.0.0.39
   runonce: false
-releaseNotes: 'HashiCorp integration'
 tests:
   - hashicorp_test

@@ -416,7 +416,5 @@ inputs:
   description: States if the instance we have configures is a Palo Alto Firewall or
     Panorama
 outputs: []
-releaseNotes: "Commit Palo Alto Firewall and Panorama Configuration.\nIf specified
-  as Panorama, will also push the Policies to the specified Device Group in the instance "
 tests:
 - palo_alto_firewall_test_pb

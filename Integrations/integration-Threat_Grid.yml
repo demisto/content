@@ -2259,11 +2259,5 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-releaseNotes: "Expanded raw-response of the following commands:
-        threat-grid-get-html-report-by-id
-        threat-grid-get-processes-by-id
-        threat-grid-get-video-by-id
-        threat-grid-get-analysis-by-id
-        "
 tests:
   - ThreatGridTest

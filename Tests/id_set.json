@@ -5536,5 +5536,77 @@
             "toversion": "99.99.99", 
             "fromversion": "0"
         }
+    }, 
+    {
+        "AbuseIPDB Test": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "servicenow_test_tasks": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "PanoramaCommitConfiguration": {
+            "toversion": "99.99.99", 
+            "fromversion": "4.0.0"
+        }
+    }, 
+    {
+        "EWS search-mailbox test": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Detonate File - No Files test": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "hashicorp_test": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "palo_alto_panorama_test_pb": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "Attivo Botsink": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "palo_alto_firewall_test_pb": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AttivoBotsinkTest": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "HashiCorp Vault": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
+    }, 
+    {
+        "AbuseIPDB": {
+            "toversion": "99.99.99", 
+            "fromversion": "0"
+        }
     }
 ]

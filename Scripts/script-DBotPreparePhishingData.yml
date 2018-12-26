@@ -219,6 +219,5 @@ timeout: 6µs
 runonce: true
 dockerimage: demisto/dl:1.1
 fromversion: 4.1.0
-releaseNotes: "This script is part of phishing model training using machine learning"
 tests:
   - CreatePhishingClassifierMLTest
