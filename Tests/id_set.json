@@ -1848,12 +1848,6 @@
         }
     }, 
     {
-        "Phishing Investigation - Generic": {
-            "toversion": "99.99.99", 
-            "fromversion": 4.0
-        }
-    }, 
-    {
         "playbook2": {
             "toversion": "99.99.99", 
             "fromversion": "2.5.0"
