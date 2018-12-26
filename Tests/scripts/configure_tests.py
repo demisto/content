@@ -163,13 +163,12 @@ def get_json(file_path):
 
 
 def collect_tests(script_ids, playbook_ids, intergration_ids):
-    test_names = []
     tests = set([])
     catched_scripts = set([])
     catched_playbooks = set([])
     catched_intergrations = set([])
 
-    get_test_names(test_names)
+    test_names = get_test_names()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -213,7 +212,8 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_names(test_names):
+def get_test_names():
+    test_names = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
@@ -221,6 +221,8 @@ def get_test_names(test_names):
     for t in conf_tests:
         playbook_id = t['playbookID']
         test_names.append(playbook_id)
+
+    return test_names
 
 
 def get_integration_commands(intergration_ids, integration_set):

@@ -45,8 +45,8 @@ tasks:
       alert-type: {}
       assigned: {}
       found-date-from: {}
-      found-date-to:
-        simple: "1537426800000"
+      type:
+        simple: "Domains"
       is-closed: {}
       is-flagged: {}
       network-type: {}
