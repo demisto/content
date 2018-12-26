@@ -50,6 +50,7 @@ CONNECTIONS_DIR = "Connections"
 # file types regexes
 INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
 WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
@@ -324,16 +325,18 @@ def changed_context(file_path):
     return False
 
 
-def playbook_valid_in_id_set(file_path, playbook_set):
-    playbook_data = get_playbook_data(file_path)
-    file_id = playbook_data.keys()[0]
-
+def is_valid_in_id_set(file_path, obj_data, obj_set):
     is_found = False
-    for playbook in playbook_set:
-        playbook_id = playbook.keys()[0]
-        if playbook_id == file_id:
+    file_id = obj_data.keys()[0]
+
+    for checked_instance in obj_set:
+        checked_instance_id = checked_instance.keys()[0]
+        checked_instance_toversion = checked_instance[checked_instance_id].get('toversion', '99.99.99')
+        checked_instance_fromversion = checked_instance[checked_instance_id].get('fromversion', '0.0.0')
+        if checked_instance_id == file_id and checked_instance_toversion == obj_data[file_id].get('toversion', '99.99.99') and \
+                checked_instance_fromversion == obj_data[file_id].get('fromversion', '0.0.0'):
             is_found = True
-            if playbook != playbook_data:
+            if checked_instance != obj_data:
                 print_error("You have failed to update id_set.json with the data of {} "
                             "please run `python Tests/scripts/update_id_set.py`".format(file_path))
                 return False
@@ -343,48 +346,21 @@ def playbook_valid_in_id_set(file_path, playbook_set):
                     "please run `python Tests/scripts/update_id_set.py`".format(file_path))
 
     return is_found
+
+
+def playbook_valid_in_id_set(file_path, playbook_set):
+    playbook_data = get_playbook_data(file_path)
+    return is_valid_in_id_set(file_path, playbook_data, playbook_set)
 
 
 def script_valid_in_id_set(file_path, script_set):
     script_data = get_script_data(file_path)
-    file_id = script_data.keys()[0]
-
-    is_found = False
-    for script in script_set:
-        script_id = script.keys()[0]
-        if script_id == file_id:
-            is_found = True
-            if script != script_data:
-                print_error("You have failed to update id_set.json with the data of {} "
-                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-                return False
-
-    if not is_found:
-        print_error("You have failed to update id_set.json with the data of {} "
-                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-
-    return is_found
+    return is_valid_in_id_set(file_path, script_data, script_set)
 
 
 def integration_valid_in_id_set(file_path, integration_set):
     integration_data = get_integration_data(file_path)
-    file_id = integration_data.keys()[0]
-
-    is_found = False
-    for integration in integration_set:
-        integration_id = integration.keys()[0]
-        if integration_id == file_id:
-            is_found = True
-            if integration != integration_data:
-                print_error("You have failed to update id_set.json with the data of {} "
-                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-                return False
-
-    if not is_found:
-        print_error("You have failed to update id_set.json with the data of {} "
-                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-
-    return is_found
+    return is_valid_in_id_set(file_path, integration_data, integration_set)
 
 
 def validate_committed_files(branch_name, is_circle):
@@ -439,7 +415,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
             if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
                 has_schema_problem = True
 
-        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
             if is_circle and not script_valid_in_id_set(file_path, script_set):
                 has_schema_problem = True
 
@@ -478,6 +454,10 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
+                has_schema_problem = True
+
+        if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if is_circle and not script_valid_in_id_set(file_path, script_set):
                 has_schema_problem = True
 
         if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):

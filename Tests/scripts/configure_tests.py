@@ -195,7 +195,7 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
                 for integration_id, integration_commands in integration_to_command.items():
                     if command in integration_commands:
                         tests.add(test_playbook_id)
-                        catched_playbooks.add(integration_id)
+                        catched_intergrations.add(integration_id)
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, intergration_ids,
                                       playbook_ids, script_ids)
@@ -313,11 +313,8 @@ def collect_changed_ids(intergration_ids, playbook_names, script_names, modified
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names)
 
-    for playbook_id in updated_playbook_names:
-        playbook_names.add(playbook_id)
-
-    for script_id in updated_script_names:
-        script_names.add(script_id)
+    script_names = script_names.union(updated_script_names)
+    playbook_names = playbook_names.union(updated_playbook_names)
 
 
 def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names):

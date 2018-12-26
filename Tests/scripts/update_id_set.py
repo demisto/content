@@ -24,7 +24,7 @@ class LOG_COLORS:
 
 # print srt in the given color
 def print_color(msg, color):
-    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
+    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
@@ -103,7 +103,7 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0')
+        return data_dictionary.get('fromversion', '0.0.0')
 
 
 def get_to_version(file_path):
@@ -123,7 +123,7 @@ def get_integration_commands(file_path):
     return cmd_list
 
 
-def get_ids_from_playbook(param_to_enrich_by, data_dict):
+def get_task_ids_from_playbook(param_to_enrich_by, data_dict):
     implementing_ids = set([])
     tasks = data_dict.get('tasks', {})
 
@@ -182,8 +182,8 @@ def get_playbook_data(file_path):
 
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
-    implementing_scripts = get_ids_from_playbook('scriptName', data_dictionary)
-    implementing_playbooks = get_ids_from_playbook('playbookName', data_dictionary)
+    implementing_scripts = get_task_ids_from_playbook('scriptName', data_dictionary)
+    implementing_playbooks = get_task_ids_from_playbook('playbookName', data_dictionary)
     implementing_commands = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
@@ -231,6 +231,19 @@ def get_depends_on(data_dict):
     return list(set([cmd.split('|')[-1] for cmd in depends_on]))
 
 
+def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
+    file_to_version = get_to_version(file_path)
+    file_from_version = get_from_version(file_path)
+
+    for instance in instances_set:
+        instance_id = instance.keys()[0]
+        integration_to_version = instance[instance_id].get('fromversion', '0.0.0')
+        integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
+        if obj_id == instance_id and file_from_version == integration_from_version and \
+                file_to_version == integration_to_version:
+            instance[obj_id] = obj_data[obj_id]
+
+
 def re_create_id_set():
     scripts_list = []
     playbooks_list = []
@@ -257,7 +270,7 @@ def re_create_id_set():
     for file in glob.glob(os.path.join('TestPlaybooks', '*')):
         print("adding {0}".format(file))
         if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
-            testplaybooks_list.append(get_script_data(file))
+            scripts_list.append(get_script_data(file))
         elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
             testplaybooks_list.append(get_playbook_data(file))
 
@@ -308,48 +321,31 @@ def update_id_set():
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 test_playbook_set.append(get_playbook_data(file_path))
                 print("Adding {0} to id_set".format(collect_ids(file_path)))
+            if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+                script_set.append(get_script_data(file_path))
+                print("Adding {0} to id_set".format(collect_ids(file_path)))
 
     if modified_files:
         for file_path in modified_files:
             if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 integration_data = get_integration_data(file_path)
-                integration_data_value = integration_data.values()[0]
-                for integration in integration_set:
-                    integration_id = integration.keys()[0]
-                    if id == integration_id:
-                        integration[id] = integration_data_value
-
+                update_object_in_id_set(id, integration_data, file_path, integration_set)
                 print("updated {0} in id_set".format(id))
-            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 script_data = get_script_data(file_path)
-                script_data_value = script_data.values()[0]
-                for script in script_set:
-                    script_id = script.keys()[0]
-                    if id == script_id:
-                        script[id] = script_data_value
-
+                update_object_in_id_set(id, script_data, file_path, script_set)
                 print("updated {0} in id_set".format(id))
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 playbook_data = get_script_data(file_path)
-                playbook_data_value = playbook_data.values()[0]
-                for playbook in playbook_set:
-                    playbook_id = playbook.keys()[0]
-                    if id == playbook_id:
-                        playbook[id] = playbook_data_value
-
+                update_object_in_id_set(id, playbook_data, file_path, playbook_set)
                 print("updated {0} in id_set".format(id))
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 playbook_data = get_script_data(file_path)
-                playbook_data_value = playbook_data.values()[0]
-                for playbook in test_playbook_set:
-                    playbook_id = playbook.keys()[0]
-                    if id == playbook_id:
-                        playbook[id] = playbook_data_value
-
+                update_object_in_id_set(id, playbook_data, file_path, test_playbook_set)
                 print("updated {0} in id_set".format(id))
 
     if added_files or modified_files:
