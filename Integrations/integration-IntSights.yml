@@ -179,12 +179,12 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts_ctx},
             'Contents': alerts_ctx,
-            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
+            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType'], removeNull=False),
             'ContentsFormat': formats['json']
         })
 
 
-    def alert_to_readable(r, parseTags):
+    def alert_to_readable(r, parse_tags):
         """
         Convert alert to readable format
         """
@@ -209,10 +209,13 @@ script:
         }
 
         tags = demisto.get(r, 'Details.Tags')
-        if parseTags:
+        if parse_tags:
             readable['Tags'] = extract_tags(tags)
         else:
-            readable['Tags'] = tags
+            readable['Tags'] = []
+            for tag in tags:
+                readable['Tags'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
+
         return readable
 
 
@@ -233,7 +236,7 @@ script:
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity_ctx},
-            'Contents': activity_ctx,
+            'Contents': activity_hr,
             'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
             'ContentsFormat': formats['json']
         })
@@ -1057,7 +1060,7 @@ script:
     - contextPath: IntSights.Alerts.Tags.Name
       description: Name of the tag
       type: string
-    - contextPath: IntSights.Alerts.Tags._id
+    - contextPath: IntSights.Alerts.Tags.ID
       description: The ID of the tag
       type: string
     - contextPath: IntSights.Alerts.Images
@@ -1409,7 +1412,7 @@ script:
     - contextPath: IntSights.Alerts.Tags.Name
       description: Name of the tag
       type: string
-    - contextPath: IntSights.Alerts.Tags._id
+    - contextPath: IntSights.Alerts.Tags.ID
       description: The ID of the tag
       type: string
     - contextPath: IntSights.Alerts.Images
