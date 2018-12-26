@@ -486,13 +486,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: mail_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='email_test_export_' + val +'_time_' + Date.now()
       exportPST:
         simple: "true"
       includeDrafts:
@@ -605,20 +603,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "10"
+        simple: "2"
       max_lcase:
-        simple: "10"
+        simple: "2"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "10"
+        simple: "2"
       min_digits:
-        simple: "10"
+        simple: "2"
       min_lcase:
-        simple: "10"
+        simple: "2"
       min_symbols: {}
       min_ucase:
-        simple: "10"
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -655,13 +653,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: groups_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='groups_test_export_' + val +'_time_' + Date.now()
       exportPST:
         simple: "true"
       groups:
@@ -710,13 +706,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: drive_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='drive_test_export_' + val +'_time_' + Date.now()
       includeTeamDrives:
         simple: "false"
       matterID:
@@ -986,13 +980,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: drive_empty_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='drive_empty_export_' + val +'_time_' + Date.now()
       includeTeamDrives:
         simple: "false"
       matterID:
@@ -1019,10 +1011,10 @@ tasks:
     note: false
   "39":
     id: "39"
-    taskid: 9b4fc340-01d6-405d-8e3a-de7241a5bac7
+    taskid: d04a6183-ed18-49a4-874a-94f50451c386
     type: regular
     task:
-      id: 9b4fc340-01d6-405d-8e3a-de7241a5bac7
+      id: d04a6183-ed18-49a4-874a-94f50451c386
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1047,10 +1039,10 @@ tasks:
     note: false
   "40":
     id: "40"
-    taskid: 84253d9d-ff23-4f53-87c1-fe06afd53700
+    taskid: e1beafa9-2076-4003-8a63-ad6dd4edd926
     type: regular
     task:
-      id: 84253d9d-ff23-4f53-87c1-fe06afd53700
+      id: e1beafa9-2076-4003-8a63-ad6dd4edd926
       version: -1
       name: Create empty groups export
       description: Creates a Google Vault Export in order to perform search actions
@@ -1072,13 +1064,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: groups_empty_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='groups_empty_export_' + val +'_time_' + Date.now()
       exportPST:
         simple: "true"
       groups:
@@ -1130,13 +1120,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: mail_empty_test_export_
-              suffix:
-                iscontext: true
+                  simple: .='email_empty_export_' + val +'_time_' + Date.now()
       exportPST:
         simple: "true"
       includeDrafts:
