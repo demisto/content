@@ -3,11 +3,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "HashiCorp Vault",
+            "playbookID": "hashicorp_test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
+        },
+        {
+            "integrations": "Attivo Botsink",
+            "playbookID": "AttivoBotsinkTest"
         },
         {
             "playbookID": "CreatePhishingClassifierMLTest"
@@ -65,6 +73,18 @@
         },
         {
           "playbookID": "JSONtoCSV-Test"
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 300
         },
         {
           "integrations": "Tenable.io",
@@ -681,6 +701,10 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations" : "jira",
