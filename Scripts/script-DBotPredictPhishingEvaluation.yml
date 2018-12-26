@@ -28,7 +28,8 @@ script: |+
           'Threshold': threshold,
           'Precision': '%.2f%%' % precision_score,
           'Recall': '%.2f%%' % recall_score,
-          'Below Threshold': '%.2f%%' % percentage_skipped,
+          'Below Threshold': '%d (%.2f%%)' % (skipped_count, percentage_skipped),
+          'Count': '%d (%.2f%%)' % (len(df) - skipped_count, 100 - percentage_skipped),
           'F1 Score': '%.2f%%' % f1_score,
       }
 
@@ -62,10 +63,10 @@ script: |+
   for i in xrange(80, 100, 5):
       result.append(get_threshold_precision(df, float(i)/100, 'Label', 'Original', 'Probability'))
 
-  table_headers = ['Threshold', 'Below Threshold', 'F1 Score', 'Precision', 'Recall']
+  table_headers = ['Threshold', 'Below Threshold', 'Count', 'F1 Score', 'Precision', 'Recall']
   hr1 = tableToMarkdown('Evaluation probablity with different thresholds', result, headers=table_headers)
   result = []
-  for i in xrange(10, 50, 5):
+  for i in xrange(0, 110, 10):
       result.append(get_threshold_precision(df, i, 'Label', 'Original', 'InputTextNumberOfTokens'))
 
   hr2 = tableToMarkdown('Evaluation input text length with different thresholds', result, headers=table_headers)
@@ -130,7 +131,7 @@ args:
   - "yes"
   - "no"
   description: Does one of the fields is in the context data?
-  defaultValue: "yes"
+  defaultValue: "no"
 - name: hashData
   auto: PREDEFINED
   predefined:
