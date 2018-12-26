@@ -206,7 +206,7 @@ tasks:
       severity: {}
       source-ID: {}
       type:
-        sample: "Domains"
+        simple: Domains
     reputationcalc: 0
     separatecontext: false
     view: |-
