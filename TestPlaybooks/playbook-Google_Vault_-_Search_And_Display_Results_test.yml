@@ -249,20 +249,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "8"
+        simple: "10"
       max_lcase:
-        simple: "2"
+        simple: "10"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "2"
+        simple: "10"
       min_digits:
-        simple: "8"
+        simple: "10"
       min_lcase:
-        simple: "2"
+        simple: "10"
       min_symbols: {}
       min_ucase:
-        simple: "2"
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -516,20 +516,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "8"
+        simple: "10"
       max_lcase:
-        simple: "2"
+        simple: "10"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "2"
+        simple: "10"
       min_digits:
-        simple: "8"
+        simple: "10"
       min_lcase:
-        simple: "2"
+        simple: "10"
       min_symbols: {}
       min_ucase:
-        simple: "2"
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -558,20 +558,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "8"
+        simple: "10"
       max_lcase:
-        simple: "2"
+        simple: "10"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "2"
+        simple: "10"
       min_digits:
-        simple: "8"
+        simple: "10"
       min_lcase:
-        simple: "2"
+        simple: "10"
       min_symbols: {}
       min_ucase:
-        simple: "2"
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -581,57 +581,15 @@ tasks:
         }
       }
     note: false
-  "13":
-    id: "13"
-    taskid: 15513ee0-53b5-4719-8c58-9dc80cf3b2f2
-    type: playbook
-    task:
-      id: 15513ee0-53b5-4719-8c58-9dc80cf3b2f2
-      version: -1
-      name: Google Vault - Display Results
-      discription: ''
-      playbookName: Google Vault - Display Results
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      ExportID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('Groups') != -1).ExportID}
-      MatterID:
-        simple: ${GoogleVault.Matter(val.Export.filter(function(e) { return e.ExportName.indexOf('Groups')
-          !== -1})).MatterID}
-      SearchtType:
-        simple: Groups
-      downloadFile:
-        simple: "false"
-      maxResultForDisplay:
-        simple: "30"
-      pollInterval:
-        simple: "2"
-      pollTimeout:
-        simple: "30"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
-    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 810,
+        "height": 2180,
+        "width": 380,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }

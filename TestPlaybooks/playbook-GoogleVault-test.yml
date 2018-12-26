@@ -605,26 +605,26 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "8"
+        simple: "10"
       max_lcase:
-        simple: "2"
+        simple: "10"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "2"
+        simple: "10"
       min_digits:
-        simple: "5"
+        simple: "10"
       min_lcase:
-        simple: "2"
+        simple: "10"
       min_symbols: {}
       min_ucase:
-        simple: "2"
+        simple: "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -340,
-          "y": 1380
+          "y": 1370
         }
       }
     note: false
@@ -659,7 +659,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: groups_test_export
+                  simple: groups_test_export_
               suffix:
                 iscontext: true
       exportPST:
@@ -990,7 +990,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: drive_empty_test_export
+                  simple: drive_empty_test_export_
               suffix:
                 iscontext: true
       includeTeamDrives:
@@ -1076,7 +1076,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: groups_empty_test_export
+                  simple: groups_empty_test_export_
               suffix:
                 iscontext: true
       exportPST:
@@ -1134,7 +1134,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: mail_empty_test_export
+                  simple: mail_empty_test_export_
               suffix:
                 iscontext: true
       exportPST:
