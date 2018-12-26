@@ -490,7 +490,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: mail_test_export
+                  simple: mail_test_export_
               suffix:
                 iscontext: true
       exportPST:
@@ -714,7 +714,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: drive_test_export
+                  simple: drive_test_export_
               suffix:
                 iscontext: true
       includeTeamDrives:
