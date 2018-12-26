@@ -2726,7 +2726,6 @@ script:
       type: string
     description: Get push status for a configuration
   runonce: false
-releaseNotes: "Add support for Firewall and Panorama instances. object handling: Address, Address-groups, Custom URL Groups, URL Filtering and Security Rule managing."
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

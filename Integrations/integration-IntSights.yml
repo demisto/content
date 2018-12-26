@@ -1453,4 +1453,3 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
-releaseNotes: "-"

@@ -930,6 +930,5 @@ script:
     description: List all deceptive users
   isfetch: true
   runonce: false
-releaseNotes: new integration
 tests:
   - AttivoBotsinkTest
