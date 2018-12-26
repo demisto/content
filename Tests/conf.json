@@ -878,7 +878,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "Netskope Test": "problem with API, yaakovi is reaching out to them"
+        "Netskope Test": "problem with API, @yaakovi is reaching out to them"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -901,7 +901,8 @@
         "Server Message Block (SMB)": "No instance",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "MimecastV2": "Several issues with instance",
-        "AWS Sagemaker": "License expired, no renewal in the near future"
+        "AWS Sagemaker": "License expired, no renewal in the near future",
+        "Attivo Botsink": "no instance, @Arian will update"
     },
     "nigthly_integrations": [
         "Lastline"
