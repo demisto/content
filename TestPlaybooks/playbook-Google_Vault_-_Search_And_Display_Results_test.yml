@@ -37,8 +37,7 @@ tasks:
     task:
       id: e0317594-5c77-4a8a-8a59-29d8cf70e3e6
       version: -1
-      name: gvault-search-mail
-      discription: ''
+      name: Google Vault - Search Mail
       playbookName: Google Vault - Search Mail
       type: playbook
       iscommand: false
@@ -60,12 +59,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: Mail_Export_
-              suffix: {}
+                  simple: .='Mail_Export_' + val +'_Time_' + Date.now()
       exportPST:
         simple: "true"
       includeDrafts:
@@ -125,12 +123,11 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: Groups_Export_
-              suffix: {}
+                  simple: .='Groups_Export_' + val +'_Time_' + Date.now()
       exportPST:
         simple: "true"
       groups:
@@ -143,8 +140,6 @@ tasks:
         simple: "1"
       pollTimeout:
         simple: "5"
-      searchMethod:
-        simple: All Accounts
       startTime: {}
       terms: {}
       timeFrame: {}
@@ -185,20 +180,15 @@ tasks:
       emails:
         simple: test@demistodev.com,maya@demistodev.com
       endTime: {}
-      exportMBOX:
-        simple: "false"
       exportName:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: concat
+          - operator: 85a66a62-4c49-4c3a-8a7c-1560a44d0dec
             args:
-              prefix:
+              dt:
                 value:
-                  simple: Drive_Export_
-              suffix: {}
-      exportPST:
-        simple: "true"
+                  simple: .='Drive_Export_' + val +'_Time_' + Date.now()
       includeTeamDrives:
         simple: "false"
       matterID:
@@ -249,20 +239,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "10"
+        simple: "2"
       max_lcase:
-        simple: "10"
+        simple: "2"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "10"
+        simple: "2"
       min_digits:
-        simple: "10"
+        simple: "2"
       min_lcase:
-        simple: "10"
+        simple: "2"
       min_symbols: {}
       min_ucase:
-        simple: "10"
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -516,20 +506,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "10"
+        simple: "2"
       max_lcase:
-        simple: "10"
+        simple: "2"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "10"
+        simple: "2"
       min_digits:
-        simple: "10"
+        simple: "2"
       min_lcase:
-        simple: "10"
+        simple: "2"
       min_symbols: {}
       min_ucase:
-        simple: "10"
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -558,20 +548,20 @@ tasks:
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "10"
+        simple: "2"
       max_lcase:
-        simple: "10"
+        simple: "2"
       max_symbols:
         simple: "0"
       max_ucase:
-        simple: "10"
+        simple: "2"
       min_digits:
-        simple: "10"
+        simple: "2"
       min_lcase:
-        simple: "10"
+        simple: "2"
       min_symbols: {}
       min_ucase:
-        simple: "10"
+        simple: "2"
     separatecontext: false
     view: |-
       {
