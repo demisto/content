@@ -212,9 +212,9 @@ script:
         if parse_tags:
             readable['Tags'] = extract_tags(tags)
         else:
-            readable['Tags'] = []
+            readable['Tag'] = []
             for tag in tags:
-                readable['Tags'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
+                readable['Tag'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
 
         return readable
 
@@ -1057,10 +1057,10 @@ script:
     - contextPath: IntSights.Alerts.Tags.CreatedBy
       description: Name of the service the tag was created by
       type: string
-    - contextPath: IntSights.Alerts.Tags.Name
+    - contextPath: IntSights.Alerts.Tag.Name
       description: Name of the tag
       type: string
-    - contextPath: IntSights.Alerts.Tags.ID
+    - contextPath: IntSights.Alerts.Tag.ID
       description: The ID of the tag
       type: string
     - contextPath: IntSights.Alerts.Images
@@ -1409,10 +1409,10 @@ script:
     - contextPath: IntSights.Alerts.Tags.CreatedBy
       description: Name of the service the tag was created by
       type: string
-    - contextPath: IntSights.Alerts.Tags.Name
+    - contextPath: IntSights.Alerts.Tag.Name
       description: Name of the tag
       type: string
-    - contextPath: IntSights.Alerts.Tags.ID
+    - contextPath: IntSights.Alerts.Tag.ID
       description: The ID of the tag
       type: string
     - contextPath: IntSights.Alerts.Images
