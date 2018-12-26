@@ -144,7 +144,9 @@
         },
         {
             "integrations": "IntSights",
-            "playbookID": "IntSights Test"
+            "playbookID": "IntSights Test",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "dnstwist",
