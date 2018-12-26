@@ -391,7 +391,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/CircleCITestsFix/TestData/EmailWithNonAsciiSubject.eml
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiSubject.eml
       username: {}
     separatecontext: false
     view: |-
@@ -431,7 +431,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/CircleCITestsFix/TestData/EmailWithNonAsciiAttachmentName.eml
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiAttachmentName.eml
       username: {}
     separatecontext: false
     view: |-
