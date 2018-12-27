@@ -80,14 +80,25 @@ script:
         return timeperiodTranslator[timeperiod];
     }
 
+    function toTimestamp(strDate){
+        var date_tuple = strDate.match('^(\\d{2})-(\\d{2})-(\\d{4})T(\\d{2}):(\\d{2}):(\\d{2})Z$');
+        if (date_tuple === null) {
+            return strDate;
+        }
+        // first element is the entire match, then the individual matches.
+        // months in Date JS are an integer between 0 and 11.
+        var timestamp = new Date(date_tuple[3], date_tuple[2] - 1, date_tuple[1], date_tuple[4], date_tuple[5], date_tuple[6]);
+        return timestamp.getTime()/1000;
+    }
+
     function getAlerts() {
         var queryArgs = {
             token: TOKEN,
             type: encodeURIComponent(args.type)
         };
         if (args.starttime && args.endtime) {
-            queryArgs.starttime = args.starttime;
-            queryArgs.endtime = args.endtime;
+            queryArgs.starttime = toTimestamp(args.starttime);
+            queryArgs.endtime = toTimestamp(args.endtime);
             if (args.timeperiod) {
                 queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
             }
@@ -102,6 +113,7 @@ script:
         } else {
             throw 'Not given enough arguments to filter events by.';
         }
+
         var cmdUrl = 'alerts' + encodeToURLQuery(queryArgs);
         var result = sendRequest('GET', cmdUrl);
         var retArray = [];
@@ -135,8 +147,8 @@ script:
             type: encodeURIComponent(args.type)
         };
         if (args.starttime && args.endtime) {
-            queryArgs.starttime = args.starttime;
-            queryArgs.endtime = args.endtime;
+            queryArgs.starttime = toTimestamp(args.starttime);
+            queryArgs.endtime = toTimestamp(args.endtime);
             if (args.timeperiod) {
                 queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
             }
@@ -151,6 +163,7 @@ script:
         } else {
             throw 'Not given enough arguments to filter events by.';
         }
+
         var cmdUrl = 'events' + encodeToURLQuery(queryArgs);
         var result = sendRequest('GET', cmdUrl);
         var retArray = [];
@@ -222,9 +235,9 @@ script:
       - Last90Days
       description: TimePeriod
     - name: starttime
-      description: 'start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
+      description: 'Query start time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
     - name: endtime
-      description: 'end time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
+      description: 'Query end time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
     - name: type
       required: true
       auto: PREDEFINED
@@ -311,9 +324,9 @@ script:
       - Last90Days
       description: Time period (e.g. Last 60 minutes, Last 24 hours, etc.)
     - name: starttime
-      description: 'Start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
+      description: 'Query start time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g., 31-12-1999T11:59:59Z)'
     - name: endtime
-      description: 'End time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
+      description: 'Query end time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
     - name: query
       description: Valid event query described in the query language document
     outputs:
@@ -337,3 +350,6 @@ script:
       type: string
     description: Gets a list of alerts
   runonce: false
+releaseNotes: "-"
+tests:
+  - Netskope Test
