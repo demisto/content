@@ -3,11 +3,23 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "HashiCorp Vault",
+            "playbookID": "hashicorp_test"
+        },
+        {
             "playbookID": "Test CommonServer"
+        },
+        {
+            "integrations": "CIRCL",
+            "playbookID": "CirclIntegrationTest"
         },
         {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
+        },
+        {
+            "integrations": "Attivo Botsink",
+            "playbookID": "AttivoBotsinkTest"
         },
         {
             "playbookID": "CreatePhishingClassifierMLTest"
@@ -67,6 +79,18 @@
           "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 300
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
@@ -111,6 +135,7 @@
                 "Panorama",
                 "Check Point"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "blockip_test_playbook"
         },
         {
@@ -123,7 +148,9 @@
         },
         {
             "integrations": "IntSights",
-            "playbookID": "IntSights Test"
+            "playbookID": "IntSights Test",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "dnstwist",
@@ -143,6 +170,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -239,6 +267,11 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "integrations": ["EWS v2","EWS Mail Sender"],
+            "playbookID": "EWS search-mailbox test",
+            "timeout": 300
         },
         {
             "integrations": "PagerDuty v2",
@@ -555,7 +588,8 @@
         },
         {
             "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
+            "playbookID": "Cybereason Test",
+            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
@@ -673,6 +707,10 @@
             "integrations": "iDefense",
             "playbookID": "iDefenseTest",
             "timeout": 300
+        },
+        {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations" : "jira",
@@ -846,7 +884,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "ParseEmailFiles-test": "Will be handled by yaakovi later this week"
+        "Netskope Test": "problem with API, @yaakovi is reaching out to them"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -861,7 +899,6 @@
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
-        "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
@@ -869,7 +906,9 @@
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "MimecastV2": "Several issues with instance"
+        "MimecastV2": "Several issues with instance",
+        "AWS Sagemaker": "License expired, no renewal in the near future",
+        "Attivo Botsink": "no instance, @Arian will update"
     },
     "nigthly_integrations": [
         "Lastline"

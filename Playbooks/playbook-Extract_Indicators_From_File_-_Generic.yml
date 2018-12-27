@@ -426,6 +426,5 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
-releaseNotes: "Fixed duplicate parsing of eml and msg files. Will now ignore them when extracting indicators from files."
 tests:
   - Extract Indicators From File - test

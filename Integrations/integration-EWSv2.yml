@@ -98,7 +98,7 @@ script:
 
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest, MalformedResponseError
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -107,6 +107,8 @@ script:
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+
+    from requests.exceptions import ConnectionError
 
     # Docker BC
     MNS = None
@@ -1492,10 +1494,6 @@ script:
         error_message_simple = ""
         error_message = ""
 
-        if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-            error_message_simple = """Got invalid response from the server.
-    Verify that the Hostname or IP address is entered correctly"""
-
         # Office365 regular maintenance case
         if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
             log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
@@ -1509,6 +1507,17 @@ script:
             error_message_simple = log_message + " Please retry your request."
 
         # Other exception handling
+        if isinstance(e.message, Exception):
+            e.message = str(e.message)
+
+        if isinstance(e, ConnectionError):
+            error_message_simple = "Could not connect to the server.\nVerify that the Hostname or IP address is correct.\n\nAdditional information: {}".format(e.message)
+        elif exchangelib.__version__ == "1.12.0":
+            from exchangelib.errors import MalformedResponseError
+            if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
+                error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
+
+        # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
@@ -1765,7 +1774,6 @@ script:
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
         in the mailbox.
-      defaultValue: Inbox
     - name: limit
       description: Maximum number of results.
       defaultValue: "100"
@@ -2205,6 +2213,6 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Improved error messages."
 tests:
   - pyEWS_Test
+  - 'EWS search-mailbox test'
