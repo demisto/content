@@ -1,11 +1,12 @@
 commonfields:
-  id: Netskope
+  id: Netskope_copy
   version: -1
-name: Netskope
-display: Netskope
+name: Netskope_copy
+display: Netskope_copy
 category: Network Security
 image: data:image/png;base64,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
-description: Cloud access security broker that enables to find, understand, and secure cloud apps.
+description: Cloud access security broker that enables to find, understand, and secure
+  cloud apps.
 detaileddescription: 'You can grab the API token from your Netskope tenant by navigating
   to: Settings-->Manage-->REST API'
 configuration:
@@ -80,15 +81,47 @@ script:
         return timeperiodTranslator[timeperiod];
     }
 
+    function translateMonthName(monthName) {
+        var monthTranslator = {
+            'january': 1,
+            'february': 2,
+            'march': 3,
+            'april': 4,
+            'may': 5,
+            'june': 6,
+            'july': 7,
+            'august': 8,
+            'september': 9,
+            'october': 10,
+            'november': 11,
+            'december': 12
+        };
+        return monthTranslator[monthName];
+    }
+
+    /**
+    * convert string formatted time to timestamp.
+    * Note: Accept 2 string formats: "dd-mm-yyyyTHH:MM:SSZ" or "Month Day, Year HH:MM:SS".
+    * @param {string} strDate - string formatted array
+    * @return {string} timestamp
+    */
     function toTimestamp(strDate){
-        var date_tuple = strDate.match('^(\\d{2})-(\\d{2})-(\\d{4})T(\\d{2}):(\\d{2}):(\\d{2})Z$');
-        if (date_tuple === null) {
-            return strDate;
+        // accept: 31-12-1999T14:35:20Z
+        var dateTuple = strDate.match('^(\\d{2})-(\\d{2})-(\\d{4})T(\\d{2}):(\\d{2}):(\\d{2})Z$');
+        if (dateTuple !== null) {
+            // first element is the entire match, then the individual matches.
+            // months in Date JS are an integer between 0 and 11.
+            var timestamp = new Date(dateTuple[3], dateTuple[2] - 1, dateTuple[1], dateTuple[4], dateTuple[5], dateTuple[6]);
+            return timestamp.getTime()/1000;
         }
-        // first element is the entire match, then the individual matches.
-        // months in Date JS are an integer between 0 and 11.
-        var timestamp = new Date(date_tuple[3], date_tuple[2] - 1, date_tuple[1], date_tuple[4], date_tuple[5], date_tuple[6]);
-        return timestamp.getTime()/1000;
+
+        // accept: December 31, 1999 14:35:20
+        var dateTuple = strDate.toLowerCase().match('^(january|february|march|april|may|june|july|august|september|october|november|december) (\\d{1,2}), (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})$');
+        if (dateTuple !== null) {
+            var timestamp = new Date(dateTuple[3], translateMonthName(dateTuple[1]) - 1, dateTuple[2], dateTuple[4], dateTuple[5], dateTuple[6]);
+            return timestamp.getTime()/1000;
+        }
+        return strDate;
     }
 
     function getAlerts() {
