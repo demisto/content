@@ -86,6 +86,8 @@ def get_all_commands_details_string(integration):
                          "Please check your command inputs and outputs".format(integration['script']['commands'][i]['name'], str(e)))
             sys.exit(0)
 
+    return commands_string
+
 
 # load the integration yml file
 if len(sys.argv) < 2:
@@ -161,12 +163,17 @@ doc += '\n## Known limitations:'
 doc += '\n## Troubleshooting:\n'
 
 filename = os.path.basename(sys.argv[1]).replace('documentation-', 'integration-').replace('.yml', '.txt').replace('.yaml', '.txt')  # strip all the spaces
+save_path = filename
 
 # save file by default at same path unless the second arg provided
 if len(sys.argv) > 2:
     save_path = sys.argv[2]
+    if not os.path.isdir(save_path):
+        return_error('{} is invalid folder'.format(save_path))
 
-with open(filename, 'w') as f:
+    save_path = os.path.join(save_path, filename)
+
+with open(save_path, 'w') as f:
     f.write(doc)
 
-print("Integration documentation file generated at: \n" + filename)
+print("Integration documentation file generated at: \n" + save_path)
