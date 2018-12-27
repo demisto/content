@@ -22,7 +22,7 @@ configuration:
   defaultvalue: https://api.threatconnect.com
   type: 0
   required: true
-- display: defaultOrg
+- display: Default Organization
   name: defaultOrg
   defaultvalue: ""
   type: 0
@@ -152,12 +152,13 @@ script:
             else:
                 dbotScore = 1
 
-            context['DBotScore'].append({
-                'Indicator': value,
-                'Score': dbotScore,
-                'Type': indicator_type,
-                'Vendor': 'ThreatConnect',
-            })
+            if include_dbot_score:
+                context['DBotScore'].append({
+                    'Indicator': value,
+                    'Score': dbotScore,
+                    'Type': indicator_type,
+                    'Vendor': 'ThreatConnect',
+                })
 
             context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
                 'ID' : ind['id'],
@@ -507,6 +508,9 @@ script:
         args = demisto.args()
         indicator = args['indicator']
         owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
         rating = int(args.get('rating', 0))
         confidence = int(args.get('confidence', 0))
 
@@ -539,6 +543,9 @@ script:
         args = demisto.args()
         incident_name = args['incidentName']
         owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
         event_date = args.get('eventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
         tag = args.get('tag')
         security_label = args.get('securityLabel')
@@ -837,6 +844,9 @@ script:
         args = demisto.args()
         name = args['name']
         owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
         first_seen = args.get('firstSeen', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
         tag = args.get('tag')
         security_label = args.get('securityLabel')
@@ -904,6 +914,9 @@ script:
         event_date = args.get('EventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
         status = args.get('status')
         owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
         description = args.get('description')
         tag = args.get('tag')
 
@@ -968,6 +981,8 @@ script:
         name = args['name']
         date = args.get('dateAdded', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
         owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
 
         raw_threat = tc_create_threat(name, owner, date)
         ec = {
