@@ -883,8 +883,7 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "Netskope Test": "problem with API, @yaakovi is reaching out to them"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
