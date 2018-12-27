@@ -70,6 +70,14 @@ script:
     encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
     HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json', 'Account-Id': demisto.getParam('credentials')['identifier']}
 
+    IOC_TYPE_TO_DBOT_TYPE = {
+        'IpAddresses': 'ip',
+        'Urls': 'url',
+        'Domains': 'domain',
+        'Hashes': 'hash'
+    }
+
+
     def req(method, path, json_data=None, params=None):
         """
         Send the request to IntSights and return the JSON response
@@ -116,33 +124,72 @@ script:
             r = []
         else:
             r = resp.json()
-        alerts = []
+
+        alerts_HR = []
+        alerts_ctx = []
         for alert_id in r:
-            alert_information = get_alert_by_id_helper(alert_id)
-            alerts.append(alert_information)
-        return alerts
+            alert_informationHR, alert_informationCtx = get_alert_by_id_helper(alert_id)
+            alerts_HR.append(alert_informationHR)
+            alerts_ctx.append(alert_informationCtx)
+        return alerts_HR, alerts_ctx
+
+
+    def extract_mail(replies):
+        mails = []
+        for reply in replies:
+            mails.append(reply.get('Email'))
+
+        return '\n'.join(mails)
+
+
+    def extract_remediation(remidiations):
+        remdies = []
+        string_format = "{0} - Status: {1}"
+        for remdy in remidiations:
+            remdies.append(string_format.format(remdy.get('Value'), remdy.get('Status')))
+
+        return '\n'.join(remdies)
+
+
+    def hash_identifier(hash_val):
+        if md5Regex.match(hash_val):
+            return 'MD5'
+        elif sha1Regex.match(hash_val):
+            return 'SHA1'
+        elif sha256Regex.match(hash_val):
+            return 'SHA256'
+        return 'Unknown'
+
+
+    def extract_tags(tags):
+        pretty_tags = []
+        string_format = "ID: {0} - Name: {1}"
+        for tag in tags:
+            pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
+        return pretty_tags
 
 
     def get_alerts():
         """
         Gets all alerts and returns as a list.
         """
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx = get_alerts_helper(handle_filters())
 
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts},
-            'Contents': alerts,
-            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts_ctx},
+            'Contents': alerts_ctx,
+            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType'], removeNull=False),
             'ContentsFormat': formats['json']
         })
 
 
-    def alert_to_readable(r):
+    def alert_to_readable(r, parse_tags):
         """
         Convert alert to readable format
         """
-        return {
+
+        readable = {
             'ID': demisto.get(r,'_id'),
             'Severity': demisto.get(r,'Details.Severity'),
             'Type': demisto.get(r,'Details.Type'),
@@ -153,16 +200,31 @@ script:
             'SourceNetworkType': demisto.get(r,'Details.Source.NetworkType'),
             'IsClosed': demisto.get(r,'IsClosed'),
             'IsFlagged': demisto.get(r,'IsFlagged'),
-            'Assets': demisto.get(r,'Assets')
+            'Assets': demisto.get(r,'Assets'),
+            'Images': demisto.get(r, 'Details.Images'),
+            'Description': demisto.get(r, 'Details.Description'),
+            'Title': demisto.get(r, 'Details.Title'),
+            'TakedownStatus': demisto.get(r, 'TakedownStatus'),
+            'SubType': demisto.get(r, 'Details.SubType')
         }
+
+        tags = demisto.get(r, 'Details.Tags')
+        if parse_tags:
+            readable['Tags'] = extract_tags(tags)
+        else:
+            readable['Tag'] = []
+            for tag in tags:
+                readable['Tag'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
+
+        return readable
 
 
     def get_alert_by_id_helper(alert_id):
         """
         Helper for getting details by ID
         """
-        r = req('GET', 'public/v1/data/alerts/get-alert/' + alert_id).json()
-        return alert_to_readable(r)
+        r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id).json()
+        return alert_to_readable(r, True), alert_to_readable(r, False)
 
 
     def get_alert_by_id():
@@ -170,12 +232,12 @@ script:
         Get alert details by id
         """
         alert_id = demisto.getArg('alert-id')
-        activity = get_alert_by_id_helper(alert_id)
+        activity_hr, activity_ctx = get_alert_by_id_helper(alert_id)
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity},
-            'Contents': activity,
-            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity_ctx},
+            'Contents': activity_hr,
+            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
             'ContentsFormat': formats['json']
         })
 
@@ -216,6 +278,7 @@ script:
         r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id).json()
         activities = []
 
+        human_readables = []
         alert = {'ID': alert_id, 'Activities': []}
         for k in r:
             alert['Activities'].append({
@@ -229,11 +292,22 @@ script:
                 'Mail': {'Replies': demisto.get(k,'AdditionalInformation.Mail.Replies')},
                 'ReadBy': demisto.get(k,'ReadBy')
             })
+            human_readables.append({
+                'ID': demisto.get(k,'_id'),
+                'Type': demisto.get(k, 'Type'),
+                'Initiator': demisto.get(k,'Initiator'),
+                'CreatedDate': demisto.get(k,'CreatedDate'),
+                'UpdateDate': demisto.get(k,'UpdateDate'),
+                'RemediationBlocklistUpdate': extract_remediation(demisto.get(k,'AdditionalInformation.RemediationBlocklistUpdate')),
+                'AskTheAnalyst': {'Replies': demisto.get(k,'AdditionalInformation.AskTheAnalyst.Replies')},
+                'Mail': extract_mail(demisto.get(k,'AdditionalInformation.Mail.Replies')),
+                'ReadBy': demisto.get(k,'ReadBy')
+            })
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
             'Contents': r,
-            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', alert['Activities'], ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate', 'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
+            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readables, ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate', 'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
             'ContentsFormat': formats['json']
         })
 
@@ -449,8 +523,11 @@ script:
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
-            'Enrichment': {'Status': demisto.get(r, 'Enrichment.Status')},
-            'Enrichment': {'Date': demisto.get(r, 'Enrichment.Data')}
+            'Enrichment': {
+                  'Status': demisto.get(r, 'Enrichment.Status'),
+                  'Data': demisto.get(r, 'Enrichment.Data'),
+                  'Date': demisto.get(r, 'Enrichment.Data') # Backwards compatability issue
+            }
         }
         ioc_readable = {
             'ID': demisto.get(r,'_id'),
@@ -462,14 +539,49 @@ script:
             'LastSeen': demisto.get(r,'LastSeen'),
             'Domain': demisto.get(r,'Domain'),
             'Status': demisto.get(r,'Status'),
-            'Severity': demisto.get(r,'Severity'),
+            'Severity': demisto.get(r,'Severity').get('Value'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
             'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
             'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
-            'Enrichment Date': demisto.get(r, 'Enrichment.Data')
+            'Enrichment Data': demisto.get(r, 'Enrichment.Data')
         }
-        return ioc_context, ioc_readable
+        dbot_score = {
+            'Indicator': ioc_context['Value'],
+            'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
+            'Vendor': 'IntSights',
+            'Score': translate_severity(ioc_readable['Severity'])
+        }
+        malicious_dict = {
+            'Vendor': 'IntSights',
+            'Description': 'IntSights severity level is High'
+        }
+        domain = {}
+        if ioc_context['Domain']:
+            domain['Name'] = ioc_context['Domain']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                domain['Malicious'] = malicious_dict
+
+        ip_info = {}
+        if ioc_context['Type'] == 'IpAddresses':
+            ip_info['Address'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                ip_info['Malicious'] = malicious_dict
+
+        url_info = {}
+        if ioc_context['Type'] == 'Urls':
+            url_info['Data'] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                url_info['Malicious'] = malicious_dict
+
+        hash_info = {}
+        if ioc_context['Type'] == 'Hashes':
+            hash_info['Name'] = ioc_context['Value']
+            hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+            if translate_severity(ioc_readable['Severity']) == 3:
+                hash_info['Malicious'] = malicious_dict
+
+        return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
 
 
     def search_for_IOC():
@@ -477,14 +589,39 @@ script:
         Search for IOC by value
         """
         value = demisto.getArg('value')
-        r = req('GET', 'public/v1/iocs/ioc-by-value', handle_filters()).json()
-        ioc_context, ioc_readable = IOC_to_readable(r)
+        r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
+
+        if r.status_code != 204:
+            r = r.json()
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(r)
+
+            demisto.results(
+                {
+                    'Type': entryTypes['note'],
+                    'EntryContext': {
+                        'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                        'DBotScore': dbot_score,
+                        'Domain': domain,
+                        'IP': ip_info,
+                        'URL': url_info,
+                        'File': hash_info
+                    },
+                    'Contents': r,
+                    'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
+                    'ContentsFormat': formats['json']
+                }
+            )
+        else:
+            results_for_no_content('IOC Information')
+
+
+    def results_for_no_content(cmd_name):
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': ioc_context},
-                'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'EntryContext': {'IntSights': {}},
+                'Contents': {},
+                'HumanReadable': '### {} \n\n Could not get any results.'.format(cmd_name),
                 'ContentsFormat': formats['json']
             }
         )
@@ -494,12 +631,10 @@ script:
         """
         Translate alert severity to demisto
         """
-        if sev == 'High':
+        if sev == 'High' or sev == 'Medium':
             return 3
-        elif sev == 'Medium':
-            return 2
         elif sev == 'Low':
-            return 1
+            return 2
         return 0
 
 
@@ -517,9 +652,9 @@ script:
             demisto.args()['is-closed'] = False
 
         demisto.args()['alert-type'] = demisto.getParam('type')
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx  = get_alerts_helper(handle_filters())
         incidents = []
-        for alert in alerts:
+        for alert in alerts_ctx:
             incidents.append({
                 'name': alert['Type'] + ' - ' + alert['ID'],
                 'occurred': alert['FoundDate'],
@@ -535,18 +670,35 @@ script:
         Gets all IOCs with the given filters
         """
         r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
+        domains = []
+        ip_infos = []
+        url_infos = []
+        hash_infos = []
+        dbot_scores = []
         iocs_context = []
         iocs_readable = []
         for k in r:
-            ioc_context, ioc_readable = IOC_to_readable(k)
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(k)
             iocs_context.append(ioc_context)
             iocs_readable.append(ioc_readable)
+            dbot_scores.append(dbot_score)
+            domains.append(domain)
+            ip_infos.append(ip_info)
+            url_infos.append(url_info)
+            hash_infos.append(hash_info)
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': iocs_context},
+                'EntryContext': {
+                    'IntSights.Iocs': iocs_context,
+                    'DBotScore': dbot_scores,
+                    'Domain': domains,
+                    'IP': ip_infos,
+                    'URL': url_info,
+                    'File': hash_info
+                },
                 'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
+                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -618,7 +770,7 @@ script:
         r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id).json()
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Insights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
             'Contents': r,
             'HumanReadable': tableToMarkdown('IntSights Blocklist Status for ' + alert_id, r, ['Status']),
             'ContentsFormat': formats['json']
@@ -902,6 +1054,30 @@ script:
     - contextPath: IntSights.Alerts.IsFlagged
       description: Whether or not the alert is flagged
       type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
     description: Returns alert object by alert ID
   - name: intsights-get-ioc-by-value
     arguments:
@@ -955,6 +1131,63 @@ script:
     - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Search for exact IOC value
   - name: intsights-get-iocs
     arguments:
@@ -978,17 +1211,17 @@ script:
     - name: source-ID
       description: Ioc source
     - name: first-seen-from
-      description: 'Beginning of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'Beginning of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: first-seen-to
-      description: 'End of the date range when the IOC first seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'End of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: last-seen-from
-      description: 'Beginning of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'Beginning of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     - name: last-seen-to
-      description: 'End of the date range when the IOC last seen in the following string format - MM/DD/YYYY
-        Default value: 0'
+      description: 'End of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
     outputs:
     - contextPath: IntSights.Iocs.ID
       description: The IOC ID
@@ -1034,6 +1267,63 @@ script:
       type: string
     - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
       type: string
     description: Get count totals of the available IOCs
   - name: intsights-get-alerts
@@ -1116,6 +1406,30 @@ script:
     - contextPath: IntSights.Alerts.IsFlagged
       description: Whether or not the alert is flagged
       type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
     description: Fetch alerts
   - name: intsights-alert-takedown-request
     arguments:
@@ -1186,8 +1500,8 @@ script:
       required: true
       description: The alert ID
     - name: reason
-      auto: PREDEFINED
       required: true
+      auto: PREDEFINED
       predefined:
       - ProblemSolved
       - InformationalOnly
@@ -1215,3 +1529,4 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
+releaseNotes: "Enhancing get_alerts command to get all alert details"

@@ -79,6 +79,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: API token
+  name: APItoken
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     // handle '/' at the end of the url
@@ -91,21 +96,14 @@ script:
         params.proxy = false;
     }
 
-    var isOAuth;
-    if(!params.consumerKey || !params.accessToken || !params.privateKey) {
-        isOAuth = false;
-    } else {
-        isOAuth = true;
-    }
-
-    if(!isOAuth) {
-        if(!params.username ||!params.password) {
-            throw 'Provide Authorization information, Basic(userName/password) or OAuth1.0'
-        }
+    var isOAuth = params.consumerKey && params.accessToken && params.privateKey;
+    // if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
+    if(!isOAuth && !(params.username && (params.password || params.APItoken))) {
+        throw 'Provide Authorization information, Basic(userName & password / API-token) or OAuth1.0'
     }
 
 
-    var sendRequest = function (method, resourceUrl, body, isCookie) {
+    var sendRequest = function (method, resourceUrl, body) {
         var requestParams = {
             Headers: {'Content-Type': ['application/json']},
             Method: method,
@@ -116,15 +114,10 @@ script:
                 AccessToken:    params.accessToken,
                 PrivateKey:     params.privateKey
             };
-            requestParams.Body = body !== undefined ? body : "";
         } else {
-            requestParams.Username = params.username;
-            requestParams.Password = params.password;
-            requestParams.Body = body !== undefined ? body : "";
-            if(!isCookie) {
-                requestParams.Cookies = getCookies();
-            }
+            requestParams.Headers.Authorization = ["Basic " + btoa(params.username + ":" + (params.APItoken ? params.APItoken : params.password))]
         }
+        requestParams.Body = body !== undefined ? body : "";
 
         var result = http(params.url + resourceUrl, requestParams, params.insecure, params.proxy);
         if (result.StatusCode !== 200 && result.StatusCode !== 201 && result.StatusCode !== 204) {
@@ -133,10 +126,6 @@ script:
         return result;
     }
 
-    var getCookies = function() {
-
-        return sendRequest('POST', 'rest/auth/1/session',JSON.stringify({'username':params.username,'password':params.password}), true).Cookies;
-    };
 
     var addQueryParam = function(urlSuffix, paramName, value){
         if (value && value.length > 0){
@@ -146,19 +135,16 @@ script:
     };
 
     var uploadFile = function(entryId, issueId) {
-        var cookies = getCookies();
         var res = httpMultipart(
-            params.url+'rest/api/2/issue/' + issueId + '/attachments',
+            params.url+'rest/api/latest/issue/' + issueId + '/attachments',
             entryId,
             {
                 Method: 'POST',
-                Cookies: cookies,
                 Username: params.username,
                 Password: params.password,
                 Headers: {'X-Atlassian-Token': ['no-check']},
             },
-            {
-            },
+            {},
             params.insecure,
             params.proxy
         );
@@ -169,7 +155,7 @@ script:
     };
 
     var runQuery = function(query, startAt, maxResults) {
-        var url = 'rest/api/2/search?jql='+encodeURIComponent(query);
+        var url = 'rest/api/latest/search?jql='+encodeURIComponent(query);
         url = addQueryParam(url,'startAt',startAt);
         url = addQueryParam(url,'maxResults',maxResults);
         var result  = sendRequest('GET', url)
@@ -364,7 +350,7 @@ script:
     };
 
     function getProjectID(projectKey, projectName) {
-        var result = sendRequest('GET', 'rest/api/2/issue/createmeta')
+        var result = sendRequest('GET', 'rest/api/latest/issue/createmeta')
         var jRes = JSON.parse(result.Body);
         var projects = jRes.projects;
         for (i in projects) {
@@ -461,7 +447,7 @@ script:
 
     var GetIssue = function(flag){
         var flag = flag || 0 ;
-        var result = sendRequest('GET', 'rest/api/2/issue/'+args.issueId)
+        var result = sendRequest('GET', 'rest/api/latest/issue/'+args.issueId)
         var jRes = JSON.parse(result.Body);
         var mdAndContext = generateMDContextGetIssue(jRes);
         md = tblToMd(command, mdAndContext['md'],argToList(args.headers));
@@ -481,27 +467,29 @@ script:
 
 
     var EditStatus = function(){
-      var url = 'rest/api/2/issue/' + String(args.issueId) + '/transitions'
-      var result = sendRequest('GET', url);
-      var jRes = JSON.parse(result.Body);
-      checkError = true;
-      for (i = 0; i < jRes.transitions.length; i++ ) {
-          if (jRes.transitions[i].name.toLowerCase() == args.status.toLowerCase()){
-            checkError = false;
-            var url = 'rest/api/2/issue/' + String(args.issueId) + '/transitions?expand=transitions.fields'
-            json = {"transition":{"id":String(jRes.transitions[i].id)}}
-            var result = sendRequest('POST', url, JSON.stringify(json));
-          }
-      }
-      if (checkError)
-        throw 'Status ' + args.status + ' not found';
+        // check for all authorized transitions available for this user
+        // if the requested transition is availabe, execute it.
+        var url = 'rest/api/2/issue/' + String(args.issueId) + '/transitions'
+        var result = sendRequest('GET', url);
+        var jRes = JSON.parse(result.Body);
+        checkError = true;
+        for (i = 0; i < jRes.transitions.length; i++ ) {
+            if (jRes.transitions[i].name.toLowerCase() == args.status.toLowerCase()){
+                checkError = false;
+                url = 'rest/api/latest/issue/' + String(args.issueId) + '/transitions?expand=transitions.fields'
+                json = {"transition":{"id":String(jRes.transitions[i].id)}}
+                result = sendRequest('POST', url, JSON.stringify(json));
+            }
+        }
+        if (checkError)
+          throw 'Status ' + args.status + ' not found';
     }
 
     // The command input arg holds the command sent from the user.
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            var res = sendRequest('GET','rest/api/2/myself')
+            var res = sendRequest('GET','rest/api/latest/myself')
             return res.StatusCode >= 200 && res.StatusCode < 400
         case 'jira-get-issue':
             return GetIssue();
@@ -521,7 +509,7 @@ script:
 
             };
         case 'jira-create-issue':
-            var url = 'rest/api/2/issue';
+            var url = 'rest/api/latest/issue';
             var issue = getIssueFields()
             var result = sendRequest('POST', url, JSON.stringify(issue));
             var jRes = JSON.parse(result.Body);
@@ -537,7 +525,7 @@ script:
 
             };
         case 'jira-edit-issue':
-            var url = 'rest/api/2/issue/' + String(args.issueId);
+            var url = 'rest/api/latest/issue/' + String(args.issueId);
             var issue = getIssueFields()
             var result = sendRequest('PUT', url, JSON.stringify(issue));
 
@@ -547,7 +535,7 @@ script:
             return GetIssue(1);
 
         case 'jira-get-comments':
-            url = 'rest/api/2/issue/' + String(args.issueId) + '/comment';
+            url = 'rest/api/latest/issue/' + String(args.issueId) + '/comment';
             var result = sendRequest('GET', url);
             var body = JSON.parse(result.Body);
             var comments = [];
@@ -567,7 +555,6 @@ script:
             }
             else return 'No comments were found in the ticket'
 
-
         case 'jira-issue-upload-file':
             var jRes = uploadFile(args.upload, args.issueId);
             var md = generateMdUploadIssue(jRes);
@@ -580,7 +567,7 @@ script:
                 ReadableContentsFormat: formats.markdown
             };
         case 'jira-issue-add-comment':
-            var url = 'rest/api/2/issue/'+ args.issueId + '/comment';
+            var url = 'rest/api/latest/issue/'+ args.issueId + '/comment';
             var comment = {};
             comment.body = args.comment;
             if (args.visibility && args.visibility.length > 0 ){
@@ -600,7 +587,7 @@ script:
                 ReadableContentsFormat: formats.markdown
             };
         case 'jira-issue-add-link':
-            var url = 'rest/api/2/issue/'+ args.issueId + '/remotelink';
+            var url = 'rest/api/latest/issue/'+ args.issueId + '/remotelink';
             var link = {};
             link.object = {};
             link.object.url = args.url;
@@ -628,9 +615,17 @@ script:
                HumanReadable: md,
                ReadableContentsFormat: formats.markdown
             };
+        case 'jira-delete-issue':
+            var url = 'rest/api/latest/issue/' + String(args.issueIdOrKey);
+            var issue = getIssueFields()
+            var result = sendRequest('DELETE', url, JSON.stringify(issue));
+            if (result.StatusCode == '204')
+                return 'Issue deleted successfully.'
+            break;
+
         case 'fetch-incidents':
             var lastRun = getLastRun();
-            var idOffset = lastRun && lastRun.idOffset ? lastRun.idOffset : params.idOffset;
+            var idOffset = (lastRun && lastRun.idOffset) ? lastRun.idOffset : params.idOffset;
             var incidents = [];
             var maxResults = 50;
             var query = params.query + ' and id > ' + String(idOffset)
@@ -827,5 +822,11 @@ script:
       description: The user that created the comment
       type: string
     description: Gets the comments added to a ticket
+  - name: jira-delete-issue
+    arguments:
+    - name: issueIdOrKey
+      required: true
+      description: issue ID or Key
+    description: deletes an issue
   isfetch: true
   runonce: false

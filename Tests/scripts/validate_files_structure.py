@@ -25,8 +25,9 @@ import os
 import glob
 import json
 import argparse
-from subprocess import Popen, PIPE
 from pykwalify.core import Core
+from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -196,8 +197,8 @@ def changed_id(file_path):
 
 def is_added_required_fields(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\-  name: .*\n.*\n.*\n-  required: true", change_string) or re.search("\+  required: true", change_string):
-        print_error("You've changed the required fields in the integration file {}".format(file_path))
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\+[ ]+required: true", change_string):
+        print_error("You've added required fields in the integration file {}".format(file_path))
         return True
 
     return False
@@ -263,14 +264,31 @@ def oversize_image(file_path):
     return False
 
 
+def non_valid_versioning(id_to_file, my_id, id_list):
+    has_duplicate = False
+    from_version = get_from_version(id_to_file[my_id])
+    for id_obj in id_list:
+        id = id_obj.keys()[0]
+        versioning = id_obj[id]
+        if my_id == id:
+            if LooseVersion(from_version) <= LooseVersion(versioning['toversion']):
+                print_error("The ID {0} already exists, please update the file {1} or update the id_set.json toversion field of this id to match the old occurrence of this id".format(id, id_to_file[id]))
+                has_duplicate = True
+
+    return has_duplicate
+
+
 def has_duplicated_ids(id_to_file):
+    ids_list = []
     has_duplicate = False
     with open('./Tests/id_set.json', 'r') as id_set_file:
         id_list = json.load(id_set_file)
 
+    for objec in id_list:
+        ids_list.append(objec.keys()[0])
+
     for id in id_to_file.keys():
-        if id in id_list:
-            print_error("The ID {0} already exists, please update the file {1}".format(id, id_to_file[id]))
+        if id in ids_list and non_valid_versioning(id_to_file, id, id_list):
             has_duplicate = True
 
     return has_duplicate
@@ -295,6 +313,44 @@ def get_modified_and_added_files(branch_name, is_circle):
     return modified_files, added_files
 
 
+def get_from_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('fromversion', 'beginning')
+
+
+def get_to_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('toversion', 'current')
+
+
+def changed_command_name_or_arg(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
+    added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
+    if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
+        print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
+                    " the file {0} please undo, the line was:\n{1}".format(file_path, deleted_groups.group(0)[1:]))
+        return True
+
+    return False
+
+
+def changed_context(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    deleted_groups = re.search("-([ ]+)?- contextPath: (.*)", change_string)
+    added_groups = re.search("\+([ ]+)?- contextPath: (.*)", change_string)
+    if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
+        print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
+                    "undo, the line was:\n{1}".format(file_path, deleted_groups.group(0)[1:]))
+        return True
+
+    return False
+
+
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
 
@@ -306,15 +362,14 @@ def validate_committed_files(branch_name, is_circle):
         if not is_release_branch() and not validate_file_release_notes(file_path):
             has_schema_problem = True
 
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
+                has_schema_problem = True
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
                 has_schema_problem = True
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path):
-                has_schema_problem = True
-            if oversize_image(file_path):
-                has_schema_problem = True
-            if is_added_required_fields(file_path):
+            if changed_id(file_path) or oversize_image(file_path) or is_added_required_fields(file_path) or changed_command_name_or_arg(file_path) or changed_context(file_path):
                 has_schema_problem = True
 
     id_to_file = {}
@@ -329,9 +384,11 @@ def validate_committed_files(branch_name, is_circle):
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
 
         if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            id_to_file[get_script_or_integration_id(file_path)] = file_path
+            id = get_script_or_integration_id(file_path)
+            id_to_file[id] = file_path
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            id_to_file[collect_ids(file_path)] = file_path
+            id = collect_ids(file_path)
+            id_to_file[id] = file_path
 
     if has_schema_problem or has_duplicated_ids(id_to_file):
         sys.exit(1)

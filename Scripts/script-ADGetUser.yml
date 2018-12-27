@@ -310,4 +310,3 @@ runonce: false
 dependson:
   must:
   - ad-search
-releaseNotes: return multiple results when runing the script with custome query

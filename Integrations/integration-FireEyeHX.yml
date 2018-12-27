@@ -117,6 +117,11 @@ script:
         'Domain',
         'Last Alert'
     ]
+    HOST_SET_MAIN_ATTRIBUTES = [
+        'Name',
+        'ID',
+        'Type'
+    ]
     #scripts for data acquisitions
     STANDART_INVESTIGATIVE_DETAILS_OSX = {
         "commands": [
@@ -861,6 +866,55 @@ script:
         }
         demisto.results(entry)
 
+    def get_host_set_information():
+        """
+        return host set information to the war room according to given id or filters
+
+        """
+        args = demisto.args()
+
+        url = '{}/host_sets/{}'.format(BASE_PATH, args.get('hostSetID', ''))
+        url_params = {
+            'limit': args.get('limit'),
+            'offset': args.get('offset'),
+            'search': args.get('search'),
+            'sort': args.get('sort'),
+            'name': args.get('name'),
+            'type': args.get('type')
+        }
+        response = http_request(
+            'GET',
+            url,
+            headers = GET_HEADERS,
+            url_params=url_params
+        )
+        host_sets = []
+        try:
+            host_sets = response.json()['data']
+        except Exception as e:
+            raise ValueError('Failed to get host set information - unexpected response from the server.\n'+response.text)
+
+        md_table = "No host sets found"
+        host_sets_list = [host_sets] if args.get('hostSetID') else host_sets.get('entries', [])
+        if len(host_sets_list) > 0:
+            md_table = tableToMarkdown(
+                'FireEye HX Get Host Sets Information',
+                host_set_entry(host_sets_list),
+                headers=HOST_SET_MAIN_ATTRIBUTES
+            )
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': host_sets,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md_table,
+            'EntryContext': {
+                "FireEyeHX.HostSets(obj._id==val._id)": host_sets_list
+            }
+        }
+        demisto.results(entry)
+
     def get_hosts_request(limit=None, offset=None, has_active_threats=None, has_alerts=None, agent_version=None, containment_queued=None, containment_state=None,
         host_name=None, os_platform=None, reported_clone=None, time_zone=None):
         """
@@ -1589,12 +1643,10 @@ script:
 
         url = '{}/searches'.format(BASE_PATH)
 
-        body = {
-            'query': query
-        }
+        body = { 'query': query }
 
         if host_set:
-            body['host_set'] = {'host_set._id': host_set}
+            body['host_set'] = {'_id': int(host_set)}
         elif hosts:
             body['hosts'] = [{'_id': host} for host in hosts]
 
@@ -1609,12 +1661,13 @@ script:
                 body=body
             )
         except Exception as e:
-            if response.status_code == 409:
-                LOG(e.message)
-                raise ValueError('Request unsuccessful because the search limits (10 existing searches or 5 running searches) have been exceeded')
+            raise e
+        if response.status_code == 409:
+            LOG(e.message)
+            raise ValueError('Request unsuccessful because the search limits (10 existing searches or 5 running searches) have been exceeded')
         return response.json().get('data')
 
-    def get_search_inforamtion_request(search_id):
+    def get_search_information_request(search_id):
         """
 
         returns the search information represented by a json object.
@@ -1628,7 +1681,7 @@ script:
             url,
             headers=GET_HEADERS
         )
-        return response.json()['data']
+        return response.json().get('data')
 
     def get_search_results_request(search_id):
         """
@@ -1644,7 +1697,7 @@ script:
             url,
             headers=GET_HEADERS
         )
-        return response.json()['entries']
+        return response.json().get('data', {}).get('entries', [])
 
     def stop_search_request(search_id):
         """
@@ -1675,6 +1728,19 @@ script:
             url
         )
 
+    def search_results_to_context(results, search_id):
+        for res in results:
+            res["SearchID"] = search_id
+            res["HostID"] = res.get("host", {}).get("_id")
+            res["HostName"] = res.get("host", {}).get("hostname")
+            res["HostUrl"] = res.get("host", {}).get("url")
+            del res['host']
+            res["Results"] = res.get("results")
+            del res["results"]
+            for resData in res.get("Results"):
+                resData.update(resData.get("data", {}))
+                del resData['data']
+        return results
     def start_search():
 
         args = demisto.args()
@@ -1700,7 +1766,7 @@ script:
                     LOG(e.message)
                     pass
             if not agents_ids:
-                raise ValueError('None of the host names past matched with an agent')
+                raise ValueError('None of the host names were matched with an agent')
 
         #limit can't exceed 1000.
         limit = args.get('limit')
@@ -1710,12 +1776,13 @@ script:
         arg_to_query_field_map = {
             'dnsHostname': 'DNS Hostname',
             'fileFullPath': 'File Full Path',
-            'fileMD5Hash': 'File MD5 Hash'
+            'fileMD5Hash': 'File MD5 Hash',
+            'ipAddress': 'IP Address'
         }
 
         query = []
         for arg in arg_to_query_field_map.keys():
-            if not args.get(filed):
+            if not args.get(arg):
                 continue
             field_filter = {
                 'field': arg_to_query_field_map[arg],
@@ -1725,7 +1792,7 @@ script:
             query.append(field_filter)
 
         search = search_request(
-            args.get('query'),
+            query,
             hosts=agents_ids,
             host_set=args.get('hostSet'),
             exhaustive=args.get('exhaustive')=='yes'
@@ -1735,7 +1802,7 @@ script:
 
         #loop to get search status once a minute. break on: search has stopped, matched results exceeded limit, or no more pending hosts.
         while True:
-            search_info = get_search_inforamtion_request(search_id)
+            search_info = get_search_information_request(search_id)
             matched = search_info.get('stats', {}).get('search_state', {}).get('MATCHED',0)
             pending = search_info.get('stats', {}).get('search_state', {}).get('PENDING',0)
             if search_info.get('state')=='STOPPED' or matched >= limit or pending == 0 :
@@ -1752,7 +1819,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': '## Search Results\n' + '\n'.join(md_entries),
             'EntryContext': {
-                "FireEyeHX.Search(obj._id==val._id)": results
+                "FireEyeHX.Search": search_results_to_context(results, search_id)
             }
         }
         demisto.results(entry)
@@ -1767,6 +1834,7 @@ script:
             if args.get('stopSearch') == 'stopAndDelete':
                 possible_error_message = 'Failed to delete search'
                 delete_search_request(search_id)
+            possible_error_message = None
         except Exception as e:
             LOG('{}\n{}'.format(possible_error_message, e.message))
             pass
@@ -2137,6 +2205,13 @@ script:
         }
         return host_entry
 
+    def host_set_entry(host_sets):
+        host_set_entries = [{
+            'Name': host_set.get('name'),
+            'ID': host_set.get('_id'),
+            'Type': host_set.get('type')
+        } for host_set in host_sets]
+        return host_set_entries
 
     def alert_entry(alert):
 
@@ -2172,7 +2247,7 @@ script:
             entries.append(entry)
 
         md_table = tableToMarkdown(
-            host_info.get('hostName'),
+            host_info.get('hostname'),
             entries,
             headers=['Item Type', 'Summary']
         )
@@ -2239,9 +2314,21 @@ script:
 
     def parse_error_response(response):
         try:
-            return response.json().get('message')
+            res = response.json()
+            msg = res.get('message')
+            if res.get('details') is not None and res.get('details')[0].get('message') is not None:
+                msg = msg + "\n"+json.dumps(res.get('details')[0])
         except Exception as e:
-            return ''
+            return response.text
+        return msg
+
+    def return_error_entry(message):
+        error_entry = {
+            'Type': entryTypes['error'],
+            'Contents': message,
+            'ContentsFormat': formats['text']
+        }
+        demisto.results(error_entry)
 
     """
 
@@ -2288,6 +2375,10 @@ script:
             data_acquisition()
         elif command == 'fireeye-hx-delete-data-acquisition':
             delete_data_acquisition_request()
+        elif command == 'fireeye-hx-search':
+            start_search()
+        elif command == 'fireeye-hx-get-host-set-information':
+            get_host_set_information()
         sys.exit(0)
     except ValueError as e:
         LOG(e.message)
@@ -2768,6 +2859,190 @@ script:
       required: true
       description: The acquisition ID.
     description: Delete data acquisition.
+  - name: fireeye-hx-search
+    description: Search endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+    arguments:
+    - name: agentsIds
+      description: IDs of agents to be searched
+    - name: hostsNames
+      description: Names of hosts to be searched
+    - name: hostSet
+      description: Id of host set to be searched
+    - name: limit
+      description: Limit results count (once limit is reached, the search is stopped)
+    - name: exhaustive
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Should search be exhaustive or quick
+      defaultValue: "yes"
+    - name: ipAddress
+      description: A valid IPv4 address to search for
+    - name: ipAddressOperator
+      auto: PREDEFINED
+      predefined:
+      - equals
+      - not equals
+      description: Which operator to apply to the given IP address
+    - name: fileMD5Hash
+      description: A 32-character MD5 hash value to search for
+    - name: fileMD5HashOperator
+      auto: PREDEFINED
+      predefined:
+      - equals
+      - not equals
+      description: Which operator to apply to the given MD5 hash
+    - name: fileFullPath
+      description: Full path of file to search
+    - name: fileFullPathOperator
+      description: Which operator to apply to the given file path
+      auto: PREDEFINED
+      predefined:
+      - equals
+      - not equals
+      - contains
+      - not contains
+    - name: dnsHostname
+      description: DNS value to search for
+    - name: dnsHostnameOperator
+      description: Which operator to apply to the given DNS
+      auto: PREDEFINED
+      predefined:
+      - equals
+      - not equals
+      - contains
+      - not contains
+    - name: stopSearch
+      auto: PREDEFINED
+      predefined:
+      - stopAndDelete
+      - stop
+      description: Method in which search should be stopped after finding <limit> number of results
+    outputs:
+    - contextPath: FireEyeHX.Search.Results.Timestamp - Modified
+      description: Time when the entry was last modified
+      type: string
+    - contextPath: FireEyeHX.Search.Results.File Text Written
+      description: The file text content
+      type: string
+    - contextPath: FireEyeHX.Search.Results.File Name
+      description: Name of the file
+      type: string
+    - contextPath: FireEyeHX.Search.Results.File Full Path
+      description: The full path of the file
+      type: string
+    - contextPath: FireEyeHX.Search.Results.File Bytes Written
+      description: Number of bytes written to the file
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Size in bytes
+      description: Size of the file in bytes
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Browser Version
+      description: Version of the browser
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Browser Name
+      description: Name of the browser
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Cookie Name
+      description: Name of the cookie
+      type: string
+    - contextPath: FireEyeHX.Search.Results.DNS Hostname
+      description: Name of the DNS host
+      type: string
+    - contextPath: FireEyeHX.Search.Results.URL
+      description: The event URL
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Username
+      description: The event username
+      type: string
+    - contextPath: FireEyeHX.Search.Results.File MD5 Hash
+      description: MD5 hash of the file
+      type: string
+    - contextPath: FireEyeHX.Search.HostID
+      description: ID of the host
+      type: string
+    - contextPath: FireEyeHX.Search.HostName
+      description: Name of host
+      type: string
+    - contextPath: FireEyeHX.Search.HostUrl
+      description: Inner FireEye host url
+      type: string
+    - contextPath: FireEyeHX.Search.SearchID
+      description: ID of performed search
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Timestamp - Accessed
+      description: Last accessed time
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Port
+      description: Port
+      type: number
+    - contextPath: FireEyeHX.Search.Results.Process ID
+      description: ID of the process
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Local IP Address
+      description: Local IP Address
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Local IP Address
+      description: Local IP Address
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Local Port
+      description: Local Port
+      type: number
+    - contextPath: FireEyeHX.Search.Results.Username
+      description: Username
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Remote Port
+      description: Remote Port
+      type: number
+    - contextPath: FireEyeHX.Search.Results.IP Address
+      description: IP Address
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Process Name
+      description: Process Name
+      type: string
+    - contextPath: FireEyeHX.Search.Results.Timestamp - Event
+      description: Timestamp - Event
+      type: string
+    - contextPath: FireEyeHX.Search.Results.type
+      description: The type of the event
+      type: string
+    - contextPath: FireEyeHX.Search.Results.id
+      description: ID of the result
+      type: string
+  - name: fireeye-hx-get-host-set-information
+    description: Get a list of all host sets known to your HX Series appliance
+    arguments:
+    - name: hostSetID
+      description: ID of a specific host set to get
+    - name: offset
+      description: Specifies which record to start with in the response. The offset value must be an unsigned 32-bit integer. The default is 0.
+    - name: limit
+      description: Specifies how many records are returned. The limit value must be an unsigned 32-bit integer. The default is 50.
+    - name: search
+      description: Searches the names of all host sets connected to the specified HX appliance.
+    - name: sort
+      description: Sorts the results by the specified field in ascending or descending order. The default is sorting by name in ascending order. Sortable fields are _id (host set ID) and name (host set name).
+    - name: name
+      description: Specifies the name of host set to look for
+    - name: type
+      description: Specifies the type of host sets to search for
+    outputs:
+    - contextPath: FireEyeHX.HostSets._id
+      description: host set id
+      type: number
+    - contextPath: FireEyeHX.HostSets._revision
+      description: Revision number
+      type: string
+    - contextPath: FireEyeHX.HostSets.name
+      description: Host set name
+      type: string
+    - contextPath: FireEyeHX.HostSets.type
+      description: Host set type (static/dynamic/hidden)
+      type: string
+    - contextPath: FireEyeHX.HostSets.url
+      description: Host set FireEye url
+      type: string
   isfetch: true
   runonce: false
 tests:
