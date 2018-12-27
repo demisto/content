@@ -795,4 +795,3 @@ script:
 hidden: false
 tests:
 - Cisco-Meraki-Test
-releaseNotes: updated API login

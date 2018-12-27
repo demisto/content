@@ -127,6 +127,19 @@ script:
             '0': '0 - Review',
             '3': '3 - Closed',
             '4': '4 - Canceled'
+        },
+        'sc_task': {
+            '-5': '-5 - Pending',
+            '1': '1 - Open',
+            '2': '2 - Work In Progress',
+            '3': '3 - Closed Complete',
+            '4': '4 - Closed Incomplete',
+            '7': '7 - Closed Skipped'
+        },
+        'sc_request': {
+            '1': '1 - Approved',
+            '3': '3 - Closed',
+            '4': '4 - Rejected'
         }
     }
 
@@ -331,8 +344,8 @@ script:
         # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
         inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
         inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
-        states = TICKET_STATES[ticket_type]
-        inv_states = {v: k for k, v in states.iteritems()}
+        states = TICKET_STATES.get(ticket_type)
+        inv_states = {v: k for k, v in states.iteritems()} if states else {}
 
         body = {}
         for arg in SNOW_ARGS:
@@ -1775,7 +1788,7 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the ticket
+      description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
@@ -2403,7 +2416,7 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the ticket
+      description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
     description: Update specific ticket
   - name: servicenow-update
     deprecated: true
@@ -3395,6 +3408,5 @@ script:
     description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-releaseNotes: "Added command to retrieve table names, new ServiceNow logo, support of updating/creating tickets with states by context values"
 tests:
   - No test - Hibernating instance

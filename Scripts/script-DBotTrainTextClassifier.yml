@@ -1,0 +1,121 @@
+commonfields:
+  id: DBotTrainTextClassifier
+  version: -1
+name: DBotTrainTextClassifier
+script: |+
+  import base64, sys, uuid, zlib
+  import demisto_ml
+
+  MODEL_LIST = demisto.args()['modelStoreListName']
+  TRAINING_FILE_NAME = demisto.args()['trainingFileName']
+  TEST_ABOVE_THRESHOLD = float(demisto.args()['precisionThreshold'])
+
+  def get_file_path(file_name):
+      file_name = file_name.strip()
+      res = demisto.dt(demisto.context(), "File(val.Name == '%s')" % file_name)
+      if type(res) is list:
+          res = res[0]
+      entry_id = res['EntryID']
+      res = demisto.executeCommand("getFilePath", {"id": entry_id})
+      if res[0]['Type'] == entryTypes['error']:
+          demisto.results(res)
+          sys.exit(0)
+      return res[0]['Contents']['path']
+
+
+  def combine_files(file_paths):
+      if len(file_paths) == 1:
+          return file_paths[0]
+      combined_file_path = str(uuid.uuid4()) + ".txt"
+      with open(combined_file_path, 'wb') as out:
+          for file_path in file_paths:
+              with open(file_path, 'rb') as f:
+                  out.write(f.read())
+      return combined_file_path
+
+  # get file path
+  if type(TRAINING_FILE_NAME) is list:
+      file_names = TRAINING_FILE_NAME
+  else:
+      file_names = TRAINING_FILE_NAME.split(",")
+      file_names = [f for f in file_names if f]
+  file_paths = map(get_file_path, file_names)
+  training_file_path = combine_files(file_paths)
+
+  # evaluate model
+  train_amount, (test_amount, precision, recall) = demisto_ml.get_model_precision(training_file_path)
+  demisto.log("Model evaluation trained on %d samples and tested on %d samples:\nPrecision:%.2f%%\nRecall:%.2f%%" % (train_amount, test_amount, precision*100, recall*100))
+  total_amount = train_amount + test_amount
+  if precision <= TEST_ABOVE_THRESHOLD:
+      return_error("Model evaluation is below %.2f threshold, do not store model" % TEST_ABOVE_THRESHOLD)
+
+  # train model
+  try:
+      model = demisto_ml.train_text_model(training_file_path, True)
+      encoded_model = demisto_ml.encode_model(model)
+  except Exception:
+      return_error("An error occurred while training model")
+
+  res = demisto.executeCommand("createList", {"listName": MODEL_LIST, "listData": encoded_model})
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(0)
+
+  model_summary = {
+      'ListName': MODEL_LIST,
+      'TrainDataSize': total_amount,
+      'Precision': "%.2f" % precision,
+      'Recall': "%.2f" % recall
+  }
+
+  demisto.results({
+      "EntryContext": {
+          'DBotTextClassifier': model_summary
+      },
+      'HumanReadable': 'Done training',
+      'HumanReadableFormat': formats['text'],
+      'Contents': model_summary,
+      'ContentsFormat': formats['json']
+  })
+
+
+
+type: python
+tags:
+- phishing
+- ml
+comment: |-
+  Create a text classifier model using machine learning.
+  Each line of the text file is sample data, and it has to be with a tag.
+enabled: true
+args:
+- name: trainingFileName
+  required: true
+  description: The name of the text file (format is described in the script details).
+    The file should be attached in the war room.
+- name: modelStoreListName
+  required: true
+  description: The name of the list to store the model binary (as base64). The list
+    must be exist in Demisto (with any value).
+- name: precisionThreshold
+  description: Precision threshold - model will be store only above this threshold.
+  defaultValue: "0.7"
+outputs:
+- contextPath: DBotTextClassifier.TrainDataSize
+  description: The number of training samples
+  type: number
+- contextPath: DBotTextClassifier.ListName
+  description: Model list name in Demisto
+- contextPath: DBotTextClassifier.Precision
+  description: Model precision (precent)
+  type: number
+- contextPath: DBotTextClassifier.Recall
+  description: Model recall (precent)
+  type: number
+scripttarget: 0
+timeout: 60µs
+runonce: true
+dockerimage: demisto/dl:1.1
+fromversion: 4.1.0
+tests:
+  - CreatePhishingClassifierMLTest

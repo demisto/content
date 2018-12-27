@@ -1,0 +1,110 @@
+commonfields:
+  id: DBotPredictTextLabel
+  version: -1
+name: DBotPredictTextLabel
+script: |+
+  import sys, base64, re
+  import demisto_ml
+
+  HASH_WORDS = (demisto.args()['hashData'] == 'yes')
+  HASH_SEED = 5381
+
+  def get_input_text_prediction(model, input_text):
+      number_of_tokens = len(input_text.split(" "))
+      label, probability =  demisto_ml.predict(model, input_text)
+      return {
+          'Label': label,
+          'Probability': "%.2f" % probability,
+          'InputTextNumberOfTokens': number_of_tokens,
+          'InputTextTokens': input_text
+      }
+
+
+
+  def load_model(list_name):
+      lst = demisto.executeCommand("getList", {"listName": list_name})
+      lst = lst[0]
+      if lst['Type'] == entryTypes['error']:
+        return_error("error reading list %s from demisto" % list_name)
+        sys.exit(0)
+      model_as_string = lst["Contents"]
+      return demisto_ml.decode_model(model_as_string)
+
+  # validate input text
+  input_txt = demisto.args().get('inputText', '')
+  if len(input_txt) == 0:
+      return_error("Input text is missing")
+  res = demisto.executeCommand('WordTokenizer', {
+      'value': input_txt,
+      'hashWordWithSeed': HASH_SEED if HASH_WORDS else None,
+      'type': 'punkt'
+  })
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(0)
+  input_txt = res[0]['Contents']
+  if len(input_txt) == 0:
+      return_error("Input text after remove HTML tags is empty: %s" % input_txt)
+  if type(input_txt) is not list:
+      input_txt = [input_txt]
+
+  model = load_model(demisto.args()['modelListName'])
+
+  predictions = map(lambda x: get_input_text_prediction(model, x), input_txt)
+  if len(predictions) == 1:
+      predictions = predictions[0]
+  context = {
+      "DBotPredictTextLabel": predictions
+  }
+
+  demisto.results({
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': predictions,
+        'EntryContext':context,
+        "HumanReadable": tableToMarkdown('DBot label suggestion', predictions),
+        "HumanReadableFormat" : formats["markdown"]
+  })
+
+
+type: python
+tags:
+- ml
+- phishing
+comment: |-
+  Predict text label using pre-trained machine learning phishing model.
+  Notice you have to run training playbook successfully first.
+enabled: true
+args:
+- name: inputText
+  required: true
+  description: The input text to predict on
+  isArray: true
+- name: modelListName
+  description: Demisto list name that stores the machine learning model
+  defaultValue: phishing_model
+- name: hashData
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Is the input text is hashed
+  defaultValue: "no"
+outputs:
+- contextPath: DBotPredictTextLabel.Label
+  description: The suggested label
+  type: string
+- contextPath: DBotPredictTextLabel.Pobability
+  description: 'The prediction probability '
+  type: number
+- contextPath: DBotPredictTextLabel.InputTextNumberOfTokens
+  description: Number of tokens in the input text
+  type: number
+- contextPath: DBotPredictTextLabel.InputTextTokens
+  description: The input text
+scripttarget: 0
+runonce: false
+dockerimage: demisto/dl:1.1
+fromversion: 4.1.0
+tests:
+  - CreatePhishingClassifierMLTest

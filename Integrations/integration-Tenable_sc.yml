@@ -2547,6 +2547,5 @@ script:
       type: date
     description: Get the system information and diagnostics from Tenable.sc
   isfetch: true
-releaseNotes: "Enabled fetch incidents (alerts), fixes to get-device command"
 tests:
   - tenable-sc-test

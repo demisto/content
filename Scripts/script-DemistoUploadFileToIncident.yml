@@ -27,4 +27,3 @@ tests:
 dependson:
   must:
   - demisto-api-multipart
-releaseNotes: "Demisto automation to add an attachment to an incident by Entry ID"
