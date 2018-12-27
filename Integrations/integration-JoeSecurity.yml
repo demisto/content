@@ -979,6 +979,7 @@ script:
     description: Download the sample file of an analysis. for security reasons, the
       extension will be "dontrun"
   runonce: false
+releaseNotes: "-"
 tests:
   - JoeSecurityTestPlaybook
   - JoeSecurityTestDetonation
