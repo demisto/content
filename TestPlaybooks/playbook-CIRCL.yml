@@ -1,5 +1,5 @@
 id: CirclIntegrationTest
-version: 9
+version: 12
 name: CIRCL Test
 starttaskid: "0"
 tasks:
@@ -99,10 +99,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: eda98941-c587-4390-8704-25c7433cfa84
+    taskid: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
     type: condition
     task:
-      id: eda98941-c587-4390-8704-25c7433cfa84
+      id: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
       version: -1
       name: Query.Record
       type: condition
@@ -122,14 +122,14 @@ tasks:
             value:
               simple: CIRCLdns.Query.Record.Data
             iscontext: true
-      - - operator: greaterThan
+      - - operator: stringHasLength
           left:
             value:
               simple: CIRCLdns.Query.Record.LastTime
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "19"
     view: |-
       {
         "position": {
