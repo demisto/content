@@ -1402,4 +1402,3 @@ timeout: 0s
 releaseNotes: added pascalToSpace headerTransformer
 tests:
   - TestPYCommonServer
-releaseNotes: "-"

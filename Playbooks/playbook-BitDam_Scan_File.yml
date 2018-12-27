@@ -439,6 +439,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-releaseNotes: "Submit only supported files to BitDam"
 tests:
 - Detonate File - BitDam Test
