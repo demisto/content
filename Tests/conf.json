@@ -239,6 +239,12 @@
             "nightly": true
         },
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestDetonation",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "WildFire",
             "playbookID": "Wildfire Test"
         },
