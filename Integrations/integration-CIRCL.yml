@@ -55,15 +55,13 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-    def http_request(method, url, bad_request_msg = None):
+    def http_request(method, url):
         response = requests.request(
             method,
             url,
             auth=AUTH
         )
 
-        # TODO: Input validation
-        
         if response.status_code != 200:
             return_error('Error in API call: [%d] - %s' % (response.status_code, response.reason))
 
@@ -80,6 +78,12 @@ script:
 
         if match is None:
             return_error('Invalid IP or CIDR: %s' % (ip))
+
+    def timestamp_to_string(timestamp):
+        if timestamp is None:
+            return None
+
+        return datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
     def dns_get_command(url):
         response = http_dns_get(url)
@@ -108,7 +112,7 @@ script:
     def http_dns_get(url):
         query_url = BASE_URL + '/pdns/query/' + url
 
-        return http_request('GET', query_url, 'Bad input. Expected a dns or hostname.')
+        return http_request('GET', query_url)
 
     # The results may contain several records with the same 'rdata' but different (not interesting) other properties.
     # This function will merge the records and keep the later "last seen time".
@@ -126,11 +130,12 @@ script:
 
         return list(results_map.values())
 
-
     def create_dns_record_context(record):
+        last_time = timestamp_to_string(record[LAST_TIME_KEY])
+
         return {
             'Data': record['rdata'],
-            'LastTime': record[LAST_TIME_KEY],
+            'LastTime': last_time,
         }
 
     def list_certificates(queryValue):
@@ -158,7 +163,7 @@ script:
     def http_list_certificates(queryValue):
         query_url = BASE_URL + '/v2pssl/query/' + queryValue
 
-        return http_request('GET', query_url, 'Bad input. Expected an IP address or IP CIDR.')
+        return http_request('GET', query_url)
 
     def create_ip_context(ip, ipData):
         certificates = []
@@ -200,7 +205,7 @@ script:
     def http_list_certificate_seen_ips(sha1):
         query_url = BASE_URL + '/v2pssl/cquery/' + sha1
 
-        return http_request('GET', query_url, 'Bad input. Expected SHA-1.')
+        return http_request('GET', query_url)
 
     def create_certificate_seen_ips_context(sha1, data, limit):
         return {
@@ -231,7 +236,7 @@ script:
     def http_get_certificate_details(sha1):
         query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
 
-        return http_request('GET', query_url, 'Bad input. Expected SHA-1.')
+        return http_request('GET', query_url)
 
     def create_certificate_details(sha1, data):
         info = data['info']
@@ -243,6 +248,7 @@ script:
         usage = extension.get('keyUsage', usage)
         usage = extension.get('extendedKeyUsage', usage)
         distribution = extension.get('crlDistributionPoints', distribution)
+        times_seen = data.get('icsi', {}).get('times_seen')
 
         return {
             'SHA1': sha1,
@@ -253,7 +259,7 @@ script:
             'Subject': info['subject'],
             'Key': info['key'],
             'Pem': data['pem'],
-            'Seen': data.get('icsi', {}).get('times_seen'),
+            'Seen': times_seen,
         }
 
     ''' EXECUTION CODE '''
@@ -376,5 +382,6 @@ script:
       type: number
     description: Get the raw certificate and related information.
   runonce: false
+releaseNotes: "-"
 tests:
   - CirclIntegrationTest
