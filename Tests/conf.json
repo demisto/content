@@ -36,7 +36,8 @@
             "integrations": [
                 "Lastline",
                 "WildFire",
-                "SNDBOX"
+                "SNDBOX",
+                "VxStream"
             ],
             "playbookID" : "Detonate File - Generic Test",
             "timeout" : 2400,
@@ -51,6 +52,11 @@
             "playbookID": "Detonate File - SNDBOX - Test",
             "timeout": 2400,
             "nightly": true
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "timeout": 2400
         },
         {
             "playbookID": "WordTokenizeTest"

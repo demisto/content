@@ -18,14 +18,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
-      - "10"
-      - "9"
-      - "11"
-      - "13"
-      - "14"
-      - "15"
-      - "16"
+        - "8"
+        - "10"
+        - "9"
+        - "11"
+        - "13"
+        - "14"
+        - "15"
+        - "16"
+        - "17"
     separatecontext: false
     view: |-
       {
@@ -35,6 +36,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
@@ -56,6 +58,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: f6627718-5952-4240-8fba-104c1350e79b
@@ -74,7 +77,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -101,6 +104,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: c04567fa-641d-4b51-8c94-561516554b3d
@@ -134,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -161,6 +165,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
@@ -178,7 +183,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -208,6 +213,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: f1c56438-d1b6-4848-8608-c6292f3905b9
@@ -228,7 +234,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       EnvironmentID:
         simple: "100"
@@ -252,6 +258,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
@@ -270,7 +277,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -292,6 +299,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: d8093197-7aa9-4b18-8774-563225e8c72b
@@ -310,7 +318,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -332,6 +340,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
     taskid: 0e879eba-0377-44bf-81c4-83468555fec4
@@ -340,14 +349,14 @@ tasks:
       id: 0e879eba-0377-44bf-81c4-83468555fec4
       version: -1
       name: Detonate File - Cuckoo
+      description: Detonates a file using Cuckoo sandbox
       playbookName: Detonate File - Cuckoo
       type: playbook
-      description: "Detonates a file using Cuckoo sandbox"
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         simple: ${inputs.File}
@@ -364,6 +373,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
     taskid: e69051d8-12bd-440c-85de-3f3c713d1556
@@ -372,14 +382,14 @@ tasks:
       id: e69051d8-12bd-440c-85de-3f3c713d1556
       version: -1
       name: Detonate File - SNDBOX
+      description: Detonates a file using SNDBOX
       playbookName: Detonate File - SNDBOX
-      description: "Detonates a file using SNDBOX"
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       File:
         complex:
@@ -401,13 +411,40 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+    type: playbook
+    task:
+      id: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+      version: -1
+      name: Detonate File - HybridAnalysis
+      description: Detonates a file using HybridAnalysis
+      playbookName: Detonate File - HybridAnalysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3510,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 3390,
+        "width": 3840,
         "x": 50,
         "y": 50
       }
@@ -640,5 +677,16 @@ outputs:
 - contextPath: SNDBOX.Analysis
   description: SNDBOX analysis
   type: unknown
-tests:
-  - Detonate File - Generic Test
+- contextPath: HybridAnalysis.Submit.State
+  description: The state of the process
+  type: string
+- contextPath: HybridAnalysis.Submit.SHA256
+  description: The submission SHA256
+  type: string
+- contextPath: HybridAnalysis.Submit.JobID
+  description: The JobID of the submission
+  type: string
+- contextPath: HybridAnalysis.Submit.EnvironmentID
+  description: The environmentID of the submission
+  type: string
+releaseNotes: "Added HybridAnalysis detonate file playbook"

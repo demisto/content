@@ -203,24 +203,19 @@ script:
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
 
-        var response = body;
-        var resMessage = '';
-        if (response.sha256) {
-            resMessage = resMessage + '\nsha256 - ' + response.sha256;
-        }
-        if (response['job_id']) {
-            resMessage = resMessage + '\nJob ID - ' + response['job_id'];
-        }
-        if (response['environment_id']) {
-            resMessage = resMessage + '\nEnvironment ID - ' + response['environment_id'];
-        }
-
-        return resMessage;
+        return body;
     }
 
-    function submitFileMsg(hash) {
-        var resMessage = "File submitted successfully" + hash;
-        return resMessage;
+    function submitFileMsg(response) {
+        var result = {
+            'JobID':  response.job_id,
+            'SHA256': response.sha256,
+            'EnvironmentID': response.environment_id
+        };
+        var context = {
+            'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': result
+        };
+        return createTableEntry('Submited file information:', result, result, context);
     }
 
     function searchQuery(query) {
@@ -277,7 +272,49 @@ script:
 
         return createTableEntry('Search results:', result, table, context);
     }
+    //Return the state of the submission
+    function reportState(){
 
+        var jobID = args.jobID;
+        var sha256 = args.sha256;
+        var environmentID = args.environmentID;
+
+        var hybridAnalysisID = '';
+
+        if (jobID) {
+            hybridAnalysisID = jobID;
+        } else if (sha256 && environmentID) {
+            hybridAnalysisID = '{0}:{1}'.format(sha256, environmentID);
+        } else {
+            throw 'Job ID or SHA-256 and environment ID must be provided.'
+        }
+
+        var commandURL = '/api/v2/report/{0}/state'.format(hybridAnalysisID);
+
+        var response = sendRequest('GET', commandURL);
+
+        var state = response.state
+
+        var output = 'Submission state: ' + state;
+
+        var context = {
+            'HybridAnalysis.Submit': {
+                State: state,
+                SHA256: sha256,
+                JobID: jobID,
+                EnvironmentID: environmentID
+            }
+        };
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: response,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: output,
+            EntryContext: context
+        };
+    }
     function detonateFile(entryId, delay, timeout) {
         var environmentId;
         if (args.environmentID) {
@@ -297,7 +334,7 @@ script:
             }
         }
         var file = submitFile(entryId, environmentId.toString());
-        var hash = file.substring(10,75);
+        var hash = file.sha256;
 
         delayTime = parseInt(delay);
         timeOut = parseInt(timeout);
@@ -328,12 +365,14 @@ script:
             var res = scan(args.file);
             return scanToEntry(res);
         case 'hybrid-analysis-submit-sample':
-            var hash = submitFile(args.entryId, args.environmentID);
-            return submitFileMsg(hash);
+            var response = submitFile(args.entryId, args.environmentID);
+            return submitFileMsg(response);
         case 'hybrid-analysis-search':
             return searchQuery(args.query);
         case 'hybrid-analysis-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
+        case 'hybrid-analysis-get-report-status':
+            return reportState();
     }
 
   type: javascript
@@ -390,6 +429,13 @@ script:
     - name: environmentID
       required: true
       description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    outputs:
+      - contextPath: HybridAnalysis.Submit.JobID
+        description: JobID of the submission
+      - contextPath: HybridAnalysis.Submit.SHA256
+        description: 'SHA of the submission '
+      - contextPath: HybridAnalysis.Submit.EnvironmentID
+        description: 'EnvironmentID of the submission '
     description: Submit a file from investigation to analysis server  (NOTE - minimum
       required authorization is `default`)
   - name: hybrid-analysis-search
@@ -481,4 +527,17 @@ script:
       description: Total wait time (in seconds)
       defaultValue: "60"
     description: Detonate file through Hybrid Analysis
+  - name: hybrid-analysis-get-report-status
+    arguments: []
+    outputs:
+    - contextPath: HybridAnalysis.Submit.State
+      description: The state of the process
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: The submission SHA256
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: The JobID of the submission
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: The environmentID of the submission
+    description: Get the state of the file submission
   runonce: false
+releaseNotes: "Added command hybrid-analysis-get-report-status"
