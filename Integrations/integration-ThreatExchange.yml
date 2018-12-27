@@ -48,7 +48,7 @@ script:
     }
 
     var defaultLimit = 20;
-    // add just comment
+    
     var doReq = function(method, path, parameters) {
         if (!parameters) {
             parameters = {};
