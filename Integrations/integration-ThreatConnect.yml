@@ -77,7 +77,7 @@ script:
         return tc
 
 
-    def create_context(indicators, rating_threshold=3, confidence_threshold=50, include_dbot_score=False):
+    def create_context(indicators, include_dbot_score=False):
         context = {
             'DBotScore' : [],
             outputPaths['ip'] : [],
@@ -119,7 +119,7 @@ script:
                 # returned in general indicator request - REST API
                 rating = int(ind.get('threatAssessRating', 0))
 
-            if confidence >= confidence_threshold and rating >= rating_threshold:
+            if confidence >= demisto.params()['rating'] and rating >= demisto.params()['confidence']:
                 dbotScore = 3
                 desc = ''
                 if hasattr(ind, 'description'):
@@ -233,7 +233,7 @@ script:
     @logger
     def ip(ip_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
 
         return indicators, ec
 
@@ -262,7 +262,7 @@ script:
     @logger
     def url(url_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
 
         return indicators, ec
 
@@ -288,7 +288,7 @@ script:
     @logger
     def _file(url_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
 
         return indicators, ec
 
@@ -314,7 +314,7 @@ script:
     @logger
     def domain(domain_addr, owners, rating_threshold, confidence_threshold):
         indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
-        ec, indicators = create_context(indicators, rating_threshold, confidence_threshold, include_dbot_score=True)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
 
         return indicators, ec
 
@@ -467,7 +467,7 @@ script:
     @logger
     def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold):
         raw_indicators = get_indicators(indicator, owners=owners, rating_threshold=rating_threshold, confidence_threshold=confidence_threshold)
-        ec, indicators = create_context(raw_indicators, rating_threshold, confidence_threshold)
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
 
         return ec, indicators, raw_indicators
 
@@ -478,7 +478,7 @@ script:
         owner = args.get('owner')
         response = tc_get_indicators_by_tag(tag, owner)
         raw_indicators = response['data']['indicator']
-        ec, indicators = create_context(raw_indicators)
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -634,7 +634,7 @@ script:
             owners = owners.split(",")
 
         raw_indicators = tc_get_incident_associate_indicators(incident_id, owners)
-        ec, indicators = create_context(raw_indicators)
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -1691,18 +1691,6 @@ script:
     - contextPath: TC.Indicator.File.SHA256
       description: Indicator's sha256. Relevant for files only
       type: string
-    - contextPath: DBotScore.Indicator
-      description: Indicator's value
-      type: string
-    - contextPath: DBotScore.Type
-      description: Indicator's Type
-      type: string
-    - contextPath: DBotScore.Score
-      description: Indicator's actual score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
     - contextPath: IP.Address
       description: IP Indicator's address
       type: string
@@ -1868,18 +1856,6 @@ script:
       type: string
     - contextPath: TC.Indicator.File.SHA256
       description: Indicator's sha256. Relevant for files only
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: Indicator's value
-      type: string
-    - contextPath: DBotScore.Type
-      description: Indicator's Type
-      type: string
-    - contextPath: DBotScore.Score
-      description: Indicator's actual score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
       type: string
     - contextPath: IP.Address
       description: IP Indicator's address
@@ -2144,18 +2120,6 @@ script:
     - contextPath: TC.Indicator.File.SHA256
       description: Indicator's sha256. Relevant for files only
       type: string
-    - contextPath: DBotScore.Indicator
-      description: Indicator's value
-      type: string
-    - contextPath: DBotScore.Type
-      description: Indicator's Type
-      type: string
-    - contextPath: DBotScore.Score
-      description: Indicator's actual score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
     - contextPath: IP.Address
       description: IP Indicator's address
       type: string
@@ -2246,18 +2210,6 @@ script:
       type: string
     - contextPath: TC.Indicator.File.SHA256
       description: Indicator's sha256. Relevant for files only
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: Indicator's value
-      type: string
-    - contextPath: DBotScore.Type
-      description: Indicator's Type
-      type: string
-    - contextPath: DBotScore.Score
-      description: Indicator's actual score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
       type: string
     - contextPath: IP.Address
       description: IP Indicator's address
