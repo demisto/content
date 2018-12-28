@@ -82,7 +82,7 @@ script:
         if type(dtobj) is datetime.datetime:
             return client.service.incidentList(savedReportId=SAVED_REPORT_ID, incidentCreationDateLaterThan=dtobj)
         else:
-            raise ValueError('excpected datetime object')
+            return_error('excpected datetime object')
 
 
 
@@ -133,7 +133,11 @@ script:
     if demisto.command() == 'fetch-incidents':
         fetchincidents()
     elif demisto.command() =='test-module':
-        demisto.results("ok")
+        try:
+            inc_list = get_incident_id(datetime.datetime.now())
+            demisto.results("ok")
+        except:
+            return_error("Invalid instance details")
     elif demisto.command() == 'dlp-incedent-details':
         inc_details = incidentDetail( demisto.args()['incidentId'])
         res = helpers.serialize_object(inc_details[0])
