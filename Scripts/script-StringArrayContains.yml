@@ -33,7 +33,9 @@ comment: |
 enabled: true
 args:
 - name: left
+  description: ""
 - name: right
+  description: ""
 scripttarget: 0
 runonce: false
 releaseNotes: ''
