@@ -117,33 +117,37 @@ script:
         timestamp_in_unix_ms_plus_x_days = date_to_timestamp(date_in_iso_plus_x_days)
         return timestamp_in_unix_ms_plus_x_days
 
+    def update_params_if_end_date_given(params, time_delta_in_days_int):
+        date_to_in_unix_timestamp = params.get('foundDateTo')
+        new_date_from_in_unix_timestamp = return_timestamp_plus_x_days(date_to_in_unix_timestamp, -1*time_delta_in_days_int)
+        params['foundDateFrom'] = new_date_from_in_unix_timestamp
+        return params
+
+    def update_params_with_end_and_start_date(oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp):
+        params['foundDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['foundDateTo'] = now_date_in_unix_timestamp
+        params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['sourceDateTo'] = now_date_in_unix_timestamp
+        return params
+
+    def update_params_if_only_delta_given(params, time_delta_in_days_int):
+        now_date_in_iso = datetime.utcnow().isoformat()
+        now_date_in_iso_without_ms = remove_milliseconds_from_iso(now_date_in_iso)
+        now_date_in_unix_timestamp = date_to_timestamp(now_date_in_iso_without_ms)
+        oldest_day_to_search_in_unix_timestamp = return_timestamp_plus_x_days(now_date_in_unix_timestamp, -1*time_delta_in_days_int)
+        params = update_params_with_end_and_start_date(oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp)
+        return params
 
 
     def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
         if 'foundDateFrom' in params and 'foundDateTo' in params:
-            demisto.log("ERROR in get_alerts()")
+            demisto.debug("ERROR in get_alerts()")
             return_error("Error: can't assign delta when assigned both found-date-to and found-date-from")
-
-        elif 'foundDateFrom' in params:
-            date_from_in_unix_timestamp = params.get('foundDateFrom')
-            new_date_to_in_unix_timestamp = return_timestamp_plus_x_days(date_from_in_unix_timestamp, time_delta_in_days_int)
-            params['foundDateTo'] = new_date_to_in_unix_timestamp
-
         elif 'foundDateTo' in params:
-            date_to_in_unix_timestamp = params.get('foundDateTo')
-            new_date_from_in_unix_timestamp = return_timestamp_plus_x_days(date_to_in_unix_timestamp, -1*time_delta_in_days_int)
-            params['foundDateFrom'] = new_date_from_in_unix_timestamp
-
+            params = update_params_if_end_date_given(params, time_delta_in_days_int)
         else:
-            now_date_in_iso = datetime.utcnow().isoformat()
-            now_date_in_iso_without_ms = remove_milliseconds_from_iso(now_date_in_iso)
-            now_date_in_unix_timestamp = date_to_timestamp(now_date_in_iso_without_ms)
-            oldest_day_to_search_in_unix_timestamp = return_timestamp_plus_x_days(now_date_in_unix_timestamp, -1*time_delta_in_days_int)
-            params['foundDateFrom'] = oldest_day_to_search_in_unix_timestamp
-            params['foundDateTo'] = now_date_in_unix_timestamp
-            params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
-            params['sourceDateTo'] = now_date_in_unix_timestamp
-        del params['time-delta-in-days']
+            params = update_params_if_only_delta_given(params, time_delta_in_days_int)
+        del params['time-delta']
         return params
 
 
@@ -172,8 +176,8 @@ script:
         for k in demisto.args():
             if demisto.getArg(k):
                 params[argsConversion.get(k) or k] = demisto.getArg(k)
-        if demisto.getArg('time-delta-in-days'):
-            time_delta_in_days = demisto.getArg('time-delta-in-days')
+        if demisto.getArg('time-delta'):
+            time_delta_in_days = demisto.getArg('time-delta')
             params = update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
         return params
 
@@ -1436,7 +1440,7 @@ script:
       description: Show flagged/unflagged alerts
     - name: is-closed
       description: Show closed/open alerts
-    - name: time-delta-in-days
+    - name: time-delta
       description: Show alerts within specified time delta, given in days
     outputs:
     - contextPath: IntSights.Alerts.ID
