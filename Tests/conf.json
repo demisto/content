@@ -877,6 +877,10 @@
                 "VirusTotal - Private API",
                 "Demisto REST API"
             ]
+        },
+        {
+            "integrations": "duo",
+            "playbookID": "duo_test"
         }
     ],
     "skipped_tests": {
