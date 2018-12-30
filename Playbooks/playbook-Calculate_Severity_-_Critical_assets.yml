@@ -478,3 +478,5 @@ outputs:
   description: The output severity
   type: string
 releaseNotes: "Replaced 'StringContains' with a new filter"
+tests:
+  - calculate_severity_-_critical_assets_-_test
