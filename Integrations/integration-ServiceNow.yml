@@ -252,7 +252,7 @@ script:
 
     def create_ticket_context(data, ticket_type):
         context =  {
-            'ID': data["sys_id"],
+            'ID': data.get('sys_id'),
             'Summary': data.get('short_description'),
             'Number': data.get('number'),
             'CreatedOn': data.get('sys_created_on'),
@@ -575,6 +575,9 @@ script:
 
         res = update(ticket_type, ticket_id ,fields, custom_fields, template)
 
+        if not res or 'result' not in res:
+            return_error('Unable to retrieve response')
+
         hr = get_ticket_human_readable(res['result'], ticket_type)
         context = get_ticket_context(res['result'], ticket_type)
 
@@ -642,6 +645,9 @@ script:
         fields = get_ticket_fields(template, ticket_type)
 
         res = create(ticket_type, fields, custom_fields, template)
+
+        if not res or 'result' not in res:
+            return_error('Unable to retrieve response')
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
         context = get_ticket_context(res['result'], ticket_type)
@@ -750,6 +756,9 @@ script:
 
         res = add_link(ticket_id, ticket_type, key, link)
 
+        if not res or 'result' not in res:
+            return_error('Unable to retrieve response')
+
         hr = get_ticket_human_readable(res['result'], ticket_type)
         entry = {
             'Type': entryTypes['note'],
@@ -776,6 +785,9 @@ script:
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
         res = add_comment(ticket_id, ticket_type, key, text)
+
+        if not res or 'result' not in res:
+            return_error('Unable to retrieve response')
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
         entry = {
@@ -902,19 +914,22 @@ script:
 
         res = upload_file(ticket_id, file_id, file_name, ticket_type)
 
+        if not res or 'result' not in res:
+            return_error('Unable to retrieve response')
+
         hr = {
-            'Filename': res['result']['file_name'],
-            'Download link': res['result']['download_link'],
-            'System ID': res['result']['sys_id']
+            'Filename': res['result'].get('file_name'),
+            'Download link': res['result'].get('download_link'),
+            'System ID': res['result'].get('sys_id')
         }
 
         context = {
             'ID': ticket_id,
             'File': {}
         }
-        context['File']['Filename'] = res['result']['file_name']
-        context['File']['Link'] = res['result']['download_link']
-        context['File']['SystemID'] = res['result']['sys_id']
+        context['File']['Filename'] = res['result'].get('file_name')
+        context['File']['Link'] = res['result'].get('download_link')
+        context['File']['SystemID'] = res['result'].get('sys_id')
 
         entry = {
             'Type': entryTypes['note'],
@@ -1023,17 +1038,17 @@ script:
         headers = ['ID','AssetTag','Name','DisplayName','SupportGroup','OperatingSystem','Company','AssignedTo','State','Cost','Comments']
 
         mapped_computers = [{
-            'ID': computer['sys_id'],
-            'AssetTag': computer['asset_tag'],
-            'Name': computer['name'],
-            'DisplayName': '{} - {}'.format(computer['asset_tag'], computer['name']),
-            'SupportGroup': computer['support_group'],
-            'OperatingSystem': computer['os'],
-            'Company': computer.get('company', {}).get('value') if isinstance(computer['company'], dict) else computer['company'],
-            'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer['assigned_to'], dict) else computer['assigned_to'],
-            'State': COMPUTER_STATUS.get(computer['install_status'], computer['install_status']),
-            'Cost': '{} {}'.format(computer['cost'], computer['cost_cc']),
-            'Comments': computer['comments']
+            'ID': computer.get('sys_id'),
+            'AssetTag': computer.get('asset_tag'),
+            'Name': computer.get('name'),
+            'DisplayName': '{} - {}'.format(computer.get('asset_tag', ''), computer.get('name', '')),
+            'SupportGroup': computer.get('support_group'),
+            'OperatingSystem': computer.get('os'),
+            'Company': computer.get('company', {}).get('value') if isinstance(computer.get('company'), dict) else computer.get('company'),
+            'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer.get('assigned_to'), dict) else computer.get('assigned_to'),
+            'State': COMPUTER_STATUS.get(computer.get('install_status', ''), computer.get('install_status')),
+            'Cost': '{} {}'.format(computer.get('cost', ''), computer.get('cost_cc', '')).rstrip(),
+            'Comments': computer.get('comments')
         } for computer in computers]
 
         entry = {
@@ -1078,12 +1093,12 @@ script:
         headers = ['ID','Description','Name','Active','Manager','Updated']
 
         mapped_groups = [{
-            'ID': group['sys_id'],
-            'Description': group['description'],
-            'Name': group['name'],
-            'Active': group['active'],
-            'Manager': group.get('manager', {}).get('value') if isinstance(group['manager'], dict) else group['manager'],
-            'Updated': group['sys_updated_on'],
+            'ID': group.get('sys_id'),
+            'Description': group.get('description'),
+            'Name': group.get('name'),
+            'Active': group.get('active'),
+            'Manager': group.get('manager', {}).get('value') if isinstance(group.get('manager'), dict) else group.get('manager'),
+            'Updated': group.get('sys_updated_on'),
         } for group in groups]
 
         entry = {
@@ -1128,12 +1143,12 @@ script:
         headers = ['ID','Name','UserName','Email','Created','Updated']
 
         mapped_users = [{
-            'ID': user['sys_id'],
-            'Name': '{} {}'.format(user['first_name'], user['last_name']),
-            'UserName': user['user_name'],
-            'Email': user['email'],
-            'Created': user['sys_created_on'],
-            'Updated': user['sys_updated_on'],
+            'ID': user.get('sys_id'),
+            'Name': '{} {}'.format(user.get('first_name', ''), user.get('last_name', '')).rstrip(),
+            'UserName': user.get('user_name'),
+            'Email': user.get('email'),
+            'Created': user.get('sys_created_on'),
+            'Updated': user.get('sys_updated_on'),
         } for user in users]
 
         entry = {
@@ -1242,9 +1257,9 @@ script:
         headers = ['ID', 'Name', 'SystemName']
 
         mapped_tables = [{
-            'ID': table['sys_id'],
-            'Name': table['name'],
-            'SystemName': table['sys_name']
+            'ID': table.get('sys_id'),
+            'Name': table.get('name'),
+            'SystemName': table.get('sys_name')
         } for table in tables]
 
         entry = {
