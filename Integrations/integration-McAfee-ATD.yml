@@ -1231,6 +1231,5 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Handle error when trying to get a report for unanalyzed submission. detonate-url, detonate-file fix"
 tests:
 - Test Playbook McAfee ATD
