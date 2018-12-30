@@ -880,7 +880,7 @@
         },
         {
             "integrations": "duo",
-            "playbookID": "duo_test"
+            "playbookID": "DUO Test Playbook"
         }
     ],
     "skipped_tests": {
