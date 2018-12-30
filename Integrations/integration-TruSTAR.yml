@@ -33,22 +33,22 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: File Threshold (LOW, MEDIUM, HIGH)
+- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the file malicious.
   name: file_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: URL Threshold (LOW, MEDIUM, HIGH)
+- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the URL malicious.
   name: url_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: IP Threshold (LOW, MEDIUM, HIGH)
+- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the IP malicious.
   name: ip_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: Domain Threshold (LOW, MEDIUM, HIGH)
+- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the domain malicious.
   name: domain_threshold
   defaultvalue: MEDIUM
   type: 0
@@ -232,7 +232,7 @@ script:
         return {
             outputPaths['dbotscore']: dbot_ec,
             outputPaths['file']: file_ec,
-            'TruSTAR.File': trustar_ec
+            'TruSTAR.File(val.Value === obj.Value)': trustar_ec
         }
 
     def create_ip_ec(indicators, ip, threshold):
@@ -274,7 +274,7 @@ script:
         return {
             outputPaths['dbotscore']: dbot_ec,
             outputPaths['ip']: ip_ec,
-            'TruSTAR.IP': trustar_ec
+            'TruSTAR.IP(val.Value === obj.Value)': trustar_ec
         }
 
     def create_url_ec(indicators, url, threshold):
@@ -316,7 +316,7 @@ script:
         return {
             outputPaths['dbotscore']: dbot_ec,
             outputPaths['url']: url_ec,
-            'TruSTAR.URL': trustar_ec
+            'TruSTAR.URL(val.Value === obj.Value)': trustar_ec
         }
 
     def create_domain_ec(indicators, url, threshold):
@@ -358,7 +358,7 @@ script:
         return {
             outputPaths['dbotscore']: dbot_ec,
             outputPaths['domain']: domain_ec,
-            'TruSTAR.Domain': trustar_ec
+            'TruSTAR.Domain(val.Value === obj.Value)': trustar_ec
         }
 
     ''' FUNCTIONS '''

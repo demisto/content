@@ -24,6 +24,7 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 243bc1c2-fd3f-4c07-884a-993d5b9d5b56
@@ -53,6 +54,7 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 43e16ce6-3a2b-49ad-83aa-d61c9fc16f6d
@@ -87,6 +89,7 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: 2dbd6137-845b-47d1-8792-bf6fd9a50cb6
@@ -115,6 +118,7 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: 585ff705-62dd-4f42-8c10-ecc4f161a84d
@@ -145,6 +149,7 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "7":
     id: "7"
     taskid: 906ed14d-6893-4877-8fe6-3245fc3333cf
@@ -177,6 +182,7 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "8":
     id: "8"
     taskid: 8650a974-09e1-4501-858c-76a58526493d
@@ -193,10 +199,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2470
         }
       }
-
+    note: false
   "9":
     id: "9"
     taskid: 7cbb11b0-44a7-447e-8f10-71a84affe068
@@ -212,7 +218,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "10"
+      - "13"
     scriptarguments:
       threshold: {}
       url:
@@ -225,7 +231,7 @@ tasks:
           "y": 1070
         }
       }
-
+    note: false
   "10":
     id: "10"
     taskid: 899bd499-98c1-4e53-8c9c-ccd92102cbfa
@@ -241,7 +247,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "11"
+      - "14"
     scriptarguments:
       domain:
         simple: www.google.com
@@ -251,9 +257,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: 3f31994d-a8f4-4f98-89e4-7939defcbbd9
@@ -269,7 +276,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "12"
+      - "15"
     scriptarguments:
       file:
         simple: 84c82835a5d21bbcf75a61706d8ab549
@@ -279,9 +286,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: 4bd45ed1-60e4-4b51-8896-c48b076dc928
@@ -297,7 +305,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       ip:
         simple: 8.8.8.8
@@ -307,15 +315,152 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 790cc70a-620b-4871-8281-0ad6ee766222
+    type: condition
+    task:
+      id: 790cc70a-620b-4871-8281-0ad6ee766222
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 5790cd03-828d-499e-87ee-cd3c365abcd5
+    type: condition
+    task:
+      id: 5790cd03-828d-499e-87ee-cd3c365abcd5
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1595
         }
       }
+    note: false
+  "15":
+    id: "15"
+    taskid: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+    type: condition
+    task:
+      id: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TruSTAR.File.Value
+            iscontext: true
+          right:
+            value:
+              simple: 84c82835a5d21bbcf75a61706d8ab549
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+    type: condition
+    task:
+      id: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50
