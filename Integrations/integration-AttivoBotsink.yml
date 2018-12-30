@@ -1,0 +1,934 @@
+commonfields:
+  id: Attivo Botsink
+  version: -1
+name: Attivo Botsink
+display: Attivo Botsink
+category: Deception
+image: data:image/png;base64,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
+description: Network-based Threat Deception for Post-Compromise Threat Detection.
+configuration:
+- display: Botsink name or address
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: BOTsink API credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not verify server SSL
+  name: insecure
+  defaultvalue: "False"
+  type: 8
+  required: false
+- display: Minimum severity when fetching events; "Very High", "High", "Medium"
+  name: fetch_severity
+  defaultvalue: High
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Number of days to go back for the initial fetch. Use "0" to only retrieve new incidents.
+  name: first_fetch
+  defaultvalue: "0"
+  type: 0
+  required: true
+script:
+  script: |-
+    import requests
+    import base64
+    import socket
+    import json
+    import datetime
+    import time
+    import os
+
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    SERVER = demisto.params()['server']
+    API_USER = demisto.params()['credentials']['identifier']
+    API_PASS = demisto.params()['credentials']['password']
+    VERIFY_SSL =  not demisto.params()['insecure']
+
+    class BSAPI:
+        BS_DEFAULT_PORT = 8443
+        TIMEOUT = 20
+
+        def __init__(self, bs_host, bs_port=BS_DEFAULT_PORT, verify_ssl=False, timeout=TIMEOUT):
+            self.bs_host = bs_host
+            self.bs_port = bs_port
+            self.timeout = timeout
+            self.session_key = None
+            self.base_url = "https://{host}:{port}/api".format(host=self.bs_host,port=self.bs_port)
+            self.verify_ssl = verify_ssl
+
+        def do_request(self, url, data=None, headers=None, files=None, method=None, content_type='application/json', json_dump=True):
+            # Guess the method if not provided
+            if not method:
+                if data: method='post'
+                else: method='get'
+
+            headers = {}
+            if self.session_key: headers = {'sessionKey': self.session_key}
+            if content_type: headers['content-type']=content_type
+
+            url = self.base_url + url
+            # Convert data dictionary to a string
+            if data and json_dump: data = json.dumps(data)
+
+            request_func = getattr(requests, method)
+            r = None
+
+            try:
+                r = request_func(url,headers=headers,data=data,files=files,verify=self.verify_ssl)
+            except requests.exceptions.SSLError as e:
+                demisto.error("SSL verification failed")
+                demisto.results("SSL verification to {url} failed".format(url=url))
+            except requests.exceptions.ConnectionError as e:
+                demisto.error("Could not connect to: {server}".format(server=SERVER))
+                demisto.error("Exception: {}".format(e))
+                demisto.results("Could not connect to {server} ({exception})".format(server=SERVER, exception=e))
+            except Exception, e:
+                demisto.error("Generic Exception: {exception}".format(exception=e))
+                demisto.error("Type is: {type}".format(type=e.__class__.__name__))
+
+            if r is not None and r.content:
+               return r.json()
+            else:
+               return None
+
+        def login(self, bs_user, bs_pass):
+            url="/auth/login"
+            login_data = {'userName': base64.b64encode(bs_user), 'password':base64.b64encode(bs_pass)}
+
+            login_status = self.do_request(url,data=login_data)
+            if login_status and 'sessionKey' in login_status:
+                self.session_key = login_status['sessionKey']
+
+            return (login_status)
+
+        def logout(self):
+            url = "/auth/logout"
+            logout_status = self.do_request(url)
+            return (logout_status)
+
+        def deploy_decoys(self,target_ip,vlan=None,decoy_number=1):
+            url = "/autodeploy/config"
+            if vlan:
+               data = {"config": [{"ipAddress":target_ip,"vlanID": vlan, "numberOfIPsToAcquire": decoy_number}]}
+            else:
+               data = {"config": [{"ipAddress":target_ip,"numberOfIPsToAcquire": decoy_number}]}
+
+            deploy_status = self.do_request(url,data=data,content_type=None)
+            return (deploy_status)
+
+        def get_threatdirect_rules(self):
+            url="/nwinterfaces/get"
+            td_decoys = self.do_request(url)
+            return (td_decoys)
+
+        def get_bs_health(self):
+            url="/device/health"
+            health = self.do_request(url)
+            return health
+
+        def get_monitoring_rules(self):
+           url = "/interfaces/get"
+           monitoring_rules = self.do_request(url,data='{}',method='post',json_dump=None)
+           return (monitoring_rules)
+
+        def get_deceptive_objects(self,object_type,object_id):
+            if object_type == 'USERS':
+                if object_id == 'ALL':
+                    url="/obj_group_cfg/summary/user"
+                else:
+                    url="/obj_group_cfg/user/{object_id}".format(object_id=object_id)
+            else:
+                response="Unknown option: {object_type}".format(object_type=object_type)
+                return (response)
+
+            deceptive_objects = self.do_request(url)
+            return (deceptive_objects)
+
+        def get_playbooks(self):
+           url='/pb/getAll'
+           return self.do_request(url)
+
+        def run_playbook(self, playbook_id, attacker_ip):
+           'This simulates an internal playbook execution based on the attacker IP'
+           url='/pb/runplaybook'
+           data= {'attacker_ip': attacker_ip, 'playbook_id': playbook_id}
+           return self.do_request(url,data=data)
+
+        def get_events(self,severity_start=None, severity_end=None, timestamp_start=None, timestamp_end=None,
+                        offset=None, acknowledged='unacknowledged', attacker_ip=None, category=None,
+                        device=None, service=None, target_os=None, target_host=None, target_ip=None,
+                        target_vlan=None, keywords=None, description=None, comments=None):
+
+            url = "/eventsquery/alerts"
+
+            query_data = {
+                'severity_start' : severity_start,
+                'severity_end' : severity_end,
+                'timestampStart' : timestamp_start,
+                'timestampEnd' : timestamp_end,
+                'offset' : offset,
+                'acknowledged' : acknowledged,
+                'attackerIp' : [] if attacker_ip is None else attacker_ip,
+                'category' : [] if category is None else category,
+                'device' : [] if device is None else device,
+                'service' : [] if service is None else service,
+                'targetOs' : [] if target_os is None else target_os,
+                'targetHost' : [] if target_host is None else target_host,
+                'targetIP' : [] if target_ip is None else target_ip,
+                'targetVLAN' : [] if target_vlan is None else target_vlan,
+                'keywords' : [] if keywords is None else keywords,
+                'description' : [] if description is None else description,
+                'comments' : [] if comments is None else comments
+            }
+
+            event_data = self.do_request(url,data=query_data)
+            return (event_data)
+
+        def convert_severity_string(self, severity_string):
+            conversion = {
+                'VeryHigh': 14,
+                'Very High': 14,
+                'High': 11,
+                'Medium': 7,
+                'Low': 4,
+                'VeryLow': 3,
+                'Very Low': 3,
+                'SystemActivity': 0,
+                'System Activity': 0
+            }
+            if severity_string in conversion:
+                return conversion[severity_string]
+            else:
+                return None
+
+        def convert_to_demisto_severity(self,attivo_severity):
+            if attivo_severity >= 14:   # Very High
+                demisto_severity = 3
+            elif attivo_severity >= 11: # High
+                demisto_severity = 3
+            elif attivo_severity >= 7: # Medium
+                demisto_severity = 2
+            else:                      # Low
+                demisto_severity = 1
+
+            return demisto_severity
+
+
+    def valid_ip(host):
+        try:
+            socket.inet_aton(host)
+            return True
+        except:
+            return False
+
+    def date_to_epoch(date):
+        date_pattern1 = '\d{4}-\d{2}-\d{2}$'
+        date_format1 = '%Y-%m-%d'
+        date_pattern2 = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+        date_format2 = '%Y-%m-%dT%H:%M:%SZ'
+
+        epoch = None
+        if re.match(date_pattern2, date):
+            epoch = int(time.mktime(time.strptime(date, date_format2))) * 1000
+        elif re.match(date_pattern1, date):
+            epoch = int(time.mktime(time.strptime(date, date_format1))) * 1000
+
+        return epoch
+
+    ''' EXECUTION CODE '''
+    attivo_api = BSAPI(SERVER, verify_ssl=VERIFY_SSL)
+
+    if demisto.command() == 'attivo-get-events':
+        args = demisto.args()
+        login_status = attivo_api.login(API_USER, API_PASS)
+        attacker_ip = args['attacker_ip']
+        severity_string = args['severity']
+
+        start_date = args.get('alerts_start_date')
+        if start_date is not None:
+            timestampStart = date_to_epoch(start_date)
+        else:
+            one_day = 24 * 60 * 60
+            timestampStart = (int(time.time()) - one_day) * 1000
+
+        end_date = args.get('alerts_end_date')
+        if end_date is not None:
+            timestampEnd = date_to_epoch(end_date)
+        else:
+            timestampEnd = int(time.time()) * 1000
+
+        if timestampEnd is None:
+            demisto.info("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
+            return_error("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
+
+        if timestampStart is None:
+            demisto.info("\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
+            return_error("\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
+
+        severity_end = "15"
+        severity_start = attivo_api.convert_severity_string(severity_string)
+        attacker_ips = [attacker_ip]
+
+        demisto.info("Pulling events for {src_ip} and severity {severity} from {start_date} to {end_date}".format(src_ip=attacker_ip, severity=severity_start, start_date=timestampStart, end_date=timestampEnd))
+
+        events = attivo_api.get_events(severity_start=severity_start, severity_end=severity_end, timestamp_start=timestampStart, timestamp_end=timestampEnd, attacker_ip=attacker_ips)
+
+        attivo_api.logout()
+
+        brief_events = []
+        context = []
+        for event in events['eventdata']:
+            brief_events.append({
+                'Attack Name': event['attackName'],
+                'Severity' : event['details']['Severity'],
+                'Target IP': event['details']['Target IP'],
+                'Target OS': event['details']['Target OS'],
+                'Timestamp': event['details']['Timestamp'],
+            })
+            context.append({k.replace(' ', ''):v for k,v in event['details'].items()})
+
+        headers = ['Attack Name', 'Severity', 'Timestamp', 'Target IP', 'Target OS']
+        entry = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': events['eventdata'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found {} events:'.format(len(brief_events)), brief_events, headers=headers),
+            'EntryContext': {'Attivo.Events.Count': len(events['eventdata']),
+                             'Attivo.Events.List': context}
+        }
+
+        demisto.results(entry)
+
+    if demisto.command() == 'fetch-incidents':
+        login_status = attivo_api.login(API_USER, API_PASS)
+        date_pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
+        os.environ['TZ'] = 'UTC'
+
+        FETCH_SEVERITY = demisto.params()['fetch_severity']
+        FIRST_FETCH = int(demisto.params()['first_fetch'])
+
+        severity_start = attivo_api.convert_severity_string(FETCH_SEVERITY)
+        if not severity_start:
+            demisto.info("Attivo fetch-incidents: Unknown severity specified ('{}') using Medium".format(FETCH_SEVERITY))
+            severity_start = 7 # Medium
+        severity_end = 15 # Very High
+
+
+        # When run for the first time, get events from the specified number of days
+        one_day = 24 * 60 * 60
+        first_fetch_seconds = (int(time.time()) - (one_day * FIRST_FETCH)) * 1000
+        last_run_time = demisto.getLastRun().get('time', None)
+
+        if last_run_time is None or last_run_time == 0:
+            last_run_time = first_fetch_seconds
+
+        demisto.info("Attivo fetch-incidents: Last run time {}, severity {}:{}".format(last_run_time, FETCH_SEVERITY, severity_start))
+
+        new_last_run = 0
+        incidents = []
+
+        events = attivo_api.get_events(timestamp_start=last_run_time, timestamp_end='now',
+                                       severity_start=severity_start, severity_end=severity_end)
+        if 'error' in events:
+            demisto.error("fetch-incidents error: {}".format(events['error']))
+            sys.exit()
+
+        demisto.info("Total new Attivo incidents to add: {}".format(len(events['eventdata'])))
+
+        for event in events['eventdata']:
+            event_date = event['timeStamp']
+            event_time = int(time.mktime(time.strptime(event_date,date_pattern))) * 1000
+            new_last_run = max(new_last_run, event_time)
+            demisto_severity = attivo_api.convert_to_demisto_severity(event['alertLevel'])
+            event_type = event['details']['Attack Phase']
+            incidents.append({
+                'name': event['attackName'],
+                'occurred': event_date,
+                'details': event['attackDesc'],
+                'severity': demisto_severity,
+                'type': event_type,
+                'rawJSON': json.dumps(event)
+            })
+
+        if len(incidents) > 0:
+            demisto.info("Setting new last run value to {}".format(new_last_run))
+            demisto.setLastRun({'time': new_last_run})
+        else:
+            demisto.info("No new Attivo incidents to add")
+
+        logout_status = attivo_api.logout()
+        demisto.incidents(incidents)
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        login_status = attivo_api.login(API_USER, API_PASS)
+
+        if login_status and 'sessionKey' in login_status:
+            demisto.info("Attivo Login successful (session key = {})".format(login_status['sessionKey']))
+            logout_status = attivo_api.logout()
+            demisto.results('ok')
+            sys.exit(0)
+        else:
+            demisto.error("Login to {} failed".format(SERVER))
+            demisto.error("API Results: {}".format(login_status))
+            demisto.results("Login to {} failed\n{}".format(SERVER,login_status))
+
+    if demisto.command() == 'attivo-list-playbooks':
+        login_status = attivo_api.login(API_USER, API_PASS)
+        all_playbooks = attivo_api.get_playbooks()
+        brief_playbooks=[]
+        for playbook in all_playbooks['pb']:
+            brief_playbook = {
+                'ID': playbook['id'],
+                'Name': playbook['name']
+            }
+            demisto.info("INVESTIGATE {}".format(playbook['investigate']))
+            if len(playbook['investigate']) > 0:
+                investigate_names = []
+                for investigate in playbook['investigate']:
+                   investigate_names.append(investigate['name'])
+                brief_playbook['Investigate'] = ', '.join(investigate_names)
+            else:
+                brief_playbook['Investigate'] = []
+
+            if len(playbook['analyze']) > 0:
+                analyze_names = []
+                for analyze in playbook['analyze']:
+                   analyze_names.append(analyze['name'])
+                brief_playbook['Analyze'] = ', '.join(analyze_names)
+            else:
+                brief_playbook['Analyze'] = []
+
+            if len(playbook['manage']) > 0:
+                manage_names = []
+                for manage in playbook['manage']:
+                   manage_names.append(manage['name'])
+                brief_playbook['Manage'] = ', '.join(manage_names)
+            else:
+                brief_playbook['Manage'] = []
+
+            if len(playbook['isolate']) > 0:
+                isolate_names = []
+                for isolate in playbook['isolate']:
+                   isolate_names.append(isolate['name'])
+                brief_playbook['Isolate'] = ', '.join(isolate_names)
+            else:
+                brief_playbook['Isolate'] = []
+
+            brief_playbooks.append(brief_playbook)
+
+        headers = ['Name', 'ID', 'Investigate', 'Analyze', 'Manage', 'Isolate']
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': brief_playbooks,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': tableToMarkdown('Attivo playbooks', brief_playbooks, headers=headers),
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {}
+        }
+
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+    if demisto.command() == 'attivo-run-playbook':
+        playbook_name = demisto.args()['playbook_name']
+        attacker_ip = demisto.args()['attacker_ip']
+        playbook_id = None
+        playbook_status = None
+        login_status = attivo_api.login(API_USER, API_PASS)
+        all_playbooks = attivo_api.get_playbooks()
+        for playbook in all_playbooks['pb']:
+            if playbook['name'] == playbook_name:
+                playbook_id = playbook['id']
+                break
+
+        if not playbook_id:
+            demisto.error("ID not found for Attivo playbook named: {}".format(playbook_name))
+            status_message = "Failed: could not find playbook named '{}'".format(playbook_name)
+            status = False
+        else:
+            demisto.info("Running Attivo playbook named {} ({}) with attacker IP {}".format(playbook_name, playbook_id, attacker_ip))
+            playbook_status = attivo_api.run_playbook(playbook_id, attacker_ip)
+            demisto.info("Run playbook status = {}".format(playbook_status))
+
+            if playbook_status['status']:
+                status_text = playbook_status['status']
+                if status_text == 'submitted':
+                    status=True
+                    status_message = "Attivo playbook '{}' (ID={}) has been run with attacker IP {}".format(playbook_name, playbook_id,attacker_ip)
+                else:
+                    status=False
+                    status_message = "Attivo playbook has not been run.  Status = '{}'".format(status_text)
+            else:
+                status = False
+                status_message = "Attivo playbook has not been run.  Status = 'Unknown failure'"
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': playbook_status,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': status_message,
+            'ReadableContentsFormat': formats['text'],
+            'EntryContext': {'Attivo.Playbook.Status': status,
+                             'Attivo.Playbook.Message': status_message}
+            }
+
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+    if demisto.command() == 'attivo-deploy-decoy':
+        vulnerable_ip = demisto.args()['vulnerable_ip']
+        decoy_number = demisto.args()['decoy_number']
+        login_status = attivo_api.login(API_USER, API_PASS)
+        demisto.info("Deploying {} decoy(s) on the subnet of {}".format(decoy_number, vulnerable_ip))
+        deploy_status = {}
+        deploy_status = attivo_api.deploy_decoys(vulnerable_ip,decoy_number=decoy_number)
+        demisto.info("Deployment status = {}".format(deploy_status))
+
+        status = False
+        status_text = "Unknown failure"
+        if 'result' in deploy_status:
+            status_text = deploy_status['result'][0]['success']
+            if status_text == True:
+                status = True
+        elif 'success' in deploy_status:
+            status_text = deploy_status['success']
+            if status_text == True:
+                status = True
+        elif 'error' in deploy_status:
+            status_text = deploy_status['error']
+
+        if status:
+            status_message = "{} new Attivo decoy(s) deployed on the subnet with {}".format(decoy_number,vulnerable_ip)
+        else:
+            status_message = "No Attivo decoys have been deployed. {}".format(status_text)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': deploy_status,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': status_message,
+            'ReadableContentsFormat': formats['text'],
+            'EntryContext': {'Attivo.DeployDecoy.Status': status,
+                             'Attivo.DeployDecoy.Message': status_message}
+            }
+
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+    if demisto.command() == 'attivo-list-users':
+        demisto.info("Retrieving information about all deceptive users")
+        login_status = attivo_api.login(API_USER, API_PASS)
+
+        user_groups = attivo_api.get_deceptive_objects('USERS','ALL')
+        users = {}
+        for user_group in user_groups['objGroup']:
+            group_id = user_group['esid']
+            group_name = user_group['name']
+            users_in_group = attivo_api.get_deceptive_objects('USERS', group_id)
+            for user_object in users_in_group['objGroup']['objects']:
+                user = user_object['username']
+                if user in users:
+                    users[user].append(group_name)
+                else:
+                    users[user] = [group_name]
+
+        all_users = []
+        for user in sorted(users.keys(), key=lambda x: x.lower()):
+            user_entry = {'User': user, 'Groups': ", ".join(users[user])}
+            all_users.append(user_entry)
+
+        headers = ['User', 'Groups']
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': all_users,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': tableToMarkdown('Attivo deceptive users', all_users, headers=headers),
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {}
+        }
+
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+
+    if demisto.command() == 'attivo-check-user':
+        user = demisto.args()['user']
+        demisto.info("Check Attivo for user = {}".format(user))
+        login_status = attivo_api.login(API_USER, API_PASS)
+
+        is_deceptive = False
+        this_user_object= None
+
+        user_groups = attivo_api.get_deceptive_objects('USERS','ALL')
+        in_groups = []
+        for user_group in user_groups['objGroup']:
+            group_id = user_group['esid']
+            users_in_group = attivo_api.get_deceptive_objects('USERS', group_id)
+            for user_object in users_in_group['objGroup']['objects']:
+                this_user = user_object['username']
+                if this_user == user:
+                    this_user_object = user_object
+                    is_deceptive = True
+                    in_groups.append(user_group['name'])
+                    break
+
+        output_table = {'User': user, 'Is Deceptive': str(is_deceptive), 'Groups': ', '.join(in_groups)}
+
+        entry = {'Type': entryTypes['note'],
+                'Contents': this_user_object,
+                'ContentsFormat': formats['text'],
+                'HumanReadable': output_table,
+                'ReadableContentsFormat': formats['table'],
+                'EntryContext': {
+                                    'Attivo.User.Name': user,
+                                    'Attivo.User.IsDeceptive': is_deceptive,
+                                    'Attivo.User.Groups': in_groups
+                                 }
+        }
+
+        demisto.info("User {user}, deceptive = {is_deceptive}, group(s) = {groups}".format(user=user,is_deceptive=is_deceptive, groups=in_groups))
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+    if demisto.command() == 'attivo-list-hosts':
+        demisto.info('Retrieving information about all deceptive hosts')
+        login_status = attivo_api.login(API_USER, API_PASS)
+
+        all_hosts=[]
+
+        td_monitoring = attivo_api.get_threatdirect_rules()
+        bs_monitoring = attivo_api.get_monitoring_rules()
+
+        if td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
+            for rule in td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
+                if rule['type'] == 'onNet':
+                    td_type = "EP"
+                else:
+                    td_type = "VM"
+
+                host_names = []
+                if 'dnsName' in rule and rule['dnsName']:
+                    host_names.append(rule['dnsName'])
+
+                host_entry = {  'IP': rule['ip'],
+                                'MAC': rule['customized_mac'],
+                                'VLAN': rule['vlanID'],
+                                'DHCP': rule['dhcpip'],
+                                'TD Name': rule['threatDirectName'],
+                                'TD Type': td_type,
+                                'Host Name': ', '.join(host_names)
+                            }
+                all_hosts.append(host_entry)
+
+        if bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
+            for rule in bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
+                #demisto.info("BS RULE: {}".format(rule))
+                vlan = rule['vlanID']
+                if vlan == -1:
+                    vlan = None
+
+                host_names = []
+                if 'dnsName' in rule and rule['dnsName']:
+                    host_names.append(rule['dnsName'])
+                if 'interfaceName' in rule and rule['interfaceName']:
+                    host_names.append(rule['interfaceName'])
+
+                host_entry = {  'IP': rule['ipAddress'],
+                            'MAC': rule['externalMAC'],
+                            'DHCP': rule['isDHCPIP'],
+                            'VLAN': vlan,
+                            'User Defined': rule['userDefined'],
+                            'Host Name': ", ".join(host_names)
+                        }
+                if td_monitoring is not None:
+                    host_entry['TD Name'] = ''
+                    host_entry['TD Type'] = ''
+                all_hosts.append(host_entry)
+
+        headers = ['IP', 'Host Name', 'MAC', 'VLAN', 'DHCP']
+
+        if td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
+            headers.append('TD Name')
+            headers.append('TD Type')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': all_hosts,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': tableToMarkdown("Attivo deceptive hosts (network decoys): {}".format(len(all_hosts)), all_hosts, headers=headers),
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {}
+        }
+
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+
+
+    if demisto.command() == 'attivo-check-host':
+        host = demisto.args()['host']
+        demisto.info("Check Attivo for host = {}".format(host))
+        login_status = attivo_api.login(API_USER, API_PASS)
+
+        is_deceptive = False
+        this_rule = None
+        host_info={}
+
+        if valid_ip(host):
+            ip_address = host
+            host_name = None
+        else:
+            host_name = host
+            ip_address = None
+
+        # Check native Monitoring Rules
+        bs_monitoring = attivo_api.get_monitoring_rules()
+        if bs_monitoring is not None:
+            for rule in bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
+                this_ip = rule['ipAddress']
+                mac = rule['externalMAC']
+                dhcp = rule['isDHCPIP']
+                vlan = rule['vlanID']
+                if vlan == -1:
+                    vlan = None
+                user_defined = rule['userDefined']
+                this_host_name = []
+                if 'dnsName' in rule and rule['dnsName']:
+                    this_host_name.append(rule['dnsName'])
+                if 'interfaceName' in rule and rule['interfaceName']:
+                    this_host_name.append(rule['interfaceName'])
+
+                if (ip_address and this_ip == ip_address) or (host_name and this_host_name and host_name in this_host_name):
+                    this_rule = rule
+                    is_deceptive = True
+                    demisto.info("Attivo BOTSink IP/Host match ({ip}) ({name}) ({user_defined}) ({mac}) ({dhcp}) ({vlan})".format(ip=this_ip, name=this_host_name, user_defined=user_defined, mac=mac, dhcp=dhcp, vlan=vlan))
+                    host_info = {'ip': this_ip, 'name': this_host_name, 'user_defined': user_defined, 'mac': mac, 'dhcp': dhcp, 'vlan': vlan}
+                    break
+
+
+        if not is_deceptive:
+            # Check ThreatDirect Monitoring Rules
+            td_monitoring = attivo_api.get_threatdirect_rules()
+            if td_monitoring is not None:
+                for rule in td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
+                    this_ip = rule['ip']
+                    this_host_name = []
+                    mac = rule['customized_mac']
+                    vlan = rule['vlanID']
+                    dhcp = rule['dhcpip']
+                    td_name = rule['threatDirectName']
+                    if rule['type'] == 'onNet':
+                        td_type = "EP"
+                    else:
+                        td_type = "VM"
+                    if 'dnsName' in rule and rule['dnsName']:
+                        this_host_name.append(rule['dnsName'])
+
+                    if (ip_address and this_ip == ip_address) or (host_name and this_host_name and host_name in this_host_name):
+                        this_rule = rule
+                        is_deceptive = True
+                        demisto.info("Attivo ThreatDirect IP match ({ip}) ({name}) ({mac}) ({dhcp}) ({vlan}) ({td_name}) ({td_type})".format(ip=this_ip, name=this_host_name, mac=mac, dhcp=dhcp, vlan=vlan, td_name=td_name, td_type=td_type))
+                        host_info = {'ip': this_ip, 'name': this_host_name, 'mac': mac, 'dhcp': dhcp, 'vlan': vlan, 'td_name': td_name, 'td_type': td_type}
+                        break
+                    #elif host_name and this_host_name and host_name in this_host_name:
+                     #   this_rule = rule
+                     #   is_deceptive = True
+                     #   demisto.info("Attivo ThreatDirect host match ({ip}) ({name}) ({user_defined}) ({mac}) ({dhcp}) ({vlan})".format(this_ip, #this_host_name, user_defined, mac, dhcp, vlan))
+                    #break
+
+        if is_deceptive:
+            output_table = {'Is Deceptive': 'True',
+                'IP Address': this_ip,
+                'Host Names': ', '.join(this_host_name),
+                'MAC Address': mac,
+                'DHCP': str(dhcp),
+                'User Defined': str(user_defined),
+                'VLAN': vlan
+            }
+        else:
+            output_table = {'Is Deceptive': 'False',
+                'IP Address': ip_address,
+                'Host Names': host_name,
+                'MAC Address': '',
+                'DHCP': '',
+                'User Defined': '',
+                'VLAN': ''
+            }
+
+
+        entry = {'Type': entryTypes['note'],
+                'Contents': output_table,
+                'ContentsFormat': formats['table'],
+                'HumanReadable': output_table,
+                'ReadableContentsFormat': formats['table'],
+                'EntryContext': {'Attivo.Host.HostInfo': host_info,
+                                 'Attivo.Host.IsDeceptive': is_deceptive
+                                }
+                }
+
+        demisto.info("Deception status for {host} is {is_deceptive}".format(host=host,is_deceptive=is_deceptive))
+        demisto.results(entry)
+        logout_status = attivo_api.logout()
+  type: python
+  commands:
+  - name: attivo-check-user
+    arguments:
+    - name: user
+      required: true
+      description: User to validate
+    outputs:
+    - contextPath: Attivo.User.IsDeceptive
+      description: Is the user part of the Deception environment
+      type: boolean
+    - contextPath: Attivo.User.Groups
+      description: If the user is part of the Deception environment, the member is a member
+        of these groups
+    description: Checks whether a user is deceptive
+  - name: attivo-check-host
+    arguments:
+    - name: host
+      required: true
+      default: true
+      description: Hostname or IP to validate
+    outputs:
+    - contextPath: Attivo.Host.IsDeceptive
+      description: Is the IP or hostname part of the Decpetion environment
+      type: boolean
+    - contextPath: Attivo.Host.IPAddress
+      description: IP Address of the deceptive host
+    - contextPath: Attivo.Host.Name
+      description: Hostname of the deceptive host
+    - contextPath: Attivo.Host.MACAddress
+      description: MAC address of the deceptive host
+    - contextPath: Attivo.Host.VLAN
+      description: VLAN of the deceptive host
+    - contextPath: Attivo.Host.UserDefined
+      description: Was this host manually defined
+      type: boolean
+    - contextPath: Attivo.Host.DHCP
+      description: Does the host have a dynamic IP address
+      type: boolean
+    - contextPath: Attivo.Host.ThreatDirect.Name
+      description: Name of the ThreatDirect device projecting this deceptive host
+    - contextPath: Attivo.Host.ThreatDirect.Type
+      description: The type of ThreatDirect device projecting the deceptive host
+    description: Checks whether a host is deceptive
+  - name: attivo-run-playbook
+    arguments:
+    - name: playbook_name
+      required: true
+      description: The name of the prebuilt playbook
+    - name: attacker_ip
+      required: true
+      description: Malicious source IP
+    outputs:
+    - contextPath: Attivo.Playbook.Message
+      description: Complete status message
+      type: string
+    - contextPath: Attivo.Playbook.Status
+      description: Was the playbook successful
+      type: boolean
+    description: Runs a prebuilt playbook on the BOTsink appliance
+  - name: attivo-deploy-decoy
+    arguments:
+    - name: vulnerable_ip
+      required: true
+      description: Used to determine which subnet to deploy to
+    - name: decoy_number
+      default: true
+      description: The number of decoys to deploy, default is "1"
+      defaultValue: "1"
+    outputs:
+    - contextPath: Attivo.DeployDecoy.Status
+      description: Was the network decoy successfully deployed
+      type: boolean
+    - contextPath: Attivo.DeployDecoy.Message
+      description: Complete status message
+      type: string
+    description: 'Deploys a new network decoy '
+  - name: attivo-get-events
+    arguments:
+    - name: attacker_ip
+      required: true
+      description: Source IP address
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - VeryHigh
+      - High
+      - Medium
+      - Low
+      - VeryLow
+      - SystemActivity
+      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
+      defaultValue: Medium
+    - name: alerts_start_date
+      description: Date and time to start looking for events, e.g.,  2018-12-10
+        or 2018-12-10T13:59:05Z
+    - name: alerts_end_date
+      description: Date and time to stop looking for events, e.g.,  2018-12-10
+        or 2018-12-10T13:59:05Z
+    outputs:
+    - contextPath: Attivo.Events.Count
+      description: Total number of events retrieved
+      type: number
+    - contextPath: Attivo.Events.List.AttackName
+      description: Short name of the attack
+    - contextPath: Attivo.Events.List.Attack Phase
+      description: Kill chain phase of the attack
+      type: string
+    - contextPath: Attivo.Events.List.Server
+      description: Internal name of the target decoy
+      type: string
+    - contextPath: Attivo.Events.List.Target
+      description: Display name of the target decoy
+      type: string
+    - contextPath: Attivo.Events.List.TargetOS
+      description: Operating system of the target decoy
+      type: string
+    - contextPath: Attivo.Events.List.Attacker
+      description: Attacker IP address
+      type: string
+    - contextPath: Attivo.Events.List.Service
+      description: The attacked service
+      type: string
+    - contextPath: Attivo.Events.List.Timestamp
+      description: Time of the attack
+      type: string
+    - contextPath: Attivo.Events.List.TargetIP
+      description: IP address of the target decoy
+      type: string
+    - contextPath: Attivo.Events.List.Severity
+      description: Attivo severity of the attack
+      type: string
+    description: Retrieves events for a specified source IP
+  - name: attivo-list-playbooks
+    arguments: []
+    description: List information about playbooks configured on the Attivo device
+  - name: attivo-list-hosts
+    arguments: []
+    description: List information about network decoys
+  - name: attivo-list-users
+    arguments: []
+    description: List all deceptive users
+  isfetch: true
+  runonce: false
+tests:
+  - AttivoBotsinkTest

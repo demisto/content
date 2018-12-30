@@ -58,6 +58,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/dl:1.1
 fromversion: 4.1.0
-releaseNotes: "New script: wrapper for DBotPredictTextLabel to predict phishing label using machine learning pre-trained model in Demisto"
 tests:
   - CreatePhishingClassifierMLTest
