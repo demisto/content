@@ -1,4 +1,4 @@
-id: duo_test
+id: DUO Test Playbook
 version: -1
 name: DUO Test Playbook
 description: Tests that DUO pre-auth returns expected results for various user types
