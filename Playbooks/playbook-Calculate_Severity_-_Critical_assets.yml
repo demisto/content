@@ -250,7 +250,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               simple: inputs.CriticalEndpoints
@@ -293,7 +293,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               complex:
@@ -336,7 +336,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               simple: inputs.CriticalGroups
