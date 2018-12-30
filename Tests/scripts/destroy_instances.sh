@@ -10,6 +10,7 @@ else
 
    # collect log file to artifacts
    PUBLIC_IP=$(cat public_ip)
+   ssh -t ${USER}@${PUBLIC_IP} "sudo chmod -R 755 /var/log/demisto/server.log"
    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USER}@${PUBLIC_IP}:/var/log/demisto/server.log $1
 
    #destroy instance
