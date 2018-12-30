@@ -39,3 +39,5 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: ''
+tests:
+  - No test - Pending
