@@ -33,22 +33,22 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the file malicious.
+- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the file malicious
   name: file_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the URL malicious.
+- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the URL malicious
   name: url_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the IP malicious.
+- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the IP malicious
   name: ip_threshold
   defaultvalue: MEDIUM
   type: 0
   required: false
-- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the domain malicious.
+- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the domain malicious
   name: domain_threshold
   defaultvalue: MEDIUM
   type: 0
