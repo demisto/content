@@ -1,6 +1,6 @@
 commonfields:
-  id: d98081d1-ce81-46ca-8500-5dfc6d5852c4
-  version: 12
+  id: StringArrayContains
+  version: -1
 name: StringArrayContains
 script: |
   var str = args.left;
