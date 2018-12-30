@@ -313,8 +313,14 @@ def collect_changed_ids(intergration_ids, playbook_names, script_names, modified
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names)
 
-    script_names = script_names.union(updated_script_names)
-    playbook_names = playbook_names.union(updated_playbook_names)
+    for new_script in updated_script_names:
+        script_names.add(new_script)
+
+    for new_playbook in updated_playbook_names:
+        playbook_names.add(new_playbook)
+
+    affected_ids_string = '\n'.join(script_names) + '\n'.join(playbook_names) + '\n'.join(intergration_ids)
+    print('The following ids are affected due to the changes you made:\n{}\n\n'.format(affected_ids_string))
 
 
 def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names):
@@ -454,7 +460,7 @@ def create_test_file(is_nightly):
 
         tests_string = '\n'.join(tests)
         if tests_string:
-            print('Collected the following tests:\n{0}'.format(tests_string))
+            print('Collected the following tests:\n{0}\n\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
 
