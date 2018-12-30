@@ -117,6 +117,5 @@ timeout: 60µs
 runonce: true
 dockerimage: demisto/dl:1.1
 fromversion: 4.1.0
-releaseNotes: "New script: create a strong text machine learning classifier in Demisto"
 tests:
   - CreatePhishingClassifierMLTest
