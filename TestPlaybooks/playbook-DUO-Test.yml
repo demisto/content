@@ -1,0 +1,342 @@
+id: duo_test
+version: -1
+name: DUO Test Playbook
+description: Tests that DUO pre-auth returns expected results for various user types
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0ec6555c-e530-4e5f-8e17-3dc8295dcbf5
+    type: start
+    task:
+      id: 0ec6555c-e530-4e5f-8e17-3dc8295dcbf5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: ae4ad4d9-d323-42c8-82bb-12bd5ea3e070
+    type: regular
+    task:
+      id: ae4ad4d9-d323-42c8-82bb-12bd5ea3e070
+      version: -1
+      name: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 6fe0f9d3-f050-402e-8f67-bf95070cb309
+    type: regular
+    task:
+      id: 6fe0f9d3-f050-402e-8f67-bf95070cb309
+      version: -1
+      name: print context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 07bf20d5-abf9-431f-87d9-c72236f67eb4
+    type: regular
+    task:
+      id: 07bf20d5-abf9-431f-87d9-c72236f67eb4
+      version: -1
+      name: Preauth disabled user
+      script: '|||duo-preauth'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ipaddr: {}
+      userID: {}
+      username:
+        simple: test-user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: d339d691-c1c9-4d6a-8b83-98bab10dca9a
+    type: condition
+    task:
+      id: d339d691-c1c9-4d6a-8b83-98bab10dca9a
+      version: -1
+      name: Check Disabled User Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Duo.PreAuth.Response.Result
+            iscontext: true
+          right:
+            value:
+              simple: deny
+      - - operator: containsString
+          left:
+            value:
+              simple: Duo.PreAuth.Response.StatusMessage
+            iscontext: true
+          right:
+            value:
+              simple: disabled
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 546ed819-8c03-4f1f-819d-c9828b1ff38d
+    type: regular
+    task:
+      id: 546ed819-8c03-4f1f-819d-c9828b1ff38d
+      version: -1
+      name: Print Error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Duo result doesn't match expected result
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 1f82e7a9-4b4a-4746-8d47-b40653254d10
+    type: regular
+    task:
+      id: 1f82e7a9-4b4a-4746-8d47-b40653254d10
+      version: -1
+      name: 'Preauth active user '
+      script: '|||duo-preauth'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ipaddr: {}
+      userID: {}
+      username:
+        simple: active-user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 59dba592-6f2c-40a9-8557-533b60882ca5
+    type: condition
+    task:
+      id: 59dba592-6f2c-40a9-8557-533b60882ca5
+      version: -1
+      name: Check Active User Response
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${Duo.PreAuth.[1].Response.Result}
+      right:
+        simple: auth
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: a1b0afbe-a652-42ea-814d-e7649d314196
+    type: regular
+    task:
+      id: a1b0afbe-a652-42ea-814d-e7649d314196
+      version: -1
+      name: Preauth non existent user
+      script: '|||duo-preauth'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ipaddr: {}
+      userID: {}
+      username:
+        simple: no-user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 6d3a9b84-a90c-4490-8790-53d37deaeb71
+    type: condition
+    task:
+      id: 6d3a9b84-a90c-4490-8790-53d37deaeb71
+      version: -1
+      name: Check Non-Existent User Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: Duo
+                accessor: PreAuth.[2].Response.StatusMessage
+            iscontext: true
+          right:
+            value:
+              simple: disabled
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Duo
+                accessor: PreAuth.[2].Response.Result
+            iscontext: true
+          right:
+            value:
+              simple: deny
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 1100,
+        "x": 260,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
