@@ -7,7 +7,7 @@ script: |
   var data = resCmd[0].Contents;
   var cvss = (data.cvss) ? parseInt(data.cvss) : -1;
 
-  if (cvss === -1) {
+  if (cvss == -1) {
       return 0;
   } else if (cvss < 3) {
       return 1;
@@ -32,3 +32,4 @@ dependson:
   must:
   - cve-search
 timeout: 0s
+releaseNotes: "fix cveReputation script"
