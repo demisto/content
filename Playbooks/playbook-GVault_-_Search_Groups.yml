@@ -1,0 +1,506 @@
+id: Google-Vault-Search-Groups
+version: -1
+fromversion: 4.0.0
+name: Google Vault - Search Groups
+description: This is a playbook for performing Google Vault search in Groups and display the results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14cac14a-3745-46d2-8ef6-da411a06da52
+    type: start
+    task:
+      id: 14cac14a-3745-46d2-8ef6-da411a06da52
+      version: -1
+      name: ""
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 40d47276-5b8c-4a16-8bfc-986b89a39382
+    type: regular
+    task:
+      id: 40d47276-5b8c-4a16-8bfc-986b89a39382
+      version: -1
+      name: Create Group Export
+      description: Creates a Google Vault export in order to perform search actions
+        on emails.
+      script: '|||gvault-create-export-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dataScope:
+        simple: ${inputs.dataScope}
+      endTime:
+        complex:
+          root: inputs.endTime
+      exportMBOX:
+        simple: ${inputs.exportMBOX}
+      exportName:
+        complex:
+          root: inputs.exportName
+      exportPST:
+        simple: ${inputs.exportPST}
+      groups:
+        complex:
+          root: inputs.groups
+      matterID:
+        complex:
+          root: inputs.matterID
+      startTime:
+        complex:
+          root: inputs.startTime
+      terms:
+        complex:
+          root: inputs.terms
+      timeFrame:
+        complex:
+          root: inputs.timeFrame
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 2499c394-d9b8-4fc2-8e39-006e6ed21018
+    type: playbook
+    task:
+      id: 2499c394-d9b8-4fc2-8e39-006e6ed21018
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      Ids:
+        simple: ${GoogleVault.Matter.MatterID}#${GoogleVault.Matter.Export.[0].ExportID}
+      Interval:
+        complex:
+          root: inputs.pollInterval
+      PollingCommandArgName:
+        simple: queryIDS
+      PollingCommandName:
+        simple: gvault-export-status
+      Timeout:
+        complex:
+          root: inputs.pollTimeout
+      dt:
+        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID
+          + '#' + val.ExportID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 31d85c78-3d02-4ef9-8734-3d41200a8857
+    type: regular
+    task:
+      id: 31d85c78-3d02-4ef9-8734-3d41200a8857
+      version: -1
+      name: Get Groups results
+      description: Get the results of a given mail export
+      script: '|||gvault-get-groups-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      bucketName:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.BucketName
+      maxResult:
+        complex:
+          root: inputs.maxResultForDisplay
+      viewID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.ViewID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1120
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 9ed8fed0-adb4-4d5a-8de3-4390979be049
+    type: title
+    task:
+      id: 9ed8fed0-adb4-4d5a-8de3-4390979be049
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1760
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: aa748877-64f6-403b-8a28-5a48d7470abf
+    type: condition
+    task:
+      id: aa748877-64f6-403b-8a28-5a48d7470abf
+      version: -1
+      name: Check downloadFile
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.downloadFile
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 97311171-052d-4110-8cac-66da6235bd3b
+    type: regular
+    task:
+      id: 97311171-052d-4110-8cac-66da6235bd3b
+      version: -1
+      name: Get Export status to context
+      description: ''
+      script: '|||gvault-export-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      exportID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.ExportID
+      exportIDS:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.ExportID
+      matterId:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.MatterID
+      queryIDS: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: afc45103-f1da-466f-8950-4b4a4227378e
+    type: regular
+    task:
+      id: afc45103-f1da-466f-8950-4b4a4227378e
+      version: -1
+      name: Download Export file
+      description: ''
+      script: '|||gvault-download-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bucketName:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.BucketName
+      downloadID:
+        complex:
+          root: GoogleVault
+          accessor: Matter.Export.DownloadID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1550
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 0273f108-4e62-44b6-82aa-bb543619668d
+    type: condition
+    task:
+      id: 0273f108-4e62-44b6-82aa-bb543619668d
+      version: -1
+      name: Check if status COMPLETED
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleVault
+                accessor: Matter.Export.Status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 1fb0571b-bd21-423c-85ae-0f9ca53649f2
+    type: regular
+    task:
+      id: 1fb0571b-bd21-423c-85ae-0f9ca53649f2
+      version: -1
+      name: Polling Timeout
+      description: ''
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: 'Polling time out: Your search is taking a bit more time. To see your
+          results please run playbook ''Google Vault - Display Results'' with a grater
+          ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID}
+          and MatterID: ${GoogleVault.Matter.Export.MatterID}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1110
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1625,
+        "width": 1110,
+        "x": 50,
+        "y": 200
+      }
+    }
+  }
+inputs:
+- key: matterID
+  value: {}
+  required: true
+  description: |2-
+
+    matterID
+- key: exportName
+  value: {}
+  required: true
+  description: Export Name
+- key: dataScope
+  value:
+    simple: All Data
+  required: false
+  description: Choice of Search scope
+- key: groups
+  value: {}
+  required: false
+  description: Enter one or more Groups separated by commas. You can search up to
+    50 Groups.
+- key: timeFrame
+  value: {}
+  required: false
+  description: 'Search time frame. E.g: "1 min ago","2 weeks ago","3 months ago"'
+- key: startTime
+  value: {}
+  required: false
+  description: UTC start time (2018-10-16T12:59:02.584000Z)
+- key: endTime
+  value: {}
+  required: false
+  description: UTC end time (2018-10-16T12:59:02.584000Z)
+- key: terms
+  value: {}
+  required: false
+  description: Add specific terms for the search (subject:example)
+- key: exportPST
+  value:
+    simple: "true"
+  required: false
+  description: Export format
+- key: exportMBOX
+  value:
+    simple: "false"
+  required: false
+  description: Export format
+- key: pollInterval
+  value:
+    simple: "2"
+  required: false
+  description: Interval to check export status (minutes)
+- key: pollTimeout
+  value:
+    simple: "30"
+  required: false
+  description: Timeout to terminate the poll (minutes)
+- key: maxResultForDisplay
+  value:
+    simple: "30"
+  required: false
+  description: The maximal number of result to be displayed
+- key: downloadFile
+  value:
+    simple: "false"
+  required: false
+  description: If set to true the export file created will be downloaded into the
+    War Room
+outputs:
+- contextPath: GoogleVault.Matter.Export.MatterID
+  description: Matter ID
+  type: string
+- contextPath: GoogleVault.Matter.Export.ExportID
+  description: Export ID
+  type: string
+- contextPath: GoogleVault.Matter.Export.Name
+  description: Export's name
+  type: string
+- contextPath: GoogleVault.Matter.Export.CreateTime
+  description: Export's creation time
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.CC
+  description: CC of the message
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.BCC
+  description: BCC of the message
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.DateSent
+  description: The date the message
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.From
+  description: The sender of the message
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.Subject
+  description: The subject of the message
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.DateReceived
+  description: The date the message was received
+  type: string
+- contextPath: GoogleVault.Matter.Export.Results.To
+  description: The address the message was sent to
+  type: string
+- contextPath: GoogleVault.Matter.Export.Status
+  description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
+  type: string
+- contextPath: GoogleVault.Matter.Export.BucketName
+  description: Bucket holder name for this export
+  type: string
+- contextPath: GoogleVault.Matter.Export.DownloadID
+  description: ID to be used by the download-export command
+  type: string
+- contextPath: GoogleVault.Matter.Export.ViewID
+  description: ID to be used by the get-X-results command (X=drive/mail/groups)
+  type: string
+- contextPath: GoogleVault.Matter
+  description: Matter object
+  type: unknown
+releaseNotes: "Created new playbook for performing search and get results on Google vault"
+tests:
+  - Google_Vault-Search_And_Display_Results_test
