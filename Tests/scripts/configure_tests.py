@@ -162,7 +162,7 @@ def get_json(file_path):
         return {}
 
 
-def collect_tests(script_ids, playbook_ids, intergration_ids):
+def collect_tests(script_ids, playbook_ids, integration_ids):
     tests = set([])
     catched_scripts = set([])
     catched_playbooks = set([])
@@ -175,7 +175,7 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
 
     integration_set = id_set['integrations']
     test_playbooks_set = id_set['TestPlaybooks']
-    integration_to_command = get_integration_commands(intergration_ids, integration_set)
+    integration_to_command = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
         test_playbook_id = test_playbook.keys()[0]
@@ -197,15 +197,15 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
                         tests.add(test_playbook_id)
                         catched_intergrations.add(integration_id)
 
-    missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, intergration_ids,
+    missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids,
                                       playbook_ids, script_ids)
 
     return tests, test_names, missing_ids
 
 
-def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, intergration_ids, playbook_ids,
+def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
                         script_ids):
-    missing_integrations = intergration_ids - catched_intergrations
+    missing_integrations = integration_ids - catched_intergrations
     missing_playbooks = playbook_ids - catched_playbooks
     missing_scripts = script_ids - catched_scripts
     missing_ids = missing_integrations.union(missing_playbooks).union(missing_scripts)
@@ -225,12 +225,12 @@ def get_test_names():
     return test_names
 
 
-def get_integration_commands(intergration_ids, integration_set):
+def get_integration_commands(integration_ids, integration_set):
     integration_to_command = {}
     for integration in integration_set:
         integration_id = integration.keys()[0]
         integration_data = integration.values()[0]
-        if integration_id in intergration_ids:
+        if integration_id in integration_ids:
             integration_to_command[integration_id] = integration_data.get('commands', [])
 
     return integration_to_command
@@ -239,10 +239,10 @@ def get_integration_commands(intergration_ids, integration_set):
 def find_tests_for_modified_files(modified_files):
     script_names = set([])
     playbook_names = set([])
-    intergration_ids = set([])
+    integration_ids = set([])
 
-    collect_changed_ids(intergration_ids, playbook_names, script_names, modified_files)
-    tests, test_names, missing_ids = collect_tests(script_names, playbook_names, intergration_ids)
+    collect_changed_ids(integration_ids, playbook_names, script_names, modified_files)
+    tests, test_names, missing_ids = collect_tests(script_names, playbook_names, integration_ids)
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests)
 
     if len(missing_ids) > 0:
@@ -280,7 +280,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
     return missing_ids
 
 
-def collect_changed_ids(intergration_ids, playbook_names, script_names, modified_files):
+def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
     for file_path in modified_files:
         if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
@@ -291,7 +291,7 @@ def collect_changed_ids(intergration_ids, playbook_names, script_names, modified
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             id = get_script_or_integration_id(file_path)
-            intergration_ids.add(id)
+            integration_ids.add(id)
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -306,7 +306,7 @@ def collect_changed_ids(intergration_ids, playbook_names, script_names, modified
     for script_id in script_names:
         enrich_for_script_id(script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names)
 
-    integration_to_command = get_integration_commands(intergration_ids, integration_set)
+    integration_to_command = get_integration_commands(integration_ids, integration_set)
     for _, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names)
 
@@ -319,7 +319,7 @@ def collect_changed_ids(intergration_ids, playbook_names, script_names, modified
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
 
-    affected_ids_string = '\n'.join(script_names) + '\n'.join(playbook_names) + '\n'.join(intergration_ids)
+    affected_ids_string = '\n'.join(script_names) + '\n'.join(playbook_names) + '\n'.join(integration_ids)
     print('The following ids are affected due to the changes you made:\n{}\n\n'.format(affected_ids_string))
 
 

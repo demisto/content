@@ -339,12 +339,12 @@ def update_id_set():
                 print("updated {0} in id_set".format(id))
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
-                playbook_data = get_script_data(file_path)
+                playbook_data = get_playbook_data(file_path)
                 update_object_in_id_set(id, playbook_data, file_path, playbook_set)
                 print("updated {0} in id_set".format(id))
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
-                playbook_data = get_script_data(file_path)
+                playbook_data = get_playbook_data(file_path)
                 update_object_in_id_set(id, playbook_data, file_path, test_playbook_set)
                 print("updated {0} in id_set".format(id))
 
