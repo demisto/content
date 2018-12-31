@@ -1,4 +1,2005 @@
 {
+    "playbooks": [
+        {
+            "search_and_delete_emails_-_generic": {
+                "implementing_playbooks": [
+                    "Search And Delete Emails - EWS"
+                ], 
+                "name": "Search And Delete Emails - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "email_address_enrichment_-_generic": {
+                "implementing_scripts": [
+                    "IsEmailAddressInternal", 
+                    "EmailReputation", 
+                    "ADGetUser", 
+                    "Exists", 
+                    "EmailDomainSquattingReputation"
+                ], 
+                "name": "Email Address Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "process_email_-_generic": {
+                "toversion": "3.6.0", 
+                "implementing_commands": [
+                    "setIncident", 
+                    "rasterize-email"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "ParseEmailFiles"
+                ], 
+                "name": "Process Email - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook12": {
+                "implementing_commands": [
+                    "epo-update-client-dat", 
+                    "servicenow-incidents-query", 
+                    "epo-get-latest-dat", 
+                    "epo-get-current-dat", 
+                    "servicenow-incident-create"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "IncidentSet", 
+                    "commentsToContext"
+                ], 
+                "name": "McAfee ePO Endpoint Compliance Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "get_original_email_-_generic": {
+                "implementing_playbooks": [
+                    "Get Original Email - Gmail", 
+                    "Get Original Email - EWS"
+                ], 
+                "name": "Get Original Email - Generic", 
+                "fromversion": 4.0
+            }
+        }, 
+        {
+            "Detonate URL - Phish.AI": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "phish-ai-check-status", 
+                    "phish-ai-scan-url"
+                ], 
+                "name": "Detonate URL - Phish.AI", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Detonate URL - Cuckoo": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "cuckoo-view-task", 
+                    "cuckoo-get-task-report", 
+                    "cuckoo-create-task-from-url"
+                ], 
+                "implementing_scripts": [
+                    "Sleep"
+                ], 
+                "name": "Detonate URL - Cuckoo", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "get_file_sample_by_hash_-_generic": {
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Cylance Protect", 
+                    "Get File Sample By Hash - Carbon Black Enterprise Response"
+                ], 
+                "name": "Get File Sample By Hash - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "search_endpoints_by_hash_-_crowdstrike": {
+                "implementing_commands": [
+                    "cs-device-ran-on", 
+                    "cs-device-details"
+                ], 
+                "name": "Search Endpoints By Hash - CrowdStrike", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "get_file_sample_from_path_-_generic": {
+                "implementing_playbooks": [
+                    "Get File Sample From Path - Carbon Black Enterprise Response", 
+                    "Get File Sample From Path - D2"
+                ], 
+                "name": "Get File Sample From Path - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "process_email_-_generic": {
+                "toversion": "3.5.9", 
+                "implementing_commands": [
+                    "rasterize-email"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "ParseEmailFiles"
+                ], 
+                "name": "Process Email - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Detonate File - Lastline": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "lastline-upload-file", 
+                    "lastline-get-report"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate File - Lastline", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "url_enrichment_-_generic": {
+                "toversion": "3.5.1", 
+                "implementing_commands": [
+                    "rasterize"
+                ], 
+                "implementing_scripts": [
+                    "URLSSLVerification", 
+                    "Exists", 
+                    "URLReputation"
+                ], 
+                "name": "URL Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "GenericPolling": {
+                "implementing_scripts": [
+                    "ScheduleGenericPolling", 
+                    "RunPollingCommand", 
+                    "PrintErrorEntry"
+                ], 
+                "name": "GenericPolling", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "playbook1": {
+                "implementing_scripts": [
+                    "ExposeModules", 
+                    "Autoruns", 
+                    "Exists"
+                ], 
+                "name": "Malware Playbook - Manual", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Calculate Severity - Generic": {
+                "implementing_playbooks": [
+                    "Calculate Severity - Indicators DBotScore", 
+                    "Calculate Severity - 3rd-party integrations", 
+                    "Calculate Severity - Critical assets"
+                ], 
+                "implementing_commands": [
+                    "setIncident"
+                ], 
+                "name": "Calculate Severity - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "search_endpoints_by_hash_-_carbon_black_protection": {
+                "implementing_commands": [
+                    "cbp-computer-get"
+                ], 
+                "implementing_scripts": [
+                    "CBPFindRule", 
+                    "Set", 
+                    "CBPCatalogFindHash", 
+                    "Exists"
+                ], 
+                "name": "Search Endpoints By Hash - Carbon Black Protection", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Incident Enrichment": {
+                "implementing_playbooks": [
+                    "Enrichment Playbook"
+                ], 
+                "implementing_scripts": [
+                    "ExtractURL", 
+                    "ExtractHash", 
+                    "ExtractIP"
+                ], 
+                "name": "Incident Enrichment", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "playbook16": {
+                "implementing_commands": [
+                    "cs-device-ran-on", 
+                    "cs-device-search"
+                ], 
+                "implementing_scripts": [
+                    "Exists", 
+                    "SendEmail"
+                ], 
+                "name": "CrowdStrike Rapid IOC Hunting", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "CrowdStrike Falcon Sandbox - Detonate file": {
+                "toversion": "3.6.0", 
+                "implementing_commands": [
+                    "crowdstrike-detonate-file"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "CrowdStrike Falcon Sandbox - Detonate file", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Enrich McAfee DXL using 3rd party sandbox": {
+                "implementing_playbooks": [
+                    "WildFire - Detonate file"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "Exists"
+                ], 
+                "name": "Enrich McAfee DXL using 3rd party sandbox", 
+                "implementing_commands": [
+                    "dxl-send-event"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Carbon Black Enterprise Response": {
+                "toversion": "3.1.0", 
+                "implementing_commands": [
+                    "cb-binary-get"
+                ], 
+                "implementing_scripts": [
+                    "Exists"
+                ], 
+                "name": "Get File Sample From Hash - Carbon Black Enterprise Response", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Calculate Severity - Generic": {
+                "toversion": "3.5.1", 
+                "implementing_commands": [
+                    "setIncident"
+                ], 
+                "implementing_scripts": [
+                    "StringContains", 
+                    "Exists"
+                ], 
+                "name": "Calculate Severity - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Tenable.io Scan": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "tenable-io-launch-scan", 
+                    "tenable-io-get-scan-report", 
+                    "tenable-io-get-scan-status"
+                ], 
+                "name": "Tenable.io Scan", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "block_indicators_-_generic": {
+                "implementing_playbooks": [
+                    "Block URL - Generic", 
+                    "Block File - Generic", 
+                    "Block IP - Generic", 
+                    "Block Account - Generic"
+                ], 
+                "name": "Block Indicators - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "detonate_url_-_threatgrid": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "threat-grid-upload-sample", 
+                    "threat-grid-get-samples-state", 
+                    "threat-grid-url-to-file"
+                ], 
+                "name": "Detonate URL - ThreatGrid", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "TrendMicro Malware Alert Playbook": {
+                "implementing_scripts": [
+                    "TrendMicroGetPolicyID", 
+                    "TrendmicroSecurityProfileAssignToHost", 
+                    "TrendmicroAntiMalwareEventRetrieve", 
+                    "TrendMicroGetHostID"
+                ], 
+                "name": "TrendMicro Malware Alert Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "calculate_severity_-_3rd-party_integrations": {
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Calculate Severity - 3rd-party integrations", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Phishing Investigation - Generic": {
+                "toversion": "3.5.9", 
+                "implementing_playbooks": [
+                    "Detonate File - Generic", 
+                    "Extract Indicators - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Calculate Severity - Generic", 
+                    "Email Address Enrichment - Generic"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "detonate_url_-_joesecurity": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "joe-download-report", 
+                    "joe-analysis-submit-url", 
+                    "joe-analysis-info"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate URL - JoeSecurity", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "CrowdStrike Falcon Sandbox - Detonate file": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "crowdstrike-submit-sample", 
+                    "crowdstrike-scan"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "CrowdStrike Falcon Sandbox - Detonate file", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "crowdstrike_endpoint_enrichment": {
+                "implementing_commands": [
+                    "cs-device-search", 
+                    "cs-device-details"
+                ], 
+                "name": "CrowdStrike Endpoint Enrichment", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "cve_enrichment_-_generic": {
+                "implementing_commands": [
+                    "cve-search"
+                ], 
+                "implementing_scripts": [
+                    "cveReputation"
+                ], 
+                "name": "CVE Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "get_file_sample_by_hash_-_cylance_protect": {
+                "implementing_commands": [
+                    "cylance-protect-download-threat"
+                ], 
+                "implementing_scripts": [
+                    "http", 
+                    "UnzipFile", 
+                    "Exists"
+                ], 
+                "name": "Get File Sample By Hash - Cylance Protect", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "dedup_incidents_-_ml": {
+                "implementing_scripts": [
+                    "Print", 
+                    "CloseInvestigationAsDuplicate", 
+                    "GetDuplicatesMl"
+                ], 
+                "name": "DeDup incidents - ML", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "playbook5": {
+                "implementing_playbooks": [
+                    "Process Email", 
+                    "Enrichment Playbook", 
+                    "Hunt for bad IOCs", 
+                    "Account Enrichment", 
+                    "Detonate File - Generic"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "SendEmail", 
+                    "CheckSenderDomainDistance", 
+                    "CloseInvestigation", 
+                    "ExtractIP", 
+                    "IsMaliciousIndicatorFound", 
+                    "ExtractURL"
+                ], 
+                "name": "Phishing Playbook - Automated", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "TIE - IOC Hunt": {
+                "implementing_commands": [
+                    "tie-file-references"
+                ], 
+                "implementing_scripts": [
+                    "EPOFindSystem", 
+                    "Exists"
+                ], 
+                "name": "TIE - IOC Hunt", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "vulnerability_management_-_qualys_Job": {
+                "implementing_commands": [
+                    "qualys-report-fetch", 
+                    "closeInvestigation", 
+                    "qualys-report-list"
+                ], 
+                "implementing_scripts": [
+                    "QualysCreateIncidentFromReport", 
+                    "Set"
+                ], 
+                "name": "Vulnerability Management - Qualys (Job)", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "get_original_email_-_gmail": {
+                "implementing_commands": [
+                    "gmail-get-attachments", 
+                    "gmail-search", 
+                    "gmail-get-mail"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "name": "Get Original Email - Gmail", 
+                "fromversion": 4.0
+            }
+        }, 
+        {
+            "detonate_url_-_mcafee_atd": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "atd-get-report", 
+                    "atd-check-status", 
+                    "atd-file-upload"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate URL - McAfee ATD", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Detonate URL - Lastline": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "lastline-get-report", 
+                    "lastline-upload-url"
+                ], 
+                "name": "Detonate URL - Lastline", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Detonate File - Generic": {
+                "toversion": "3.6.0", 
+                "implementing_playbooks": [
+                    "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "WildFire - Detonate file"
+                ], 
+                "name": "Detonate File - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "process_email_-_ews": {
+                "implementing_commands": [
+                    "ews-get-attachment"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Process Email - EWS", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook7": {
+                "implementing_commands": [
+                    "slack-send", 
+                    "ExposeModules"
+                ], 
+                "implementing_scripts": [
+                    "IsIntegrationAvailable", 
+                    "Exists"
+                ], 
+                "name": "Hunting C&C Communication Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "get_file_sample_from_path_-_d2": {
+                "implementing_scripts": [
+                    "IncidentAddSystem", 
+                    "FetchFileD2"
+                ], 
+                "name": "Get File Sample From Path - D2", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "get_original_email_-_ews": {
+                "implementing_commands": [
+                    "ews-search-mailbox", 
+                    "ews-get-attachment", 
+                    "ews-get-items"
+                ], 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "name": "Get Original Email - EWS", 
+                "fromversion": 4.0
+            }
+        }, 
+        {
+            "playbook17": {
+                "implementing_scripts": [
+                    "CBPFindRule", 
+                    "CBPCatalogFindHash", 
+                    "Exists"
+                ], 
+                "name": "Carbon black Protection Rapid IOC Hunting", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "calculate_severity_-_critical_assets": {
+                "toversion": "3.6.1", 
+                "implementing_scripts": [
+                    "StringContains", 
+                    "Set", 
+                    "Exists"
+                ], 
+                "name": "Calculate Severity - Critical assets", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook14": {
+                "implementing_scripts": [
+                    "UtilAnyResults", 
+                    "SendEmail", 
+                    "CPShowBackupStatus", 
+                    "CloseInvestigation", 
+                    "SNOpenTicket", 
+                    "SCPPullFiles", 
+                    "CPCreateBackup"
+                ], 
+                "name": "Checkpoint Firewall Configuration Backup Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "endpoint_enrichment_-_generic": {
+                "implementing_playbooks": [
+                    "CrowdStrike Endpoint Enrichment"
+                ], 
+                "implementing_commands": [
+                    "cylance-protect-get-devices", 
+                    "cb-sensor-info", 
+                    "so-agents-query"
+                ], 
+                "implementing_scripts": [
+                    "EPOFindSystem", 
+                    "Exists", 
+                    "ADGetComputer"
+                ], 
+                "name": "Endpoint Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "access_investigation_-_qradar": {
+                "implementing_playbooks": [
+                    "QRadar - Get offense correlations", 
+                    "Access Investigation - Generic"
+                ], 
+                "implementing_commands": [
+                    "setIncident"
+                ], 
+                "name": "Access Investigation - QRadar", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "DBotCreatePhishingClassifier": {
+                "implementing_scripts": [
+                    "DBotTrainTextClassifier", 
+                    "Base64ListToFile", 
+                    "DBotPredictPhishingEvaluation", 
+                    "DBotPreparePhishingData"
+                ], 
+                "name": "DBot Create Phishing Classifier", 
+                "fromversion": "4.1.0"
+            }
+        }, 
+        {
+            "detonate_url_-_generic": {
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike", 
+                    "Detonate URL - JoeSecurity", 
+                    "Detonate URL - Cuckoo", 
+                    "Detonate URL - Lastline", 
+                    "Detonate URL - ThreatGrid", 
+                    "Detonate URL - McAfee ATD"
+                ], 
+                "name": "Detonate URL - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "tenable-sc-scan": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "tenable-sc-get-scan-report", 
+                    "tenable-sc-launch-scan"
+                ], 
+                "name": "Launch Scan - Tenable.sc", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "detonate_file_from_url_-_wildfire": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "wildfire-upload-file-remote", 
+                    "wildfire-report"
+                ], 
+                "name": "Detonate File From URL - WildFire", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "block_endpoint_-_carbon_black_response": {
+                "implementing_commands": [
+                    "cb-sensor-info", 
+                    "cb-quarantine-device"
+                ], 
+                "name": "Block Endpoint - Carbon Black Response", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "close_incident_if_duplicate_found": {
+                "implementing_scripts": [
+                    "FindSimilarIncidents", 
+                    "CloseInvestigationAsDuplicate"
+                ], 
+                "name": "DeDup incidents", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "scan_assets_nexpose": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "nexpose-start-assets-scan", 
+                    "nexpose-get-scan"
+                ], 
+                "name": "Scan Assets - Nexpose", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "extract_indicators_-_generic": {
+                "implementing_scripts": [
+                    "ExtractHash", 
+                    "ExtractDomain", 
+                    "ExtractURL", 
+                    "ExtractEmail", 
+                    "ExtractIP"
+                ], 
+                "name": "Extract Indicators - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "playbook0": {
+                "toversion": "3.1.0", 
+                "implementing_playbooks": [
+                    "Enrichment Playbook"
+                ], 
+                "implementing_scripts": [
+                    "TrendMicroClassifier", 
+                    "Exists", 
+                    "IncidentSet", 
+                    "SplunkEmailParser", 
+                    "QRadarClassifier", 
+                    "MapValues", 
+                    "Print", 
+                    "VectraClassifier", 
+                    "NexposeEmailParser"
+                ], 
+                "name": "Default", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "dedup_-_generic": {
+                "implementing_scripts": [
+                    "FindSimilarIncidentsByText", 
+                    "GetDuplicatesMlv2", 
+                    "CloseInvestigationAsDuplicate", 
+                    "FindSimilarIncidents"
+                ], 
+                "name": "Dedup - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "malware_investigation-_generic_-_setup": {
+                "implementing_playbooks": [
+                    "Get File Sample From Path - Generic", 
+                    "Get File Sample By Hash - Generic", 
+                    "Search Endpoints By Hash - Generic"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Malware Investigation - Generic - Setup", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "block_file_-_carbon_black_response": {
+                "implementing_commands": [
+                    "cb-get-hash-blacklist", 
+                    "cb-block-hash"
+                ], 
+                "name": "Block File - Carbon Black Response", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "search_and_delete_emails_-_ews": {
+                "implementing_commands": [
+                    "ews-search-mailboxes", 
+                    "ews-delete-items"
+                ], 
+                "implementing_scripts": [
+                    "BuildEWSQuery"
+                ], 
+                "name": "Search And Delete Emails - EWS", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Detonate File - BitDam": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "bitdam-upload-file", 
+                    "bitdam-get-verdict"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate File - BitDam", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection": {
+                "implementing_scripts": [
+                    "EPOFindSystem", 
+                    "Exists"
+                ], 
+                "name": "MAR - Endpoint data collection", 
+                "implementing_commands": [
+                    "mar-search-multiple"
+                ]
+            }
+        }, 
+        {
+            "process_email_-_add_custom_fields": {
+                "implementing_scripts": [
+                    "IncidentSet"
+                ], 
+                "name": "Process Email - Add custom fields", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "detonate_url_-_crowdstrike": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "crowdstrike-submit-url", 
+                    "crowdstrike-scan"
+                ], 
+                "name": "Detonate URL - CrowdStrike", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "ip_enrichment_generic": {
+                "implementing_playbooks": [
+                    "Endpoint Enrichment - Generic"
+                ], 
+                "implementing_commands": [
+                    "vt-private-get-ip-report"
+                ], 
+                "implementing_scripts": [
+                    "IsIPInRanges", 
+                    "IPToHost", 
+                    "IPReputation"
+                ], 
+                "name": "IP Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "domain_enrichment_generic": {
+                "toversion": "3.5.1", 
+                "implementing_scripts": [
+                    "DomainReputation"
+                ], 
+                "name": "Domain Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "QRadarFullSearch": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "qradar-get-search", 
+                    "qradar-get-search-results", 
+                    "qradar-searches"
+                ], 
+                "name": "QRadarFullSearch", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Arcsight - Get events related to the Case": {
+                "implementing_scripts": [
+                    "IncidentSet", 
+                    "Set", 
+                    "Exists"
+                ], 
+                "name": "Arcsight - Get events related to the Case", 
+                "implementing_commands": [
+                    "as-get-security-events", 
+                    "as-get-case", 
+                    "as-get-case-event-ids"
+                ]
+            }
+        }, 
+        {
+            "Account Enrichment": {
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "ADGetUser", 
+                    "Exists"
+                ], 
+                "name": "Account Enrichment", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "malware_investigation-_generic": {
+                "toversion": "3.6.0", 
+                "implementing_playbooks": [
+                    "Malware Investigation - Generic - Setup", 
+                    "Extract Indicators - Generic", 
+                    "Calculate Severity - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Detonate File - Generic"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "AssignAnalystToIncident"
+                ], 
+                "name": "Malware Investigation - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "QRadar - Get offense correlations ": {
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "AreValuesEqual", 
+                    "QRadarGetCorrelationLogs", 
+                    "QRadarGetOffenseCorrelations", 
+                    "Exists"
+                ], 
+                "name": "QRadar - Get offense correlations "
+            }
+        }, 
+        {
+            "QRadar - Get offense correlations ": {
+                "implementing_scripts": [
+                    "QRadarGetCorrelationLogs", 
+                    "QRadarGetOffenseCorrelations"
+                ], 
+                "name": "QRadar - Get offense correlations", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "block_ip_-_generic": {
+                "implementing_playbooks": [
+                    "Add Indicator to Miner - Palo Alto MineMeld"
+                ], 
+                "implementing_commands": [
+                    "zscaler-blacklist-ip", 
+                    "checkpoint-block-ip"
+                ], 
+                "implementing_scripts": [
+                    "PanoramaBlockIP"
+                ], 
+                "name": "Block IP - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "vulnerability_handling_-_qualys_-_add _ustom_fields_to_default_layout": {
+                "implementing_scripts": [
+                    "IncidentSet"
+                ], 
+                "name": "Vulnerability Handling - Qualys - Add custom fields to default layout", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook3": {
+                "name": "Ransomware Playbook - Manual", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Enrich DXL with ATD verdict": {
+                "implementing_playbooks": [
+                    "ATD - Detonate File"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "Exists"
+                ], 
+                "name": "Enrich DXL with ATD verdict", 
+                "implementing_commands": [
+                    "dxl-send-event"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - SNDBOX": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "sndbox-analysis-info", 
+                    "sndbox-analysis-submit-sample", 
+                    "sndbox-download-report"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate File - SNDBOX", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Phishing Investigation - Generic": {
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Block Indicators - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "send-mail"
+                ], 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": 4.0
+            }
+        }, 
+        {
+            "playbook2": {
+                "name": "Phishing Playbook - Manual", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Hunt for bad IOCs": {
+                "implementing_playbooks": [
+                    "CrowdStrike Rapid IOC Hunting", 
+                    "Carbon Black Rapid IOC Hunting", 
+                    "TIE - IOC Hunt", 
+                    "Carbon black Protection Rapid IOC Hunting"
+                ], 
+                "name": "Hunt for bad IOCs", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "extract_indicators_from_file_-_generic": {
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "name": "Extract Indicators From File - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Sentinel One - Endpoint data collection": {
+                "implementing_scripts": [
+                    "Print", 
+                    "Exists"
+                ], 
+                "name": "Sentinel One - Endpoint data collection", 
+                "implementing_commands": [
+                    "so-agents-query", 
+                    "so-get-agent-processes"
+                ]
+            }
+        }, 
+        {
+            "process_email_-_generic": {
+                "implementing_playbooks": [
+                    "Get Original Email - Generic"
+                ], 
+                "implementing_commands": [
+                    "setIncident", 
+                    "rasterize-email"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "ParseEmailFiles"
+                ], 
+                "name": "Process Email - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "playbook13": {
+                "implementing_commands": [
+                    "servicenow-incident-create"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "commentsToContext", 
+                    "Ping"
+                ], 
+                "name": "McAfee ePO Endpoint Connectivity Diagnostics Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "vulnerability_handling_-_nexpose": {
+                "implementing_playbooks": [
+                    "CVE Enrichment - Generic", 
+                    "Endpoint Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "nexpose-get-asset-vulnerability", 
+                    "nexpose-get-asset", 
+                    "setIncident"
+                ], 
+                "name": "Vulnerability Handling - Nexpose", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Calculate Severity - Generic": {
+                "toversion": "3.1.0", 
+                "implementing_commands": [
+                    "setIncident"
+                ], 
+                "implementing_scripts": [
+                    "Print", 
+                    "StringContains", 
+                    "Exists"
+                ], 
+                "name": "Calculate Severity - Generic", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "playbook8": {
+                "name": "Lost / Stolen Device Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "vulnerability_handling_-_qualys": {
+                "implementing_playbooks": [
+                    "CVE Enrichment - Generic", 
+                    "Vulnerability Handling - Qualys - Add custom fields to default layout", 
+                    "Endpoint Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "qualys-host-list", 
+                    "qualys-vulnerability-list"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "DisplayHTML"
+                ], 
+                "name": "Vulnerability Handling - Qualys", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook10": {
+                "implementing_playbooks": [
+                    "Hunt for bad IOCs"
+                ], 
+                "implementing_scripts": [
+                    "ExtractHash", 
+                    "Exists", 
+                    "ReadFile", 
+                    "ExtractIP", 
+                    "Print", 
+                    "ExtractURL"
+                ], 
+                "name": "Rapid IOC Hunting Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "search_endpoints_by_hash_-_carbon_black_response": {
+                "implementing_scripts": [
+                    "Set", 
+                    "CBFindHash"
+                ], 
+                "name": "Search Endpoints By Hash - Carbon Black Response", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "scan_site_nexpose": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "nexpose-start-site-scan", 
+                    "nexpose-get-scan"
+                ], 
+                "name": "Scan Site - Nexpose", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Failed Login Playbook With Slack": {
+                "implementing_commands": [
+                    "slack-send"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "IncidentSet", 
+                    "ADExpirePassword", 
+                    "SlackAskUser"
+                ], 
+                "name": "Failed Login Playbook With Slack", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "WildFire - Detonate file": {
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "Exists"
+                ], 
+                "name": "WildFire - Detonate file", 
+                "implementing_commands": [
+                    "wildfire-upload", 
+                    "wildfire-report"
+                ]
+            }
+        }, 
+        {
+            "File Enrichment - Generic": {
+                "implementing_playbooks": [
+                    "File Enrichment - File reputation", 
+                    "File Enrichment - Virus Total Private API"
+                ], 
+                "implementing_commands": [
+                    "cylance-protect-get-threat", 
+                    "pan-appframework-search-by-file-hash"
+                ], 
+                "name": "File Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "vulnerability_management_-_nexpose_job": {
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "nexpose-create-assets-report", 
+                    "nexpose-search-assets"
+                ], 
+                "implementing_scripts": [
+                    "NexposeCreateIncidentsFromAssets"
+                ], 
+                "name": "Vulnerability Management - Nexpose (Job)", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Archer initiate incident": {
+                "implementing_commands": [
+                    "archer-get-file"
+                ], 
+                "name": "Archer initiate incident", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "block_file_-_generic": {
+                "implementing_playbooks": [
+                    "Block File - Carbon Black Response"
+                ], 
+                "name": "Block File - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "calculate_severity_-_critical_assets": {
+                "implementing_scripts": [
+                    "StringContains", 
+                    "Set"
+                ], 
+                "name": "Calculate Severity - Critical assets", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "add_indicator_to_miner_-_palo_alto_mineMeld": {
+                "implementing_commands": [
+                    "minemeld-add-to-miner"
+                ], 
+                "name": "Add Indicator to Miner - Palo Alto MineMeld", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "domain_enrichment_generic": {
+                "implementing_commands": [
+                    "vt-private-get-domain-report"
+                ], 
+                "implementing_scripts": [
+                    "DomainReputation"
+                ], 
+                "name": "Domain Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "playbook11": {
+                "implementing_commands": [
+                    "epo-update-repository", 
+                    "epo-get-latest-dat", 
+                    "epo-get-current-dat"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "IncidentSet", 
+                    "Sleep", 
+                    "AreValuesEqual", 
+                    "SendEmail"
+                ], 
+                "name": "McAfee ePO Repository Compliance Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "url_enrichment_-_generic": {
+                "implementing_commands": [
+                    "vt-private-get-url-report", 
+                    "rasterize"
+                ], 
+                "implementing_scripts": [
+                    "URLSSLVerification", 
+                    "Exists", 
+                    "URLReputation"
+                ], 
+                "name": "URL Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "entity_enrichment_generic": {
+                "implementing_playbooks": [
+                    "Account Enrichment - Generic", 
+                    "Endpoint Enrichment - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "URL Enrichment - Generic", 
+                    "File Enrichment - Generic", 
+                    "Domain Enrichment - Generic", 
+                    "IP Enrichment - Generic"
+                ], 
+                "name": "Entity Enrichment - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "search_endpoints_by_hash_-_generic": {
+                "implementing_playbooks": [
+                    "Search Endpoints By Hash - Carbon Black Response", 
+                    "Search Endpoints By Hash - CrowdStrike", 
+                    "Search Endpoints By Hash - TIE", 
+                    "Search Endpoints By Hash - Carbon Black Protection"
+                ], 
+                "name": "Search Endpoints By Hash - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "malware_investigation-_generic": {
+                "implementing_playbooks": [
+                    "Malware Investigation - Generic - Setup", 
+                    "Calculate Severity - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Detonate File - Generic"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "AssignAnalystToIncident"
+                ], 
+                "name": "Malware Investigation - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "calculate_severity_-_indicators_dbotscore": {
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Calculate Severity - Indicators DBotScore", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "Detonate File - Cuckoo": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "cuckoo-task-screenshot", 
+                    "cuckoo-get-task-report", 
+                    "cuckoo-view-task", 
+                    "cuckoo-create-task-from-file"
+                ], 
+                "implementing_scripts": [
+                    "Sleep"
+                ], 
+                "name": "Detonate File - Cuckoo", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Account Enrichment": {
+                "implementing_scripts": [
+                    "ADGetUser", 
+                    "Exists"
+                ], 
+                "name": "Account Enrichment", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "entity_enrichment_generic": {
+                "toversion": "3.5.1", 
+                "implementing_playbooks": [
+                    "Account Enrichment - Generic", 
+                    "Endpoint Enrichment - Generic", 
+                    "DBot Indicator Enrichment - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "URL Enrichment - Generic", 
+                    "File Enrichment - Generic", 
+                    "Domain Enrichment - Generic", 
+                    "IP Enrichment - Generic"
+                ], 
+                "name": "Entity Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Phishing Investigation - Generic": {
+                "toversion": "3.9.9", 
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Process Email - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "DBotCreatePhishingClassifierJob": {
+                "implementing_playbooks": [
+                    "DBot Create Phishing Classifier"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation"
+                ], 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "name": "DBot Create Phishing Classifier Job", 
+                "fromversion": "4.1.0"
+            }
+        }, 
+        {
+            "playbook5": {
+                "toversion": "3.1.0", 
+                "implementing_playbooks": [
+                    "Process Email", 
+                    "Detonate files", 
+                    "Hunt for bad IOCs", 
+                    "Account Enrichment", 
+                    "Enrichment Playbook"
+                ], 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "SendEmail", 
+                    "CheckSenderDomainDistance", 
+                    "CloseInvestigation", 
+                    "ExtractIP", 
+                    "IsMaliciousIndicatorFound", 
+                    "ExtractURL"
+                ], 
+                "name": "Phishing Playbook - Automated", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Demisto_Self-Defense_-_Account_policy_monitoring_playbook": {
+                "implementing_commands": [
+                    "TwilioSendSMS", 
+                    "slack-send", 
+                    "demisto-api-get", 
+                    "setIncident"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation"
+                ], 
+                "name": "Demisto Self-Defense - Account policy monitoring playbook", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "ATD - Detonate File": {
+                "toversion": "3.6.0", 
+                "implementing_scripts": [
+                    "Exists"
+                ], 
+                "name": "ATD - Detonate File", 
+                "implementing_commands": [
+                    "detonate-file"
+                ]
+            }
+        }, 
+        {
+            "block_account_-_generic": {
+                "implementing_commands": [
+                    "ad-disable-account"
+                ], 
+                "name": "Block Account - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "file_enrichment_-_virus_total_private_api": {
+                "implementing_commands": [
+                    "vt-private-check-file-behaviour", 
+                    "vt-private-get-file-report"
+                ], 
+                "name": "File Enrichment - Virus Total Private API", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "file_enrichment_-_file_reputation": {
+                "implementing_scripts": [
+                    "FileReputation"
+                ], 
+                "name": "File Enrichment - File reputation", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "block_url_-_generic": {
+                "implementing_playbooks": [
+                    "Add Indicator to Miner - Palo Alto MineMeld"
+                ], 
+                "implementing_commands": [
+                    "zscaler-blacklist-url"
+                ], 
+                "name": "Block URL - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Process Email": {
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists", 
+                    "ParseEmailFiles"
+                ], 
+                "name": "Process Email", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "playbook15": {
+                "implementing_commands": [
+                    "tn-deploy-package", 
+                    "tn-ask-question", 
+                    "tn-get-saved-question"
+                ], 
+                "name": "Tanium Demo Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "get_file_sample_by_hash_-_carbon_black_enterprise_Response": {
+                "implementing_commands": [
+                    "cb-binary-get"
+                ], 
+                "implementing_scripts": [
+                    "Exists"
+                ], 
+                "name": "Get File Sample By Hash - Carbon Black Enterprise Response", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Cylance Protect": {
+                "toversion": "3.1.0", 
+                "implementing_commands": [
+                    "cylance-protect-download-threat"
+                ], 
+                "implementing_scripts": [
+                    "http", 
+                    "UnzipFile", 
+                    "Exists"
+                ], 
+                "name": "Get File Sample From Hash - Cylance Protect", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "access_investigation_-_generic": {
+                "implementing_playbooks": [
+                    "IP Enrichment - Generic", 
+                    "Account Enrichment - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "setIncident"
+                ], 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "ADGetUser", 
+                    "EmailAskUser"
+                ], 
+                "name": "Access Investigation - Generic", 
+                "fromversion": "3.6.0"
+            }
+        }, 
+        {
+            "search_endpoints_by_hash_-_tie": {
+                "implementing_commands": [
+                    "tie-file-references"
+                ], 
+                "implementing_scripts": [
+                    "EPOFindSystem"
+                ], 
+                "name": "Search Endpoints By Hash - TIE", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "get_file_sample_from_path_-_carbon_black_enterprise_response": {
+                "implementing_scripts": [
+                    "CBLiveGetFile", 
+                    "Exists"
+                ], 
+                "name": "Get File Sample From Path - Carbon Black Enterprise Response", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "WildFire - Detonate file": {
+                "toversion": "3.6.0", 
+                "implementing_commands": [
+                    "wildfire-report", 
+                    "detonate-file"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "WildFire - Detonate file", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Detonate File - Generic": {
+                "implementing_playbooks": [
+                    "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "ATD - Detonate File", 
+                    "Detonate File - SNDBOX", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - Cuckoo", 
+                    "Detonate File - Lastline", 
+                    "WildFire - Detonate file", 
+                    "Detonate File - ThreatGrid"
+                ], 
+                "name": "Detonate File - Generic", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "D2 - Endpoint data collection": {
+                "implementing_scripts": [
+                    "D2ExecuteCommand", 
+                    "ActiveUsersD2", 
+                    "Exists", 
+                    "IncidentAddSystem", 
+                    "FetchFileD2", 
+                    "AreValuesEqual"
+                ], 
+                "name": "D2 - Endpoint data collection"
+            }
+        }, 
+        {
+            "Enrichment Playbook": {
+                "implementing_scripts": [
+                    "Print", 
+                    "FileReputation", 
+                    "IPReputation", 
+                    "Exists", 
+                    "URLReputation"
+                ], 
+                "name": "Enrichment Playbook", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "Office 365 Search and Delete": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "ews-o365-remove-compliance-search", 
+                    "ews-o365-purge-compliance-search-results", 
+                    "ews-o365-get-compliance-search", 
+                    "ews-o365-start-compliance-search"
+                ], 
+                "name": "Office 365 Search and Delete", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "dbot_indicator_enrichment_-_generic": {
+                "implementing_scripts": [
+                    "GetIndicatorDBotScore"
+                ], 
+                "name": "DBot Indicator Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "playbook0": {
+                "implementing_playbooks": [
+                    "Extract Indicators - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "AssignAnalystToIncident"
+                ], 
+                "name": "Default", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "File Enrichment - Generic": {
+                "toversion": "3.5.1", 
+                "implementing_scripts": [
+                    "FileReputation"
+                ], 
+                "name": "File Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "ATD - Detonate File": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "atd-get-report", 
+                    "atd-file-upload", 
+                    "atd-check-status"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "ATD - Detonate File", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "account_enrichment_-_generic": {
+                "implementing_scripts": [
+                    "ADGetUser", 
+                    "Exists"
+                ], 
+                "name": "Account Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "detonatefile_-_joesecurity": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "joe-download-report", 
+                    "joe-analysis-info", 
+                    "joe-analysis-submit-sample"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate File - JoeSecurity", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "ip_enrichment_generic": {
+                "toversion": "3.5.1", 
+                "implementing_scripts": [
+                    "IsIPInRanges", 
+                    "IPReputation", 
+                    "Exists"
+                ], 
+                "name": "IP Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Detonate files": {
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "Print", 
+                    "SandboxDetonateFile", 
+                    "Exists"
+                ], 
+                "name": "Detonate files", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "detonate_file_from_url_-_joesecurity": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "joe-download-report", 
+                    "joe-analysis-submit-sample"
+                ], 
+                "name": "Detonate File From URL - JoeSecurity", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "Carbon Black Rapid IOC Hunting": {
+                "implementing_scripts": [
+                    "CBFindHash", 
+                    "Exists"
+                ], 
+                "name": "Carbon Black Rapid IOC Hunting", 
+                "fromversion": "2.5.0"
+            }
+        }, 
+        {
+            "email_address_enrichment_-_generic": {
+                "toversion": "3.5.1", 
+                "implementing_scripts": [
+                    "IsEmailAddressInternal", 
+                    "EmailReputation", 
+                    "ADGetUser", 
+                    "Exists", 
+                    "EmailDomainSquattingReputation"
+                ], 
+                "name": "Email Address Enrichment - Generic", 
+                "fromversion": "3.5.0"
+            }
+        }, 
+        {
+            "Endpoint data collection": {
+                "implementing_playbooks": [
+                    "Sentinel One - Endpoint data collection", 
+                    "MAR - Endpoint data collection", 
+                    "D2 - Endpoint data collection"
+                ], 
+                "implementing_scripts": [
+                    "AreValuesEqual"
+                ], 
+                "name": "Endpoint data collection"
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic": {
+                "toversion": "3.1.0", 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Cylance Protect", 
+                    "Get File Sample From Hash - Carbon Black Enterprise Response"
+                ], 
+                "name": "Get File Sample From Hash - Generic"
+            }
+        }, 
+        {
+            "WildFire - Detonate file": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "wildfire-upload", 
+                    "wildfire-report"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "WildFire - Detonate file", 
+                "fromversion": "4.0.0"
+            }
+        }, 
+        {
+            "detonate_file_-_threatgrid": {
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "threat-grid-upload-sample", 
+                    "threat-grid-get-samples-state"
+                ], 
+                "implementing_scripts": [
+                    "Set"
+                ], 
+                "name": "Detonate File - ThreatGrid", 
+                "fromversion": "4.0.0"
+            }
+        }
+    ], 
     "integrations": [
         {
             "Cybereason": {
@@ -3979,2007 +5980,6 @@
                     "intsights-close-alert"
                 ], 
                 "name": "IntSights"
-            }
-        }
-    ], 
-    "playbooks": [
-        {
-            "search_and_delete_emails_-_generic": {
-                "implementing_playbooks": [
-                    "Search And Delete Emails - EWS"
-                ], 
-                "name": "Search And Delete Emails - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "email_address_enrichment_-_generic": {
-                "implementing_scripts": [
-                    "IsEmailAddressInternal", 
-                    "EmailReputation", 
-                    "ADGetUser", 
-                    "Exists", 
-                    "EmailDomainSquattingReputation"
-                ], 
-                "name": "Email Address Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "process_email_-_generic": {
-                "toversion": "3.6.0", 
-                "implementing_commands": [
-                    "setIncident", 
-                    "rasterize-email"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "ParseEmailFiles"
-                ], 
-                "name": "Process Email - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook12": {
-                "implementing_commands": [
-                    "epo-update-client-dat", 
-                    "servicenow-incidents-query", 
-                    "epo-get-latest-dat", 
-                    "epo-get-current-dat", 
-                    "servicenow-incident-create"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IncidentSet", 
-                    "commentsToContext"
-                ], 
-                "name": "McAfee ePO Endpoint Compliance Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "get_original_email_-_generic": {
-                "implementing_playbooks": [
-                    "Get Original Email - Gmail", 
-                    "Get Original Email - EWS"
-                ], 
-                "name": "Get Original Email - Generic", 
-                "fromversion": 4.0
-            }
-        }, 
-        {
-            "Detonate URL - Phish.AI": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "phish-ai-check-status", 
-                    "phish-ai-scan-url"
-                ], 
-                "name": "Detonate URL - Phish.AI", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Detonate URL - Cuckoo": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "cuckoo-view-task", 
-                    "cuckoo-get-task-report", 
-                    "cuckoo-create-task-from-url"
-                ], 
-                "implementing_scripts": [
-                    "Sleep"
-                ], 
-                "name": "Detonate URL - Cuckoo", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "get_file_sample_by_hash_-_generic": {
-                "implementing_playbooks": [
-                    "Get File Sample By Hash - Cylance Protect", 
-                    "Get File Sample By Hash - Carbon Black Enterprise Response"
-                ], 
-                "name": "Get File Sample By Hash - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "search_endpoints_by_hash_-_crowdstrike": {
-                "implementing_commands": [
-                    "cs-device-ran-on", 
-                    "cs-device-details"
-                ], 
-                "name": "Search Endpoints By Hash - CrowdStrike", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "get_file_sample_from_path_-_generic": {
-                "implementing_playbooks": [
-                    "Get File Sample From Path - Carbon Black Enterprise Response", 
-                    "Get File Sample From Path - D2"
-                ], 
-                "name": "Get File Sample From Path - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "process_email_-_generic": {
-                "toversion": "3.5.9", 
-                "implementing_commands": [
-                    "rasterize-email"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "ParseEmailFiles"
-                ], 
-                "name": "Process Email - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Detonate File - Lastline": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "lastline-upload-file", 
-                    "lastline-get-report"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate File - Lastline", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "url_enrichment_-_generic": {
-                "toversion": "3.5.1", 
-                "implementing_commands": [
-                    "rasterize"
-                ], 
-                "implementing_scripts": [
-                    "URLSSLVerification", 
-                    "Exists", 
-                    "URLReputation"
-                ], 
-                "name": "URL Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "GenericPolling": {
-                "implementing_scripts": [
-                    "ScheduleGenericPolling", 
-                    "RunPollingCommand", 
-                    "PrintErrorEntry"
-                ], 
-                "name": "GenericPolling", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "playbook1": {
-                "implementing_scripts": [
-                    "ExposeModules", 
-                    "Autoruns", 
-                    "Exists"
-                ], 
-                "name": "Malware Playbook - Manual", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Calculate Severity - Generic": {
-                "implementing_playbooks": [
-                    "Calculate Severity - Indicators DBotScore", 
-                    "Calculate Severity - 3rd-party integrations", 
-                    "Calculate Severity - Critical assets"
-                ], 
-                "implementing_commands": [
-                    "setIncident"
-                ], 
-                "name": "Calculate Severity - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "search_endpoints_by_hash_-_carbon_black_protection": {
-                "implementing_commands": [
-                    "cbp-computer-get"
-                ], 
-                "implementing_scripts": [
-                    "CBPFindRule", 
-                    "Set", 
-                    "CBPCatalogFindHash", 
-                    "Exists"
-                ], 
-                "name": "Search Endpoints By Hash - Carbon Black Protection", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Incident Enrichment": {
-                "implementing_playbooks": [
-                    "Enrichment Playbook"
-                ], 
-                "implementing_scripts": [
-                    "ExtractURL", 
-                    "ExtractHash", 
-                    "ExtractIP"
-                ], 
-                "name": "Incident Enrichment", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "playbook16": {
-                "implementing_commands": [
-                    "cs-device-ran-on", 
-                    "cs-device-search"
-                ], 
-                "implementing_scripts": [
-                    "Exists", 
-                    "SendEmail"
-                ], 
-                "name": "CrowdStrike Rapid IOC Hunting", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "CrowdStrike Falcon Sandbox - Detonate file": {
-                "toversion": "3.6.0", 
-                "implementing_commands": [
-                    "crowdstrike-detonate-file"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "CrowdStrike Falcon Sandbox - Detonate file", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Enrich McAfee DXL using 3rd party sandbox": {
-                "implementing_playbooks": [
-                    "WildFire - Detonate file"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "Exists"
-                ], 
-                "name": "Enrich McAfee DXL using 3rd party sandbox", 
-                "implementing_commands": [
-                    "dxl-send-event"
-                ]
-            }
-        }, 
-        {
-            "Get File Sample From Hash - Carbon Black Enterprise Response": {
-                "toversion": "3.1.0", 
-                "implementing_commands": [
-                    "cb-binary-get"
-                ], 
-                "implementing_scripts": [
-                    "Exists"
-                ], 
-                "name": "Get File Sample From Hash - Carbon Black Enterprise Response", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Calculate Severity - Generic": {
-                "toversion": "3.5.1", 
-                "implementing_commands": [
-                    "setIncident"
-                ], 
-                "implementing_scripts": [
-                    "StringContains", 
-                    "Exists"
-                ], 
-                "name": "Calculate Severity - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Tenable.io Scan": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "tenable-io-launch-scan", 
-                    "tenable-io-get-scan-report", 
-                    "tenable-io-get-scan-status"
-                ], 
-                "name": "Tenable.io Scan", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "block_indicators_-_generic": {
-                "implementing_playbooks": [
-                    "Block URL - Generic", 
-                    "Block File - Generic", 
-                    "Block IP - Generic", 
-                    "Block Account - Generic"
-                ], 
-                "name": "Block Indicators - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "detonate_url_-_threatgrid": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "threat-grid-upload-sample", 
-                    "threat-grid-get-samples-state", 
-                    "threat-grid-url-to-file"
-                ], 
-                "name": "Detonate URL - ThreatGrid", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "TrendMicro Malware Alert Playbook": {
-                "implementing_scripts": [
-                    "TrendMicroGetPolicyID", 
-                    "TrendmicroSecurityProfileAssignToHost", 
-                    "TrendmicroAntiMalwareEventRetrieve", 
-                    "TrendMicroGetHostID"
-                ], 
-                "name": "TrendMicro Malware Alert Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "calculate_severity_-_3rd-party_integrations": {
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Calculate Severity - 3rd-party integrations", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Phishing Investigation - Generic": {
-                "toversion": "3.5.9", 
-                "implementing_playbooks": [
-                    "Detonate File - Generic", 
-                    "Extract Indicators - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Process Email - Generic", 
-                    "Calculate Severity - Generic", 
-                    "Email Address Enrichment - Generic"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "AssignAnalystToIncident", 
-                    "Set", 
-                    "SendEmail"
-                ], 
-                "name": "Phishing Investigation - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "detonate_url_-_joesecurity": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "joe-download-report", 
-                    "joe-analysis-submit-url", 
-                    "joe-analysis-info"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate URL - JoeSecurity", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "CrowdStrike Falcon Sandbox - Detonate file": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "crowdstrike-submit-sample", 
-                    "crowdstrike-scan"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "CrowdStrike Falcon Sandbox - Detonate file", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "crowdstrike_endpoint_enrichment": {
-                "implementing_commands": [
-                    "cs-device-search", 
-                    "cs-device-details"
-                ], 
-                "name": "CrowdStrike Endpoint Enrichment", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "cve_enrichment_-_generic": {
-                "implementing_commands": [
-                    "cve-search"
-                ], 
-                "implementing_scripts": [
-                    "cveReputation"
-                ], 
-                "name": "CVE Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "get_file_sample_by_hash_-_cylance_protect": {
-                "implementing_commands": [
-                    "cylance-protect-download-threat"
-                ], 
-                "implementing_scripts": [
-                    "http", 
-                    "UnzipFile", 
-                    "Exists"
-                ], 
-                "name": "Get File Sample By Hash - Cylance Protect", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "dedup_incidents_-_ml": {
-                "implementing_scripts": [
-                    "Print", 
-                    "CloseInvestigationAsDuplicate", 
-                    "GetDuplicatesMl"
-                ], 
-                "name": "DeDup incidents - ML", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "playbook5": {
-                "implementing_playbooks": [
-                    "Process Email", 
-                    "Enrichment Playbook", 
-                    "Hunt for bad IOCs", 
-                    "Account Enrichment", 
-                    "Detonate File - Generic"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "SendEmail", 
-                    "CheckSenderDomainDistance", 
-                    "CloseInvestigation", 
-                    "ExtractIP", 
-                    "IsMaliciousIndicatorFound", 
-                    "ExtractURL"
-                ], 
-                "name": "Phishing Playbook - Automated", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "TIE - IOC Hunt": {
-                "implementing_commands": [
-                    "tie-file-references"
-                ], 
-                "implementing_scripts": [
-                    "EPOFindSystem", 
-                    "Exists"
-                ], 
-                "name": "TIE - IOC Hunt", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "vulnerability_management_-_qualys_Job": {
-                "implementing_commands": [
-                    "qualys-report-fetch", 
-                    "closeInvestigation", 
-                    "qualys-report-list"
-                ], 
-                "implementing_scripts": [
-                    "QualysCreateIncidentFromReport", 
-                    "Set"
-                ], 
-                "name": "Vulnerability Management - Qualys (Job)", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "get_original_email_-_gmail": {
-                "implementing_commands": [
-                    "gmail-get-attachments", 
-                    "gmail-search", 
-                    "gmail-get-mail"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "DeleteContext"
-                ], 
-                "name": "Get Original Email - Gmail", 
-                "fromversion": 4.0
-            }
-        }, 
-        {
-            "detonate_url_-_mcafee_atd": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "atd-get-report", 
-                    "atd-check-status", 
-                    "atd-file-upload"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate URL - McAfee ATD", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Detonate URL - Lastline": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "lastline-get-report", 
-                    "lastline-upload-url"
-                ], 
-                "name": "Detonate URL - Lastline", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Detonate File - Generic": {
-                "toversion": "3.6.0", 
-                "implementing_playbooks": [
-                    "CrowdStrike Falcon Sandbox - Detonate file", 
-                    "WildFire - Detonate file"
-                ], 
-                "name": "Detonate File - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "process_email_-_ews": {
-                "implementing_commands": [
-                    "ews-get-attachment"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Process Email - EWS", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook7": {
-                "implementing_commands": [
-                    "slack-send", 
-                    "ExposeModules"
-                ], 
-                "implementing_scripts": [
-                    "IsIntegrationAvailable", 
-                    "Exists"
-                ], 
-                "name": "Hunting C&C Communication Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "get_file_sample_from_path_-_d2": {
-                "implementing_scripts": [
-                    "IncidentAddSystem", 
-                    "FetchFileD2"
-                ], 
-                "name": "Get File Sample From Path - D2", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "get_original_email_-_ews": {
-                "implementing_commands": [
-                    "ews-search-mailbox", 
-                    "ews-get-attachment", 
-                    "ews-get-items"
-                ], 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "Set"
-                ], 
-                "name": "Get Original Email - EWS", 
-                "fromversion": 4.0
-            }
-        }, 
-        {
-            "playbook17": {
-                "implementing_scripts": [
-                    "CBPFindRule", 
-                    "CBPCatalogFindHash", 
-                    "Exists"
-                ], 
-                "name": "Carbon black Protection Rapid IOC Hunting", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "calculate_severity_-_critical_assets": {
-                "toversion": "3.6.1", 
-                "implementing_scripts": [
-                    "StringContains", 
-                    "Set", 
-                    "Exists"
-                ], 
-                "name": "Calculate Severity - Critical assets", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook14": {
-                "implementing_scripts": [
-                    "UtilAnyResults", 
-                    "SendEmail", 
-                    "CPShowBackupStatus", 
-                    "CloseInvestigation", 
-                    "SNOpenTicket", 
-                    "SCPPullFiles", 
-                    "CPCreateBackup"
-                ], 
-                "name": "Checkpoint Firewall Configuration Backup Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "endpoint_enrichment_-_generic": {
-                "implementing_playbooks": [
-                    "CrowdStrike Endpoint Enrichment"
-                ], 
-                "implementing_commands": [
-                    "cylance-protect-get-devices", 
-                    "cb-sensor-info", 
-                    "so-agents-query"
-                ], 
-                "implementing_scripts": [
-                    "EPOFindSystem", 
-                    "Exists", 
-                    "ADGetComputer"
-                ], 
-                "name": "Endpoint Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "access_investigation_-_qradar": {
-                "implementing_playbooks": [
-                    "QRadar - Get offense correlations", 
-                    "Access Investigation - Generic"
-                ], 
-                "implementing_commands": [
-                    "setIncident"
-                ], 
-                "name": "Access Investigation - QRadar", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "DBotCreatePhishingClassifier": {
-                "implementing_scripts": [
-                    "DBotTrainTextClassifier", 
-                    "Base64ListToFile", 
-                    "DBotPredictPhishingEvaluation", 
-                    "DBotPreparePhishingData"
-                ], 
-                "name": "DBot Create Phishing Classifier", 
-                "fromversion": "4.1.0"
-            }
-        }, 
-        {
-            "detonate_url_-_generic": {
-                "implementing_playbooks": [
-                    "Detonate URL - CrowdStrike", 
-                    "Detonate URL - JoeSecurity", 
-                    "Detonate URL - Cuckoo", 
-                    "Detonate URL - Lastline", 
-                    "Detonate URL - ThreatGrid", 
-                    "Detonate URL - McAfee ATD"
-                ], 
-                "name": "Detonate URL - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "tenable-sc-scan": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "tenable-sc-get-scan-report", 
-                    "tenable-sc-launch-scan"
-                ], 
-                "name": "Launch Scan - Tenable.sc", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "detonate_file_from_url_-_wildfire": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "wildfire-upload-file-remote", 
-                    "wildfire-report"
-                ], 
-                "name": "Detonate File From URL - WildFire", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "block_endpoint_-_carbon_black_response": {
-                "implementing_commands": [
-                    "cb-sensor-info", 
-                    "cb-quarantine-device"
-                ], 
-                "name": "Block Endpoint - Carbon Black Response", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "close_incident_if_duplicate_found": {
-                "implementing_scripts": [
-                    "FindSimilarIncidents", 
-                    "CloseInvestigationAsDuplicate"
-                ], 
-                "name": "DeDup incidents", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "scan_assets_nexpose": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "nexpose-start-assets-scan", 
-                    "nexpose-get-scan"
-                ], 
-                "name": "Scan Assets - Nexpose", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "extract_indicators_-_generic": {
-                "implementing_scripts": [
-                    "ExtractHash", 
-                    "ExtractDomain", 
-                    "ExtractURL", 
-                    "ExtractEmail", 
-                    "ExtractIP"
-                ], 
-                "name": "Extract Indicators - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "playbook0": {
-                "toversion": "3.1.0", 
-                "implementing_playbooks": [
-                    "Enrichment Playbook"
-                ], 
-                "implementing_scripts": [
-                    "TrendMicroClassifier", 
-                    "Exists", 
-                    "IncidentSet", 
-                    "SplunkEmailParser", 
-                    "QRadarClassifier", 
-                    "MapValues", 
-                    "Print", 
-                    "VectraClassifier", 
-                    "NexposeEmailParser"
-                ], 
-                "name": "Default", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "dedup_-_generic": {
-                "implementing_scripts": [
-                    "FindSimilarIncidentsByText", 
-                    "GetDuplicatesMlv2", 
-                    "CloseInvestigationAsDuplicate", 
-                    "FindSimilarIncidents"
-                ], 
-                "name": "Dedup - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "malware_investigation-_generic_-_setup": {
-                "implementing_playbooks": [
-                    "Get File Sample From Path - Generic", 
-                    "Get File Sample By Hash - Generic", 
-                    "Search Endpoints By Hash - Generic"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Malware Investigation - Generic - Setup", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "block_file_-_carbon_black_response": {
-                "implementing_commands": [
-                    "cb-get-hash-blacklist", 
-                    "cb-block-hash"
-                ], 
-                "name": "Block File - Carbon Black Response", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "search_and_delete_emails_-_ews": {
-                "implementing_commands": [
-                    "ews-search-mailboxes", 
-                    "ews-delete-items"
-                ], 
-                "implementing_scripts": [
-                    "BuildEWSQuery"
-                ], 
-                "name": "Search And Delete Emails - EWS", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Detonate File - BitDam": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "bitdam-upload-file", 
-                    "bitdam-get-verdict"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate File - BitDam", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "MAR - Endpoint data collection": {
-                "implementing_scripts": [
-                    "EPOFindSystem", 
-                    "Exists"
-                ], 
-                "name": "MAR - Endpoint data collection", 
-                "implementing_commands": [
-                    "mar-search-multiple"
-                ]
-            }
-        }, 
-        {
-            "process_email_-_add_custom_fields": {
-                "implementing_scripts": [
-                    "IncidentSet"
-                ], 
-                "name": "Process Email - Add custom fields", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "detonate_url_-_crowdstrike": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "crowdstrike-submit-url", 
-                    "crowdstrike-scan"
-                ], 
-                "name": "Detonate URL - CrowdStrike", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "ip_enrichment_generic": {
-                "implementing_playbooks": [
-                    "Endpoint Enrichment - Generic"
-                ], 
-                "implementing_commands": [
-                    "vt-private-get-ip-report"
-                ], 
-                "implementing_scripts": [
-                    "IsIPInRanges", 
-                    "IPToHost", 
-                    "IPReputation"
-                ], 
-                "name": "IP Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "domain_enrichment_generic": {
-                "toversion": "3.5.1", 
-                "implementing_scripts": [
-                    "DomainReputation"
-                ], 
-                "name": "Domain Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "QRadarFullSearch": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "qradar-get-search", 
-                    "qradar-get-search-results", 
-                    "qradar-searches"
-                ], 
-                "name": "QRadarFullSearch", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Arcsight - Get events related to the Case": {
-                "implementing_scripts": [
-                    "IncidentSet", 
-                    "Set", 
-                    "Exists"
-                ], 
-                "name": "Arcsight - Get events related to the Case", 
-                "implementing_commands": [
-                    "as-get-security-events", 
-                    "as-get-case", 
-                    "as-get-case-event-ids"
-                ]
-            }
-        }, 
-        {
-            "Account Enrichment": {
-                "toversion": "3.1.0", 
-                "implementing_scripts": [
-                    "ADGetUser", 
-                    "Exists"
-                ], 
-                "name": "Account Enrichment", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "malware_investigation-_generic": {
-                "toversion": "3.6.0", 
-                "implementing_playbooks": [
-                    "Malware Investigation - Generic - Setup", 
-                    "Extract Indicators - Generic", 
-                    "Calculate Severity - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Detonate File - Generic"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "AssignAnalystToIncident"
-                ], 
-                "name": "Malware Investigation - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "QRadar - Get offense correlations ": {
-                "toversion": "3.1.0", 
-                "implementing_scripts": [
-                    "AreValuesEqual", 
-                    "QRadarGetCorrelationLogs", 
-                    "QRadarGetOffenseCorrelations", 
-                    "Exists"
-                ], 
-                "name": "QRadar - Get offense correlations "
-            }
-        }, 
-        {
-            "QRadar - Get offense correlations ": {
-                "implementing_scripts": [
-                    "QRadarGetCorrelationLogs", 
-                    "QRadarGetOffenseCorrelations"
-                ], 
-                "name": "QRadar - Get offense correlations", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "block_ip_-_generic": {
-                "implementing_playbooks": [
-                    "Add Indicator to Miner - Palo Alto MineMeld"
-                ], 
-                "implementing_commands": [
-                    "zscaler-blacklist-ip", 
-                    "checkpoint-block-ip"
-                ], 
-                "implementing_scripts": [
-                    "PanoramaBlockIP"
-                ], 
-                "name": "Block IP - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "vulnerability_handling_-_qualys_-_add _ustom_fields_to_default_layout": {
-                "implementing_scripts": [
-                    "IncidentSet"
-                ], 
-                "name": "Vulnerability Handling - Qualys - Add custom fields to default layout", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook3": {
-                "name": "Ransomware Playbook - Manual", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Enrich DXL with ATD verdict": {
-                "implementing_playbooks": [
-                    "ATD - Detonate File"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "Exists"
-                ], 
-                "name": "Enrich DXL with ATD verdict", 
-                "implementing_commands": [
-                    "dxl-send-event"
-                ]
-            }
-        }, 
-        {
-            "Detonate File - SNDBOX": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "sndbox-analysis-info", 
-                    "sndbox-analysis-submit-sample", 
-                    "sndbox-download-report"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate File - SNDBOX", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Phishing Investigation - Generic": {
-                "implementing_playbooks": [
-                    "Search And Delete Emails - Generic", 
-                    "Detonate File - Generic", 
-                    "Extract Indicators From File - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Process Email - Generic", 
-                    "Block Indicators - Generic", 
-                    "Email Address Enrichment - Generic", 
-                    "Calculate Severity - Generic"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "send-mail"
-                ], 
-                "implementing_scripts": [
-                    "AssignAnalystToIncident", 
-                    "Set", 
-                    "SendEmail"
-                ], 
-                "name": "Phishing Investigation - Generic", 
-                "fromversion": 4.0
-            }
-        }, 
-        {
-            "playbook2": {
-                "name": "Phishing Playbook - Manual", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Hunt for bad IOCs": {
-                "implementing_playbooks": [
-                    "CrowdStrike Rapid IOC Hunting", 
-                    "Carbon Black Rapid IOC Hunting", 
-                    "TIE - IOC Hunt", 
-                    "Carbon black Protection Rapid IOC Hunting"
-                ], 
-                "name": "Hunt for bad IOCs", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "extract_indicators_from_file_-_generic": {
-                "implementing_scripts": [
-                    "ReadPDFFile", 
-                    "Set", 
-                    "ExtractIndicatorsFromTextFile"
-                ], 
-                "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Sentinel One - Endpoint data collection": {
-                "implementing_scripts": [
-                    "Print", 
-                    "Exists"
-                ], 
-                "name": "Sentinel One - Endpoint data collection", 
-                "implementing_commands": [
-                    "so-agents-query", 
-                    "so-get-agent-processes"
-                ]
-            }
-        }, 
-        {
-            "process_email_-_generic": {
-                "implementing_playbooks": [
-                    "Get Original Email - Generic"
-                ], 
-                "implementing_commands": [
-                    "setIncident", 
-                    "rasterize-email"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "ParseEmailFiles"
-                ], 
-                "name": "Process Email - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "playbook13": {
-                "implementing_commands": [
-                    "servicenow-incident-create"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "commentsToContext", 
-                    "Ping"
-                ], 
-                "name": "McAfee ePO Endpoint Connectivity Diagnostics Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "vulnerability_handling_-_nexpose": {
-                "implementing_playbooks": [
-                    "CVE Enrichment - Generic", 
-                    "Endpoint Enrichment - Generic", 
-                    "Calculate Severity - Generic"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "nexpose-get-asset-vulnerability", 
-                    "nexpose-get-asset", 
-                    "setIncident"
-                ], 
-                "name": "Vulnerability Handling - Nexpose", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Calculate Severity - Generic": {
-                "toversion": "3.1.0", 
-                "implementing_commands": [
-                    "setIncident"
-                ], 
-                "implementing_scripts": [
-                    "Print", 
-                    "StringContains", 
-                    "Exists"
-                ], 
-                "name": "Calculate Severity - Generic", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "playbook8": {
-                "name": "Lost / Stolen Device Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "vulnerability_handling_-_qualys": {
-                "implementing_playbooks": [
-                    "CVE Enrichment - Generic", 
-                    "Vulnerability Handling - Qualys - Add custom fields to default layout", 
-                    "Endpoint Enrichment - Generic", 
-                    "Calculate Severity - Generic"
-                ], 
-                "implementing_commands": [
-                    "qualys-host-list", 
-                    "qualys-vulnerability-list"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "DisplayHTML"
-                ], 
-                "name": "Vulnerability Handling - Qualys", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook10": {
-                "implementing_playbooks": [
-                    "Hunt for bad IOCs"
-                ], 
-                "implementing_scripts": [
-                    "ExtractHash", 
-                    "Exists", 
-                    "ReadFile", 
-                    "ExtractIP", 
-                    "Print", 
-                    "ExtractURL"
-                ], 
-                "name": "Rapid IOC Hunting Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "search_endpoints_by_hash_-_carbon_black_response": {
-                "implementing_scripts": [
-                    "Set", 
-                    "CBFindHash"
-                ], 
-                "name": "Search Endpoints By Hash - Carbon Black Response", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "scan_site_nexpose": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "nexpose-start-site-scan", 
-                    "nexpose-get-scan"
-                ], 
-                "name": "Scan Site - Nexpose", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Failed Login Playbook With Slack": {
-                "implementing_commands": [
-                    "slack-send"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IncidentSet", 
-                    "ADExpirePassword", 
-                    "SlackAskUser"
-                ], 
-                "name": "Failed Login Playbook With Slack", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "WildFire - Detonate file": {
-                "toversion": "3.1.0", 
-                "implementing_scripts": [
-                    "Exists"
-                ], 
-                "name": "WildFire - Detonate file", 
-                "implementing_commands": [
-                    "wildfire-upload", 
-                    "wildfire-report"
-                ]
-            }
-        }, 
-        {
-            "File Enrichment - Generic": {
-                "implementing_playbooks": [
-                    "File Enrichment - File reputation", 
-                    "File Enrichment - Virus Total Private API"
-                ], 
-                "implementing_commands": [
-                    "cylance-protect-get-threat", 
-                    "pan-appframework-search-by-file-hash"
-                ], 
-                "name": "File Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "vulnerability_management_-_nexpose_job": {
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "nexpose-create-assets-report", 
-                    "nexpose-search-assets"
-                ], 
-                "implementing_scripts": [
-                    "NexposeCreateIncidentsFromAssets"
-                ], 
-                "name": "Vulnerability Management - Nexpose (Job)", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Archer initiate incident": {
-                "implementing_commands": [
-                    "archer-get-file"
-                ], 
-                "name": "Archer initiate incident", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "block_file_-_generic": {
-                "implementing_playbooks": [
-                    "Block File - Carbon Black Response"
-                ], 
-                "name": "Block File - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "calculate_severity_-_critical_assets": {
-                "implementing_scripts": [
-                    "StringContains", 
-                    "Set"
-                ], 
-                "name": "Calculate Severity - Critical assets", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "add_indicator_to_miner_-_palo_alto_mineMeld": {
-                "implementing_commands": [
-                    "minemeld-add-to-miner"
-                ], 
-                "name": "Add Indicator to Miner - Palo Alto MineMeld", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "domain_enrichment_generic": {
-                "implementing_commands": [
-                    "vt-private-get-domain-report"
-                ], 
-                "implementing_scripts": [
-                    "DomainReputation"
-                ], 
-                "name": "Domain Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "playbook11": {
-                "implementing_commands": [
-                    "epo-update-repository", 
-                    "epo-get-latest-dat", 
-                    "epo-get-current-dat"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IncidentSet", 
-                    "Sleep", 
-                    "AreValuesEqual", 
-                    "SendEmail"
-                ], 
-                "name": "McAfee ePO Repository Compliance Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "url_enrichment_-_generic": {
-                "implementing_commands": [
-                    "vt-private-get-url-report", 
-                    "rasterize"
-                ], 
-                "implementing_scripts": [
-                    "URLSSLVerification", 
-                    "Exists", 
-                    "URLReputation"
-                ], 
-                "name": "URL Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "entity_enrichment_generic": {
-                "implementing_playbooks": [
-                    "Account Enrichment - Generic", 
-                    "Endpoint Enrichment - Generic", 
-                    "Email Address Enrichment - Generic", 
-                    "URL Enrichment - Generic", 
-                    "File Enrichment - Generic", 
-                    "Domain Enrichment - Generic", 
-                    "IP Enrichment - Generic"
-                ], 
-                "name": "Entity Enrichment - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "search_endpoints_by_hash_-_generic": {
-                "implementing_playbooks": [
-                    "Search Endpoints By Hash - Carbon Black Response", 
-                    "Search Endpoints By Hash - CrowdStrike", 
-                    "Search Endpoints By Hash - TIE", 
-                    "Search Endpoints By Hash - Carbon Black Protection"
-                ], 
-                "name": "Search Endpoints By Hash - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "malware_investigation-_generic": {
-                "implementing_playbooks": [
-                    "Malware Investigation - Generic - Setup", 
-                    "Calculate Severity - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Detonate File - Generic"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "AssignAnalystToIncident"
-                ], 
-                "name": "Malware Investigation - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "calculate_severity_-_indicators_dbotscore": {
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Calculate Severity - Indicators DBotScore", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "Detonate File - Cuckoo": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "cuckoo-task-screenshot", 
-                    "cuckoo-get-task-report", 
-                    "cuckoo-view-task", 
-                    "cuckoo-create-task-from-file"
-                ], 
-                "implementing_scripts": [
-                    "Sleep"
-                ], 
-                "name": "Detonate File - Cuckoo", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Account Enrichment": {
-                "implementing_scripts": [
-                    "ADGetUser", 
-                    "Exists"
-                ], 
-                "name": "Account Enrichment", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "entity_enrichment_generic": {
-                "toversion": "3.5.1", 
-                "implementing_playbooks": [
-                    "Account Enrichment - Generic", 
-                    "Endpoint Enrichment - Generic", 
-                    "DBot Indicator Enrichment - Generic", 
-                    "Email Address Enrichment - Generic", 
-                    "URL Enrichment - Generic", 
-                    "File Enrichment - Generic", 
-                    "Domain Enrichment - Generic", 
-                    "IP Enrichment - Generic"
-                ], 
-                "name": "Entity Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Phishing Investigation - Generic": {
-                "toversion": "3.9.9", 
-                "implementing_playbooks": [
-                    "Search And Delete Emails - Generic", 
-                    "Detonate File - Generic", 
-                    "Extract Indicators From File - Generic", 
-                    "Process Email - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Email Address Enrichment - Generic", 
-                    "Calculate Severity - Generic"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "AssignAnalystToIncident", 
-                    "Set", 
-                    "SendEmail"
-                ], 
-                "name": "Phishing Investigation - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "DBotCreatePhishingClassifierJob": {
-                "implementing_playbooks": [
-                    "DBot Create Phishing Classifier"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation"
-                ], 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "name": "DBot Create Phishing Classifier Job", 
-                "fromversion": "4.1.0"
-            }
-        }, 
-        {
-            "playbook5": {
-                "toversion": "3.1.0", 
-                "implementing_playbooks": [
-                    "Process Email", 
-                    "Detonate files", 
-                    "Hunt for bad IOCs", 
-                    "Account Enrichment", 
-                    "Enrichment Playbook"
-                ], 
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "SendEmail", 
-                    "CheckSenderDomainDistance", 
-                    "CloseInvestigation", 
-                    "ExtractIP", 
-                    "IsMaliciousIndicatorFound", 
-                    "ExtractURL"
-                ], 
-                "name": "Phishing Playbook - Automated", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Demisto_Self-Defense_-_Account_policy_monitoring_playbook": {
-                "implementing_commands": [
-                    "TwilioSendSMS", 
-                    "slack-send", 
-                    "demisto-api-get", 
-                    "setIncident"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation"
-                ], 
-                "name": "Demisto Self-Defense - Account policy monitoring playbook", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "ATD - Detonate File": {
-                "toversion": "3.6.0", 
-                "implementing_scripts": [
-                    "Exists"
-                ], 
-                "name": "ATD - Detonate File", 
-                "implementing_commands": [
-                    "detonate-file"
-                ]
-            }
-        }, 
-        {
-            "block_account_-_generic": {
-                "implementing_commands": [
-                    "ad-disable-account"
-                ], 
-                "name": "Block Account - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "file_enrichment_-_virus_total_private_api": {
-                "implementing_commands": [
-                    "vt-private-check-file-behaviour", 
-                    "vt-private-get-file-report"
-                ], 
-                "name": "File Enrichment - Virus Total Private API", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "file_enrichment_-_file_reputation": {
-                "implementing_scripts": [
-                    "FileReputation"
-                ], 
-                "name": "File Enrichment - File reputation", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "block_url_-_generic": {
-                "implementing_playbooks": [
-                    "Add Indicator to Miner - Palo Alto MineMeld"
-                ], 
-                "implementing_commands": [
-                    "zscaler-blacklist-url"
-                ], 
-                "name": "Block URL - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Process Email": {
-                "implementing_scripts": [
-                    "Set", 
-                    "Exists", 
-                    "ParseEmailFiles"
-                ], 
-                "name": "Process Email", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "playbook15": {
-                "implementing_commands": [
-                    "tn-deploy-package", 
-                    "tn-ask-question", 
-                    "tn-get-saved-question"
-                ], 
-                "name": "Tanium Demo Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "get_file_sample_by_hash_-_carbon_black_enterprise_Response": {
-                "implementing_commands": [
-                    "cb-binary-get"
-                ], 
-                "implementing_scripts": [
-                    "Exists"
-                ], 
-                "name": "Get File Sample By Hash - Carbon Black Enterprise Response", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Get File Sample From Hash - Cylance Protect": {
-                "toversion": "3.1.0", 
-                "implementing_commands": [
-                    "cylance-protect-download-threat"
-                ], 
-                "implementing_scripts": [
-                    "http", 
-                    "UnzipFile", 
-                    "Exists"
-                ], 
-                "name": "Get File Sample From Hash - Cylance Protect", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "access_investigation_-_generic": {
-                "implementing_playbooks": [
-                    "IP Enrichment - Generic", 
-                    "Account Enrichment - Generic"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "setIncident"
-                ], 
-                "implementing_scripts": [
-                    "AssignAnalystToIncident", 
-                    "ADGetUser", 
-                    "EmailAskUser"
-                ], 
-                "name": "Access Investigation - Generic", 
-                "fromversion": "3.6.0"
-            }
-        }, 
-        {
-            "search_endpoints_by_hash_-_tie": {
-                "implementing_commands": [
-                    "tie-file-references"
-                ], 
-                "implementing_scripts": [
-                    "EPOFindSystem"
-                ], 
-                "name": "Search Endpoints By Hash - TIE", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "get_file_sample_from_path_-_carbon_black_enterprise_response": {
-                "implementing_scripts": [
-                    "CBLiveGetFile", 
-                    "Exists"
-                ], 
-                "name": "Get File Sample From Path - Carbon Black Enterprise Response", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "WildFire - Detonate file": {
-                "toversion": "3.6.0", 
-                "implementing_commands": [
-                    "wildfire-report", 
-                    "detonate-file"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "WildFire - Detonate file", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Detonate File - Generic": {
-                "implementing_playbooks": [
-                    "CrowdStrike Falcon Sandbox - Detonate file", 
-                    "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
-                    "Detonate File - Cuckoo", 
-                    "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
-                    "Detonate File - ThreatGrid"
-                ], 
-                "name": "Detonate File - Generic", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "D2 - Endpoint data collection": {
-                "implementing_scripts": [
-                    "D2ExecuteCommand", 
-                    "ActiveUsersD2", 
-                    "Exists", 
-                    "IncidentAddSystem", 
-                    "FetchFileD2", 
-                    "AreValuesEqual"
-                ], 
-                "name": "D2 - Endpoint data collection"
-            }
-        }, 
-        {
-            "Enrichment Playbook": {
-                "implementing_scripts": [
-                    "Print", 
-                    "FileReputation", 
-                    "IPReputation", 
-                    "Exists", 
-                    "URLReputation"
-                ], 
-                "name": "Enrichment Playbook", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "Office 365 Search and Delete": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "ews-o365-remove-compliance-search", 
-                    "ews-o365-purge-compliance-search-results", 
-                    "ews-o365-get-compliance-search", 
-                    "ews-o365-start-compliance-search"
-                ], 
-                "name": "Office 365 Search and Delete", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "dbot_indicator_enrichment_-_generic": {
-                "implementing_scripts": [
-                    "GetIndicatorDBotScore"
-                ], 
-                "name": "DBot Indicator Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "playbook0": {
-                "implementing_playbooks": [
-                    "Extract Indicators - Generic", 
-                    "Entity Enrichment - Generic", 
-                    "Calculate Severity - Generic"
-                ], 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "AssignAnalystToIncident"
-                ], 
-                "name": "Default", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "File Enrichment - Generic": {
-                "toversion": "3.5.1", 
-                "implementing_scripts": [
-                    "FileReputation"
-                ], 
-                "name": "File Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "ATD - Detonate File": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "atd-get-report", 
-                    "atd-file-upload", 
-                    "atd-check-status"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "ATD - Detonate File", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "account_enrichment_-_generic": {
-                "implementing_scripts": [
-                    "ADGetUser", 
-                    "Exists"
-                ], 
-                "name": "Account Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "detonatefile_-_joesecurity": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "joe-download-report", 
-                    "joe-analysis-info", 
-                    "joe-analysis-submit-sample"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate File - JoeSecurity", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "ip_enrichment_generic": {
-                "toversion": "3.5.1", 
-                "implementing_scripts": [
-                    "IsIPInRanges", 
-                    "IPReputation", 
-                    "Exists"
-                ], 
-                "name": "IP Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Detonate files": {
-                "toversion": "3.1.0", 
-                "implementing_scripts": [
-                    "Print", 
-                    "SandboxDetonateFile", 
-                    "Exists"
-                ], 
-                "name": "Detonate files", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "detonate_file_from_url_-_joesecurity": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "joe-download-report", 
-                    "joe-analysis-submit-sample"
-                ], 
-                "name": "Detonate File From URL - JoeSecurity", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "Carbon Black Rapid IOC Hunting": {
-                "implementing_scripts": [
-                    "CBFindHash", 
-                    "Exists"
-                ], 
-                "name": "Carbon Black Rapid IOC Hunting", 
-                "fromversion": "2.5.0"
-            }
-        }, 
-        {
-            "email_address_enrichment_-_generic": {
-                "toversion": "3.5.1", 
-                "implementing_scripts": [
-                    "IsEmailAddressInternal", 
-                    "EmailReputation", 
-                    "ADGetUser", 
-                    "Exists", 
-                    "EmailDomainSquattingReputation"
-                ], 
-                "name": "Email Address Enrichment - Generic", 
-                "fromversion": "3.5.0"
-            }
-        }, 
-        {
-            "Endpoint data collection": {
-                "implementing_playbooks": [
-                    "Sentinel One - Endpoint data collection", 
-                    "MAR - Endpoint data collection", 
-                    "D2 - Endpoint data collection"
-                ], 
-                "implementing_scripts": [
-                    "AreValuesEqual"
-                ], 
-                "name": "Endpoint data collection"
-            }
-        }, 
-        {
-            "Get File Sample From Hash - Generic": {
-                "toversion": "3.1.0", 
-                "implementing_playbooks": [
-                    "Get File Sample From Hash - Cylance Protect", 
-                    "Get File Sample From Hash - Carbon Black Enterprise Response"
-                ], 
-                "name": "Get File Sample From Hash - Generic"
-            }
-        }, 
-        {
-            "WildFire - Detonate file": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "wildfire-upload", 
-                    "wildfire-report"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "WildFire - Detonate file", 
-                "fromversion": "4.0.0"
-            }
-        }, 
-        {
-            "detonate_file_-_threatgrid": {
-                "implementing_playbooks": [
-                    "GenericPolling"
-                ], 
-                "implementing_commands": [
-                    "threat-grid-upload-sample", 
-                    "threat-grid-get-samples-state"
-                ], 
-                "implementing_scripts": [
-                    "Set"
-                ], 
-                "name": "Detonate File - ThreatGrid", 
-                "fromversion": "4.0.0"
             }
         }
     ], 
@@ -13285,9 +13285,11 @@
         {
             "ADGetComputer": {
                 "depends_on": [
-                    "ad-search"
+                    "ad-search", 
+                    "fromversion"
                 ], 
-                "name": "ADGetComputer"
+                "name": "ADGetComputer", 
+                "fromversion": "100.100.100"
             }
         }, 
         {

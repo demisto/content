@@ -30,7 +30,8 @@ BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
 BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
 
 
 # File type regex
@@ -304,11 +305,13 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     updated_playbook_names = set([])
 
     for script_id in script_names:
-        enrich_for_script_id(script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names)
+        enrich_for_script_id(script_id, script_names, script_set, playbook_set,
+                             playbook_names, updated_script_names, updated_playbook_names)
 
     integration_to_command = get_integration_commands(integration_ids, integration_set)
     for _, integration_commands in integration_to_command.items():
-        enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names)
+        enrich_for_integration_id(integration_commands, script_set, playbook_set,
+                                  playbook_names, script_names, updated_script_names, updated_playbook_names)
 
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names)
@@ -319,11 +322,19 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
 
-    affected_ids_string = '\n'.join(script_names) + '\n'.join(playbook_names) + '\n'.join(integration_ids)
-    print('The following ids are affected due to the changes you made:\n{}\n\n'.format(affected_ids_string))
+    affected_ids_string = ""
+    if script_names:
+        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n\n'
+    if playbook_names:
+        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n\n'
+    if integration_ids:
+        affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n\n'
+
+    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
 
 
-def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names, updated_script_names, updated_playbook_names):
+def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names,
+                              updated_script_names, updated_playbook_names):
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
@@ -332,7 +343,8 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
                 playbook_name = playbook_data.get('name')
                 if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
                     updated_playbook_names.add(playbook_name)
-                    enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names)
+                    enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set,
+                                           updated_playbook_names)
 
     for script in script_set:
         script_id = script.keys()[0]
@@ -342,7 +354,8 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
             if integration_command in script_data.get('depends_on', []):
                 if script_name not in script_names and script_name not in updated_script_names:
                     updated_script_names.add(script_name)
-                    enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names)
+                    enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names,
+                                         updated_script_names, updated_playbook_names)
 
 
 def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names):
@@ -356,7 +369,8 @@ def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbo
                 enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names)
 
 
-def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names, updated_playbook_names):
+def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names,
+                         updated_playbook_names):
     for script in script_set:
         script_id = script.keys()[0]
         script_data = script.values()[0]
@@ -364,7 +378,8 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
             script_name = script_data.get('name')
             if script_name not in script_names and script_name not in updated_script_names:
                 updated_script_names.add(script_name)
-                enrich_for_script_id(script_name, script_names, script_set, playbook_set, updated_script_names, updated_playbook_names)
+                enrich_for_script_id(script_name, script_names, script_set, playbook_set, updated_script_names,
+                                     updated_playbook_names)
 
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
@@ -373,7 +388,7 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
             playbook_name = playbook_data.get('name')
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
                 updated_playbook_names.add(playbook_name)
-                enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_script_names, updated_playbook_names)
+                enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names)
 
 
 def get_test_from_conf(branch_name):
@@ -460,7 +475,7 @@ def create_test_file(is_nightly):
 
         tests_string = '\n'.join(tests)
         if tests_string:
-            print('Collected the following tests:\n{0}\n\n'.format(tests_string))
+            print('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
 

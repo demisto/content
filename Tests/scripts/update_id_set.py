@@ -232,6 +232,10 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
+    is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
+
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
 
@@ -239,9 +243,11 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
         instance_id = instance.keys()[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
-        if obj_id == instance_id and file_from_version == integration_from_version and \
-                file_to_version == integration_to_version:
-            instance[obj_id] = obj_data[obj_id]
+        if obj_id == instance_id:
+            if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
+                if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
+                    print('fromversion')
+                    instance[obj_id] = obj_data[obj_id]
 
 
 def re_create_id_set():

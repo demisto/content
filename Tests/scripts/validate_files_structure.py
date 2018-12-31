@@ -154,6 +154,7 @@ def validate_file_release_notes(file_path):
 
     return True
 
+
 def validate_schema(file_path, matching_regex=None):
     if matching_regex is None:
         for regex in CHECKED_TYPES_REGEXES:
