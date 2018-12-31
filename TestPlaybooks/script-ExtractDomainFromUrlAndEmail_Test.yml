@@ -1,0 +1,42 @@
+commonfields:
+  id: ExtractDomainFromUrlAndEmail_Test
+  version: 12
+name: ExtractDomainFromUrlAndEmail_Test
+script: |-
+  EXPECTED_EMAIL_DOMAINS = ('domain.dev.com', 'dev.com')
+  EXPECTED_URL_DOMAINS = ('domain.com', )
+
+  # Email Test
+  dArgs = {"input": "test@domain.dev.com"}
+  # Calling a command - returns a list of one or more entries
+  resCmdName = demisto.executeCommand("ExtractDomainFromUrlAndEmail", dArgs)
+
+  is_error = any([isError(entry) for entry in resCmdName])
+  results = [entry['Contents'] for entry in resCmdName]
+  is_valid_output = len(results) == len(EXPECTED_EMAIL_DOMAINS) and all(domain in results for domain in EXPECTED_EMAIL_DOMAINS)
+
+  if is_error or not is_valid_output:
+      demisto.results(resCmdName)
+      return_error('Failed to pass email extraction test. see above results')
+
+  # URL Test
+  dArgs = {"input": "https://www.domain.com"}
+  # Calling a command - returns a list of one or more entries
+  resCmdName = demisto.executeCommand("ExtractDomainFromUrlAndEmail", dArgs)
+
+  is_error = any([isError(entry) for entry in resCmdName])
+  results = [entry['Contents'] for entry in resCmdName]
+  is_valid_output = len(results) == len(EXPECTED_URL_DOMAINS) and all(domain in results for domain in EXPECTED_URL_DOMAINS)
+
+  if is_error or not is_valid_output:
+      demisto.results(resCmdName)
+      return_error('Failed to pass url extraction test. see above results')
+
+
+  demisto.results('ok')
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

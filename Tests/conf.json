@@ -7,6 +7,9 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "playbookID": "ExtractDomainFromUrlAndEmail_TestPlaybook"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {

@@ -47,3 +47,5 @@ args:
 scripttarget: 0
 dockerimage: demisto/tld
 releaseNotes: extract parent domain for emails (in addition to full domain)
+tests:
+  - ExtractDomainFromUrlAndEmail_TestPlaybook

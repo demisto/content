@@ -1,0 +1,64 @@
+id: ExtractDomainFromUrlAndEmail_TestPlaybook
+version: 1
+name: ExtractDomainFromUrlAndEmail_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 332883ac-2e37-415d-8293-10ae30a46974
+    type: start
+    task:
+      id: 332883ac-2e37-415d-8293-10ae30a46974
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 5f5ae326-f0ba-42e7-8fb0-426925ed4dba
+    type: regular
+    task:
+      id: 5f5ae326-f0ba-42e7-8fb0-426925ed4dba
+      version: -1
+      name: ExtractDomainFromUrlAndEmail - Test
+      scriptName: ExtractDomainFromUrlAndEmail_Test
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 245,
+        "width": 400,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
