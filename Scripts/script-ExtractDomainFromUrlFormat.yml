@@ -46,3 +46,4 @@ args:
   description: The URL or Email to process
 scripttarget: 0
 dockerimage: demisto/tld
+releaseNotes: extract parent domain for emails (in addition to full domain)
