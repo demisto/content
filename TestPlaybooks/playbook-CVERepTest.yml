@@ -1,0 +1,146 @@
+id: CVE-test
+version: -1
+name: CVE-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 44d09adc-07ae-4ea3-84fa-43539d5f0911
+    type: start
+    task:
+      id: 44d09adc-07ae-4ea3-84fa-43539d5f0911
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: e4589cd4-b458-4fd9-8319-d856f9599e97
+    type: regular
+    task:
+      id: e4589cd4-b458-4fd9-8319-d856f9599e97
+      version: -1
+      name: cveReputation
+      description: Provides  severity of CVE based on CVSS score where available
+      scriptName: cveReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        simple: CVE-2018-20477
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 0745935c-12ee-4877-8dd7-324607e1ea59
+    type: condition
+    task:
+      id: 0745935c-12ee-4877-8dd7-324607e1ea59
+      version: -1
+      name: any bad CVE found?
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    scriptarguments:
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 7cb6af2f-654a-4e35-8fbc-80537864d8cb
+    type: title
+    task:
+      id: 7cb6af2f-654a-4e35-8fbc-80537864d8cb
+      version: -1
+      name: Good!!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 7e16c4ed-17f2-4f10-8fec-ea9c839aa241
+    type: regular
+    task:
+      id: 7e16c4ed-17f2-4f10-8fec-ea9c839aa241
+      version: -1
+      name: FAIL
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
