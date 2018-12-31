@@ -2,7 +2,6 @@ commonfields:
   id: findIncidentsWithIndicator
   version: -1 
 name: findIncidentsWithIndicator
-releaseNotes: Fixed bad context key (note that this fix is not backward compatible)
 script: |-
   var res = executeCommand("getIncidents", {"query": 'indicator.value:"'+args.indicator+'"'});
   var incidentsIDs=[];

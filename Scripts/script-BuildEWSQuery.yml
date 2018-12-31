@@ -84,6 +84,5 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
 tests:
   - buildewsquery_test
