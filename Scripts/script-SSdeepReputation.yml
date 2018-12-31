@@ -43,7 +43,7 @@ script: |
 
   ssdeep_value = demisto.args()['input']
   ssdeep_indicator = get_indicator_from_value(ssdeep_value)
-  demisto.executeCommand("getContext", {"id":"<id>"})
+
   res = demisto.executeCommand('similarSsdeep', {
       'value': ssdeep_value,
       'daysTimeFrame': int(demisto.args()['timeFrameDays']),
@@ -91,3 +91,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
+releaseNotes: "remove unneeded code from SSDeepReputation script"
