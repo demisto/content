@@ -64,19 +64,23 @@ script:
         except Exception, e:
             raise(e)
 
-    def create_domain_command_markdown(domain, total_hits, reports, domain_full_report, is_full_response):
-        md = '## Cymon Domain report for: {}\n'.format(domain)
+    def create_domain_command_markdown(domain, domainWhois, domainPassiveDNS, subDomains, domainUris, domainHashes):
+        md = '## ThreatMiner Domain report for: {}\n'.format(domain)
 
         md += '\n'
 
-        md += '**Total Hits:** {}'.format(total_hits)
+        md += tableToMarkdown("Whois for {} domain".format(domain), domainWhois, ['Domain Name', 'Server', 'Create Date', 'Update Date', 'Expiration', 'Name Servers'])
 
-        md += '\n'
+        md += tableToMarkdown("PassiveDNS for {} domain".format(domain), domainPassiveDNS, ['First Seen', 'Last Seen'])
 
-        md += tableToMarkdown("The following reports are the latest malicious hits resolved to the given domain:", reports, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
+        md += tableToMarkdown("{} Subdomains".format(domain), subDomains, ['Subdomains'])
 
-        if is_full_response:
-           md += tableToMarkdown("Full report list:", domain_full_report, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
+        md += tableToMarkdown("{} URIs".format(domain), domainUris, ['uri','Last Seen'])
+
+        md += tableToMarkdown("{} Related Samples(hash only)".format(domain), domainHashes, ['hashes'])
+
+        # if is_full_response:
+        #   md += tableToMarkdown("Full report list:", domain_full_report, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
 
         return md
 
@@ -90,12 +94,12 @@ script:
         threatminerResults = threatminerResultsAsArray[0]
 
         return {
-                    'DomainName': threatminerResults['domain'],
+                    'Domain Name': threatminerResults['domain'],
                     'Server': threatminerResults['whois']['whois_server'],
-                    'CreateDate': threatminerResults['whois']['creation_date'],
-                    'UpdateDate': threatminerResults['whois']['updated_date'],
+                    'Create Date': threatminerResults['whois']['creation_date'],
+                    'Update Date': threatminerResults['whois']['updated_date'],
                     'Expiration': threatminerResults['whois']['expiration_date'],
-                    'NameServers': threatminerResults['whois']['nameservers']
+                    'Name Servers': threatminerResults['whois']['nameservers']
                 }
 
     def get_domain_passiveDns(domainName):
@@ -104,8 +108,8 @@ script:
         threatminerResultsAsArray = response.get('results',[])
         threatminerResults = threatminerResultsAsArray[0]
         return {
-                    'FirstSeen': threatminerResults['first_seen'],
-                    'LastSeen': threatminerResults['last_seen']
+                    'First Seen': threatminerResults['first_seen'],
+                    'Last Seen': threatminerResults['last_seen']
                 }
 
     def get_domain_subdomains(domainName, maxReturnedArraySize):
@@ -136,7 +140,7 @@ script:
             if maxReturnedArraySize == -1 or uriCounter < maxReturnedArraySize:
                 uris.append({
                     'Address': uriInfo['uri'],
-                    'LastSeen': uriInfo['last_seen']
+                    'Last Seen': uriInfo['last_seen']
                 })
                 uriCounter += 1
             else:
@@ -171,7 +175,6 @@ script:
         domainUri = get_domain_URI(domainName, maxReturnedArraySize)
         domainMD5 = get_domain_MD5(domainName, maxReturnedArraySize)
 
-        # markdown = create_ip_command_markdown(ip, sources, events, domains, urls, asn)
         if len(domainWhois) > 0:
             context['ThreatMiner.Domain.Whois'] = domainWhois
 
@@ -187,10 +190,11 @@ script:
         if len(domainMD5) > 0:
             context['ThreatMiner.Domain.MD5'] = domainMD5
 
+        markdown = create_domain_command_markdown(domainName, domainWhois , passiveDNS, subdomains, domainUri, domainMD5)
 
         return [{'Type': entryTypes['note'],
                 'Contents': context,
-                # 'HumanReadable': "hello world",
+                'HumanReadable': markdown,
                 'EntryContext': context,
                 'ContentsFormat': formats['json']}]
 
@@ -440,10 +444,11 @@ script:
     ''' EXECUTION CODE '''
     try:
         # if params.fileThreshold == '' : #TODO: Ask maya if its OK to use -1 to define unlimited array size
-        #     maxArraySize = MAX_RETURNED_ARRAY_SIZE
+        maxArraySize = MAX_RETURNED_ARRAY_SIZE
         # else:
         #     maxArraySize = params.fileThreshold
-        maxArraySize = MAX_RETURNED_ARRAY_SIZE
+        # if demisto.params().get('useProxy', False):
+        #     maxArraySize = MAX_RETURNED_ARRAY_SIZE
         if demisto.command() == 'domain':
             domainName = demisto.args().get('domain')
             demisto.results(get_domain_report(domainName, maxArraySize))
