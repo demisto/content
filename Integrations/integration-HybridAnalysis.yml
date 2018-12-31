@@ -541,3 +541,5 @@ script:
     description: Get the state of the file submission
   runonce: false
 releaseNotes: "Added command hybrid-analysis-get-report-status"
+tests:
+  - "Detonate File - HybridAnalysis - Test"
