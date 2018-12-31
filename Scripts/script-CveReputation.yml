@@ -33,3 +33,5 @@ dependson:
   - cve-search
 timeout: 0s
 releaseNotes: "fix cveReputation script"
+tests:
+- CVE-test
