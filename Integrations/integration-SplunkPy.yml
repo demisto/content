@@ -69,8 +69,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
-  script: |+
+  script: |-
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -84,12 +89,14 @@ script:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+    VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 
     def get_current_splunk_time(splunk_service):
         t = datetime.utcnow() - timedelta(days=3)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count':1,'earliest_time':time}
-        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
+        # change to notable
+        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock | notable'
 
         oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
@@ -174,7 +181,8 @@ script:
         auth_header = {'Authorization': 'Splunk %s' % sessionKey}
 
         args['output_mode'] = 'json'
-        mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header, verify=False)
+
+        mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header, verify=VERIFY_CERTIFICATE)
 
         return mod_notables.json()
 
@@ -228,14 +236,15 @@ script:
         data = message.get('body', "") if method == 'post' else None
         headers = dict(message.get('headers', []))
         req = urllib2.Request(url, data, headers)
+        context = ssl.create_default_context()
+
+        if VERIFY_CERTIFICATE:
+            context.verify_mode = ssl.CERT_REQUIRED
+        else:
+            context.verify_mode = ssl.CERT_NONE
+
         try:
-            response = urllib2.urlopen(req)
-        except urllib2.URLError, response:
-            # If running Python 2.7.9+, disable SSL certificate validation and try again
-            if sys.version_info >= (2, 7, 9):
-                response = urllib2.urlopen(req, context=ssl._create_unverified_context())
-            else:
-                raise
+            response = urllib2.urlopen(req, context=context)
         except urllib2.HTTPError, response:
             pass # Propagate HTTP errors via the returned response message
         return {
@@ -254,7 +263,8 @@ script:
                 host=demisto.params()['host'],
                 port=demisto.params()['port'],
                 username=demisto.params()['authentication']['identifier'],
-                password=demisto.params()['authentication']['password'])
+                password=demisto.params()['authentication']['password'],
+                verify=VERIFY_CERTIFICATE)
         except urllib2.URLError as e:
             if e.reason.errno == 1 and sys.version_info < (2, 6, 3):
                 pass
@@ -265,7 +275,8 @@ script:
             host=demisto.params()['host'],
             port=demisto.params()['port'],
             username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
+            password=demisto.params()['authentication']['password'],
+            verify=VERIFY_CERTIFICATE)
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -401,7 +412,8 @@ script:
         baseurl = 'https://'+demisto.params()['host']+':'+demisto.params()['port']+'/'
         username=demisto.params()['authentication']['identifier']
         password=demisto.params()['authentication']['password']
-        auth_req = requests.post(baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'}, verify=False)
+        auth_req = requests.post(baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+
         sessionKey = auth_req.json()['sessionKey']
         eventIDs = None
         if demisto.get(demisto.args(), 'eventIDs'):
@@ -413,10 +425,12 @@ script:
         response_info = updateNotableEvents( sessionKey=sessionKey, baseurl=baseurl, comment=demisto.get(demisto.args(), 'comment'), status=status,
             urgency=demisto.get(demisto.args(), 'urgency'),
             owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
+        if 'success' not in response_info:
+                return_error("api error, field success is missing. api response: " + str(response_info['messages']))
         if not response_info['success']:
-                demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
-                    'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
-                sys.exit(0)
+            demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
+                'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
+            sys.exit(0)
         demisto.results('Splunk ES Notable events: '+response_info['message'])
         sys.exit(0)
     if demisto.command() == 'splunk-parse-raw':
@@ -527,3 +541,5 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+  runonce: false
+  releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"
