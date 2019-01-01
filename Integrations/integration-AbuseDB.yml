@@ -458,3 +458,4 @@ script:
   runonce: false
 tests:
   - AbuseIPDB Test
+releaseNotes: "fixed context issues. updated blacklist command"
