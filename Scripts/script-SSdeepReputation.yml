@@ -42,32 +42,33 @@ script: |
       return related_indicators
 
   ssdeep_value = demisto.args()['input']
-  ssdeep_indicator = get_indicator_from_value(ssdeep_value)
-
   res = demisto.executeCommand('similarSsdeep', {
       'value': ssdeep_value,
       'daysTimeFrame': int(demisto.args()['timeFrameDays']),
       'threshold': int(demisto.args()['threshold'])
   })
+
   ssdeep_indicators = map(lambda x: x['indicator'], res[0]['Contents'])
-  ssdeep_indicators.append(ssdeep_indicator)
+
   related_indicators = []
   for i in ssdeep_indicators:
       related_indicators += get_ssdeep_related_indicators(i)
 
+  max_score = 0
   max_score = max(map(lambda x: x['score'], related_indicators))
   max_score_indicator = next(x for x in related_indicators if x['score'] == max_score)
-  if max_score > ssdeep_indicator['score']:
+
+  if max_score > 0:
       entry = {
           'Type': entryTypes['note'],
-          'HumanReadable': 'Similarity to %s %s:%s' % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
+          'HumanReadable': 'Similarity to %s %s %s' % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
           'ReadableContentsFormat': formats['markdown'],
           'Contents': max_score,
           'ContentsFormat': formats['text']
       }
       ec = {}
       ec['DBotScore'] = {
-          'Indicator': ssdeep_indicator['value'],
+          'Indicator': ssdeep_value,
           'Type': 'ssdeep',
           'Vendor': 'DBot',
           'Score': max_score
@@ -91,4 +92,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
-releaseNotes: "remove unneeded code from SSDeepReputation script"
+releaseNotes: "remove unneeded code from SSDeepReputation script, and make it compatible as indicator reputation script"
