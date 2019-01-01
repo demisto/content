@@ -496,6 +496,10 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test"
+        },
+        {
             "integrations" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
             "timeout" : 400,
