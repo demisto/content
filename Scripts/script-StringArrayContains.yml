@@ -29,15 +29,15 @@ tags:
 - filter
 - string
 comment: |
-  Checks whether a substring is within a string array - each item will be checked. Supports single strings as well.
+  Checks whether a substring is within a string array - each item will be checked. Supports single strings as well. For example, for a substring 'a' in an array of strings ['a','b','c'] the script will return true.
 enabled: true
 args:
 - name: left
-  description: ""
+  description: The array of strings to search in
 - name: right
-  description: ""
+  description: The substring to search for
 scripttarget: 0
 runonce: false
-releaseNotes: ''
+releaseNotes: 'New filter to check if a string contains a substring from an array'
 tests:
-  - No test - Pending
+  - StringArrayContains_test
