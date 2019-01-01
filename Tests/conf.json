@@ -14,6 +14,9 @@
             "playbookID": "CirclIntegrationTest"
         },
         {
+            "playbookID": "test-LinkIncidentsWithRetry"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
@@ -884,6 +887,10 @@
                 "VirusTotal - Private API",
                 "Demisto REST API"
             ]
+        },
+        {
+            "integrations": "duo",
+            "playbookID": "DUO Test Playbook"
         }
     ],
     "skipped_tests": {
@@ -896,7 +903,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "JoeSecurityTestPlaybook": "Reached qota limit for the month"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -920,7 +928,9 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
-        "Attivo Botsink": "no instance, @Arian will update"
+        "Attivo Botsink": "no instance, @Arian will update",
+        "XFE": "Reached quota limit for the month",
+        "Lastline": "Reached quota limit for the month"
     },
     "nigthly_integrations": [
         "Lastline"

@@ -1,0 +1,29 @@
+commonfields:
+  id: LinkIncidentsWithRetry
+  version: -1
+name: LinkIncidentsWithRetry
+script: |
+  linkedIncidentIDs = demisto.args()["linkedIncidentIDs"]
+  counter = int(demisto.args()["retryLimit"])
+  res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs":linkedIncidentIDs})
+  while isError(res[0]) and counter>0 and ("DB Version" in res[0]["Contents"]):
+      time.sleep(2)
+      demisto.error(str(counter)+" retry linkIncidents:"+str(linkedIncidentIDs))
+      res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs":linkedIncidentIDs})
+      counter = counter - 1
+  demisto.results(res)
+type: python
+tags: []
+enabled: true
+args:
+- name: linkedIncidentIDs
+  required: true
+  description: The list of other incidents. Accepts comma-delimited
+    IDs.
+- name: retryLimit
+  description: How many retries to do after failure
+  defaultValue: "5"
+scripttarget: 0
+comment: |-
+  Since running multiple link incidents in same time can cause DB version errors, plz use this script instead to overcome it
+releaseNotes: "Adding LinkIncidentsWithRetry script"
