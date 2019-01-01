@@ -87,6 +87,8 @@ script: |2
       }
       entry['EntryContext'] = ec
       demisto.results(entry)
+  else:
+      demisto.results(ssdeep_indicator.get('score', 0))
 type: python
 tags:
 - reputation
@@ -104,4 +106,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
-releaseNotes: "Fix bug: use as reputation script with new ssdeep value"
+releaseNotes: "Make script compatible as indicator reputation script"
