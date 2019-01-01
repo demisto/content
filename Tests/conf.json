@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "StringArrayContains_test"
+            "playbookID": "StringContainsArray_test"
         },
         {
             "integrations": "HashiCorp Vault",

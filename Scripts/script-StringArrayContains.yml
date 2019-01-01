@@ -1,7 +1,7 @@
 commonfields:
-  id: StringArrayContains
+  id: StringContainsArray
   version: -1
-name: StringArrayContains
+name: StringContainsArray
 script: |
   var str = args.left;
   var substring = args.right;
@@ -40,4 +40,4 @@ scripttarget: 0
 runonce: false
 releaseNotes: 'New filter to check if a string contains a substring from an array'
 tests:
-  - StringArrayContains_test
+  - StringContainsArray_test
