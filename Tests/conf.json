@@ -929,8 +929,7 @@
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
-        "XFE": "Reached quota limit for the month",
-        "Lastline": "Reached quota limit for the month"
+        "carbonblackprotection": "License expired"
     },
     "nigthly_integrations": [
         "Lastline"
