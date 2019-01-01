@@ -111,7 +111,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: test
@@ -148,7 +148,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: SingleString
@@ -185,7 +185,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: nop
@@ -222,7 +222,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: SingleString
@@ -280,7 +280,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: EmptyString

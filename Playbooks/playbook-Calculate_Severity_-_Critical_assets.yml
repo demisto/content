@@ -251,7 +251,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: inputs.CriticalEndpoints
@@ -294,7 +294,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               complex:
@@ -337,7 +337,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: StringArrayContains
+      - - operator: StringContainsArray
           left:
             value:
               simple: inputs.CriticalGroups
