@@ -1,6 +1,6 @@
-id: StringArrayContains_test
+id: StringContainsArray_test
 version: -1
-name: StringArrayContains_test
+name: StringContainsArray_test
 starttaskid: "0"
 tasks:
   "0":
@@ -11,7 +11,6 @@ tasks:
       id: 31aa4ea8-3ac3-424e-808e-f422de36e2cd
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -94,10 +93,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 5bf6ef1c-c57c-48a8-8872-6e3921f24d6f
+    taskid: fc0f28bf-76a7-47cd-8382-759019c7a1d6
     type: condition
     task:
-      id: 5bf6ef1c-c57c-48a8-8872-6e3921f24d6f
+      id: fc0f28bf-76a7-47cd-8382-759019c7a1d6
       version: -1
       name: Check Array
       type: condition
@@ -112,14 +111,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
+            value:
+              simple: test
+          right:
             value:
               simple: StringArray
             iscontext: true
-          right:
-            value:
-              simple: test
     view: |-
       {
         "position": {
@@ -149,7 +148,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               simple: SingleString
@@ -168,10 +167,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: abf322c3-0827-4ffe-85b5-6afa343098b5
+    taskid: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
     type: condition
     task:
-      id: abf322c3-0827-4ffe-85b5-6afa343098b5
+      id: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
       version: -1
       name: Check Array Not Contains
       type: condition
@@ -186,14 +185,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
+            value:
+              simple: nop
+          right:
             value:
               simple: StringArray
             iscontext: true
-          right:
-            value:
-              simple: thisisatest
     view: |-
       {
         "position": {
@@ -223,7 +222,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               simple: SingleString
@@ -281,7 +280,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: d98081d1-ce81-46ca-8500-5dfc6d5852c4
+      - - operator: StringArrayContains
           left:
             value:
               simple: EmptyString
@@ -398,4 +397,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: ""
