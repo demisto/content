@@ -425,7 +425,7 @@ script:
             urgency=demisto.get(demisto.args(), 'urgency'),
             owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
         if 'success' not in response_info:
-                return_error("api error, field success is missing. api response: " + str(response_info['messages']))
+            return_error("api error, field success is missing. api response: " + str(response_info['messages']))
         if not response_info['success']:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
                 'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
