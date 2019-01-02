@@ -251,7 +251,7 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestDetonation",
-            "timeout": 500,
+            "timeout": 2000,
             "nightly": true
         },
         {
