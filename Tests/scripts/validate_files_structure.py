@@ -338,7 +338,7 @@ def is_valid_in_id_set(file_path, obj_data, obj_set):
         if checked_instance_id == file_id and checked_instance_toversion == obj_data[file_id].get('toversion', '99.99.99') and \
                 checked_instance_fromversion == obj_data[file_id].get('fromversion', '0.0.0'):
             is_found = True
-            if checked_instance_data != obj_data:
+            if checked_instance_data != obj_data[file_id]:
                 print_error("You have failed to update id_set.json with the data of {} "
                             "please run `python Tests/scripts/update_id_set.py`".format(file_path))
                 return False
