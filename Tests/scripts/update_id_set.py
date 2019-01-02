@@ -5,7 +5,7 @@ import glob
 import json
 import yaml
 from subprocess import Popen, PIPE
-
+from collections import OrderedDict
 
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
@@ -209,6 +209,7 @@ def get_script_data(file_path):
     name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
+    deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on = get_depends_on(data_dictionary)
     script_executions = re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code)
@@ -218,6 +219,8 @@ def get_script_data(file_path):
         script_data['toversion'] = toversion
     if fromversion:
         script_data['fromversion'] = fromversion
+    if deprecated:
+        script_data['deprecated'] = deprecated
     if depends_on:
         script_data['depends_on'] = depends_on
     if script_executions:
@@ -279,12 +282,12 @@ def re_create_id_set():
         elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
             testplaybooks_list.append(get_playbook_data(file))
 
-    ids_dict = {
-        "scripts": scripts_list,
-        "playbooks": playbooks_list,
+    ids_dict = OrderedDict({
         "integrations": integration_list,
-        "TestPlaybooks": testplaybooks_list
-    }
+        "playbooks": playbooks_list,
+        "TestPlaybooks": testplaybooks_list,
+        "scripts": scripts_list
+    })
 
     print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
@@ -305,7 +308,7 @@ def update_id_set():
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            ids_dict = json.load(id_set_file)
+            ids_dict = OrderedDict(json.load(id_set_file))
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
