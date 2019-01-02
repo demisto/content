@@ -34,6 +34,7 @@ tasks:
       id: cc737177-04cc-4c7f-8e30-c46494ba1989
       version: -1
       name: Change Remediation SLA On Severity Change
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -61,7 +62,7 @@ tasks:
       description: Runs a script that should change the Remediation SLA because of
         a severity change. This also injects input to the script, that will make it
         believe the severity was changed.
-      scriptName: ChangeRemediationSLAOnSevChange_dev
+      scriptName: ChangeRemediationSLAOnSevChange
       type: regular
       iscommand: false
       brand: ""
@@ -169,6 +170,7 @@ tasks:
       id: d167197d-ed08-4be5-85fe-18d658e4ae0d
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -250,6 +252,7 @@ tasks:
       id: 78b27df7-2596-4237-8836-acd49b9e8e89
       version: -1
       name: Delete context
+      description: "Deletes the current context,"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -367,6 +370,7 @@ tasks:
       id: cf0b91a9-88d1-4bdd-8dba-b9b4ff862a48
       version: -1
       name: Stop Time to Assignment On Owner Change
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -424,7 +428,7 @@ tasks:
       name: Run script with new owner
       description: Runs StopTimeToAssignOnOwnerChange script, with a new owner as
         an argument. This should stop the Time to Assignment timer.
-      scriptName: StopTimeToAssignOnOwnerChange_dev
+      scriptName: StopTimeToAssignOnOwnerChange
       type: regular
       iscommand: false
       brand: ""

@@ -33,7 +33,7 @@ script: |
   NONCRITICAL_SLA = 6 # In days
 
   # ##### Logic #####
-  args_sev =  demisto.args()['new']
+  args_sev =  demisto.args().get('new')
   now = datetime.datetime.utcnow()
 
   if args_sev == 'Critical':
@@ -53,8 +53,25 @@ comment: |-
   Changes the remediation SLA once a change in incident severity occurs.
   This is done automatically and the changes can be configured to your needs.
 enabled: true
+args:
+- name: old
+  auto: PREDEFINED
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+  description: The old value of the field that was changed.
+- name: new
+  auto: PREDEFINED
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+  description: The new value of the field that was changed.
 scripttarget: 0
 runonce: false
 runas: DBotRole
 tests:
-  - No test - will be manually tested before release (only useful as a triggered script)
+  - SLA Scripts - Test

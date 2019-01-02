@@ -9,7 +9,7 @@
 		"byTo": "",
 		"byFrom": "days",
 		"toValue": null,
-		"fromValue": 7,
+		"fromValue": 30,
 		"field": ""
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
@@ -21,7 +21,7 @@
 			"x": 6,
 			"y": 0,
 			"i": "25a2e8f0-fd4e-11e8-a656-2b6c8cbabaee",
-			"w": 2,
+			"w": 3,
 			"h": 1,
 			"widget": {
 				"id": "fddd62ff-a411-4e6a-8213-e0277a9b95b5",
@@ -57,11 +57,11 @@
 		{
 			"id": "3747f820-fd4e-11e8-a656-2b6c8cbabaee",
 			"forceRange": false,
-			"x": 2,
+			"x": 0,
 			"y": 0,
 			"i": "3747f820-fd4e-11e8-a656-2b6c8cbabaee",
-			"w": 2,
-			"h": 2,
+			"w": 3,
+			"h": 3,
 			"widget": {
 				"id": "1e54092d-1ed0-47a6-862d-893adc05e612",
 				"version": 1,
@@ -96,11 +96,11 @@
 		{
 			"id": "3de5b1e0-fd4e-11e8-a656-2b6c8cbabaee",
 			"forceRange": false,
-			"x": 4,
+			"x": 3,
 			"y": 0,
 			"i": "3de5b1e0-fd4e-11e8-a656-2b6c8cbabaee",
-			"w": 2,
-			"h": 2,
+			"w": 3,
+			"h": 3,
 			"widget": {
 				"id": "1767dee0-7f8c-48a5-8988-c58b9e713ab6",
 				"version": 1,
@@ -135,10 +135,10 @@
 		{
 			"id": "a48c1670-fdf1-11e8-a2fa-df5e7de7d45d",
 			"forceRange": false,
-			"x": 8,
+			"x": 9,
 			"y": 0,
 			"i": "a48c1670-fdf1-11e8-a2fa-df5e7de7d45d",
-			"w": 2,
+			"w": 3,
 			"h": 1,
 			"widget": {
 				"id": "mean-time-to-resolution",
@@ -174,11 +174,11 @@
 		{
 			"id": "d2bbe430-02a1-11e9-878d-4fff182656eb",
 			"forceRange": false,
-			"x": 2,
-			"y": 2,
+			"x": 6,
+			"y": 1,
 			"i": "d2bbe430-02a1-11e9-878d-4fff182656eb",
-			"w": 4,
-			"h": 2,
+			"w": 6,
+			"h": 5,
 			"widget": {
 				"id": "mttd-by-type",
 				"version": 1,
@@ -216,10 +216,10 @@
 		{
 			"id": "e30f9430-02a1-11e9-878d-4fff182656eb",
 			"forceRange": false,
-			"x": 6,
-			"y": 1,
+			"x": 0,
+			"y": 3,
 			"i": "e30f9430-02a1-11e9-878d-4fff182656eb",
-			"w": 4,
+			"w": 6,
 			"h": 3,
 			"widget": {
 				"id": "mttr-by-type",

@@ -8,7 +8,7 @@ script: |
   # This is an example script. The script is used to stop the Time to Assignment SLA field, once an owner was set to an incident.
   # If you want to use this script, you should go to the Time to Assignment SLA field, and set this script as the script to run upon change of field value.
 
-  if demisto.args()['old'] == "" and demisto.args()['new'] != "":  # If owner was no-one and is now someone:
+  if not demisto.args().get('old') and demisto.args().get('new'):  # If owner was no-one and is now someone:
       demisto.executeCommand("stopTimer", {"timerField":"timetoassignment"})
       demisto.results("Assignment of the incident was successful and so the Time To Assignment timer has been stopped.")
 type: python
@@ -17,8 +17,13 @@ tags:
 - example
 comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
 enabled: true
+args:
+- name: old
+  description: The old value of the changed field
+- name: new
+  description: The new value of the changed field
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - No test - will be manually tested before release (only useful as a triggered script)
+  - SLA Scripts - Test

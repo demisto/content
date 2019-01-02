@@ -19,7 +19,7 @@
     }
   },
   "params":{
-     "keys":["avg|detectionsla.totalDuration / 60"],
+     "keys":["avg|detectionsla.totalDuration / 3600"],
      "groupBy" : ["occurred(d)", "type"]
   },
   "description": "A widget that shows the Mean Time to Detection, by incident type."
