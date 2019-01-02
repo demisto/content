@@ -7,6 +7,7 @@ import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 
+
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
@@ -153,7 +154,7 @@ def get_commmands_from_playbook(data_dict):
 
 
 def get_integration_data(file_path):
-    integration_data = {}
+    integration_data = OrderedDict()
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
@@ -175,7 +176,7 @@ def get_integration_data(file_path):
 
 
 def get_playbook_data(file_path):
-    playbook_data = {}
+    playbook_data = OrderedDict()
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
@@ -202,7 +203,7 @@ def get_playbook_data(file_path):
 
 
 def get_script_data(file_path):
-    script_data = {}
+    script_data = OrderedDict()
     data_dictionary = get_json(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     script_code = data_dictionary.get('script', '')
