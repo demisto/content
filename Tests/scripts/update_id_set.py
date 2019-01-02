@@ -301,7 +301,7 @@ def update_id_set():
     files_string = run_git_command("git diff --name-status")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files = get_changed_files(files_string + '\n' + second_files_string)
-    print(modified_files)
+    print(added_files)
     if added_files or modified_files:
         print("Updating id_set.json")
 
