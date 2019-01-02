@@ -503,34 +503,49 @@ script:
       outputs:
         - contextPath: HybridAnalysis.Search.SHA256
           description: SHA256 of search result
+          type: string
         - contextPath: HybridAnalysis.Search.SHA1
           description: SHA1of search result
+          type: string
         - contextPath: HybridAnalysis.Search.MD5
           description: MD5 of search result
+          type: string
         - contextPath: HybridAnalysis.Search.environmentId
           description: Environment Id of search result
+          type: string
         - contextPath: HybridAnalysis.Search.start_time
           description: Start time of search result
+          type: date
         - contextPath: HybridAnalysis.Search.threatscore
           description: Threat score of search result by server
+          type: string
         - contextPath: HybridAnalysis.Search.verdict
           description: Verdict of search result
+          type: string
         - contextPath: HybridAnalysis.Search.environmentDescription
           description: Environment description of search result
+          type: string
         - contextPath: HybridAnalysis.Search.submitname
           description: Submission name of search result
+          type: string
         - contextPath: HybridAnalysis.Search.vxfamily
           description: Family of search result
+          type: string
         - contextPath: HybridAnalysis.Search.threatscore
           description: Threat score of search result
+          type: string
         - contextPath: HybridAnalysis.Search.type_short
           description: type of search result (url, host, etc.)
+          type: string
         - contextPath: HybridAnalysis.Search.size
           description: Size of search result
+          type: number
         - contextPath: File.Malicious.Vendor
           description: or malicious files, the vendor that made the decision
+          type: string
         - contextPath: File.Malicious.Description
           description: For malicious files, the reason for the vendor to make the decision
+          type: string
       description: Search the database using the Hybrid Analysis search syntax
     - name: hybrid-analysis-detonate-file
       arguments:
