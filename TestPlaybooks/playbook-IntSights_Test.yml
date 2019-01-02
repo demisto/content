@@ -199,14 +199,14 @@ tasks:
       - "20"
     scriptarguments:
       first-seen-from: {}
-      first-seen-to:
-        simple: "1537426800000"
+      first-seen-to: {}
       last-seen-from: {}
       last-seen-to: {}
       limit: {}
       severity: {}
       source-ID: {}
-      type: {}
+      type:
+        simple: Domains
     reputationcalc: 0
     separatecontext: false
     view: |-
