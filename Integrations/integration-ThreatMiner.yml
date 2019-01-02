@@ -43,7 +43,6 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-    #TODO: Check what happens if domain/ip/file/search have no results
     def http_request(method, url, headers):
         try:
             res = requests.request(method,
@@ -64,26 +63,6 @@ script:
         except Exception, e:
             raise(e)
 
-    def create_domain_command_markdown(domain, domainWhois, domainPassiveDNS, subDomains, domainUris, domainHashes):
-        md = '## ThreatMiner Domain report for: {}\n'.format(domain)
-
-        md += '\n'
-
-        md += tableToMarkdown("Whois for {} domain".format(domain), domainWhois, ['Domain Name', 'Server', 'Create Date', 'Update Date', 'Expiration', 'Name Servers'])
-
-        md += tableToMarkdown("PassiveDNS for {} domain".format(domain), domainPassiveDNS, ['First Seen', 'Last Seen'])
-
-        md += tableToMarkdown("{} Subdomains".format(domain), subDomains, ['Subdomains'])
-
-        md += tableToMarkdown("{} URIs".format(domain), domainUris, ['uri','Last Seen'])
-
-        md += tableToMarkdown("{} Related Samples(hash only)".format(domain), domainHashes, ['hashes'])
-
-        # if is_full_response:
-        #   md += tableToMarkdown("Full report list:", domain_full_report, ['Title', 'Hostname', 'IP', 'Timestamp', 'Feed', 'Tags', 'Location', 'Reported By', 'Domain'])
-
-        return md
-
     def get_domain_whois(domainName):
         threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 1)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
@@ -91,52 +70,49 @@ script:
         if len(threatminerResultsAsArray) == 0:
             return {}
 
-        threatminerResults = threatminerResultsAsArray[0]
+        whois = threatminerResultsAsArray[0]
 
         return {
-                    'Domain Name': threatminerResults['domain'],
-                    'Server': threatminerResults['whois']['whois_server'],
-                    'Create Date': threatminerResults['whois']['creation_date'],
-                    'Update Date': threatminerResults['whois']['updated_date'],
-                    'Expiration': threatminerResults['whois']['expiration_date'],
-                    'Name Servers': threatminerResults['whois']['nameservers']
+                    'Domain Name': whois['domain'],
+                    'Server': whois['whois']['whois_server'],
+                    'Create Date': whois['whois']['creation_date'],
+                    'Update Date': whois['whois']['updated_date'],
+                    'Expiration': whois['whois']['expiration_date'],
+                    'Name Servers': whois['whois']['nameservers']
                 }
 
     def get_domain_passiveDns(domainName):
         threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 2)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
         threatminerResultsAsArray = response.get('results',[])
-        threatminerResults = threatminerResultsAsArray[0]
+        if len(threatminerResultsAsArray) == 0:
+            return []
+
+        passiveDns = threatminerResultsAsArray[0]
         return {
-                    'First Seen': threatminerResults['first_seen'],
-                    'Last Seen': threatminerResults['last_seen']
+                    'First Seen': passiveDns['first_seen'],
+                    'Last Seen': passiveDns['last_seen']
                 }
 
     def get_domain_subdomains(domainName, maxReturnedArraySize):
         threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 5)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
         subDomainsArray = response.get('results',[])
-        if response == -1:
-            return response
-        subDomainsCounter = 0
-        subDomains = []
+        if maxReturnedArraySize == -1:
+            return subDomainsArray
 
-        for subDomain in subDomainsArray:
-            if maxReturnedArraySize == -1 or subDomainsCounter < maxReturnedArraySize:
-                subDomains.append(subDomain)
-                subDomainsCounter += 1
-            else:
-                break
+        subDomains = subDomainsArray[:maxReturnedArraySize]
+
         return subDomains;
 
 
     def get_domain_URI(domainName, maxReturnedArraySize):
         threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 3)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
-        threatminerResultsAsArray = response.get('results',[])
+        urisFullResult = response.get('results',[])
         uriCounter = 0
         uris = []
-        for uriInfo in threatminerResultsAsArray:
+        for uriInfo in urisFullResult:
             if maxReturnedArraySize == -1 or uriCounter < maxReturnedArraySize:
                 uris.append({
                     'Address': uriInfo['uri'],
@@ -149,56 +125,65 @@ script:
         return uris
 
     def get_domain_MD5(domainName, maxReturnedArraySize):
-        threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 4) #TODO: handle unknown url
+        threatMinerDomainUrlPostfix = 'domain.php?q={}&rt={}'.format(domainName, 4)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
-        threatminerResultsAsArray = response.get('results',[])
+        md5s = response.get('results',[])
+        if len(md5s) == 0:
+            return []
 
-        md5FileCounter = 0
-        md5Files = []
+        if maxReturnedArraySize == -1:
+            return md5s
 
-        for fileMD5 in threatminerResultsAsArray:
-            if maxReturnedArraySize == -1 or md5FileCounter < maxReturnedArraySize:
-                md5Files.append(threatminerResultsAsArray[md5FileCounter])
-                md5FileCounter += 1
-            else:
-                break
+        return md5s[:maxReturnedArraySize]
 
-        return md5Files
+    def create_domain_command_markdown(domain, domainWhois, domainPassiveDNS, subDomains, domainUris, domainHashes):
 
+        md = '## ThreatMiner Domain report for: {}\n'.format(domain)
+        threadMinerFoundResults = False
+
+        if len(domainWhois) != 0:
+            md += tableToMarkdown("Whois for {} domain".format(domain), domainWhois, ['Domain Name', 'Server', 'Create Date', 'Update Date', 'Expiration', 'Name Servers'])
+            threadMinerFoundResults = True
+        if len(domainPassiveDNS) != 0:
+            md += tableToMarkdown("PassiveDNS for {} domain".format(domain), domainPassiveDNS, ['First Seen', 'Last Seen'])
+            threadMinerFoundResults = True
+        if len(subDomains) != 0:
+            md += tableToMarkdown("{} Subdomains".format(domain), subDomains, ['Subdomains'])
+            threadMinerFoundResults = True
+        if len(domainUris) != 0:
+            md += tableToMarkdown("{} URIs".format(domain), domainUris, ['Address','Last Seen'])
+            threadMinerFoundResults = True
+        if len(domainHashes) != 0:
+            md += tableToMarkdown("{} Related Samples(hash only)".format(domain), domainHashes, ['hashes'])
+            threadMinerFoundResults = True
+
+        if threadMinerFoundResults == False:
+            md += 'No results found'
+
+        return md
 
     def get_domain_report(domainName, maxReturnedArraySize):
         context = {}
 
-        domainWhois = get_domain_whois(domainName) #Ask Maya about ThreatMiner.Domain Field
+        domainWhois = get_domain_whois(domainName)
         passiveDNS = get_domain_passiveDns(domainName)
         subdomains = get_domain_subdomains(domainName, maxReturnedArraySize)
         domainUri = get_domain_URI(domainName, maxReturnedArraySize)
         domainMD5 = get_domain_MD5(domainName, maxReturnedArraySize)
 
-        if len(domainWhois) > 0:
-            context['ThreatMiner.Domain.Whois'] = domainWhois
-
-        if len(passiveDNS) > 0:
-            context['ThreatMiner.Domain.PassiveDNS'] = passiveDNS
-
-        if len(subdomains) > 0:
-            context['ThreatMiner.Domain.Subdomains'] = subdomains
-
-        if len(domainUri) > 0:
-            context['ThreatMiner.Domain.URI'] = domainUri
-
-        if len(domainMD5) > 0:
-            context['ThreatMiner.Domain.MD5'] = domainMD5
+        context['ThreatMiner.Domain.Whois'] = domainWhois
+        context['ThreatMiner.Domain.PassiveDNS'] = passiveDNS
+        context['ThreatMiner.Domain.Subdomains'] = subdomains
+        context['ThreatMiner.Domain.URI'] = domainUri
+        context['ThreatMiner.Domain.MD5'] = domainMD5
 
         markdown = create_domain_command_markdown(domainName, domainWhois , passiveDNS, subdomains, domainUri, domainMD5)
 
         return [{'Type': entryTypes['note'],
                 'Contents': context,
                 'HumanReadable': markdown,
-                'EntryContext': context,
+                'EntryContext': createContext(context, removeNull=True),
                 'ContentsFormat': formats['json']}]
-
-        # return domain_report_results;
 
     def get_ip_whois(ipAddress):
         threatMinerIpUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 1)
@@ -210,98 +195,118 @@ script:
         threatminerResults = threatminerResultsAsArray[0]
         ipWhoisResults = {}
         ipWhoisResults['Address'] = ipAddress
-        if threatminerResults['reverse_name'] != '':
-            ipWhoisResults['Reserve'] = threatminerResults['reverse_name']
-        if threatminerResults['bgp_prefix'] != '':
-            ipWhoisResults['Bgp'] = threatminerResults['bgp_prefix']
-        if threatminerResults['cc'] != '':
-            ipWhoisResults['Country'] = threatminerResults['cc']
-        if threatminerResults['asn'] != '':
-            ipWhoisResults['ASN'] = threatminerResults['asn']
-        if threatminerResults['org_name'] != '':
-            ipWhoisResults['Org'] = threatminerResults['org_name']
+        ipWhoisResults['Reverse'] = threatminerResults['reverse_name']
+        ipWhoisResults['Bgp'] = threatminerResults['bgp_prefix']
+        ipWhoisResults['Country'] = threatminerResults['cc']
+        ipWhoisResults['ASN'] = threatminerResults['asn']
+        ipWhoisResults['Org'] = threatminerResults['org_name']
 
         return ipWhoisResults
 
     def get_ip_passiveDNS(ipAddress, maxReturnedArraySize):
         threatMinerIpUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 2)
         response = http_request('GET',THREAT_MINER_URL + threatMinerIpUrlPostfix, DEFAULT_HEADERS)
+        passiveDNSArray = response.get('results',[])
+
+        if len(passiveDNSArray) == 0:
+            return []
+
+        if maxReturnedArraySize == -1:
+            return passiveDNSArray;
+        return passiveDNSArray[:maxReturnedArraySize]
+
+
+    def get_ip_URI(ipAddress, maxReturnedArraySize):
+        threatMinerIpUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 3)
+        response = http_request('GET',THREAT_MINER_URL + threatMinerIpUrlPostfix, DEFAULT_HEADERS)
         threatminerResultsAsArray = response.get('results',[])
 
-        subDomainsCounter = 0
-        subDomains = []
+        uriCounter = 0
+        URIs = []
 
-        for fileMD5 in threatminerResultsAsArray:
-            if maxReturnedArraySize == -1 or subDomainsCounter < maxReturnedArraySize:
-                subDomains.append({
-                    'Domain':threatminerResultsAsArray[subDomainsCounter]['domain'],
-                    'FirstSeen':threatminerResultsAsArray[subDomainsCounter]['first_seen'],
-                    'LastSeen':threatminerResultsAsArray[subDomainsCounter]['last_seen']
+        for uri in threatminerResultsAsArray:
+            if maxReturnedArraySize == -1 or uriCounter < maxReturnedArraySize:
+                URIs.append({
+                    'UriAddress':threatminerResultsAsArray[uriCounter]['uri'], #TODO: tell Maya changed URI to URI.UriAddress
+                    'LastSeen':threatminerResultsAsArray[uriCounter]['last_seen']
                     })
-                subDomainsCounter += 1
+                uriCounter += 1
             else:
                 break
 
-        return subDomains
+        return URIs
 
     def get_ip_MD5(ipAddress, maxReturnedArraySize):
-        threatMinerDomainUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 4) #TODO: handle unknown url
+        threatMinerDomainUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 4)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
-        threatminerResultsAsArray = response.get('results',[])
 
-        md5FileCounter = 0
-        md5Files = []
+        md5s = response.get('results',[])
 
-        for fileMD5 in threatminerResultsAsArray:
-            if maxReturnedArraySize == -1 or md5FileCounter < maxReturnedArraySize:
-                md5Files.append(threatminerResultsAsArray[md5FileCounter])
-                md5FileCounter += 1
-            else:
-                break
+        if len(md5s) == 0:
+            return []
 
-        return md5Files
+        if maxReturnedArraySize == -1:
+            return md5s
+        return md5s[:maxReturnedArraySize]
 
     def get_ip_SSL(ipAddress, maxReturnedArraySize):
-        threatMinerDomainUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 5) #TODO: handle unknown url
+        threatMinerDomainUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 5)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
-        threatminerResultsAsArray = response.get('results',[])
 
-        SSLs_counter = 0
-        SSLs = []
+        ssls = response.get('results',[])
+        if len(ssls) == 0:
+            return []
 
-        for ssl in threatminerResultsAsArray:
-            if maxReturnedArraySize == -1 or SSLs_counter < maxReturnedArraySize:
-                SSLs.append(threatminerResultsAsArray[SSLs_counter])
-                SSLs_counter += 1
-            else:
-                break
+        if maxReturnedArraySize == -1:
+            return ssls;
+        return ssls[:maxReturnedArraySize]
 
-        return SSLs
+    def create_ip_command_markdown(ipAddress, ipWhois, passiveDNS, uris, relatedSamples, ssls):
+
+        md = '## ThreatMiner IP report for: {}\n'.format(ipAddress)
+        threadMinerFoundResults = False
+
+        if len(ipWhois) != 0:
+            md += tableToMarkdown("Whois for {}".format(ipAddress), ipWhois, ['Address', 'Country', 'Org', 'Bgp', 'Reverse', 'ASN'])
+            threadMinerFoundResults = True
+        if len(passiveDNS) != 0:
+            md += tableToMarkdown("PassiveDNS for {}".format(ipAddress), passiveDNS, ['domain', 'first_seen', 'last_seen'])
+            threadMinerFoundResults = True
+        if len(uris) != 0:
+            md += tableToMarkdown("{} URIs".format(ipAddress), uris, ['UriAddress','LastSeen'])
+            threadMinerFoundResults = True
+        if len(relatedSamples) != 0:
+            md += tableToMarkdown("{} MD5s".format(ipAddress), relatedSamples, ['MD5'])
+            threadMinerFoundResults = True
+        if len(ssls) != 0:
+            md += tableToMarkdown("{} SSLs".format(ipAddress), ssls, ['SSL'])
+            threadMinerFoundResults = True
+
+        if threadMinerFoundResults == False:
+            md += 'No results found'
+
+        return md
 
     def get_ip_report(ipAddress, maxReturnedArraySize):
         context = {}
         ipWhois = get_ip_whois(ipAddress)
         ipPassiveDNS = get_ip_passiveDNS(ipAddress, maxReturnedArraySize)
         ipMD5 = get_ip_MD5(ipAddress, maxReturnedArraySize)
-        # domain_report_results['ThreatMiner.IP.URI'] = get_ip_URI(ipAddress, maxReturnedArraySize)  #TODO: Add IP.URI
+        ipURI = get_ip_URI(ipAddress, maxReturnedArraySize)
         ipSSL = get_ip_SSL(ipAddress, maxReturnedArraySize)
 
-        if len(ipWhois) > 0:
-            context['ThreatMiner.IP.Whois'] = ipWhois
-        if len(ipPassiveDNS) > 0:
-            context['ThreatMiner.IP.PassiveDNS'] = ipPassiveDNS
-        if len(ipMD5) > 0:
-            context['ThreatMiner.IP.MD5'] = ipMD5
-            # 'ThreatMiner.IP.URI': ip_report_results['ThreatMiner.IP.URI'],
-        if len(ipSSL) > 0:
-            context['ThreatMiner.IP.SSL'] = ipSSL
+        context['ThreatMiner.IP.Whois'] = ipWhois
+        context['ThreatMiner.IP.PassiveDNS'] = ipPassiveDNS
+        context['ThreatMiner.IP.MD5'] = ipMD5
+        context['ThreatMiner.IP.URI'] = ipURI
+        context['ThreatMiner.IP.SSL'] = ipSSL
 
-        # markdown = create_ip_command_markdown(ip, sources, events, domains, urls, asn)
+        markdown = create_ip_command_markdown(ipAddress, ipWhois, ipPassiveDNS, ipURI, ipMD5, ipSSL)
 
         return [{'Type': entryTypes['note'],
                 'Contents': context,
-                # 'HumanReadable': "hello world",
-                'EntryContext': context,
+                'HumanReadable': markdown,
+                'EntryContext': createContext(context, removeNull=True),
                 'ContentsFormat': formats['json']}]
 
     def get_file_whois(hashedFile):
@@ -314,25 +319,19 @@ script:
 
         threatminerResults = threatminerResultsAsArray[0]
         whoisResult = {}
-        if threatminerResults['md5'] != '':
-            whoisResult['MD5'] = threatminerResults['md5']
-        if threatminerResults['architecture'] != '':
-            whoisResult['Architecture'] = threatminerResults['architecture']
-        if threatminerResults['sha1'] != '':
-            whoisResult['Sha1'] = threatminerResults['sha1']
-        if threatminerResults['sha256'] != '':
-            whoisResult['Sha256'] = threatminerResults['sha256'] #TODO: ask maya about add SHA512
-        if threatminerResults['file_type'] != '':
-            whoisResult['Type'] = threatminerResults['file_type']
-        if threatminerResults['file_size'] != '':
-            whoisResult['Size'] = threatminerResults['file_size']
-        if threatminerResults['date_analysed'] != '':
-            whoisResult['Analyzed'] = threatminerResults['date_analysed']
+        whoisResult['MD5'] = threatminerResults['md5']
+        whoisResult['Architecture'] = threatminerResults['architecture']
+        whoisResult['Sha1'] = threatminerResults['sha1']
+        whoisResult['Sha256'] = threatminerResults['sha256']
+        whoisResult['Type'] = threatminerResults['file_type']
+        whoisResult['FileName'] = threatminerResults['file_name']
+        whoisResult['Size'] = threatminerResults['file_size']
+        whoisResult['Analyzed'] = threatminerResults['date_analysed']
 
         return whoisResult
 
     def get_file_http(hashedFile, maxReturnedArraySize):
-        threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 2) #TODO: handle unknown url
+        threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 2)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
         threatminerResultsAsArray = response.get('results',[])
         if len(threatminerResultsAsArray) == 0:
@@ -358,56 +357,58 @@ script:
         return httpTrafficsInfo
 
     def get_file_domainsAndIp(hashedFile, maxReturnedArraySize):
-        threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 3) #TODO: handle unknown url
+        threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 3)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
         threatminerResultsAsArray = response.get('results',[])
         if len(threatminerResultsAsArray) == 0:
-            return [];
+            return []
 
         threatminerResult = threatminerResultsAsArray[0]
         fileDomains = threatminerResult['domains']
-        domainsCounter = 0
-        fileDomainsInfo = []
-
         if maxReturnedArraySize == -1:
             return fileDomains
+        return fileDomains[:maxReturnedArraySize]
 
-        for fileDomain in fileDomains:
-            if maxReturnedArraySize == -1 or domainsCounter < maxReturnedArraySize:
-                fileDomainsInfo.append({
-                    'IP': fileDomains[domainsCounter]['ip'],
-                    'Domain': fileDomains[domainsCounter]['domain']
-                })
-                domainsCounter += 1
-            else:
-                break
-        return fileDomainsInfo
 
     def get_file_mutants(hashedFile, maxReturnedArraySize):
         threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 4)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
 
-        fileMutants = []
         threatminerResultsAsArray = response.get('results',[])
-        if len(threatminerResultsAsArray) > 0:
-            threatminerResult = threatminerResultsAsArray[0]
-            fileMutants = threatminerResult['mutants'] #TODO: slice array if is bigger than maxReturnedArraySize
+        if len(threatminerResultsAsArray) == 0:
+            return []
 
-        return fileMutants
+        fileMutants = threatminerResultsAsArray[0]
+        if maxReturnedArraySize == -1:
+            return fileMutants['mutants']
+        return fileMutants['mutants'][:maxReturnedArraySize]
 
 
-    def get_file_AV_detection(hashedFile, maxReturnedArraySize):
+    def get_file_registry_keys(hashedFile, maxReturnedArraySize):
+        threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 5)
+        response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
+
+        threatminerResultsAsArray = response.get('results',[])
+        if len(threatminerResultsAsArray)  == 0:
+            return []
+
+        fileRegistryKeys = threatminerResultsAsArray[0]
+
+        if maxReturnedArraySize == -1:
+            return fileRegistryKeys['registry_keys']
+        return fileRegistryKeys['registry_keys'][:maxReturnedArraySize]
+
+    def get_file_AV_detection(hashedFile):
         threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 6)
         response = http_request('GET',THREAT_MINER_URL + threatMinerDomainUrlPostfix, DEFAULT_HEADERS)
 
         threatminerResultsAsArray = response.get('results',[])
-        avDetections = []
-        if len(threatminerResultsAsArray) > 0:
-            threatminerResult = threatminerResultsAsArray[0]
-            avDetections = threatminerResult['av_detections'][:maxReturnedArraySize]
+        if len(threatminerResultsAsArray) == 0:
+            return []
 
+        fileAVDetection = threatminerResultsAsArray[0]
 
-        return avDetections
+        return fileAVDetection['av_detections']
 
 
     def get_file_report(hashedFile, maxReturnedArraySize):
@@ -415,52 +416,109 @@ script:
         context = {}
 
         fileWhoIs = get_file_whois(hashedFile)
-        if len(fileWhoIs) > 0:
-            context['ThreatMiner.File.Whois'] = fileWhoIs
-
         fileHttps = get_file_http(hashedFile, maxReturnedArraySize)
-        if len(fileHttps) > 0:
-            context['ThreatMiner.File.HTTP'] = fileHttps
-
         fileDomains = get_file_domainsAndIp(hashedFile, maxReturnedArraySize)
-        if len(fileDomains) > 0:
-            context['ThreatMiner.File.Domains'] = fileDomains
+        fileMutants = get_file_mutants(hashedFile, maxReturnedArraySize)
+        fileRegistryKeys = get_file_registry_keys(hashedFile, maxReturnedArraySize)
+        fileAntiVirus = get_file_AV_detection(hashedFile)
 
-        fileMutants = get_file_mutants(hashedFile, maxReturnedArraySize)  #TODO: Check if File.Registry appear and add if not
-        if len(fileMutants) > 0:
-            context['ThreatMiner.File.Mutants'] = fileMutants
+        context['ThreatMiner.File.Whois'] = fileWhoIs
+        context['ThreatMiner.File.HTTP'] = fileHttps
+        context['ThreatMiner.File.Domains'] = fileDomains
+        context['ThreatMiner.File.Mutants'] = fileMutants
+        context['ThreatMiner.File.Registry'] = fileRegistryKeys
+        context['ThreatMiner.File.AV'] = fileAntiVirus
 
-        fileAntiVirus = get_file_AV_detection(hashedFile, maxReturnedArraySize)
-        if len(fileAntiVirus) > 0:
-            context['ThreatMiner.File.AV'] = fileAntiVirus
+        amountOfDetections = len(fileAntiVirus)
+        context['File.Malicious.Vendor'] = 'ThreatMiner'
+        context['File.Malicious.Detections'] = amountOfDetections
+        context['File.MD5'] = fileWhoIs['MD5']
+        context['File.Sha1'] = fileWhoIs['Sha1']
+        context['File.Sha256'] = fileWhoIs['Sha256']
+
+        context['DBotScore.Indicator'] = 'ThreatMiner.File.AV'
+        context['DBotScore.Type'] = 'ThreatMiner' #TODO: ask Maya what it's supoose to be
+        context['DBotScore.Vendor'] = 'ThreatMiner'
+        context['DBotScore.Score'] = get_dbot_score(amountOfDetections)
+
+        markDownResult = create_file_command_markdown(hashedFile, fileWhoIs, fileHttps, fileDomains, fileMutants, fileRegistryKeys, fileAntiVirus[:maxReturnedArraySize])
 
         return [{'Type': entryTypes['note'],
                 'Contents': context,
-                # 'HumanReadable': "hello world",
-                'EntryContext': context,
+                'HumanReadable': markDownResult,
+                'EntryContext': createContext(context, removeNull=True),
                 'ContentsFormat': formats['json']}]
+
+    def get_dbot_score(amountOfDetections): #TODO: let Maya know that the user limit doesn't change the number of results I calculate the AV (so the user might not understand why its bigger)
+        if amountOfDetections == 0:
+            return 0
+        if amountOfDetections > 0 and amountOfDetections <= 10:
+            return 2
+        if amountOfDetections > 11:
+            return 3
+
+    def create_file_command_markdown(hashedFile, fileWhois, fileHttp, domains, mutants, registryKeys, antiVirusDetection):
+
+        md = '## ThreatMiner file report for hashed file: {}\n'.format(hashedFile)
+        threadMinerFoundResults = False
+
+        if len(fileWhois) != 0:
+            md += tableToMarkdown("Whois for hashed file {}".format(hashedFile), fileWhois, ['MD5', 'Architecture', 'Sha1', 'Sha256', 'Type', 'FileName', 'Size', 'Analyzed'])
+            threadMinerFoundResults = True
+        if len(fileHttp) != 0:
+            md += tableToMarkdown("HTTP for hashed file {}".format(hashedFile), fileHttp, ['Domain', 'URL', 'UserAgent'])
+            threadMinerFoundResults = True
+        if len(domains) != 0:
+            md += tableToMarkdown("Hashed file: {} Domains".format(hashedFile), domains, ['domain','ip'])
+            threadMinerFoundResults = True
+        if len(mutants) != 0:
+            md += tableToMarkdown("Hashed file: {} Mutants".format(hashedFile), mutants, ['Mutants'])
+            threadMinerFoundResults = True
+        if len(registryKeys) != 0:
+            md += tableToMarkdown("Hashed file: {} Registry keys".format(hashedFile), registryKeys, ['Registry'])
+            threadMinerFoundResults = True
+        if len(antiVirusDetection) != 0:
+            md += tableToMarkdown("Anti Virus detections to hashed file: {}".format(hashedFile), antiVirusDetection, ['av','detection'])
+            threadMinerFoundResults = True
+
+        if threadMinerFoundResults == False:
+            md += 'No results found'
+
+        return md
 
 
     ''' EXECUTION CODE '''
     try:
-        # if params.fileThreshold == '' : #TODO: Ask maya if its OK to use -1 to define unlimited array size
-        maxArraySize = MAX_RETURNED_ARRAY_SIZE
-        # else:
-        #     maxArraySize = params.fileThreshold
-        # if demisto.params().get('useProxy', False):
-        #     maxArraySize = MAX_RETURNED_ARRAY_SIZE
-        if demisto.command() == 'domain':
+        demistoCommand = demisto.command()
+        if demistoCommand == 'test-module':
+            report = get_domain_report('google.com', MAX_RETURNED_ARRAY_SIZE)[0]
+
+            if 'Contents' in report:
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+            pass
+
+        if demisto.params().get('fileThreshold').lower() == 'all':
+            maxArraySize = -1
+        else:
+            maxArraySize = int(demisto.params().get('fileThreshold', MAX_RETURNED_ARRAY_SIZE))
+
+        if demistoCommand == 'domain':
             domainName = demisto.args().get('domain')
             demisto.results(get_domain_report(domainName, maxArraySize))
-        if demisto.command() == 'ip':
+        if demistoCommand == 'ip':
             ipAddress = demisto.args().get('ip')
+            if not is_ip_valid(ipAddress):
+                return_error('An inalid IP was specified')
             demisto.results(get_ip_report(ipAddress, maxArraySize))
-        if demisto.command() == 'file':
-            hashedfile = demisto.args().get('file') #TODO: ask maya about change argument name to hasedFile
+        if demistoCommand == 'file':
+            hashedfile = demisto.args().get('file')
             demisto.results(get_file_report(hashedfile, maxArraySize))
 
     except Exception, e:
         raise
+
   type: python
   commands:
   - name: domain
@@ -515,7 +573,7 @@ script:
       required: true
       description: IP address
     outputs:
-    - contextPath: Threatminer.IP
+    - contextPath: ThreatMiner.IP.Address
       description: Searched IP address
       type: string
     - contextPath: ThreatMiner.IP.Whois.Reverse
@@ -601,10 +659,10 @@ script:
     - contextPath: ThreatMiner.File.IP
       description: Related IP addresses
       type: string
-    - contextPath: ThreatMiner.File.Domain
+    - contextPath: ThreatMiner.File.Domains
       description: Related domains
       type: string
-    - contextPath: ThreatMiner.File.Mutant
+    - contextPath: ThreatMiner.File.Mutants
       description: Used Mutexes
       type: string
     - contextPath: ThreatMiner.File.Registry
