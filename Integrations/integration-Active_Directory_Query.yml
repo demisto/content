@@ -34,13 +34,22 @@ configuration:
   required: true
 - display: Secure Connection
   name: secure_connection
-  defaultvalue: None
+  defaultvalue: SSL
   type: 15
   required: true
   options:
   - None
   - SSL
-  - TLS
+- display: verify server certificate (with SSL connection)
+  name: tls
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: NTLM authentication
+  name: ntlm
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |+
     from ldap3 import Server, Connection, NTLM, SUBTREE, ALL, ALL_ATTRIBUTES
@@ -56,6 +65,8 @@ script:
     DEFAULT_BASE_DN = demisto.params().get('base_dn')
     SECURE_CONNECTION = demisto.params().get('secure_connection')
     DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
+    TLS_VERIFY_CERTIFICATE =  demisto.params().get('tls')
+    NTLM_AUTH = demisto.params().get('ntlm')
 
     if PORT:
         PORT = int(PORT)
@@ -106,17 +117,17 @@ script:
         """
         uses the instance configuration to initialize the LDAP server
         """
-        if SECURE_CONNECTION == "SSL":
+        if SECURE_CONNECTION == "SSL" and not TLS_VERIFY_CERTIFICATE:
             # intialize server with ssl
             # uses the ssl.PROTOCOL_SSLv23 and performs no validation of the server certificate
             demisto.debug("Initializing server with SSL")
             if PORT:
                 return Server(SERVER_IP, port=PORT, use_ssl=True)
             return Server(SERVER_IP, port=PORT, use_ssl=True)
-        if SECURE_CONNECTION == 'TLS':
+        if SECURE_CONNECTION == 'SSL' and TLS_VERIFY_CERTIFICATE:
             # initialize with tls
             # uses sl.PROTOCOL_TLSv1 and validates server certificate
-            demisto.debug("Initializing server with TLS")
+            demisto.debug("Initializing server with tls")
             tls_configuration = Tls(validate=ssl.CERT_REQUIRED, version=ssl.PROTOCOL_TLSv1)
             if PORT:
                 return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls_configuration)
@@ -148,13 +159,13 @@ script:
         # create an endpoint entry from a computer object
         endpoint = {
             'Type': 'AD',
-            'ID': user.get('dn'),
-            'Hostname': user.get('name'),
-            'Groups': user.get('memberOf')
+            'ID': computer_object.get('dn'),
+            'Hostname': computer_object.get('name'),
+            'Groups': computer_object.get('memberOf')
         }
 
         for attr in custome_attributes:
-            account[attr] = user[attr]
+            endpoint[attr] = computer_object[attr]
 
         return endpoint
 
@@ -402,17 +413,17 @@ script:
 
         # query by user DN
         if args.get('dn'):
-            query = "(&(objectClass=User)(objectCategory=computer)(dn={}))".format(args['dn'])
+            query = "(&(objectClass=user)(objectCategory=computer)(dn={}))".format(args['dn'])
 
         # query by name
         if args.get('name'):
-            query = "(&(objectClass=User)(objectCategory=computer)(name={}))".format(args['name'])
+            query = "(&(objectClass=user)(objectCategory=computer)(name={}))".format(args['name'])
 
         # query by custom object attribute
         if args.get('custom-field-type'):
             if not args.get('custom-field-data'):
                 raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
-            query = "(&(objectClass=User)(objectCategory=computer)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
+            query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
 
         if args.get('attributes'):
             custome_attributes = args['attributes'].split(",")
@@ -442,6 +453,7 @@ script:
         }
         demisto.results(demisto_entry)
 
+
     def search_group_members():
         # this command is equivalent to ADGetGroupMembers script
 
@@ -467,6 +479,8 @@ script:
             page_size=DEFAULT_PAGE_SIZE
         )
 
+        members = [ {'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
+
         demisto_entry = {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -474,20 +488,19 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Active Directory - Get Group Members", entries['flat']),
             'EntryContext': {
-
+                'ActiveDirectory.Groups(obj.dn ==' + group_dn + ')': {
+                    'dn': group_dn,
+                    'members': members
+                }
             }
         }
 
         if member_type == 'person':
-            demisto_entry['EntryContext'] = {
-                'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
-                'Account': [account_entry(entry, custome_attributes) for entry in entries['flat']]
-            }
+            demisto_entry['EntryContext']['ActiveDirectory.Users(obj.dn == val.dn)'] = entries['flat']
+            demisto_entry['EntryContext']['Account'] = [account_entry(entry, custome_attributes) for entry in entries['flat']]
         else:
-            demisto_entry['EntryContext'] = {
-                'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
-                'Endpoint': [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
-            }
+            demisto_entry['EntryContext']['ActiveDirectory.Computers(obj.dn == val.dn)'] = entries['flat']
+            demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
 
         demisto.results(demisto_entry)
 
@@ -508,8 +521,8 @@ script:
         }
 
         # set common user attributes
-        if args.get('diaply-name'):
-            attributes['displayName'] = args['diaply-name']
+        if args.get('display-name'):
+            attributes['displayName'] = args['display-name']
         if args.get('description'):
             attributes['description'] = args['description']
         if args.get('email'):
@@ -863,7 +876,13 @@ script:
 
     # intialize connection to LDAP server with NTLM authentication
     server = initialize_server()
-    conn = Connection(server, user=SERVER_IP + '\\' + USERNAME, password=PASSWORD, authentication=NTLM)
+
+    conn = None
+    if NTLM_AUTH:
+        conn = Connection(server, user=SERVER_IP + '\\' + USERNAME, password=PASSWORD, authentication=NTLM)
+    else:
+        # here username should be the user dn
+        conn =  Connection(server, user=USERNAME, password=PASSWORD)
 
     try:
         # open socket and bind to server
@@ -1164,6 +1183,49 @@ script:
       - "false"
       description: Include verbose translation for UserAccountControl flags
       defaultValue: "false"
+    outputs:
+    - contextPath: ActiveDirectory.Users.dn
+      description: The user distinguished name
+      type: string
+    - contextPath: ActiveDirectory.Users.displayName
+      description: The user display name
+      type: string
+    - contextPath: 'ActiveDirectory.Users.name'
+      description: The user common name
+      type: string
+    - contextPath: 'ActiveDirectory.Users.sAMAccountName'
+      description: The user sAMAccountName
+      type: string
+    - contextPath: 'ActiveDirectory.Users.userAccountControl'
+      description: The user account control flag
+      type: number
+    - contextPath: 'ActiveDirectory.Users.mail'
+      description: The user email address
+      type: string
+    - contextPath: 'ActiveDirectory.Users.manager'
+      description: The user manager
+      type: string
+    - contextPath: 'ActiveDirectory.Users.memberOf'
+      description: Groups the  user is member of
+      type: string
+    - contextPath: Account.DisplayName
+      description: The user display name
+      type: string
+    - contextPath: Account.Groups
+      description: Groups the  user is member of
+      type: string
+    - contextPath: Account.Manager
+      description: 'The user manager '
+      type: string
+    - contextPath: Account.ID
+      description: The user distinguished name.
+      type: string
+    - contextPath: Account.Username
+      description: The user samAccountName
+      type: string
+    - contextPath: Account.Email
+      description: The user email
+      type: string
     description: Retrieve detailed information about a user account. The user can
       be specified by name, email or as an Active Directory Distinguished Name (DN).
       If no filter is provided, the result will show all users.
@@ -1181,6 +1243,19 @@ script:
         is provided)
     - name: custom-field-type
       description: Search computer by this custom field type
+    outputs:
+    - contextPath: ActiveDirectory.Computers.dn
+      description: The computer distinguished name
+    - contextPath: ActiveDirectory.Computers.memberOf
+      description: Groups the computer is listed as a member
+    - contextPath: ActiveDirectory.Computers.name
+      description: The computer name
+    - contextPath: Endpoint.ID
+      description: The computer DN
+    - contextPath: Endpoint.Hostname
+      description: The computer name
+    - contextPath: Endpoint.Groups
+      description: Groups the computer is listed as a member
     description: 'Retrieve detailed information about a computer account. The computer
       can be specified by name, email or as an Active Directory Distinguished Name
       (DN). If no filters are provided, the result will show all computers. '
@@ -1200,6 +1275,16 @@ script:
     - name: attributes
       description: Comma separated list of attributes to Include in addition to the
         default ones
+    outputs:
+    - contextPath: ActiveDirectory.Groups.dn
+      description: The group distinguished name
+      type: string
+    - contextPath: ActiveDirectory.Groups.members.dn
+      description: The group member distinguished name
+      type: string
+    - contextPath: ActiveDirectory.Groups.members.category
+      description: person/computer
+      type: string
     description: Retrieve the list of persons or computers that are members of the
       specified group.
   runonce: false
