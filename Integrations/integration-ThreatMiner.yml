@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAF8El
 description: Data Mining for Threat Intelligence
 configuration:
 - display: ""
-  name: fileThreshold
+  name: limitResults
   defaultvalue: "30"
   type: 0
   required: false
@@ -214,7 +214,7 @@ script:
         for uri in threatminerResultsAsArray:
             if maxReturnedArraySize == -1 or uriCounter < maxReturnedArraySize:
                 URIs.append({
-                    'UriAddress':threatminerResultsAsArray[uriCounter]['uri'], #TODO: tell Maya changed URI to URI.UriAddress
+                    'UriAddress':threatminerResultsAsArray[uriCounter]['uri'],
                     'LastSeen':threatminerResultsAsArray[uriCounter]['last_seen']
                     })
                 uriCounter += 1
@@ -414,7 +414,7 @@ script:
         context['ThreatMiner.File.Domains'] = fileDomains
         context['ThreatMiner.File.Mutants'] = fileMutants
         context['ThreatMiner.File.Registry'] = fileRegistryKeys
-        context['ThreatMiner.File.AV'] = fileAntiVirus
+        context['ThreatMiner.File.AV'] = fileAntiVirus[:maxReturnedArraySize]
 
         amountOfDetections = len(fileAntiVirus)
         context['File.Malicious.Vendor'] = 'ThreatMiner'
@@ -423,8 +423,8 @@ script:
         context['File.Sha1'] = fileWhoIs['Sha1']
         context['File.Sha256'] = fileWhoIs['Sha256']
 
-        context['DBotScore.Indicator'] = 'ThreatMiner.File.AV'
-        context['DBotScore.Type'] = 'ThreatMiner' #TODO: ask Maya what it's supoose to be
+        context['DBotScore.Indicator'] = hashedFile
+        context['DBotScore.Type'] = 'File'
         context['DBotScore.Vendor'] = 'ThreatMiner'
         context['DBotScore.Score'] = get_dbot_score(amountOfDetections)
 
@@ -436,12 +436,13 @@ script:
                 'EntryContext': createContext(context, removeNull=True),
                 'ContentsFormat': formats['json']}]
 
-    def get_dbot_score(amountOfDetections): #TODO: let Maya know that the user limit doesn't change the number of results I calculate the AV (so the user might not understand why its bigger)
+    def get_dbot_score(amountOfDetections):
+        maliciousThreshold = demisto.args().get('threshold')
         if amountOfDetections == 0:
             return 0
-        if amountOfDetections > 0 and amountOfDetections <= 10:
+        if amountOfDetections > 0 and amountOfDetections < maliciousThreshold :
             return 2
-        if amountOfDetections > 11:
+        if amountOfDetections >= maliciousThreshold:
             return 3
 
     def create_file_command_markdown(hashedFile, fileWhois, fileHttp, domains, mutants, registryKeys, antiVirusDetection):
@@ -486,10 +487,10 @@ script:
                 demisto.results('test failed')
             pass
 
-        if demisto.params().get('fileThreshold').lower() == 'all':
+        if demisto.params().get('limitResults').lower() == 'all':
             maxArraySize = -1
         else:
-            maxArraySize = int(demisto.params().get('fileThreshold', MAX_RETURNED_ARRAY_SIZE))
+            maxArraySize = int(demisto.params().get('limitResults', MAX_RETURNED_ARRAY_SIZE))
 
         if demistoCommand == 'domain':
             domainName = demisto.args().get('domain')
@@ -497,7 +498,7 @@ script:
         if demistoCommand == 'ip':
             ipAddress = demisto.args().get('ip')
             if not is_ip_valid(ipAddress):
-                return_error('An inalid IP was specified')
+                return_error('An invalid IP was specified')
             demisto.results(get_ip_report(ipAddress, maxArraySize))
         if demistoCommand == 'file':
             hashedfile = demisto.args().get('file')
@@ -688,11 +689,4 @@ script:
       description: Vendor used to calculate the score
       type: string
     description: Retrieve data from ThreatMiner about a specified file.
-  - name: threatminer-search
-    arguments:
-    - name: indicator
-      required: true
-      description: Search for domains, IPs, hashes, email addresses, SSL certificates,
-        user-agents, file names, registry keys, mutexes
-    description: Perform free search in ThreatMiner
   runonce: false
