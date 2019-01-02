@@ -52,8 +52,10 @@ configuration:
   required: false
 script:
   script: |+
-    from ldap3 import Server, Connection, NTLM, SUBTREE, ALL, ALL_ATTRIBUTES
+    from ldap3 import Server, Connection, NTLM, SUBTREE, ALL, ALL_ATTRIBUTES, Tls
+    from ldap3.core.exceptions import LDAPSocketOpenError
     from ldap3.extend import microsoft
+    import ssl
     from datetime import datetime, timedelta
 
 
@@ -887,14 +889,14 @@ script:
     try:
         # open socket and bind to server
         if not conn.bind():
-            demisto.results(error_entry('Failed to bind to server'))
+            demisto.results(error_entry('Failed to bind to server. Please validate credentials'))
     except LDAPSocketOpenError as e:
     # except Exception as e:
         demisto.info(e.message)
         message = "Failed to access LDAP server."
-        if SECURE_CONNECTION == 'TLS':
+        if TLS_VERIFY_CERTIFICATE:
             # probably failed to verify certificate
-            message += ' Consider not using TLS'
+            message += '\nCould not verify server certificate'
         demisto.results(error_entry(message))
         sys.exit(0)
 
@@ -1190,22 +1192,22 @@ script:
     - contextPath: ActiveDirectory.Users.displayName
       description: The user display name
       type: string
-    - contextPath: 'ActiveDirectory.Users.name'
+    - contextPath: ' ActiveDirectory.Users.name'
       description: The user common name
       type: string
-    - contextPath: 'ActiveDirectory.Users.sAMAccountName'
+    - contextPath: ' ActiveDirectory.Users.sAMAccountName'
       description: The user sAMAccountName
       type: string
-    - contextPath: 'ActiveDirectory.Users.userAccountControl'
+    - contextPath: ' ActiveDirectory.Users.userAccountControl'
       description: The user account control flag
       type: number
-    - contextPath: 'ActiveDirectory.Users.mail'
+    - contextPath: ' ActiveDirectory.Users.mail'
       description: The user email address
       type: string
-    - contextPath: 'ActiveDirectory.Users.manager'
+    - contextPath: ' ActiveDirectory.Users.manager'
       description: The user manager
       type: string
-    - contextPath: 'ActiveDirectory.Users.memberOf'
+    - contextPath: ' ActiveDirectory.Users.memberOf'
       description: Groups the  user is member of
       type: string
     - contextPath: Account.DisplayName
