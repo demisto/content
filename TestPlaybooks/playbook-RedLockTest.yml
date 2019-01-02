@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 77b8ef03-e751-4afe-8656-c4b7b6c65036
+    taskid: 5e429589-d69a-4ae6-8577-8347bb9bcfd2
     type: start
     task:
-      id: 77b8ef03-e751-4afe-8656-c4b7b6c65036
+      id: 5e429589-d69a-4ae6-8577-8347bb9bcfd2
       version: -1
       name: ""
       iscommand: false
@@ -21,16 +21,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 65
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 6e434e41-7577-4c02-8bc9-e6f7a3189077
+    taskid: 017f5456-c8a7-44a3-876c-286f5ea3d3db
     type: regular
     task:
-      id: 6e434e41-7577-4c02-8bc9-e6f7a3189077
+      id: 017f5456-c8a7-44a3-876c-286f5ea3d3db
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -50,16 +50,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 07eafe11-1cab-42aa-86b1-5504892d6666
+    taskid: bd050756-d655-4bae-845e-49387668b2ac
     type: regular
     task:
-      id: 07eafe11-1cab-42aa-86b1-5504892d6666
+      id: bd050756-d655-4bae-845e-49387668b2ac
       version: -1
       name: Retrieve all open alerts between 2 given dates
       description: Check IP reputation (when information is available, returns a JSON
@@ -70,7 +70,7 @@ tasks:
       brand: RedLock
     nexttasks:
       '#none#':
-      - "3"
+      - "21"
     scriptarguments:
       alert-id: {}
       alert-rule-name: {}
@@ -98,43 +98,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 52652c74-eddd-446e-87e9-d905f5f34a9e
-    type: regular
-    task:
-      id: 52652c74-eddd-446e-87e9-d905f5f34a9e
-      version: -1
-      name: VerifyContext that we have alerts
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: Redlock.Alert=>val.length > 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 400
         }
       }
     note: false
@@ -162,7 +126,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 925
         }
       }
     note: false
@@ -197,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1100
         }
       }
     note: false
@@ -245,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1450
         }
       }
     note: false
@@ -289,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1070
+          "x": 162.5,
+          "y": 1275
         }
       }
     note: false
@@ -308,7 +272,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "18"
     scriptarguments:
       alert-id:
         simple: P-251
@@ -318,34 +282,125 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1410
+          "y": 1625
         }
       }
     note: false
-  "17":
-    id: "17"
-    taskid: 76e7adb8-168c-4419-8782-76021c0b4ee5
-    type: regular
+  "18":
+    id: "18"
+    taskid: ac7ca920-6453-4a2e-8af9-42c9b6378802
+    type: condition
     task:
-      id: 76e7adb8-168c-4419-8782-76021c0b4ee5
+      id: ac7ca920-6453-4a2e-8af9-42c9b6378802
       version: -1
       name: verify that P-251 is dismissed
-      scriptName: VerifyContext
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Redlock.Alert(val.ID === 'P-251').Status}
+          right:
+            value:
+              simple: dismissed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 1033d1bc-bda6-4a03-823c-731817e7857a
+    type: regular
+    task:
+      id: 1033d1bc-bda6-4a03-823c-731817e7857a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
-      expectedValue:
-        simple: '["dismissed"]'
-      fields: {}
-      path:
-        simple: Redlock.Alert(val.ID === 'P-251').Status
+      all:
+        simple: "yes"
+      key: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1580
+          "y": 750
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: ed45d04a-0f18-4e7b-842a-75c85c33f71b
+    type: condition
+    task:
+      id: ed45d04a-0f18-4e7b-842a-75c85c33f71b
+      version: -1
+      name: Check for response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Alert
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: c9fcc93e-da98-4e6d-8092-ed6cdfe1f907
+    type: title
+    task:
+      id: c9fcc93e-da98-4e6d-8092-ed6cdfe1f907
+      version: -1
+      name: Test Completed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2010
         }
       }
     note: false
@@ -357,10 +412,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1625,
-        "width": 690,
-        "x": -260,
-        "y": 50
+        "height": 2010,
+        "width": 492.5,
+        "x": 50,
+        "y": 65
       }
     }
   }
