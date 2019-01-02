@@ -891,6 +891,10 @@
         {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
+        },
+        {
+            "integrations": "Active Directory Query",
+            "playbookID": "Active Directory Test"
         }
     ],
     "skipped_tests": {
