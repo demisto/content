@@ -5,7 +5,7 @@ import glob
 import json
 import yaml
 from subprocess import Popen, PIPE
-
+from collections import OrderedDict
 
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
@@ -209,6 +209,7 @@ def get_script_data(file_path):
     name = data_dictionary.get('name', '-')
 
     toversion = data_dictionary.get('toversion')
+    deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on = get_depends_on(data_dictionary)
     script_executions = re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code)
@@ -218,6 +219,8 @@ def get_script_data(file_path):
         script_data['toversion'] = toversion
     if fromversion:
         script_data['fromversion'] = fromversion
+    if deprecated:
+        script_data['deprecated'] = deprecated
     if depends_on:
         script_data['depends_on'] = depends_on
     if script_executions:
@@ -279,12 +282,11 @@ def re_create_id_set():
         elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
             testplaybooks_list.append(get_playbook_data(file))
 
-    ids_dict = {
-        "scripts": scripts_list,
-        "playbooks": playbooks_list,
-        "integrations": integration_list,
-        "TestPlaybooks": testplaybooks_list
-    }
+    ids_dict = OrderedDict()
+    ids_dict['scripts'] = scripts_list
+    ids_dict['playbooks'] = playbooks_list
+    ids_dict['integrations'] = integration_list
+    ids_dict['TestPlaybooks'] = testplaybooks_list
 
     print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
@@ -305,7 +307,7 @@ def update_id_set():
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            ids_dict = json.load(id_set_file)
+            ids_dict = OrderedDict(json.load(id_set_file))
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
@@ -354,8 +356,14 @@ def update_id_set():
                 print("updated {0} in id_set".format(id))
 
     if added_files or modified_files:
+        new_ids_dict = OrderedDict()
+        new_ids_dict['scripts'] = script_set
+        new_ids_dict['playbooks'] = playbook_set
+        new_ids_dict['integrations'] = integration_set
+        new_ids_dict['TestPlaybooks'] = test_playbook_set
+
         with open('./Tests/id_set.json', 'w') as id_set_file:
-            json.dump(ids_dict, id_set_file, indent=4)
+            json.dump(new_ids_dict, id_set_file, indent=4)
 
     print("Finished updating id_set.json")
 
