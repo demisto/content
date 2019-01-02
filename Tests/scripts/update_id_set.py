@@ -7,6 +7,7 @@ import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 
+
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
