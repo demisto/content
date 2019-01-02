@@ -1,4 +1,4 @@
-version: 2.0
+version: 2
 jobs:
   build:
     docker:
@@ -14,11 +14,8 @@ jobs:
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-      - run:
-          name: Install dependencies
-          command: |
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
+              chmod +x ./Tests/scripts/*
+              chmod +x ./Tests/lastest_server_build_scripts/*
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
@@ -113,3 +110,30 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+
+  run_nightly_build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Prepare Enviornement
+          command: chmod +x ./Utils/*
+      - run:
+          name: Trigger nightly run
+          command: ./Utils/trigger_content_nightly_build.sh master "$CIRCLECI_TOKEN"
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 2 * * *" # UTC time
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - run_nightly_build

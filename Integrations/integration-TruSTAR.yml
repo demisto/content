@@ -33,6 +33,26 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: File Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the file malicious
+  name: file_threshold
+  defaultvalue: MEDIUM
+  type: 0
+  required: false
+- display: URL Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the URL malicious
+  name: url_threshold
+  defaultvalue: MEDIUM
+  type: 0
+  required: false
+- display: IP Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the IP malicious
+  name: ip_threshold
+  defaultvalue: MEDIUM
+  type: 0
+  required: false
+- display: Domain Threshold (LOW, MEDIUM, HIGH). Minimum TruSTAR priority level to consider the domain malicious
+  name: domain_threshold
+  defaultvalue: MEDIUM
+  type: 0
+  required: false
 script:
   script: |+
     ''' IMPORTS '''
@@ -135,6 +155,32 @@ script:
             ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
         return indicators, ec
 
+    def translate_specific_indicators(ts_indicators, specific_types):
+        res = []
+        for indicator in ts_indicators:
+            current_indicator = indicator.to_dict(remove_nones=True)
+            indicator_type = current_indicator['indicatorType']
+            priority_level = current_indicator.get('priorityLevel')
+            value = current_indicator['value']
+            whitelisted = current_indicator.get('whitelisted')
+            if indicator_type in specific_types:
+                res.append({
+                    'value': value,
+                    'priorityLevel': priority_level,
+                    'whitelisted': whitelisted,
+                    'indicatorType': indicator_type
+                })
+        return res
+
+    def priority_level_to_score(priority_level):
+        if priority_level == 'LOW':
+            return 1
+        elif priority_level == 'MEDIUM':
+            return 2
+        elif priority_level == 'HIGH':
+            return 3
+        return 0
+
     def normalize_time(timestamp):
         '''
         Converts unix epoch time to GMT
@@ -147,6 +193,173 @@ script:
         d = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         return int(d.strftime("%s")) * 1000
 
+    def create_file_ec(indicators, file, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': file,
+                    'Type': 'file',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
+        trustar_ec = {}
+        file_ec = {}
+        dbot_ec = {}
+        for indicator in indicators:
+            file_ec.update({
+                indicator['indicatorType']: indicator['value'],
+            })
+            trustar_ec.update({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
+            dbot_ec.update({
+                'Indicator': file,
+                'Type': 'file',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            if threshold <= indicator_score:
+                file_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': 'Priority level above {0}'.format(indicator['priorityLevel'])
+                    }
+                })
+        return {
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['file']: file_ec,
+            'TruSTAR.File(val.Value === obj.Value)': trustar_ec
+        }
+
+    def create_ip_ec(indicators, ip, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': ip,
+                    'Type': 'ip',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
+        trustar_ec = {}
+        ip_ec = {}
+        dbot_ec = {}
+        for indicator in indicators:
+            ip_ec.update({
+                'Address': indicator['value'],
+            })
+            trustar_ec.update({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
+            dbot_ec.update({
+                'Indicator': ip,
+                'Type': 'ip',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            if threshold <= indicator_score:
+                ip_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': 'Priority level above {0}'.format(indicator['priorityLevel'])
+                    }
+                })
+        return {
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['ip']: ip_ec,
+            'TruSTAR.IP(val.Value === obj.Value)': trustar_ec
+        }
+
+    def create_url_ec(indicators, url, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': url,
+                    'Type': 'url',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
+        trustar_ec = {}
+        url_ec = {}
+        dbot_ec = {}
+        for indicator in indicators:
+            url_ec.update({
+                'Data': indicator['value'],
+            })
+            trustar_ec.update({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
+            dbot_ec.update({
+                'Indicator': url,
+                'Type': 'url',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            if threshold <= indicator_score:
+                url_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': 'Priority level above {0}'.format(indicator['priorityLevel'])
+                    }
+                })
+        return {
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['url']: url_ec,
+            'TruSTAR.URL(val.Value === obj.Value)': trustar_ec
+        }
+
+    def create_domain_ec(indicators, url, threshold):
+        if not indicators:
+            return {
+                'DBotScore': {
+                    'Indicator': url,
+                    'Type': 'domain',
+                    'Score': 0,
+                    'Vendor': 'TruSTAR',
+                }
+            }
+        trustar_ec = {}
+        domain_ec = {}
+        dbot_ec = {}
+        for indicator in indicators:
+            domain_ec.update({
+                'Name': indicator['value'],
+            })
+            trustar_ec.update({
+                'Value': indicator['value'],
+                'Whitelisted': indicator['whitelisted'],
+                'Priority': indicator['priorityLevel']
+            })
+            indicator_score = priority_level_to_score(indicator['priorityLevel'])
+            dbot_ec.update({
+                'Indicator': url,
+                'Type': 'domain',
+                'Vendor': 'TruSTAR',
+                'Score': 0 if indicator_score == 0 else (2 if threshold > indicator_score else 3)
+            })
+            if threshold <= indicator_score:
+                domain_ec.update({
+                    'Malicious': {
+                        'Vendor': 'TruSTAR',
+                        'Description': 'Priority level above {0}'.format(indicator['priorityLevel'])
+                    }
+                })
+        return {
+            outputPaths['dbotscore']: dbot_ec,
+            outputPaths['domain']: domain_ec,
+            'TruSTAR.Domain(val.Value === obj.Value)': trustar_ec
+        }
 
     ''' FUNCTIONS '''
     def get_related_indicators(indicators, enclave_ids, page_size, page_number):
@@ -217,6 +430,24 @@ script:
             }
         else:
             entry = 'No indicators were found.'
+        return entry
+
+    def generic_search_indicator(search_term, threshold, search_type, ec_function):
+        if demisto.args().get('threshold'):
+            threshold = demisto.args().get('threshold')
+        response = ts.search_indicators_page(search_term=search_term)
+        indicators = translate_specific_indicators(response, search_type)
+        threshold = priority_level_to_score(threshold)
+        title = 'TruSTAR results for {0} indicator: {1}'.format(search_type[0], search_term)
+        ec = ec_function(indicators, search_term, threshold)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': indicators,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, indicators),
+            'EntryContext': ec
+        }
         return entry
 
     def submit_report(title, report_body, enclave_ids, external_url, time_began, distribution_type):
@@ -526,6 +757,18 @@ script:
 
         elif demisto.command() == 'trustar-get-enclaves':
             demisto.results(get_enclaves())
+
+        elif demisto.command() == 'file':
+            demisto.results(generic_search_indicator(demisto.args().get('file'), demisto.params().get('file_threshold'), ('File', 'MD5', 'SHA1', 'SHA256'), create_file_ec))
+
+        elif demisto.command() == 'ip':
+            demisto.results(generic_search_indicator(demisto.args().get('ip'), demisto.params().get('ip_threshold'), ('IP',), create_ip_ec))
+
+        elif demisto.command() == 'url':
+            demisto.results(generic_search_indicator(demisto.args().get('url'), demisto.params().get('url_threshold'), ('URL',), create_url_ec))
+
+        elif demisto.command() == 'domain':
+            demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.params().get('domain_threshold'), ('Domain', 'URL',), create_domain_ec))
 
     except Exception, e:
         LOG(e.message)
@@ -910,4 +1153,189 @@ script:
     arguments: []
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: File hash - MD5, SHA1 or SHA256
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: TruSTAR.File.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.File.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.File.Priority
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Check file reputation on TruSTAR
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address (e.g. 8.8.8.8) or a CIDR (e.g. 1.1.1.0/18)
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+    outputs:
+    - contextPath: IP.Address
+      description: IP Address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.IP.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.IP.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.IP.Priority
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+    description: Check IP Reputation on TruSTAR
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: Enter a URL to search
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+    outputs:
+    - contextPath: URL.Data
+      description: URL data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.URL.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.URL.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.URL.Priority
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      type: string
+    description: Check URL reputation on TruSTAR
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: Enter domain name to search
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain Name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: string
+    - contextPath: TruSTAR.Domain.Value
+      description: Indicator value
+      type: string
+    - contextPath: TruSTAR.Domain.Whitelisted
+      description: Is the indicator whitelisted
+      type: boolean
+    - contextPath: TruSTAR.Domain.Priority
+      description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
+      type: string
+    description: Check Domain reputation on TruStar
   dockerimage: demisto/trustar
+releaseNotes: "Added 4 new commands: file, url, ip and domain"
