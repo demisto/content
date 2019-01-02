@@ -20,28 +20,28 @@ We have some prebuilt scripts that will automate the steps outlined in the above
 ## Creating an Integration
 After you have done the above, we will look at Demisto and get started on your first integration.
 
-[Follow the steps here to learn about the Demisto IDE](/documentation/getting_started/README.MD)
+[Follow the steps here to learn about the Demisto IDE](/docs/getting_started/README.MD)
 
 
 ## Code Conventions
 The Demisto Code Conventions will help you understand how we format our Integrations and some of the tips and tricks we have developed over the years.
 
-[Learn about the Demisto Code Conventions](/documentation/code_conventions/README.MD)
+[Learn about the Demisto Code Conventions](/docs/code_conventions/README.MD)
  
 ## Context and Outputs
 The Demisto platform relies heavily on collecting data from various endpoints (integrations) and creating a "Context" for them. This allows customers to be able to use the data to perform various tasks they may need to accomplish.
 
-[Click here to learn about Context and Outputs](/documentation/context_and_ouputs/README.MD)
+[Click here to learn about Context and Outputs](/docs/context_and_ouputs/README.MD)
 
 ## Context Standards
 When we are working with data that is generic across all platforms, we format them according to our context standards. This helps integrations work interchangeably inside other playbooks.
 
-[Learn about our Context Standards here](/documentation/context_standards/README.MD)
+[Learn about our Context Standards here](/docs/context_standards/README.MD)
 
 ## Docker
 In some cases, it will be necessary to create a docker image to enable your integration to run. When this happens, we must create a new docker image using the steps outlined here:
 
-[Create a Docker Image](/documentation/docker/README.MD)
+[Create a Docker Image](/docs/docker/README.MD)
 
 ## The Integration YAML File
 Demisto formats the integration as a YAML file. This allows us to set parameters that may not be available for a customer such as Tests, Server Version, and locking the integration from future changes.

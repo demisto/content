@@ -51,7 +51,7 @@ Arguments are variables for a command that are dynamic and can be changed each t
 * **List Options** - Add options separated by a comma to include a dropdown list of options for the argument.
 
 ### Outputs
-Please [read here](/documentation/context_and_ouputs/README.MD) to learn more about Outputs and Context.
+Please [read here](/docs/context_and_ouputs/README.MD) to learn more about Outputs and Context.
 
 ## Content development lifecycle
 1. [Define/gather use cases](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BUse-cases%5D)
