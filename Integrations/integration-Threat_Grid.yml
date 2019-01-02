@@ -297,7 +297,7 @@ script:
         args['api_key'] = API_KEY
         fileData = demisto.getFilePath(demisto.getArg('file-id'))
         with open(fileData['path'], 'rb') as f:
-            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (demisto.getArg('filename'), f)}, data=args)
+            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (demisto.getArg('filename').encode('ascii', 'ignore').replace('"', ''), f)}, data=args)
             if r.status_code != requests.codes.ok:
                 if r.status_code == 503:
                     return_error('Sample upload failed. File was already uploaded.')
@@ -2259,11 +2259,6 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-releaseNotes: "Expanded raw-response of the following commands:
-        threat-grid-get-html-report-by-id
-        threat-grid-get-processes-by-id
-        threat-grid-get-video-by-id
-        threat-grid-get-analysis-by-id
-        "
+releaseNotes: "Bug fix - submit a file with unicode chars in its name"
 tests:
   - ThreatGridTest
