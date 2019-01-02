@@ -98,7 +98,7 @@ script:
         timestamp_in_unix_millisecond = date_to_timestamp(python_date_object, 'datetime.datetime')
         return timestamp_in_unix_millisecond
 
-    def return_iso_plus_x_days(date_in_iso_format, num_of_days):
+    def increase_iso_by_x_days(date_in_iso_format, num_of_days):
         iso_format = "%Y-%m-%dT%H:%M:%S"
         date_in_python_format = convert_iso_string_to_python_date(date_in_iso_format)
         new_date_in_python_format = date_in_python_format + timedelta(days = int(num_of_days))
@@ -110,10 +110,10 @@ script:
         date_in_iso_without_milliseconds = date_parts_arr[0]
         return date_in_iso_without_milliseconds
 
-    def return_timestamp_plus_x_days(date_in_unix_ms_timestamp, num_of_days):
+    def increase_timestamp_by_x_days(date_in_unix_ms_timestamp, num_of_days):
         date_in_iso = timestamp_to_datestring(date_in_unix_ms_timestamp)
         date_in_iso_without_ms = remove_milliseconds_from_iso(date_in_iso)
-        date_in_iso_plus_x_days = return_iso_plus_x_days(date_in_iso_without_ms, num_of_days)
+        date_in_iso_plus_x_days = increase_iso_by_x_days(date_in_iso_without_ms, num_of_days)
         timestamp_in_unix_ms_plus_x_days = date_to_timestamp(date_in_iso_plus_x_days)
         return timestamp_in_unix_ms_plus_x_days
 
@@ -122,24 +122,22 @@ script:
         params['foundDateTo'] = now_date_in_unix_timestamp
         params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
         params['sourceDateTo'] = now_date_in_unix_timestamp
-        return params
 
-    def update_params_if_only_delta_given(params, time_delta_in_days_int):
+    def update_params_with_delta_arg(params, time_delta_in_days_int):
         now_date_in_iso = datetime.utcnow().isoformat()
         now_date_in_iso_without_ms = remove_milliseconds_from_iso(now_date_in_iso)
         now_date_in_unix_timestamp = date_to_timestamp(now_date_in_iso_without_ms)
-        oldest_day_to_search_in_unix_timestamp = return_timestamp_plus_x_days(now_date_in_unix_timestamp, -1*time_delta_in_days_int)
-        params = update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp)
-        return params
+        oldest_day_to_search_in_unix_timestamp = increase_timestamp_by_x_days(now_date_in_unix_timestamp, -1*time_delta_in_days_int)
+        update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp)
+        del params['time-delta']
 
 
     def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
         if 'foundDateFrom' in params or 'foundDateTo' in params:
-            demisto.debug("ERROR in get_alerts()")
+            demisto.debug("ERROR in get_alerts() - can't use found-date-to or found-date-from arguments with time-delta argument")
             return_error("Error: can't assign delta when assigned both found-date-to or found-date-from")
         else:
-            params = update_params_if_only_delta_given(params, time_delta_in_days_int)
-        del params['time-delta']
+            update_params_with_delta_arg(params, time_delta_in_days_int)
         return params
 
 
@@ -170,7 +168,7 @@ script:
                 params[argsConversion.get(k) or k] = demisto.getArg(k)
         if demisto.getArg('time-delta'):
             time_delta_in_days = demisto.getArg('time-delta')
-            params = update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
+            update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
         return params
 
 
