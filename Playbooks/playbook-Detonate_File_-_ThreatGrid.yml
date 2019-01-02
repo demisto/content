@@ -498,6 +498,5 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
-releaseNotes: "Submit only supported files to ThreatGrid"
 tests:
 - Detonate File - Generic Test

@@ -646,7 +646,6 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
-releaseNotes: "Submit only supported files to McAfee ATD"
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test
