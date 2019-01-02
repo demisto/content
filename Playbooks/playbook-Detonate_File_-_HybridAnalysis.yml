@@ -381,3 +381,6 @@ outputs:
 - contextPath: HybridAnalysis.Submit.EnvironmentID
   description: The environmentID of the submission
   type: unknown
+releaseNotes: "Hybrid Analysis Detonate file playbook"
+tests:
+  - "Detonate File - HybridAnalysis - Test"
