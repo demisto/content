@@ -32,7 +32,7 @@ configuration:
     | eval security_domain=if(isnull(security_domain),source,security_domain)
   type: 0
   required: false
-- display: Fetch incidents
+  - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
@@ -424,9 +424,7 @@ script:
         response_info = updateNotableEvents( sessionKey=sessionKey, baseurl=baseurl, comment=demisto.get(demisto.args(), 'comment'), status=status,
             urgency=demisto.get(demisto.args(), 'urgency'),
             owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
-        if 'success' not in response_info:
-            return_error("api error, field success is missing. api response: " + str(response_info['messages']))
-        if not response_info['success']:
+        if 'success' not in response_info or not response_info['success']:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
                 'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
             sys.exit(0)
