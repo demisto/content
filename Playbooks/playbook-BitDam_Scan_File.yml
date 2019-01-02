@@ -1,11 +1,11 @@
 id: Detonate File - BitDam
 version: 18
 name: Detonate File - BitDam
+fromversion: 4.0.0
 description: |-
   Detonates one or more files using BitDam integration.
   Returns verdict to the War Room and file reputations to the context data.
   Supported file types are mainly PDF & microsoft office software/
-fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -13,10 +13,10 @@ tasks:
     taskid: cf22dcbc-af9c-42fa-8963-205d412e6965
     type: start
     task:
-      description: ""
       id: cf22dcbc-af9c-42fa-8963-205d412e6965
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -31,36 +31,7 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: 4c2c547d-ad8a-4e52-8bab-63760b7677cc
-    type: regular
-    task:
-      description: ""
-      id: 4c2c547d-ad8a-4e52-8bab-63760b7677cc
-      version: -1
-      name: BitDam Upload File
-      script: '|||bitdam-upload-file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      entryId:
-        complex:
-          root: inputs.File
-          accessor: EntryID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 272.5,
-          "y": 905
-        }
-      }
-    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 19ace356-7eb1-491e-8b42-9d755950312c
@@ -109,20 +80,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272.5,
-          "y": 1080
+          "x": 387.5,
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: aa6d7b50-e89e-4046-8245-91d4e430544d
     type: title
     task:
-      description: ""
       id: aa6d7b50-e89e-4046-8245-91d4e430544d
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -135,6 +107,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: 840243b7-07df-471e-8cab-7dc8080ce28c
@@ -171,6 +144,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 03079660-b680-41d1-847d-4d667e3bc404
@@ -224,6 +198,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: 2610cf49-d119-4065-861c-c7b3a5ffd0c8
@@ -248,11 +223,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272.5,
-          "y": 1255
+          "x": 387.5,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: 5f4539b9-bf85-42e5-8892-f12714a02869
@@ -261,11 +237,11 @@ tasks:
       id: 5f4539b9-bf85-42e5-8892-f12714a02869
       version: -1
       name: Set file to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -285,6 +261,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: 699619cb-33c2-4b32-88ef-ba0844c2cddf
@@ -293,15 +270,15 @@ tasks:
       id: 699619cb-33c2-4b32-88ef-ba0844c2cddf
       version: -1
       name: Is File type supported?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -344,18 +321,80 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 272.5,
+          "x": 275,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 5e010413-b8e7-4562-8fc6-cddc2168851f
+    type: regular
+    task:
+      id: 5e010413-b8e7-4562-8fc6-cddc2168851f
+      version: -1
+      name: BItDam Upload File
+      description: Upload a file sample to BitDam's service
+      script: '|||bitdam-upload-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entryId:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_12_yes": 0.89
+    },
     "paper": {
       "dimensions": {
         "height": 1435,
-        "width": 605,
+        "width": 717.5,
         "x": 50,
         "y": 50
       }
@@ -400,3 +439,5 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+tests:
+- Detonate File - BitDam Test

@@ -3,11 +3,29 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "HashiCorp Vault",
+            "playbookID": "hashicorp_test"
+        },
+        {
+            "playbookID": "Test CommonServer"
+        },
+        {
+            "integrations": "CIRCL",
+            "playbookID": "CirclIntegrationTest"
+        },
+        {
+            "playbookID": "test-LinkIncidentsWithRetry"
+        },
+        {
             "playbookID": "CopyContextToFieldTest"
         },
         {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
+        },
+        {
+            "integrations": "Attivo Botsink",
+            "playbookID": "AttivoBotsinkTest"
         },
         {
             "playbookID": "CreatePhishingClassifierMLTest"
@@ -67,16 +85,23 @@
           "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 300
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 300
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
         {
           "playbookID": "URLDecode-Test"
-        },
-        {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 600
         },
         {
           "playbookID": "GetTime-Test"
@@ -96,7 +121,14 @@
         {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
-            "timeout": 500
+            "nightly": true,
+            "timeout": 3600
+        },
+        {
+            "integrations": "google-vault",
+            "playbookID": "Google_Vault-Search_And_Display_Results_test",
+            "nightly": true,
+            "timeout": 3600
         },
         {
             "playbookID": "Luminate-TestPlaybook",
@@ -109,10 +141,14 @@
             "playbookID": "ParseExcel-test"
         },
         {
+            "playbookID": "Detonate File - No Files test"
+        },
+        {
             "integrations": [
                 "Panorama",
                 "Check Point"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "blockip_test_playbook"
         },
         {
@@ -125,7 +161,9 @@
         },
         {
             "integrations": "IntSights",
-            "playbookID": "IntSights Test"
+            "playbookID": "IntSights Test",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "dnstwist",
@@ -145,6 +183,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
+            "instance_names": "palo_alto_firewall",
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -213,6 +252,12 @@
             "nightly": true
         },
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestDetonation",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "WildFire",
             "playbookID": "Wildfire Test"
         },
@@ -241,6 +286,11 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "integrations": ["EWS v2","EWS Mail Sender"],
+            "playbookID": "EWS search-mailbox test",
+            "timeout": 300
         },
         {
             "integrations": "PagerDuty v2",
@@ -389,10 +439,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": [],
-            "playbookID": "Test CommonServer"
         },
         {
             "integrations": "VirusTotal",
@@ -561,7 +607,8 @@
         },
         {
             "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
+            "playbookID": "Cybereason Test",
+            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
@@ -681,6 +728,10 @@
             "timeout": 300
         },
         {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB Test"
+        },
+        {
             "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
         },
@@ -756,6 +807,11 @@
             "playbookID": "ExifReadTest"
         },
         {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
+        },
+        {
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,
@@ -780,6 +836,40 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io",
+                "activedir"
+            ],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                "carbonblackprotection",
+                "carbonblack"
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 500
+        },
+        {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test",
+            "nightly": true
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test",
+            "integrations": "Demisto REST API"
+
+        },
+        {
+            "playbookID": "Test_Sagemaker",
+            "integrations": "AWS Sagemaker"
+
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -802,37 +892,8 @@
             ]
         },
         {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io",
-                "activedir"
-            ],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                "carbonblackprotection",
-                "carbonblack"
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "Zscaler",
-            "playbookID": "Zscaler Test"
-        },
-        {
-            "playbookID": "DemistoUploadFileToIncident Test",
-            "integrations": "Demisto REST API"
-
-        },
-        {
-            "playbookID": "Test_Sagemaker",
-            "integrations": "AWS Sagemaker"
-
+            "integrations": "duo",
+            "playbookID": "DUO Test Playbook"
         }
     ],
     "skipped_tests": {
@@ -845,7 +906,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
-        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
+        "tenable-sc-test": "Unstable instance = flaky test"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -860,7 +922,6 @@
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
-        "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
@@ -868,7 +929,10 @@
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "MimecastV2": "Several issues with instance"
+        "MimecastV2": "Several issues with instance",
+        "AWS Sagemaker": "License expired, no renewal in the near future",
+        "Attivo Botsink": "no instance, @Arian will update",
+        "carbonblackprotection": "License expired"
     },
     "nigthly_integrations": [
         "Lastline"
