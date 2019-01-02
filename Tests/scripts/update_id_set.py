@@ -246,7 +246,6 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
         if obj_id == instance_id:
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
-                    print('fromversion')
                     instance[obj_id] = obj_data[obj_id]
 
 
