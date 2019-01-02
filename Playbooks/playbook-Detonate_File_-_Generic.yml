@@ -453,12 +453,15 @@ view: |-
 inputs:
   - key: EntryID
     value:
-      simple: ${File.EntryID}
+      complex:
+        root: File
+        accessor: EntryID
     required: false
     description: Entry ID of file to be detonated
   - key: File
     value:
-      simple: ${File}
+      complex:
+        root: File
     required: false
     description: File object of file to be detonated
 outputs:
