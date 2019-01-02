@@ -298,7 +298,7 @@ def update_id_set():
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status HEAD")
+    files_string = run_git_command("git diff --name-status")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files = get_changed_files(files_string + '\n' + second_files_string)
 
@@ -358,7 +358,7 @@ def update_id_set():
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(ids_dict, id_set_file, indent=4)
 
-        print("Finished updating id_set.json")
+    print("Finished updating id_set.json")
 
 
 if __name__ == '__main__':

@@ -96,11 +96,11 @@ def print_error(error_str):
 
 def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
+    output, err = p.communicate()
+    if err:
         print_error("Failed to run git command " + command)
         sys.exit(1)
-    return p.stdout.read()
+    return output
 
 
 def checked_type(file_path):
@@ -191,7 +191,7 @@ def is_release_branch():
 
 
 def changed_id(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_git_command("git diff HEAD {}".format(file_path))
     if re.search("[+-](  )?id: .*", change_string):
         print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
@@ -276,7 +276,7 @@ def get_modified_and_added_files(branch_name, is_circle):
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
-        files_string = run_git_command("git diff --name-status --no-merges HEAD")
+        files_string = run_git_command("git diff --name-status --no-merges")
 
         modified_files, added_files = get_modified_files(files_string)
         _, added_files_from_branch = get_modified_files(all_changed_files_string)
