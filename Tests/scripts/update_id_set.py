@@ -308,7 +308,7 @@ def update_id_set():
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            ids_dict = OrderedDict(json.load(id_set_file))
+            ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
