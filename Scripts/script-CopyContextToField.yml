@@ -38,7 +38,8 @@ args:
   description: The incident field to set with the value.
 - name: incidentsQuery
   required: true
-  description: The incidents query to apply the copy process.
+  description: 'The incidents query to apply the copy process. For example, to apply
+    this for all the incidents of Phishing type we will use this query: "type:Phishing"'
 - name: limit
   description: Maximum number of incidents to edit.
   defaultValue: "1000"
