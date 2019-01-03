@@ -2,7 +2,7 @@ commonfields:
   id: SSDeepReputation
   version: -1
 name: SSDeepReputation
-script: |2
+script: |-
 
   REPUTATIONS = {
       0: 'None',
