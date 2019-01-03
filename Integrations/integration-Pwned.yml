@@ -156,141 +156,141 @@ script:
   commands:
   - name: pwned-email
     arguments:
-      - name: email
-        required: true
-        default: true
-        description: Email to check
+    - name: email
+      required: true
+      default: true
+      description: Email to check
     outputs:
-      - contextPath: Account.Email.Compromised.Vendor
-        description: For comporomised emails, the vendor that made the decision
-      - contextPath: Account.Email.Reason
-        description: For comporomised emails, the reason for the vendor to make the
-          compromised decision
-      - contextPath: Account.Email.Address
-        description: Email address
-      - contextPath: Email.Malicious.Vendor
-        description: For malicious emails, the vendor that made the decision
-      - contextPath: Email.Malicious.Description
-        description: For malicious emails, the reason for the vendor to make the decision
-      - contextPath: Email.dBotScore.Indicator
-        description: The indicator we tested
-      - contextPath: Email.dBotScore.Type
-        description: The type of the indicator
-      - contextPath: Email.dBotScore.Vendor
-        description: Vendor used to calculate the score
-      - contextPath: Email.dBotScore.Score
-        description: The actual score
+    - contextPath: Account.Email.Compromised.Vendor
+      description: For comporomised emails, the vendor that made the decision
+    - contextPath: Account.Email.Reason
+      description: For comporomised emails, the reason for the vendor to make the
+        compromised decision
+    - contextPath: Account.Email.Address
+      description: Email address
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision
+    - contextPath: Email.Malicious.Description
+      description: For malicious emails, the reason for the vendor to make the decision
+    - contextPath: Email.dBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: Email.dBotScore.Type
+      description: The type of the indicator
+    - contextPath: Email.dBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: Email.dBotScore.Score
+      description: The actual score
     important:
-      - contextPath: Persons(val.Compromised)
-        description: Compromised Persons
-        related: ""
+    - contextPath: Persons(val.Compromised)
+      description: Compromised Persons
+      related: ""
     description: Check if an email has been compromised as part of past breaches
   - name: pwned-domain
     arguments:
-      - name: domain
-        required: true
-        default: true
-        description: Domain to check
+    - name: domain
+      required: true
+      default: true
+      description: Domain to check
     outputs:
-      - contextPath: Domain.Compromised.Vendor
-        description: For compromised domains, the vendor that made the decision
-        type: string
-      - contextPath: Domain.Compromised.Reason
-        description: For compromised domains, the reason for the vendor to make the
-          compromised decision
-        type: string
-      - contextPath: Domain.Name
-        description: Domain name
-        type: string
-      - contextPath: Domain.Malicious.Vendor
-        description: For malicious domains, the vendor that made the decision
-        type: string
-      - contextPath: Domain.Malicious.Description
-        description: For malicious domains, the reason for the vendor to make the decision
-        type: string
-      - contextPath: Domain.dBotScore.Indicator
-        description: The indicator we tested
-        type: string
-      - contextPath: Domain.dBotScore.Type
-        description: The type of the indicator
-        type: string
-      - contextPath: Domain.dBotScore.Vendor
-        description: Vendor used to calculate the score
-        type: string
-      - contextPath: Domain.dBotScore.Score
-        description: The actual score
-        type: number
+    - contextPath: Domain.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Compromised.Reason
+      description: For compromised domains, the reason for the vendor to make the
+        compromised decision
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: Domain.dBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: Domain.dBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: Domain.dBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: Domain.dBotScore.Score
+      description: The actual score
+      type: number
     important:
-      - contextPath: Domain(val.Compromised)
-        description: Compromised Domains
-        related: ""
+    - contextPath: Domain(val.Compromised)
+      description: Compromised Domains
+      related: ""
     description: Check if domain has been compromised
   - name: email
     arguments:
-      - name: email
-        required: true
-        default: true
-        description: Email to check
+    - name: email
+      required: true
+      default: true
+      description: Email to check
     outputs:
-      - contextPath: Account.Email.Compromised.Vendor
-        description: For comporomised emails, the vendor that made the decision
-      - contextPath: Account.Email.Reason
-        description: For comporomised emails, the reason for the vendor to make the
-          compromised decision
-      - contextPath: Account.Email.Address
-        description: Email address
-      - contextPath: Email.Malicious.Vendor
-        description: For malicious emails, the vendor that made the decision
-      - contextPath: Email.Malicious.Description
-        description: For malicious emails, the reason for the vendor to make the decision
-      - contextPath: Email.dBotScore.Indicator
-        description: The indicator we tested
-      - contextPath: Email.dBotScore.Type
-        description: The type of the indicator
-      - contextPath: Email.dBotScore.Vendor
-        description: Vendor used to calculate the score
-      - contextPath: Email.dBotScore.Score
-        description: The actual score
+    - contextPath: Account.Email.Compromised.Vendor
+      description: For comporomised emails, the vendor that made the decision
+    - contextPath: Account.Email.Reason
+      description: For comporomised emails, the reason for the vendor to make the
+        compromised decision
+    - contextPath: Account.Email.Address
+      description: Email address
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision
+    - contextPath: Email.Malicious.Description
+      description: For malicious emails, the reason for the vendor to make the decision
+    - contextPath: Email.dBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: Email.dBotScore.Type
+      description: The type of the indicator
+    - contextPath: Email.dBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: Email.dBotScore.Score
+      description: The actual score
     important:
-      - contextPath: Persons(val.Compromised)
-        description: Compromised Persons
-        related: ""
+    - contextPath: Persons(val.Compromised)
+      description: Compromised Persons
+      related: ""
     description: Check if an email has been compromised as part of past breaches
     - name: domain
       arguments: []
       outputs:
-      - contextPath: Domain.Compromised.Vendor
-        description: For compromised domains, the vendor that made the decision
-        type: string
-      - contextPath: Domain.Compromised.Reason
-        description: For compromised domains, the reason for the vendor to make the
-          compromised decision
-        type: string
-      - contextPath: Domain.Name
-        description: Domain name
-        type: string
-      - contextPath: Domain.Malicious.Vendor
-        description: For malicious domains, the vendor that made the decision
-        type: string
-      - contextPath: Domain.Malicious.Description
-        description: For malicious domains, the reason for the vendor to make the decision
-        type: string
-      - contextPath: Domain.dBotScore.Indicator
-        description: The indicator we tested
-        type: string
-      - contextPath: Domain.dBotScore.Type
-        description: The type of the indicator
-        type: string
-      - contextPath: Domain.dBotScore.Vendor
-        description: Vendor used to calculate the score
-        type: string
-      - contextPath: Domain.dBotScore.Score
-        description: The actual score
-        type: number
+    - contextPath: Domain.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Compromised.Reason
+      description: For compromised domains, the reason for the vendor to make the
+        compromised decision
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: Domain.dBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: Domain.dBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: Domain.dBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: Domain.dBotScore.Score
+      description: The actual score
+      type: number
     important:
-      - contextPath: Domain(val.Compromised)
-        description: Compromised Domains
-        related: ""
+    - contextPath: Domain(val.Compromised)
+      description: Compromised Domains
+      related: ""
     description: Check if domain has been compromised
   runonce: false
 releasneNotes: "added DBot Score"
