@@ -14,7 +14,8 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2
+  script: |
+    DEFAULT_DBOT_SCORE = params.defaultdbotscore == 'Suspicious' ? 2 : 3;
 
     var sendRequest = function(url) {
         var res = http(
@@ -76,12 +77,26 @@ script:
         });
         compSites = compSites.sort();
         var compEmail = {};
+        var dBotScore = 0;
         if (compSites.length > 0) {
+            dBotScore = DEFAULT_DBOT_SCORE;
+            if (DEFAULT_DBOT_SCORE === 3){
+                email.Malicious = {
+                    Vendor: 'Pwned',
+                    Description: 'The email has been compromised',
+                }
+            }
             addCompromised(compEmail, outputPaths.email, {
                 'Address': email,
-                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
+                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', '), dBotScore: DEFAULT_DBOT_SCORE}
             });
         }
+        var dBotScore = {
+            Indicator: email,
+            Type: 'email',
+            Vendor: 'Pwned',
+            Score: DEFAULT_DBOT_SCORE
+        };
         return compEmail;
     }
     var domainToEc = function(domain,obj) {
@@ -91,12 +106,27 @@ script:
         });
         compSites = compSites.sort();
         var compDomain = {};
+        var dBotScore = 0;
         if (compSites.length > 0) {
+            dBotScore = DEFAULT_DBOT_SCORE;
+            if (DEFAULT_DBOT_SCORE === 3){
+                domain.Malicious = {
+                    Vendor: 'Pwned',
+                    Description: 'The domain has been compromised',
+                }
+            }
+
             addCompromised(compDomain, outputPaths.domain, {
                 'Name': domain,
-                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
+                'Compromised': {Vendor:'Pwned', Reason: compSites.join(', '), dBotScore: DEFAULT_DBOT_SCORE}
             });
         }
+        var dBotScore = {
+            Indicator: domain,
+            Type: 'domain',
+            Vendor: 'Pwned',
+            Score: DEFAULT_DBOT_SCORE
+        };
         return compDomain;
     }
 
@@ -112,6 +142,7 @@ script:
             var md = dataToMd("Email",args.email,res);
             var ec = emailToEc(args.email,res || []);
             return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        case 'domain':
         case 'pwned-domain':
             var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=' + args.domain;
             var res = sendRequest(url);
@@ -137,6 +168,18 @@ script:
         compromised decision
     - contextPath: Account.Email.Address
       description: Email address
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision
+    - contextPath: Email.Malicious.Description
+      description: For malicious emails, the reason for the vendor to make the decision
+    - contextPath: Email.dBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: Email.dBotScore.Type
+      description: The type of the indicator
+    - contextPath: Email.dBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: Email.dBotScore.Score
+      description: The actual score
     important:
     - contextPath: Persons(val.Compromised)
       description: Compromised Persons
@@ -149,13 +192,34 @@ script:
       default: true
       description: Domain to check
     outputs:
-    - contextPath: Domain.Compromised.Vendor
-      description: For comporomised domains, the vendor that made the decision
-    - contextPath: Domain.Compromised.Reason
-      description: For comporomised domains, the reason for the vendor to make the
-        compromised decision
-    - contextPath: Domain.Name
-      description: Domain name
+      - contextPath: Domain.Compromised.Vendor
+        description: For compromised domains, the vendor that made the decision
+        type: string
+      - contextPath: Domain.Compromised.Reason
+        description: For compromised domains, the reason for the vendor to make the
+          compromised decision
+        type: string
+      - contextPath: Domain.Name
+        description: Domain name
+        type: string
+      - contextPath: Domain.Malicious.Vendor
+        description: For malicious domains, the vendor that made the decision
+        type: string
+      - contextPath: Domain.Malicious.Description
+        description: For malicious domains, the reason for the vendor to make the decision
+        type: string
+      - contextPath: Domain.dBotScore.Indicator
+        description: The indicator we tested
+        type: string
+      - contextPath: Domain.dBotScore.Type
+        description: The type of the indicator
+        type: string
+      - contextPath: Domain.dBotScore.Vendor
+        description: Vendor used to calculate the score
+        type: string
+      - contextPath: Domain.dBotScore.Score
+        description: The actual score
+        type: number
     important:
     - contextPath: Domain(val.Compromised)
       description: Compromised Domains
@@ -175,9 +239,58 @@ script:
         compromised decision
     - contextPath: Account.Email.Address
       description: Email address
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision
+    - contextPath: Email.Malicious.Description
+      description: For malicious emails, the reason for the vendor to make the decision
+    - contextPath: Email.dBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: Email.dBotScore.Type
+      description: The type of the indicator
+    - contextPath: Email.dBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: Email.dBotScore.Score
+      description: The actual score
     important:
     - contextPath: Persons(val.Compromised)
       description: Compromised Persons
       related: ""
     description: Check if an email has been compromised as part of past breaches
-hidden: false
+    - name: domain
+      arguments: []
+      outputs:
+    - contextPath: Domain.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Compromised.Reason
+      description: For compromised domains, the reason for the vendor to make the
+        compromised decision
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: Domain.dBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: Domain.dBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: Domain.dBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: Domain.dBotScore.Score
+      description: The actual score
+      type: number
+    important:
+      - contextPath: Domain(val.Compromised)
+        description: Compromised Domains
+        related: ""
+    description: Check if domain has been compromised
+  runonce: false
+releasneNotes: "added DBot Score"
