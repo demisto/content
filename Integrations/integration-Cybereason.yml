@@ -45,10 +45,10 @@ configuration:
   defaultvalue: 3 days
   type: 0
   required: false
-- display: Fetch by Malop creation time or by Malop update time (Fetching by Malop
+- display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop
     update time might create duplicates of Malops as incidents)
   name: fetch_by
-  defaultvalue: Malop creation time
+  defaultvalue: MALOP CREATION TIME
   type: 0
   required: false
 script:
@@ -82,7 +82,7 @@ script:
     USE_SSL = not demisto.params().get('unsecure', False)
     CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
     FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-    FETCH_BY = demisto.params().get('fetch_by', 'Malop creation time')
+    FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
 
     STATUS_MAP = {
         'To Review': 'TODO',
@@ -160,7 +160,6 @@ script:
         return query
 
     def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
-
         LOG('running request with url=%s' % (SERVER + url_suffix))
         try:
             res = session.request(
@@ -292,8 +291,13 @@ script:
         only_suspicious = demisto.args().get('onlySuspicious')
         has_incoming_connection = demisto.args().get('hasIncomingConnection')
         has_outgoing_connection = demisto.args().get('hasOutgoingConnection')
+        has_external_connection = demisto.args().get('hasExternalConnection')
+        unsigned_unknown_reputation = demisto.args().get('unsignedUnknownReputation')
+        from_temporary_folder = demisto.args().get('fromTemporaryFolder')
+        privileges_escalation = demisto.args().get('privilegesEscalation')
+        maclicious_psexec = demisto.args().get('maliciousPsExec')
 
-        response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection)
+        response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection, has_external_connection, unsigned_unknown_reputation, from_temporary_folder, privileges_escalation, maclicious_psexec)
         elements = response['data']['resultIdToElementDataMap']
         outputs = []
         for element in elements:
@@ -326,7 +330,7 @@ script:
             'EntryContext': ec
         })
 
-    def query_processes(machine, process_name, only_suspicious=None, has_incoming_connection=None, has_outgoing_connection=None):
+    def query_processes(machine, process_name, only_suspicious=None, has_incoming_connection=None, has_outgoing_connection=None, has_external_connection=None, unsigned_unknown_reputation=None, from_temporary_folder=None, privileges_escalation=None, maclicious_psexec=None):
 
         machine_filters = []
         process_filters = []
@@ -345,6 +349,21 @@ script:
 
         if has_outgoing_connection == 'true':
             process_filters.append({'facetName': 'hasOutgoingConnection', 'values': [True]})
+
+        if has_external_connection == 'true':
+            process_filters.append({'facetName': 'hasExternalConnection', 'values': [True]})
+
+        if unsigned_unknown_reputation == 'true':
+            process_filters.append({'facetName': 'unknownUnsignedEvidence', 'values': [True]})
+
+        if from_temporary_folder == 'true':
+            process_filters.append({'facetName': 'runningFromTempEvidence', 'values': [True]})
+
+        if  privileges_escalation == 'true':
+            process_filters.append({'facetName': 'privilegeEscalationSuspicion', 'values': [True]})
+
+        if  maclicious_psexec == 'true':
+            process_filters.append({'facetName': 'executedByPsexecSuspicion', 'values': [True]})
 
         path = [
             {
@@ -453,7 +472,7 @@ script:
         total_result_limit = demisto.args().get('totalResultLimit')
         per_group_limit = demisto.args().get('perGroupLimit')
         template_context = demisto.args().get('templateContext')
-        filters = demisto.args().get('filters')
+        filters = demisto.args().get('filters', [])
         within_last_days = demisto.args().get('withinLastDays')
 
         if within_last_days:
@@ -462,13 +481,11 @@ script:
             within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
             within_last_days_timestamp = time.mktime(within_last_days_datetime.timetuple()) + within_last_days_datetime.microsecond / 1E6 #Converting datetime to time
             within_last_days_timestamp = within_last_days_timestamp * 1000
-            filters = [
-                {
-                    'facetName': 'malopLastUpdateTime',
-                    'values': [within_last_days_timestamp],
-                    'filterType': 'GreaterThan'
-                }
-            ]
+            filters.append({
+                'facetName': 'malopLastUpdateTime',
+                'values': [within_last_days_timestamp],
+                'filterType': 'GreaterThan'
+            })
 
         response = query_malops(total_result_limit, per_group_limit, template_context, None)
         data = response['data']
@@ -496,6 +513,11 @@ script:
                 suspects = raw_suspects['elementValues'][0]
                 suspects_string = '{}: {}'.format(suspects['elementType'], suspects['name'])
 
+            affected_machines = []
+            for machine in malop['elementValues']['affectedMachines']['elementValues']:
+                machine_name = machine.get('name', '')
+                affected_machines.append(machine_name)
+
             malop_output = {
                 'GUID': malop_id,
                 'Link': SERVER + '/#/malop/' + malop_id,
@@ -503,7 +525,8 @@ script:
                 'DecisionFailure': re.sub(r'\([^)]*\)', '', decision_failure),
                 'Suspects':suspects_string,
                 'LastUpdateTime': malop_last_update_time,
-                'Status': management_status
+                'Status': management_status,
+                'AffectedMachines': affected_machines
             }
             outputs.append(malop_output)
         ec = {
@@ -515,7 +538,7 @@ script:
             'Contents': data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects']),
+            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachines']),
             'EntryContext': ec
         })
 
@@ -921,114 +944,109 @@ script:
 
         filters = []
 
-        if file_hash:
-            hash_type = get_hash_type(file_hash)
-            if hash_type == 'sha1':
-                filters.append({
-                    'facetName': 'sha1String',
-                    'values': [file_hash],
-                    'filterType': 'ContainsIgnoreCase'
-                })
-            elif hash_type == 'md5':
-                filters.append({
-                    'facetName': 'md5String',
-                    'values': [file_hash],
-                    'filterType': 'ContainsIgnoreCase'
-                })
-            else:
-                return_error('Hash type is not supported.')
-
-        response = query_file(filters)
-
-        if response.get('status', '') == 'SUCCESS' and 'data' in response:
-            data = response['data']
-            if data:
-                cybereason_outputs = []
-                file_outsputs = []
-                endpoint_outputs = []
-                files = response['data'].get('resultIdToElementDataMap')
-                for file in files.keys():
-
-                    raw_machine_details = get_file_machine_details(file)['data']['resultIdToElementDataMap']
-                    machine_details = raw_machine_details[raw_machine_details.keys()[0]]
-                    simple_values = files[file]['simpleValues']
-
-                    file_name = simple_values['elementDisplayName']['values'][0]
-                    md5 = simple_values['md5String']['values'][0]
-                    sha1 = simple_values['sha1String']['values'][0]
-                    path = simple_values['correctedPath']['values'][0]
-                    machine = files[file].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
-
-                    machine_element_values = machine_details['elementValues']
-                    machine_simple_values = machine_details['simpleValues']
-                    os_version = machine_simple_values['ownerMachine.osVersionType']['values'][0]
-
-                    raw_suspicions = machine_details['suspicions']
-                    suspicions = {}
-                    if raw_suspicions:
-                        for key in raw_suspicions.keys():
-                            suspicions[key] = timestamp_to_datestring(raw_suspicions[key])
-
-                    evidences = []
-                    for key in machine_element_values:
-                        if 'evidence' in key.lower():
-                            evidences.append(key)
-                    for key in machine_simple_values:
-                        if 'evidence' in key.lower():
-                            evidences.append(key)
-
-                    company_name = None
-                    if 'companyName' in simple_values:
-                        company_name = simple_values['companyName']['values'][0]
-
-                    cybereason_outputs.append({
-                        'Name': file_name,
-                        'CreationTime': timestamp_to_datestring(simple_values['createdTime']['values'][0]),
-                        'ModifiedTime': timestamp_to_datestring(simple_values['modifiedTime']['values'][0]),
-                        'Malicious': files[file]['isMalicious'],
-                        'MD5': md5,
-                        'SHA1': sha1,
-                        'Path': path,
-                        'Machine': machine,
-                        'SuspicionsCount': machine_details['suspicionCount'],
-                        'IsConnected': True if machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true' else False,
-                        'OSVersion': os_version,
-                        'Suspicion': suspicions,
-                        'Evidence': evidences,
-                        'Signed': True if simple_values['isSigned']['values'][0] == 'true' else False,
-                        'Company': company_name
-                    })
-
-                    file_outsputs.append({
-                        'Name': file_name,
-                        'MD5': md5,
-                        'SHA1': sha1,
-                        'Path': path,
-                        'Hostname': machine
-                    })
-                    endpoint_outputs.append({
-                        'Hostname': machine,
-                        'OSVersion': os_version
-                    })
-
-                    ec = {
-                        'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-                        'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
-                    }
-                    ec[outputPaths['file']] = file_outsputs
-
-                    demisto.results({
-                        'ContentsFormat': formats['json'],
-                        'Type': entryTypes['note'],
-                        'Contents': response,
-                        'ReadableContentsFormat': formats['markdown'],
-                        'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs),
-                        'EntryContext': ec
-                    })
-            else:
-                demisto.results('No results found.')
+        hash_type = get_hash_type(file_hash)
+        if hash_type == 'sha1':
+            filters.append({
+                'facetName': 'sha1String',
+                'values': [file_hash],
+                'filterType': 'ContainsIgnoreCase'
+            })
+        elif hash_type == 'md5':
+            filters.append({
+                'facetName': 'md5String',
+                'values': [file_hash],
+                'filterType': 'ContainsIgnoreCase'
+            })
         else:
-            return_error('Error occurred while trying to query the file.')
+            return_error('Hash type is not supported.')
+
+        data = query_file(filters)
+
+        if data:
+            cybereason_outputs = []
+            file_outsputs = []
+            endpoint_outputs = []
+            files = data.get('resultIdToElementDataMap')
+            for file in files.keys():
+
+                raw_machine_details = get_file_machine_details(file)['data']['resultIdToElementDataMap']
+                machine_details = raw_machine_details[raw_machine_details.keys()[0]]
+                simple_values = files[file]['simpleValues']
+
+                file_name = simple_values['elementDisplayName']['values'][0]
+                md5 = simple_values['md5String']['values'][0]
+                sha1 = simple_values['sha1String']['values'][0]
+                path = simple_values['correctedPath']['values'][0]
+                machine = files[file].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
+
+                machine_element_values = machine_details['elementValues']
+                machine_simple_values = machine_details['simpleValues']
+                os_version = machine_simple_values['ownerMachine.osVersionType']['values'][0]
+
+                raw_suspicions = machine_details['suspicions']
+                suspicions = {}
+                if raw_suspicions:
+                    for key in raw_suspicions.keys():
+                        suspicions[key] = timestamp_to_datestring(raw_suspicions[key])
+
+                evidences = []
+                for key in machine_element_values:
+                    if 'evidence' in key.lower():
+                        evidences.append(key)
+                for key in machine_simple_values:
+                    if 'evidence' in key.lower():
+                        evidences.append(key)
+
+                company_name = None
+                if 'companyName' in simple_values:
+                    company_name = simple_values['companyName']['values'][0]
+
+                cybereason_outputs.append({
+                    'Name': file_name,
+                    'CreationTime': timestamp_to_datestring(simple_values['createdTime']['values'][0]),
+                    'ModifiedTime': timestamp_to_datestring(simple_values['modifiedTime']['values'][0]),
+                    'Malicious': files[file]['isMalicious'],
+                    'MD5': md5,
+                    'SHA1': sha1,
+                    'Path': path,
+                    'Machine': machine,
+                    'SuspicionsCount': machine_details['suspicionCount'],
+                    'IsConnected': True if machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true' else False,
+                    'OSVersion': os_version,
+                    'Suspicion': suspicions,
+                    'Evidence': evidences,
+                    'Signed': True if simple_values['isSigned']['values'][0] == 'true' else False,
+                    'Company': company_name
+                })
+
+                file_outsputs.append({
+                    'Name': file_name,
+                    'MD5': md5,
+                    'SHA1': sha1,
+                    'Path': path,
+                    'Hostname': machine
+                })
+                endpoint_outputs.append({
+                    'Hostname': machine,
+                    'OSVersion': os_version
+                })
+
+                ec = {
+                    'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+                    'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
+                }
+                ec[outputPaths['file']] = file_outsputs
+
+                demisto.results({
+                    'ContentsFormat': formats['json'],
+                    'Type': entryTypes['note'],
+                    'Contents': data,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs),
+                    'EntryContext': ec
+                })
+        else:
+            demisto.results('No results found.')
 
     def query_file(filters):
 
@@ -1043,7 +1061,10 @@ script:
         json = build_query(query_fields, path)
         cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        return response
+        if response.get('status', '') == 'SUCCESS' and 'data' in response:
+            return response['data']
+        else:
+            return_error('Error occurred while trying to query the file.')
 
     def get_file_machine_details(file_guid):
 
@@ -1072,57 +1093,52 @@ script:
             'filterType': 'ContainsIgnoreCase'
         }]
 
+        data = query_domain(filters)
 
-        response = query_domain(filters)
+        if data:
+            cybereason_outputs = []
+            domain_outputs = []
+            domains = data.get('resultIdToElementDataMap')
+            for domain in domains.keys():
 
-        if response.get('status', '') == 'SUCCESS' and 'data' in response:
-            data = response['data']
-            if data:
-                cybereason_outputs = []
-                domain_outputs = []
-                domains = data.get('resultIdToElementDataMap')
-                for domain in domains.keys():
+                simple_values = domains[domain]['simpleValues']
 
-                    simple_values = domains[domain]['simpleValues']
+                reputation = simple_values['maliciousClassificationType']['values'][0]
+                is_internal_domain = True if simple_values['isInternalDomain']['values'][0] == 'true' else False
+                was_ever_resolved = True if simple_values['everResolvedDomain']['values'][0] == 'true' else False
+                was_ever_resolved_as = True if simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true' else False
+                malicious = domains[domain].get('isMalicious')
+                suspicions_count = domains[domain].get('suspicionCount')
 
-                    reputation = simple_values['maliciousClassificationType']['values'][0]
-                    is_internal_domain = True if simple_values['isInternalDomain']['values'][0] == 'true' else False
-                    was_ever_resolved = True if simple_values['everResolvedDomain']['values'][0] == 'true' else False
-                    was_ever_resolved_as = True if simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true' else False
-                    malicious = domains[domain].get('isMalicious')
-                    suspicions_count = domains[domain].get('suspicionCount')
+                cybereason_outputs.append({
+                    'Name': domain_input,
+                    'Reputation': reputation,
+                    'Malicious': malicious,
+                    'SuspicionsCount': suspicions_count,
+                    'IsInternalDomain': is_internal_domain,
+                    'WasEverResolved': was_ever_resolved,
+                    'WasEverResolvedAsASecondLevelDomain': was_ever_resolved_as
+                })
 
-                    cybereason_outputs.append({
-                        'Name': domain_input,
-                        'Reputation': reputation,
-                        'Malicious': malicious,
-                        'SuspicionsCount': suspicions_count,
-                        'IsInternalDomain': is_internal_domain,
-                        'WasEverResolved': was_ever_resolved,
-                        'WasEverResolvedAsASecondLevelDomain': was_ever_resolved_as
-                    })
+                domain_outputs.append({
+                    'Name': domain_input,
+                })
 
-                    domain_outputs.append({
-                        'Name': domain_input,
-                    })
+                ec = {
+                    'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
+                }
+                ec[outputPaths['domain']] = domain_outputs
 
-                    ec = {
-                        'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
-                    }
-                    ec[outputPaths['domain']] = domain_outputs
-
-                    demisto.results({
-                        'ContentsFormat': formats['json'],
-                        'Type': entryTypes['note'],
-                        'Contents': response,
-                        'ReadableContentsFormat': formats['markdown'],
-                        'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs, ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']),
-                        'EntryContext': ec
-                    })
-            else:
-                demisto.results('No results found.')
+                demisto.results({
+                    'ContentsFormat': formats['json'],
+                    'Type': entryTypes['note'],
+                    'Contents': data,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs, ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']),
+                    'EntryContext': ec
+                })
         else:
-            return_error('Error occurred while trying to query the file.')
+            demisto.results('No results found.')
 
     def query_domain(filters):
 
@@ -1137,7 +1153,10 @@ script:
         json = build_query(query_fields, path)
         cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        return response
+        if response.get('status', '') == 'SUCCESS' and 'data' in response:
+            return response['data']
+        else:
+            return_error('Error occurred while trying to query the file.')
 
     def query_user_command():
 
@@ -1149,47 +1168,43 @@ script:
             'filterType': 'ContainsIgnoreCase'
         }]
 
-        response = query_user(filters)
+        data = query_user(filters)
 
-        if response.get('status', '') == 'SUCCESS' and 'data' in response:
-            data = response['data']
-            if data:
-                cybereason_outputs = []
-                users = data.get('resultIdToElementDataMap')
-                for user in users.keys():
+        if data:
+            cybereason_outputs = []
+            users = data.get('resultIdToElementDataMap')
+            for user in users.keys():
 
-                    simple_values = users[user]['simpleValues']
-                    element_values = users[user]['elementValues']
+                simple_values = users[user]['simpleValues']
+                element_values = users[user]['elementValues']
 
-                    domain = simple_values['domain']['values'][0]
-                    local_system = True if simple_values['isLocalSystem']['values'][0] == 'true' else False
-                    machine = element_values['ownerMachine']['elementValues'][0]['name']
-                    organization = element_values['ownerOrganization']['elementValues'][0]['name']
+                domain = simple_values['domain']['values'][0]
+                local_system = True if simple_values['isLocalSystem']['values'][0] == 'true' else False
+                machine = element_values['ownerMachine']['elementValues'][0]['name']
+                organization = element_values['ownerOrganization']['elementValues'][0]['name']
 
-                    cybereason_outputs.append({
-                        'Username': username,
-                        'Domain': domain,
-                        'LastMachineLoggedInTo': machine,
-                        'Organization': organization,
-                        'LocalSystem': local_system
-                    })
+                cybereason_outputs.append({
+                    'Username': username,
+                    'Domain': domain,
+                    'LastMachineLoggedInTo': machine,
+                    'Organization': organization,
+                    'LocalSystem': local_system
+                })
 
-                    ec = {
-                        'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
-                    }
+                ec = {
+                    'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
+                }
 
-                    demisto.results({
-                        'ContentsFormat': formats['json'],
-                        'Type': entryTypes['note'],
-                        'Contents': response,
-                        'ReadableContentsFormat': formats['markdown'],
-                        'HumanReadable': tableToMarkdown('Cybereason user query results', cybereason_outputs, ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']),
-                        'EntryContext': ec
-                    })
-            else:
-                demisto.results('No results found.')
+                demisto.results({
+                    'ContentsFormat': formats['json'],
+                    'Type': entryTypes['note'],
+                    'Contents': data,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Cybereason user query results', cybereason_outputs, ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']),
+                    'EntryContext': ec
+                })
         else:
-            return_error('Error occurred while trying to query the file.')
+            demisto.results('No results found.')
 
     def query_user(filters):
 
@@ -1204,7 +1219,10 @@ script:
         json = build_query(query_fields, path)
         cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        return response
+        if response.get('status', '') == 'SUCCESS' and 'data' in response:
+            return response['data']
+        else:
+            return_error('Error occurred while trying to query the file.')
 
     def malop_to_incident(malop):
 
@@ -1226,13 +1244,13 @@ script:
 
         max_update_time = last_update_time
 
-        if FETCH_BY == 'Malop update time':
+        if FETCH_BY == 'MALOP UPDATE TIME':
             filters = [{
                 'facetName': 'malopLastUpdateTime',
                 'values': [last_update_time],
                 'filterType': 'GreaterThan'
             }]
-        elif FETCH_BY == 'Malop creation time':
+        elif FETCH_BY == 'MALOP CREATION TIME':
             filters = [{
                 'facetName': 'creationTime',
                 'values': [last_update_time],
@@ -1333,6 +1351,7 @@ script:
     try:
         if demisto.command() == 'test-module':
             # Tests connectivity and credentails on login
+            query_user([])
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
@@ -1437,6 +1456,39 @@ script:
       - "false"
       description: Filter only processes with outgoing connections.
       defaultValue: "false"
+    - name: hasExternalConnection
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If process has external connection
+    - name: unsignedUnknownReputation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If process is not known to reputation services and its image file
+        is unsigned
+    - name: fromTemporaryFolder
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If process is running from temporary folder
+    - name: privilegesEscalation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If process was identified elevating its privileges to local system
+        user
+    - name: maliciousPsExec
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If the process was executed by PsExec service and is suspicious
+        as being executed maliciously
     outputs:
     - contextPath: Process.Name
       description: The process name
@@ -1727,7 +1779,7 @@ script:
     - name: file_hash
       required: true
       default: true
-      description: File hash (SHA-1 and MD-5 supported)
+      description: File hash (SHA-1 and MD5 supported)
     outputs:
     - contextPath: Cybereason.File.Path
       description: File path
