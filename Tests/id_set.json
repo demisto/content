@@ -14288,6 +14288,15 @@
                     "VerifyHumanReadableContains"
                 ]
             }
+        }, 
+        {
+            "cveReputation Test": {
+                "name": "cveReputation Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "cveReputation"
+                ]
+            }
         }
     ]
 }
