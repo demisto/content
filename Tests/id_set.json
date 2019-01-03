@@ -14318,6 +14318,15 @@
                 ]
             }
         },
+		{
+            "SplunkPySearch_Test": {
+                "name": "SplunkPySearch_Test", 
+                "implementing_scripts": [
+                    "SplunkPySearch", 
+                    "VerifyHumanReadableContains"
+                ]
+            }
+        },
         {
             "SLA Scripts - Test": {
                 "name": "SLA Scripts - Test",
