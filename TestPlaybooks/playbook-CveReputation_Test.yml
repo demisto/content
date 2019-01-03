@@ -35,7 +35,7 @@ tasks:
       version: -1
       name: cveReputation
       description: Provides  severity of CVE based on CVSS score where available
-      scriptName: cveReputation_copy
+      scriptName: cveReputation
       type: regular
       iscommand: false
       brand: ""
