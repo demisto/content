@@ -737,4 +737,3 @@ script:
       type: string
     description: Get all available attack definitions in NSM
   runonce: false
-releaseNotes: "Added sensor id to get-alert-details command"

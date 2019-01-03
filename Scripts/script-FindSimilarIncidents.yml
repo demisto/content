@@ -50,22 +50,22 @@ script: |-
           keys.append(value.strip())
       return equality_map
 
-  def remove_prefix(prefix, str):
-      if str and str.startswith(prefix):
-          return str[len(prefix):]
-      return str
+  def remove_prefix(prefix, s):
+      if s and s.startswith(prefix):
+          return s[len(prefix):]
+      return s
 
   SIMILAR_INCIDENT_KEYS = [x for x in demisto.args().get('similarIncidentKeys','').split(",") if x]
   SIMILAR_CUSTOMS_FIELDS_MAP = parse_input(demisto.args().get('similarCustomFields', ''))
   SIMILAR_INCIDENTS_FIELDS_MAP = parse_input(demisto.args().get('similarIncidentFields', ''))
   if len(SIMILAR_INCIDENTS_FIELDS_MAP) > 0 and (len(SIMILAR_INCIDENT_KEYS) > 0 or len(SIMILAR_CUSTOMS_FIELDS_MAP) > 0):
-      raise Exception('If using similarIncidentFields do not use deprecated similarCustomFields\\similarIncidentKeys')
+      return_error('If using similarIncidentFields do not use deprecated similarCustomFields\\similarIncidentKeys')
   else:
-      SIMILAR_INCIDENTS_FIELDS_MAP = {}
       SIMILAR_INCIDENTS_FIELDS_MAP.update(SIMILAR_CUSTOMS_FIELDS_MAP)
       for k in map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS):
           if k and len(k) > 0:
               SIMILAR_INCIDENTS_FIELDS_MAP[k] = EXACT_MATCH
+
   SIMILAR_LABELS_MAP = parse_input(demisto.args().get('similarLabelsKeys', ''))
   SIMILAR_CONTEXT_MAP = parse_input(demisto.args().get('similarContextKeys', ''))
   HOURS_BACK = float(demisto.args()['hoursBack'])
@@ -73,6 +73,9 @@ script: |-
   IGNORE_CLOSED = demisto.args()['ignoreClosedIncidents'] == 'yes'
   MAX_NUMBER_OF_INCIDENTS = int(demisto.args()['maxNumberOfIncidents'])
   MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxResults'])
+  EXTRA_QUERY = demisto.args().get('filterQuery')
+  INCIDENT_FIELDS_APPLIED_CONDITION = demisto.args()['incidentFieldsAppliedCondition']
+  RAISE_ERROR_MISSING_VALUES = not (demisto.args()['skipMissingValues'] == 'yes')
 
   def parse_datetime(datetime_str):
       return parser.parse(datetime_str)
@@ -102,9 +105,9 @@ script: |-
                   result[key] = flat_dict[key]
               else:
                   if raise_error:
-                      raise Exception("Missing key\label\custom\context field for incident: " + key)
+                      return_error("Missing key\label\custom\context field for incident: " + key)
                   else:
-                      return {}
+                      continue
       return result
 
 
@@ -129,8 +132,9 @@ script: |-
 
       return labels_map
 
-  def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hours_back, ignore_closed, max_number_of_results):
-      similar_keys_query = " and ".join(map(lambda t: '%s:"%s"' % (t[0], t[1]), similar_incident_keys.items()))
+  def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hours_back, ignore_closed, max_number_of_results, extra_query, applied_condition):
+      condition_string = ' %s ' % applied_condition.lower()
+      similar_keys_query = condition_string.join(map(lambda t: '%s:"%s"' % (t[0], t[1]), similar_incident_keys.items()))
       incident_time = parse_datetime(incident_time)
       max_date = incident_time + timedelta(hours=hours_back)
       min_date = incident_time - timedelta(hours=hours_back)
@@ -146,10 +150,16 @@ script: |-
 
       if incident_id:
           query = '(-id:%s) and (%s)' % (incident_id, query)
+
+      if extra_query:
+          query += " and (%s)" % extra_query
+
+      demisto.log("Find similar incidents based on initial query: %s" % query)
+
       res = demisto.executeCommand("getIncidents",
                                    {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % TIME_FIELD})
       if res[0]['Type'] == entryTypes['error']:
-          raise Exception(str(res[0]['Contents']))
+          return_error(str(res[0]['Contents']))
 
       incident_list = res[0]['Contents']['data'] or []
       return incident_list
@@ -250,15 +260,29 @@ script: |-
   incident = merge_incident_fields(demisto.incidents()[0])
 
   # validate fields
-  exact_match_incident_fields = get_map_from_nested_dict(incident, {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v == EXACT_MATCH}, raise_error=True)
+  exact_match_incident_fields = get_map_from_nested_dict(incident, {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v == EXACT_MATCH}, raise_error=RAISE_ERROR_MISSING_VALUES)
   SIMILAR_INCIDENTS_FIELDS_MAP = {k: v for k,v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v != EXACT_MATCH}
-  similar_incident_fields = get_map_from_nested_dict(incident, SIMILAR_INCIDENTS_FIELDS_MAP, raise_error=True)
+  similar_incident_fields = get_map_from_nested_dict(incident, SIMILAR_INCIDENTS_FIELDS_MAP, raise_error=RAISE_ERROR_MISSING_VALUES)
   labels_map = get_incident_labels_map(incident.get('labels', []))
-  incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(), raise_error=True)
-  incident_similar_context = get_map_from_nested_dict(demisto.context() or {}, SIMILAR_CONTEXT_MAP.keys(), raise_error=True)
+  incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(), raise_error=RAISE_ERROR_MISSING_VALUES)
+  incident_similar_context = get_map_from_nested_dict(demisto.context() or {}, SIMILAR_CONTEXT_MAP.keys(), raise_error=RAISE_ERROR_MISSING_VALUES)
+
+  log_message = 'Incident fields with exact math: %s' % exact_match_incident_fields
+  if len(exact_match_incident_fields) > 1:
+      log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
+  demisto.log(log_message)
+  if len(similar_incident_fields) > 0:
+      demisto.log('Simiar incident fields (not exact math): %s' % similar_incident_fields)
+  if len(incident_similar_labels) > 0:
+      demisto.log('Similar labels: %s' % incident_similar_labels)
+  if len(incident_similar_context) > 0:
+      demisto.log('Similar context keys: %s' % incident_similar_context)
+
+  if len(exact_match_incident_fields) == 0 and len(similar_incident_fields) == 0 and len(incident_similar_labels) == 0 and len(incident_similar_context) == 0:
+      return_error("Does not have any field to compare in the current incident")
 
   duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, incident[TIME_FIELD], incident['id'],
-                                              HOURS_BACK, IGNORE_CLOSED, MAX_NUMBER_OF_INCIDENTS)
+                                              HOURS_BACK, IGNORE_CLOSED, MAX_NUMBER_OF_INCIDENTS, EXTRA_QUERY, INCIDENT_FIELDS_APPLIED_CONDITION)
 
   if len(duplicate_incidents) == 0:
       did_not_found_duplicates()
@@ -280,7 +304,6 @@ script: |-
                                                                           raise_error=False),
                                                 SIMILAR_INCIDENTS_FIELDS_MAP)
                           ]
-  # demisto.results(duplicate_incidents)
   # filter by context
   if incident_similar_context:
       filter_by_context = []
@@ -322,7 +345,6 @@ comment: |-
   Find similar incidents by common incident keys, labels, custom fields or context keys.
   It's highly recommended to use incident keys if possible (e.g. "type" for same incident type).
   It's also recommended to avoid using context keys if possible (for example, if the value also appear in label key, use label) for better performance.
-  All the conditions applied with "AND" between them.
 enabled: true
 args:
 - name: similarIncidentKeys
@@ -368,6 +390,25 @@ args:
 - name: similarIncidentFields
   description: Similar incident fields keys. Comma separated value. It's also possible
     to let X different words between values (see labels description).
+- name: filterQuery
+  description: Use this query condition when fetching duplicate incidents.
+- name: incidentFieldsAppliedCondition
+  auto: PREDEFINED
+  predefined:
+  - AND
+  - OR
+  description: Apply "OR" \ "AND" condition between incident fields. This will apply
+    only for fields with "exact match".
+  defaultValue: AND
+- name: skipMissingValues
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: 'If the incident does not have specific key, skip it. WARNING: notice
+    that if there is no fields existing in the incident, random incidents might be
+    return as results due to empty condition.'
+  defaultValue: "yes"
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.

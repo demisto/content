@@ -1,7 +1,7 @@
 commonfields:
-  id: WordTokenize
+  id: WordTokenizer
   version: -1
-name: WordTokenize
+name: WordTokenizer
 script: |-
   import nltk, re
   from HTMLParser import HTMLParser
@@ -51,15 +51,17 @@ script: |-
       return text.replace("\r","").replace("\n","")
 
   text = demisto.args()['value']
+
   if type(text) is not list:
       text = [text]
   result = map(remove_line_breaks, map(tokenize_text, map(clean_html, text)))
+
   if len(result) == 1:
       result = result[0]
 
   demisto.results({
       'Contents': result,
-      'ContentsFormat': formats['text'],
+      'ContentsFormat': formats['json'] if type(result) is list else formats['text'],
       'EntryContext': {
           'WordTokenizeOutput': result
       }

@@ -25,12 +25,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: e64b04fa-85eb-44cf-842e-33c3b04b02ed
+    taskid: a30d4ef9-4218-46e8-868c-1b55acfe0492
     type: regular
     task:
-      id: e64b04fa-85eb-44cf-842e-33c3b04b02ed
+      id: a30d4ef9-4218-46e8-868c-1b55acfe0492
       version: -1
       name: cybereason-is-probe-connected
       description: Checks if the machine is currently connected to the Cybereason
@@ -44,7 +45,7 @@ tasks:
       - "2"
     scriptarguments:
       machine:
-        simple: ip-172-16-3-7.ec2.internal
+        simple: EC2AMAZ-5MAN2HC
     separatecontext: false
     view: |-
       {
@@ -54,6 +55,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: f48abf9b-cc3e-4797-89d9-2a25a05a40ea
@@ -90,12 +92,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: e770a435-6b28-40b3-8aff-07fc067d94f6
+    taskid: b56ab88e-8143-4d7a-8d24-ca6552a5a07d
     type: regular
     task:
-      id: e770a435-6b28-40b3-8aff-07fc067d94f6
+      id: b56ab88e-8143-4d7a-8d24-ca6552a5a07d
       version: -1
       name: cybereason-query-connections
       description: Searches for connections.
@@ -121,12 +124,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 90f11a9b-02e5-42e0-800d-c30af04de849
+    taskid: 63424f54-6706-4155-8c00-960c66053645
     type: regular
     task:
-      id: 90f11a9b-02e5-42e0-800d-c30af04de849
+      id: 63424f54-6706-4155-8c00-960c66053645
       version: -1
       name: VerifyContext
       description: |-
@@ -145,7 +149,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Name,Direction,ServerAddress,OwnerMachine,OwnerProcess,ServerPort,CreationTime,
+        simple: Name,Direction,ServerAddress,OwnerMachine,OwnerProcess,ServerPort
       path:
         simple: Connection
     separatecontext: false
@@ -157,12 +161,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: ad6fa381-adbb-419f-832a-9f7c941747f5
+    taskid: c2c4bcf7-5b67-4218-8095-5ab9428ec5d0
     type: regular
     task:
-      id: ad6fa381-adbb-419f-832a-9f7c941747f5
+      id: c2c4bcf7-5b67-4218-8095-5ab9428ec5d0
       version: -1
       name: cybereason-query-processes
       description: Searches for processes with various filters.
@@ -193,12 +198,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: faab8d5c-8fd1-4881-874c-6c1df0ae2917
+    taskid: cc5376a3-295b-4558-8163-ae60ca98056a
     type: regular
     task:
-      id: faab8d5c-8fd1-4881-874c-6c1df0ae2917
+      id: cc5376a3-295b-4558-8163-ae60ca98056a
       version: -1
       name: VerifyContext
       description: |-
@@ -229,6 +235,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 7ca1237c-6fe9-4590-850a-73e953afee1e
@@ -245,16 +252,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 7332e3c9-b256-4152-8696-587278081b48
+    taskid: a971732c-f90e-4f1e-8ab7-2a869f444f49
     type: regular
     task:
-      id: 7332e3c9-b256-4152-8696-587278081b48
+      id: a971732c-f90e-4f1e-8ab7-2a869f444f49
       version: -1
       name: cybereason-query-malops
       description: Returns a list of all Malops and details on the Malops.
@@ -281,12 +289,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: ccc36dbf-1d79-4684-86db-82eb834d5598
+    taskid: 3a9cb86f-aa8c-4a23-8413-27b61674a82d
     type: regular
     task:
-      id: ccc36dbf-1d79-4684-86db-82eb834d5598
+      id: 3a9cb86f-aa8c-4a23-8413-27b61674a82d
       version: -1
       name: cybereason-malop-processes
       description: Returns a list of malops
@@ -309,12 +318,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: c3f13b3e-7889-4c37-88a6-b9a715c65de3
+    taskid: b9274971-7ee4-4d07-8a6d-610e53131cae
     type: regular
     task:
-      id: c3f13b3e-7889-4c37-88a6-b9a715c65de3
+      id: b9274971-7ee4-4d07-8a6d-610e53131cae
       version: -1
       name: VerifyContext
       description: |-
@@ -329,11 +339,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "12"
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: SHA1,Parent,Name,User,CreationTime,OwnerMachine,Malicious,ImageFile,ProductName,MD5,CommandLine
+        simple: SHA1,Parent,Name,User,CreationTime,OwnerMachine,Malicious,ImageFile,MD5,CommandLine
       path:
         simple: Process
     separatecontext: false
@@ -345,6 +355,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 6578e8e9-16e7-47fa-8f2f-87532a92ad74
@@ -375,12 +386,52 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: e7955643-7629-4209-8d14-94301496f1d7
+    type: regular
+    task:
+      id: e7955643-7629-4209-8d14-94301496f1d7
+      version: -1
+      name: Malops fetch test
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cybereason
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50
