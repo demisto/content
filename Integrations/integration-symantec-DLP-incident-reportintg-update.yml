@@ -29,6 +29,12 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3     months,
+    1 year)
+  name: fetch_time
+  defaultvalue: 2 months
+  type: 0
+  required: false
 - display: 'Saved Report ID'
   name: saved-Report-id
   defaultvalue: ""
@@ -66,6 +72,7 @@ script:
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     SAVED_REPORT_ID = demisto.params()['saved-Report-id']
+    FETCH_TIME = demisto.params()['fetch_time']
 
 
     wsdl = 'https://{}/ProtectManager/services/v2011/incidents?wsdl'.format(SERVER_IP)
@@ -89,13 +96,33 @@ script:
     def incidentDetail(_id):
 
         return client.service.incidentDetail(incidentId=_id,includeViolations=True,includeHistory=True)
+        
+    
+        
+    def parse_date_range(daterange):
+        dateobj = datetime.now()
+        try:
+            number,time_unit = daterange.split(" ")
+            if time_unit.startswith("minute"):
+              start_time = end_time - timedelta(minutes=int(number))
+            if time_unit.startswith("hour"):
+                dateobj = dateobj - timedelta(hours=int(number))
+            elif time_unit.startswith("day"):
+                dateobj = dateobj - timedelta(days=int(number))
+            elif time_unit.startswith("month"):
+                dateobj = dateobj - timedelta(days=int(number)*30)
+            elif time_unit.startswith("year"):
+                dateobj = dateobj - timedelta(days=int(number)*365)
+        except Exception:
+            return_error('invalid dateformat supplied')
+        return dateobj
 
 
 
     def fetchincidents():
         last_run=demisto.getLastRun()
         if 'lt_time' not in last_run:
-            last_run['lt_time'] = datetime.datetime.strptime("01/11/2018 00:00:00.000000",'%d/%m/%Y %H:%M:%S.%f')
+            last_run['lt_time'] = parse_date_range(FETCH_TIME)
         else:
             last_run['lt_time']= datetime.datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
 
