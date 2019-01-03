@@ -271,6 +271,5 @@
 			}
 		}
 	],
-	"isPredefined": true,
-	"releaseNotes": "-"
+	"isPredefined": true
 }
