@@ -54,6 +54,7 @@ script:
     import requests
     import json
     import os
+    import csv
 
     ''' GLOBALS '''
     VERBOSE = True
@@ -107,7 +108,7 @@ script:
         21 : 'Web_App_Attack',
         22 : 'SSH',
         23 : 'IoT_Targeted'
-    }
+    }script-AbuseIPDB-PopulateIndicators.yml
 
     CATEGORIES_ID = {
         "Frad_Orders"    : "3",
@@ -207,15 +208,20 @@ script:
 
         ips = [d.get("ipAddress") for d in data]
         context = {"Blacklist" : ips}
+        temp = demisto.uniqueFile()
+        with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+            wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+            for ip in ips:
+                wr.writerow([ip])
         entry = {
+            'HumanReadable' : '',
+            'Contents': ips,
             'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, context, removeNull=True),
-            'EntryContext': { 'AbuseIPDB' : createContext(context if saveToContext == "true" else None, removeNull=True) }
+            'Type': entryTypes['file'],
+            'File': "Blacklist.csv",
+            'FileID': temp,
+            'EntryContext': { 'AbuseIPDB' : createContext(context if saveToContext else None, removeNull=True) }
         }
-        demisto.results(fileResult('Blacklist AbuseIPDB', "\n".join(ips)))
         return entry
 
 
@@ -458,4 +464,4 @@ script:
   runonce: false
 tests:
   - AbuseIPDB Test
-releaseNotes: "fixed context issues. updated blacklist command"
+releaseNotes: "fixed context issues. added AbuseIPDB-PopulateIndicators script"
