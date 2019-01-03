@@ -127,9 +127,10 @@ workflows:
   commit:
     jobs:
       - build
-          branches:
-            ignore:
-              - nightly-trigger
+          filters:
+            branches:
+              ignore:
+                - nightly-trigger
   nightly:
     triggers:
       - schedule:
