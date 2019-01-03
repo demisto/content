@@ -14297,6 +14297,15 @@
                     "symantec-mss-get-incident"
                 ]
             }
+        }, 
+        {
+            "SplunkPySearch_Test": {
+                "name": "SplunkPySearch_Test", 
+                "implementing_scripts": [
+                    "SplunkPySearch", 
+                    "VerifyHumanReadableContains"
+                ]
+            }
         }
     ]
 }
