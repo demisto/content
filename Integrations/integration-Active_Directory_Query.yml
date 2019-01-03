@@ -5,13 +5,14 @@ name: Active Directory Query
 display: Active Directory Query
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAF8ElEQVRo3tVaa2wUVRQ+lUeolLZQHwQxEUIi/GgpakvTst2d7fax7RaEUFOIRW2x7e7cme220BawNSQ1MQZFgYaH8gvlFVAxUYIIJPxRA7FSLCpBJMYnL5FEyh8cvzttodvd6e527izpJCezO3Pn3Pvde853zzkzRKKPAmUOScp+Kg/MoVF7FCiZJLHz5JA1nL8jlzxzxLoklgw908iBc5xBZKPTSzqIAcmvPU3Ltk+NSc/S5vGUz9YASBd0XIXOb2jpKm+cQDAnOvw9CAQXm1ej0ubj9PW5yVHpaXplLJU3bKN83xA9+F+gtJAnkGAdCIm50dm1EBADYgeYrJrDlF0d2UTscj7ZfXcMdN2kJW2PWwPCIZdC/jYEESwHATopwsquHVZHgb9IPAinvhI3owTRJ5L8ITm8xisjye8N+7xLtQk2JyUHPnElJhB3CcB7hCpff9TATI8bPmfzXUCfqeJAuPyzoPinEYEYkMKGr8jtnztkhbmZ3gr1MYiTXaPFgWKRFDuenMpBUyD0wemsBGqVt2EVWmgRmMoh3wjTthdAdlGpP120cz8EO/7FNJBQswm95mR7qKTBoujAqUzADJ4QDiREWDe5lInWbn5FgWysyiEAOmNgDuZFkt+N107+AGw3hUrU6VSsLsTvo4LBHMFEJVDcD7syBh1vEQikFz5SRPflkNRU2PY5cebF/oBPLjM/sMWBVEShKpRuJxeLjsMdyibx/sL2UUXHCNmrtiUZ9n/0bhSaW3uL1A2RuVxiqy1ismvQvR7ycKxx1GuUP0hRdo1GLVvfjsK8NlpMzRdhbowKlSmRQVSumg/kt4csr0Y5dZepyvuEMXh/Ctr1kA1t56vDC28jmaLnbkQZ9VSoJhqxzzh08rmhguyXPqI9xxINzOotPsDkhbXavMZlWmZgeVjh93gbHYx5//kWYFZQkfLg0P2hAg3+M3xwQb1GFe0nacVaDz3XOB3m9xiU5UP64i/M9rzG5dq+6xnanqsZ2u4rc4OEX+P3eBt9ZYQRgnf/4IAwERe7IsyARnl1PBTX9IRKYteD7mNwfNb5gD+4nKG9/9fcIOHX+D3eRggQbp42Pp616wYBUVeaVtwPhM8+H/iuPzODhF/j94QB4RNaFviR1h1K6wPxYkcyZvqHUQckC2y6utN3bzWatzDKqtZGHZDcuh56oWNSH4h3dqRRSdP5frsfXUAkVn1vNTxyO+V5zfG6GGe/ohMIn1BOKFJEej5NBfKEwfHRAWE0OBL6ldh+0H4ussRpOqVXrfFQRdtJneqN+7qD+G9J8N7hbkzEalRBusynrDFuiE7lzbCbK990s6s/Ns732WGkweMMQgxs95JSB0BnzPF61CHKWVC+cY1rZWAG5fmuhs1Vlq96JprsbzLyZRmoL1gaADrZGxHHsiSwKagwwUtDLmV9rBEwKiasvb9sY0FezgIRx/BsUybCoN5Bz32G2CppZLlJTfNssrO94sEoG6MrCLIytN8KS/EB/CQBNS1WCflNIJgeOHvKfcrLlULd2YT5ibwZ5zHxB+JAicbBjgg1MV5KcjcuIk/TdFBrKnwzTsCcyk6LmIynBd04f0Lu1qctNi05CZ2dtbxkKiknyNmQaA0Il5qOTkLDmZyXrQDzMyRNLACPmgmlu+Ebt0MTG991Yhs6sUM34n6nvufYTfsMJ4G9VMjGigNR0+LRbTf84P4lW31wWdOtZlCx8qUpMPw9fZEyUxyI1rYpCA8uGQ5Kkr8I+5y39RFa4Ds8QiCXwVpZYk2q1C9FeIexw/BZm5yMmY01PbgBJ7egcF3oLxnWjl1Kc4Ty6USAPRBDSbTYGpZqacMGJf8TvnqBxEaS8yLqyKpJhnyqfzRgHPrzzzQsfIWweE0CuHw12euHMpVG5f7N+Nwiuh2Yf77hbj6mf84Rap6/YoO1x2cnL3m1Dp2e0h1RwtkuB5CSxhZGPL9zKj4UONX/NncAxEWS/E/FOcaSJ+mfHDlNhNFlrTP0l5x9weL38LF0GrWHq2m2/uLGpT4pWvX/zRDqQjZWrVoAAAAASUVORK5CYII=
-description: Active Direcory Query integration enables accessing and managing Active Directory objects (users,contacts and computers).
+description: Active Direcory Query integration enables accessing and managing Active
+  Directory objects (users,contacts and computers).
 detaileddescription: |+
   Searching Active directory is done with paging, when each page size pulled is set by the 'page size'
   parameter configured in the instance settings.
 
 configuration:
-- display: The server IP address
+- display: Server IP (e.g. 192.168.0.1)
   name: server_ip
   defaultvalue: ""
   type: 0
@@ -123,7 +124,7 @@ script:
             demisto.debug("Initializing server with SSL")
             if PORT:
                 return Server(SERVER_IP, port=PORT, use_ssl=True)
-            return Server(SERVER_IP, port=PORT, use_ssl=True)
+            return Server(SERVER_IP, use_ssl=True)
         if SECURE_CONNECTION == 'SSL' and TLS_VERIFY_CERTIFICATE:
             # initialize with tls
             # uses sl.PROTOCOL_TLSv1 and validates server certificate
@@ -781,7 +782,7 @@ script:
 
         search_base = args.get('base-dn') or DEFAULT_BASE_DN
 
-        # get the dn of the member - either user or computer
+        # get the  dn of the member - either user or computer
         args_err = "Pleade provide either username or computer-name"
         member_dn = ''
 
@@ -906,7 +907,6 @@ script:
         if not conn.bind():
             message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(conn.result)
             return_error(message)
-            sys.exit(0)
     except LDAPSocketOpenError as e:
     # except Exception as e:
         demisto.info(e.message)
@@ -915,14 +915,12 @@ script:
             # probably failed to verify certificate
             message += '\nCould not verify server certificate'
         return_error(message)
-        sys.exit(0)
 
     demisto.info('Established connection with AD LDAP server')
 
     if not base_dn_verified():
         message = "Failed to verify the base DN configured for the instance.\nLast connection result: {}\nLast error from LDAP server: {}".format(conn.result, conn.last_error)
         return_error(message)
-        sys.exit(0)
 
     demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
@@ -989,7 +987,7 @@ script:
     except Exception as e:
         message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(e.message, json.dumps(conn.result), conn.last_error)
         demisto.info(message)
-         return_error(message)
+        return_error(message)
     finally:
         # disconnect and close the connection
         conn.unbind()
