@@ -139,5 +139,6 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
+releaseNotes: "Enhanced indicator extraction from pdf files"
 tests:
   - ReadPDFFile-Test

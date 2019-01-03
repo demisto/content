@@ -21,31 +21,10 @@ script: |-
   with open(filePath, mode='r') as f:
       data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
 
-      # Extract Email
-      demisto.results(demisto.executeCommand("ExtractEmail", {
+      # Extract indicators (omitting context output, letting auto-extract work)
+      demisto.results(str(demisto.executeCommand("extractIndicators", {
           'text': data
-      }))
-
-      # Extract Domain
-      demisto.results(demisto.executeCommand("ExtractDomain", {
-          'text': data,
-          'calcReputation':'false'
-      }))
-
-      # Extract Hash
-      demisto.results(demisto.executeCommand("ExtractHash", {
-          'text': data
-      }))
-
-      # Extract IP
-      demisto.results(demisto.executeCommand("ExtractIP", {
-          'text': data
-      }))
-
-      # Extract URL
-      demisto.results(demisto.executeCommand("ExtractURL", {
-          'text': data
-      }))
+      })[0][u'Contents']))
 type: python
 tags: []
 comment: |-
@@ -87,3 +66,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole
+releaseNotes: "Enhanced indicator extraction from text-based files"
+tests:
+  - Extract Indicators From File - test
