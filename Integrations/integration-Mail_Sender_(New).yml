@@ -383,19 +383,19 @@ script:
     - name: transientFile
       description: Desired name for attached file. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent.1="test 2,temporary file content,third file content"
+        transientFileContent="test 2,temporary file content,third file content"
         transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileContent
       description: Content for attached file. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent.1="test 2,temporary file content,third file content"
+        transientFileContent="test 2,temporary file content,third file content"
         transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: transientFileCID
       description: CID for attached file if we want it inline. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent.1="test 2,temporary file content,third file content"
+        transientFileContent="test 2,temporary file content,third file content"
         transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
     - name: templateParams
