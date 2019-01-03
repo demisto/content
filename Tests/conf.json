@@ -17,6 +17,9 @@
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {
+            "playbookID": "CopyContextToFieldTest"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
