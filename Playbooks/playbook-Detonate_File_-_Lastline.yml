@@ -568,6 +568,5 @@ outputs:
 - contextPath: Lastline.Submission.YaraSignatures.internal
   description: True if the signature is only for internal usage
   type: boolean
-releaseNotes: "Submit only supported files to Lastline"
 tests:
 - Lastline - testplaybook
