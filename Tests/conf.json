@@ -7,6 +7,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -642,10 +646,6 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
         },
         {
             "integrations": "VxStream",
