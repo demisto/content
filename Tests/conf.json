@@ -17,6 +17,9 @@
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {
+            "playbookID": "CopyContextToFieldTest"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
@@ -25,7 +28,8 @@
             "playbookID": "AttivoBotsinkTest"
         },
         {
-            "playbookID": "CreatePhishingClassifierMLTest"
+            "playbookID": "CreatePhishingClassifierMLTest",
+            "timeout" : 2400
         },
         {
             "integrations": "Cymon",
@@ -251,7 +255,7 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestDetonation",
-            "timeout": 500,
+            "timeout": 2000,
             "nightly": true
         },
         {
@@ -316,7 +320,7 @@
         {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -494,6 +498,10 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test"
         },
         {
             "integrations" : "McAfee NSM",
@@ -904,7 +912,8 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "tenable-sc-test": "Unstable instance = flaky test"
+        "tenable-sc-test": "Unstable instance = flaky test",
+        "XFE Test": "License expired"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -929,9 +938,11 @@
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
-        "carbonblackprotection": "License expired"
+        "carbonblackprotection": "License expired",
+        "Lastline": "Out of quota"
     },
     "nigthly_integrations": [
-        "Lastline"
+        "Lastline",
+        "TruSTAR"
     ]
 }
