@@ -38,6 +38,11 @@ configuration:
   - country
   - city
   - insights
+- display: Base URL
+  name: url
+  defaultvalue: https://geoip.maxmind.com/geoip/v2.1/
+  type: 0
+  required: true
 script:
   script: |
     import requests
@@ -49,8 +54,9 @@ script:
 
 
 
+
     '''GLOBAL VARS'''
-    BASE_URL = 'https://geoip.maxmind.com/geoip/v2.1/'
+    BASE_URL = demisto.params().get('url')
     APIKEY = demisto.params().get('apikey')
     ACCOUNT_ID = demisto.params().get('account')
     MODE = demisto.params().get('mode')
