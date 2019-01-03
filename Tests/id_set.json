@@ -14319,11 +14319,19 @@
             }
         },
         {
-            "SplunkPySearch_Test": {
-                "name": "SplunkPySearch_Test",
+            "SLA Scripts - Test": {
+                "name": "SLA Scripts - Test",
                 "implementing_scripts": [
-                    "SplunkPySearch",
-                    "VerifyHumanReadableContains"
+                    "StopTimeToAssignOnOwnerChange",
+                    "ChangeRemediationSLAOnSevChange",
+                    "Set",
+                    "PrintErrorEntry",
+                    "DeleteContext"
+                ],
+                "implementing_commands": [
+                    "setIncident",
+                    "startTimer",
+                    "resetTimer"
                 ]
             }
         }
