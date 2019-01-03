@@ -2,7 +2,7 @@ commonfields:
   id: SSDeepReputation
   version: -1
 name: SSDeepReputation
-script: |
+script: |-
 
   REPUTATIONS = {
       0: 'None',
@@ -42,22 +42,35 @@ script: |
       return related_indicators
 
   ssdeep_value = demisto.args()['input']
-  ssdeep_indicator = get_indicator_from_value(ssdeep_value)
-  demisto.executeCommand("getContext", {"id":"<id>"})
+  current_incident_id = demisto.investigation()['id']
   res = demisto.executeCommand('similarSsdeep', {
       'value': ssdeep_value,
       'daysTimeFrame': int(demisto.args()['timeFrameDays']),
       'threshold': int(demisto.args()['threshold'])
   })
   ssdeep_indicators = map(lambda x: x['indicator'], res[0]['Contents'])
+  ssdeep_indicator = get_indicator_from_value(ssdeep_value)
+  if not ssdeep_indicator:
+      # make the current ssdeep part of the current invastigation
+      ssdeep_indicator = {
+          'investigationIDs': [current_incident_id],
+          'score': 0
+      }
+  else:
+      # make sure the current ssdeep part of the current invastigation
+      if ssdeep_indicator.get('investigationIDs') is None:
+          ssdeep_indicator['investigationIDs'] = [current_incident_id]
+      elif current_incident_id not in ssdeep_indicator['investigationIDs']:
+          ssdeep_indicator['investigationIDs'].append(current_incident_id)
+
   ssdeep_indicators.append(ssdeep_indicator)
   related_indicators = []
   for i in ssdeep_indicators:
       related_indicators += get_ssdeep_related_indicators(i)
 
-  max_score = max(map(lambda x: x['score'], related_indicators))
-  max_score_indicator = next(x for x in related_indicators if x['score'] == max_score)
-  if max_score > ssdeep_indicator['score']:
+  max_score = max(map(lambda x: x.get('score'), related_indicators))
+  max_score_indicator = next(x for x in related_indicators if x.get('score', 0) == max_score)
+  if max_score > ssdeep_indicator.get('score', 0) and max_score > 1:
       entry = {
           'Type': entryTypes['note'],
           'HumanReadable': 'Similarity to %s %s:%s' % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
@@ -67,13 +80,15 @@ script: |
       }
       ec = {}
       ec['DBotScore'] = {
-          'Indicator': ssdeep_indicator['value'],
+          'Indicator': ssdeep_value,
           'Type': 'ssdeep',
           'Vendor': 'DBot',
           'Score': max_score
       }
       entry['EntryContext'] = ec
       demisto.results(entry)
+  else:
+      demisto.results(ssdeep_indicator.get('score', 0))
 type: python
 tags:
 - reputation
@@ -91,3 +106,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
+releaseNotes: "Make script compatible as indicator reputation script"

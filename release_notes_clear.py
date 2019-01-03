@@ -4,9 +4,6 @@
 # Usage: python release_notes_clear.py
 import os
 import glob
-import argparse
-
-from Tests.scripts.update_id_set import update_id_set
 
 def yml_remove_releaseNote_record(file_path):
     '''
@@ -109,17 +106,7 @@ def remove_releaseNotes_folder(folder_path, files_extension):
     print '--> Changed %d out of %d files' % (count, len(scan_files), )
 
 
-
-def get_git_sha():
-    parser = argparse.ArgumentParser(description='Utility for getting latest release')
-    parser.add_argument('-g', '--gitsha', help='Git SHA1')
-    options = parser.parse_args()
-    return options.gitsha
-
-
 def main(root_dir):
-    update_id_set(get_git_sha())
-
     yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks'] # yml
     json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets', 'Classifiers', 'Layouts', 'IncidentFields' ] # json
 

@@ -1,0 +1,390 @@
+id: Zscaler Test
+version: -1
+name: Zscaler Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0da89571-63bb-4abd-848c-9c3b5b5dae55
+    type: start
+    task:
+      id: 0da89571-63bb-4abd-848c-9c3b5b5dae55
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
+    type: regular
+    task:
+      id: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
+      version: -1
+      name: zscaler-get-categories
+      description: Returns a list of all categories
+      script: '|||zscaler-get-categories'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      displayURL: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 9cd501ba-b434-49c5-8718-226deeba3a6a
+    type: condition
+    task:
+      id: 9cd501ba-b434-49c5-8718-226deeba3a6a
+      version: -1
+      name: Verify Get Categories output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Zscaler.Category.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Zscaler.Category.CustomCategory
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Zscaler.Category.Description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: c16700c7-cadf-48db-824b-bae75c6f56e3
+    type: regular
+    task:
+      id: c16700c7-cadf-48db-824b-bae75c6f56e3
+      version: -1
+      name: Add URL to URL category
+      script: '|||zscaler-category-add-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      category-id:
+        simple: ${Zscaler.Category.[0].ID}
+      url:
+        simple: ${GeneratedUUID}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 3cc72806-2c79-4fe3-804c-88468220cb2d
+    type: regular
+    task:
+      id: 3cc72806-2c79-4fe3-804c-88468220cb2d
+      version: -1
+      name: GenerateUUID
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
+    type: condition
+    task:
+      id: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
+      version: -1
+      name: Verify Add URL to URL category output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: GeneratedUUID
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+          right:
+            value:
+              simple: Zscaler.Category.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
+    type: regular
+    task:
+      id: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
+      version: -1
+      name: Blacklist URL
+      script: '|||zscaler-blacklist-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        simple: ${GeneratedUUID}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
+    type: condition
+    task:
+      id: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
+      version: -1
+      name: Verify Blacklist URL ouput
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: GeneratedUUID
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+          right:
+            value:
+              simple: Zscaler.Blacklist
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
+    type: regular
+    task:
+      id: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
+      version: -1
+      name: Get blacklist
+      script: '|||zscaler-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 096936ff-8102-4b4c-8b60-ae16e5b880c1
+    type: regular
+    task:
+      id: 096936ff-8102-4b4c-8b60-ae16e5b880c1
+      version: -1
+      name: Try to blacklist url which starts with https://
+      script: '|||zscaler-blacklist-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        simple: https://www.google.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 9e2f856c-1f1c-41be-8241-0015d80711fc
+    type: regular
+    task:
+      id: 9e2f856c-1f1c-41be-8241-0015d80711fc
+      version: -1
+      name: Ensure error occurred
+      scriptName: isError
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 0a12bea2-00c5-405f-88de-6324a0f2b995
+    type: title
+    task:
+      id: 0a12bea2-00c5-405f-88de-6324a0f2b995
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

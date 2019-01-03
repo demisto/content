@@ -45,7 +45,7 @@ script:
           error_message = subprocess.check_output(command)
       except Exception as e:
           return_code = -1
-          error_message = e.output
+          error_message = e.message
 
 
     if demisto.command() == 'test-module':
@@ -78,7 +78,7 @@ script:
             error_message = subprocess.check_output(command)
         except Exception as e:
             return_code = -1
-            error_message = e.output
+            error_message = e.message
 
         if return_code == 0:
             file = file_result_existing_file(friendlyName)
@@ -131,7 +131,7 @@ script:
             error_message = subprocess.check_output(command);
         except Exception as e:
             return_code = -1
-            error_message = e.output
+            error_message = e.message
 
         if return_code == 0:
             file = file_result_existing_file(friendlyName)
