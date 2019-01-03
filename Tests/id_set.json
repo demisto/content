@@ -119,9 +119,8 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
-                    "AdSearch", 
-                    "addEntitlement"
+                    "addEntitlement", 
+                    "AdSearch"
                 ]
             }
         }, 
@@ -153,7 +152,6 @@
                 ], 
                 "script_executions": [
                     "getEntry", 
-                    "file", 
                     "file"
                 ]
             }
@@ -431,14 +429,11 @@
             "SandboxDetonateFile": {
                 "name": "SandboxDetonateFile", 
                 "script_executions": [
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
                     "getEntry", 
                     "CuckooDetonateFile", 
-                    "CuckooTaskStatus", 
-                    "CuckooGetReport"
+                    "CuckooGetReport", 
+                    "IsIntegrationAvailable", 
+                    "CuckooTaskStatus"
                 ]
             }
         }, 
@@ -482,8 +477,8 @@
                     "get_job_sample"
                 ], 
                 "script_executions": [
-                    "get_job_sample", 
                     "get_results", 
+                    "get_job_sample", 
                     "scheduleEntry"
                 ]
             }
@@ -856,9 +851,9 @@
                 "name": "IncidentSet", 
                 "toversion": "3.5.0", 
                 "script_executions": [
-                    "setOwner", 
-                    "setStage", 
                     "setIncident", 
+                    "setStage", 
+                    "setOwner", 
                     "setPlaybook"
                 ]
             }
@@ -909,7 +904,6 @@
                     "file"
                 ], 
                 "script_executions": [
-                    "file", 
                     "file"
                 ]
             }
@@ -919,8 +913,8 @@
                 "name": "TopMaliciousRatioIndicators", 
                 "fromversion": "4.0.0", 
                 "script_executions": [
-                    "findIndicators", 
-                    "maliciousRatio"
+                    "maliciousRatio", 
+                    "findIndicators"
                 ]
             }
         }, 
@@ -1029,8 +1023,8 @@
             "UnzipFile": {
                 "name": "UnzipFile", 
                 "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
+                    "getFilePath", 
+                    "getEntries"
                 ]
             }
         }, 
@@ -1496,7 +1490,6 @@
                     "checkpoint"
                 ], 
                 "script_executions": [
-                    "checkpoint", 
                     "checkpoint"
                 ]
             }
@@ -1761,8 +1754,8 @@
                 "name": "IngestCSV", 
                 "deprecated": true, 
                 "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
+                    "getFilePath", 
+                    "getEntries"
                 ]
             }
         }, 
@@ -1912,9 +1905,9 @@
                 "fromversion": "3.5.1", 
                 "deprecated": true, 
                 "script_executions": [
-                    "setOwner", 
-                    "setStage", 
                     "setIncident", 
+                    "setStage", 
+                    "setOwner", 
                     "setPlaybook"
                 ]
             }
@@ -2042,8 +2035,8 @@
                 ], 
                 "script_executions": [
                     "getFilePath", 
-                    "upload_sample", 
-                    "scheduleEntry"
+                    "scheduleEntry", 
+                    "upload_sample"
                 ]
             }
         }, 
@@ -2077,7 +2070,6 @@
                 "fromversion": "3.5.0", 
                 "script_executions": [
                     "findIndicators", 
-                    "getIncidents", 
                     "getIncidents"
                 ]
             }
@@ -2090,9 +2082,8 @@
                     "file"
                 ], 
                 "script_executions": [
-                    "getEntries", 
                     "file", 
-                    "file"
+                    "getEntries"
                 ]
             }
         }, 
@@ -2442,8 +2433,8 @@
                     "ipinfo_field"
                 ], 
                 "script_executions": [
-                    "ipinfo_field", 
-                    "ip"
+                    "ip", 
+                    "ipinfo_field"
                 ]
             }
         }, 
@@ -2694,8 +2685,6 @@
             "SetSeverityByScore": {
                 "name": "SetSeverityByScore", 
                 "script_executions": [
-                    "IncidentSet", 
-                    "IncidentSet", 
                     "IncidentSet"
                 ]
             }
@@ -2758,8 +2747,8 @@
                 "name": "DBotPredictPhishingEvaluation", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "DBotPreparePhishingData", 
-                    "setIncident"
+                    "setIncident", 
+                    "DBotPreparePhishingData"
                 ]
             }
         }, 
@@ -2900,8 +2889,7 @@
                 "fromversion": "3.5.0", 
                 "script_executions": [
                     "getIncidents", 
-                    "findIndicators", 
-                    "getIncidents"
+                    "findIndicators"
                 ]
             }
         }, 
@@ -3013,8 +3001,8 @@
                     "SendEmail"
                 ], 
                 "script_executions": [
-                    "SendEmail", 
-                    "RemoteExec"
+                    "RemoteExec", 
+                    "SendEmail"
                 ]
             }
         }, 
@@ -3251,8 +3239,8 @@
                 "name": "MaliciousRatioReputation", 
                 "fromversion": "4.0.0", 
                 "script_executions": [
-                    "findIndicators", 
-                    "maliciousRatio"
+                    "maliciousRatio", 
+                    "findIndicators"
                 ]
             }
         }, 
@@ -3335,8 +3323,8 @@
             "MarkAsNoteByTag": {
                 "name": "MarkAsNoteByTag", 
                 "script_executions": [
-                    "getEntries", 
-                    "markAsNote"
+                    "markAsNote", 
+                    "getEntries"
                 ]
             }
         }, 
@@ -3408,7 +3396,6 @@
                     "checkpoint"
                 ], 
                 "script_executions": [
-                    "checkpoint", 
                     "checkpoint"
                 ]
             }
@@ -3533,8 +3520,7 @@
                 "deprecated": true, 
                 "script_executions": [
                     "getIncidents", 
-                    "findIndicators", 
-                    "getIncidents"
+                    "findIndicators"
                 ]
             }
         }, 
@@ -3548,8 +3534,8 @@
             "UnPackFile": {
                 "name": "UnPackFile", 
                 "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
+                    "getFilePath", 
+                    "getEntries"
                 ]
             }
         }, 
@@ -3763,8 +3749,8 @@
             "O365SearchEmails": {
                 "name": "O365SearchEmails", 
                 "script_executions": [
-                    "D2O365SearchAndDelete", 
-                    "D2O365ComplianceSearch"
+                    "D2O365ComplianceSearch", 
+                    "D2O365SearchAndDelete"
                 ]
             }
         }, 
@@ -3825,9 +3811,9 @@
                     "ImpSfListEndpoints"
                 ], 
                 "script_executions": [
-                    "SendEmail", 
+                    "ImpSfSetEndpointStatus", 
                     "ImpSfListEndpoints", 
-                    "ImpSfSetEndpointStatus"
+                    "SendEmail"
                 ]
             }
         }, 
@@ -3885,9 +3871,8 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
-                    "AdSearch", 
-                    "addOneTimeEntitlement"
+                    "addOneTimeEntitlement", 
+                    "AdSearch"
                 ]
             }
         }, 
@@ -4010,7 +3995,6 @@
             "LinkIncidentsWithRetry": {
                 "name": "LinkIncidentsWithRetry", 
                 "script_executions": [
-                    "linkIncidents", 
                     "linkIncidents"
                 ]
             }
@@ -4238,10 +4222,10 @@
                 "name": "DBotPreparePhishingData", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "getContext", 
+                    "WordTokenizer", 
                     "getIncidents", 
                     "createList", 
-                    "WordTokenizer"
+                    "getContext"
                 ]
             }
         }, 
@@ -4346,8 +4330,8 @@
             "CompleteManualTask": {
                 "name": "CompleteManualTask", 
                 "script_executions": [
-                    "DemistoGetIncidentTasksByState", 
-                    "taskComplete"
+                    "taskComplete", 
+                    "DemistoGetIncidentTasksByState"
                 ]
             }
         }, 
@@ -4393,7 +4377,6 @@
             "TestCreateIncidents": {
                 "name": "TestCreateIncidents", 
                 "script_executions": [
-                    "createNewIncident", 
                     "createNewIncident"
                 ]
             }
@@ -4421,8 +4404,6 @@
                 "name": "SsdeepReputationTest", 
                 "script_executions": [
                     "findIndicators", 
-                    "createNewIndicator", 
-                    "createNewIndicator", 
                     "createNewIndicator"
                 ]
             }
