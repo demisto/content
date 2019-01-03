@@ -7,6 +7,9 @@
             "playbookID": "OTRS Test"
         },
         {
+            "playbookID": "CreatePhishingClassifierMLTest"
+        },
+        {
             "integrations": "Cymon",
             "playbookID": "playbook-Cymon_Test"
         },
@@ -826,6 +829,11 @@
         {
             "playbookID": "MaxMind Test",
             "integrations": "MaxMind GeoIP2"
+          
+        },
+        {
+            "playbookID": "Test_Sagemaker",
+            "integrations": "AWS Sagemaker"
 
         }
     ],
@@ -861,7 +869,8 @@
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
         "Server Message Block (SMB)": "No instance",
-        "ServiceNow": "Instance goes to hibernate every few hours"
+        "ServiceNow": "Instance goes to hibernate every few hours",
+        "MimecastV2": "Several issues with instance"
     },
     "nigthly_integrations": [
         "Lastline"
