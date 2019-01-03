@@ -130,7 +130,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 5 * * *" # UTC time
+          cron: "0 2 * * *" # UTC time
           filters:
             branches:
               only:
