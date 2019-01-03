@@ -119,7 +119,7 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
+                    "AdSearch",
                     "addEntitlement"
                 ]
             }
@@ -430,9 +430,9 @@
                 "name": "SandboxDetonateFile", 
                 "script_executions": [
                     "CuckooDetonateFile", 
-                    "CuckooGetReport", 
-                    "CuckooTaskStatus", 
-                    "IsIntegrationAvailable", 
+                    "CuckooGetReport",
+                    "CuckooTaskStatus",
+                    "IsIntegrationAvailable",
                     "getEntry"
                 ]
             }
@@ -533,7 +533,7 @@
                     "ck-report"
                 ], 
                 "script_executions": [
-                    "getEntry", 
+                    "getEntry",
                     "getFilePath"
                 ]
             }
@@ -852,8 +852,8 @@
                 "toversion": "3.5.0", 
                 "script_executions": [
                     "setIncident", 
-                    "setOwner", 
-                    "setPlaybook", 
+                    "setOwner",
+                    "setPlaybook",
                     "setStage"
                 ]
             }
@@ -1905,9 +1905,9 @@
                 "fromversion": "3.5.1", 
                 "deprecated": true, 
                 "script_executions": [
-                    "setIncident", 
-                    "setOwner", 
-                    "setPlaybook", 
+                    "setIncident",
+                    "setOwner",
+                    "setPlaybook",
                     "setStage"
                 ]
             }
@@ -2035,7 +2035,7 @@
                 ], 
                 "script_executions": [
                     "getFilePath", 
-                    "scheduleEntry", 
+                    "scheduleEntry",
                     "upload_sample"
                 ]
             }
@@ -2069,7 +2069,7 @@
                 "name": "IndicatorMaliciousRatioCalculation", 
                 "fromversion": "3.5.0", 
                 "script_executions": [
-                    "findIndicators", 
+                    "findIndicators",
                     "getIncidents"
                 ]
             }
@@ -2433,7 +2433,7 @@
                     "ipinfo_field"
                 ], 
                 "script_executions": [
-                    "ip", 
+                    "ip",
                     "ipinfo_field"
                 ]
             }
@@ -3001,7 +3001,7 @@
                     "SendEmail"
                 ], 
                 "script_executions": [
-                    "RemoteExec", 
+                    "RemoteExec",
                     "SendEmail"
                 ]
             }
@@ -3749,7 +3749,7 @@
             "O365SearchEmails": {
                 "name": "O365SearchEmails", 
                 "script_executions": [
-                    "D2O365ComplianceSearch", 
+                    "D2O365ComplianceSearch",
                     "D2O365SearchAndDelete"
                 ]
             }
@@ -3812,7 +3812,7 @@
                 ], 
                 "script_executions": [
                     "ImpSfListEndpoints", 
-                    "ImpSfSetEndpointStatus", 
+                    "ImpSfSetEndpointStatus",
                     "SendEmail"
                 ]
             }
@@ -3871,7 +3871,7 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
+                    "AdSearch",
                     "addOneTimeEntitlement"
                 ]
             }
@@ -4148,7 +4148,7 @@
                 "name": "DBotTrainTextClassifier", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "createList", 
+                    "createList",
                     "getFilePath"
                 ]
             }
@@ -4222,9 +4222,9 @@
                 "name": "DBotPreparePhishingData", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "WordTokenizer", 
-                    "createList", 
-                    "getContext", 
+                    "WordTokenizer",
+                    "createList",
+                    "getContext",
                     "getIncidents"
                 ]
             }
@@ -4403,7 +4403,7 @@
             "SsdeepReputationTest": {
                 "name": "SsdeepReputationTest", 
                 "script_executions": [
-                    "createNewIndicator", 
+                    "createNewIndicator",
                     "findIndicators"
                 ]
             }
@@ -14298,17 +14298,17 @@
                     "symantec-mss-get-incident"
                 ]
             }
-        }, 
+        },
         {
             "SplunkPySearch_Test": {
-                "name": "SplunkPySearch_Test", 
+                "name": "SplunkPySearch_Test",
                 "implementing_scripts": [
-                    "SplunkPySearch", 
+                    "SplunkPySearch",
                     "VerifyHumanReadableContains"
                 ]
             }
         },
-	{
+	    {
             "SLA Scripts - Test": {
                 "name": "SLA Scripts - Test",
                 "implementing_scripts": [

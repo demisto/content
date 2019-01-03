@@ -2,7 +2,7 @@ commonfields:
   id: SSDeepReputation
   version: -1
 name: SSDeepReputation
-script: |2
+script: |-
 
   REPUTATIONS = {
       0: 'None',
@@ -70,7 +70,7 @@ script: |2
 
   max_score = max(map(lambda x: x.get('score'), related_indicators))
   max_score_indicator = next(x for x in related_indicators if x.get('score', 0) == max_score)
-  if max_score > ssdeep_indicator.get('score', 0):
+  if max_score > ssdeep_indicator.get('score', 0) and max_score > 1:
       entry = {
           'Type': entryTypes['note'],
           'HumanReadable': 'Similarity to %s %s:%s' % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
