@@ -28,7 +28,8 @@
             "playbookID": "AttivoBotsinkTest"
         },
         {
-            "playbookID": "CreatePhishingClassifierMLTest"
+            "playbookID": "CreatePhishingClassifierMLTest",
+            "timeout" : 2400
         },
         {
             "integrations": "Cymon",
