@@ -3774,7 +3774,6 @@
                 "name": "AnalyzeOSX", 
                 "depends_on": [
                     "url", 
-                    "Osxcollector", 
                     "file"
                 ]
             }

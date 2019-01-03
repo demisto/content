@@ -41,5 +41,6 @@ dependson:
   - file
 timeout: 0s
 deprecated: true
+releaseNotes: "-"
 tests:
   - No test - deprecated old script
