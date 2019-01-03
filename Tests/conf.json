@@ -316,7 +316,7 @@
         {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -929,7 +929,8 @@
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
-        "carbonblackprotection": "License expired"
+        "carbonblackprotection": "License expired",
+        "Lastline": "Out of quota"
     },
     "nigthly_integrations": [
         "Lastline"
