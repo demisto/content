@@ -349,9 +349,9 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
     for script in script_set:
         script_id = script.keys()[0]
         script_data = script.values()[0]
+        script_name = script_data.get('name')
         for integration_command in integration_commands:
-            script_name = script_data.get('name')
-            if integration_command in script_data.get('depends_on', []):
+            if integration_command in script_data.get('depends_on', []) and not script_data.get('deprecated'):
                 if script_name not in script_names and script_name not in updated_script_names:
                     updated_script_names.add(script_name)
                     enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names,
@@ -374,12 +374,12 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
     for script in script_set:
         script_id = script.keys()[0]
         script_data = script.values()[0]
-        if given_script_id in script_data.get('script_executions', []):
+        if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated'):
             script_name = script_data.get('name')
             if script_name not in script_names and script_name not in updated_script_names:
                 updated_script_names.add(script_name)
-                enrich_for_script_id(script_name, script_names, script_set, playbook_set, updated_script_names,
-                                     updated_playbook_names)
+                enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names,
+                                     updated_script_names, updated_playbook_names)
 
     for playbook in playbook_set:
         playbook_id = playbook.keys()[0]
