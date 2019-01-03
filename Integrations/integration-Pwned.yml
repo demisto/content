@@ -256,9 +256,9 @@ script:
       description: Compromised Persons
       related: ""
     description: Check if an email has been compromised as part of past breaches
-    - name: domain
-      arguments: []
-      outputs:
+  - name: domain
+    arguments: []
+    outputs:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision
       type: string

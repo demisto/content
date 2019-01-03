@@ -9199,7 +9199,8 @@
                 "commands": [
                     "pwned-email", 
                     "pwned-domain", 
-                    "email"
+                    "email", 
+                    "domain"
                 ]
             }
         }, 
