@@ -4499,6 +4499,27 @@
                     "stopTimer"
                 ]
             }
+        }, 
+        {
+            "changeremediationslaonsevchange": {
+                "name": "ChangeRemediationSLAOnSevChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "setIncident", 
+                    "setIncident", 
+                    "setIncident", 
+                    "setIncident"
+                ]
+            }
+        }, 
+        {
+            "stoptimetoassignonownerchange": {
+                "name": "StopTimeToAssignOnOwnerChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "stopTimer"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -6594,6 +6615,32 @@
             "Phishing Investigation - Generic": {
                 "name": "Phishing Investigation - Generic", 
                 "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Block Indicators - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "send-mail"
+                ]
+            }
+        }, 
+        {
+            "Phishing Investigation - Generic": {
+                "name": "Phishing Investigation - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "4.0.0", 
                 "implementing_scripts": [
                     "AssignAnalystToIncident", 
                     "Set", 
@@ -14409,6 +14456,23 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "SLA Scripts - Test": {
+                "name": "SLA Scripts - Test", 
+                "implementing_scripts": [
+                    "StopTimeToAssignOnOwnerChange", 
+                    "ChangeRemediationSLAOnSevChange", 
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "setIncident", 
+                    "startTimer", 
+                    "resetTimer"
                 ]
             }
         }, 
