@@ -47,6 +47,11 @@ configuration:
   defaultvalue: "50"
   type: 0
   required: false
+- display: Indicator Reputation Freshness (in days)
+  name: freshness
+  defaultvalue: "7"
+  type: 0
+  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -59,6 +64,10 @@ script:
     from threatconnect.Config.IndicatorType import IndicatorType
     from threatconnect.Config.ResourceType import ResourceType
     from threatconnect.Config.FilterOperator import FilterOperator
+
+    '''GLOBAL VARS'''
+    FRESHNESS = int(demisto.params()['freshness'])
+    MAX_CONTEXT = 100
 
     ''' HELPER FUNCTIONS '''
     def get_client():
@@ -75,6 +84,11 @@ script:
             tc.set_proxies(proxy_ip, int(proxy_port))
 
         return tc
+
+
+    def calculate_freshness_time(freshness):
+        t = datetime.datetime.now() - datetime.timedelta(days=7)
+        return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
     def create_context(indicators, include_dbot_score=False):
@@ -144,8 +158,9 @@ script:
                 elif indicator_type == 'domain':
                     mal['Name'] = value
 
-                contextPath = outputPaths[indicator_type]
-                context[contextPath].append(mal)
+                contextPath = outputPaths.get(indicator_type)
+                if contextPath is not None:
+                    context[contextPath].append(mal)
 
             elif rating >= 1:
                 dbotScore = 2
@@ -180,12 +195,12 @@ script:
                 'File.SHA256' : ind.get('sha256'),
             })
 
-        context = {k : createContext(v, removeNull=True) for k, v in context.items() if len(v) > 0}
+        context = {k : createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if len(v) > 0}
         return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
 
     @logger
-    def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1):
+    def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1, freshness=None):
         tc = get_client()
         indicators_obj = tc.indicators()
         _filter = indicators_obj.add_filter()
@@ -203,6 +218,8 @@ script:
             _filter.add_pf_rating(rating_threshold, FilterOperator.GE)
         if confidence_threshold != -1:
             _filter.add_pf_confidence(confidence_threshold, FilterOperator.GE)
+        if freshness is not None:
+            _filter.add_pf_last_modified(calculate_freshness_time(freshness), FilterOperator.GE)
 
         raw_indicators = indicators_obj.retrieve()
         indicators = [json.loads(indicator.json) for indicator in raw_indicators]
@@ -218,7 +235,7 @@ script:
         confidence_threshold = int(args.get('confidenceThreshold', -1))
         ip_addr = args['ip']
 
-        indicators, ec = ip(ip_addr, owners, rating_threshold, confidence_threshold)
+        ec, indicators = ip(ip_addr, owners, rating_threshold, confidence_threshold)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -232,10 +249,10 @@ script:
 
     @logger
     def ip(ip_addr, owners, rating_threshold, confidence_threshold):
-        indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
+        indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
         ec, indicators = create_context(indicators, include_dbot_score=True)
 
-        return indicators, ec
+        return ec, indicators
 
 
     def url_command():
@@ -248,7 +265,7 @@ script:
         rating_threshold = int(args.get('ratingThreshold', -1))
         confidence_threshold = int(args.get('confidenceThreshold', -1))
 
-        indicators, ec = url(url_addr, owners, rating_threshold, confidence_threshold)
+        ec, indicators = url(url_addr, owners, rating_threshold, confidence_threshold)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -261,10 +278,10 @@ script:
 
     @logger
     def url(url_addr, owners, rating_threshold, confidence_threshold):
-        indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
+        indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
         ec, indicators = create_context(indicators, include_dbot_score=True)
 
-        return indicators, ec
+        return ec, indicators
 
 
     def file_command():
@@ -274,7 +291,7 @@ script:
         rating_threshold = int(args.get('ratingThreshold', -1))
         confidence_threshold = int(args.get('confidenceThreshold', -1))
 
-        indicators, ec = _file(file_name, owners, rating_threshold, confidence_threshold)
+        ec, indicators = _file(file_name, owners, rating_threshold, confidence_threshold)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -287,10 +304,10 @@ script:
 
     @logger
     def _file(url_addr, owners, rating_threshold, confidence_threshold):
-        indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
+        indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
         ec, indicators = create_context(indicators, include_dbot_score=True)
 
-        return indicators, ec
+        return ec, indicators
 
 
     def domain_command():
@@ -300,7 +317,7 @@ script:
         confidence_threshold = int(args.get('confidenceThreshold', -1))
         domain_addr = args['domain']
 
-        indicators, ec = domain(domain_addr, owners, rating_threshold, confidence_threshold)
+        ec, indicators = domain(domain_addr, owners, rating_threshold, confidence_threshold)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -313,10 +330,10 @@ script:
 
     @logger
     def domain(domain_addr, owners, rating_threshold, confidence_threshold):
-        indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
+        indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
         ec, indicators = create_context(indicators, include_dbot_score=True)
 
-        return indicators, ec
+        return ec, indicators
 
 
     def tc_owners_command():
