@@ -49,7 +49,6 @@ script:
 
 
 
-
     '''GLOBAL VARS'''
     BASE_URL = 'https://geoip.maxmind.com/geoip/v2.1/'
     APIKEY = demisto.params().get('apikey')
@@ -182,9 +181,14 @@ script:
 
 
     ''' FUNCTIONS '''
-    def geo_ip_search():
-        query = demisto.args().get('ip')
+    def geo_ip(query):
         raw = http_request('GET', query, MODE)
+        return raw
+
+
+    def geo_ip_command():
+        query = demisto.args().get('ip')
+        raw = geo_ip(query)
         hr, ip_ec, res_json = format_results(raw)
         ec = ({'IP(val.Address && val.Address == obj.Address)': ip_ec})
         demisto.results({
@@ -202,7 +206,7 @@ script:
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'ip':
-            geo_ip_search()
+            geo_ip_command()
         if demisto.command() == 'test-module':
             raw = http_request('GET', '8.8.8.8', MODE)
             demisto.results('ok')
