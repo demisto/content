@@ -14381,23 +14381,6 @@
                     "resetTimer"
                 ]
             }
-        }, 
-        {
-            "SLA Scripts - Test": {
-                "name": "SLA Scripts - Test", 
-                "implementing_scripts": [
-                    "StopTimeToAssignOnOwnerChange", 
-                    "ChangeRemediationSLAOnSevChange", 
-                    "Set", 
-                    "PrintErrorEntry", 
-                    "DeleteContext"
-                ], 
-                "implementing_commands": [
-                    "setIncident", 
-                    "startTimer", 
-                    "resetTimer"
-                ]
-            }
         }
     ]
 }
