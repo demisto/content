@@ -262,8 +262,8 @@ def add_new_object_to_id_set(obj_id, obj_data, file_path, instances_set):
         instance_id = instance.keys()[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
-        if (obj_id == instance_id and file_from_version == integration_from_version and
-                file_to_version == integration_to_version):
+        if obj_id == instance_id and file_from_version == integration_from_version and \
+                file_to_version == integration_to_version:
             instance[obj_id] = obj_data[obj_id]
             obj_in_set = True
 
@@ -363,7 +363,8 @@ def update_id_set():
                 integration_data = get_integration_data(file_path)
                 update_object_in_id_set(id, integration_data, file_path, integration_set)
                 print("updated {0} in id_set".format(id))
-            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX,
+                                                                            file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 script_data = get_script_data(file_path)
                 update_object_in_id_set(id, script_data, file_path, script_set)

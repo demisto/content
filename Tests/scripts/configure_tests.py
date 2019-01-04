@@ -1,19 +1,18 @@
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
-try:
-    import yaml
-except ImportError:
-    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
-    sys.exit(1)
-
-
 import re
 import os
 import sys
 import json
 import argparse
 from subprocess import Popen, PIPE
+
+try:
+    import yaml
+except ImportError:
+    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
+    sys.exit(1)
 
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
@@ -51,7 +50,7 @@ class LOG_COLORS:
 
 # print srt in the given color
 def print_color(msg, color):
-    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
+    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
@@ -336,7 +335,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 def enrich_for_integration_id(integration_commands, script_set, playbook_set, playbook_names, script_names,
                               updated_script_names, updated_playbook_names):
     for playbook in playbook_set:
-        playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         for integration_command in integration_commands:
             if integration_command in playbook_data.get('implementing_commands', []):
@@ -347,7 +345,6 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
                                            updated_playbook_names)
 
     for script in script_set:
-        script_id = script.keys()[0]
         script_data = script.values()[0]
         script_name = script_data.get('name')
         for integration_command in integration_commands:
@@ -360,7 +357,6 @@ def enrich_for_integration_id(integration_commands, script_set, playbook_set, pl
 
 def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names):
     for playbook in playbook_set:
-        playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         if given_playbook_id in playbook_data.get('implementing_playbooks', []):
             playbook_name = playbook_data.get('name')
@@ -372,7 +368,6 @@ def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbo
 def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names,
                          updated_playbook_names):
     for script in script_set:
-        script_id = script.keys()[0]
         script_data = script.values()[0]
         if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated'):
             script_name = script_data.get('name')
@@ -382,7 +377,6 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
                                      updated_script_names, updated_playbook_names)
 
     for playbook in playbook_set:
-        playbook_id = playbook.keys()[0]
         playbook_data = playbook.values()[0]
         if given_script_id in playbook_data.get('implementing_scripts', []):
             playbook_name = playbook_data.get('name')
@@ -447,7 +441,8 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, 
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
-        print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
+        print_color("There are no tests that check the changes you've done, please make sure you write one",
+                    LOG_COLORS.RED)
         sys.exit(1)
 
     return tests

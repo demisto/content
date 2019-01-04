@@ -6,9 +6,9 @@ This script is used to validate the files in Content repository. Specifically fo
 4) Having ReleaseNotes if applicable.
 
 It can be run to check only commited changes (if the first argument is 'true') or all the files in the repo.
-Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh` for that task.
+Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
+for that task.
 """
-import pip
 import sys
 try:
     import yaml
@@ -16,10 +16,11 @@ except ImportError:
     print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
     sys.exit(1)
 try:
-    import pykwalify
+    import pykwalify  # noqa: F401
 except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
+
 import re
 import os
 import json
@@ -62,16 +63,26 @@ INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX,
-                 CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
+                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
+                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
-REGEXES_TO_SCHEMA_DIC={INTEGRATION_REGEX: "integration", PLAYBOOK_REGEX: "playbook", TEST_PLAYBOOK_REGEX:"test-playbook",
-             SCRIPT_REGEX: "script", WIDGETS_REGEX: "widget", DASHBOARD_REGEX:"dashboard", CONNECTIONS_REGEX: "canvas-context-connections",
-             CLASSIFIER_REGEX: "classifier", LAYOUT_REGEX:"layout", INCIDENT_FIELDS_REGEX:"incidentfields"}
+REGEXES_TO_SCHEMA_DIC = {
+    INTEGRATION_REGEX: "integration",
+    PLAYBOOK_REGEX: "playbook",
+    TEST_PLAYBOOK_REGEX: "test-playbook",
+    SCRIPT_REGEX: "script",
+    WIDGETS_REGEX: "widget",
+    DASHBOARD_REGEX: "dashboard",
+    CONNECTIONS_REGEX: "canvas-context-connections",
+    CLASSIFIER_REGEX: "classifier",
+    LAYOUT_REGEX: "layout",
+    INCIDENT_FIELDS_REGEX: "incidentfields"
+}
 
 SCHEMAS_PATH = "Tests/schemas/"
 
@@ -87,7 +98,7 @@ class LOG_COLORS:
 
 # print srt in the given color
 def print_color(msg, color):
-    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
+    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
@@ -127,7 +138,8 @@ def get_modified_files(files_string):
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
-            print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
+            print_error(file_path + " file status is an unknown known one, "
+                                    "please check. File status was: " + file_status)
 
     return modified_files_list, added_files_list
 
@@ -135,7 +147,7 @@ def get_modified_files(files_string):
 def validate_file_release_notes(file_path):
     data_dictionary = None
     if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-        return True # Test playbooks don't need releaseNotes
+        return True  # Test playbooks don't need releaseNotes
 
     if os.path.isfile(file_path):
         with open(os.path.expanduser(file_path), "r") as f:
@@ -169,7 +181,8 @@ def validate_schema(file_path, matching_regex=None):
         return True
 
     if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
-        c = Core(source_file=file_path, schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
+        c = Core(source_file=file_path,
+                 schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
         try:
             c.validate(raise_exception=True)
             return True
@@ -178,7 +191,8 @@ def validate_schema(file_path, matching_regex=None):
             print_error(err)
             return False
 
-    print file_path + " doesn't match any of the known supported file prefix/suffix, please make sure that its naming is correct."
+    print file_path + " doesn't match any of the known supported file prefix/suffix," \
+                      " please make sure that its naming is correct."
     return True
 
 
@@ -201,7 +215,8 @@ def changed_id(file_path):
 
 def is_added_required_fields(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\+[ ]+required: true", change_string):
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or \
+            re.search("\+[ ]+required: true", change_string):
         print_error("You've added required fields in the integration file {}".format(file_path))
         return True
 
@@ -263,8 +278,8 @@ def oversize_image(file_path):
         return False
 
     if ((len(image) - 22) / 4.0) * 3 > IMAGE_MAX_SIZE:
-         print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
-         return True
+        print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
+        return True
 
     return False
 
@@ -335,8 +350,10 @@ def is_valid_in_id_set(file_path, obj_data, obj_set):
         checked_instance_data = checked_instance[checked_instance_id]
         checked_instance_toversion = checked_instance_data.get('toversion', '99.99.99')
         checked_instance_fromversion = checked_instance_data.get('fromversion', '0.0.0')
-        if checked_instance_id == file_id and checked_instance_toversion == obj_data[file_id].get('toversion', '99.99.99') and \
-                checked_instance_fromversion == obj_data[file_id].get('fromversion', '0.0.0'):
+        obj_to_version = obj_data[file_id].get('toversion', '99.99.99')
+        obj_from_version = obj_data[file_id].get('fromversion', '0.0.0')
+        if checked_instance_id == file_id and checked_instance_toversion == obj_to_version and \
+                checked_instance_fromversion == obj_from_version:
             is_found = True
             if checked_instance_data != obj_data[file_id]:
                 print_error("You have failed to update id_set.json with the data of {} "
@@ -388,7 +405,7 @@ def validate_committed_files(branch_name, is_circle):
 
 def is_valid_id(objects_set, compared_id, file_path):
     from_version = get_from_version(file_path)
-    
+
     for obj in objects_set:
         obj_id = obj.keys()[0]
         obj_data = obj.values()[0]
@@ -496,20 +513,22 @@ def validate_all_files():
                     continue
                 print "Validating " + file_name
                 if not file_name.lower().endswith(suffix):
-                     print_error("file " + file_path + " should end with " + suffix)
-                     found_wrong_name = True
+                    print_error("file " + file_path + " should end with " + suffix)
+                    found_wrong_name = True
                 if not file_name.lower().startswith(prefix):
-                     print_error("file " + file_path + " should start with " + prefix)
-                     found_wrong_name = True
+                    print_error("file " + file_path + " should start with " + prefix)
+                    found_wrong_name = True
                 if not validate_schema(file_path, regex):
                     print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
-                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX,
+                                                                                file_path, re.IGNORECASE):
                     _id = get_script_or_integration_id(file_path)
                     if _id in id_list:
                         print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
                         duplicated_id = True
-                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX,
+                                                                                  file_path, re.IGNORECASE):
                     _id = collect_ids(file_path)
                     if _id in id_list:
                         print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
