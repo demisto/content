@@ -461,7 +461,7 @@ while True:
             'win': win
         }
 
-        exec(code, sub_globals, sub_globals)
+        exec(code, sub_globals, sub_globals)  # guardrails-disable-line
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
