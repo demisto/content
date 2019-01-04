@@ -4417,6 +4417,15 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "CybereasonPreProcessingExample": {
+                "name": "CybereasonPreProcessingExample", 
+                "script_executions": [
+                    "getIncidents", 
+                    "setIncident"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -6521,7 +6530,12 @@
                     "cybereason-query-malops", 
                     "cybereason-malop-processes", 
                     "cybereason-add-comment", 
-                    "cybereason-update-malop-status"
+                    "cybereason-update-malop-status", 
+                    "cybereason-prevent-file", 
+                    "cybereason-unprevent-file", 
+                    "cybereason-query-file", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-user"
                 ]
             }
         }, 
@@ -12441,11 +12455,14 @@
                     "DeleteContext"
                 ], 
                 "implementing_commands": [
+                    "cybereason-query-user", 
                     "cybereason-malop-processes", 
+                    "cybereason-query-file", 
                     "cybereason-query-connections", 
-                    "cybereason-query-processes", 
                     "cybereason-is-probe-connected", 
-                    "cybereason-query-malops"
+                    "cybereason-query-malops", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-processes"
                 ]
             }
         }, 
