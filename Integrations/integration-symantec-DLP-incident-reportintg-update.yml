@@ -73,7 +73,7 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     SAVED_REPORT_ID = demisto.params()['saved-Report-id']
     FETCH_TIME = demisto.params()['fetch_time']
-
+    SEVERITY = {'high':3,'medium':2,'low':1,'info':5}
 
     wsdl = 'https://{}/ProtectManager/services/v2011/incidents?wsdl'.format(SERVER_IP)
 
@@ -97,6 +97,9 @@ script:
 
         return client.service.incidentDetail(incidentId=_id,includeViolations=True,includeHistory=True)
         
+    def myconverter(o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()        
     
         
     def parse_date_range(daterange):
@@ -131,14 +134,17 @@ script:
         if len(incidentids['incidentId']) > 0:
             for incident1 in incidentids['incidentId']:
                 inc=incidentDetail(str(incident1))
+                serialized_obj = helpers.serialize_object(inc[0])
+                rawjson = json.dumps(serialized_obj,default = myconverter)
                 incidents.append({
                     'name':"DLP Incident #"+str(incident1),
                     'details':  inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated"
+                    'rawJSON': rawjson,
+                    'severity' : SEVERITY[inc[0]['incident']['severity']]
                 })
                 if inc[0]['incident']['incidentCreationDate'].isoformat() > last_run['lt_time'].isoformat():
                     demisto.setLastRun({'lt_time':inc[0]['incident']['incidentCreationDate'].strftime("%d/%m/%Y %H:%M:%S.%f")})
         demisto.incidents(incidents)
-        return(incidents)
 
 
     def updateIncidents():
@@ -151,34 +157,40 @@ script:
 
 
 
-    def myconverter(o):
-        if isinstance(o, datetime.datetime):
-            return o.__str__()
-
-
-
     if demisto.command() == 'fetch-incidents':
         fetchincidents()
+        
     elif demisto.command() =='test-module':
         try:
             inc_list = get_incident_id(datetime.datetime.now())
             demisto.results("ok")
         except:
             return_error("Invalid instance details")
-    elif demisto.command() == 'dlp-incedent-details':
+            
+    elif demisto.command() == 'dlp-incident-details':
         inc_details = incidentDetail( demisto.args()['incidentId'])
         res = helpers.serialize_object(inc_details[0])
-        demisto.results(json.loads(json.dumps(res,default = myconverter)))
+        json_res = json.loads(json.dumps(res,default = myconverter))
+        demisto.results({'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents':json_res,
+        'EntryContext':{'Symantec':{"DLP":{'Incident':json_res}}}
+        })
+        
     elif demisto.command() == 'dlp-update-incident':
         demisto.results(updateIncidents())
 
   type: python
   commands:
-  - name: dlp-incedent-details
+  - name: dlp-incident-details
     arguments:
     - name: incidentId
       required: true
       description: incident Id  from DLP console to fetch the data of
+      outputs:
+    - contextPath: Symantec.DLP.Incident
+      description: DLP incident details
+      type: unknown
     description: fetches DLP incident details
   - name: dlp-update-incident
     arguments:
