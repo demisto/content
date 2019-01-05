@@ -155,7 +155,8 @@ script:
             'Attribute',
             'ShadowAttribute',
             'RelatedEvent',
-            'Galaxy'
+            'Galaxy',
+            'Tag'
             ]
 
         # Remove 'Event' keyword
@@ -185,7 +186,12 @@ script:
                     }
                     galaxy.append(new_star)
                 events[i]['Galaxy'] = galaxy
-
+            # Build tag
+            if events[i]['Tag']:
+                tag_list = list()
+                for tag in events[i]['Tag']:
+                    tag_list.append({'Name': tag.get('name')})
+                events[i]['Tag'] = tag_list
         events = replace_keys(events)
         return events
 
@@ -663,6 +669,24 @@ script:
                 'HumanReadable': md,
             })
 
+    def add_tag():
+        uuid = demisto.args().get('uuid')
+        tag = demisto.args().get('tag')
+
+        MISP.tag(uuid, tag)
+        event = MISP.search(uuid=uuid)
+        ec = {
+            MISP_PATH: build_context(event)
+        }
+        md = f'Tag {tag} has been succefully added to event {uuid}'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': event,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        })
 
     command = demisto.command()
 
@@ -687,6 +711,8 @@ script:
             search()
         elif command == 'misp-delete-event':
             delete_event()
+        elif command == 'misp-add-tag':
+            add_tag()
         elif command == 'file':
             check_file()
         elif command == 'url':
@@ -793,6 +819,8 @@ script:
       description: ShadowAttribute
     - contextPath: MISP.Event.RelatedEvent
       description: RelatedEvent
+    - contextPath: MISP.Event.Tag.Name
+      description: All tags name in the event
     description: Search for events in misp
   - name: file
     arguments:
@@ -1014,6 +1042,8 @@ script:
       description: Event's analysis (0 Initial, 1 Ongoing, 2 Completed)
     - contextPath: MISP.Event.SharingGroupID
       description: Event' sharing group ID
+    - contextPath: MISP.Event.Tag.Name
+      description: All tags name in the event
     description: Create new MISP event
   - name: internal-misp-add-attribute
     deprecated: true
@@ -1166,7 +1196,9 @@ script:
     - contextPath: MISP.Event.Analysis
       description: Event's analysis (0 Initial, 1 Ongoing, 2 Completed)
     - contextPath: MISP.Event.SharingGroupID
-      description: Event' sharing group ID
+      description: Event's sharing group ID
+    - contextPath: MISP.Event.Tag.Name
+      description: All tags name in the event
     description: Add attribute to existing MISP event
   - name: misp-upload-sample
     arguments:
@@ -1229,6 +1261,66 @@ script:
       required: true
       description: Event ID to delete
     description: Deletes a given event number
+  - name: misp-add-tag
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the attribute/event
+    - name: tag
+      required: true
+      description: Tag to add to the attribute/event
+    outputs:
+      - contextPath: MISP.Event.ID
+        description: Event ID
+      - contextPath: MISP.Event.Date
+        description: Date
+      - contextPath: MISP.Event.ThreatLevelID
+        description: Threat Level ID
+      - contextPath: MISP.Event.info
+        description: info
+      - contextPath: MISP.Event.Published
+        description: Published
+      - contextPath: MISP.Event.UUID
+        description: UUID
+      - contextPath: MISP.Event.Analysis
+        description: Analysis
+      - contextPath: MISP.Event.Timestamp
+        description: Timestamp
+      - contextPath: MISP.Event.Distribution
+        description: Distribution
+      - contextPath: MISP.Event.ProposalEmailLock
+        description: Proposal Email Lock
+      - contextPath: MISP.Event.Locked
+        description: Locked
+      - contextPath: MISP.Event.PublishTimestamp
+        description: Publish Timestamp
+      - contextPath: MISP.Event.SharingGroupID
+        description: Sharing Group ID
+      - contextPath: MISP.Event.DisableCorrelation
+        description: Disable Correlation
+      - contextPath: MISP.Event.EventCreatorEmail
+        description: Event Creator Email
+      - contextPath: MISP.Event.Organisation.ID
+        description: Organisation ID
+      - contextPath: MISP.Event.Organisation.Name
+        description: Organisation Name
+      - contextPath: MISP.Event.Organisation.UUID
+        description: Organisation UUID
+      - contextPath: MISP.Event.OwnerOrganisation.ID
+        description: Owner Organisation ID
+      - contextPath: MISP.Event.OwnerOrganisation.Name
+        description: Owner Organisation Name
+      - contextPath: MISP.Event.OwnerOrganisation.UUID
+        description: Owner Organisation UUID
+      - contextPath: MISP.Event.Attribute
+        description: Attribute
+      - contextPath: MISP.Event.ShadowAttribute
+        description: ShadowAttribute
+      - contextPath: MISP.Event.RelatedEvent
+        description: RelatedEvent
+      - contextPath: MISP.Event.Tag.Name
+        description: All tags name in the event
+    description: Adding tag to given UUID event/attribute
   dockerimage: devtesting/pymisp:1.0.0.1545643433
   runonce: false
 releaseNotes:

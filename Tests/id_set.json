@@ -10615,7 +10615,8 @@
                     "misp-download-sample", 
                     "misp-add-attribute", 
                     "misp-upload-sample", 
-                    "misp-delete-event"
+                    "misp-delete-event", 
+                    "misp-add-tag"
                 ]
             }
         }
