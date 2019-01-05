@@ -4426,6 +4426,11 @@
                     "setIncident"
                 ]
             }
+        }, 
+        {
+            "StringContainsArray": {
+                "name": "StringContainsArray"
+            }
         }
     ], 
     "playbooks": [
@@ -5859,7 +5864,6 @@
                 "name": "Calculate Severity - Critical assets", 
                 "fromversion": "4.0.0", 
                 "implementing_scripts": [
-                    "StringContains", 
                     "Set"
                 ]
             }
@@ -14275,6 +14279,16 @@
                 "implementing_scripts": [
                     "SplunkPySearch", 
                     "VerifyHumanReadableContains"
+                ]
+            }
+        }, 
+        {
+            "StringContainsArray_test": {
+                "name": "StringContainsArray_test", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
                 ]
             }
         }
