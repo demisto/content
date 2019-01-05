@@ -14269,6 +14269,14 @@
                     "VerifyHumanReadableContains"
                 ]
             }
+        }, 
+        {
+            "AbuseIPDB PopulateIndicators Test": {
+                "name": "AbuseIPDB PopulateIndicators Test", 
+                "implementing_scripts": [
+                    "AbuseIPDBPopulateIndicators"
+                ]
+            }
         }
     ]
 }
