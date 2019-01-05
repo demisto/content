@@ -14,12 +14,12 @@ configuration:
   required: false
 - display: ""
   name: unsecure
-  defaultvalue: "False"
+  defaultvalue: "True"
   type: 0
   required: false
 - display: ""
   name: proxy
-  defaultvalue: "True"
+  defaultvalue: "False"
   type: 0
   required: false
 - display: ""
@@ -28,22 +28,22 @@ configuration:
   type: 0
   required: true
 script:
-  script: |
-    # VERIFY_CERTIFICATES = False if demisto.params().get('unsecure') else True
-    VERIFY_CERTIFICATES = True
+  script: |2
 
     ''' IMPORTS '''
     import datetime
     import time
     import requests
     import json
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
     THREAT_MINER_URL= demisto.params().get('threatminerUrl')
+    VERIFY_CERTIFICATES = False if demisto.params().get('unsecure') else True
     DEFAULT_HEADERS = {
       "Content-Type": "application/json"
     }
     MAX_RETURNED_ARRAY_SIZE = 30
-
 
     ''' HELPER FUNCTIONS '''
     def http_request(method, url, headers):
@@ -177,8 +177,6 @@ script:
         return md
 
     def get_domain_report(domainName, maxReturnedArraySize):
-        context = {}
-        content = []
 
         whoisRawData = get_domain_whois_rawdata(domainName)
         domainWhois = get_domain_whois(whoisRawData)
@@ -195,12 +193,14 @@ script:
         md5RawData = get_domain_MD5_rawdata(domainName)
         domainMD5 = get_domain_MD5(md5RawData, maxReturnedArraySize)
 
+        content = []
         content.append(whoisRawData)
         content.append(passiveDNSRawData)
         content.append(subdomainsRawData)
         content.append(uriRawData)
         content.append(md5RawData)
 
+        context = {}
         context['ThreatMiner.Domain.Whois'] = domainWhois
         context['ThreatMiner.Domain.PassiveDNS'] = passiveDNS
         context['ThreatMiner.Domain.Subdomains'] = subdomains
@@ -218,13 +218,13 @@ script:
         threatMinerIpUrlPostfix = 'host.php?q={}&rt={}'.format(ipAddress, 1)
         response = http_request('GET',THREAT_MINER_URL + threatMinerIpUrlPostfix, DEFAULT_HEADERS)
         whoisRawdata = response.get('results',[])
-
-        return whoisRawdata[0]
+        if len(whoisRawdata) > 0:
+            return whoisRawdata[0]
+        return []
 
     def get_ip_whois(whoisRawdata):
 
         ipWhoisResults = {}
-        # ipWhoisResults['Address'] = ipAddress #TODO: fix it to take ip
         ipWhoisResults['Reverse'] = whoisRawdata['reverse_name']
         ipWhoisResults['Bgp'] = whoisRawdata['bgp_prefix']
         ipWhoisResults['Country'] = whoisRawdata['cc']
@@ -331,8 +331,6 @@ script:
         return md
 
     def get_ip_report(ipAddress, maxReturnedArraySize):
-        context = {}
-        content = []
 
         whoisRawData = get_ip_whois_rawdata(ipAddress)
         ipWhois = get_ip_whois(whoisRawData)
@@ -349,17 +347,22 @@ script:
         sslRawData = get_ip_SSL_rawdata(ipAddress)
         ipSSL = get_ip_SSL(sslRawData, maxReturnedArraySize)
 
+        content = []
         content.append(whoisRawData)
         content.append(passiveDNSRawData)
         content.append(md5RawData)
         content.append(uriRawData)
         content.append(sslRawData)
 
-        context['ThreatMiner.IP.Whois'] = ipWhois
-        context['ThreatMiner.IP.PassiveDNS'] = ipPassiveDNS
-        context['ThreatMiner.IP.MD5'] = ipMD5
-        context['ThreatMiner.IP.URI'] = ipURI
-        context['ThreatMiner.IP.SSL'] = ipSSL
+        context = {}
+        context['ThreatMiner'] = {}
+        context['ThreatMiner']['IP'] = {}
+        context['ThreatMiner']['IP']['Address'] = ipAddress
+        context['ThreatMiner']['IP']['Whois'] = ipWhois
+        context['ThreatMiner']['IP']['PassiveDNS'] = ipPassiveDNS
+        context['ThreatMiner']['IP']['MD5'] = ipMD5
+        context['ThreatMiner']['IP']['URI'] = ipURI
+        context['ThreatMiner']['IP']['SSL'] = ipSSL
 
         markdown = create_ip_command_markdown(ipAddress, ipWhois, ipPassiveDNS, ipURI, ipMD5, ipSSL)
 
@@ -379,21 +382,18 @@ script:
 
         return threatminerResultsAsArray[0]
 
-    def get_file_whois(rawdataFile):
+    def get_file_whois_and_update_theartMinerFileContext(rawdataFile, context):
         if len(rawdataFile) == 0:
             return rawdataFile
 
-        whoisResult = {}
-        whoisResult['MD5'] = rawdataFile['md5']
-        whoisResult['Architecture'] = rawdataFile['architecture']
-        whoisResult['Sha1'] = rawdataFile['sha1']
-        whoisResult['Sha256'] = rawdataFile['sha256']
-        whoisResult['Type'] = rawdataFile['file_type']
-        whoisResult['FileName'] = rawdataFile['file_name']
-        whoisResult['Size'] = rawdataFile['file_size']
-        whoisResult['Analyzed'] = rawdataFile['date_analysed']
-
-        return whoisResult
+        context['ThreatMiner']['File']['MD5'] = rawdataFile['md5']
+        context['ThreatMiner']['File']['Architecture'] = rawdataFile['architecture']
+        context['ThreatMiner']['File']['Sha1'] = rawdataFile['sha1']
+        context['ThreatMiner']['File']['Sha256'] = rawdataFile['sha256']
+        context['ThreatMiner']['File']['Type'] = rawdataFile['file_type']
+        context['ThreatMiner']['File']['FileName'] = rawdataFile['file_name']
+        context['ThreatMiner']['File']['Size'] = rawdataFile['file_size']
+        context['ThreatMiner']['File']['Analyzed'] = rawdataFile['date_analysed']
 
     def get_file_http_rawdata(hashedFile):
         threatMinerDomainUrlPostfix = 'sample.php?q={}&rt={}'.format(hashedFile, 2)
@@ -490,11 +490,12 @@ script:
 
 
     def get_file_report(hashedFile, maxReturnedArraySize):
-        context = {}
-        content = []
+        threatMinerFileContext = {}
+        threatMinerFileContext['ThreatMiner'] = {}
+        threatMinerFileContext['ThreatMiner']['File'] = {}
 
         fileWhoIsRawData = get_file_whois_rawdata(hashedFile)
-        fileWhoIs = get_file_whois(fileWhoIsRawData)
+        get_file_whois_and_update_theartMinerFileContext(fileWhoIsRawData, threatMinerFileContext)
 
         fileHttpsRawData = get_file_http_rawdata(hashedFile)
         fileHttps = get_file_http(fileHttpsRawData, maxReturnedArraySize)
@@ -511,6 +512,7 @@ script:
         rawFileAvDectection = get_file_AV_detection_rawdata(hashedFile)
         fileAntiVirus = get_file_AV_detection(rawFileAvDectection)
 
+        content = []
         content.append(fileWhoIsRawData)
         content.append(fileHttpsRawData)
         content.append(fileDomainsRawData)
@@ -518,54 +520,44 @@ script:
         content.append(fileRegistryKeysRawData)
         content.append(rawFileAvDectection)
 
+        threatMinerFileContext['ThreatMiner']['File']['HTTP'] = fileHttps
+        threatMinerFileContext['ThreatMiner']['File']['Domains'] = fileDomains
+        threatMinerFileContext['ThreatMiner']['File']['Mutants'] = fileMutants
+        threatMinerFileContext['ThreatMiner']['File']['Registry'] = fileRegistryKeys
+        threatMinerFileContext['ThreatMiner']['File']['AV'] = fileAntiVirus[:maxReturnedArraySize]
 
-        context['ThreatMiner.File'] = fileWhoIs
-        context['ThreatMiner.File.HTTP'] = fileHttps
-        context['ThreatMiner.File.Domains'] = fileDomains
-        context['ThreatMiner.File.Mutants'] = fileMutants
-        context['ThreatMiner.File.Registry'] = fileRegistryKeys
-        context['ThreatMiner.File.AV'] = fileAntiVirus[:maxReturnedArraySize]
-
-        file = {}
-        file['Whois'] = fileWhoIs
-        file['MD5'] = fileWhoIs['MD5']
-        file['HTTP'] = fileHttps
-        file['Domains'] = fileDomains
-        file['Mutants'] = fileMutants
-        file['Registry'] = fileRegistryKeys
-        file['AV'] = fileAntiVirus[:maxReturnedArraySize]
-
-        # context['File.MD5'] = fileWhoIs['MD5']
-        # context['File.Sha1'] = fileWhoIs['Sha1']
-        # context['File.Sha256'] = fileWhoIs['Sha256']
+        fileContext = threatMinerFileContext['ThreatMiner']['File']
 
         amountOfDetections = len(fileAntiVirus)
 
-        dbot_scores = get_dbot_score_report(amountOfDetections, hashedFile, context)
+        dbot_scores = get_dbot_score_report(amountOfDetections, hashedFile, fileContext)
 
-        markDownResult = create_file_command_markdown(hashedFile, fileWhoIs, fileHttps, fileDomains, fileMutants, fileRegistryKeys, fileAntiVirus[:maxReturnedArraySize])
+        markDownResult = create_file_command_markdown(hashedFile, threatMinerFileContext['ThreatMiner']['File'])
 
-        context2 = {
-            'File(val.MD5 == obj.MD5)': createContext(file, removeNull=True),
-            'ThreatMiner.File(val.MD5 == obj.MD5)':  createContext(context, removeNull=True),
+        context = {
+            'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)':  createContext(threatMinerFileContext['ThreatMiner']['File'], removeNull=True),
+            'File(val.MD5 && val.MD5 == obj.MD5)': createContext(fileContext, removeNull=True),
             'DBotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': createContext(dbot_scores, removeNull=True)
         }
 
         return [{'Type': entryTypes['note'],
                 'Contents': content,
                 'HumanReadable': markDownResult,
-                'EntryContext': context2,
+                'EntryContext': context,
                 'ContentsFormat': formats['json']}]
 
-    def get_dbot_score_report(amountOfDetections, hashedFile, context):
+    def get_dbot_score_report(amountOfDetections, hashedFile, fileContext):
         dbot = {}
+        dbot_score = get_dbot_score(amountOfDetections)
+        dbot['Score'] = dbot_score
         dbot['Indicator'] = hashedFile
         dbot['Type'] = 'File'
         dbot['Vendor'] = 'ThreatMiner'
-        dbot_score = get_dbot_score(amountOfDetections)
+
         if dbot_score == 3:
-            context['File.Malicious.Vendor'] = 'ThreatMiner'
-            context['File.Malicious.Detections'] = amountOfDetections
+            fileContext['Malicious'] = {}
+            fileContext['Malicious']['Vendor'] = 'ThreatMiner'
+            fileContext['Malicious']['Detections'] = amountOfDetections
         return dbot
 
     def get_dbot_score(amountOfDetections):
@@ -577,28 +569,43 @@ script:
         if amountOfDetections >= maliciousThreshold:
             return 3
 
-    def create_file_command_markdown(hashedFile, fileWhois, fileHttp, domains, mutants, registryKeys, antiVirusDetection):
+    def create_file_command_markdown(hashedFile, FileContext):
 
         md = '## ThreatMiner file report for hashed file: {}\n'.format(hashedFile)
         threadMinerFoundResults = False
 
-        if len(fileWhois) != 0:
-            md += tableToMarkdown("Whois for hashed file {}".format(hashedFile), fileWhois, ['MD5', 'Architecture', 'Sha1', 'Sha256', 'Type', 'FileName', 'Size', 'Analyzed'])
+        md += '\n'
+        md += '**File MD5:** {}'.format(hashedFile)
+        md += '\n'
+        md += '**File Architecture:** {}'.format(FileContext['Architecture'])
+        md += '\n'
+        md += '**File SHA1:** {}'.format(FileContext['Sha1'])
+        md += '\n'
+        md += '**File SHA256:** {}'.format(FileContext['Sha256'])
+        md += '\n'
+        md += '**File Type:** {}'.format(FileContext['Type'])
+        md += '\n'
+        md += '**File Name:** {}'.format(FileContext['FileName'])
+        md += '\n'
+        md += '**File Size:** {}'.format(FileContext['Size'])
+        md += '\n'
+        md += '**File Analyzed:** {}'.format(FileContext['Analyzed'])
+
+
+        if len(FileContext['HTTP']) != 0:
+            md += tableToMarkdown("HTTP for hashed file {}".format(hashedFile), FileContext['HTTP'], ['Domain', 'URL', 'UserAgent'])
             threadMinerFoundResults = True
-        if len(fileHttp) != 0:
-            md += tableToMarkdown("HTTP for hashed file {}".format(hashedFile), fileHttp, ['Domain', 'URL', 'UserAgent'])
+        if len(FileContext['Domains']) != 0:
+            md += tableToMarkdown("Hashed file: {} Domains".format(hashedFile),  FileContext['Domains'], ['domain','ip'])
             threadMinerFoundResults = True
-        if len(domains) != 0:
-            md += tableToMarkdown("Hashed file: {} Domains".format(hashedFile), domains, ['domain','ip'])
+        if len(FileContext['Mutants']) != 0:
+            md += tableToMarkdown("Hashed file: {} Mutants".format(hashedFile),  FileContext['Mutants'], ['Mutants'])
             threadMinerFoundResults = True
-        if len(mutants) != 0:
-            md += tableToMarkdown("Hashed file: {} Mutants".format(hashedFile), mutants, ['Mutants'])
+        if len(FileContext['Registry']) != 0:
+            md += tableToMarkdown("Hashed file: {} Registry keys".format(hashedFile), FileContext['Registry'], ['Registry'])
             threadMinerFoundResults = True
-        if len(registryKeys) != 0:
-            md += tableToMarkdown("Hashed file: {} Registry keys".format(hashedFile), registryKeys, ['Registry'])
-            threadMinerFoundResults = True
-        if len(antiVirusDetection) != 0:
-            md += tableToMarkdown("Anti Virus detections to hashed file: {}".format(hashedFile), antiVirusDetection, ['av','detection'])
+        if len(FileContext['AV']) != 0:
+            md += tableToMarkdown("Anti Virus detections to hashed file: {}".format(hashedFile), FileContext['AV'], ['av','detection'])
             threadMinerFoundResults = True
 
         if threadMinerFoundResults == False:
@@ -643,7 +650,6 @@ script:
         if demistoCommand == 'file':
             hashedfile = demisto.args().get('file')
             demisto.results(get_file_report(hashedfile, maxArraySize))
-
     except Exception, e:
         raise
   type: python
@@ -693,7 +699,6 @@ script:
     - contextPath: ThreatMiner.Domain.MD5
       description: Related samples md5
       type: string
-    - contextPath: Domain.Name
     description: Retrieve data from ThreatMiner about a specified domain.
   - name: ip
     arguments:
@@ -740,9 +745,6 @@ script:
     - contextPath: ThreatMiner.IP.SSL
       description: SSL certificates
       type: string
-    - contextPath: IP.Geo.Country
-      description: ""
-    - contextPath: IP.Address
     description: Retrieve data from ThreatMiner about a specified IP address.
   - name: file
     arguments:

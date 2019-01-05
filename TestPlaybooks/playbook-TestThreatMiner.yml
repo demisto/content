@@ -1,5 +1,5 @@
 id: 0951e543-6f41-4d36-8801-fddf70065c7a
-version: 24
+version: 25
 name: ThreatMiner - Test
 starttaskid: "0"
 tasks:
@@ -377,10 +377,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 0bb51442-a00d-4035-8764-0e4af55f17ce
+    taskid: e34a85f3-c0f0-422a-87e7-ab137768f5fa
     type: condition
     task:
-      id: 0bb51442-a00d-4035-8764-0e4af55f17ce
+      id: e34a85f3-c0f0-422a-87e7-ab137768f5fa
       version: -1
       name: Verify File(Samples)
       description: Verify File(Sample) Metadata, HTTP Traffic, Hosts, Mutants
@@ -397,7 +397,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ThreatMiner.File.Whois.MD5
+              simple: ThreatMiner.File.MD5
             iscontext: true
           right:
             value:
