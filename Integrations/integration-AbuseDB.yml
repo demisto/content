@@ -108,7 +108,7 @@ script:
         21 : 'Web_App_Attack',
         22 : 'SSH',
         23 : 'IoT_Targeted'
-    }script-AbuseIPDB-PopulateIndicators.yml
+    }
 
     CATEGORIES_ID = {
         "Frad_Orders"    : "3",

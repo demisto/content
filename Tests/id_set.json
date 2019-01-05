@@ -4417,6 +4417,15 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "AbuseIPDBPopulateIndicators": {
+                "name": "AbuseIPDBPopulateIndicators", 
+                "depends_on": [
+                    "abuseipdb-get-blacklist", 
+                    "createNewIndicator"
+                ]
+            }
         }
     ], 
     "playbooks": [
