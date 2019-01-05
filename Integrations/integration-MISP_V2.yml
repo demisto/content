@@ -1323,11 +1323,12 @@ script:
     description: Adding tag to given UUID event/attribute
   dockerimage: devtesting/pymisp:1.0.0.1545643433
   runonce: false
-releaseNotes: "
+releaseNotes:
+  "
   - added delete event command
   - added outputs in misp-create-event, misp-add-attribute, misp-search
   - deprecated internal misp commands
-  - requried python3/pymisp docker
+  - required demisto/pymisp docker
   "
 tests:
-  - MISP V2 Test
+- MISP V2 Test
