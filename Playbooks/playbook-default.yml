@@ -261,4 +261,4 @@ inputs:
   description: Should preform enrichment on all indicators in the incident
 outputs: []
 tests:
-  - No test - Tested manually
+- No test - Tested manually
