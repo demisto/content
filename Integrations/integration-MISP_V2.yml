@@ -17,11 +17,6 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Certificate
-  name: credentials
-  defaultvalue: ""
-  type: 4
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""

@@ -10600,6 +10600,24 @@
                     "intsights-close-alert"
                 ]
             }
+        }, 
+        {
+            "MISP V2": {
+                "name": "MISP V2", 
+                "commands": [
+                    "misp-search", 
+                    "file", 
+                    "url", 
+                    "ip", 
+                    "internal-misp-create-event", 
+                    "misp-create-event", 
+                    "internal-misp-add-attribute", 
+                    "misp-download-sample", 
+                    "misp-add-attribute", 
+                    "misp-upload-sample", 
+                    "misp-delete-event"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
