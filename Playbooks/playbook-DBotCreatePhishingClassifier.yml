@@ -360,6 +360,5 @@ outputs:
 - contextPath: DBotTextClassifier.ListName
   description: Model list name in Demisto
 fromversion: 4.1.0
-releaseNotes: "Add new playbook: create phishing model in Demisto"
 tests:
   - CreatePhishingClassifierMLTest

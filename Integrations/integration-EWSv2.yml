@@ -102,11 +102,13 @@ script:
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
-    from exchangelib import IMPERSONATION, DELEGATE, Account, ServiceAccount, \
+    from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
         EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, ItemAttachment, \
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+
+    from requests.exceptions import ConnectionError
 
     # Docker BC
     MNS = None
@@ -235,7 +237,7 @@ script:
             os.environ['NO_PROXY'] = EWS_SERVER
 
         version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
+        credentials = Credentials(username=USERNAME, password=PASSWORD)
         config_args = {
             'credentials': credentials,
             'auth_type': get_auth_method(AUTH_METHOD_STR),
@@ -1505,6 +1507,17 @@ script:
             error_message_simple = log_message + " Please retry your request."
 
         # Other exception handling
+        if isinstance(e.message, Exception):
+            e.message = str(e.message)
+
+        if isinstance(e, ConnectionError):
+            error_message_simple = "Could not connect to the server.\nVerify that the Hostname or IP address is correct.\n\nAdditional information: {}".format(e.message)
+        elif exchangelib.__version__ == "1.12.0":
+            from exchangelib.errors import MalformedResponseError
+            if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
+                error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
+
+        # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
@@ -1761,7 +1774,6 @@ script:
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
         in the mailbox.
-      defaultValue: Inbox
     - name: limit
       description: Maximum number of results.
       defaultValue: "100"
@@ -2203,3 +2215,4 @@ script:
   runonce: false
 tests:
   - pyEWS_Test
+  - 'EWS search-mailbox test'

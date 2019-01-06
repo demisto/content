@@ -1,35 +1,47 @@
-versionedfields: {}
 commonfields:
   id: Panorama
   version: -1
 name: Panorama
+display: Palo Alto Firewall and Panorama
 fromversion: 3.0.0
-display: Palo Alto Panorama
 category: Network Security
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAyCAYAAAAweqkjAAAMjUlEQVR4Ac2YA3icXRbH72d/X732bm0jRu2tEdt22pk4maQT27aNhhOniGvb7vLu/8wma7RPmef5ZXzf/z2657xs9K+6e2iiMKVcuM45YniRkd+9+Ya+dxa8YeYb+NxdbhZwW903pTaqtGUTYKNI/x0/e2UhBF2cpuXOZ+t5cfzorQFxfIa2B5+l68WFyeWJj5//7hPA2I17j76/zS329FRNd/riO2MeBE5WF3IYygswFlbU5IE36MN3zhw9by5nKX7Se/bKDLbRNWpgtq7Ufe8F5FaP1EpjNhKI/H2BYk7WUixg898zYcQ8fR/B+2axUd6qMFhCRLxfwmbr+SN23LmMhQefC3HvRBilPWX6/NHXEKUuMuEpjTI8vlaBr3J0wXuityuMRK1ziujdJoyVLDTyg+v8+GJjbx5bo8gLOhbyoq75fL+vKZ+lE/D2hM3Q9uT2MYWFBS3HPwbMMCirYKqmN1e1d+XpTct5dutiniVZyte5OJIVgTfc6k2PVPnfjLD5Bn+1Vmpt1wbACLOwnODJ6r58p4clz2tfxHMgLL5Wnq8w94CrfflK+9BTeuL0vQaBmRbyVoHPIO71C0PtQWAfepZa2/lrwIjtbnGSyeoirhekDzcu4Llti3hIySppEV1oJOJFrX3KgBFbBTHNiMvXL4wW3Xwgeqikve9TwCq7Bieo2IXcmqYp4k6Ju6XC8hFj7um/5TO0RFzRJvhqQlX7d4Bl1Hd/vN45on+23hsQNlPHk2v5pxYDRkSUNM9abCz64zx9Xx5UtFbqShJnFKrDp2iI+CbXqG7AiJSazu/DlXcRb68mjFxBQmghstRo4FtG5B0CjAgvbtoyS8eXy1q48cTDctLAJ1duc7OGMF/aRAZgREhhoxyaU1qX1qNYfWlhI/Hhx22jC+JdE0rXavilNJELaEGv9CpNwAjn+BLBVA0fvsbJmWe2LJUKS29ejoB35dO1fLhtVIENYIRdTKEp/Z42utcrsdE5vnjeSwsjy2j7p9UBRqCpW0sLwm08KL9+HmCEbkBaKmXkbi8LuHGhNCPjUMuWmVLl96PvqgJGGAVnRUzWcKMYPd14/NS3gP1N2DwsThedpev5d+uMBDX1SKP+Jxe6pVS4Akb459QZTtfy4Cq2IdcLJb1jACN2usd3TFb341ZR6tLYInGivA1YT8SXmvg/Dy5o+A1gBLK3ioQZBWXGAkZIheGiiAXxdbPQnDA13+Q6qkkE6grtot4yPC9EFRk2WhBjyiXrACOMg7OCp2DRDS6R3YARaXVdk5B1d2Zq+3GfnE08H6JInHPSLj4VWbrGMfxCZn3PV4ClH+7+arVD2AVq7T3TKs0BIxjqz/0V5oc4vrACsKyGnnHKtsFXp2q6cRTIWqT9h4AJkssdyHLY7R9iylunAwbgztSKX6sJOIpkJmBEbHmr3HxDEWLRm4eXq0qDvqBzATcM0eVU13BcDdT0DH8KWGJVuyoFPlk9srTFAjCCwVVPNx+IGqroHPwIsOzGI+OUbIJv0sQUVdaiAxjhEFvkil1Rtb5e0TkwFrD85mNfrHeJPEPvW0fmOwBGHEgs1Zih7cPlrYQ8uV52JCMX861CW5yR/nyRsR9H0qQbBGV6kyfm6vuQJ2jt2xbheclGQVmbGGLm93qH0ksAI0ILGxfTDii+MKgsBYwwEGek/gZDyx6vxMOAAao/0zEX/oFGL/Tp2wEjrCLyvKgkbBHY8hwIImEpDTJcwVpILY90bfoNMRq7xFyECrxCCNh0bY8/4uCNBAxQTbGeBgtgWnmU03jkJ4ARuz3jO0iYRXjuIcCIwPz6TVQqKCMjipvmAUao+SSXU+Cr+Znwkp656Cjm8dDSVSPlxu/FGkUE9MNVDmF3MYWrOcUV2yhYBz4h1TQ9Fbf1fQIomCco2QTdxvtUv3QBA9hIkSVcTi64HF0q+QYwdBVfUXDP1PHBsSPgAQXreXDxGqznQB3Fy7XWoxWcIH9TycCuCwAjIGwuWYUOaqS3CmAAGZkdT1bcC/cCBmCx5l/DvdQpUBtNFiJI1Kv3/COWOQQY4ZNZs4VEI3sfoSD+BDBi04GoNioVaF2iASPgXkWcDlRuRl1HvJ5hhCx4MKlMDTACR4YHlQ+46CSs9xmgwP8a3cNFcqV7aoUNYIBqkCWC+vVPSeQCysrqniFZwAjcjWmk2wi7PBNqACPQPUxfZur/R9qEOO+wCmCETkBaBDL91ZpOEgaT3/lPfbthUGZBSk3HUse44uCFI0eRSUiOP2CEOLd+N1kG8fQc1vsNYMR+n6TaVxWGJkHAVO1Dz0HIf2r88IW/1huKGfpOQE7dXsAI87BcL+lJYOr/B5wW8wF1rUo42p4jgV6pr0Nc2zCUiSi46b+2OKOPlJWocYsAI1C5c2kRylTE3ql93knZSI572MArtefUUrX0nZZhwxevz1K0Dnrwv8w/mmEeaZUmgM7ILeg4YRnvf5wjaeFXcuFv1IRckFSeDhjDP7rNuXOJiej35Jp5/2Clf4TaIgTl73GOXqDHOXpSF786IxubiuzWFKV24kbiRMAY/SOSazoWaPilVixDzPyv7hXCR138kvgR/ynQObqZmzh1hD0nL34DGCH9NwqOnw9RIH+JDmF5kaRXGd2D0r+gmNt0VIYegdKLktt0TCmv+ah8fvNR2bymPrw+rlQoGVCKq2hTRBItQDaPA+wfoX8vTOfw+Q/ROYw9eubSh4C9DGev133aPOj4HWAvAv17YXKajk5eZhpwA73ZDMBehpZhO5PCjtXdgF2+XfNZ67C9+q2H3RMA+0/Qvxcmva6Lqv0TLVHqHMBehtpeA5uCjjXDgB09F/z9LMmKx/V9pisA+08wZIIBCprdWqfwNGWb4GwUysWAhRQ0rEJQ5shYiMtQozzaBs5+nksWMwt4gnZ6NmD5LcdnocdPwXfKneNL9wN2/8ngtzXHtT1yWhVKCzvX5h47F7IGQJihdX77qiHA2k8IbDOaaQBeXdrQbzb11NXsT2p79dxz25SqK4/s9bpxv3sMw2TUgBLwBGecPXqwOhTLcxVdgx+7JpTYoYj62EUX7EHNuow50b+krffHS2ExDC3TMQd8jrb6Au45FKM1EqC4Pkmq7tp19kbj92t7tTMbBsz3Vx/TFOW2KT4dvJzyo/p+c+P89pVDgPWej9QjYfV9JvFDl9O+D3FxEHm+5riOZWHH2hP1/aa5bJaOZydEhQIaxWYhfZ+GFTVOL23v/wDZuRQFdenWgzF5CtZBlTi4fw4BjzGk/lKYXK663DzgLn4zFlALlLrJNa4E4MLin7UM2su3nji4KVsi81wy7KrQMGChj4sOA7gy9Ps5rXKPJEMuS/ovxnyE57c6TnluA6ztpOC3GS1LbjO0xp27PRO8ARNl106GRR6g75fBGHcYNzrK8GivZBvcig62NKywUSrMMa7oF2hxNi8z87+GlugLwGC96C0HEwpah2O2FHWqXKk8ul8Ei3khlv7QOnxQHlYwKOxcPwRY5ynvH+a0yj9uHLBejOefZ0tkH3ScdF8JWMuQ/ZqM5oX3aEqSQNRRn8zqr22iCgxxj/0uphwVHDf30TovBQzuKpCzCqxGc/hjBP9TDC3K4rz6aWjDn+I+xTa/rNqJG1yiT1hH5ghqe9XEZT3bmgBdZEZWyzLedkKoIBl2Vodbr3Sf9h3ffzFuUrZkxaO6Xv1dgJUf2Xmktlc//ujZoI/h1ohibIChih+mGELffhyV+L5nepUQMOOQrNgVZgHnV9mHNiHAT6nahaYCTED5qejXbuDwl3FLrbCE0OsoIVd2eSTUnLl656vr95sXFXUqnS7tUT5S07upqaRb8UbfRV+56/dbJpb1rO0tO7Je8uDpwFddp52D8juW3Wo/Zb7s5LWUBSXdqicLOuQuFHTInL50u0qFBt5OBatAoUNM0WfWEfkTACOKW3s/wDHxQ7jsB4nV7V+4JJR+DVgJTgebqPzxsN5ngAmTy8bCqj/Mqu/5CDCiqT/h89ASp58F5PmNia7wHu+dGfaNOK/qo7LOxI8qeoK/q+zq/LCwte6z4o5DYw4mu30ZVlzyQVln8ke5Ld4/yW2J/hIwhsO4a6aOhztgrwNYVVec17xVziJMT94qzHqbMGn5EhOxnUNMsap3xmE1oO4QW6xvEpK3zyaqZOs8gwDHnR5J1vriPA1BUs1Gu+iynUZB2Q5MlFUjAyYD9jpAvO5FvLohNPz2eCa4BObV/9gwMHMjbsD8FBnug8HGA0lmpi/OWO8UV6KPmy+GeuIMI7wWYLDWdk+p3L/DPd79L3aE9c1ZCzWJAAAAAElFTkSuQmCC
-description: Manage Palo Alto Networks firewalls via the Panorama management interface
+description: Manage Palo Alto Networks Firewalls and Panorama. Make sure you read
+  the Detailed Instructions section.
 detaileddescription: |-
   The integration uses the Panorama XML API.
-  To obtain an API Key, use the following REST command:
+  To obtain an API Key, run the following REST command and copy the key:
   https://[PanoramaIP]/api/?type=keygen&user=[user]&password=[password]
-  and copy the resulting key.
-  For more information, visit: https://www.paloaltonetworks.com/documentation
+
+  For more information, visit the [Palo Alto Networks documentation](https://www.paloaltonetworks.com/documentation).
+
+  ---
+  You need to create a separate integration instance for Palo Alto Networks Firewall and Palo Alto Networks. Unless specified otherwise, all commands are valid for both Firewall and Panorama.
+
+  ---
+  ### Firewall: Configure the vsys
+  - The vsys is located in the Firewall URL; e.g, https://<server>#device::<vsys>::device/setup
+
+  ### Panorama: Configure a device group
+  - Access the Panorama UI.
+  - Go to Panorama --> Device Groups.
+  - Choose a device group name.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   defaultvalue: ""
   type: 0
   required: true
-- display: API Key
-  name: key
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: Port
   name: port
   defaultvalue: ""
   type: 0
   required: false
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -40,79 +52,1884 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Device group - Only for Panorama instance
+  name: device_group
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Vsys - Only for Firewall instance (default is 'vsys1')
+  name: vsys
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
-    var sendRequest = function(url) {
-        url.replace(/[\/]+$/, '');
-        var res = http(
-            url,
-            {
-                Method: 'POST',
-                Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-            },
-            params.insecure,
-            params.proxy
-        );
+    ''' IMPORTS '''
+    import string
+    import requests
+    import json
+    import re
+    import uuid
+    import time
+    import os
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
-        var jRes = JSON.parse(x2j(res.Body));
-        if(jRes.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: '+jRes.response['-code']+'\nBody: ' + res.Body;
-        }
-        return jRes;
-    };
+    if not demisto.params().get("proxy", False):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
 
-    var sendMultipartRequest = function(url, file, apikey){
-        var res = httpMultipart(
-          url,
-          file,
-          {
-            Method: 'POST',
-          },
-          {
-            'key': apikey,
-            'file' : file
-          },
-          params.insecure,
-          params.proxy
-        );
 
-        if (res.StatusCode !==200) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        var jRes = JSON.parse(x2j(res.Body));
-        if(jRes.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: '+jRes.response['-code']+'\nBody: ' + res.Body;
-        }
-        return jRes;
-    };
+    ''' GLOBALS '''
+    URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
+    API_KEY = str(demisto.params()['key']);
+    USE_SSL = not demisto.params()['insecure']
 
-    var url = params.server.replace(/[\/]+$/, '') + ':'+params.port+'/api/';
+    # determine a vsys or a device-group
+    VSYS = demisto.params().get('vsys')
+    DEVICE_GROUP = demisto.params().get('device_group')
+    if DEVICE_GROUP and VSYS:
+        return_error('Can not configure both vsys and Device Group. Set vsys for Firewall, set Device Group for Panorama')
 
-    switch (command) {
-        case 'test-module':
-            res = sendRequest(url + encodeToURLQuery({type:'config', action: 'show', key: params.key}));
-            return 'ok';
-        case 'panorama-dynamic-block-list':
-            return sendMultipartRequest(url+encodeToURLQuery({'type':'user-id'}), args.file, params.key);
-        case 'panorama':
-            res = sendRequest(url+encodeToURLQuery(args)+'&key='+params.key);
-            return res;
+    # setting security xpath relevant to FW or panorama managment
+    XPATH_SECURITY_RULES = None
+    if DEVICE_GROUP:
+        XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    else:
+        XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
+
+    # setting objects xpath relevant to FW or panorama managment
+    XPATH_OBJECTS = None
+    if DEVICE_GROUP:
+        XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    else:
+        XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
+
+    # Security rule arguments for output handling
+    SECURITY_RULE_ARGS = {
+        'rulename': 'Name',
+        'source': 'Source',
+        'destination': 'Destination',
+        'negate_source': 'NegateSource',
+        'negate_destination': 'NegateDestination',
+        'action': 'Action',
+        'service': 'Service',
+        'disable': 'Disabled',
+        'application': 'Application',
+        'source_user': 'SourceUser',
+        'disable_server_response_inspection': 'DisableServerResponseInspection',
+        'descripton': 'Description',
+        'target': 'Target'
     }
-  type: javascript
+
+
+    ''' HELPERS '''
+    def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
+        ''' Makes an API call with the given arguments '''
+        result = requests.request(
+            method,
+            uri,
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files
+        )
+
+        if result.status_code < 200 or result.status_code >= 300:
+            return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
+
+        jresult = json.loads(xml2json(result.text))
+        if jresult['response']['@status'] != 'success':
+            if '@code' in jresult['response']:
+                return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            elif '@status' in jresult['response']:
+                return_error('Request Failed.\nStatus: ' + jresult['response']['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            else:
+                return_error('Request Failed.\n' + jresult['response'])
+
+        return jresult
+
+
+    def add_argument_list(arg, field_name, member):
+        member_stringify_list = ''
+        if arg:
+            for item in arg:
+                member_stringify_list += '<member>' + item + '</member>'
+            if field_name == 'member':
+                return member_stringify_list
+            elif member:
+                return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def add_argument(arg, field_name, member):
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def add_argument_open(arg, field_name, member):
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            if member:
+                return '<' + field_name + '><member>any</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>any</' + field_name + '>'
+
+
+    def add_argument_yes_no(arg, field_name):
+        if (arg and arg == 'No'):
+            return '<' + field_name + '>' + 'no' + '</' + field_name + '>'
+        else:
+            return '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
+
+
+    def add_argument_target(arg, field_name):
+        if arg:
+            return '<' + field_name + '>' +  '<devices>' + '<entry name=\"' + arg + '\"/>' +'</devices>' + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def prepare_security_rule_params(api_action = None, xpath = None, rulename = None, source = None, destination = None,
+                    negate_source = None, negate_destination = None, action = None, service = None,
+                    disable = None, application = None, source_user = None, category = None,
+                    fromm = None, to = None, disable_server_response_inspection = None,
+                    description = None, target = None):
+
+        rulename = rulename if rulename else ('demisto-' + uuid.uuid4()[:8])
+        params = {
+            'type': 'config',
+            'action': api_action,
+            'key': API_KEY,
+            'element': add_argument_open(action, 'action', False)
+                    + add_argument_target(target, 'target')
+                    + add_argument_open(description, 'description', False)
+                    + add_argument_open(source, 'source', True)
+                    + add_argument_open(destination, 'destination', True)
+                    + add_argument_open(application, 'application', True)
+                    + add_argument_open(category, 'category', True)
+                    + add_argument_open(source_user, 'source-user', True)
+                    # default from, to will always be any
+                    + add_argument_open(fromm, 'from', True)
+                    + add_argument_open(to, 'to', True)
+                    + add_argument_open(service, 'service', True)
+                    + add_argument_yes_no(negate_source, 'negate-source')
+                    + add_argument_yes_no(negate_destination, 'negate-destination')
+                    + add_argument_yes_no(disable, 'disabled')
+        }
+        if DEVICE_GROUP:
+            if 'pre_post' not in demisto.args():
+                return_error('Please provide the pre_post argument when configuring a security rule in Panorama instance.')
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
+        return params
+
+
+    ''' FUNCTIONS'''
+    def panorama_test():
+        ''' test module '''
+        params = {
+            'type':'op',
+            'cmd': '<show><system><info></info></system></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+        )
+        demisto.results('ok')
+
+
+    @logger
+    def panorama_command():
+        ''' Executes a command '''
+        params = {}
+        params['key'] = API_KEY
+        for arg in demisto.args().keys():
+            params[arg] = demisto.args()[arg]
+
+        result = http_request(
+            URL,
+            'POST',
+            params=params
+        )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Command was executed successfully',
+        })
+
+
+    @logger
+    def panorama_commit():
+        params = {
+            'type': 'commit',
+            'cmd': '<commit></commit>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+
+        return result
+
+
+    def panorama_commit_command():
+        ''' Commit and show message in warroom '''
+        result = panorama_commit()
+
+        if 'result' in result['response']:
+            # commit has been given a jobid
+            commit_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+            demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Commit:',commit_output, ['JobID', 'Status'], None, True),
+            'EntryContext': {
+                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
+            }
+        })
+        else:
+            # no changes to commit
+            demisto.results(result['response']['msg'])
+
+
+    @logger
+    def panorama_commit_status():
+        params = {
+            'type': 'op',
+            'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+        )
+
+        return result
+
+
+    def panorama_commit_status_command():
+        ''' Check jobID of commit status '''
+        result = panorama_commit_status()
+
+        if (result['response']['result']['job']['type'] != 'Commit'):
+            return_error('JobID given is not of a commit')
+
+        commit_status_output = {'JobID' : result['response']['result']['job']['id']}
+        if (result['response']['result']['job']['status'] == 'FIN'):
+            if (result['response']['result']['job']['result'] == 'OK'):
+                commit_status_output['Status'] = 'Completed'
+            else:
+            # result['response']['job']['result'] == 'FAIL'
+                commit_status_output['Status'] = 'Failed'
+            commit_status_output['Details'] = result['response']['result']['job']['details']['line']
+
+        if (result['response']['result']['job']['status'] == 'PEND'):
+            push_status_output['Status'] = 'Pending'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Commit status:',commit_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
+        })
+
+
+    @logger
+    def panorama_push_to_device_group():
+        params = {
+            'type': 'commit',
+            'action': 'all',
+            'cmd': '<commit-all><shared-policy><device-group><entry name=\"' + DEVICE_GROUP + '\"/></device-group></shared-policy></commit-all>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+
+        return result
+
+
+    def panorama_push_to_device_group_command():
+        ''' Push Panorama configuration and show message in warroom '''
+        if not DEVICE_GROUP:
+            return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
+
+        result = panorama_push_to_device_group()
+        if 'result' in result['response']:
+            # commit has been given a jobid
+            push_output = {
+                'DeviceGroup': DEVICE_GROUP,
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Push to Device Group:',push_output, ['JobID', 'Status'], None, True),
+                'EntryContext': {
+                    "Panorama.Push(val.JobID == obj.JobID)": push_output
+                }
+            })
+        else:
+            # no changes to commit
+            demisto.results(result['response']['msg']['line'])
+
+
+    @logger
+    def panorama_push_status():
+        params = {
+            'type': 'op',
+            'cmd': '<show><jobs><id>' + demisto.args()['job_id'] + '</id></jobs></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+        )
+
+        return result
+
+
+    def panorama_push_status_command():
+        ''' Check jobID of push status '''
+
+        result = panorama_push_status()
+        if (result['response']['result']['job']['type'] != 'CommitAll'):
+            return_error('JobID given is not of a Push')
+
+        push_status_output = {'JobID' : result['response']['result']['job']['id']}
+        if (result['response']['result']['job']['status'] == 'FIN'):
+            if (result['response']['result']['job']['result'] == 'OK'):
+                push_status_output['Status'] = 'Completed'
+            else:
+            # result['response']['job']['result'] == 'FAIL'
+                push_status_output['Status'] = 'Failed'
+            push_status_output['Details'] = result['response']['result']['job']['devices']['entry']['status']
+
+        if (result['response']['result']['job']['status'] == 'PEND'):
+            push_status_output['Status'] = 'Pending'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output, ['JobID', 'Status', 'Details'], None, True),
+            'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
+        })
+
+
+    ''' Addresses Commands '''
+    def prettify_addresses_arr(addresses_arr):
+        pretty_addresses_arr = []
+        for address in addresses_arr:
+            pretty_address = {
+                'Name': address['@name'],
+            }
+            if 'description' in address:
+                pretty_address['Description'] = address['description']
+
+            if 'ip-netmask' in address:
+                pretty_address['IP_Netmask'] = address['ip-netmask']
+
+            if 'ip-range' in address:
+                pretty_address['IP_Range'] = address['ip-range']
+
+            if 'fqdn' in address:
+                pretty_address['FQDN'] = address['fqdn']
+
+            pretty_addresses_arr.append(pretty_address)
+
+        return pretty_addresses_arr
+
+
+    @logger
+    def panorama_list_addresses():
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_list_addresses_command():
+        ''' Get all addresses '''
+        addresses_arr = panorama_list_addresses()
+        addresses_output = prettify_addresses_arr(addresses_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': addresses_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Addresses:', addresses_output, ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
+            'EntryContext': {
+                  "Panorama.Addresses(val.Name == obj.Name)": addresses_output
+            }
+        })
+
+
+    def prettify_address(address):
+        pretty_address = {
+                'Name': address['@name'],
+        }
+        if 'description' in address:
+            pretty_address['Description'] = address['description']
+
+        if 'ip-netmask' in address:
+            pretty_address['IP_Netmask'] = address['ip-netmask']
+
+        if 'ip-range' in address:
+            pretty_address['IP_Range'] = address['ip-range']
+
+        if 'fqdn' in address:
+            pretty_address['FQDN'] = address['fqdn']
+
+        return pretty_address
+
+
+    @logger
+    def panorama_get_address(address_name):
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_address_command():
+        ''' Get an address '''
+        address_name = demisto.args()['name']
+
+        address = panorama_get_address(address_name)
+        address_output = prettify_address(address)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': address,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address:', address_output, ['Name', 'IP_Netmask', 'IP_Range', 'FQDN'], None, True),
+            'EntryContext': {
+                  "Panorama.Addresses(val.Name == obj.Name)": address_output
+            }
+        })
+
+
+    @logger
+    def panorama_create_address(address_name, fqdn = None, ip_netmask = None, ip_range = None, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+            'key': API_KEY
+        }
+        params['element'] = add_argument(fqdn, 'fqdn', False) + add_argument(ip_netmask, 'ip-netmask', False)  + add_argument(ip_range, 'ip-range', False) + add_argument(description, 'description', False)
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+
+    def panorama_create_address_command():
+        ''' Create an address object '''
+        address_name = demisto.args()['name']
+        description = demisto.args().get('description')
+
+        fqdn = demisto.args().get('fqdn')
+        ip_netmask = demisto.args().get('ip_netmask')
+        ip_range = demisto.args().get('ip_range')
+
+        if (not fqdn and not ip_netmask and not ip_range):
+            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
+
+        if ((fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range)):
+            return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range')
+
+        address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description)
+
+        address_output = {'Name': address_name}
+        if fqdn:
+            address_output['FQDN'] = fqdn
+        if ip_netmask:
+            address_output['IP_Netmask'] = ip_netmask
+        if ip_range:
+            address_output['IP_Range'] = ip_range
+        if description:
+            address_output['Description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': address,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address was added successfully',
+            'EntryContext': {
+                  "Panorama.Addresses(val.Name == obj.Name)": address_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_address(address_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+            'element': "<entry name='" + address_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_address_command():
+        ''' Delete an address '''
+        address_name = demisto.args()['name']
+
+        address = panorama_delete_address(address_name)
+        address_output = {'Name': address_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': address,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address was deleted successfully',
+            'EntryContext': {
+                  "Panorama.Addresses(val.Name == obj.Name)": address_output
+            }
+        })
+
+
+    ''' Address Group Commands '''
+    def prettify_address_groups_arr(address_groups_arr):
+        pretty_address_groups_arr = []
+        for address_group in address_groups_arr:
+            pretty_address_group = {
+                'Name': address_group['@name'],
+                'Type': 'static' if 'static'in address_group else 'dynamic',
+            }
+            if 'description' in address_group:
+                pretty_address_group['Description'] = address_group['description']
+
+            if pretty_address_group['Type'] == 'static':
+                # static address groups can have empty lists
+                if address_group['static']:
+                    pretty_address_group['Addresses'] = address_group['static']['member']
+            else:
+                pretty_address_group['Match'] = address_group['dynamic']['filter']
+
+            pretty_address_groups_arr.append(pretty_address_group)
+
+        return pretty_address_groups_arr;
+
+
+    @logger
+    def panorama_list_address_groups():
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address-group/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_list_address_groups_command():
+        ''' Get all address groups '''
+        address_groups_arr = panorama_list_address_groups()
+        address_groups_output = prettify_address_groups_arr(address_groups_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': address_groups_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address groups:', address_groups_output, ['Name', 'Type', 'Addresses', 'Match', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.AddressGroups(val.Name == obj.Name)": address_groups_output
+            }
+        })
+
+
+    def prettify_address_group(address_group):
+        pretty_address_group = {
+            'Name': address_group['@name'],
+            'Type': 'static' if 'static'in address_group else 'dynamic',
+        }
+
+        if 'description' in address_group:
+            pretty_address_group['Description'] = address_group['description']
+
+        if pretty_address_group['Type'] == 'static':
+            pretty_address_group['Addresses'] = address_group['static']['member']
+        else:
+            pretty_address_group['Match'] = address_group['dynamic']['filter']
+
+        return pretty_address_group
+
+
+    @logger
+    def panorama_get_address_group(address_group_name):
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_address_group_command():
+        ''' Get an address group '''
+        address_group_name = demisto.args()['name']
+
+        result = panorama_get_address_group(address_group_name)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address group:', prettify_address_group(result), ['Name', 'Type', 'Addresses', 'Match', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.AddressGroups(val.Name == obj.Name)": prettify_address_group(result)
+            }
+        })
+
+
+    @logger
+    def panorama_create_static_address_group(address_group_name, addresses, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<static>" + add_argument_list(addresses, 'member', True) + "</static>" + add_argument(description, 'description', False),
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+        return result
+
+
+    def panorama_create_dynamic_address_group(address_group_name, match, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<dynamic>" + add_argument(match, 'filter', False) + "</dynamic>" + add_argument(description, 'description', False),
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+        return result
+
+
+    def panorama_create_address_group_command():
+        ''' Create an address group '''
+        address_group_name = demisto.args()['name']
+        typee = demisto.args()['type']
+        description = demisto.args().get('description')
+        match = demisto.args().get('match')
+        addresses = argToList(demisto.args()['addresses']) if 'addresses' in demisto.args() else None
+        if match and addresses:
+                return_error('Please specify only one of the following: addresses, match')
+        if typee == 'static':
+            if not addresses:
+                return_error('Please specify addresses in order to create a static address group')
+        if typee == 'dynamic':
+            if not match:
+                return_error('Please specify a match in order to create a dynamic address group')
+
+        if typee == 'static':
+            result = panorama_create_static_address_group(address_group_name, addresses, description)
+        else:
+            result = panorama_create_dynamic_address_group(address_group_name, match, description)
+
+        address_group_output = {
+            'Name': address_group_name,
+            'Type': typee
+        }
+        if match:
+            address_group_output['Match'] = match
+        if addresses:
+            address_group_output['Addresses'] = addresses
+        if description:
+            address_group_output['Description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address group was created successfully',
+            'EntryContext': {
+                  "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_address_group(address_group_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+            'element': "<entry name='" + address_group_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_address_group_command():
+        ''' Delete an address group '''
+        address_group_name = demisto.args()['name']
+
+        address_group = panorama_delete_address_group(address_group_name)
+        address_group_output = {'Name': address_group_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': address_group,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address group was deleted successfully',
+            'EntryContext': {
+                  "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
+            }
+        })
+
+
+    def panorama_edit_address_group_command():
+        ''' Edit an address group '''
+        address_group_name = demisto.args()['name']
+        typee = demisto.args()['type']
+        match = demisto.args().get('match')
+        element_to_add = argToList(demisto.args()['element_to_add']) if 'element_to_add' in demisto.args() else None
+        element_to_remove = argToList(demisto.args()['element_to_remove']) if 'element_to_remove' in demisto.args() else None
+
+        if (typee == 'dynamic'):
+            if (not match):
+                return_error('To edit a Dynamic Address group, Please provide a match')
+            match_param = add_argument_open(match, 'filter', False)
+            match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter",
+
+
+        if (typee == 'static'):
+            if ((element_to_add and element_to_remove) or (not element_to_add and not element_to_remove)):
+                return_error('To edit a Static Address group, Please specify exactly one of the following: element_to_add, element_to_remove')
+            address_group_prev = panorama_get_address_group(address_group_name)
+            address_group_list = []
+            if 'static' in address_group_prev:
+                if address_group_prev['static']:
+                    address_group_list = argToList(address_group_prev['static']['member'])
+            if (element_to_add):
+                addresses = list(set(element_to_add + address_group_list))
+            else:
+                addresses = [item for item in address_group_list if item not in element_to_remove]
+            addresses_param = add_argument_list(addresses, 'member', False)
+            addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static",
+
+        description = demisto.args().get('description')
+        description_param = add_argument_open(description, 'description', False)
+        description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description",
+
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY,
+        }
+
+        address_group_output = {'Name': address_group_name}
+
+        if (match):
+            params['xpath'] = match_path
+            params['element'] = match_param
+            result = http_request(URL, 'POST', params = params)
+            address_group_output['Match'] = match
+        if (addresses):
+            params['xpath'] = addresses_path
+            params['element'] = "<static>" + addresses_param + "</static>"
+            result = http_request(URL, 'POST', params = params)
+            address_group_output['Addresses'] = addresses
+        if (description):
+            params['xpath'] = description_path
+            params['element'] = description_param
+            result = http_request(URL, 'POST', params = params)
+            address_group_output['Description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address Group was edited successfully',
+            'EntryContext': {
+                  "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
+            }
+        })
+
+
+    ''' Custom URL Category Commands '''
+    def prettify_custom_url_category(custom_url_category):
+        pretty_custom_url_category = {
+            'Name': custom_url_category['@name'],
+        }
+
+        if 'description' in custom_url_category:
+            pretty_custom_url_category['Description'] = custom_url_category['description']
+
+        if 'list' in custom_url_category:
+            pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
+
+        return pretty_custom_url_category
+
+
+    @logger
+    def panorama_get_custom_url_category(name):
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_custom_url_category_command():
+        ''' Get a custom url category'''
+        name = demisto.args()['name']
+
+        custom_url_category = panorama_get_custom_url_category(name)
+        custom_url_category_output = prettify_custom_url_category(custom_url_category)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': custom_url_category,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
+            }
+        })
+
+
+    @logger
+    def panorama_create_custom_url_category(custom_url_category_name, sites = None, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        custom_url_category_output = {'Name': custom_url_category_name}
+        if sites:
+            custom_url_category_output['Sites'] = sites
+        if description:
+            custom_url_category_output['Description'] = description
+
+        return result, custom_url_category_output
+
+
+    def panorama_create_custom_url_category_command():
+        ''' Create a custom URL category '''
+        custom_url_category_name = demisto.args()['name']
+        sites = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else None
+        description = demisto.args().get('description')
+
+        custom_url_category, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name, sites, description)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': custom_url_category,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Created Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_custom_url_category(custom_url_category_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': "<entry name='" + custom_url_category_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_custom_url_category_command():
+        ''' Delete a custom url category '''
+        custom_url_category_name = demisto.args()['name']
+
+        result = panorama_delete_custom_url_category(custom_url_category_name)
+        custom_url_category_output = {'Name': custom_url_category_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Custom URL category was deleted successfully',
+            'EntryContext': {
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
+            }
+        })
+
+    @logger
+    def panorama_edit_custom_url_category(custom_url_category_name, sites, description = None):
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+            'element': "<entry name='" + custom_url_category_name + "'>" + add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + "</entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        custom_url_category_output = {'Name': custom_url_category_name}
+        if sites:
+            custom_url_category_output['Sites'] = sites
+        if description:
+            custom_url_category_output['Description'] = description
+
+        return result, custom_url_category_output
+
+
+    def panorama_custom_url_category_add_sites_command():
+        ''' Add sites to a configured custom url category'''
+        custom_url_category_name = demisto.args()['name']
+
+        custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
+
+        description = custom_url_category.get('description')
+
+        custom_url_category_sites = []
+        if 'list' in custom_url_category:
+            if custom_url_category['list']:
+                custom_url_category_sites = argToList(custom_url_category['list']['member'])
+
+        sites = argToList(demisto.args()['list'])
+        merged_sites = list((set(sites)).union(set(custom_url_category_sites)))
+
+        result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, merged_sites, description)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Updated Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
+            }
+        })
+
+    def panorama_custom_url_category_remove_sites_command():
+        ''' Add sites to a configured custom url category'''
+        custom_url_category_name = demisto.args()['name']
+
+        custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
+        description = custom_url_category.get('description')
+
+        custom_url_category_list = []
+        if 'list' in custom_url_category:
+            if 'member' in custom_url_category['list']:
+                custom_url_category_sites = custom_url_category['list']['member']
+
+        sites = argToList(demisto.args()['sites'])
+
+        substructed_sites = [item for item in custom_url_category_lsites if item not in sites]
+        result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, substructed_sites, description)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Updated Custom URL Category:', custom_url_category_output, ['Name', 'Sites', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
+            }
+        })
+
+
+    ''' URL Filtering '''
+    @logger
+    def panorama_get_url_category(url):
+        params = {
+            'action': 'show',
+            'type': 'op',
+            'key': API_KEY,
+            'cmd': '<test><url>' + url + '</url></test>'
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        s = result['response']['result'].splitlines()[1]
+        return s.split(' ')[1]
+
+
+    def populate_url_filter_category_from_context(url_category_hr):
+        url_filter_category = demisto.dt(demisto.context(), 'Panorama.URLFilter(val.Category === "{0}")'.format(url_category_hr['Category']))
+
+        if not url_filter_category:
+            url_filter_category = {
+                'Category': url_category_hr['Category'],
+                'URL': []
+            }
+
+        if type(url_filter_category) is dict:
+            url_filter_category = [url_filter_category]
+
+        url_filter_category[0]['URL'] += [url_category_hr['URL']]
+
+        return url_filter_category
+
+
+    def panorama_get_url_category_command():
+        ''' Get the url category from Palo Alto URL Filtering '''
+        url = demisto.args()['url']
+
+        category = panorama_get_url_category(url)
+
+        url_category_hr = {
+            'URL': url,
+            'Category': category
+        }
+
+        url_category_output = populate_url_filter_category_from_context(url_category_hr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': category,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('URL Filtering:', url_category_hr, ['URL', 'Category'], None, True),
+            'EntryContext': {
+                  "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
+            }
+        })
+
+
+    def prettify_get_url_filter(url_filter):
+        pretty_url_filter = {'Name': url_filter['@name']}
+        if 'description' in url_filter:
+            pretty_url_filter['Description'] = url_filter['description']
+
+        pretty_url_filter['Category'] = []
+        url_category_list = []
+        action = ''
+        if 'alert' in url_filter:
+            url_category_list = url_filter['alert']['member']
+            action = 'alert'
+        elif 'allow' in url_filter:
+            url_category_list = url_filter['allow']['member']
+            action = 'allow'
+        elif 'block' in url_filter:
+            url_category_list = url_filter['block']['member']
+            action = 'block'
+        elif 'continue' in url_filter:
+            url_category_list = url_filter['continue']['member']
+            action = 'continue'
+        elif 'override' in url_filter:
+            url_category_list = url_filter['override']['member']
+            action = 'override'
+
+        for category in url_category_list:
+            pretty_url_filter['Category'].append({
+                'Name': category,
+                'Action': action
+            })
+
+        if 'allow-list' in url_filter or 'block-list' in url_filter:
+            pretty_url_filter['Overrides'] = []
+            if 'allow-list' in url_filter:
+                pretty_url_filter['OverrideAllowList'] = url_filter['allow-list']['member']
+            else:
+                pretty_url_filter['OverrideBlockList'] = url_filter['block-list']['member']
+
+        return pretty_url_filter
+
+    @logger
+    def panorama_get_url_filter(name):
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_url_filter_command():
+        ''' Get a URL Filter '''
+        name = demisto.args()['name']
+
+        url_filter = panorama_get_url_filter(name)
+
+        url_filter_output = prettify_get_url_filter(url_filter)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': url_filter,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('URL Filter:', url_filter_output, ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
+            }
+        })
+
+
+    @logger
+    def panorama_create_url_filter(
+        url_filter_name, action,
+        url_category_list,
+        override_allow_list = None,
+        override_block_list = None,
+        description = None):
+
+        element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list', True) + add_argument_list(override_block_list, 'block-list', True) + add_argument(description, 'description', False) + "<action>block</action>"
+
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+            'element': element,
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+        return result
+
+
+    def panorama_create_url_filter_command():
+        ''' Create a URL Filter '''
+        url_filter_name = demisto.args()['name']
+        action = demisto.args()['action']
+        url_category_list = argToList(demisto.args()['url_category'])
+        override_allow_list = argToList(demisto.args().get('override_allow_list'))
+        override_block_list = argToList(demisto.args().get('override_block_list'))
+        description = demisto.args().get('description')
+
+        result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list, override_block_list, description)
+
+        url_filter_output = {'Name': url_filter_name}
+        url_filter_output['Category'] = []
+        for category in url_category_list:
+            url_filter_output['Category'].append({
+                'Name': category,
+                'Action': action
+            })
+        if override_allow_list:
+            url_filter_output['OverrideAllowList'] = override_allow_list
+        if override_block_list:
+            url_filter_output['OverrideBlockList'] = override_block_list
+        if description:
+            url_filter_output['Description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'URL Filter was created successfully',
+            'EntryContext': {
+                  "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
+            }
+        })
+
+    @logger
+    def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element = None):
+
+        url_filter_prev = panorama_get_url_filter(url_filter_name)
+        if '@dirtyId' in url_filter_prev:
+            return_error('Please commit the instance prior to editing the URL Filter')
+
+        url_filter_output = {'Name': url_filter_name}
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY,
+        }
+
+        if element_to_change == 'description':
+            params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/" + element_to_change
+            params['element'] = add_argument_open(element_value, 'description', False)
+            result = http_request(URL, 'POST', params = params)
+            url_filter_output['Description'] = element_value
+
+        elif element_to_change == 'override_allow_list':
+            prev_override_allow_list = argToList(url_filter_prev['allow-list']['member'])
+            if add_remove_element == 'add':
+                new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
+            else:
+                new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
+
+            params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
+            params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
+            result = http_request(URL, 'POST', params = params)
+            url_filter_output[element_to_change] = new_override_allow_list
+
+        # element_to_change == 'override_block_list'
+        else:
+            prev_override_block_list = argToList(url_filter_prev['block-list']['member'])
+            if add_remove_element == 'add':
+                new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
+            else:
+                new_override_block_list = [url for url in prev_override_block_list if url != element_value]
+
+            params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
+            params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
+            result = http_request(URL, 'POST', params = params)
+            url_filter_output[element_to_change] = new_override_block_list
+
+        return result, url_filter_output
+
+
+    def panorama_edit_url_filter_command():
+        ''' Edit a URL Filter '''
+        url_filter_name = demisto.args()['name']
+        element_to_change = demisto.args()['element_to_change']
+        add_remove_element = demisto.args()['add_remove_element']
+        element_value = demisto.args()['element_value']
+
+        result, url_filter_output = panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'URL Filter was edited successfully',
+            'EntryContext': {
+                  "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_url_filter(url_filter_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+            'element': "<entry name='" + url_filter_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_url_filter_command():
+        ''' Delete a custom url category '''
+        url_filter_name = demisto.args()['name']
+        result = panorama_delete_url_filter(url_filter_name)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'URL Filter was deleted successfully',
+        })
+
+
+    ''' Security Rules Managing '''
+    @logger
+    def panorama_move_rule_command():
+        ''' Move a security rule'''
+        rulename = demisto.args()['rulename']
+        params = {
+            'type': 'config',
+            'action': 'move',
+            'key': API_KEY,
+            'where': demisto.args()['where'],
+        }
+
+        if DEVICE_GROUP:
+            if 'pre_post' not in demisto.args():
+                return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
+        if 'dst' in demisto.args():
+            params['dst'] = demisto.args()['dst']
+
+        result = http_request(URL, 'POST', params = params)
+        rule_output = {'Name': rulename}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule ' + rulename + ' moved successfully',
+            'EntryContext': {
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+            }
+        })
+
+
+    ''' Security Rule Configuration '''
+    @logger
+    def panorama_create_rule_command():
+        ''' Create a security rule '''
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        source =  demisto.args().get('source')
+        destination =  demisto.args().get('destination')
+        negate_source = demisto.args().get('negate_source')
+        negate_destination = demisto.args().get('negate_destination')
+        action =  demisto.args().get('action')
+        service =  demisto.args().get('service')
+        disable =  demisto.args().get('disable')
+        application = demisto.args().get('application')
+        source_user = demisto.args().get('source_user')
+        disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
+        description = demisto.args().get('description')
+        target = demisto.args().get('target')
+        if not DEVICE_GROUP and target:
+            return_error('The target argument is only relevant for a Palo Alto Panorama instance.')
+
+        params = prepare_security_rule_params(api_action= 'set', rulename = rulename, source = source, destination = destination,
+                    negate_source = negate_source, negate_destination = negate_destination, action = action, service = service,
+                    disable = disable, application = application, source_user = source_user,
+                    disable_server_response_inspection = disable_server_response_inspection,
+                    description = description, target = target)
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+
+        rule_output = {SECURITY_RULE_ARGS[key] : value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule configured successfully',
+            'EntryContext': {
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+            }
+        })
+
+
+    @logger
+    def panorama_edit_rule_command():
+        ''' Edit a security rule '''
+        rulename =  demisto.args()['rulename']
+        element_to_change = demisto.args()['element_to_change']
+        element_value = demisto.args()['element_value']
+        target = demisto.args().get('target')
+        if not DEVICE_GROUP and target:
+            return_error('The target argument is only relevant for a Palo Alto Panorama instance.')
+
+        params = {
+            'type': 'config',
+            'action': 'edit',
+            'key': API_KEY
+        }
+        if element_to_change in ['action', 'description']:
+            params['element'] = add_argument_open(element_value, element_to_change, False)
+        elif element_to_change in ['source', 'destination', 'application', 'categry', 'source-user', 'service']:
+            params['element'] = add_argument_open(element_value, element_to_change, True)
+        else:
+            # element_to_change in ['negate_source', 'negate_destination', 'disable']
+            params['element'] = add_argument_yes_no(element_value, element_to_change)
+
+        if target:
+            params['element'] += add_argument_target(target, 'target')
+
+        if DEVICE_GROUP:
+            if 'pre_post' not in demisto.args():
+                return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
+        params['xpath'] = params['xpath'] + '/' + element_to_change
+
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+        rule_output = {'Name': rulename}
+        rule_output[SECURITY_RULE_ARGS[element_to_change]] = element_value
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule editted successfully',
+            'EntryContext': {
+                  "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_rule_command():
+        ''' Delete a security rule '''
+        rulename =  demisto.args()['rulename']
+
+        params = {
+            'type': 'config',
+            'action': 'delete',
+            'key': API_KEY
+        }
+        if DEVICE_GROUP:
+            if 'pre_post' not in demisto.args():
+                return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule deleted successfully',
+        })
+
+
+    @logger
+    def panorama_custom_block_rule_command():
+        ''' Block an object in Panorama '''
+        object_type = demisto.args()['object_type']
+        object_value = demisto.args()['object_value']
+        direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        block_destination = False if direction == 'from' else True
+        block_source =  False if direction == 'to' else True
+        target = demisto.args().get('target')
+        if not DEVICE_GROUP:
+            return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+
+        custom_block_output = {
+            'Name': rulename,
+            'Direction': direction,
+            'Disabled': False
+        }
+
+        if object_type == 'ip':
+            if block_source:
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target)
+                result = http_request(URL, 'POST', params = params)
+            if block_destination:
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target)
+                result = http_request(URL, 'POST', params = params)
+            custom_block_output['IP'] = object_value
+
+        elif object_type == 'address-group':
+            if block_source:
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = object_value, destination = 'any', rulename = rulename + '-from', target = target)
+                result = http_request(URL, 'POST', params = params)
+            if block_destination:
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', destination = object_value, source = 'any', rulename = rulename + '-to', target = target)
+                result = http_request(URL, 'POST', params = params)
+            custom_block_output['AddressGroup'] = object_value
+
+        elif object_type == 'url-category':
+            params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', category = object_value, rulename = rulename, target = target)
+            result = http_request(URL, 'POST', params = params)
+            custom_block_output['CustomURLCategory'] = object_value
+
+        elif object_type == 'application':
+                params = prepare_security_rule_params(api_action= 'set', action = 'drop', source = 'any', destination = 'any', application = object_value, rulename = rulename, target = target)
+                result = http_request(URL, 'POST', params = params)
+                custom_block_output['Application'] = object_value
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Object was blocked successfully',
+            'EntryContext': {
+                  "Panorama.SecurityRule(val.Name == obj.Name)": custom_block_output
+            }
+        })
+
+
+    # ------------------------------------------------------------------------ #
+    def prettify_applications_arr(applications_arr):
+        pretty_application_arr = []
+        for i in range (len(applications_arr)):
+            application = applications_arr[i]
+            pretty_application_arr.append({
+                'SubCategory': application['subcategory'],
+                'Risk': application['risk'],
+                'Technology': application['technology'],
+                'Name': application['@name'],
+                'Description': application['description'],
+                'Id': application['@id']
+            })
+        return pretty_application_arr;
+
+
+    @logger
+    def panorama_list_applications():
+        params = {
+            'type': 'op',
+            'command': '<show><objects></objects></show>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+        return result['response']['result']['config']['shared']['content-preview']['application']['entry']
+
+
+    def panorama_list_applications_command():
+        ''' List all applications '''
+        applications_arr = panorama_list_applications()
+
+        applications_arr_output = prettify_applications_arr(applications_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': applications_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Applications', applications_arr_output, ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']),
+            'EntryContext': {
+                  "Panorama.Applications(val.Id == obj.Id)": applications_arr_output
+            }
+        })
+
+
+    @logger
+    def panorama_get_pcaps_command():
+        ''' Get pcaps '''
+        params = {
+            'type': 'export',
+            'key': API_KEY,
+            'category': demisto.args()['pcapType']
+        }
+
+        if 'password' in demisto.args():
+            params['dlp-password'] = demisto.args()['password']
+        elif demisto.args()['pcapType'] == 'dlp-pcap':
+            return_error('can not provide dlp-pcap without password')
+
+        if 'pcapID' in demisto.args():
+            params['pcap-id'] = demisto.args()['pcapID']
+        elif demisto.args()['pcapType'] == 'threat-pcap':
+            return_error('can not provide threat-pcap without pcap-id')
+
+        fromm = demisto.args().get('from')
+        to = demisto.args().get('to')
+        serialno = demisto.args().get('serialNo')
+        search_time = demisto.args().get('searchTime')
+
+        if (fromm):
+            params['from'] = fromm
+        if (to):
+            params['to'] = to
+        if (serialno):
+            params['serialno'] = serialno
+        if (search_time):
+            params['search-time'] = search_time
+
+        result = http_request(URL, 'GET', params = params)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Get pcap successfully',
+        })
+
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            panorama_test()
+
+        elif demisto.command() == 'panorama':
+            panorama_command()
+
+        elif demisto.command() == 'panorama-commit':
+            panorama_commit_command()
+
+        elif demisto.command() == 'panorama-commit-status':
+            panorama_commit_status_command()
+
+        elif demisto.command() == 'panorama-push-to-device-group':
+            panorama_push_to_device_group_command()
+
+        elif demisto.command() == 'panorama-push-status':
+            panorama_push_status_command()
+
+        # Addresses commands
+        elif demisto.command() == 'panorama-list-addresses':
+            panorama_list_addresses_command()
+
+        elif demisto.command() == 'panorama-get-address':
+            panorama_get_address_command()
+
+        elif demisto.command() == 'panorama-create-address':
+            panorama_create_address_command()
+
+        elif demisto.command() == 'panorama-delete-address':
+            panorama_delete_address_command()
+
+        # Address groups commands
+        elif demisto.command() == 'panorama-list-address-groups':
+            panorama_list_address_groups_command()
+
+        elif demisto.command() == 'panorama-get-address-group':
+            panorama_get_address_group_command()
+
+        elif demisto.command() == 'panorama-create-address-group':
+            panorama_create_address_group_command()
+
+        elif demisto.command() == 'panorama-delete-address-group':
+            panorama_delete_address_group_command()
+
+        elif demisto.command() == 'panorama-edit-address-group':
+            panorama_edit_address_group_command()
+
+        # Custom Url Category commands
+        elif demisto.command() == 'panorama-get-custom-url-category':
+            panorama_get_custom_url_category_command()
+
+        elif demisto.command() == 'panorama-create-custom-url-category':
+            panorama_create_custom_url_category_command()
+
+        elif demisto.command() == 'panorama-delete-custom-url-category':
+            panorama_delete_custom_url_category_command()
+
+        elif demisto.command() == 'panorama-edit-custom-url-category':
+            if demisto.args()['action'] == 'remove':
+                panorama_custom_url_category_remove_sites_command()
+            else:
+                panorama_custom_url_category_add_sites_command()
+
+        # URL Filtering capabilities
+        elif demisto.command() == 'panorama-get-url-category':
+            panorama_get_url_category_command()
+
+        elif demisto.command() == 'panorama-get-url-filter':
+            panorama_get_url_filter_command()
+
+        elif demisto.command() == 'panorama-create-url-filter':
+            panorama_create_url_filter_command()
+
+        elif demisto.command() == 'panorama-edit-url-filter':
+            panorama_edit_url_filter_command()
+
+        elif demisto.command() == 'panorama-delete-url-filter':
+            panorama_delete_url_filter_command()
+
+        # Security Rules Managing
+        elif demisto.command() == 'panorama-move-rule':
+            panorama_move_rule_command()
+
+        # Security Rules Configuration
+        elif demisto.command() == 'panorama-create-rule':
+            panorama_create_rule_command()
+
+        elif demisto.command() == 'panorama-custom-block-rule':
+            panorama_custom_block_rule_command()
+
+        elif demisto.command() == 'panorama-edit-rule':
+            panorama_edit_rule_command()
+
+        elif demisto.command() == 'panorama-delete-rule':
+            panorama_delete_rule_command()
+
+    # ------------------------------------------------------------------------ #
+        elif demisto.command() == 'panorama-list-applications':
+            panorama_list_applications_command()
+
+        # elif demisto.command() == 'panorama-get-pcaps':
+        #     panorama_get_pcaps_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
   commands:
   - name: panorama
-    description: Run any panorama command supported in api.
     arguments:
     - name: action
-      description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
+      auto: PREDEFINED
+      predefined:
+      - set
+      - edit
+      - delete
+      - rename
+      - clone
+      - move
+      - override
+      - muti-move
+      - multi-clone
+      - complete
+      - show
+      - get
+      description: Choose an available  action(show, get, set, edit, delete, rename,
+        clone, move, override)
     - name: category
-      description: Category parameter. e.g. when exporting a configuration file use category=configuration
+      description: Category parameter. e.g. when exporting a configuration file use
+        category=configuration
     - name: cmd
-      description: Used for operations commands cmd specifies the xml struct that defines the command.
+      description: Used for operations commands cmd specifies the xml struct that
+        defines the command.
     - name: command
       description: Run a command. e.g. command =<show><arp><entry name='all'/></arp></show>
     - name: dst
@@ -128,7 +1945,8 @@ script:
     - name: log-type
       description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: where
-      description: Specifies the type of a move operation (e.g. where=after, where=before, where=top, where=bottom)
+      description: Specifies the type of a move operation (e.g. where=after, where=before,
+        where=top, where=bottom)
     - name: period
       description: Describe a time period. E.g. period=last-24-hrs
     - name: xpath
@@ -138,19 +1956,776 @@ script:
     - name: serialno
       description: Specifies the device serial number
     - name: reporttype
-      description: Choose dynamic,predefined or custom report
+      description: Choose dynamic, predefined or custom report
     - name: reportname
       description: The report name
     - name: log-type
       description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: type
       description: The request type (e.g. export, import, log, config)
+      defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
     - name: search-time
-      description: Used for threat PCAPs, the time that the PCAP was received on the firewall.
-  - name: panorama-dynamic-block-list
-    description: Create a dynamic block list
+      description: Used for threat PCAPs, the time that the PCAP was received on the
+        firewall.
+    - name: target
+      description: target number of the firewall. use only on Panorama instance
+    description: Run any command supported in the API
+  - name: panorama-commit
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+    description: Commits a configuration to Palo Alto Firewall or Panorama, but does
+      not validate if the commit was successful. Commiting to Panorama will not push
+      the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group
+      command.
+  - name: panorama-push-to-device-group
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status
+      type: string
+    description: Pushes rules from Palo Alto Panorama to the configured device group
+  - name: panorama-list-addresses
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+    description: Returns a list of addresses
+  - name: panorama-get-address
     arguments:
-    - name: file
+    - name: name
       required: true
-      description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
-hidden: false
+      description: Address name
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+    description: Returns address details for the supplied address name
+  - name: panorama-create-address
+    arguments:
+    - name: name
+      required: true
+      description: Name for the new address
+    - name: description
+      description: A description of the new address
+    - name: fqdn
+      description: FQDN of the new address
+    - name: ip_netmask
+      description: IP netmask of the new address, e.g., 10.10.10.10/24
+    - name: ip_range
+      description: IP range of the new address, e.g., 10.10.10.0-10.10.10.255
+    outputs:
+    - contextPath: ' Panorama.Addresses.Name'
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+    description: Creates an address object
+  - name: panorama-delete-address
+    arguments:
+    - name: name
+      required: true
+      description: Name of the address to delete
+    outputs:
+    - contextPath: ' Panorama.Addresses.Name'
+      description: Name of the address that was deleted
+      type: string
+    description: Delete an address object
+  - name: panorama-list-address-groups
+    arguments: []
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+    description: Returns a list of address groups
+  - name: panorama-get-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Address group name
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+    description: Get details for the specified address group
+  - name: panorama-create-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Address group name
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - dynamic
+      - static
+      description: Address group type
+    - name: match
+      description: 'Dynamic Address group match. e.g: "1.1.1.1 or 2.2.2.2"'
+    - name: addresses
+      description: Static address group list of addresses
+      isArray: true
+    - name: description
+      description: Address group description
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group list
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    description: Creates an address group; "static" or "dynamic"
+  - name: panorama-delete-address-group
+    arguments:
+    - name: name
+      description: Name of address group to delete
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Name of address group that was deleted
+      type: string
+    description: Deletes an address group
+  - name: panorama-edit-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Name of the address group to edit
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - static
+      - dynamic
+      description: Address group type
+    - name: match
+      description: 'Address group new match. e.g: "1.1.1.1 and 2.2.2.2"'
+    - name: element_to_add
+      description: Element to add to the list of the static address group. only existing
+        Address objects can be added
+    - name: element_to_remove
+      description: Element to remove to the list of the static address group. only
+        existing Address objects can be added
+    - name: description
+      description: Address group new description
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Filter
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+    description: Edit an address group; "static" or "dynamic"
+  - name: panorama-get-custom-url-category
+    arguments:
+    - name: name
+      required: true
+      description: Custom URL category name
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+    description: Returns information for a custom URL category
+  - name: panorama-create-custom-url-category
+    arguments:
+    - name: name
+      required: true
+      description: Name for the custom URL category to create
+    - name: description
+      description: Description of the custom URL category to create
+    - name: sites
+      description: List of sites for the custom URL category
+      isArray: true
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+    description: Creates a custom URL category
+  - name: panorama-delete-custom-url-category
+    arguments:
+    - name: name
+      description: Name of the custom URL category to delete
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Name of the custom URL category to delete
+      type: string
+    description: Delete a custom URL category
+  - name: panorama-edit-custom-url-category
+    arguments:
+    - name: name
+      required: true
+      description: Name of the custom URL category to add or remove sites to
+    - name: sites
+      required: true
+      description: CSV list of sites to add to the custom URL category
+      isArray: true
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Add or remove sites; "add" or "remove"
+      isArray: true
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+    description: Add sites to, or remove sites from a custom URL category
+  - name: panorama-get-url-category
+    arguments:
+    - name: url
+      required: true
+      description: URL to check
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category
+      type: string
+    description: Get a URL category from URL Filtering
+  - name: panorama-get-url-filter
+    arguments:
+    - name: name
+      required: true
+      description: URL Filter name
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override block list
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: URL Filter override allow list
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+    description: Get information for a URL filtering rule
+  - name: panorama-create-url-filter
+    arguments:
+    - name: name
+      required: true
+      description: Name of the URL filter to create
+    - name: url_category
+      required: true
+      description: One or more URL categories
+      isArray: true
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - block
+      - alert
+      - continue
+      - override
+      description: Action for the URL categories; "allow", "block", "alert", "continue",
+        "override"
+    - name: override_allow_list
+      description: CSV list of URLs to exclude from the allow list
+      isArray: true
+    - name: override_block_list
+      description: CSV list of URLs to exclude from the block list
+      isArray: true
+    - name: description
+      description: URL Filter description
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override allow list
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override block list
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+    description: Creates a URL filtering rule
+  - name: panorama-edit-url-filter
+    arguments:
+    - name: name
+      required: true
+      description: URL Filter to edit
+    - name: element_to_change
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - override_allow_list
+      - override_block_list
+      - description
+      description: Element to change; "ovveride_allow_list", "ovveride_block_list"
+    - name: element_value
+      required: true
+      description: Element value, limited to one value
+    - name: add_remove_element
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Add or remove an element from the Allow List field or Block List
+        field, default is "add" the element_value to the list.
+      defaultValue: add
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category
+      type: string
+    - contextPath: Panorama.URLFilter.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: Allow Overrides for the url category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: Block Overrides for the url category
+      type: string
+    description: Name of the URL filter to edit
+  - name: panorama-delete-url-filter
+    arguments:
+    - name: name
+      required: true
+      description: Name of the URL filter rule to delete
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL filter rule name
+      type: string
+    description: Deletes a URL filtering rule
+  - name: panorama-create-rule
+    arguments:
+    - name: rulename
+      description: Name of the rule to create
+    - name: description
+      description: Description of the rule to create
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      - drop
+      description: Action for the rule; "allow", "deny", "drop"
+    - name: source
+      description: Source address; "address", "address group"
+    - name: destination
+      description: Destination address; "address", "address group"
+    - name: negate_source
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Whether to negate the source (address, address group); "Yes" or
+        "No"
+    - name: negate_destination
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Whether to negate the destination (address, address group); "Yes"
+        or "No"
+    - name: service
+      description: Service for the rule (service object) to create
+    - name: disable
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Whether to disable the rule; "Yes" or "No" (default is "No")
+      defaultValue: "No"
+    - name: application
+      description: Application for the rule to create
+    - name: source_user
+      description: Source user for the rule to create
+      defaultValue: any
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Pre rule or Post rule (Panorama instances)
+    - name: target
+      description: Specify a target firewall for the rule (Panorama instances)
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Is the source negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Is the destination negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Is the rule disabled
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    description: Creates a policy rule
+    execution: true
+  - name: panorama-custom-block-rule
+    arguments:
+    - name: rulename
+      description: Name of the custom block policy rule to create
+    - name: object_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - address-group
+      - application
+      - url-category
+      description: Object type to block in the policy rule
+    - name: object_value
+      required: true
+      description: Object value
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - to
+      - from
+      - both
+      description: Direction to block (relevant only for "ip", "address-group" block),
+        default is "both"
+      defaultValue: both
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Pre rule or Post rule (Panorama instances)
+    - name: target
+      description: Specify a target firewall for the rule (Panorama instances)
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Object
+      description: Blocked object
+      type: string
+    - contextPath: Panorama.SecurityRule.Direction
+      description: Direction blocked
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    description: Creates a custom block policy rule
+    execution: true
+  - name: panorama-move-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Name of the rule to move
+    - name: where
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+      description: Where to move the rule to; "before", "after", "top", or "bottom".
+        If you specify "up" or "down", you need to supply the "dst" argument.
+    - name: dst
+      description: Destination rule relative to the rule you are moving. Only supply
+        this argument if you specified "up" or "down" for the "where" argument.
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Rule location. Mandatory for Panorama instances.
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    description: Change the location of a policy rule
+    execution: true
+  - name: panorama-edit-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Name of the rule to edit
+    - name: element_to_change
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - source
+      - destination
+      - application
+      - action
+      - category
+      - description
+      - disabled
+      - target
+      description: Parameter in the security rule to change; "source", "destination",
+        "application", "action", "category", "description", "disabled", "target"
+    - name: element_value
+      required: true
+      description: New value for the parameter
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Pre rule or Post rule (Panorama instances)
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Is the source negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Is the destination negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Is the rule disabled
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    description: Edit a policy rule
+    execution: true
+  - name: panorama-delete-rule
+    arguments:
+    - name: rulename
+      required: true
+      description: Name of the rule to delete
+    - name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      description: Pre rule or Post rule (Panorama instances)
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    description: Deletes a policy rule
+    execution: true
+  - name: panorama-list-applications
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Applications.Name
+      description: Application name
+      type: string
+    - contextPath: Panorama.Applications.Id
+      description: Application id
+      type: number
+    - contextPath: Panorama.Applications.Category
+      description: Application category
+      type: string
+    - contextPath: Panorama.Applications.SubCategory
+      description: Application sub category
+      type: string
+    - contextPath: Panorama.Applications.Technology
+      description: Application technology
+      type: string
+    - contextPath: Panorama.Applications.Risk
+      description: Application risk (1 to 5)
+      type: number
+    - contextPath: Panorama.Applications.Description
+      description: Application description
+      type: string
+    description: Returns a list of predefined applications
+  - name: panorama-commit-status
+    arguments:
+    - name: job_id
+      required: true
+      description: Job ID to check
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+    - contextPath: Panorama.Commit.Details
+      description: Job ID details
+      type: string
+    description: Get commit status for a configuration
+  - name: panorama-push-status
+    arguments:
+    - name: job_id
+      required: true
+      description: Job ID to check
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status
+      type: string
+    - contextPath: Panorama.Push.Details
+      description: Job ID details
+      type: string
+    description: Get push status for a configuration
+  runonce: false
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
