@@ -975,4 +975,4 @@ script:
 hidden: false
 fromversion: 3.5.0
 tests:
-  - CuckooTest
+  - No test

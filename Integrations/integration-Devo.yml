@@ -211,7 +211,7 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        return_error(e)
+        return_error(e.message)
   type: python
   commands:
   - name: devo-query
@@ -240,5 +240,6 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
+releaseNotes: "-"
 tests:
     - devo_test_playbook

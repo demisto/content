@@ -133,19 +133,21 @@ def __create_incident_with_playbook(client, name, playbook_id):
     response_json = r.json()
     inc_id = response_json['id']
 
+    if inc_id == 'incCreateErr':
+        print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
+        return False, -1
+
     # get incident
     incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
 
-    # poll up to 1 second
-    timeout = time.time() + 10
+    # poll the incidents queue for a max time of 25 seconds
+    timeout = time.time() + 25
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
-            if inc_id == 'incCreateErr':
-                print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
-                return False, -1
-            print_error('failed to get incident with id:' + inc_id)
+            print_error('Got timeout for searching incident with id {}, got {} incidents in the search'.format(inc_id, incidents['total']))
             return False, -1
+
         time.sleep(1)
 
     return incidents['data'][0], inc_id

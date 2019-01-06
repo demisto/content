@@ -29,7 +29,7 @@ script:
     import math
     import datetime
 
-    AWS_DEFAULT_REGION = None
+    AWS_DEFAULT_REGION = None #demisto.params()['defaultRegion']
     AWS_roleArn = demisto.params()['roleArn']
     AWS_roleSessionName = demisto.params()['roleSessionName']
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
@@ -137,7 +137,7 @@ script:
             if args.get('acl') is not None:
                 kwargs.update({'ACL':args.get('acl')})
             if args.get('locationConstraint') is not None:
-                kwargs.update({'LocationConstraint':args.get('locationConstraint')})
+                kwargs.update({'CreateBucketConfiguration':{'LocationConstraint':args.get('locationConstraint')}})
             if args.get('grantFullControl') is not None:
                 kwargs.update({'GrantFullControl':args.get('grantFullControl')})
             if args.get('grantRead') is not None:
@@ -606,4 +606,4 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 tests:
-  - No test
+  - No Tests

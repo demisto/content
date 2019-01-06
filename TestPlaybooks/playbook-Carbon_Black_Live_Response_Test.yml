@@ -33,6 +33,7 @@ tasks:
     type: regular
     task:
       id: ca3603da-0da2-4dec-8dbb-e263f1084c2b
+
       version: -1
       name: Close session
       script: carbonblackliveresponse|||cb-session-close
@@ -100,10 +101,10 @@ tasks:
       id: c2d7d938-88d4-43d1-854c-b282fee1c463
       version: -1
       name: 'Create a session for sensor #17'
-      script: carbonblackliveresponse|||cb-session-create-and-wait
+      script: '|||cb-session-create-and-wait'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "70"
@@ -134,10 +135,10 @@ tasks:
       id: 6d880cb1-571a-4424-86ee-51a44d6928ae
       version: -1
       name: 'List open sessions for sensor #17'
-      script: carbonblackliveresponse|||cb-list-sessions
+      script: '|||cb-list-sessions'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "56"
@@ -252,10 +253,10 @@ tasks:
       id: b1f86001-250d-41ed-8afc-d00b38d4eea9
       version: -1
       name: 'Upload test file to sensor #15'
-      script: carbonblackliveresponse|||cb-push-file-to-endpoint
+      script: '|||cb-push-file-to-endpoint'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "60"
@@ -287,10 +288,10 @@ tasks:
       id: eeee6767-965b-4592-829b-e98a916bc079
       version: -1
       name: Download uploaded file from the sensor
-      script: carbonblackliveresponse|||cb-get-file-from-endpoint
+      script: '|||cb-get-file-from-endpoint'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "61"
@@ -320,10 +321,10 @@ tasks:
       id: 10bcf518-ef60-4e5d-8146-2fd113e7ba5e
       version: -1
       name: Delete uploaded file from the endpoint
-      script: carbonblackliveresponse|||cb-file-delete-from-endpoint
+      script: '|||cb-file-delete-from-endpoint'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     scriptarguments:
       cancel-on-timeout: {}
       path:
@@ -423,10 +424,10 @@ tasks:
       id: 0d4f807b-f25e-4c67-8763-dfa53d7a6dab
       version: -1
       name: 'List active sessions for sensor #15 '
-      script: carbonblackliveresponse|||cb-list-sessions
+      script: '|||cb-list-sessions'
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse
+      brand: ""
     nexttasks:
       '#none#':
       - "74"
