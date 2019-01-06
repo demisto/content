@@ -5,10 +5,7 @@
                 "name": "AwsStopInstance", 
                 "depends_on": [
                     "stop-instance"
-                ], 
-                "command_to_integration": {
-                    "e": "s"
-                }
+                ]
             }
         }, 
         {
@@ -22,7 +19,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "ProtectWise"
                 }
             }
         }, 
@@ -32,10 +29,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "qradar-searches"
-                ], 
-                "command_to_integration": {
-                    "s": "q"
-                }
+                ]
             }
         }, 
         {
@@ -52,10 +46,7 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -69,7 +60,7 @@
                     "sensors"
                 ], 
                 "command_to_integration": {
-                    "s": "s"
+                    "sensors": "ProtectWise"
                 }
             }
         }, 
@@ -79,10 +70,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -100,10 +88,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-hosts"
-                ], 
-                "command_to_integration": {
-                    "s": "v"
-                }
+                ]
             }
         }, 
         {
@@ -129,9 +114,6 @@
                 "depends_on": [
                     "cb-binary"
                 ], 
-                "command_to_integration": {
-                    "y": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -148,11 +130,7 @@
                 "script_executions": [
                     "AdSearch", 
                     "addEntitlement"
-                ], 
-                "command_to_integration": {
-                    "h": "a", 
-                    "l": "s"
-                }
+                ]
             }
         }, 
         {
@@ -171,10 +149,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "wildfire-upload"
-                ], 
-                "command_to_integration": {
-                    "d": "w"
-                }
+                ]
             }
         }, 
         {
@@ -189,9 +164,11 @@
                     "getEntry"
                 ], 
                 "command_to_integration": {
-                    "e": "f", 
-                    "d": "c"
-                }
+                    "file": "cylance"
+                }, 
+                "tests": [
+                    "No test - no instance"
+                ]
             }
         }, 
         {
@@ -201,9 +178,6 @@
                 "depends_on": [
                     "panorama"
                 ], 
-                "command_to_integration": {
-                    "a": "p"
-                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -232,10 +206,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-indicators"
-                ], 
-                "command_to_integration": {
-                    "s": "c"
-                }
+                ]
             }
         }, 
         {
@@ -246,7 +217,7 @@
                     "event-pcap-info"
                 ], 
                 "command_to_integration": {
-                    "o": "e"
+                    "event-pcap-info": "ProtectWise"
                 }
             }
         }, 
@@ -256,10 +227,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-issue-query"
-                ], 
-                "command_to_integration": {
-                    "y": "j"
-                }
+                ]
             }
         }, 
         {
@@ -268,10 +236,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -280,9 +245,6 @@
                 "depends_on": [
                     "cuckoo-create-task-from-file"
                 ], 
-                "command_to_integration": {
-                    "e": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -294,10 +256,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -308,10 +267,7 @@
                 ], 
                 "script_executions": [
                     "grr_set_flows"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -320,10 +276,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-get-detetctions-by-id"
-                ], 
-                "command_to_integration": {
-                    "d": "v"
-                }
+                ]
             }
         }, 
         {
@@ -373,7 +326,7 @@
                     "scan-create"
                 ], 
                 "command_to_integration": {
-                    "e": "s"
+                    "scan-create": "Nessus"
                 }
             }
         }, 
@@ -388,10 +341,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "nessus-get-scans-editors"
-                ], 
-                "command_to_integration": {
-                    "s": "n"
-                }
+                ]
             }
         }, 
         {
@@ -405,11 +355,7 @@
                 ], 
                 "script_executions": [
                     "QrGetSearchResults"
-                ], 
-                "command_to_integration": {
-                    "h": "q", 
-                    "s": "Q"
-                }
+                ]
             }
         }, 
         {
@@ -428,10 +374,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-get-user"
-                ], 
-                "command_to_integration": {
-                    "r": "o"
-                }
+                ]
             }
         }, 
         {
@@ -445,10 +388,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-activate-user"
-                ], 
-                "command_to_integration": {
-                    "r": "o"
-                }
+                ]
             }
         }, 
         {
@@ -462,13 +402,7 @@
                     "cb-file-get", 
                     "cb-command-info", 
                     "cb-list-sessions"
-                ], 
-                "command_to_integration": {
-                    "s": "c", 
-                    "e": "c", 
-                    "t": "c", 
-                    "o": "c"
-                }
+                ]
             }
         }, 
         {
@@ -501,8 +435,8 @@
                     "servicenow-create-record"
                 ], 
                 "command_to_integration": {
-                    "e": "s", 
-                    "d": "s"
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-create-record": "ServiceNow"
                 }, 
                 "tests": [
                     "No test - Hibernating instance"
@@ -525,10 +459,7 @@
                 "name": "TrendmicroAlertStatus", 
                 "depends_on": [
                     "trendmicro-alert-status"
-                ], 
-                "command_to_integration": {
-                    "s": "t"
-                }
+                ]
             }
         }, 
         {
@@ -566,10 +497,7 @@
                 ], 
                 "script_executions": [
                     "setSeverity"
-                ], 
-                "command_to_integration": {
-                    "r": "c"
-                }
+                ]
             }
         }, 
         {
@@ -582,10 +510,7 @@
                 "name": "ImpSfListEndpoints", 
                 "depends_on": [
                     "imp-sf-list-endpoints"
-                ], 
-                "command_to_integration": {
-                    "s": "i"
-                }
+                ]
             }
         }, 
         {
@@ -600,7 +525,7 @@
                     "scheduleEntry"
                 ], 
                 "command_to_integration": {
-                    "e": "g"
+                    "get_job_sample": "VMRay"
                 }
             }
         }, 
@@ -615,10 +540,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-detections"
-                ], 
-                "command_to_integration": {
-                    "s": "v"
-                }
+                ]
             }
         }, 
         {
@@ -637,10 +559,7 @@
                 "name": "TaniumFilterComputersByIndexQueryFileDetails", 
                 "depends_on": [
                     "tn-ask-manual-question"
-                ], 
-                "command_to_integration": {
-                    "n": "t"
-                }
+                ]
             }
         }, 
         {
@@ -662,10 +581,7 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -679,11 +595,7 @@
                 "depends_on": [
                     "cb-command-info", 
                     "cb-command-create"
-                ], 
-                "command_to_integration": {
-                    "e": "c", 
-                    "o": "c"
-                }
+                ]
             }
         }, 
         {
@@ -692,10 +604,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "googleapps-gmail-get-mail"
-                ], 
-                "command_to_integration": {
-                    "l": "g"
-                }
+                ]
             }
         }, 
         {
@@ -709,12 +618,7 @@
                     "pt-get-subdomains", 
                     "pt-ssl-cert", 
                     "pt-passive-dns"
-                ], 
-                "command_to_integration": {
-                    "s": "p", 
-                    "e": "p", 
-                    "t": "p"
-                }
+                ]
             }
         }, 
         {
@@ -732,10 +636,7 @@
                 "name": "NetwitnessSearch", 
                 "depends_on": [
                     "nw-sdk-search"
-                ], 
-                "command_to_integration": {
-                    "h": "n"
-                }
+                ]
             }
         }, 
         {
@@ -747,10 +648,7 @@
                 ], 
                 "script_executions": [
                     "query"
-                ], 
-                "command_to_integration": {
-                    "y": "q"
-                }
+                ]
             }
         }, 
         {
@@ -776,10 +674,7 @@
                 ], 
                 "script_executions": [
                     "addOneTimeEntitlement"
-                ], 
-                "command_to_integration": {
-                    "d": "s"
-                }
+                ]
             }
         }, 
         {
@@ -791,10 +686,7 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -808,10 +700,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "demisto-api-post"
-                ], 
-                "command_to_integration": {
-                    "t": "d"
-                }
+                ]
             }
         }, 
         {
@@ -831,10 +720,7 @@
                 ], 
                 "script_executions": [
                     "grr_get_hunt"
-                ], 
-                "command_to_integration": {
-                    "t": "g"
-                }
+                ]
             }
         }, 
         {
@@ -855,10 +741,7 @@
                 "name": "AlgosecGetTicket", 
                 "depends_on": [
                     "algosec-get-ticket"
-                ], 
-                "command_to_integration": {
-                    "t": "a"
-                }
+                ]
             }
         }, 
         {
@@ -866,10 +749,7 @@
                 "name": "IncapGetDomainApproverEmail", 
                 "depends_on": [
                     "incap-get-domain-approver-email"
-                ], 
-                "command_to_integration": {
-                    "l": "i"
-                }
+                ]
             }
         }, 
         {
@@ -879,7 +759,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "elasticsearch"
                 }
             }
         }, 
@@ -899,10 +779,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-search"
-                ], 
-                "command_to_integration": {
-                    "h": "o"
-                }
+                ]
             }
         }, 
         {
@@ -910,10 +787,7 @@
                 "name": "TrendmicroSecurityProfileRetrieveAll", 
                 "depends_on": [
                     "trendmicro-security-profile-retrieve-all"
-                ], 
-                "command_to_integration": {
-                    "l": "t"
-                }
+                ]
             }
         }, 
         {
@@ -923,9 +797,6 @@
                 "depends_on": [
                     "panorama"
                 ], 
-                "command_to_integration": {
-                    "a": "p"
-                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -960,10 +831,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-set-new-password"
-                ], 
-                "command_to_integration": {
-                    "d": "a"
-                }
+                ]
             }
         }, 
         {
@@ -994,10 +862,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-health"
-                ], 
-                "command_to_integration": {
-                    "h": "v"
-                }
+                ]
             }
         }, 
         {
@@ -1016,10 +881,7 @@
                 "name": "ConferIncidentDetails", 
                 "depends_on": [
                     "confer"
-                ], 
-                "command_to_integration": {
-                    "r": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1040,10 +902,7 @@
                 "name": "XBTimeline", 
                 "depends_on": [
                     "xb-timeline"
-                ], 
-                "command_to_integration": {
-                    "e": "x"
-                }
+                ]
             }
         }, 
         {
@@ -1085,10 +944,7 @@
                 "name": "XBUser", 
                 "depends_on": [
                     "xb-user"
-                ], 
-                "command_to_integration": {
-                    "r": "x"
-                }
+                ]
             }
         }, 
         {
@@ -1097,10 +953,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "servicenow-incident-update"
-                ], 
-                "command_to_integration": {
-                    "e": "s"
-                }
+                ]
             }
         }, 
         {
@@ -1119,7 +972,7 @@
                     "file"
                 ], 
                 "command_to_integration": {
-                    "e": "f"
+                    "file": "VirusTotal"
                 }
             }
         }, 
@@ -1145,9 +998,6 @@
                 "depends_on": [
                     "panorama"
                 ], 
-                "command_to_integration": {
-                    "a": "p"
-                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -1175,10 +1025,7 @@
                 "depends_on": [
                     "demisto-api-post", 
                     "demisto-api-get"
-                ], 
-                "command_to_integration": {
-                    "t": "d"
-                }
+                ]
             }
         }, 
         {
@@ -1198,10 +1045,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "googleapps-gmail-search"
-                ], 
-                "command_to_integration": {
-                    "h": "g"
-                }
+                ]
             }
         }, 
         {
@@ -1223,10 +1067,7 @@
                 ], 
                 "script_executions": [
                     "TrendmicroSecurityProfileRetrieveAll"
-                ], 
-                "command_to_integration": {
-                    "l": "t"
-                }
+                ]
             }
         }, 
         {
@@ -1246,10 +1087,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "nw-update-incident"
-                ], 
-                "command_to_integration": {
-                    "t": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1269,10 +1107,7 @@
                 "name": "NetwitnessSAGetAvailableAssignees", 
                 "depends_on": [
                     "nw-get-available-assignees"
-                ], 
-                "command_to_integration": {
-                    "s": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1283,10 +1118,7 @@
                 ], 
                 "script_executions": [
                     "getIncidents"
-                ], 
-                "command_to_integration": {
-                    "t": "q"
-                }
+                ]
             }
         }, 
         {
@@ -1295,9 +1127,6 @@
                 "depends_on": [
                     "cuckoo-create-task-from-url"
                 ], 
-                "command_to_integration": {
-                    "l": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -1311,10 +1140,7 @@
                 ], 
                 "script_executions": [
                     "ADGetUser"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1330,10 +1156,7 @@
                 "name": "NetwitnessSAListIncidents", 
                 "depends_on": [
                     "nw-list-incidents"
-                ], 
-                "command_to_integration": {
-                    "s": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1352,10 +1175,7 @@
                 "name": "ArcherCreateSecurityIncident", 
                 "depends_on": [
                     "archer-create-record"
-                ], 
-                "command_to_integration": {
-                    "d": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1368,10 +1188,7 @@
                 "name": "TrendmicroSystemEventRetrieve", 
                 "depends_on": [
                     "trendmicro-system-event-retrieve"
-                ], 
-                "command_to_integration": {
-                    "e": "t"
-                }
+                ]
             }
         }, 
         {
@@ -1379,10 +1196,7 @@
                 "name": "MimecastFindEmail", 
                 "depends_on": [
                     "mimecast-query"
-                ], 
-                "command_to_integration": {
-                    "y": "m"
-                }
+                ]
             }
         }, 
         {
@@ -1398,12 +1212,7 @@
                     "tn-add-question-complex", 
                     "tn-result-data", 
                     "tn-result-info"
-                ], 
-                "command_to_integration": {
-                    "a": "t", 
-                    "x": "t", 
-                    "o": "t"
-                }
+                ]
             }
         }, 
         {
@@ -1414,7 +1223,7 @@
                     "scan-details"
                 ], 
                 "command_to_integration": {
-                    "s": "s"
+                    "scan-details": "Nessus"
                 }
             }
         }, 
@@ -1423,10 +1232,7 @@
                 "name": "CBPCatalogFindHash", 
                 "depends_on": [
                     "cbp-fileCatalog-search"
-                ], 
-                "command_to_integration": {
-                    "h": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1459,11 +1265,7 @@
                 ], 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "command_to_integration": {
-                    "d": "w", 
-                    "t": "w"
-                }
+                ]
             }
         }, 
         {
@@ -1471,10 +1273,7 @@
                 "name": "ADGetGroupMembers", 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1482,10 +1281,7 @@
                 "name": "SCPPullFiles", 
                 "depends_on": [
                     "copy-from"
-                ], 
-                "command_to_integration": {
-                    "m": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1502,10 +1298,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-sensors"
-                ], 
-                "command_to_integration": {
-                    "s": "v"
-                }
+                ]
             }
         }, 
         {
@@ -1517,10 +1310,6 @@
                     "qradar-get-search-results", 
                     "qradar-searches"
                 ], 
-                "command_to_integration": {
-                    "h": "q", 
-                    "s": "q"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -1532,10 +1321,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-actors"
-                ], 
-                "command_to_integration": {
-                    "s": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1548,9 +1334,9 @@
                     "scan-export-status"
                 ], 
                 "command_to_integration": {
-                    "s": "s", 
-                    "t": "s", 
-                    "d": "s"
+                    "scan-report-download": "Nessus", 
+                    "scan-export": "Nessus", 
+                    "scan-export-status": "Nessus"
                 }
             }
         }, 
@@ -1572,10 +1358,7 @@
                 ], 
                 "script_executions": [
                     "LCMHosts"
-                ], 
-                "command_to_integration": {
-                    "t": "l"
-                }
+                ]
             }
         }, 
         {
@@ -1588,10 +1371,7 @@
                 "name": "NexposeVulnExtractor", 
                 "depends_on": [
                     "nexpose"
-                ], 
-                "command_to_integration": {
-                    "e": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1599,10 +1379,7 @@
                 "name": "XBTriggeredRules", 
                 "depends_on": [
                     "xb-triggered-rules"
-                ], 
-                "command_to_integration": {
-                    "s": "x"
-                }
+                ]
             }
         }, 
         {
@@ -1642,10 +1419,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-create-user"
-                ], 
-                "command_to_integration": {
-                    "r": "o"
-                }
+                ]
             }
         }, 
         {
@@ -1654,10 +1428,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-issue-upload-file"
-                ], 
-                "command_to_integration": {
-                    "e": "j"
-                }
+                ]
             }
         }, 
         {
@@ -1703,10 +1474,7 @@
                 "name": "AlgosecGetNetworkObject", 
                 "depends_on": [
                     "algosec-get-network-object"
-                ], 
-                "command_to_integration": {
-                    "t": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1720,10 +1488,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-triage"
-                ], 
-                "command_to_integration": {
-                    "e": "v"
-                }
+                ]
             }
         }, 
         {
@@ -1733,12 +1498,7 @@
                     "atd-get-report", 
                     "atd-file-upload", 
                     "atd-check-status"
-                ], 
-                "command_to_integration": {
-                    "s": "a", 
-                    "d": "a", 
-                    "t": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1751,10 +1511,7 @@
                 "name": "NetwitnessSACreateIncident", 
                 "depends_on": [
                     "nw-create-incident"
-                ], 
-                "command_to_integration": {
-                    "t": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1782,10 +1539,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cve-latest"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1796,10 +1550,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -1807,10 +1558,7 @@
                 "name": "DemistoLogsBundle", 
                 "depends_on": [
                     "demisto-api-download"
-                ], 
-                "command_to_integration": {
-                    "d": "d"
-                }
+                ]
             }
         }, 
         {
@@ -1826,10 +1574,7 @@
                 ], 
                 "script_executions": [
                     "getIncidents"
-                ], 
-                "command_to_integration": {
-                    "t": "n"
-                }
+                ]
             }
         }, 
         {
@@ -1846,10 +1591,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ews-search-mailbox"
-                ], 
-                "command_to_integration": {
-                    "x": "e"
-                }
+                ]
             }
         }, 
         {
@@ -1861,10 +1603,7 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -1888,9 +1627,6 @@
                 "depends_on": [
                     "cuckoo-task-screenshot"
                 ], 
-                "command_to_integration": {
-                    "t": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -1915,10 +1651,7 @@
                 ], 
                 "script_executions": [
                     "grr_get_flows"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -1937,7 +1670,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "splunk"
                 }
             }
         }, 
@@ -1977,10 +1710,7 @@
                 "script_executions": [
                     "ADGetUserGroups", 
                     "AdSearch"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -1990,9 +1720,6 @@
                 "depends_on": [
                     "panorama"
                 ], 
-                "command_to_integration": {
-                    "a": "p"
-                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -2004,10 +1731,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2016,10 +1740,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2035,7 +1756,7 @@
                     "observation-pcap-info"
                 ], 
                 "command_to_integration": {
-                    "o": "o"
+                    "observation-pcap-info": "ProtectWise"
                 }
             }
         }, 
@@ -2045,10 +1766,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "qr-searches"
-                ], 
-                "command_to_integration": {
-                    "s": "q"
-                }
+                ]
             }
         }, 
         {
@@ -2078,10 +1796,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -2089,10 +1804,7 @@
                 "name": "TrendMicroClassifier", 
                 "depends_on": [
                     "trendmicro-alert-status"
-                ], 
-                "command_to_integration": {
-                    "s": "t"
-                }
+                ]
             }
         }, 
         {
@@ -2103,10 +1815,7 @@
                 ], 
                 "script_executions": [
                     "TrendmicroHostRetrieveAll"
-                ], 
-                "command_to_integration": {
-                    "l": "t"
-                }
+                ]
             }
         }, 
         {
@@ -2120,10 +1829,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-settings"
-                ], 
-                "command_to_integration": {
-                    "s": "v"
-                }
+                ]
             }
         }, 
         {
@@ -2144,10 +1850,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -2158,7 +1861,7 @@
                     "observation-search"
                 ], 
                 "command_to_integration": {
-                    "h": "o"
+                    "observation-search": "ProtectWise"
                 }
             }
         }, 
@@ -2194,10 +1897,7 @@
                 "name": "TrendmicroHostAntimalwareScan", 
                 "depends_on": [
                     "trendmicro-host-antimalware-scan"
-                ], 
-                "command_to_integration": {
-                    "n": "t"
-                }
+                ]
             }
         }, 
         {
@@ -2206,10 +1906,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "qr-get-search-results"
-                ], 
-                "command_to_integration": {
-                    "s": "q"
-                }
+                ]
             }
         }, 
         {
@@ -2220,7 +1917,7 @@
                     "scan-host-details"
                 ], 
                 "command_to_integration": {
-                    "s": "s"
+                    "scan-host-details": "Nessus"
                 }
             }
         }, 
@@ -2237,10 +1934,7 @@
                 ], 
                 "script_executions": [
                     "OSQueryBasicQuery"
-                ], 
-                "command_to_integration": {
-                    "y": "O"
-                }
+                ]
             }
         }, 
         {
@@ -2265,10 +1959,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "qr-offenses"
-                ], 
-                "command_to_integration": {
-                    "s": "q"
-                }
+                ]
             }
         }, 
         {
@@ -2291,10 +1982,7 @@
                 "name": "NexposeEmailParser", 
                 "depends_on": [
                     "nexpose"
-                ], 
-                "command_to_integration": {
-                    "e": "n"
-                }
+                ]
             }
         }, 
         {
@@ -2309,10 +1997,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "slack-mirror-investigation"
-                ], 
-                "command_to_integration": {
-                    "n": "s"
-                }
+                ]
             }
         }, 
         {
@@ -2321,10 +2006,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "file"
-                ], 
-                "command_to_integration": {
-                    "e": "f"
-                }
+                ]
             }
         }, 
         {
@@ -2337,10 +2019,7 @@
                 "name": "CBSessions", 
                 "depends_on": [
                     "cb-list-sessions"
-                ], 
-                "command_to_integration": {
-                    "s": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2396,10 +2075,7 @@
                 "name": "AwsCreateImage", 
                 "depends_on": [
                     "create-image"
-                ], 
-                "command_to_integration": {
-                    "e": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2408,10 +2084,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "wildfire-report"
-                ], 
-                "command_to_integration": {
-                    "t": "w"
-                }
+                ]
             }
         }, 
         {
@@ -2419,10 +2092,7 @@
                 "name": "LCMIndicatorsForEntity", 
                 "depends_on": [
                     "lcm-indicatorsforentity"
-                ], 
-                "command_to_integration": {
-                    "y": "l"
-                }
+                ]
             }
         }, 
         {
@@ -2440,11 +2110,7 @@
                 ], 
                 "script_executions": [
                     "scheduleEntry"
-                ], 
-                "command_to_integration": {
-                    "y": "s", 
-                    "s": "I"
-                }
+                ]
             }
         }, 
         {
@@ -2455,8 +2121,8 @@
                     "servicenow-update-record"
                 ], 
                 "command_to_integration": {
-                    "e": "s", 
-                    "d": "s"
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-update-record": "ServiceNow"
                 }, 
                 "tests": [
                     "No test - Hibernating instance"
@@ -2483,10 +2149,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2502,10 +2165,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "pw-event-get"
-                ], 
-                "command_to_integration": {
-                    "t": "p"
-                }
+                ]
             }
         }, 
         {
@@ -2525,7 +2185,7 @@
                     "upload_sample"
                 ], 
                 "command_to_integration": {
-                    "e": "u"
+                    "upload_sample": "VMRay"
                 }
             }
         }, 
@@ -2536,7 +2196,7 @@
                     "observation-pcap-download"
                 ], 
                 "command_to_integration": {
-                    "d": "o"
+                    "observation-pcap-download": "ProtectWise"
                 }
             }
         }, 
@@ -2545,10 +2205,7 @@
                 "name": "cveReputation", 
                 "depends_on": [
                     "cve-search"
-                ], 
-                "command_to_integration": {
-                    "h": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2579,10 +2236,7 @@
                 "script_executions": [
                     "file", 
                     "getEntries"
-                ], 
-                "command_to_integration": {
-                    "e": "f"
-                }
+                ]
             }
         }, 
         {
@@ -2590,10 +2244,7 @@
                 "name": "ArcherUpdateSecurityIncident", 
                 "depends_on": [
                     "archer-update-record"
-                ], 
-                "command_to_integration": {
-                    "d": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2613,10 +2264,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-device-count-ioc"
-                ], 
-                "command_to_integration": {
-                    "c": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2627,10 +2275,7 @@
                 ], 
                 "script_executions": [
                     "LCMHosts"
-                ], 
-                "command_to_integration": {
-                    "t": "l"
-                }
+                ]
             }
         }, 
         {
@@ -2646,10 +2291,7 @@
                 ], 
                 "script_executions": [
                     "OSQueryBasicQuery"
-                ], 
-                "command_to_integration": {
-                    "y": "O"
-                }
+                ]
             }
         }, 
         {
@@ -2660,7 +2302,7 @@
                     "scan-details"
                 ], 
                 "command_to_integration": {
-                    "s": "s"
+                    "scan-details": "Nessus"
                 }
             }
         }, 
@@ -2669,10 +2311,7 @@
                 "name": "DemistoLinkIncidents", 
                 "depends_on": [
                     "demisto-api-post"
-                ], 
-                "command_to_integration": {
-                    "t": "d"
-                }
+                ]
             }
         }, 
         {
@@ -2681,10 +2320,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-create-issue"
-                ], 
-                "command_to_integration": {
-                    "e": "j"
-                }
+                ]
             }
         }, 
         {
@@ -2705,10 +2341,7 @@
                 ], 
                 "script_executions": [
                     "AdSearch"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2722,10 +2355,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "qr-get-search"
-                ], 
-                "command_to_integration": {
-                    "h": "q"
-                }
+                ]
             }
         }, 
         {
@@ -2741,10 +2371,7 @@
                     "get-instance-info", 
                     "get-ebs-volume-info", 
                     "get-sg-info"
-                ], 
-                "command_to_integration": {
-                    "o": "g"
-                }
+                ]
             }
         }, 
         {
@@ -2758,10 +2385,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2769,10 +2393,7 @@
                 "name": "CBPFindRule", 
                 "depends_on": [
                     "cbp-fileRule-search"
-                ], 
-                "command_to_integration": {
-                    "h": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2781,10 +2402,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "googleapps-list-users"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -2808,10 +2426,7 @@
                 "name": "AlgosecGetApplications", 
                 "depends_on": [
                     "algosec-get-applications"
-                ], 
-                "command_to_integration": {
-                    "s": "a"
-                }
+                ]
             }
         }, 
         {
@@ -2824,7 +2439,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "elasticsearch"
                 }
             }
         }, 
@@ -2834,10 +2449,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -2854,10 +2466,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-health"
-                ], 
-                "command_to_integration": {
-                    "h": "v"
-                }
+                ]
             }
         }, 
         {
@@ -2868,10 +2477,7 @@
                 ], 
                 "script_executions": [
                     "addEntitlement"
-                ], 
-                "command_to_integration": {
-                    "d": "m"
-                }
+                ]
             }
         }, 
         {
@@ -2880,10 +2486,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "whois"
-                ], 
-                "command_to_integration": {
-                    "s": "w"
-                }
+                ]
             }
         }, 
         {
@@ -2904,10 +2507,7 @@
                 "name": "LCMPathFinderScanHost", 
                 "depends_on": [
                     "lcm-pathfinder-scan"
-                ], 
-                "command_to_integration": {
-                    "n": "l"
-                }
+                ]
             }
         }, 
         {
@@ -2919,11 +2519,7 @@
                 ], 
                 "script_executions": [
                     "scheduleEntry"
-                ], 
-                "command_to_integration": {
-                    "y": "s", 
-                    "e": "I"
-                }
+                ]
             }
         }, 
         {
@@ -2931,10 +2527,7 @@
                 "name": "SbQuery", 
                 "depends_on": [
                     "sb-query"
-                ], 
-                "command_to_integration": {
-                    "y": "s"
-                }
+                ]
             }
         }, 
         {
@@ -2948,10 +2541,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-device-ran-on"
-                ], 
-                "command_to_integration": {
-                    "n": "c"
-                }
+                ]
             }
         }, 
         {
@@ -2965,10 +2555,6 @@
                 "script_executions": [
                     "IsIntegrationAvailable"
                 ], 
-                "command_to_integration": {
-                    "s": "f", 
-                    "t": "f"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -2980,10 +2566,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
-                ], 
-                "command_to_integration": {
-                    "r": "o"
-                }
+                ]
             }
         }, 
         {
@@ -2997,10 +2580,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "pw-observation-get"
-                ], 
-                "command_to_integration": {
-                    "t": "p"
-                }
+                ]
             }
         }, 
         {
@@ -3009,10 +2589,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "servicenow-incident-create"
-                ], 
-                "command_to_integration": {
-                    "e": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3025,10 +2602,7 @@
                 "script_executions": [
                     "ip", 
                     "ipinfo_field"
-                ], 
-                "command_to_integration": {
-                    "d": "i"
-                }
+                ]
             }
         }, 
         {
@@ -3053,10 +2627,7 @@
                 "name": "CBPBanHash", 
                 "depends_on": [
                     "cbp-fileRule-update"
-                ], 
-                "command_to_integration": {
-                    "e": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3072,10 +2643,7 @@
                 "name": "AwsRunInstance", 
                 "depends_on": [
                     "run-instance"
-                ], 
-                "command_to_integration": {
-                    "e": "r"
-                }
+                ]
             }
         }, 
         {
@@ -3084,10 +2652,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -3096,10 +2661,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "tn-get-object"
-                ], 
-                "command_to_integration": {
-                    "t": "t"
-                }
+                ]
             }
         }, 
         {
@@ -3113,10 +2675,7 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
-                ], 
-                "command_to_integration": {
-                    "t": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3168,10 +2727,7 @@
                 "name": "AwsCreateVolumeSnapshot", 
                 "depends_on": [
                     "create-volume-snapshot"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3193,10 +2749,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -3204,10 +2757,7 @@
                 "name": "CheckSender", 
                 "depends_on": [
                     "pipl-search"
-                ], 
-                "command_to_integration": {
-                    "h": "p"
-                }
+                ]
             }
         }, 
         {
@@ -3218,7 +2768,7 @@
                     "scan-launch"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "scan-launch": "Nessus"
                 }
             }
         }, 
@@ -3228,10 +2778,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3243,10 +2790,7 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3255,10 +2799,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "whois"
-                ], 
-                "command_to_integration": {
-                    "s": "w"
-                }
+                ]
             }
         }, 
         {
@@ -3266,10 +2807,7 @@
                 "name": "NetwitnessSAAddEventsToIncident", 
                 "depends_on": [
                     "nw-add-events-to-incident"
-                ], 
-                "command_to_integration": {
-                    "t": "n"
-                }
+                ]
             }
         }, 
         {
@@ -3288,10 +2826,7 @@
                 ], 
                 "script_executions": [
                     "addEntitlement"
-                ], 
-                "command_to_integration": {
-                    "t": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3300,10 +2835,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3314,10 +2846,7 @@
                 ], 
                 "script_executions": [
                     "OSQueryBasicQuery"
-                ], 
-                "command_to_integration": {
-                    "y": "O"
-                }
+                ]
             }
         }, 
         {
@@ -3327,7 +2856,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "esm"
                 }
             }
         }, 
@@ -3347,10 +2876,7 @@
                 ], 
                 "script_executions": [
                     "createNewIncident"
-                ], 
-                "command_to_integration": {
-                    "t": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3361,10 +2887,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3377,10 +2900,7 @@
                 "name": "CBPApproveHash", 
                 "depends_on": [
                     "cbp-fileRule-update"
-                ], 
-                "command_to_integration": {
-                    "e": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3398,10 +2918,7 @@
                 "name": "GoogleappsRevokeUserRole", 
                 "depends_on": [
                     "googleapps-revoke-user-role"
-                ], 
-                "command_to_integration": {
-                    "e": "g"
-                }
+                ]
             }
         }, 
         {
@@ -3422,10 +2939,7 @@
                 "name": "DemistoUploadFile", 
                 "depends_on": [
                     "demisto-api-multipart"
-                ], 
-                "command_to_integration": {
-                    "t": "d"
-                }
+                ]
             }
         }, 
         {
@@ -3434,10 +2948,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "servicenow-incidents-query"
-                ], 
-                "command_to_integration": {
-                    "y": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3446,10 +2957,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-issue-add-comment"
-                ], 
-                "command_to_integration": {
-                    "t": "j"
-                }
+                ]
             }
         }, 
         {
@@ -3457,10 +2965,7 @@
                 "name": "AlgosecCreateTicket", 
                 "depends_on": [
                     "algosec-create-ticket"
-                ], 
-                "command_to_integration": {
-                    "t": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3474,10 +2979,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3490,10 +2992,7 @@
                 "name": "IncapGetAppInfo", 
                 "depends_on": [
                     "incap-get-app-info"
-                ], 
-                "command_to_integration": {
-                    "o": "i"
-                }
+                ]
             }
         }, 
         {
@@ -3503,7 +3002,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "splunk"
                 }
             }
         }, 
@@ -3533,9 +3032,6 @@
                 "depends_on": [
                     "panorama"
                 ], 
-                "command_to_integration": {
-                    "a": "p"
-                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb", 
                     "blockip_test_playbook"
@@ -3560,10 +3056,7 @@
                 "name": "AlgosecQuery", 
                 "depends_on": [
                     "algosec-query"
-                ], 
-                "command_to_integration": {
-                    "y": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3571,10 +3064,7 @@
                 "name": "AwsStartInstance", 
                 "depends_on": [
                     "start-instance"
-                ], 
-                "command_to_integration": {
-                    "e": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3600,10 +3090,7 @@
                 "name": "JIRAPrintIssue", 
                 "depends_on": [
                     "jira-get-issue"
-                ], 
-                "command_to_integration": {
-                    "e": "j"
-                }
+                ]
             }
         }, 
         {
@@ -3614,10 +3101,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -3639,10 +3123,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-get-groups"
-                ], 
-                "command_to_integration": {
-                    "s": "o"
-                }
+                ]
             }
         }, 
         {
@@ -3674,10 +3155,7 @@
                 "name": "LCMDetectedEntities", 
                 "depends_on": [
                     "lcm-entities"
-                ], 
-                "command_to_integration": {
-                    "s": "l"
-                }
+                ]
             }
         }, 
         {
@@ -3703,10 +3181,7 @@
                 ], 
                 "script_executions": [
                     "OSQueryBasicQuery"
-                ], 
-                "command_to_integration": {
-                    "y": "O"
-                }
+                ]
             }
         }, 
         {
@@ -3726,12 +3201,7 @@
                 "script_executions": [
                     "RemoteExec", 
                     "SendEmail"
-                ], 
-                "command_to_integration": {
-                    "c": "R", 
-                    "s": "i", 
-                    "l": "S"
-                }
+                ]
             }
         }, 
         {
@@ -3740,10 +3210,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cve-search"
-                ], 
-                "command_to_integration": {
-                    "h": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3761,10 +3228,7 @@
                 "name": "DemistoCreateList", 
                 "depends_on": [
                     "demisto-api-post"
-                ], 
-                "command_to_integration": {
-                    "t": "d"
-                }
+                ]
             }
         }, 
         {
@@ -3774,7 +3238,7 @@
                     "servicenow-query-table"
                 ], 
                 "command_to_integration": {
-                    "e": "s"
+                    "servicenow-query-table": "ServiceNow"
                 }, 
                 "tests": [
                     "No test - Hibernating instance"
@@ -3786,10 +3250,7 @@
                 "name": "MimecastQuery", 
                 "depends_on": [
                     "mimecast-query"
-                ], 
-                "command_to_integration": {
-                    "y": "m"
-                }
+                ]
             }
         }, 
         {
@@ -3807,10 +3268,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ews-delete-items"
-                ], 
-                "command_to_integration": {
-                    "s": "e"
-                }
+                ]
             }
         }, 
         {
@@ -3824,10 +3282,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3835,10 +3290,7 @@
                 "name": "TrendmicroAntiMalwareEventRetrieve", 
                 "depends_on": [
                     "trendmicro-anti-malware-event-retrieve"
-                ], 
-                "command_to_integration": {
-                    "e": "t"
-                }
+                ]
             }
         }, 
         {
@@ -3852,10 +3304,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -3863,10 +3312,7 @@
                 "name": "XBNotable", 
                 "depends_on": [
                     "xb-notable"
-                ], 
-                "command_to_integration": {
-                    "e": "x"
-                }
+                ]
             }
         }, 
         {
@@ -3875,10 +3321,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "googleapps-get-user"
-                ], 
-                "command_to_integration": {
-                    "r": "g"
-                }
+                ]
             }
         }, 
         {
@@ -3889,10 +3332,7 @@
                 ], 
                 "script_executions": [
                     "CBLiveGetFile"
-                ], 
-                "command_to_integration": {
-                    "e": "C"
-                }
+                ]
             }
         }, 
         {
@@ -3901,10 +3341,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-issue-add-link"
-                ], 
-                "command_to_integration": {
-                    "k": "j"
-                }
+                ]
             }
         }, 
         {
@@ -3925,10 +3362,7 @@
                 ], 
                 "script_executions": [
                     "CBSearch"
-                ], 
-                "command_to_integration": {
-                    "h": "C"
-                }
+                ]
             }
         }, 
         {
@@ -3942,9 +3376,6 @@
                 "depends_on": [
                     "cuckoo-get-task-report"
                 ], 
-                "command_to_integration": {
-                    "t": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -3958,10 +3389,7 @@
                 ], 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "command_to_integration": {
-                    "s": "c"
-                }
+                ]
             }
         }, 
         {
@@ -3977,10 +3405,7 @@
                 ], 
                 "script_executions": [
                     "grr_get_files"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -3998,10 +3423,7 @@
                 "name": "XBLockouts", 
                 "depends_on": [
                     "xb-lockouts"
-                ], 
-                "command_to_integration": {
-                    "s": "x"
-                }
+                ]
             }
         }, 
         {
@@ -4017,10 +3439,7 @@
                 ], 
                 "script_executions": [
                     "grr_set_hunts"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -4038,10 +3457,7 @@
                 "name": "EPOFindSystem", 
                 "depends_on": [
                     "epo-command"
-                ], 
-                "command_to_integration": {
-                    "d": "e"
-                }
+                ]
             }
         }, 
         {
@@ -4052,12 +3468,7 @@
                     "tn-add-question-complex", 
                     "tn-result-data", 
                     "tn-result-info"
-                ], 
-                "command_to_integration": {
-                    "a": "t", 
-                    "x": "t", 
-                    "o": "t"
-                }
+                ]
             }
         }, 
         {
@@ -4070,12 +3481,10 @@
             "DataHashReputation": {
                 "name": "DataHashReputation", 
                 "toversion": "3.0.1", 
+                "deprecated": true, 
                 "depends_on": [
                     "file"
-                ], 
-                "command_to_integration": {
-                    "e": "f"
-                }
+                ]
             }
         }, 
         {
@@ -4099,9 +3508,9 @@
                 "depends_on": [
                     "file"
                 ], 
-                "command_to_integration": {
-                    "e": "f"
-                }
+                "tests": [
+                    "No test - deprecated old script"
+                ]
             }
         }, 
         {
@@ -4110,10 +3519,7 @@
                 "depends_on": [
                     "cb-process", 
                     "process-events"
-                ], 
-                "command_to_integration": {
-                    "s": "p"
-                }
+                ]
             }
         }, 
         {
@@ -4122,10 +3528,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "whois"
-                ], 
-                "command_to_integration": {
-                    "s": "w"
-                }
+                ]
             }
         }, 
         {
@@ -4144,10 +3547,7 @@
                 "depends_on": [
                     "tn-add-object", 
                     "tn-get-object"
-                ], 
-                "command_to_integration": {
-                    "t": "t"
-                }
+                ]
             }
         }, 
         {
@@ -4163,7 +3563,7 @@
                     "scans-list"
                 ], 
                 "command_to_integration": {
-                    "t": "s"
+                    "scans-list": "Nessus"
                 }
             }
         }, 
@@ -4174,11 +3574,7 @@
                 "depends_on": [
                     "tn-result-data", 
                     "tn-result-info"
-                ], 
-                "command_to_integration": {
-                    "a": "t", 
-                    "o": "t"
-                }
+                ]
             }
         }, 
         {
@@ -4216,10 +3612,7 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -4235,10 +3628,7 @@
                 "name": "RemoteExec", 
                 "depends_on": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4258,10 +3648,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "googleapps-get-user-roles"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -4274,10 +3661,7 @@
                 "name": "SbUpload", 
                 "depends_on": [
                     "sb-upload"
-                ], 
-                "command_to_integration": {
-                    "d": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4286,10 +3670,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-set-password"
-                ], 
-                "command_to_integration": {
-                    "d": "o"
-                }
+                ]
             }
         }, 
         {
@@ -4302,10 +3683,7 @@
                 "name": "IncapListSites", 
                 "depends_on": [
                     "incap-list-sites"
-                ], 
-                "command_to_integration": {
-                    "s": "i"
-                }
+                ]
             }
         }, 
         {
@@ -4314,10 +3692,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -4326,9 +3701,6 @@
                 "depends_on": [
                     "cuckoo-view-task"
                 ], 
-                "command_to_integration": {
-                    "k": "c"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -4345,7 +3717,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "ProtectWise"
                 }
             }
         }, 
@@ -4354,10 +3726,7 @@
                 "name": "NexposeEmailParserForVuln", 
                 "depends_on": [
                     "nexpose"
-                ], 
-                "command_to_integration": {
-                    "e": "n"
-                }
+                ]
             }
         }, 
         {
@@ -4421,10 +3790,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4446,10 +3812,7 @@
                 "name": "SplunkPySearch", 
                 "depends_on": [
                     "splunk-search"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4460,10 +3823,7 @@
                 ], 
                 "script_executions": [
                     "grr_get_hunts"
-                ], 
-                "command_to_integration": {
-                    "s": "g"
-                }
+                ]
             }
         }, 
         {
@@ -4471,10 +3831,7 @@
                 "name": "ImpSfSetEndpointStatus", 
                 "depends_on": [
                     "imp-sf-set-endpoint-status"
-                ], 
-                "command_to_integration": {
-                    "s": "i"
-                }
+                ]
             }
         }, 
         {
@@ -4495,10 +3852,7 @@
                 "name": "PagerDutyAssignOnCallUser", 
                 "depends_on": [
                     "PagerDuty-get-users-on-call-now"
-                ], 
-                "command_to_integration": {
-                    "w": "P"
-                }
+                ]
             }
         }, 
         {
@@ -4528,14 +3882,23 @@
             }
         }, 
         {
+            "CybereasonPreProcessingExample": {
+                "name": "CybereasonPreProcessingExample", 
+                "script_executions": [
+                    "getIncidents", 
+                    "setIncident"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
             "CBAlerts": {
                 "name": "CBAlerts", 
                 "depends_on": [
                     "cb-alert"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -4557,10 +3920,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "slack-send"
-                ], 
-                "command_to_integration": {
-                    "d": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4575,10 +3935,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-health"
-                ], 
-                "command_to_integration": {
-                    "h": "v"
-                }
+                ]
             }
         }, 
         {
@@ -4609,10 +3966,7 @@
                 "name": "LCMResolveHost", 
                 "depends_on": [
                     "lcm-resolve-host"
-                ], 
-                "command_to_integration": {
-                    "t": "l"
-                }
+                ]
             }
         }, 
         {
@@ -4625,15 +3979,25 @@
                 "name": "SbQuota", 
                 "depends_on": [
                     "sb-quota"
-                ], 
-                "command_to_integration": {
-                    "a": "s"
-                }
+                ]
             }
         }, 
         {
             "ContextFilter": {
                 "name": "ContextFilter"
+            }
+        }, 
+        {
+            "CopyContextToField": {
+                "name": "CopyContextToField", 
+                "script_executions": [
+                    "getContext", 
+                    "getIncidents", 
+                    "setIncident"
+                ], 
+                "tests": [
+                    "CopyContextToFieldTest"
+                ]
             }
         }, 
         {
@@ -4650,14 +4014,11 @@
                 "name": "AnalyzeOSX", 
                 "depends_on": [
                     "url", 
-                    "Osxcollector", 
                     "file"
                 ], 
-                "command_to_integration": {
-                    "r": "O", 
-                    "e": "f", 
-                    "l": "u"
-                }
+                "tests": [
+                    "No test - need to revisit"
+                ]
             }
         }, 
         {
@@ -4667,7 +4028,7 @@
                     "event-pcap-download"
                 ], 
                 "command_to_integration": {
-                    "d": "e"
+                    "event-pcap-download": "ProtectWise"
                 }
             }
         }, 
@@ -4690,10 +4051,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "jira-get-issue"
-                ], 
-                "command_to_integration": {
-                    "e": "j"
-                }
+                ]
             }
         }, 
         {
@@ -4702,10 +4060,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-expire-password"
-                ], 
-                "command_to_integration": {
-                    "d": "a"
-                }
+                ]
             }
         }, 
         {
@@ -4719,10 +4074,7 @@
                     "ImpSfListEndpoints", 
                     "ImpSfSetEndpointStatus", 
                     "SendEmail"
-                ], 
-                "command_to_integration": {
-                    "s": "I"
-                }
+                ]
             }
         }, 
         {
@@ -4730,10 +4082,7 @@
                 "name": "ADGetUser", 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -4741,10 +4090,7 @@
                 "name": "SendEmail", 
                 "depends_on": [
                     "send-mail"
-                ], 
-                "command_to_integration": {
-                    "l": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4759,9 +4105,6 @@
                 "depends_on": [
                     "PagerDuty-submit-event"
                 ], 
-                "command_to_integration": {
-                    "t": "P"
-                }, 
                 "tests": [
                     "PagerDuty Test"
                 ]
@@ -4774,15 +4117,27 @@
             }
         }, 
         {
+            "AbuseIPDBPopulateIndicators": {
+                "name": "AbuseIPDBPopulateIndicators", 
+                "depends_on": [
+                    "abuseipdb-get-blacklist", 
+                    "createNewIndicator"
+                ], 
+                "command_to_integration": {
+                    "createNewIndicator": "Builtin"
+                }, 
+                "tests": [
+                    "AbuseIPDB PopulateIndicators Test"
+                ]
+            }
+        }, 
+        {
             "TaniumDeployAction": {
                 "name": "TaniumDeployAction", 
                 "deprecated": true, 
                 "depends_on": [
                     "tn-deploy-package"
-                ], 
-                "command_to_integration": {
-                    "e": "t"
-                }
+                ]
             }
         }, 
         {
@@ -4796,11 +4151,7 @@
                 "script_executions": [
                     "AdSearch", 
                     "addOneTimeEntitlement"
-                ], 
-                "command_to_integration": {
-                    "h": "a", 
-                    "l": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4822,10 +4173,7 @@
                 ], 
                 "script_executions": [
                     "ssh"
-                ], 
-                "command_to_integration": {
-                    "h": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4839,10 +4187,7 @@
                 "name": "CBWatchlists", 
                 "depends_on": [
                     "cb-watchlist-get"
-                ], 
-                "command_to_integration": {
-                    "t": "c"
-                }
+                ]
             }
         }, 
         {
@@ -4850,10 +4195,7 @@
                 "name": "DamSensorDown", 
                 "depends_on": [
                     "dam-get-latest-by-rule"
-                ], 
-                "command_to_integration": {
-                    "e": "d"
-                }
+                ]
             }
         }, 
         {
@@ -4862,10 +4204,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-deactivate-user"
-                ], 
-                "command_to_integration": {
-                    "r": "o"
-                }
+                ]
             }
         }, 
         {
@@ -4873,10 +4212,7 @@
                 "name": "NetwitnessQuery", 
                 "depends_on": [
                     "nw-sdk-query"
-                ], 
-                "command_to_integration": {
-                    "y": "n"
-                }
+                ]
             }
         }, 
         {
@@ -4884,10 +4220,7 @@
                 "name": "CBSensors", 
                 "depends_on": [
                     "cb-list-sensors"
-                ], 
-                "command_to_integration": {
-                    "s": "c"
-                }
+                ]
             }
         }, 
         {
@@ -4900,10 +4233,7 @@
                 "name": "ADGetComputer", 
                 "depends_on": [
                     "ad-search"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -4912,9 +4242,6 @@
                 "depends_on": [
                     "demisto-api-multipart"
                 ], 
-                "command_to_integration": {
-                    "t": "d"
-                }, 
                 "tests": [
                     "DemistoUploadFileToIncident Test"
                 ]
@@ -4925,10 +4252,7 @@
                 "name": "SbDownload", 
                 "depends_on": [
                     "sb-download"
-                ], 
-                "command_to_integration": {
-                    "d": "s"
-                }
+                ]
             }
         }, 
         {
@@ -4939,10 +4263,7 @@
                 ], 
                 "script_executions": [
                     "RemoteExec"
-                ], 
-                "command_to_integration": {
-                    "c": "R"
-                }
+                ]
             }
         }, 
         {
@@ -4992,9 +4313,6 @@
                 "script_executions": [
                     "checkpoint"
                 ], 
-                "command_to_integration": {
-                    "t": "c"
-                }, 
                 "tests": [
                     "blockip_test_playbook"
                 ]
@@ -5005,10 +4323,7 @@
                 "name": "TrendmicroSecurityProfileAssignToHost", 
                 "depends_on": [
                     "trendmicro-security-profile-assign-to-host"
-                ], 
-                "command_to_integration": {
-                    "t": "t"
-                }
+                ]
             }
         }, 
         {
@@ -5018,9 +4333,6 @@
                     "jira-create-issue", 
                     "jira-delete-issue"
                 ], 
-                "command_to_integration": {
-                    "e": "j"
-                }, 
                 "tests": [
                     "JiraCreateIssue-example-test"
                 ]
@@ -5040,10 +4352,7 @@
                 ], 
                 "script_executions": [
                     "ADGetUserGroups"
-                ], 
-                "command_to_integration": {
-                    "h": "a"
-                }
+                ]
             }
         }, 
         {
@@ -5051,10 +4360,7 @@
                 "name": "NetwitnessSAGetComponents", 
                 "depends_on": [
                     "nw-get-components"
-                ], 
-                "command_to_integration": {
-                    "s": "n"
-                }
+                ]
             }
         }, 
         {
@@ -5066,9 +4372,6 @@
                 "script_executions": [
                     "QRadarFullSearch"
                 ], 
-                "command_to_integration": {
-                    "s": "q"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -5094,10 +4397,7 @@
                 "name": "CBPFindComputer", 
                 "depends_on": [
                     "cbp-computer-search"
-                ], 
-                "command_to_integration": {
-                    "h": "c"
-                }
+                ]
             }
         }, 
         {
@@ -5105,10 +4405,7 @@
                 "name": "ClassifierNotifyAdmin", 
                 "depends_on": [
                     "send-mail"
-                ], 
-                "command_to_integration": {
-                    "l": "s"
-                }
+                ]
             }
         }, 
         {
@@ -5120,10 +4417,7 @@
                 ], 
                 "script_executions": [
                     "addEntitlement"
-                ], 
-                "command_to_integration": {
-                    "d": "s"
-                }
+                ]
             }
         }, 
         {
@@ -5136,10 +4430,7 @@
                 "name": "NetwitnessSAGetEvents", 
                 "depends_on": [
                     "nw-get-events"
-                ], 
-                "command_to_integration": {
-                    "s": "n"
-                }
+                ]
             }
         }, 
         {
@@ -5165,10 +4456,7 @@
                 "name": "LCMDetectedIndicators", 
                 "depends_on": [
                     "lcm-indicators"
-                ], 
-                "command_to_integration": {
-                    "s": "l"
-                }
+                ]
             }
         }, 
         {
@@ -5179,7 +4467,7 @@
                     "search"
                 ], 
                 "command_to_integration": {
-                    "h": "s"
+                    "search": "splunk"
                 }
             }
         }, 
@@ -5194,10 +4482,7 @@
                 "name": "TrendmicroHostRetrieveAll", 
                 "depends_on": [
                     "trendmicro-host-retrieve-all"
-                ], 
-                "command_to_integration": {
-                    "l": "t"
-                }
+                ]
             }
         }, 
         {
@@ -5215,10 +4500,7 @@
                 "name": "SEPScan", 
                 "depends_on": [
                     "sep-command-status"
-                ], 
-                "command_to_integration": {
-                    "s": "s"
-                }
+                ]
             }
         }, 
         {
@@ -5255,9 +4537,6 @@
                 "script_executions": [
                     "QRadarFullSearch"
                 ], 
-                "command_to_integration": {
-                    "s": "q"
-                }, 
                 "tests": [
                     "No test"
                 ]
@@ -5289,10 +4568,7 @@
                 "deprecated": true, 
                 "depends_on": [
                     "vec-get-host-by-id"
-                ], 
-                "command_to_integration": {
-                    "d": "v"
-                }
+                ]
             }
         }, 
         {
@@ -5989,6 +5265,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -7687,7 +6966,12 @@
                     "cybereason-query-malops", 
                     "cybereason-malop-processes", 
                     "cybereason-add-comment", 
-                    "cybereason-update-malop-status"
+                    "cybereason-update-malop-status", 
+                    "cybereason-prevent-file", 
+                    "cybereason-unprevent-file", 
+                    "cybereason-query-file", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-user"
                 ], 
                 "tests": [
                     "Cybereason Test"
@@ -10795,7 +10079,14 @@
                     "tc-fetch-incidents", 
                     "tc-incident-associate-indicator", 
                     "domain", 
-                    "tc-get-incident-associate-indicators"
+                    "tc-get-incident-associate-indicators", 
+                    "tc-update-indicator", 
+                    "tc-delete-indicator-tag", 
+                    "tc-delete-indicator", 
+                    "tc-create-campaign", 
+                    "tc-create-event", 
+                    "tc-create-threat", 
+                    "tc-delete-group"
                 ], 
                 "tests": [
                     "test-ThreatConnect"
@@ -12014,6 +11305,9 @@
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
                     "intsights-close-alert"
+                ], 
+                "tests": [
+                    "IntSights Test"
                 ]
             }
         }, 
@@ -12389,6 +11683,16 @@
                     "aws-ec2-waiter-snapshot_completed", 
                     "aws-ec2-copy-image", 
                     "aws-ec2-stop-instances"
+                ]
+            }
+        }, 
+        {
+            "CopyContextToFieldTest": {
+                "name": "CopyContextToFieldTest", 
+                "implementing_scripts": [
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "CopyContextToField"
                 ]
             }
         }, 
@@ -13269,6 +12573,14 @@
             }
         }, 
         {
+            "AbuseIPDB PopulateIndicators Test": {
+                "name": "AbuseIPDB PopulateIndicators Test", 
+                "implementing_scripts": [
+                    "AbuseIPDBPopulateIndicators"
+                ]
+            }
+        }, 
+        {
             "efc817d2-6660-4d4f-890d-90513ca1e180": {
                 "name": "Cisco Spark Test", 
                 "implementing_scripts": [
@@ -13479,6 +12791,15 @@
                     "ews-get-contacts", 
                     "ews-get-attachment", 
                     "ews-search-mailboxes"
+                ]
+            }
+        }, 
+        {
+            "SplunkPySearch_Test": {
+                "name": "SplunkPySearch_Test", 
+                "implementing_scripts": [
+                    "SplunkPySearch", 
+                    "VerifyHumanReadableContains"
                 ]
             }
         }, 
@@ -13718,8 +13039,28 @@
         {
             "test-ThreatConnect": {
                 "name": "test-ThreatConnect", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "implementing_commands": [
-                    "tc-owners"
+                    "tc-delete-indicator-tag", 
+                    "tc-create-incident", 
+                    "tc-create-event", 
+                    "tc-owners", 
+                    "tc-create-campaign", 
+                    "tc-tag-indicator", 
+                    "tc-create-threat", 
+                    "tc-incident-associate-indicator", 
+                    "tc-get-tags", 
+                    "tc-get-indicators-by-tag", 
+                    "tc-delete-indicator", 
+                    "tc-indicators", 
+                    "tc-delete-group", 
+                    "tc-fetch-incidents", 
+                    "tc-add-indicator", 
+                    "tc-get-indicator", 
+                    "tc-update-indicator", 
+                    "tc-get-incident-associate-indicators"
                 ]
             }
         }, 
@@ -13895,11 +13236,14 @@
                     "DeleteContext"
                 ], 
                 "implementing_commands": [
+                    "cybereason-query-user", 
                     "cybereason-malop-processes", 
+                    "cybereason-query-file", 
                     "cybereason-query-connections", 
-                    "cybereason-query-processes", 
                     "cybereason-is-probe-connected", 
-                    "cybereason-query-malops"
+                    "cybereason-query-malops", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-processes"
                 ]
             }
         }, 
@@ -15466,7 +14810,8 @@
             "RedLockTest": {
                 "name": "RedLockTest", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "implementing_commands": [
                     "redlock-search-alerts", 

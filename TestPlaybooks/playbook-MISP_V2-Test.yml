@@ -304,10 +304,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: c2ee8731-f77d-449e-8735-c52278525480
+    taskid: 3e165fc5-149e-4cf0-806c-4bd3352e0bc2
     type: regular
     task:
-      id: c2ee8731-f77d-449e-8735-c52278525480
+      id: 3e165fc5-149e-4cf0-806c-4bd3352e0bc2
       version: -1
       name: Delete event
       script: MISP V2|||misp-delete-event
