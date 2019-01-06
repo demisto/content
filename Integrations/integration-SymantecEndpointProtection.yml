@@ -2,7 +2,7 @@ commonfields:
   id: Symantec Endpoint Protection
   version: -1
 name: Symantec Endpoint Protection
-display: Symantec Endpoint Protection 14
+display: Symantec Endpoint Protection
 category: Endpoint
 image: data:image/png;base64,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
 description: Query the Symantec Endpoint Protection Manager using the official REST
@@ -35,13 +35,28 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: 'Time zone (for example: +02:30,-06:00)'
+  name: timeZone
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
-  script: |-
-    // Default timeout and interval parameters for polling the response
+  script: |+
+    import requests
+    import json
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # Default timeout and interval parameters for polling the response
     CLIENT_COMMAND_PARAMETERS = {
         'sep-update-content'    : {'timeout': 120, 'interval': 10},
         'sep-quarantine'        : {'timeout': 120, 'interval': 10},
-        // Don't poll for scan response because it takes too long. The automation will do that
+        #  Don't poll for scan response because it takes too long. The automation will do that
         'sep-scan'              : {'timeout': 1, 'interval': 1}
     }
 
@@ -75,449 +90,429 @@ script:
         'created'
     ]
 
-    var fixUrl = function(base) {
-        return ((base[base.length - 1] != '/') ? (base + '/') : base);
-    }
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@    LITERALS    @@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    var buildArgs = function(args) {
-        sArgs = Object.keys(args).map(function(key) {
-            return [key, args[key]].map(encodeURIComponent).join("=");
-        }).join("&");
-        if (sArgs) {
-            return '?' + sArgs;
-        } else {
-            return '';
-        }
-    }
+    TOKEN = demisto.getIntegrationContext().get('TOKEN')
 
-    var buildClientXml = function(data) {
-        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
-                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data);
-    }
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@    HELPER FUNCTIONS    @@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    var buildCommandXml = function(data) {
-        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
-                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data);
-    }
+    def fix_url(base):
+        return (base if base.endswith('/') else (base + '/'))
 
-    var parseResponse = function(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                return JSON.parse(resp.Body);
-            } catch (e) {
-                return resp.Body;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    }
 
-    var doAuth = function() {
-        url = fixUrl(params.server) + 'sepm/api/v1/identity/authenticate';
+    def build_query_params(params):
+        list_params = map(lambda key: key + '=' + str(params[key]), params.keys())
+        quert_params = '&'.join(list_params)
+        return '?' + quert_params if quert_params else ''
+
+
+    def do_auth(server, crads, insecure):
+        url = fix_url(str(server)) + 'sepm/api/v1/identity/authenticate'
         body = {
-            username: (params.authentication ? params.authentication.identifier : ''),
-            password: (params.authentication ? params.authentication.password : ''),
-            domain: (params.domain ? params.domain : '')
-        };
-        res = http(
-            url,
-            {
-                Method: 'POST',
-                Headers: {"Content-Type": ["application/json"]},
-                Body: JSON.stringify(body),
-
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        return res;
-    };
-
-    var doGet = function(token, raw, suffix) {
-        url = fixUrl(params.server) + suffix + buildArgs(args);
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Headers: {'Authorization': ['Bearer ' + token]}
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        if (raw) {
-            return res;
-        } else {
-            return parseResponse(res);
+            'username': crads.get('identifier') if crads.get('identifier') else '',
+            'password': crads.get('password') if crads.get('password') else '',
+            'domain': crads.get('domain') if crads.get('domain') else ''
         }
-    }
+        res = requests.post(url, headers={"Content-Type":"application/json"}, data=json.dumps(body), verify=not insecure)
+        return parse_response(res)
 
-    var doPost = function(token, is_xml, suffix, body) {
-        url = fixUrl(params.server) + suffix;
-        res = http(
-            url,
-            {
-                Method: 'POST',
-                Headers: {'Authorization': ['Bearer ' + token]},
-                Body: body
 
-            },
-            params.insecure,
-            params.proxy
-        );
+    def do_get(token, raw, suffix):
+        insecure = demisto.getParam('insecure')
+        server = demisto.getParam('server')
+        url = fix_url(server) + suffix + build_query_params(demisto.args())
+        res = requests.get(url, headers={'Authorization': 'Bearer ' + token}, verify=not insecure)
+        if (raw):
+            return res
+        else:
+            return parse_response(res)
 
-        res = parseResponse(res);
-        if (is_xml) {
-            res = JSON.parse(x2j(res));
-        }
 
-        return res;
-    }
+    def do_post(token, is_xml, suffix, body):
+        insecure = demisto.getParam('insecure')
+        server = demisto.getParam('server')
+        url = fix_url(server) + suffix
+        res = requests.post(url, headers = {'Authorization': 'Bearer ' + token}, data=body, verify = not insecure)
+        if (is_xml):
+            parsed_response = xml2json(res.content)
+        else:
+            parsed_response = parse_response(res)
+        return parsed_response
 
-    var systemInfo = function(token) {
-        versionJson = doGet(token, false, 'sepm/api/v1/version');
-        avdefJson = doGet(token, false, 'sepm/api/v1/content/avdef/latest');
 
-        var systemInfoJson = {
-            'version': versionJson,
-            'avdef': avdefJson
-        };
+    def parse_response(resp):
+        if resp.status_code == 200:
+            try:
+                return resp.json()
+            except Exception, ex:
+                return_error('Unable to parse response: {}'.format(ex))
+        else:
+            return_error('Error: {}'.format(resp))
 
-        var md = '## System Information\n';
-        md += '### Version\n';
-        md += objToMd(versionJson);
-        md += '### AV Definitions\n';
-        md += objToMd(avdefJson);
+
+    def get_token_from_response(resp):
+        if resp.get('token'):
+            return resp.get('token')
+        else:
+            return_error('No token: {}'.format(resp))
+
+
+    def choose_columns(column_arg, default_list):
+        if not column_arg:
+            columns_list = default_list
+            columns_list.sort()
+        elif column_arg == 'all' or columns =='*':
+            columns_list = []
+        else:
+            columns_list = argToList(columns)
+        return columns_list
+
+
+    def build_command_xml(data):
+        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
+                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data)
+
+    def build_client_xml(data):
+        return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
+                <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data)
+
+
+    def get_command_status_details(token, command_id):
+        xml = build_command_xml('<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(command_id))
+        res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
+
+        return res_json
+
+
+    def poll_response(token, command_id, timeout, interval):
+        retries = timeout / interval
+        is_done = False
+        for _ in range(retries):
+            command_status_json = get_command_status_details(token, command_id)
+            cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
+            state_id = cmd_status_detail.get('stateId')
+            if state_id == '2' or state_id == '3':
+                is_done = True
+                break
+            time.sleep(interval)
 
         return {
-            Type: entryTypes.note, Contents: systemInfoJson, ContentsFormat: formats.json, HumanReadable: md,
-            EntryContext: {'SEPM.ServerAVDefVersion': systemInfoJson.avdef.publishedBySymantec}
-        };
-    }
-
-    var clientContent = function(token) {
-        clientContentJson = doGet(token, false, 'sepm/api/v1/stats/client/content');
-
-        var lastUpdatedDate = (new Date(parseInt(clientContentJson.lastUpdated))).toString();
-        var md = '## Client Content, last updated on {0}\n'.format(lastUpdatedDate);
-        md += tblToMd('Client Content Versions', clientContentJson.clientDefStatusList);
-
-        return {
-            Type: entryTypes.note, Contents: clientContentJson, ContentsFormat: formats.json, HumanReadable: md,
-            EntryContext: {'SEPM.ClientContentVersions': clientContentJson.clientDefStatusList, 'SEPM.LastUpdated': lastUpdatedDate}
-        };
-    }
-
-    var endpointsInfo = function(token) {
-        var jsonRes = doGet(token, false, 'sepm/api/v1/computers');
-
-        // Set the war room result
-        var md = '## Endpoints Information';
-
-        if (args.computerName) {
-            md += ', filtered for hostname: ' + args.computerName;
-        }
-        if(args.lastUpdate) {
-            md += ', filtered for last updated status: ' + args.lastUpdate;
-        }
-        if(args.os){
-            md += ', filtered for os: ' + args.os;
-        }
-        if(args.pageSize){
-            md += ', page size: ' + args.pageSize;
+            'cmdStatusDetail': cmd_status_detail,
+            'isDone': is_done
         }
 
-        md += '\n';
 
-        var entryContext = [];
+    def build_command_response_output(title, command_id, message, response):
+        cmd_status_details = response.get('cmdStatusDetail')
+        cmd_status_details.pop('hardwareKey',None)
 
-        var filteredJsonRes = [];
-        jsonRes.content.forEach(function(content) {
-            filteredJsonRes.push(content);
-            // Set the entry context
-
-            entryContext.push({
-                Hostname: content.computerName,
-                Domain: content.domainOrWorkgroup,
-                IPAddresses: content.ipAddresses,
-                OS: content.operatingSystem + ' | ' + content.osBitness,
-                Description: content.description,
-                MACAddresses: content.macAddresses,
-                BIOSVersion: content.biosVersion,
-                DHCPServer: content.dhcpServer
-            });
-        });
-
-        if (args.columns) {
-            if (args.columns == 'all' || args.columns == '*') {
-                var columnsList = [];
-            } else {
-                columnsList = argToList(args.columns);
-            }
-        } else {
-            columnsList = ENDPOINTS_INFO_DEFAULT_COLUMNS;
-            columnsList.sort();
-        }
-
-        md += tblToMd('Endpoints', filteredJsonRes, columnsList);
-        return {
-            Type: entryTypes.note,
-            Contents: filteredJsonRes,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: {
-                'SEPM.Endpoint(val.computerName == obj.computerName)': entryContext
-            }
-        };
-    }
-
-    var groupsInfo = function(token) {
-        jsonRes = doGet(token, false, 'sepm/api/v1/groups');
-
-        // Set the entry context
-        entryContext = {}
-        entryContext['SEPM.Groups'] = [];
-        jsonRes.content.forEach(function(entry) {
-            var group = {}
-            GROUPS_INFO_DEFAULT_COLUMNS.forEach(function(h) {
-                group[h] = entry[h];
-            });
-            entryContext['SEPM.Groups'].push(group);
-        });
-
-        // Set the war room result
-        if (args.columns) {
-            if (args.columns == 'all' || args.columns == '*') {
-                columnsList = [];
-            } else {
-                columnsList = argToList(args.columns);
-            }
-        } else {
-            columnsList = GROUPS_INFO_DEFAULT_COLUMNS;
-            columnsList.sort();
-        }
-
-        md = tblToMd('Groups Information', jsonRes.content, columnsList);
-        return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: entryContext};
-    }
-
-    var getComputerIdByIp = function(token, ip) {
-        xml = buildClientXml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip));
-        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
-
-        return resJson.Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId;
-    }
-
-    var getComputerIdByHostname = function(token, hostname) {
-        xml = buildClientXml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname));
-        resJson = doPost(token, true, 'sepm/ws/v1/ClientService', xml);
-
-        return resJson.Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId;
-    }
-
-    var getComputerId = function(token) {
-        if (args.ip) {
-            try {
-                computerId = getComputerIdByIp(token, args.ip);
-            } catch (err) {
-                throw 'Failed to locate the endpoint by its IP address.';
-            }
-        } else if (args.hostname) {
-            try {
-                computerId = getComputerIdByHostname(token, args.hostname);
-            } catch (err) {
-                throw 'Failed to locat the endpoint by its hostname.';
-            }
-        } else {
-            throw 'Please provide the IP address or the hostname of endpoint.';
-        }
-
-        return computerId;
-    }
-
-    var getCommandStatusDetails = function(token, commandId) {
-        xml = buildCommandXml('<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(commandId));
-        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
-
-        return resJson;
-    }
-
-    var pollResponse = function(token, commandId, timeout, interval) {
-        retries = timeout / interval;
-        isDone = false;
-        for (var i = 0; i < retries; i++) {
-            commandStatusJson = getCommandStatusDetails(token, commandId);
-            cmdStatusDetail = commandStatusJson.Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail;
-            stateId = cmdStatusDetail.stateId;
-            if (stateId == '2' || stateId == '3') {
-                isDone = true;
-                break;
-            }
-
-            wait(interval);
-        }
-
-        return {
-            'cmdStatusDetail': cmdStatusDetail,
-            'isDone': isDone
-        }
-    }
-
-    var buildCommandResponseOutput = function(title, commandId, message) {
-        cmdStatusDetail = response.cmdStatusDetail;
-        delete cmdStatusDetail.hardwareKey;
-
-        md = '### ' + title + '\n';
-        md += objToMd(cmdStatusDetail) + '\n';
-        md += '### Command ID: {0}\n'.format(commandId);
+        md = tableToMarkdown(title, cmd_status_details) + '\n'
+        md += '### Command ID: {0}\n'.format(command_id)
         md += '### ' + message;
 
-        return {Type: entryTypes.note, Contents: {'cmdStatusDetail': cmdStatusDetail, 'commandId': commandId}, ContentsFormat: formats.json, HumanReadable: md,
-                EntryContext: {'SEPM.LastCommand': {'CommandDetails': cmdStatusDetail, 'CommandId': commandId}}};
-    }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': {
+                'cmdStatusDetail': cmd_status_details,
+                'commandId': command_id
 
-    var runClientCommand = function(token, command) {
-        try {
-            computerId = getComputerId(token);
-        }
-        catch (err) {
-            return {Type: entryTypes.error, Contents: err, ContentsFormat: formats.json, HumanReadable: err, EntryContext: {}};
-        }
-
-        timeout = args.timeout ? parseInt(args.timeout) : CLIENT_COMMAND_PARAMETERS[command]['timeout'];
-        interval = args.interval ? parseInt(args.interval) : CLIENT_COMMAND_PARAMETERS[command]['interval'];
-
-        switch (command) {
-            case 'sep-update-content':
-                commandId = updateContent(token, computerId);
-                break;
-            case 'sep-scan':
-                commandId = scan(token, computerId);
-                break;
-            case 'sep-quarantine':
-                commandId = quarantine(token, computerId);
-                break;
-            default:
-                throw 'Invalid command.';
-        }
-
-        response = pollResponse(token, commandId, timeout, interval);
-        endpoint = args.hostname ? args.hostname : args.ip;
-        title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint);
-
-        if (response.isDone) {
-            message = 'Command is done.';
-        } else if (command == 'sep-scan') {
-            message = 'Command is in progress.';
-        } else {
-            message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout);
-        }
-
-        return buildCommandResponseOutput(title, commandId, message);
-    }
-
-    var commandStatus = function(token) {
-        // Poll once for a response (timeout=1, interval=1)
-        response = pollResponse(token, args.commandId, 1, 1);
-        message = response.isDone ? 'Command is done.' : 'Command is in progress. Run !sep-command-status to check again.';
-
-        return buildCommandResponseOutput('Command status:', args.commandId, message);
-    }
-
-    var updateContent = function(token, computerId) {
-        xml = buildCommandXml('<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList></com:runClientCommandUpdateContent>'.format(computerId));
-        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
-        commandId = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId;
-
-        if(!commandId) {
-            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
-            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
-            if(errorCode || errorMessage){
-              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
-            } else {
-              throw 'Could not retrieve command ID, no error was returned from server';
+            },
+            'HumanReadable': md,
+            'EntryContext': {
+                'SEPM.LastCommand': createContext({'CommandDetails': cmd_status_details,'CommandId': command_id}, removeNull = True)
             }
+        })
+
+    def get_computer_id_by_ip(token, ip):
+        xml = build_client_xml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip))
+        res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
+
+        return demisto.get(json.loads(res_json) ,'Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId')
+
+
+    def get_computer_id_by_hostname(token, hostname):
+        xml = build_command_xml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname))
+        res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
+
+        return demisto.get(json.loads(res_son), 'resJson.Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId')
+
+    def get_computer_id(token, endpoint_ip, endpoint_host_name):
+        if endpoint_ip:
+            try:
+                computer_id = get_computer_id_by_ip(token, endpoint_ip)
+            except Exception, ex:
+                return_error('Failed to locate the endpoint by its IP address.')
+        elif endpoint_ip:
+            try:
+                computer_id = get_computer_id_by_hostname(token, endpoint_ip)
+            except Exception, ex:
+                return_error('Failed to locat the endpoint by its hostname.')
+        else:
+            return_error('Please provide the IP address or the hostname of endpoint.')
+        return computer_id
+
+
+    def update_content(token, computer_id):
+        xml = build_command_xml('<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList></com:runClientCommandUpdateContent>'.format(computer_id))
+        res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
+        command_id = demisto.get(json.loads(res_son), 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId')
+
+        if not command_id:
+            error_code = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode')
+            error_message = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
+            if error_code or error_message:
+                result_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+            else:
+                result_error('Could not retrieve command ID, no error was returned from server')
+        return command_id
+
+
+    def scan (token, computer_id, scan_type):
+        xml = build_command_xml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computer_id, scan_type))
+        res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
+        command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId')
+
+        if not command_id:
+            error_code = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorCode')
+            error_message = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorMessage')
+            if error_code or error_message:
+                result_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+            else:
+                result_error('Could not retrieve command ID, no error was returned from server')
+        return command_id
+
+
+    def quarantine(token, computer_id, action_type):
+        xml = build_command_xml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(action_type, computer_id));
+        res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml);
+        command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId')
+        if not command_id:
+            error_code = demisto.get(res_json, 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.inputErrors.errorCode')
+            error_message = demisto.get(res_json, 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.inputErrors.errorMessage')
+            if error_code or error_message:
+                result_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+            else:
+                result_error('Could not retrieve command ID, no error was returned from server')
+        return command_id
+
+
+
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS    @@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    def test_command():
+        '''
+        This command invokes authentication API call to get the API TOKEN
+        '''
+        # server = demisto.getParam('server')
+        # crads = demisto.getParam('authentication')
+        # insecure = demisto.getParam('insecure')
+        # resp = do_auth(server, crads, insecure)
+
+
+    def system_info_command(token):
+
+        insecure = demisto.getParam('insecure')
+        version_json = do_get(token, False, 'sepm/api/v1/version')
+        avdef_json = do_get(token, False, 'sepm/api/v1/content/avdef/latest')
+        system_info_json = {
+            'version': version_json,
+            'avdef': avdef_json
         }
 
-        return commandId;
-    }
+        md = '## System Information\n'
+        md += tableToMarkdown('Version', version_json)
+        md += tableToMarkdown('AV Definitions', avdef_json)
 
-    var scan = function(token, computerId) {
-        xml = buildCommandXml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computerId, args.scanType));
-        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
-        commandId = resJson.Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId;
+        context = avdef_json.get('publishedBySymantec')
+        if(type(context) is dict):
+            context = createContext(context, removeNull = True)
 
-        if(!commandId) {
-            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
-            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
-            if(errorCode || errorMessage){
-              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
-            } else {
-              throw 'Could not retrieve command ID, no error was returned from server';
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': system_info_json,
+            'HumanReadable': md,
+            'EntryContext': {
+                'SEPM.ServerAVDefVersion': context
             }
-        }
+        })
 
-        return commandId;
-    }
 
-    var quarantine = function(token, computerId) {
-        xml = buildCommandXml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(args.actionType, computerId));
-        resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
-        commandId = resJson.Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId;
+    def client_content_command(token):
+        client_content_json = do_get(token, False, 'sepm/api/v1/stats/client/content')
+        epoch_time = client_content_json.get('lastUpdated')
+        # epoch_time = '1546185294597'
+        # last_update_date = time.localtime(int(epoch_time) /1000)
+        last_update_date = timestamp_to_datestring(epoch_time, '%a %b %d %y %H:%M:%S %z')
 
-        if(!commandId) {
-            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
-            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
-            if(errorCode || errorMessage){
-              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
-            } else {
-              throw 'Could not retrieve command ID, no error was returned from server';
+        md = '## Client Content, last updated on {0}\n'.format(last_update_date)
+        md += tableToMarkdown('Client Content Versions', client_content_json.get('clientDefStatusList'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': client_content_json,
+            'HumanReadable': md,
+            'EntryContext': createContext({'SEPM.ClientContentVersions': client_content_json.get('clientDefStatusList'),'SEPM.LastUpdated': last_update_date}, removeNull = True)
+        })
+
+
+    def endpoints_info_command(token):
+        computer_name = demisto.getArg('computerName')
+        last_update = demisto.getArg('lastUpdate')
+        os = demisto.getArg('os')
+        page_size = demisto.getArg('pageSize')
+        columns = demisto.getArg('columns')
+
+        json_response = do_get(token, False, 'sepm/api/v1/computers')
+
+        md = '## Endpoints Information'
+        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
+        md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
+        md += ', filtered for os: {}'.format(os) if os else ''
+        md += ', page size: {}'.format(page_size) if page_size else ''
+        md += '\n'
+
+        entry_context = []
+        filtered_json_response = json_response.get('content')
+        for content in filtered_json_response:
+            entry_context.append({
+                'Hostname': content.get('computerName'),
+                'Domain': content.get('domainOrWorkgroup'),
+                'IPAddresses': content.get('ipAddresses'),
+                'OS': content.get('operatingSystem') + ' | ' + content.get('osBitness'),
+                'Description': content.get('content.description'),
+                'MACAddresses': content.get('macAddresses'),
+                'BIOSVersion': content.get('biosVersion'),
+                'DHCPServer': content.get('dhcpServer')
+            })
+
+        columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
+
+        md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': filtered_json_response,
+            'HumanReadable': md,
+            'EntryContext': {
+                'SEPM.Endpoint(val.computerName == obj.computerName)': createContext(entry_context, removeNull = True)
             }
-        }
+        })
 
-        return commandId;
-    }
 
-    var resp = doAuth(params);
-    var token;
-    if (resp.StatusCode === 200) {
-        token = JSON.parse(resp.Body).token;
-    } else {
-        return resp;
-    }
+    def groups_info_command(token):
+        columns = demisto.getArg('columns')
+        json_res = do_get(token, False, 'sepm/api/v1/groups')
+        entry_context = {}
+        entry_context['SEPM.Groups'] = []
+        filtered_json_response = json_res.get('content')
+        for entry in filtered_json_response:
+            group = {}
+            for header in GROUPS_INFO_DEFAULT_COLUMNS:
+                group[header] = entry[header]
+            entry_context['SEPM.Groups'].append(group)
 
-    switch (command) {
-        case 'test-module':
-            if (resp.StatusCode === 200) {
-                return 'ok';
-            } else if (resp.Status) {
-                return resp.Status;
-            } else {
-                return resp;
-            }
-            break;
-        case 'sep-system-info':
-            return systemInfo(token);
-        case 'sep-client-content':
-            return clientContent(token);
-        case 'sep-endpoints-info':
-            return endpointsInfo(token);
-        case 'sep-groups-info':
-            return groupsInfo(token);
-        case 'sep-command-status':
-            return commandStatus(token);
-        case 'sep-update-content':
-        case 'sep-scan':
-        case 'sep-quarantine':
-            return runClientCommand(token, command);
-        default:
-    }
-  type: javascript
+        columns_list = choose_columns(columns, GROUPS_INFO_DEFAULT_COLUMNS)
+
+        md = tableToMarkdown('Groups Information', filtered_json_response, columns_list)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': json_res,
+            'HumanReadable': md,
+            'EntryContext': createContext(entry_context, removeNull = True)
+
+        })
+
+    def command_status(token):
+        # Poll once for a response (timeout=1, interval=1)
+        command_id = demisto.getArg('commandId')
+        response = poll_response(token, command_id, 1, 1)
+        message = 'Command is done.' if response.get('isDone') else 'Command is in progress. Run !sep-command-status to check again.';
+
+        return build_command_response_output('Command status:', command_id, message, response)
+
+
+
+    def run_client_command(token, command):
+        endpoint_ip = demisto.getArg('ip')
+        endpoint_host_name = demisto.getArg('hostname')
+        try:
+            computer_id = get_computer_id(token, endpoint_ip, endpoint_host_name)
+            timeout = int(demisto.getParam('timeout')) if demisto.getParam('timeout') else CLIENT_COMMAND_PARAMETERS[command]['timeout']
+            interval = int(demisto.getParam('interval')) if demisto.getParam('interval') else CLIENT_COMMAND_PARAMETERS[command]['interval']
+
+        except Exception, ex:
+            return_error('unable to run command: {}'.format(ex))
+
+        if command == 'sep-update-content':
+            command_id = update_content(token, computer_id)
+        elif command == 'sep-scan':
+            scan_type = demisto.getArg('scanType')
+            command_id = scan(token, computer_id, scan_type)
+        elif command == 'sep-quarantine':
+            action_type = demisto.getArg('actionType')
+            command_id = quarantine(token, computer_id, action_type)
+
+        response = poll_response(token, command_id, timeout, interval)
+        endpoint = endpoint_ip if endpoint_ip else endpoint_host_name
+        title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint)
+
+        if response.get('isDone'):
+
+            message = 'Command is done.'
+        elif command == 'sep-scan':
+            message = 'Command is in progress.'
+        else:
+            message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout)
+
+        return build_command_response_output(title, command_id, message, response)
+
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS SWITCH    @@@@@@@@@@@@@@@@@@@@@@@@@@
+    '''
+    Before EVERY command the follwing tow lines are performed (do_auth and get_token_from_response)
+    '''
+    resp = do_auth(server = demisto.getParam('server'), crads = demisto.getParam('authentication'), insecure = demisto.getParam('insecure'))
+    token = get_token_from_response(resp)
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        if token:
+            demisto.results('ok')
+    if demisto.command() == 'sep-system-info':
+        system_info_command(token)
+    if demisto.command() == 'sep-client-content':
+        client_content_command(token)
+    if demisto.command() == 'sep-endpoints-info':
+        endpoints_info_command(token)
+    if demisto.command() == 'sep-groups-info':
+        groups_info_command(token)
+    if demisto.command() == 'sep-command-status':
+        command_status(token)
+    if demisto.command() == 'sep-quarantine':
+        run_client_command(token, 'sep-quarantine')
+    if demisto.command() == 'sep-update-content':
+        run_client_command(token, 'sep-update-content')
+    if demisto.command() == 'sep-scan':
+        run_client_command(token, 'sep-scan')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  type: python
   commands:
   - name: sep-endpoints-info
     arguments:
@@ -673,6 +668,4 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last-updated date.
     description: Retrieves the client content.
-hidden: false
-tests:
-- sep_-_test_endpoint_search
+  runonce: false
