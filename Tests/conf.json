@@ -738,11 +738,13 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test"
+            "playbookID": "AbuseIPDB Test",
+            "nightly": true
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB PopulateIndicators Test"
+            "playbookID": "AbuseIPDB PopulateIndicators Test",
+            "nightly": true
         },
         {
             "integrations" : "jira",
