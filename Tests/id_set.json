@@ -6271,12 +6271,13 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "Detonate File - HybridAnalysis", 
                     "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
+                    "WildFire - Detonate file", 
                     "Detonate File - Cuckoo", 
                     "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - SNDBOX", 
                     "Detonate File - ThreatGrid"
                 ]
             }
@@ -6513,6 +6514,19 @@
                 "implementing_commands": [
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis": {
+                "name": "Detonate File - HybridAnalysis", 
+                "fromversion": "4.0.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "hybrid-analysis-submit-sample", 
+                    "hybrid-analysis-scan"
                 ]
             }
         }
@@ -7907,7 +7921,8 @@
                     "hybrid-analysis-scan", 
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-search", 
-                    "hybrid-analysis-detonate-file"
+                    "hybrid-analysis-detonate-file", 
+                    "hybrid-analysis-get-report-status"
                 ]
             }
         }, 
@@ -14275,6 +14290,18 @@
                 "implementing_scripts": [
                     "SplunkPySearch", 
                     "VerifyHumanReadableContains"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis - Test": {
+                "name": "Detonate File - HybridAnalysis - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate File - HybridAnalysis"
                 ]
             }
         }
