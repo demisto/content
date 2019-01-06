@@ -836,3 +836,5 @@ script:
       type: string
     description: Retrieve data from ThreatMiner about a specified file.
   runonce: false
+tests:
+  - ThreatMiner-Test

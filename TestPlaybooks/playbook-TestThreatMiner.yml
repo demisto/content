@@ -1,5 +1,5 @@
-id: 0951e543-6f41-4d36-8801-fddf70065c7a
-version: 25
+id: ThreatMiner-Test
+version: -1
 name: ThreatMiner - Test
 starttaskid: "0"
 tasks:
