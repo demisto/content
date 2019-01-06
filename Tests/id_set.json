@@ -4933,7 +4933,7 @@
                     "Exists"
                 ], 
                 "tests": [
-                    "No Tests - Deprecated playbook"
+                    "No Tests"
                 ]
             }
         }, 
@@ -5665,7 +5665,7 @@
                     "Search Endpoints By Hash - Generic"
                 ], 
                 "tests": [
-                    "No Tests - for now"
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
