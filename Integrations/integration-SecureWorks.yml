@@ -1597,4 +1597,4 @@ script:
 fromversion: 3.6.0
 releaseNotes: "-"
 tests:
-    - No test - instance is on local machine
+    - Secureworks test
