@@ -17,6 +17,9 @@
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {
+            "playbookID": "CopyContextToFieldTest"
+        },
+        {
             "integrations": "OTRS",
             "playbookID": "OTRS Test"
         },
@@ -25,7 +28,8 @@
             "playbookID": "AttivoBotsinkTest"
         },
         {
-            "playbookID": "CreatePhishingClassifierMLTest"
+            "playbookID": "CreatePhishingClassifierMLTest",
+            "timeout" : 2400
         },
         {
             "integrations": "Cymon",
@@ -502,6 +506,10 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test"
+        },
+        {
             "integrations" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
             "timeout" : 400,
@@ -910,7 +918,8 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "tenable-sc-test": "Unstable instance = flaky test"
+        "tenable-sc-test": "Unstable instance = flaky test",
+        "XFE Test": "License expired"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -939,6 +948,7 @@
         "Lastline": "Out of quota"
     },
     "nigthly_integrations": [
-        "Lastline"
+        "Lastline",
+        "TruSTAR"
     ]
 }
