@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -41,6 +41,7 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -60,7 +61,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -100,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -121,7 +122,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2820
         }
       }
@@ -153,7 +154,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -190,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -204,9 +205,9 @@ tasks:
       id: e1400e84-63a8-446c-82a9-92b0275334e3
       version: -1
       name: Upload sample
-      script: MISP V2|||misp-upload-sample
+      scriptName: misp_upload_sample
       type: regular
-      iscommand: true
+      iscommand: false
       brand: MISP V2
     nexttasks:
       '#none#':
@@ -221,8 +222,6 @@ tasks:
       fileEntryID:
         simple: ${File.EntryID}
       info: {}
-      threat_level_id:
-        simple: "1"
       to_ids: {}
     separatecontext: false
     view: |-
@@ -266,7 +265,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -280,9 +279,9 @@ tasks:
       id: fd366686-fc45-4073-8c12-722f08f8a78f
       version: -1
       name: Download sample
-      script: MISP V2|||misp-download-sample
+      scriptName: misp_download_sample
       type: regular
-      iscommand: true
+      iscommand: false
       brand: MISP V2
     nexttasks:
       '#none#':
@@ -293,7 +292,6 @@ tasks:
         simple: ${MISP.Event.ID}
       hash:
         simple: ${File.MD5}
-      unzip: {}
     separatecontext: false
     view: |-
       {
@@ -326,7 +324,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2645
         }
       }
@@ -354,7 +352,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -384,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2120
         }
       }
@@ -414,7 +412,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1595
         }
       }
@@ -452,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1420
         }
       }
@@ -490,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1945
         }
       }
@@ -533,7 +531,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
@@ -553,6 +551,7 @@ tasks:
     nexttasks:
       "yes":
       - "11"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -576,8 +575,74 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: d17a714d-8746-4066-8447-09fd5aae7c5e
+    type: regular
+    task:
+      id: d17a714d-8746-4066-8447-09fd5aae7c5e
+      version: -1
+      name: Download sample (deprecated script)
+      scriptName: misp_download_sample
+      type: regular
+      iscommand: false
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allSamples: {}
+      eventID:
+        simple: ${MISP.Event.ID}
+      hash:
+        simple: ${File.MD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 21a45e48-06a4-4ece-8fb7-045f8acd1c1c
+    type: regular
+    task:
+      id: 21a45e48-06a4-4ece-8fb7-045f8acd1c1c
+      version: -1
+      name: Upload sample (deprecated script)
+      scriptName: misp_upload_sample
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      analysis: {}
+      category: {}
+      comment: {}
+      distribution: {}
+      event_id: {}
+      fileEntryID:
+        simple: ${File.EntryID}
+      info: {}
+      to_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -588,7 +653,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2835,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }

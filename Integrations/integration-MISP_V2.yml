@@ -102,7 +102,6 @@ script:
         'version': 'Version'
     }
 
-
     THREAT_LEVELS_WORDS = {
             '1': 'HIGH',
             '2': 'MEDIUM',
@@ -170,7 +169,7 @@ script:
             events[i] = {k:events[i].get(k) for k in event_args if k in events[i]}
 
             # Remove 'Event' keyword from 'RelatedEvent'
-            if events[i]['RelatedEvent']:
+            if events[i].get('RelatedEvent'):
                 events[i]['RelatedEvent'] = [r_event.get('Event') for r_event in events[i].get('RelatedEvent')]
 
                 # Get only IDs from related event
@@ -180,7 +179,7 @@ script:
                 events[i]['RelatedEvent'] = related_events
 
             # Build Galaxy
-            if events[i]['Galaxy']:
+            if events[i].get('Galaxy'):
                 galaxy = list()
                 for star in events[i]['Galaxy']:
                     new_star = {
@@ -191,9 +190,9 @@ script:
                     galaxy.append(new_star)
                 events[i]['Galaxy'] = galaxy
             # Build tag
-            if events[i]['Tag']:
+            if events[i].get('Tag'):
                 tag_list = list()
-                for tag in events[i]['Tag']:
+                for tag in events[i].get('Tag'):
                     tag_list.append({'Name': tag.get('name')})
                 events[i]['Tag'] = tag_list
         events = replace_keys(events)
