@@ -11,6 +11,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "Dell Secureworks",
+            "playbookID": "secureworks_test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -610,14 +614,14 @@
             "timeout": 400
         },
         {
+            "playbookID": "Cybereason Test",
+            "integrations": "Cybereason",
+            "timeout": 1200
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test",
-            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
@@ -738,7 +742,13 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test"
+            "playbookID": "AbuseIPDB Test",
+            "nightly": true
+        },
+        {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB PopulateIndicators Test",
+            "nightly": true
         },
         {
             "integrations" : "jira",
@@ -917,7 +927,9 @@
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
-        "XFE Test": "License expired"
+        "XFE Test": "License expired",
+        "FireEye HX Test": "Test unstable - to be fixed by @noac",
+        "CuckooTest": "Skipped due to unstable instance"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -943,7 +955,8 @@
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
-        "Lastline": "Out of quota"
+        "Lastline": "Out of quota",
+        "Netskope": "instance is down"
     },
     "nigthly_integrations": [
         "Lastline",
