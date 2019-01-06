@@ -606,14 +606,14 @@
             "timeout": 400
         },
         {
-            "integrations": "VirusTotal - Private API",
-            "playbookID": "virusTotalPrivateAPI-test-playbook",
-            "nightly": true
-        },
-        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test",
             "timeout": 1200
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
         },
         {
             "integrations": "Cisco Meraki",
