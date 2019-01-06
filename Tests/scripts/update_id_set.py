@@ -213,7 +213,7 @@ def get_script_data(file_path):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on = get_depends_on(data_dictionary)
-    script_executions = re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code)
+    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -251,6 +251,24 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
                     instance[obj_id] = obj_data[obj_id]
+
+
+def add_new_object_to_id_set(obj_id, obj_data, file_path, instances_set):
+    obj_in_set = False
+    file_to_version = get_to_version(file_path)
+    file_from_version = get_from_version(file_path)
+
+    for instance in instances_set:
+        instance_id = instance.keys()[0]
+        integration_to_version = instance[instance_id].get('toversion', '99.99.99')
+        integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
+        if (obj_id == instance_id and file_from_version == integration_from_version and
+                file_to_version == integration_to_version):
+            instance[obj_id] = obj_data[obj_id]
+            obj_in_set = True
+
+    if not obj_in_set:
+        instances_set.append(obj_data)
 
 
 def re_create_id_set():
@@ -318,19 +336,24 @@ def update_id_set():
     if added_files:
         for file_path in added_files:
             if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-                integration_set.append(get_integration_data(file_path))
+                add_new_object_to_id_set(get_script_or_integration_id(file_path), get_integration_data(file_path),
+                                         file_path, integration_set)
                 print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
             if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_set.append(get_script_data(file_path))
+                add_new_object_to_id_set(get_script_or_integration_id(file_path), get_script_data(file_path),
+                                         file_path, script_set)
                 print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                playbook_set.append(get_playbook_data(file_path))
+                add_new_object_to_id_set(collect_ids(file_path), get_playbook_data(file_path),
+                                         file_path, playbook_set)
                 print("Adding {0} to id_set".format(collect_ids(file_path)))
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                test_playbook_set.append(get_playbook_data(file_path))
+                add_new_object_to_id_set(collect_ids(file_path), get_playbook_data(file_path),
+                                         file_path, test_playbook_set)
                 print("Adding {0} to id_set".format(collect_ids(file_path)))
             if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_set.append(get_script_data(file_path))
+                add_new_object_to_id_set(get_script_or_integration_id(file_path), get_script_data(file_path),
+                                         file_path, script_set)
                 print("Adding {0} to id_set".format(collect_ids(file_path)))
 
     if modified_files:
