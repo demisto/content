@@ -1,11 +1,11 @@
 {
-  "id":"mttr-by-type",
+  "id":"mttd-by-type",
   "version":-1,
-  "fromVersion":"3.5.0",
-  "name":"MTTR by Type",
+  "fromVersion":"4.1",
+  "name":"MTTD by Type",
   "dataType":"incidents",
   "widgetType":"line",
-  "query":"-category:job and status:closed",
+  "query":"-category:job and detectionsla.runStatus:ended",
   "isPredefined":true,
   "dateRange":{
     "fromDate":"0001-01-01T00:00:00Z",
@@ -19,9 +19,8 @@
     }
   },
   "params":{
-     "keys":["avg|openDuration / 3600"],
+     "keys":["avg|detectionsla.totalDuration / 3600"],
      "groupBy" : ["occurred(d)", "type"]
   },
-  "description": "Shows changes in Mean Time to Resolution, over time, while differentiating between incident types.",
-  "releaseNotes": "MTTR now also in timeline widget"
+  "description": "A widget that shows the Mean Time to Detection, by incident type."
 }
