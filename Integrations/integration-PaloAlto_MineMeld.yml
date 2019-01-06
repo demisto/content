@@ -341,7 +341,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['domain']:  indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -419,7 +419,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['url']:  indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -428,7 +428,7 @@ script:
         else:
             result_text = 'MineMeld URL severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -506,7 +506,7 @@ script:
         else:
             result_text = 'MineMeld File severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -584,7 +584,7 @@ script:
         else:
             result_text = 'MineMeld IP severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
