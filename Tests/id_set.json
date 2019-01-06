@@ -10603,6 +10603,21 @@
                     "intsights-close-alert"
                 ]
             }
+        }, 
+        {
+            "Symantec Endpoint Protection - old": {
+                "name": "Symantec Endpoint Protection - old", 
+                "commands": [
+                    "sep-endpoints-info", 
+                    "sep-update-content", 
+                    "sep-scan", 
+                    "sep-groups-info", 
+                    "sep-system-info", 
+                    "sep-command-status", 
+                    "sep-quarantine", 
+                    "sep-client-content"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
