@@ -613,7 +613,7 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test",
-            "timeout": 300
+            "timeout": 1200
         },
         {
             "integrations": "Cisco Meraki",
