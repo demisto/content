@@ -1,0 +1,70 @@
+id: AbuseIPDB PopulateIndicators Test
+version: -1
+name: AbuseIPDB PopulateIndicators Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0295597d-b28b-437b-8c9c-f81c3ca854e4
+    type: start
+    task:
+      id: 0295597d-b28b-437b-8c9c-f81c3ca854e4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 00a03d74-204e-4af1-8684-cb04e2db32bf
+    type: regular
+    task:
+      id: 00a03d74-204e-4af1-8684-cb04e2db32bf
+      version: -1
+      name: AbuseIPDBPopulateIndicators
+      scriptName: AbuseIPDBPopulateIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      days: {}
+      limit:
+        simple: "10"
+      saveToContext:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

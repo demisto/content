@@ -4419,6 +4419,15 @@
             }
         }, 
         {
+            "AbuseIPDBPopulateIndicators": {
+                "name": "AbuseIPDBPopulateIndicators", 
+                "depends_on": [
+                    "abuseipdb-get-blacklist", 
+                    "createNewIndicator"
+                  ]
+            }
+        },
+       {
             "CybereasonPreProcessingExample": {
                 "name": "CybereasonPreProcessingExample", 
                 "script_executions": [
@@ -14275,6 +14284,14 @@
                 "implementing_scripts": [
                     "SplunkPySearch", 
                     "VerifyHumanReadableContains"
+                ]
+            }
+        }, 
+        {
+            "AbuseIPDB PopulateIndicators Test": {
+                "name": "AbuseIPDB PopulateIndicators Test", 
+                "implementing_scripts": [
+                    "AbuseIPDBPopulateIndicators"
                 ]
             }
         }
