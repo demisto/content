@@ -1596,4 +1596,4 @@ script:
   runonce: false
 fromversion: 3.6.0
 tests:
-    - Run all tests
+    - No test - instance is on local machine
