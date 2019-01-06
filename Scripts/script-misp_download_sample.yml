@@ -43,8 +43,6 @@ args:
     the hash provided above
 scripttarget: 0
 dependson:
-  must:
-  - internal-misp-download-sample
 releaseNotes: 'Script is deprecated, use misp-download-sample in MISP V2 integration instead'
 tests:
 - MISP V2 Test
