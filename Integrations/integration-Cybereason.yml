@@ -1908,4 +1908,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "1. Improved malop fetching as incidents implementation. 2. Added commands to prevent and unprevent file"
+releaseNotes: "1. Improved malop fetching as incidents implementation. 2. Added commands to prevent and unprevent file "

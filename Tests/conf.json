@@ -610,14 +610,14 @@
             "timeout": 400
         },
         {
+            "playbookID": "Cybereason Test",
+            "integrations": "Cybereason",
+            "timeout": 1200
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test",
-            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
@@ -921,7 +921,8 @@
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
-        "XFE Test": "License expired"
+        "XFE Test": "License expired",
+        "FireEye HX Test": "Test unstable - to be fixed by @noac"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
