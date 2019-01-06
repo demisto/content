@@ -5265,7 +5265,7 @@
                     "Detonate File - Generic"
                 ], 
                 "tests": [
-                    "No Tests - Deprecated playbook"
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
