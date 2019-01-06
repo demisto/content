@@ -737,6 +737,10 @@
             "playbookID": "AbuseIPDB Test"
         },
         {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB PopulateIndicators Test"
+        },
+        {
             "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
         },
@@ -939,7 +943,8 @@
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
-        "Lastline": "Out of quota"
+        "Lastline": "Out of quota",
+        "Netskope": "instance is down"
     },
     "nigthly_integrations": [
         "Lastline",
