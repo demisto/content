@@ -246,8 +246,8 @@ def get_depends_on(data_dict):
     depends_on_list = list(set([cmd.split('|')[-1] for cmd in depends_on]))
     command_to_integration = {}
     for cmd in depends_on:
-        splitted_cmd = cmd.split('|')[-1]
-        if splitted_cmd[0]:
+        splitted_cmd = cmd.split('|')
+        if splitted_cmd[0] and '|' in cmd:
             command_to_integration[splitted_cmd[-1]] = splitted_cmd[0]
 
     return depends_on_list, command_to_integration
