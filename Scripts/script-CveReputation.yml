@@ -12,7 +12,7 @@ script: |
   }
 
   if (isError(resCmd)) {
-      throw resCmd[0].Contents;
+      throw resCmd.Contents;
   }
 
   var data = resCmd.Contents;
