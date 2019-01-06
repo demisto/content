@@ -67,3 +67,5 @@ dependson:
   - url
   - Osxcollector
 timeout: 0s
+releaseNotes:
+  - No tests

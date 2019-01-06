@@ -3275,6 +3275,7 @@
             "DataHashReputation": {
                 "name": "DataHashReputation", 
                 "toversion": "3.0.1", 
+                "deprecated": true, 
                 "depends_on": [
                     "file"
                 ]
