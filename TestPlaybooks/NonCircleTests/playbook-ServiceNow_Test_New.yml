@@ -1,0 +1,1779 @@
+id: servicenow_test_new
+version: -1
+name: ServiceNow Test New
+description: This playbook tests the ServiceNow integration commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 67dc347d-93a3-4375-8eed-b618cb1f3f86
+    type: start
+    task:
+      id: 67dc347d-93a3-4375-8eed-b618cb1f3f86
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 11063b19-9c0f-4515-8059-b4b497c968b2
+    type: regular
+    task:
+      id: 11063b19-9c0f-4515-8059-b4b497c968b2
+      version: -1
+      name: DeleteContext (all)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 9a303255-732d-4ea3-8e1f-7dfbffffac5b
+    type: regular
+    task:
+      id: 9a303255-732d-4ea3-8e1f-7dfbffffac5b
+      version: -1
+      name: 'servicenow-create-ticket, Summary: "Hello World"'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "6"
+      - "35"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to:
+        simple: Johnny Doe
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description:
+        simple: Hello World
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      template: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 4977a43f-48f6-416e-836e-3c4bacda978c
+    type: regular
+    task:
+      id: 4977a43f-48f6-416e-836e-3c4bacda978c
+      version: -1
+      name: 'VerifyContextFields: Summary, Assignee'
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      field1:
+        simple: ServiceNow.Ticket.Assignee
+      field2:
+        simple: ServiceNow.Ticket.Summary
+      field3:
+        simple: ServiceNow.Ticket.Priority
+      field4: {}
+      field5: {}
+      value1:
+        simple: Johnny Doe
+      value2:
+        simple: Hello World
+      value3:
+        simple: 5 - Planning
+      value4: {}
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 55b97abb-5187-44c0-89b8-6788bd1b645e
+    type: regular
+    task:
+      id: 55b97abb-5187-44c0-89b8-6788bd1b645e
+      version: -1
+      name: 'servicenow-create-ticket, Summary: "Lovely Day"'
+      description: Create new ServiceNow ticket
+      script: ServiceNow|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "8"
+      - "36"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to:
+        simple: Lucy Liu
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description:
+        simple: Lovely Day
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      template: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 38935e25-02d0-4b88-8153-7de3224e6279
+    type: regular
+    task:
+      id: 38935e25-02d0-4b88-8153-7de3224e6279
+      version: -1
+      name: 'VerifyContextFields: ServiceNow.Ticket[1].Summary, ServiceNow.Ticket[1].Assignee'
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      field1:
+        simple: ServiceNow.Ticket.[1].Assignee
+      field2:
+        simple: ServiceNow.Ticket.[1].Summary
+      field3: {}
+      field4: {}
+      field5: {}
+      value1:
+        simple: Lucy Liu
+      value2:
+        simple: Lovely Day
+      value3: {}
+      value4: {}
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: d2b17f13-7fbb-4591-8dcf-0722dbd5c8c1
+    type: title
+    task:
+      id: d2b17f13-7fbb-4591-8dcf-0722dbd5c8c1
+      version: -1
+      name: Create two tickets
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 1f1dcd0b-d837-475e-8016-01e116314957
+    type: title
+    task:
+      id: 1f1dcd0b-d837-475e-8016-01e116314957
+      version: -1
+      name: Query and update tickets
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 263ed649-f6db-4ea5-8397-a7b954b8fc70
+    type: regular
+    task:
+      id: 263ed649-f6db-4ea5-8397-a7b954b8fc70
+      version: -1
+      name: 'servicenow-query-tickets Ticket #0'
+      script: ServiceNow|||servicenow-query-tickets
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: sys_id=${Ticket.[0].ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: d5acf6cc-0c15-4e49-8aae-19f54bbd91ec
+    type: regular
+    task:
+      id: d5acf6cc-0c15-4e49-8aae-19f54bbd91ec
+      version: -1
+      name: 'servicenow-get-ticket Ticket #1'
+      script: ServiceNow|||servicenow-get-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      get_attachments: {}
+      id:
+        simple: ${Ticket.[1].ID}
+      number: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 57534ab4-5337-4b67-83fe-173578e8a0e5
+    type: regular
+    task:
+      id: 57534ab4-5337-4b67-83fe-173578e8a0e5
+      version: -1
+      name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
+        "New Assignee", State: "2 - In Progress"'
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to:
+        simple: New Assignee
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      id:
+        simple: ${Ticket.[0].ID}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description:
+        simple: Goodbye Please
+      sla_due: {}
+      state:
+        simple: 2 - In Progress
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 7ed76685-7ef4-4101-8b2f-79cad7c40443
+    type: regular
+    task:
+      id: 7ed76685-7ef4-4101-8b2f-79cad7c40443
+      version: -1
+      name: 'servicenow-query Ticket #0'
+      script: '|||servicenow-query-tickets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+      - "29"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: sys_id=${Ticket.[0].ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 60418a74-96ae-4ff1-8b04-689db9e1901b
+    type: regular
+    task:
+      id: 60418a74-96ae-4ff1-8b04-689db9e1901b
+      version: -1
+      name: 'VerifyContextFields (Entry updated - #0, ServiceNow.Ticket[0])'
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      field1:
+        simple: ServiceNow.Ticket.[0].Summary
+      field2:
+        simple: ServiceNow.Ticket.[0].Assignee
+      field3:
+        simple: ServiceNow.Ticket.[0].Priority
+      field4:
+        simple: ServiceNow.Ticket.[0].State
+      field5: {}
+      value1:
+        simple: Goodbye Please
+      value2:
+        simple: New Assignee
+      value3:
+        simple: 5 - Planning
+      value4:
+        simple: 2 - In Progress
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 581c4f00-74a8-4f5f-8760-d377605b6221
+    type: regular
+    task:
+      id: 581c4f00-74a8-4f5f-8760-d377605b6221
+      version: -1
+      name: 'servicenow-add-comment Ticket #0'
+      script: ServiceNow|||servicenow-add-comment
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      comment:
+        simple: This is a new comment
+      id:
+        simple: ${Ticket.[0].ID}
+      post-as-comment: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: 9c3d92e3-6ac0-4fde-8844-d8aeaf41af7d
+    type: regular
+    task:
+      id: 9c3d92e3-6ac0-4fde-8844-d8aeaf41af7d
+      version: -1
+      name: 'servicenow-add-link Ticket #0'
+      script: ServiceNow|||servicenow-add-link
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      id:
+        simple: ${Ticket.[0].ID}
+      link:
+        simple: http://www.google.com
+      post-as-comment: {}
+      text: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 54c7fb27-4836-4f5e-8c7c-7adb523b031a
+    type: regular
+    task:
+      id: 54c7fb27-4836-4f5e-8c7c-7adb523b031a
+      version: -1
+      name: Upload File to War Room
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      data:
+        simple: file data
+      entryId: {}
+      filename:
+        simple: test_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 8c055dee-25f1-4f73-8fb3-bf3fa04d7078
+    type: regular
+    task:
+      id: 8c055dee-25f1-4f73-8fb3-bf3fa04d7078
+      version: -1
+      name: 'Verify output contains: "Hello World"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Hello World
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 795072c5-5b27-4d2a-83af-640e4d8147d0
+    type: regular
+    task:
+      id: 795072c5-5b27-4d2a-83af-640e4d8147d0
+      version: -1
+      name: 'Verify output contains: "Lovely Day"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      extend-context: {}
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Lovely Day
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 78c0f142-5311-4600-8654-6232f4cfb25b
+    type: regular
+    task:
+      id: 78c0f142-5311-4600-8654-6232f4cfb25b
+      version: -1
+      name: 'Verify output contains: "Hello World"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Hello World
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: d2ddf2d4-a568-45cb-84ce-0a6939e57ba3
+    type: regular
+    task:
+      id: d2ddf2d4-a568-45cb-84ce-0a6939e57ba3
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Goodbye Please
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: 891181f3-e216-4d70-87b9-c1f3815ab22b
+    type: regular
+    task:
+      id: 891181f3-e216-4d70-87b9-c1f3815ab22b
+      version: -1
+      name: 'Verify output contains: "Lovely Day"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Lovely Day
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "42":
+    id: "42"
+    taskid: 574fd6e5-c63a-4e80-8ee0-86699dd4ac28
+    type: regular
+    task:
+      id: 574fd6e5-c63a-4e80-8ee0-86699dd4ac28
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Goodbye Please
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+  "43":
+    id: "43"
+    taskid: 33bea087-a196-476e-84c5-34eca5a30aa8
+    type: regular
+    task:
+      id: 33bea087-a196-476e-84c5-34eca5a30aa8
+      version: -1
+      name: 'Verify output contains: "Goodbye Please"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: Goodbye Please
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+  "44":
+    id: "44"
+    taskid: 1881c0da-1a5e-478b-8420-4a259c3457eb
+    type: regular
+    task:
+      id: 1881c0da-1a5e-478b-8420-4a259c3457eb
+      version: -1
+      name: 'Verify output contains: "test_file.txt"'
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      substring:
+        simple: test_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+  "45":
+    id: "45"
+    taskid: a40ccffd-feda-4d50-80ed-462e9e3844fc
+    type: regular
+    task:
+      id: a40ccffd-feda-4d50-80ed-462e9e3844fc
+      version: -1
+      name: 'servicenow-upload-file test_file.txt to Ticket #0'
+      script: ServiceNow|||servicenow-upload-file
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      file_name: {}
+      id:
+        simple: ${Ticket.[0].ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+  "46":
+    id: "46"
+    taskid: 18460c88-cefb-42c5-829e-b7ae3b067072
+    type: regular
+    task:
+      id: 18460c88-cefb-42c5-829e-b7ae3b067072
+      version: -1
+      name: VerifyContextFields - File Uploaded to War Room
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      field1:
+        simple: File.Name
+      field2: {}
+      field3: {}
+      field4: {}
+      field5: {}
+      value1:
+        simple: test_file.txt
+      value2: {}
+      value3: {}
+      value4: {}
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+  "48":
+    id: "48"
+    taskid: 9cf0ecb5-4ade-4c9f-8d22-d38c8c421808
+    type: regular
+    task:
+      id: 9cf0ecb5-4ade-4c9f-8d22-d38c8c421808
+      version: -1
+      name: Get group by name
+      description: Return information about specific servicenow group
+      script: ServiceNow|||servicenow-query-groups
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      group_id: {}
+      group_name:
+        simple: test1
+      limit: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+  "49":
+    id: "49"
+    taskid: f74af86d-da75-4050-87fa-f8891ded74e0
+    type: regular
+    task:
+      id: f74af86d-da75-4050-87fa-f8891ded74e0
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: ServiceNow.Group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+  "50":
+    id: "50"
+    taskid: 8a079b91-fa9d-42f6-8450-c1de37d2fb07
+    type: regular
+    task:
+      id: 8a079b91-fa9d-42f6-8450-c1de37d2fb07
+      version: -1
+      name: 'Get Ticket #0 with attachments'
+      description: Retrieve ticket information by specific ticket ID
+      script: ServiceNow|||servicenow-get-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      get_attachments:
+        simple: "true"
+      id:
+        simple: ${Ticket.[0].ID}
+      number: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+  "51":
+    id: "51"
+    taskid: 7a195718-e882-4017-8e01-3cfcb9f07276
+    type: regular
+    task:
+      id: 7a195718-e882-4017-8e01-3cfcb9f07276
+      version: -1
+      name: Verify File
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+  "52":
+    id: "52"
+    taskid: 825f7a30-af72-423b-89ff-fc1956af5045
+    type: regular
+    task:
+      id: 825f7a30-af72-423b-89ff-fc1956af5045
+      version: -1
+      name: Delete File Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: File
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+  "53":
+    id: "53"
+    taskid: 4ffca856-7a55-4295-825e-36555db10917
+    type: regular
+    task:
+      id: 4ffca856-7a55-4295-825e-36555db10917
+      version: -1
+      name: Query table
+      description: Query a specified table in ServiceNow
+      script: ServiceNow|||servicenow-query-table
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      fields:
+        simple: sys_id,state,active
+      limit: {}
+      query:
+        simple: sys_idin${Ticket.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+  "54":
+    id: "54"
+    taskid: 7ab6f886-dad3-4776-8972-53aacec27312
+    type: regular
+    task:
+      id: 7ab6f886-dad3-4776-8972-53aacec27312
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,state,active
+      path:
+        simple: ServiceNow.Record
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+  "55":
+    id: "55"
+    taskid: 7e21859c-9b5f-49ec-8e5d-9925de902eb4
+    type: regular
+    task:
+      id: 7e21859c-9b5f-49ec-8e5d-9925de902eb4
+      version: -1
+      name: Delete the tickets
+      description: Delete a ticket from ServiceNow
+      script: ServiceNow|||servicenow-delete-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      id:
+        simple: ${Ticket.ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+  "56":
+    id: "56"
+    taskid: e5ce9d86-fd9e-42cf-8358-f6f45db45353
+    type: regular
+    task:
+      id: e5ce9d86-fd9e-42cf-8358-f6f45db45353
+      version: -1
+      name: Create incident as record
+      description: Retrieve record information by specific record ID
+      script: ServiceNow|||servicenow-create-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      custom_fields: {}
+      fields:
+        simple: short_description=Summary;assigned_to=Lucy Liu
+      table_name:
+        simple: incident
+      template: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+  "57":
+    id: "57"
+    taskid: 36c97825-5b42-4c94-8917-3e2043da6550
+    type: regular
+    task:
+      id: 36c97825-5b42-4c94-8917-3e2043da6550
+      version: -1
+      name: Get the record
+      description: Retrieve record information by specific record ID
+      script: ServiceNow|||servicenow-get-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      fields:
+        simple: short_description,assigned_to
+      id:
+        simple: ${ServiceNow.Record.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+  "58":
+    id: "58"
+    taskid: 1f7f419f-c227-4b55-8584-e2905f78c05d
+    type: regular
+    task:
+      id: 1f7f419f-c227-4b55-8584-e2905f78c05d
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      field1:
+        simple: ServiceNow.Record.assigned_to
+      field2:
+        simple: ServiceNow.Record.short_description
+      field3: {}
+      field4: {}
+      field5: {}
+      value1:
+        simple: Lucy Liu
+      value2:
+        simple: Summary
+      value3: {}
+      value4: {}
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+  "59":
+    id: "59"
+    taskid: ffcd8db4-5d7c-4288-8773-a0567edcc1d6
+    type: regular
+    task:
+      id: ffcd8db4-5d7c-4288-8773-a0567edcc1d6
+      version: -1
+      name: Update record
+      description: Update specific ticket
+      script: ServiceNow|||servicenow-update-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      custom_fields: {}
+      fields:
+        simple: assigned_to=John Smith;short_description=New
+      id:
+        simple: ${ServiceNow.Record.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+  "60":
+    id: "60"
+    taskid: 5c442ca7-48f4-4419-8347-1a40d711d8f0
+    type: regular
+    task:
+      id: 5c442ca7-48f4-4419-8347-1a40d711d8f0
+      version: -1
+      name: Get the record
+      description: Retrieve record information by specific record ID
+      script: ServiceNow|||servicenow-get-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      fields:
+        simple: short_description,assigned_to
+      id:
+        simple: ${ServiceNow.Record.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+  "61":
+    id: "61"
+    taskid: 57d1a8c4-1209-4150-856d-28fc3bed40f0
+    type: regular
+    task:
+      id: 57d1a8c4-1209-4150-856d-28fc3bed40f0
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field1:
+        simple: ServiceNow.Record.assigned_to
+      field2:
+        simple: ServiceNow.Record.short_description
+      field3: {}
+      field4: {}
+      field5: {}
+      value1:
+        simple: John Smith
+      value2:
+        simple: New
+      value3: {}
+      value4: {}
+      value5: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+  "62":
+    id: "62"
+    taskid: 11c33afc-e222-4021-8dc6-d379b063c2b1
+    type: regular
+    task:
+      id: 11c33afc-e222-4021-8dc6-d379b063c2b1
+      version: -1
+      name: Delete the record
+      description: Delete a record in a specified ServiceNow table
+      script: ServiceNow|||servicenow-delete-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      id:
+        simple: ${ServiceNow.Record.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+  "63":
+    id: "63"
+    taskid: f9da4899-51aa-4849-89d8-98f6e6f5a5d0
+    type: regular
+    task:
+      id: f9da4899-51aa-4849-89d8-98f6e6f5a5d0
+      version: -1
+      name: servicenow-list-table-fields
+      description: List API fields for a specified ServiceNow table
+      script: ServiceNow|||servicenow-list-table-fields
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6785
+        }
+      }
+    note: false
+    timertriggers: []
+  "64":
+    id: "64"
+    taskid: 559e1a7c-a93a-48fb-86c9-8f3a7c9d514a
+    type: regular
+    task:
+      id: 559e1a7c-a93a-48fb-86c9-8f3a7c9d514a
+      version: -1
+      name: servicenow-query-computers
+      description: Query the cmdb_ci_computer table in ServiceNow
+      script: ServiceNow|||servicenow-query-computers
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      asset_tag: {}
+      computer_id: {}
+      computer_name: {}
+      limit:
+        simple: "1"
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+  "65":
+    id: "65"
+    taskid: 3080d4c2-8ee6-4558-8ffa-03fbe0877727
+    type: regular
+    task:
+      id: 3080d4c2-8ee6-4558-8ffa-03fbe0877727
+      version: -1
+      name: servicenow-query-groups
+      description: Query the sys_user_group table in ServiceNow
+      script: ServiceNow|||servicenow-query-groups
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      group_id: {}
+      group_name: {}
+      limit:
+        simple: "1"
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+  "67":
+    id: "67"
+    taskid: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
+    type: regular
+    task:
+      id: f2de40ed-b11f-4d5c-8666-bf16eb5db67d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Field,Computer,Group,User,Table
+      path:
+        simple: ServiceNow
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7660
+        }
+      }
+    note: false
+    timertriggers: []
+  "68":
+    id: "68"
+    taskid: d0effd4f-0e10-47b0-864f-612362afae46
+    type: regular
+    task:
+      id: d0effd4f-0e10-47b0-864f-612362afae46
+      version: -1
+      name: servicenow-query-users
+      description: Query the sys_user table in ServiceNow
+      script: ServiceNow|||servicenow-query-users
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      limit:
+        simple: "1"
+      offset: {}
+      query: {}
+      user_id: {}
+      user_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+  "69":
+    id: "69"
+    taskid: df264a9e-7742-4efe-81f1-8284de528f74
+    type: regular
+    task:
+      id: df264a9e-7742-4efe-81f1-8284de528f74
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+  "70":
+    id: "70"
+    taskid: 563001d5-1061-4bb8-8609-648cda6953db
+    type: regular
+    task:
+      id: 563001d5-1061-4bb8-8609-648cda6953db
+      version: -1
+      name: servicenow-get-table-name
+      description: Get table names by a label to use in commands
+      script: ServiceNow|||servicenow-get-table-name
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      label:
+        simple: Asset
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7705,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

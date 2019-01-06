@@ -1,0 +1,963 @@
+commonfields:
+  id: OTRS
+  version: -1
+name: OTRS
+display: OTRS
+category: Case Management
+image: data:image/png;base64,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
+description: Service management suite that comprises ticketing, workflow automation,
+  and notification.
+fromversion: 4.1.0
+configuration:
+- display: OTRS Server URL (e.g. https://demisto.managed-otrs.com)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: OTRS Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported,
+    e.g., Misc,Raw)
+  name: fetch_queue
+  defaultvalue: Any
+  type: 0
+  required: false
+- display: Fetch tickets in priority
+  name: fetch_priority
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - 1VeryLow
+  - 2Low
+  - 3Normal
+  - 4High
+  - 5VeryHigh
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    from pyotrs import Article, Client, Ticket, DynamicField, Attachment
+    import base64
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+
+    SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    USE_SSL = not demisto.params().get('unsecure', False)
+    FETCH_QUEUE = demisto.params().get('fetch_queue', 'Any')
+    FETCH_PRIORITY = demisto.params().get('fetch_priority')
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+
+    ''' HELPER FUNCTIONS '''
+
+    def ticket_to_incident(ticket):
+
+        incident = {}
+
+        attachments_list = []
+        articles = ticket.get('Article')
+        if articles:
+            for article in articles:
+                attachments = article.get('Attachment')
+                if attachments:
+                    for attachment in attachments:
+                        file_name = attachment['Filename']
+                        attachment_file = fileResult(file_name, base64.b64decode(attachment['Content']))
+                        attachments_list.append({
+                            'path': attachment_file['FileID'],
+                            'name': file_name
+                        })
+
+        incident['attachment'] = attachments_list
+        incident['name'] = 'OTRS ticket {}'.format(ticket['TicketID'])
+        incident['rawJSON'] = json.dumps(ticket)
+
+        return incident
+
+    def translate_state(state):
+        state_dict = {
+            'ClosedSuccessful': 'closed successful',
+            'ClosedUnsuccessful': 'closed unsuccessful',
+            'Open': 'open',
+            'PendingReminder': 'pending reminder',
+            'New': 'new'
+        }
+        return state_dict[state]
+
+    def translate_priority(priority):
+        priority_dict = {
+            '1VeryLow': '1 very low',
+            '2Low': '2 low',
+            '3Normal': '3 normal',
+            '4High': '4 high',
+            '5VeryHigh': '5 very high'
+        }
+        return priority_dict[priority]
+
+    def calculate_age(seconds):
+        """
+        Convert seconds to time period string
+        e.g. 6000 -> 1 h 40 m
+        """
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
+        return '%d h %02d m' % (h, m)
+
+    def demisto_entry_to_otrs_attachment(entry_list):
+        """
+        Convert Demisto file entry to OTRS attachment object
+        """
+        attachments = []
+        for file in entry_list:
+            file_path = demisto.getFilePath(file)
+            with open(file_path['path'], 'rb') as file_content:
+                encoded_file = base64.b64encode(file_content.read()) # Encoding file content in base64, as required by OTRS
+
+            # Getting file type from context
+            context_files = demisto.get(demisto.context(), 'File')
+            if isinstance(context_files, dict): # If there's only one file in context, we will get a dict and we convert it to list
+                context_files = [context_files]
+            content_type = None
+            for context_file in context_files: # Looking for file entry in context
+                if context_file['EntryID'] == file:
+                    content_type = context_file['Info']
+                    break
+            if content_type is None:
+                return_error('Could not find file in context')
+            otrs_attachment = Attachment.create_basic( # Creating OTRS attachment object
+                Filename=file_path['name'],
+                Content=encoded_file,
+                ContentType=content_type
+            )
+            attachments.append(otrs_attachment)
+        return attachments
+
+    ''' FUNCTIONS '''
+
+    def get_ticket_command():
+
+        ticket_id = demisto.args()['ticket_id']
+
+        ticket = get_ticket(ticket_id)
+
+        output = {
+            'ID': str(ticket['TicketID']),
+            'Created': ticket['Created'],
+            'CustomerID': ticket['CustomerUserID'],
+            'Owner': ticket['Owner'],
+            'Priority': ticket['Priority'],
+            'Queue': ticket['Queue'],
+            'State': ticket['State'],
+            'Title': ticket['Title'],
+            'Type': ticket['Type'],
+            'Lock': ticket['Lock'],
+            'Age': calculate_age(ticket['Age'])
+        }
+
+        df = ticket.get('DynamicField')
+        if df:
+            output['DynamicField'] = {}
+            for field in df:
+                value = field['Value']
+                if value:
+                    name = field['Name']
+                    output['DynamicField'][name] = value
+
+        title = 'OTRS Ticket ' + ticket_id
+        headers = ['ID', 'Age', 'Title', 'State', 'Lock', 'Queue', 'Owner', 'CustomerID', 'Priority', 'Type', 'Created', 'DynamicField']
+        human_readable = tableToMarkdown(title, output, headers=headers, removeNull=True)
+
+        attachments_list = []
+        articles = ticket.get('Article')
+        if articles:
+            articles_list = []
+            human_readable_articles = []
+            for article in articles:
+
+                # Get article details
+                current_article = {
+                    'ID': str(article['ArticleID']),
+                    'Subject': article['Subject'],
+                    'Body': article['Body'],
+                    'CreateTime': article['CreateTime'],
+                    'From': article['From'],
+                    'ContentType': article['ContentType']
+                }
+                currect_human_readable_article = dict(current_article)
+
+                # Get attachments
+                attachments = article.get('Attachment')
+                if attachments:
+
+                    attachments_output = []
+                    attachments_str = ''
+                    for attachment in attachments:
+                        file_name = attachment['Filename']
+                        file_size = attachment['FilesizeRaw']
+                        content_type = attachment['ContentType']
+                        current_attachment = {
+                            'Name': file_name,
+                            'Size': file_size,
+                            'ContentType': content_type
+                        }
+                        attachments_str += 'Name: {0}, Size: {1}, ContentType: {2}'.format(file_name, file_size, content_type)
+                        attachments_str += '\n\n'
+                        attachments_list.append(fileResult(file_name, base64.b64decode(attachment['Content'])))
+                        attachments_output.append(current_attachment)
+                    currect_human_readable_article['Attachment'] = attachments_str
+                    current_article['Attachment'] = attachments_output
+
+                human_readable_articles.append(currect_human_readable_article)
+                articles_list.append(current_article)
+
+            human_readable += tableToMarkdown('Articles', human_readable_articles, headers=['ID', 'From', 'Subject', 'Body', 'CreateTime', 'ContentType', 'Attachment'], removeNull=True)
+            output['Article'] = articles_list
+
+        ec = {
+            'OTRS.Ticket(val.ID===obj.ID)': output
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': ticket,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': ec
+        })
+
+        demisto.results(attachments_list)
+
+    def get_ticket(ticket_id):
+
+        response = client.ticket_get_by_id(ticket_id, articles=True, attachments=True, dynamic_fields=True)
+        raw_ticket = response.to_dct()['Ticket']
+        return raw_ticket
+
+    def search_ticket_command():
+
+        states = demisto.args().get('state')
+        if states:
+            states = argToList(states)
+        created_before = demisto.args().get('created_before')
+        if created_before:
+            created_before, _ = parse_date_range(created_before)
+        created_after = demisto.args().get('created_after')
+        if created_after:
+            created_after, _ = parse_date_range(created_after)
+        title = demisto.args().get('title')
+        queue = demisto.args().get('queue')
+        if queue:
+            queue = argToList(queue)
+        priority = demisto.args().get('priority')
+        if priority:
+            priority_list = argToList(priority)
+            priority = [translate_priority(p) for p in priority_list]
+        ticket_type = demisto.args().get('type')
+
+        tickets = search_ticket(states, created_before, created_after, title, queue, priority, ticket_type)
+
+        if tickets:
+            output = []
+            for ticket_id in tickets:
+                raw_ticket = get_ticket(ticket_id)
+                ticket = {
+                    'ID': str(raw_ticket['TicketID']),
+                    'Created': raw_ticket['Created'],
+                    'Owner': raw_ticket['Owner'],
+                    'Priority': raw_ticket['Priority'],
+                    'Queue': raw_ticket['Queue'],
+                    'State': raw_ticket['State'],
+                    'Title': raw_ticket['Title'],
+                    'Type': raw_ticket['Type']
+                }
+                output.append(ticket)
+            ec = {
+                'OTRS.Ticket(val.ID===obj.ID)': output
+            }
+            title = 'OTRS Search Results'
+            headers = ['ID', 'Title', 'Type', 'State', 'Priority', 'Queue', 'Created', 'Owner']
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': raw_ticket,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, output, headers),
+                'EntryContext': ec
+            })
+        else:
+            demisto.results('No results found')
+
+    def search_ticket(states=None, created_before=None, created_after=None, title=None, queue=None, priority=None, ticket_type=None):
+
+        response = client.ticket_search(
+            States=states,
+            TicketCreateTimeOlderDate=created_before,
+            TicketCreateTimeNewerDate=created_after,
+            Title=title,
+            Queues=queue,
+            Priorities=priority,
+            Types=ticket_type
+        )
+        return response
+
+    def create_ticket_command():
+
+        title = demisto.args().get('title')
+        queue = demisto.args().get('queue')
+        state = translate_state(demisto.args().get('state'))
+        priority = translate_priority(demisto.args().get('priority'))
+        customer_user = demisto.args().get('customer_user')
+        article_subject = demisto.args().get('article_subject')
+        article_body = demisto.args().get('article_body')
+        ticket_type = demisto.args().get('type')
+        dynamic_fields = demisto.args().get('dynamic_fields')
+        attachment = demisto.args().get('attachment')
+
+        df = []
+        df_output = []
+        if dynamic_fields:
+            dynamic_fields_list = argToList(dynamic_fields)
+            for field in dynamic_fields_list:
+                splitted_field = field.split('=')
+                current_field, current_value = splitted_field[0], splitted_field[1]
+                df.append(DynamicField(current_field, current_value))
+                df_output.append({current_field: current_value})
+
+        attachments = []
+        if attachment:
+            attachments_list = argToList(attachment)
+            attachments = demisto_entry_to_otrs_attachment(attachments_list)
+
+        new_ticket = Ticket.create_basic(
+            Title=title,
+            Queue=queue,
+            State=state,
+            Priority=priority,
+            CustomerUser=customer_user,
+            Type=ticket_type
+        )
+
+        article = Article({
+            'Subject': article_subject,
+            'Body': article_body
+        })
+
+        ticket = create_ticket(new_ticket, article, df, attachments)
+
+        context = {
+            'ID': ticket['TicketID'],
+            'CustomerUser': customer_user,
+            'Priority': priority,
+            'Queue': queue,
+            'State': state,
+            'Title': title,
+            'Article': {
+                'Subject': article_subject,
+                'Body': article_body
+            },
+            'Type': ticket_type,
+            'DynamicField': df_output
+        }
+        ec = {
+            'OTRS.Ticket(val.ID===obj.ID)': context
+        }
+        output = 'Created ticket {} successfully'.format(ticket['TicketID'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': output,
+            'EntryContext': ec
+        })
+
+    def create_ticket(new_ticket, article, df, attachments):
+
+        response = client.ticket_create(new_ticket, article, dynamic_fields=df, attachments=attachments)
+        return response
+
+    def update_ticket_command():
+
+        ticket_id = demisto.args().get('ticket_id')
+        title = demisto.args().get('title')
+        queue = demisto.args().get('queue')
+        state = demisto.args().get('state')
+        priority = demisto.args().get('priority')
+        article_subject = demisto.args().get('article_subject')
+        article_body = demisto.args().get('article_body')
+        ticket_type = demisto.args().get('type')
+        dynamic_fields = demisto.args().get('dynamic_fields')
+        attachment = demisto.args().get('attachment')
+
+        if all(v is None for v in [title, queue, state, priority, article_subject, article_body, ticket_type, dynamic_fields, attachment]):
+            return_error('No fields to update were given')
+
+        if (article_subject and article_body is None) or (article_subject is None and article_body):
+            return_error('Both article subject and body are required in order to add article')
+        elif article_subject and article_body:
+            article_obj = {
+                'Subject': article_subject,
+                'Body': article_body
+            }
+            article = Article(article_obj)
+        else:
+            article = None
+
+        if state:
+            state = translate_state(state)
+
+        if priority:
+            priority = translate_priority(priority)
+
+        df = []
+        if dynamic_fields:
+            dynamic_fields_list = argToList(dynamic_fields)
+            for field in dynamic_fields_list:
+                splitted_field = field.split('=')
+                current_field, current_value = splitted_field[0], splitted_field[1]
+                df.append(DynamicField(current_field, current_value))
+
+        attachments = []
+        if attachment:
+            attachments_list = argToList(attachment)
+            attachments = demisto_entry_to_otrs_attachment(attachments_list)
+
+        ticket = update_ticket(ticket_id, title, queue, state, priority, article, ticket_type, df, attachments)
+
+        context = {
+            'ID': ticket['TicketID'],
+        }
+        if priority:
+            context['Priority'] = priority
+        if queue:
+            context['Queue'] = queue
+        if state:
+            context['State'] = state
+        if title:
+            context['Title'] = title
+        if article:
+            context['Article'] = article
+        if ticket_type:
+            context['Type'] = ticket_type
+        ec = {
+            'OTRS.Ticket(val.ID===obj.ID)': context
+        }
+        output = 'Updated ticket {} successfully'.format(ticket['TicketID'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': output,
+            'EntryContext': ec
+        })
+
+    def close_ticket_command():
+
+        ticket_id = demisto.args().get('ticket_id')
+        article_subject = demisto.args().get('article_subject')
+        article_body = demisto.args().get('article_body')
+
+        article_object = {
+            'Subject': article_subject,
+            'Body': article_body
+        }
+
+        article = Article(article_object)
+
+        ticket = update_ticket(ticket_id, article=article, state='closed successful')
+
+        context = {
+            'ID': ticket['TicketID'],
+            'State': 'closed successful',
+            'Article': article_object
+        }
+        ec = {
+            'OTRS.Ticket(val.ID===obj.ID)': context
+        }
+        output = 'Closed ticket {} successfully'.format(ticket['TicketID'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': output,
+            'EntryContext': ec
+        })
+
+    def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None, article=None, ticket_type=None, df=None, attachments=None):
+
+        kwargs = {'Type': ticket_type}
+
+        response = client.ticket_update(
+            ticket_id,
+            Title=title,
+            Queue=queue,
+            State=state,
+            Priority=priority,
+            article=article,
+            dynamic_fields=df,
+            attachments=attachments,
+            **kwargs
+        )
+        return response
+
+    def fetch_incidents():
+
+        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+        if last_run:
+            last_run = datetime.strptime(last_run, '%Y-%m-%d %H:%M:%S')
+            last_run += timedelta(seconds=1)
+        else:
+            last_run, _ = parse_date_range(FETCH_TIME)
+
+        queue_list = argToList(FETCH_QUEUE)
+        if 'Any' in queue_list:
+            queue = None
+        else:
+            queue = queue_list
+
+        if FETCH_PRIORITY:
+            priority = [translate_priority(p) for p in FETCH_PRIORITY]
+        else:
+            priority = None
+
+        tickets = search_ticket(created_after=last_run, queue=queue, priority=priority)
+        incidents = []
+
+        first_ticket = True
+        last_created = ''
+
+        for ticket_id in tickets:
+            ticket = get_ticket(ticket_id)
+            incident = ticket_to_incident(ticket)
+            incidents.append(incident)
+            if first_ticket:
+                last_created = ticket['Created'] # First ticket fetched is the last created, so should set its creation time as last fetched ticket
+                first_ticket = False
+
+        demisto.incidents(incidents)
+
+        if not last_created:
+            last_created = datetime.strftime(last_run, '%Y-%m-%d %H:%M:%S')
+
+        demisto.setLastRun({'time': last_created})
+
+    ''' EXECUTION CODE '''
+
+    client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
+    client.session_create()
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            # Testing connectivity and credentials
+            demisto.results('ok')
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+        elif demisto.command() == 'otrs-get-ticket':
+            get_ticket_command()
+
+        elif demisto.command() == 'otrs-search-ticket':
+            search_ticket_command()
+
+        elif demisto.command() == 'otrs-create-ticket':
+            create_ticket_command()
+
+        elif demisto.command() == 'otrs-update-ticket':
+            update_ticket_command()
+
+        elif demisto.command() == 'otrs-close-ticket':
+            close_ticket_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
+  commands:
+  - name: otrs-get-ticket
+    arguments:
+    - name: ticket_id
+      required: true
+      default: true
+      description: Ticket ID of the ticket to get details of
+    outputs:
+    - contextPath: OTRS.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: OTRS.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: OTRS.Ticket.CustomerUser
+      description: Customer user related to ticket
+      type: string
+    - contextPath: OTRS.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: OTRS.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: OTRS.Ticket.Queue
+      description: Queue the ticket is in
+      type: string
+    - contextPath: OTRS.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: OTRS.Ticket.Title
+      description: Ticket title
+      type: string
+    - contextPath: OTRS.Ticket.Type
+      description: Ticket type
+      type: string
+    - contextPath: OTRS.Ticket.DynamicField
+      description: Ticket dynamic fields
+      type: string
+    - contextPath: OTRS.Ticket.Article.Subject
+      description: Ticket article subject
+      type: string
+    - contextPath: OTRS.Ticket.Article.Body
+      description: Ticket article body
+      type: string
+    - contextPath: OTRS.Ticket.Article.CreatedTime
+      description: Ticket article creation time
+      type: date
+    - contextPath: OTRS.Ticket.Article.ContentType
+      description: Ticket article content type
+      type: string
+    - contextPath: OTRS.Ticket.Article.From
+      description: Ticket article sender
+      type: string
+    - contextPath: OTRS.Ticket.Article.ID
+      description: Ticket article ID
+      type: string
+    - contextPath: OTRS.Ticket.Article.Attachment.Name
+      description: Ticket article attachment file name
+      type: string
+    - contextPath: OTRS.Ticket.Article.Attachment.Size
+      description: Ticket article attachment file size
+      type: number
+    - contextPath: OTRS.Ticket.Article.Attachment.ContentType
+      description: Ticket article attachment file content type
+      type: string
+    - contextPath: OTRS.Ticket.Lock
+      description: Is the ticket locked or unlocked
+      type: string
+    - contextPath: File.Size
+      description: Size of the file attachment
+      type: number
+    - contextPath: File.SHA1
+      description: SHA-1 of the file attachment
+      type: string
+    - contextPath: File.SHA256
+      description: SHA-256 of the file attachment
+      type: string
+    - contextPath: File.Name
+      description: Attachment file name
+      type: string
+    - contextPath: File.SSDeep
+      description: Attachment file SSDeep
+      type: string
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+      type: string
+    - contextPath: File.Info
+      description: Attachment file information
+      type: string
+    - contextPath: File.Type
+      description: Attachment file type
+      type: string
+    - contextPath: File.MD5
+      description: Attachment file MD5
+      type: string
+    - contextPath: File.Extension
+      description: Attachment file extension
+      type: string
+    description: Retrieves details for an OTRS ticket by ticket ID.
+  - name: otrs-search-ticket
+    arguments:
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - New
+      - ClosedSuccessful
+      - ClosedUnsuccessful
+      - Open
+      - PendingReminder
+      description: Ticket States to filter by in CSV format (e.g., New,Open)
+    - name: created_before
+      description: Filter for a ticket created before this date. Given in format "<number>
+        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+    - name: created_after
+      description: Filter for a ticket created after this date. Given in format "<number>
+        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+    - name: title
+      description: Ticket Title to filter by
+    - name: queue
+      description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc)
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - 1VeryLow
+      - 2Low
+      - 3Normal
+      - 4High
+      - 5VeryHigh
+      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh)
+    - name: type
+      description: Ticket type to filter by
+    outputs:
+    - contextPath: OTRS.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: OTRS.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: OTRS.Ticket.CustomerUser
+      description: Customer user related to ticket
+      type: string
+    - contextPath: OTRS.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: OTRS.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: OTRS.Ticket.Queue
+      description: Queue the ticket is in
+      type: string
+    - contextPath: OTRS.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: OTRS.Ticket.Title
+      description: Ticket title
+      type: string
+    - contextPath: OTRS.Ticket.Type
+      description: Ticket type
+      type: string
+    description: Search for an OTRS ticket using search filters
+  - name: otrs-create-ticket
+    arguments:
+    - name: title
+      required: true
+      description: Title to assign to the new ticket
+    - name: queue
+      required: true
+      description: Queue to place the new ticket in
+    - name: state
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - ClosedSuccessful
+      - ClosedUnsuccessful
+      - Open
+      - PendingReminder
+      description: State to assign to the new ticket
+    - name: priority
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 1VeryLow
+      - 2Low
+      - 3Normal
+      - 4High
+      - 5VeryHigh
+      description: Priority to assign to the new ticket
+    - name: customer_user
+      required: true
+      description: Customer user related to the new ticket
+    - name: article_subject
+      required: true
+      description: Article Subject to apply to the new ticket
+    - name: article_body
+      required: true
+      description: Text to add to the Article Body of the new ticket
+    - name: type
+      description: Ticket Type to assign to the new ticket
+    - name: dynamic_fields
+      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2.
+        For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+    - name: attachment
+      description: 'File entry ID of the file to add as an attachment to the new ticket
+        in CSV format, e.g., 123@20,124@21 '
+    outputs:
+    - contextPath: OTRS.Ticket.Article.Subject
+      description: Ticket article subject
+      type: string
+    - contextPath: OTRS.Ticket.Article.Body
+      description: Ticket article body
+      type: string
+    - contextPath: OTRS.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: OTRS.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: OTRS.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: OTRS.Ticket.Queue
+      description: Queue that the ticket is in
+      type: string
+    - contextPath: OTRS.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: OTRS.Ticket.Title
+      description: Ticket title
+      type: string
+    - contextPath: OTRS.Ticket.Type
+      description: Ticket type
+      type: string
+    - contextPath: OTRS.Ticket.CustomerUser
+      description: Customer user related to ticket
+      type: string
+    - contextPath: OTRS.Ticket.DynamicField
+      description: Ticket dynamic fields
+      type: string
+    description: Create a new ticket in OTRS
+  - name: otrs-update-ticket
+    arguments:
+    - name: ticket_id
+      required: true
+      description: Ticket ID of the ticket to update
+    - name: title
+      description: Ticket Title of the ticket to update
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - New
+      - ClosedSuccessful
+      - ClosedUnsuccessful
+      - Open
+      - PendingReminder
+      description: Ticket State of the ticket to update
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - 1VeryLow
+      - 2Low
+      - 3Normal
+      - 4High
+      - 5VeryHigh
+      description: Priority of the ticket to update
+    - name: article_subject
+      description: Article Subject of the ticket to update
+    - name: article_body
+      description: Article Body of the ticket to update
+    - name: queue
+      description: Queue that the ticket to update is in
+    - name: type
+      description: Ticket Type of the ticket to update
+    - name: dynamic_fields
+      description: 'Dynamic fields to apply to the updated ticket, in the format:
+        field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+    - name: attachment
+      description: 'File entry ID of the file to add as an attachment to the updated
+        ticket in CSV format, e.g., 123@20,124@21 '
+    outputs:
+    - contextPath: OTRS.Ticket.Article.Subject
+      description: Ticket article subject
+      type: string
+    - contextPath: OTRS.Ticket.Article.Body
+      description: Ticket article body
+      type: string
+    - contextPath: OTRS.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: OTRS.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: OTRS.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: OTRS.Ticket.Queue
+      description: Queue that the ticket is in
+      type: string
+    - contextPath: OTRS.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: OTRS.Ticket.Title
+      description: Ticket title
+      type: string
+    - contextPath: OTRS.Ticket.Type
+      description: Ticket type
+      type: string
+    description: Update an OTRS ticket
+  - name: otrs-close-ticket
+    arguments:
+    - name: ticket_id
+      required: true
+      description: Ticket ID of the ticket to close
+    - name: article_subject
+      required: true
+      description: Article Subject of the ticket to close
+    - name: article_body
+      required: true
+      description: Article Body of the ticket to close
+    outputs:
+    - contextPath: OTRS.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: OTRS.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: OTRS.Ticket.Article.Subject
+      description: Ticket article subject
+      type: string
+    - contextPath: OTRS.Ticket.Article.Body
+      description: Ticket article body
+      type: string
+    description: Close an OTRS ticket
+  dockerimage: demisto/pyotrs
+  isfetch: true
+  runonce: false
+tests:
+ - OTRS Test

@@ -1,0 +1,139 @@
+id: JiraCreateIssue-example-test
+version: -1
+name: JiraCreateIssue-example-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee963608-6c73-44fd-8e11-12b9ce752e20
+    type: start
+    task:
+      id: ee963608-6c73-44fd-8e11-12b9ce752e20
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: f9e3c914-4de1-4c26-89de-d5505a075e9d
+    type: regular
+    task:
+      id: f9e3c914-4de1-4c26-89de-d5505a075e9d
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: b716384f-1231-4d76-8558-f302af7cc086
+    type: regular
+    task:
+      id: b716384f-1231-4d76-8558-f302af7cc086
+      version: -1
+      name: Jira create generic Issue
+      scriptName: JiraCreateIssue-example
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignee: {}
+      description:
+        simple: '"jira descriptions" '
+      dueDate: {}
+      issueTypeId:
+        simple: "10001"
+      issueTypeName:
+        simple: Incident
+      labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
+      priority: {}
+      projectKey:
+        simple: DEM
+      projectName: {}
+      reporter: {}
+      summary:
+        simple: '"jira playbook test"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 2dd6dbe2-fd37-4739-8ec9-bef4008b22a2
+    type: regular
+    task:
+      id: 2dd6dbe2-fd37-4739-8ec9-bef4008b22a2
+      version: -1
+      name: delete issue
+      script: '|||jira-delete-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      issueIdOrKey:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

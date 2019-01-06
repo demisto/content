@@ -1,0 +1,1249 @@
+commonfields:
+  id: InfoArmor VigilanteATI
+  version: -1
+name: InfoArmor VigilanteATI
+display: InfoArmor VigilanteATI
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: VigilanteATI redefines Advanced Threat Intelligence. InfoArmor's VigilanteATI
+  platform and cyber threat services act as an extension of your IT security team.
+detaileddescription: |-
+  For Risk Intelligence API Account navigate to Risk Intelligence -> Compromised Credentials -> My API Account
+  For general API Account navigate to Edit Profile -> API Account
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://vigilanteati.infoarmor.com/
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API Secret
+  name: apisecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import json
+    import base64
+    import binascii
+    import hashlib
+    import hmac
+    import time
+    import requests
+    from datetime import datetime
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    BASE_URL = demisto.params().get('url')
+    API_KEY = demisto.params().get('apikey')
+    API_SECRET = demisto.params().get('apisecret')
+    VERIFY_SSL = not demisto.params().get('unsecure', False)
+
+    def gen_hmac(method, timestamp, api_key, api_secret):
+        """
+        Generate HMAC string for VigilanteATI API service. The string is generated as follows:
+        hmac('sha1', 'API_KEY' + 'TIMESTAMP' + 'METHOD_NAME', 'API_SECRET')
+        """
+        msg = "%s%s%s%s" % (api_key, timestamp, method, api_secret)
+        hm = hmac.new(str(api_secret), str(msg), hashlib.sha1)
+        return hm.hexdigest()
+
+
+    def http_request(method, url, hmac_url, params={}, data=None):
+        if params is None:
+            params = {}
+
+        ts = int(time.time())
+        hmacc = gen_hmac(hmac_url, ts, API_KEY, API_SECRET)
+
+        fullurl = BASE_URL + url
+        params['ts'] = ts
+        params['key'] = API_KEY
+        params['hmac'] = hmacc
+
+        res = requests.request(
+            method,
+            fullurl,
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            params=params,
+            verify=VERIFY_SSL,
+            json=data
+        )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Request failed.\nURL: {}\nStatusCode: {}\nResponse: \n{}'.format(fullurl, res.status_code, res.text))
+
+        try:
+            res.json()
+        except:
+            return_error('Response failed, the response body is not json.\nURL: {}\nStatusCode: {}\nResponse: \n{}'.format(fullurl, res.status_code, res.text))
+
+        return res
+
+    def query_infected_host_data(days_ago=None, limit=None, token=None, q_address=None, cc_ipaddress=None):
+        params = {}
+        if days_ago:
+            params['days_ago'] = days_ago
+
+        if limit:
+            params['limit'] = limit
+
+        if token:
+            params['token'] = token
+
+        if q_address:
+            params['q_address'] = q_address
+
+        if cc_ipaddress:
+            params['cc_ipaddress'] = cc_ipaddress
+
+        res = http_request('get', 'api/2/si/infected/query', 'si.infected.query', params)
+        return res.json()
+
+
+    def query_infected_host_data_command():
+        days_ago = demisto.args().get('days_ago')
+        limit = demisto.args().get('limit')
+        token = demisto.args().get('token')
+        q_address = demisto.args().get('q_address')
+        cc_ipaddress = demisto.args().get('cc_ipaddress')
+
+        infected_hosts = query_infected_host_data(days_ago, limit, token, q_address, cc_ipaddress)
+        markdown = tableToMarkdown('Infected hosts', infected_hosts.get('hosts'))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': infected_hosts,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'VigilanteATI.InfectedHost(val.ip == obj.ip)': infected_hosts.get('hosts'),
+                'VigilanteATI.GetInfectedHostsToken(true==true)': infected_hosts.get('re_token')
+            }
+        })
+
+    def query_elasticsearch(max_rows, query):
+        params = {}
+        if max_rows:
+            params['maxRows'] = max_rows
+
+        if query:
+            params['query'] = query
+
+        res = http_request('get', 'api/1/es/fulltext/query', 'es.fulltext.query', params)
+        return res.json()
+
+    def query_elasticsearch_command():
+        max_rows = int(demisto.args().get('max_rows', 10))
+        query = demisto.args().get('query')
+
+        results = query_elasticsearch(max_rows, query)
+        if len(results.get('results')) == 0:
+            demisto.results('No results')
+
+        markdown = tableToMarkdown('Elasticsearch Results', results.get('results'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'VigilanteATI.ElasticsearchResults': results.get('results')
+            }
+        })
+
+    def search(query, days_ago, exact_match):
+        params = {}
+        if days_ago:
+            params['daysAgo'] = days_ago
+
+        if query:
+            params['query'] = query
+
+        if exact_match:
+            params['exactMatch'] = exact_match
+
+        res = http_request('get', 'api/1/fullext/query', 'fulltext.query', params)
+
+        return res.json()
+
+    def search_command():
+        days_ago = demisto.args().get('days_ago')
+        query = demisto.args().get('query')
+        exact_match = demisto.args().get('exact_match')
+
+        results = search(query, days_ago, exact_match)
+        if len(results.get('results')) == 0:
+            demisto.results('No results')
+
+        markdown = tableToMarkdown('Search Results', results.get('results'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'SearchResults': results.get('results')
+            }
+        })
+
+    def get_vulnerable_host_data(limit, q_address, q_mask, q_type, re_token=None):
+        params = {}
+        if limit:
+            params['limit'] = limit
+
+        if q_address:
+            params['q_address'] = q_address
+
+        if q_mask:
+            params['q_mask'] = q_mask
+
+        if q_type:
+            params['q_type'] = q_type
+
+        if re_token:
+            params['re_token'] = re_token
+
+        res = http_request('get', 'api/2/vi/hosts/get', 'vi.hosts.get', params)
+        return res.json()
+
+    def get_vulnerable_host_data_command():
+        limit = int(demisto.args().get('limit', 100))
+        q_address = demisto.args().get('q_address')
+        q_mask = demisto.args().get('q_mask')
+        q_type = demisto.args().get('q_type')
+
+        raw_host_data = get_vulnerable_host_data(limit, q_address, q_mask, q_type)
+        if len(raw_host_data.get('hosts')) == 0:
+            demisto.results('No results')
+            sys.exit(0)
+
+        markdown = tableToMarkdown('Vulnerable host data from VI feed', raw_host_data.get('hosts'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_host_data,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Hosts(val.ip === obj.ip)': raw_host_data.get('hosts')
+            }
+        })
+
+    def search_leaks(leak_id, days_ago, keyword, limit, token=None):
+        """
+        Retrieves the list of leaks from our database.
+        """
+        params = {}
+        if leak_id:
+            params['leakId'] = leak_id
+
+        if days_ago:
+            params['daysAgo'] = days_ago
+
+        if keyword:
+            params['keyword'] = keyword
+
+        if limit:
+            params['limit'] = limit
+
+        if token:
+            params['token'] = token
+
+        res = http_request('get', 'api/1/leaks/info', 'leaks.info', params)
+        return res.json()
+
+    def search_leaks_command():
+        leak_id = demisto.args().get('leak_id')
+        days_ago = demisto.args().get('days_ago')
+        keyword = demisto.args().get('keyword')
+        limit = int(demisto.args().get('limit', 20))
+        token = demisto.args().get('token')
+
+        raw_list_leaks = search_leaks(leak_id, days_ago, keyword, limit, token)
+        markdown = tableToMarkdown('List of leaks', raw_list_leaks.get('leaks'), [
+                'leak_id',
+                'title',
+                'leak_type',
+                'score',
+                'leak_date',
+                'breach_date',
+                'targets',
+                'attackers',
+                'num_entries',
+                'password_type',
+                'description',
+                'source_refs',
+                'attack_method',
+                'target_industries',
+                'media_refs',
+                'password_hash',
+                'num_domains_affected',
+                'import_date'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_list_leaks,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'VigilanteATI.LeakInfoToken(true==true)': raw_list_leaks.get('token'),
+                'VigilanteATI.Leaks(val.leak_id === obj.leak_id)': raw_list_leaks.get('leaks')
+            }
+        })
+
+    def get_leak(leak_id, limit, domains, token):
+        """
+        Retrieve all the accounts related to this specific leak
+        """
+        params = remove_none_params({
+            'leak_id': leak_id,
+            'limit': limit,
+            'domains': domains,
+            'token': token
+        })
+
+        res = http_request('get', 'api/1/leaks/get', 'leaks.get', params)
+        return res.json()
+
+
+    def get_leak_command():
+        leak_id = demisto.args().get('leak_id')
+        domains = demisto.args().get('domains')
+        token = demisto.args().get('token')
+        limit = int(demisto.args().get('limit', 20))
+
+        leak = get_leak(leak_id, limit, domains, token)
+        if not leak and len(leak.get('accounts')) == 0:
+            demisto.results('Leak has no accounts related to it')
+            sys.exit(0)
+
+        accounts = leak.get('accounts')
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+
+        markdown = tableToMarkdown('Accounts related to leak {}'.format(leak_id), leak.get('accounts'), ['email', 'domain', 'password', 'type_id'])
+        outputs = {
+            'VigilanteATI.Leaks(val.leak_id === obj.leak_id)': {
+                'leak_id': leak_id,
+                'accounts': accounts
+            }
+        }
+        if leak.get('token'):
+            outputs['VigilanteATI.LeakAccountsToken(true==true)'] = leak.get('token')
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': leak,
+            'HumanReadable': markdown,
+            'EntryContext': outputs
+        })
+
+    def remove_none_params(params_dict):
+        """
+        filter only the params that have values
+        """
+        return dict((k,v) for k,v in params_dict.iteritems() if v is not None)
+
+    def query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token=None):
+        params = remove_none_params({
+            'query': query,
+            'q_forum': q_forum,
+            'q_start_data': q_start_data,
+            'limit': limit,
+            're_token': re_token
+        })
+
+        res = http_request('get', 'api/1/ecrime/posts/query', 'ecrime.posts.query', params)
+        return res.json()
+
+    def query_ecrime_intelligence_database_command():
+        query = demisto.args().get('query')
+        q_forum = demisto.args().get('q_forum')
+        q_start_data = demisto.args().get('q_start_data')
+        limit = int(demisto.args().get('limit', 10))
+        re_token = demisto.args().get('re_token')
+
+        results = query_ecrime_intelligence_database(query, q_forum, q_start_data, limit, re_token)
+        posts = results.get('posts')
+        for post in posts:
+            post['title'] = base64.b64decode(post['title']).decode('utf8')
+            post['post'] = base64.b64decode(post['post']).decode('utf8')
+
+        markdown = tableToMarkdown('ECrime Posts', posts)
+        markdown += '\n**Total Count**: {}'.format(results.get('count'))
+        markdown += '\n**Next Page Token**: \n{}'.format(results.get('re_token'))
+
+        outputs = {
+            'VigilanteATI.ECrimePosts': posts
+        }
+        if results.get('re_token'):
+            outputs['VigilanteATI.ECrimeQueryToken(true==true)'] = results.get('re_token')
+
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': markdown,
+            'EntryContext': outputs
+        })
+
+    def list_account_credentials(leak_id, limit, domains, token=None):
+        params = remove_none_params({
+            'leak_id': leak_id,
+            'limit': limit,
+            'domains': domains,
+            'token': token
+        })
+
+        res = http_request('get', 'api/1/leaks/get', 'leaks.get', params)
+        return res.json()
+
+    def query_accounts(account_identifier, limit, days_ago):
+        if days_ago is not None:
+            days_ago = int(days_ago)
+
+        body = remove_none_params({
+            'account_identifier': account_identifier,
+            'limit': limit,
+            'daysAgo': days_ago
+        })
+
+        res = http_request('post', 'api/3/accounts/query', 'accounts.query', None, data=body)
+        return res.json()
+
+    def query_accounts_command():
+        emails = argToList(demisto.args().get('emails'))
+        days_ago = demisto.args().get('days_ago')
+        limit = demisto.args().get('limit')
+
+        results = query_accounts(emails, limit, days_ago)
+        accounts = results.get('results')
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+
+        markdown = tableToMarkdown('Leaks related to email accounts \n{}'.format('\n'.join(emails)), accounts, ['leak_id', 'email', 'password', 'source_type', 'type_id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'VigilanteATI.Account(val.email == obj.email && val.password == obj.password && val.leak_id && obj.leak_id)': accounts
+            }
+        })
+
+    def domain_info(domain_identifier, subdomains, days_ago):
+        params = remove_none_params({
+            'domain_identifier': domain_identifier,
+            'subdomains': subdomains,
+            'daysAgo': days_ago
+        })
+
+        res = http_request('get', 'api/1/domains/info', 'domains.info', params)
+        domain_info = res.json()
+        if not domain_info:
+            return []
+
+        if isinstance(domain_info) != list:
+            # if it single object then return an array
+            return [domain_info]
+
+        return domain_info
+
+    def query_domains(domain, days_ago, limit, token=None):
+        params = remove_none_params({
+            'domain_identifier': domain,
+            'limit': limit,
+            'daysAgo': days_ago,
+            'token': token
+        })
+
+        res = http_request('get', 'api/1/domains/query', 'domains.query', params)
+        domains = res.json()
+        return domains
+
+    def query_domains_command():
+        domain = demisto.args().get('domain')
+        limit = int(demisto.args().get('limit', 20))
+        days_ago = demisto.args().get('days_ago')
+        token = demisto.args().get('token')
+
+        query_results = query_domains(domain, days_ago, limit, token)
+        accounts = query_results.get('accounts')
+        for i, _ in enumerate(accounts):
+            account = accounts[i]
+            account['email'] = account['plain']
+            del account['plain']
+        markdown = tableToMarkdown('Accounts related to domain: {}'.format(domain), accounts, ['leak_id', 'email', 'password', 'source_type', 'type_id'])
+
+        outputs = {
+            'VigilanteATI.Domain(val.domain == obj.domain)': {
+                'domain': query_results.get('domain_identifier'),
+                'accounts': accounts
+            }
+        }
+        if query_results.get('token'):
+            outputs['DomainQueryToken'] = query_results.get('token')
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': query_results,
+            'HumanReadable': markdown,
+            'EntryContext': outputs
+        })
+
+    def get_report(date, account_identifier, limit, token=None):
+        params = remove_none_params({
+            'date': date,
+            'account_identifier': account_identifier,
+            'limit': limit,
+            'token': token
+        })
+
+        res = http_request('get', 'api/1/reports/get', 'reports.get', params)
+        reports = res.json()
+        return reports
+
+    def watchlist_add_accounts(account_identifiers, _type, tag):
+        body = remove_none_params({
+            'account_identifiers': account_identifiers,
+            'type': _type,
+            'tag': tag
+        })
+
+        params = {
+            'account_identifiers': json.dumps(account_identifiers),
+            'type': _type,
+            'tag': tag
+        }
+
+        res = http_request('post', 'api/2/watchlist', 'watchlist.add', params, body)
+        result = res.json()
+
+        return result
+
+    def watchlist_add_accounts_command():
+        account_identifiers = demisto.args().get('account_identifiers')
+        if isinstance(account_identifiers, basestring):
+            account_identifiers = account_identifiers.split(',')
+
+        _type = demisto.args().get('type')
+        tag = demisto.args().get('tag')
+
+        result = watchlist_add_accounts(account_identifiers, _type, tag)
+        markdown = ''
+        added = result.get('added')
+        already_on_watchlist = result.get('already on watchlist')
+        invalid = result.get('invalid')
+
+
+        if len(added) > 0:
+            markdown += '### Added: {}\n\n'.format(','.join(added))
+
+        if len(already_on_watchlist) > 0:
+            markdown += '### Already on watchlist: {}'.format(','.join(already_on_watchlist))
+
+        if len(invalid) > 0:
+            markdown += '### Invalid: {}\n'.format(','.join(invalid))
+
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'HumanReadable': markdown
+        })
+
+    def watchlist_remove_accounts(account_identifiers):
+        params = remove_none_params({
+            'account_identifiers': json.dumps(account_identifiers)
+        })
+
+        res = http_request('delete', 'api/2/watchlist', 'watchlist.remove', params)
+        result = res.json()
+
+        return result
+
+    def watchlist_remove_accounts_command():
+        account_identifiers = demisto.args().get('account_identifiers')
+        if isinstance(account_identifiers, basestring):
+            account_identifiers = account_identifiers.split(',')
+
+        result = watchlist_remove_accounts(account_identifiers)
+        removed = result.get('removed')
+        not_on_watchlist = result.get('not on watchlist')
+
+        markdown = ''
+        if len(removed) > 0:
+            markdown += '### Removed: {}'.format(','.join(removed))
+
+        if len(not_on_watchlist) > 0:
+            markdown += '### Not on watchlist: {}'.format(','.join(not_on_watchlist))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'HumanReadable': markdown
+        })
+
+    def get_watchlist_accounts(limit, token=None):
+        params = remove_none_params({
+            'limit': limit,
+            'token': token
+        })
+
+        res = http_request('get', 'api/2/watchlist', 'watchlist.info', params)
+        reports = res.json()
+        return reports
+
+    def get_watchlist_accounts_command():
+        limit = int(demisto.args().get('limit', 20))
+        token = demisto.args().get('token')
+
+        watchlist = get_watchlist_accounts(limit, token)
+        markdown = tableToMarkdown('Watchlist', watchlist.get('identifiers'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': watchlist,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'VigilanteATI.WatchlistQueryToken(true==true)': watchlist.get('token'),
+                'VigilanteATI.Watchlist(val.identifier == obj.identifier)': watchlist.get('identifiers')
+            }
+        })
+
+    def usage_info():
+        res = http_request('get', 'api/1/usage/info', 'usage.info')
+        usage = res.json()
+        return usage
+
+    def usage_info_command():
+        raw_usage = usage_info()
+        usage = [{
+            'Number of queries allowed': raw_usage.get('num_queries_allotted'),
+            'Number of queries left': raw_usage.get('num_queries_left')
+        }]
+        markdown = tableToMarkdown('Usage Info', usage)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': usage,
+            'HumanReadable': markdown
+        })
+
+    if demisto.command() == 'test-module':
+        query_infected_host_data(
+            days_ago=0,
+            q_address='8.8.8.8',
+            limit=1
+        )
+        usage_info()
+
+        demisto.results('ok')
+        sys.exit(0)
+
+    if demisto.command() == 'vigilante-query-infected-host-data':
+        query_infected_host_data_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-query-elasticsearch':
+        query_elasticsearch_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-search':
+        search_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-get-vulnerable-host-data':
+        get_vulnerable_host_data_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-search-leaks':
+        search_leaks_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-get-leak':
+        get_leak_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-query-ecrime-db':
+        query_ecrime_intelligence_database_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-list-account-credentials':
+        list_account_credentials_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-query-accounts':
+        query_accounts_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-query-domains':
+        query_domains_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-watchlist-add-accounts':
+        watchlist_add_accounts_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-watchlist-remove-accounts':
+        watchlist_remove_accounts_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-get-watchlist':
+        get_watchlist_accounts_command()
+        sys.exit(0)
+
+    elif demisto.command() == 'vigilante-account-usage-info':
+        usage_info_command()
+        sys.exit(0)
+
+    else:
+        demisto.results('Command not implement yet')
+  type: python
+  commands:
+  - name: vigilante-query-infected-host-data
+    arguments:
+    - name: days_ago
+      description: Specifies how many days ago (in history) we should go back to fetch
+        data for. By default, this parameter is set to 1 which means it returns all
+        infected host data added to the database within the last 1 day. To return
+        data for all infected hosts you can set this value to be equal to 0, or set
+        it a high value such as 3650 days (or 10 years). (optional)
+    - name: limit
+      description: Specifies the maximum number of entries to return from this request.
+        By default this parameter is set to 20 which means it returns up to the first
+        20 infected hosts. The valid range for value of limit is from 1 (minimum)
+        to 50,000 (maximum). (optional)
+      defaultValue: "20"
+    - name: token
+      description: The token required to retrieve the next page of results; if necessary.
+        When the result set is larger than the value of limit the API will return
+        a token along with the response so the client can request the next page of
+        results appropriately with the next API request. (optional)
+    - name: q_address
+      description: Query parameter specifying the alphanumeric version of the IPv4
+        address that will be used to query the database. (optional)
+    - name: cc_ipaddress
+      description: Query parameter specifying the IP address of the infected host
+        was seen communicating with. (optional)
+    outputs:
+    - contextPath: VigilanteATI.InfectedHosts.ip
+      description: Alphanumeric version of the IPv4 address belonging to this infected
+        host.
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts.port
+      description: 'Port number used by the infected host. '
+      type: number
+    - contextPath: VigilanteATI.InfectedHosts.domain
+      description: Domain name associated with the infected host. (e.g sample.com)
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts.country
+      description: Country code representing the country the host is located in. (e.g
+        US)
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts.malware
+      description: Name of the malware family we believe has infected the host. (e.g
+        c_zeroaccess)
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts.c_and_c
+      description: IP address of the C&C the infected host was seen communicating
+        with.
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts.timestamp
+      description: Timestamp of when we last saw this infected host and imported it
+        into our database. (e.g 2015-10-10 12:01:01)
+      type: date
+    - contextPath: VigilanteATI.GetInfectedHostsToken
+      description: Token required to paginate the next set of results in. This is
+        only provided if host number of items in the response exceeds our max pagination
+        size. Otherwise it is set to an empty string. If empty, it means there is
+        no next page
+      type: string
+    - contextPath: VigilanteATI.InfectedHosts
+      description: Container for infected host objects. This is basically a list of
+        dictionaries (hosts).
+    description: Query all infected host data. This is the API call you want to use
+      to lookup infected host data using an IP address or a network range.
+  - name: vigilante-get-vulnerable-host-data
+    arguments:
+    - name: limit
+      description: Specifies the maximum number of entries to return from this request.
+        By default this parameter is set to 20 which means it returns up to the first
+        20 cards. The valid range for value of limit is from 1 (minimum) to 1,000
+        (maximum). (optional)
+      defaultValue: "20"
+    - name: re_token
+      description: The re_token required to retrieve the next page of results; if
+        necessary. When the result set is larger than the value of limit the API will
+        return a re_token along with the response so the client can request the next
+        page of results appropriately with the next API request. (optional)
+    - name: q_address
+      description: The q_address is IP address of the vulnerable one wishes to search.
+        If not provided, by default this parameter is set to '*', and thus, will not
+        have any constrains on q_address. (optional)
+    - name: q_mask
+      description: The q_mask is mask one wishes to apply to the IP while searching.
+        If not provided, by default this parameter is set to '32', and thus, will
+        not have any constrains on q_address. (optional)
+    - name: q_type
+      description: The q_type is type of the vulnerable one wishes to search. If not
+        provided, by default this parameter is set to '*', and thus, will not have
+        any constrains on q_type. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Hosts
+      description: Container for vulnerable host objects. This is basically a list
+        of dictionaries (hosts).
+    - contextPath: VigilanteATI.Hosts.ip
+      description: Alphanumeric version of the IPv4 address belonging to this vulnerable
+        host.
+    - contextPath: VigilanteATI.Hosts.hostname
+      description: Hostname of the host. Obtained by doing a lookup using the given
+        IPv4 address. (e.g "sample.hostname.com")
+    - contextPath: VigilanteATI.Hosts.type
+      description: Vulnerability type/name. (e.g heartbleed)
+    - contextPath: VigilanteATI.Hosts.port
+      description: Port numbers that this might affect. (e.g 443)
+    - contextPath: VigilanteATI.Hosts.protocols
+      description: Protocols that this might affect. (e.g "ssh")
+    - contextPath: VigilanteATI.Hosts.url
+      description: URL field. Only applicable with certain vulnerability types such
+        as web shell.
+    - contextPath: VigilanteATI.Hosts.geoip
+      description: JSon of all the data we have about the IP and its location.
+    - contextPath: VigilanteATI.Hosts.geoip.timezone
+      description: Timezone (e.g Asia/Tokyo)
+    - contextPath: VigilanteATI.Hosts.geoip.ip
+      description: IPv4 addresss
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.continent_code
+      description: Contient Code (e.g AS)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.city_name
+      description: City Name (e.g Tokyo)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.country_code2
+      description: Country Code (e.g JP)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.country_name
+      description: Country Name (e.g Japan)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.country_code3
+      description: Country Code  (e.g JP)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.region_name
+      description: Region Name(e.g Tokyo)
+    - contextPath: VigilanteATI.Hosts.geoip.latitude
+      description: Latitude (e.g 35.6502)
+      type: number
+    - contextPath: VigilanteATI.Hosts.geoip.longitude
+      description: Longitude (e.g 139.6939)
+      type: number
+    - contextPath: VigilanteATI.Hosts.geoip.postal_code
+      description: Postal Code (e.g 153-0042)
+      type: string
+    - contextPath: VigilanteATI.Hosts.geoip.region_code
+      description: Region Code (e.g 13)
+      type: string
+    - contextPath: VigilanteATI.Hosts.timestamp
+      description: Timestamp of when we found this vulnerable host and imported it
+        into our database. (e.g 2015-10-10 12:01:01)
+      type: date
+    - contextPath: VigilanteATI.GetVulnerableHostsToken
+      description: The re_token parameter value required to retrieve the next page
+        of results. The token is valid for 5 minutes. The value is null if count is
+        equal to either 0 or total.
+    description: Returns all vulnerable host data from VI feed for the given query.
+      This is the API call you want to use to download the entire feed of vulnerable
+      hosts that matches the query.
+  - name: vigilante-query-ecrime-db
+    arguments:
+    - name: query
+      required: true
+      description: Specifies the search query; may be a lucene query.
+    - name: q_forum
+      description: 'Specifies a specific forum to search. '
+    - name: q_start_date
+      description: Specifies the search start date; only posts on or after q_start_date
+        are retrieved. e.g 2017-10-01)
+    - name: q_end_date
+      description: Specifies the search end date; only posts on or before q_end_date
+        are retrieved. (e.g 2017-10-03)
+    - name: limit
+      description: Specifies the maximum number of posts to return. By default limit
+        is set to 10, which means the result set is limited to the first 10 posts.
+        limit must be between 1 and 100, inclusive.
+      defaultValue: "10"
+    - name: re_token
+      description: The re_token required to retrieve the next page of results when
+        the result set is larger than limit. If this parameter is specified, all other
+        parameters are ignored.
+    outputs:
+    - contextPath: VigilanteATI.ECrimeQueryToken
+      description: The re_token parameter value required to retrieve the next page
+        of results. The token is valid for 5 minutes. The value is null if count is
+        equal to either 0 or total.
+      type: string
+    - contextPath: VigilanteATI.ECrimePosts.title
+      description: base64 encoded, matching search terms highlighted via <mark> tags
+      type: string
+    - contextPath: VigilanteATI.ECrimePosts.date
+      description: Post date (format YYYY-MM-DD)
+      type: date
+    - contextPath: VigilanteATI.ECrimePosts.forum
+      description: Forum (e.g rstforums.com)
+      type: string
+    - contextPath: VigilanteATI.ECrimePosts.author
+      description: Author
+      type: string
+    - contextPath: VigilanteATI.ECrimePosts.post
+      description: base64 encoded, matching search terms highlighted via <mark> tags
+      type: string
+    description: Query the eCrime intelligence database. This is the API call you
+      want to use to do a full text search on eCrime intelligence data, such as hacker
+      chatter.
+  - name: vigilante-search-leaks
+    arguments:
+    - name: leak_id
+      description: If set this parameter determines which leak the user wants to return
+        metadata for. This is used primarily when you want to get information on just
+        a single leak instead of a set of leaks.
+    - name: days_ago
+      description: Specifies how many days ago (in history) we should go back to fetch
+        leak data for. By default this parameter is set to 7 which means it returns
+        all leaks added to the database within the last 7 days. To return data for
+        all leaks you can set this value to be equal to 0.
+    - name: keyword
+      description: Allows you to specify a string keyword to search for. The keyword
+        specified is used to search metadata associated with a leak and return any
+        matching results. You can search by domain names, hacker groups, affected
+        companies, etc.
+    - name: limit
+      description: Specifies the maximum number of leaks to return from this request.
+        By default this parameter is set to 20 which means it returns up to the first
+        20 leaks. The valid range for value of limit is from 1 (minimum) to 1,000
+        (maximum). (optional)
+      defaultValue: "20"
+    - name: token
+      description: The token required to retrieve the next page of results; if necessary.
+        When the result set is larger than the value of limit the API will return
+        a token along with the response so the client can request the next page of
+        results appropriately with the next API request. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Leaks.leak_id
+      description: Unique identifier for the leak. We internally use MD5 sums to identify
+        leaks, so this will be a MD5 sum
+      type: string
+    - contextPath: VigilanteATI.Leaks.title
+      description: Title of the leak.
+    - contextPath: VigilanteATI.Leaks.description
+      description: A short leak description
+    - contextPath: VigilanteATI.Leaks.leak_type
+      description: 'Type of the leak. Currently we feature the following leak designations:
+        "Database dump", "Credentials dump" or "Credit card dump". As our service
+        grows we will add new leak types into the system.'
+    - contextPath: VigilanteATI.Leaks.source_refs
+      description: List of sources (URIs) where this leak was available at the time
+        VigilanteATI team harvested it.
+      type: string
+    - contextPath: VigilanteATI.Leaks.import_date
+      description: The date the leak was first imported into the VigilanteATI database.
+      type: date
+    - contextPath: VigilanteATI.Leaks.attackers
+      description: A list of attackers (hackers) who claimed responsibility for the
+        breach/leak.
+      type: string
+    - contextPath: VigilanteATI.Leaks.score
+      description: An integer, in a range of 0 to 100, of how confident we are this
+        leak is legitimate.
+      type: number
+    - contextPath: VigilanteATI.Leaks.num_domains_affected
+      description: Number of domains affected by the leak.
+      type: number
+    - contextPath: VigilanteATI.Leaks.target_industries
+      description: A list of target industry verticals affected by the leak.
+      type: string
+    - contextPath: VigilanteATI.Leaks.attack_method
+      description: The method of attack on the target; if published. This is usually
+                     "SQLi", "phishing", "social engineering", etc.
+      type: string
+    - contextPath: VigilanteATI.Leaks.media_refs
+      description: A list of media articles covering the data leak.
+    - contextPath: VigilanteATI.Leaks.targets
+      description: List of entities targeted by this leak.
+      type: string
+    - contextPath: VigilanteATI.Leaks.num_entries
+      description: Total number of account credentials (email/password pairs) harvested
+        from this leak.
+      type: number
+    - contextPath: VigilanteATI.Leaks.password_hash
+      description: Type of password hash; only present if leaked passwords have been
+        hashed.
+      type: string
+    - contextPath: VigilanteATI.LeakInfoToken
+      description: Token required to paginate the next set of results in. This is
+        only provided if the number of items in the response exceeds our max pagination
+        size. Otherwise it is set to an empty string.
+      type: string
+    description: ' Retrieves the list of leaks from database.'
+  - name: vigilante-get-leak
+    arguments:
+    - name: leak_id
+      required: true
+      description: An identifier (MD5 sum) that uniquely represents this leak in our
+        database.
+    - name: limit
+      description: Specifies the maximum number of account credentials to return from
+        this request. By default this parameter is set to 20 which means it returns
+        up to the first 20 accounts harvested from this leak. The valid range for
+        value of limit is from 1 (minimum) to 10,000 (maximum). (optional)
+      defaultValue: "20"
+    - name: domains
+      description: A comma delimited list of domains to use a filter for returning
+        the harvested credentials. This parameter is used to return only a subset
+        of the leak that matches a particular email domain, rather than the whole
+        leak. By default this parameter is set to empty string which means it returns
+        all harvested credentials, regardless of the email domain they belong to.
+        (optional)
+    - name: token
+      description: The token required to retrieve the next page of results; if necessary.
+        When the result set is larger than the value of limit the API will return
+        a token along with the response so the client can request the next page of
+        results appropriately with the next API request. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Leaks.leak_id
+      description: Unique identifier for the leak from which the accounts come from.
+        (MD5 sum)
+      type: string
+    - contextPath: VigilanteATI.Leaks.accounts
+      description: Container for account objects. This is just a list of dictionaries.
+    - contextPath: VigilanteATI.Leaks.accounts.domain
+      description: Email domain which the account belongs to.
+      type: string
+    - contextPath: VigilanteATI.Leaks.accounts.type_id
+      description: Type of account. At the moment we only support accounts of type
+        1, which are email addresses. As we expand our service we will add support
+        for additional types such as usernames.
+      type: number
+    - contextPath: VigilanteATI.Leaks.accounts.email
+      description: A plaintext form of the email address from the account. The email
+        address will always be lowercased.
+      type: string
+    - contextPath: VigilanteATI.Leaks.accounts.password
+      description: The encrypted password found in this leaked account credential.
+        This field is the BASE64 encoded representation of the encrypted data. You
+        will need to decrypt this password using a decryption key provided to you.
+      type: string
+    - contextPath: VigilanteATI.LeakAccountsToken
+      description: Token required to paginate the next set of results in. This is
+        only provided if the number of items in the response exceeds our max pagination
+        size. Otherwise it is set to an empty string.
+      type: string
+    description: ' Retrieves the list of account credentials that belong to a particular
+      leak.'
+  - name: vigilante-query-accounts
+    arguments:
+    - name: emails
+      required: true
+      description: The string (or comma delimited list of strings) that uniquely identifier
+        the account we are trying to match on. In the current version of the API the
+        only acceptable types of account identifiers are email address and SHA512
+        hashes of email addresses. Please note that if you're populating this argument
+        with a list of email addresses or SHA512 hashes we do not allow mixing of
+        the two types. The list must be either only email addresses, or only hashes.
+        Any email address provided in account_identifier must adhere to RFC 2822.
+        (required)
+      isArray: true
+    - name: limit
+      description: Upper bounds for how many results we will return. By default this
+        is set to 20. (optional)
+      defaultValue: "20"
+    - name: days_ago
+      description: Used to specify a time range on matching against the given account
+        identifier. By default we will run the query against our entire database,
+        without restricting results to a time range. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Account.leak_id
+      description: Leak ID related to that account
+      type: string
+    - contextPath: VigilanteATI.Account.type_id
+      description: Type of account. At the moment we only support accounts of type
+        1, which are email addresses. As we expand our service we will add support
+        for additional types such as usernames.
+      type: number
+    - contextPath: VigilanteATI.Account.source_type
+      description: Denotes type of data. Value of 1 indicates compromised credentials.
+        Value of 2 means that these are Endangered Credentials, and the password field
+        contains a JSON dictionary instead of a password.
+      type: number
+    - contextPath: VigilanteATI.Account.email
+      description: A plaintext form of the email address from the account. The email
+        address will always be lowercased.
+      type: string
+    - contextPath: VigilanteATI.Account.password
+      description: The encrypted password found in this leaked account credential.
+        This field is the BASE64 encoded representation of the encrypted data. You
+        will need to decrypt this password using a decryption key provided to you.
+      type: string
+    - contextPath: VigilanteATI.AccountQueryToken
+      description: Token required to paginate the next set of results in. This is
+        only provided if the number of items in the response exceeds our max pagination
+        size. Otherwise it is set to an empty string.
+      type: string
+    description: Performs a query to match the given account identifier against database
+      of leaked credentials.
+  - name: vigilante-query-domains
+    arguments:
+    - name: domain
+      required: true
+      description: The string that uniquely identifies the domain we are trying to
+        match on. Domain names provided as domain_identifier must adhere to RFC 1035.
+    - name: days_ago
+      description: If this parameter is supplied, the API will only search the previous
+        n days for the domains. The maximum value allowed is 365 days if supplied.
+        If this parameter is not included, the will not be restricted by time.
+    - name: limit
+      description: Upper bounds for how many results we will return. By default this
+        is set to 20.
+      defaultValue: "20"
+    - name: token
+      description: The token required to retrieve the next page of results; if necessary.
+        When the result set is larger than our max page size the API returns a token
+        along with the response so the client can request the next page appropriately
+        with the next API request. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Domain.domain
+      description: The domain name you queried for.
+      type: string
+    - contextPath: VigilanteATI.Domain.accounts
+      description: Container for results. List of dictionaries, each representing
+        a single pair of account credentials with associated metadata.
+    - contextPath: VigilanteATI.Domain.accounts.source_type
+      description: Denotes type of data. Value of 1 indicates compromised credentials.
+        Value of 2 means that these are Endangered Credentials, and the password field
+        contains a JSON dictionary instead of a password.
+      type: number
+    - contextPath: VigilanteATI.Domain.accounts.email
+      description: A plaintext form of the email address from the account. The email
+        address will always be lowercased.
+      type: string
+    - contextPath: VigilanteATI.Domain.accounts.password
+      description: The encrypted password found in this leaked account credential.
+        This field is the BASE64 encoded representation of the encrypted data. You
+        will need to decrypt this password using a decryption key provided to you.
+      type: string
+    - contextPath: VigilanteATI.DomainQueryToken
+      description: Token required to paginate the next set of results in. This is
+        only provided if the number of items in the response exceeds our max pagination
+        size. Otherwise it is set to an empty string.
+      type: string
+    - contextPath: VigilanteATI.Domain.accounts.leak_id
+      description: Identifier of the leak where this account came from. You can use
+        this ID to correlate account data to the leak.
+      type: string
+    description: ' Performs a query to match the given domain name against our database
+      of leaked credentials.'
+  - name: vigilante-watchlist-add-accounts
+    arguments:
+    - name: account_identifiers
+      required: true
+      description: Command separated string containing account identifiers to add
+        to your watchlist. All identifiers must be of the same type as specified by
+        the type parameter. Identifiers cannot be longer than 255 characters. Multiple
+        occurrences of an identifier in the array are treated as a single identifier.
+        The maximum number of account identifiers allowed per request is 100. Email
+        addresses must adhere to RFC 2822.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - domain
+      description: The type of each account identifier, either "email" or "domain"
+    - name: tag
+      description: A textual note to associate with each account identifier. Tags
+        cannot be longer than 255 characters. (optional)
+    description: Add account identifiers to your watchlist.
+  - name: vigilante-watchlist-remove-accounts
+    arguments:
+    - name: account_identifiers
+      required: true
+      description: Comma separated string containing account identifiers to remove
+        from your watchlist. Multiple occurrences of an identifier in the array are
+        treated as a single identifier. The maximum number of account identifiers
+        allowed per request is 100. (required)
+    description: Remove account identifiers from your watchlist
+  - name: vigilante-get-watchlist
+    arguments:
+    - name: limit
+      description: Specifies the maximum number of identifiers to return. By default
+        limit is set to 20, which means the result set is limited to the most recently
+        added 20 identifiers. limit must be between 1 and 5000, inclusive. (optional)
+      defaultValue: "20"
+    - name: token
+      description: The token required to retrieve the next page of results. If this
+        parameter is specified, the limit parameter is ignored. (optional)
+    outputs:
+    - contextPath: VigilanteATI.Watchlist
+      description: Watchlist of accounts
+    - contextPath: VigilanteATI.Watchlist.identifier
+      description: account identifier (e.g "john@domain.com")
+    - contextPath: VigilanteATI.Watchlist.type
+      description: identifer type ("email" or "domain")
+    - contextPath: VigilanteATI.Watchlist.date_added
+      description: date identifier added to watchlist (YYYY-MM-DD)
+    - contextPath: VigilanteATI.Watchlist.date_notified
+      description: latest matching intelligence date (YYYY-MM-DD)
+    - contextPath: VigilanteATI.Watchlist.tag
+      description: identifier tag
+    - contextPath: VigilanteATI.WatchlistQueryToken
+      description: The token parameter value required to retrieve the next page of
+        results. The value is null if there are no more pages of results to retrieve.
+      type: string
+    description: Retrieve account identifiers on your watchlist.
+  - name: vigilante-account-usage-info
+    arguments: []
+    description: Returns the usage data for your account.
+  runonce: false
+tests:
+  - InfoArmorVigilanteATITest

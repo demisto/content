@@ -12,7 +12,6 @@ tasks:
       id: 4cda480e-8fe1-4795-8b8f-e78ee8e84375
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -22,10 +21,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 391e1cac-f7b0-4511-808d-2b3169996721
@@ -36,13 +36,12 @@ tasks:
       name: Domain Enrichment - Generic
       description: Enrich Domain using one or more integrations
       playbookName: Domain Enrichment - Generic
-      playbookId: domain_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       Domain:
         simple: ${Test.Domain}
@@ -54,10 +53,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 613
+          "x": 265,
+          "y": 545
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 6bf75fe8-8731-4aa3-8e53-e3078f3ad13b
@@ -83,10 +83,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 799
+          "x": 480,
+          "y": 895
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: bcf27b2e-3bc3-4b76-8e97-10e2c6b94648
@@ -100,6 +101,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -110,10 +114,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1014
+          "x": 480,
+          "y": 1070
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: f23e993b-c68d-4b39-84f0-cc14c4d92158
@@ -138,10 +143,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 227
+          "x": 265,
+          "y": 195
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 23212201-4dce-46cb-8f57-21ce44c0efb2
@@ -168,18 +174,106 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 423
+          "x": 265,
+          "y": 370
         }
       }
+    note: false
+  "6":
+    id: "6"
+    taskid: f924aa02-4b5e-43b4-88fd-db1b2e51b624
+    type: condition
+    task:
+      id: f924aa02-4b5e-43b4-88fd-db1b2e51b624
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 6d72f27a-b73c-43c6-860f-7ace96888831
+    type: condition
+    task:
+      id: 6d72f27a-b73c-43c6-860f-7ace96888831
+      version: -1
+      name: Check if API RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 5c881764-350f-4efb-8e4e-76868c6c51a2
+    type: title
+    task:
+      id: 5c881764-350f-4efb-8e4e-76868c6c51a2
+      version: -1
+      name: End test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1257,
-        "width": 383,
-        "x": 447,
+        "height": 1260,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }

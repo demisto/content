@@ -157,13 +157,29 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
-def set_integration_params(demisto_api_key, integrations, secret_params):
+def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
     for integration in integrations:
-        integration_params = [item for item in secret_params if
-                              item["name"] == integration['name']]
+        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+
         if integration_params:
-            integration['params'] = integration_params[0].get('params', {})
-            integration['byoi'] = integration_params[0].get('byoi', True)
+            matched_integration_params = integration_params[0]
+            if len(integration_params) != 1:
+                found_matching_instance = False
+                for item in integration_params:
+                    if item.get('instance_name', 'Not Found') in instance_names:
+                        matched_integration_params = item
+                        found_matching_instance = True
+
+                if not found_matching_instance:
+                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in integration_params]
+                    print_error("{} Failed to run\n, There are {} instances of {},"
+                                "please select of them by using the instance_name "
+                                "argument in conf.json the options are:\n{}".format(playbook_id, len(integration_params),
+                                                                                  integration['name'], '\n'.join(optional_instance_names)))
+                    return False
+
+            integration['params'] = matched_integration_params.get('params', {})
+            integration['byoi'] = matched_integration_params.get('byoi', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -171,15 +187,20 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                 'insecure': True,
             }
 
+    return True
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
+
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
+    is_nightly_integration = False
     has_skipped_integration = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
-            break
+
+        if integration in nightly_integrations:
+            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -187,7 +208,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return has_skipped_integration, integrations
+    return has_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests():
@@ -249,8 +270,11 @@ def main():
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
+    default_test_timeout = conf.get('testTimeout', 30)
+
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
+    nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
@@ -271,20 +295,24 @@ def main():
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
         integrations_conf = t.get('integrations', [])
-        skip_nightly_test = True if nightly_test and not is_nightly else False
+        instance_names_conf = t.get('instance_names', [])
 
         test_message = 'playbook: ' + playbook_id
 
         test_options = {
-            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-            'interval': conf.get('testInterval', 10)
+            'timeout': t.get('timeout', default_test_timeout)
         }
 
         if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
+            integrations_conf = [integrations_conf, ]
 
-        has_skipped_integration, integrations = collect_integrations(
-            integrations_conf, skipped_integration, skipped_integrations_conf)
+        if not isinstance(instance_names_conf, list):
+            instance_names_conf = [instance_names_conf, ]
+
+        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+        skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
         # Skip nightly test
         if skip_nightly_test:
@@ -308,7 +336,11 @@ def main():
         if has_skipped_integration:
             continue
 
-        set_integration_params(demisto_api_key, integrations, secret_params)
+        are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf, playbook_id)
+        if not are_params_set:
+            failed_playbooks.append(playbook_id)
+            continue
+
         test_message = update_test_msg(integrations, test_message)
 
         run_test(c, failed_playbooks, integrations, playbook_id,

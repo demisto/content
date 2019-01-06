@@ -5,7 +5,8 @@ name: Phish.AI
 display: Phish.AI
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
-description: Next-Generation Anti-Phishing Platform Powered by AI & Computer VIsion
+description: Next-Generation Anti-Phishing Platform Powered by AI & Computer Vision
+fromversion: "4.0.0"
 configuration:
 - display: Private API Key (Optional)
   name: apiKey
@@ -19,23 +20,9 @@ configuration:
   required: false
 script:
   script: |2
-
-    var TIMEOUT = 20 * 1000;
     var DONT_CHECK_CERTIFICATE = false;
 
-    function phishAiScan(url, apiKey) {
-        var ec = {
-            PhishAI: {Url: url},
-            DBotScore: {
-                Indicator: url,
-                Score: 0,
-                Type: 'url',
-                Vendor: 'Phish.AI'
-            }
-        };
-
-        var md = '## Phish.AI Analysis for ' + url + '\n';
-
+    function checkStatus(url, apiKey){
         var initialRes = http(
             'https://app.phish.ai/api/url/scan',
             {
@@ -50,84 +37,139 @@ script:
             DONT_CHECK_CERTIFICATE,
             params.proxy
         );
+
+        // check status code is valid
         if (initialRes.StatusCode !== 200 && initialRes.StatusCode !== 201) {
             throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
         }
 
         var scanId = JSON.parse(initialRes.Body).scan_id;
 
-        var startTime = new Date();
-        startTime = startTime.getMilliseconds();
+        var res = http(
+            'https://app.phish.ai/api/url/report?scan_id=' + scanId,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                }
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
 
-        var endTime = new Date();
-        endTime = endTime.getMilliseconds();
-        var res;
-        while ((endTime - startTime) < TIMEOUT) {
-            res = http(
-                'https://app.phish.ai/api/url/report?scan_id=' + scanId,
-                {
-                    Method: 'GET',
-                    Headers: {
-                        'Accept': ['application/json'],
-                        'Authorization': [apiKey]
+        if (res.StatusCode !== 200) {
+            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+        }
+        var report = JSON.parse(res.Body);
+        md = tableToMarkdown('Phish.AI Scan report ' + url, report);
+        return {
+            Type: entryTypes.note,
+            Contents: report,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'URL(val.Data === obj.Data)' : {
+                    'Data': url,
+                    'Status': report.status
+                },
+            }
+        };
+    }
+
+
+    function analayzeResult(report, url) {
+        delete report.user_email;
+        var DBotScore = {
+            Indicator: url,
+            Score: 0,
+            Type: 'url',
+            Vendor: 'Phish.AI'
+        };
+        if (report.verdict == 'malicious') {
+            DBotScore.Score = 3;
+            addMalicious(ec, url, {
+                Data: url,
+                Malicious: {
+                    Vendor: 'Phish.AI',
+                    Description: 'URL classified as phishing by Phish.AI'
+                }
+            });
+        }
+
+        // if we sending both domain and url to the war-room in the human readable we would
+        // run the test again for the domain since it doesn't have the http:// part
+        if (url === report.url){
+            delete report.domain;
+        } else if (url === report.domain){
+            delete report.url;
+
+        }
+        md = tableToMarkdown('Phish.AI Scan report ' + url, report);
+        return {
+            Type: entryTypes.note,
+            Contents: report,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'URL(val.Data === obj.Data)' : {
+                    'Data': url
+                },
+                'IP(val.Hostname === obj.Hostname)' : {
+                    'Address': report.ip_address,
+                    'Hostname': report.domain,
+                    'Geo':{
+                        'Country':report.iso_code
                     }
                 },
-                DONT_CHECK_CERTIFICATE,
-                params.proxy
-            );
-            if (res.StatusCode !== 200) {
-                throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+                'DBotScore' : DBotScore
             }
-            var report = JSON.parse(res.Body);
-            if (report.status !== 'in progress') {
-                delete report.user_email;
-                if (report.verdict == 'malicious') {
-                    ec.DBotScore.Score = 3;
-                    addMalicious(ec, url, {
-                        Data: url,
-                        Malicious: {
-                            Vendor: 'Phish.AI',
-                            Description: 'URL classified as phishing by Phish.AI'
-                        }
-                    });
-                }
-                ec.PhishAI.IpAddress = report.ip_address;
-                ec.PhishAI.Hostname = report.domain;
-                ec.PhishAI.Country = report.iso_code;
-                // if we sending both domain and url to the war-room in the human readable we would run the test again for the domain since it doesn't have the http:// part
-                if (url === report.url){
-                    delete report.domain;
-                } else if (url === report.domain){
-                    delete report.url;
-                }
-                md = tableToMarkdown('Phish.AI Scan report ' + url, report);
-                return {
-                    Type: entryTypes.note,
-                    Contents: report,
-                    ContentsFormat: formats.json,
-                    HumanReadable: md,
-                    EntryContext: {
-                        'Url(obj.Data.Url && obj.Data.Url===val.Data.Url)' : {
-                            'Data': ec.PhishAI.Url
-                        },
-                        'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
-                            'Address': ec.PhishAI.IpAddress,
-                            'Hostname': ec.PhishAI.Hostname,
-                            'Geo':{
-                                'Country':ec.PhishAI.Country
-                            }
-                        },
-                        'DBotScore' : ec.DBotScore
-                    }
-                };
-            }
-            logInfo('scan in progress');
-        }
-        return {
-            Type: entryType.error,
-            Contents: JSON.parse(res.Body),
-            HumanReadable: "Scan timed out"
         };
+    }
+
+
+    function phishAiScan(url, apiKey) {
+        var initialRes = http(
+            'https://app.phish.ai/api/url/scan',
+            {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                },
+                Body: JSON.stringify({'url': url})
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
+
+        // check status code is valid
+        if (initialRes.StatusCode !== 200 && initialRes.StatusCode !== 201) {
+            throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
+        }
+
+        var scanId = JSON.parse(initialRes.Body).scan_id;
+        var res = http(
+            'https://app.phish.ai/api/url/report?scan_id=' + scanId,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                }
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
+
+        if (res.StatusCode !== 200) {
+            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+        }
+
+        var report = JSON.parse(res.Body);
+
+        return analayzeResult(report, url)
     }
 
     switch (command) {
@@ -139,14 +181,16 @@ script:
                 return 'error';
             }
             break;
-        case 'url':
+        case 'phish-ai-scan-url':
             return phishAiScan(args.url, params.apiKey);
+        case 'phish-ai-check-status':
+            return checkStatus(args.url, params.apiKey);
         default:
             break;
     }
   type: javascript
   commands:
-  - name: url
+  - name: phish-ai-scan-url
     arguments:
     - name: url
       required: true
@@ -178,3 +222,16 @@ script:
       type: string
     description: Check if url is phishing and get details about the brand that is
       being phished
+  - name: phish-ai-check-status
+    arguments:
+    - name: url
+      description: url to check status for
+    outputs:
+    - contextPath: URL.Data
+      description: URL's Address
+    - contextPath: URL.Status
+      description: URL's Status
+    description: Checks on url's status, e.g. completed/in progress
+  runonce: false
+tests:
+  - PhishAi-Test
