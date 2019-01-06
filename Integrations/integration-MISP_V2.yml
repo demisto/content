@@ -117,9 +117,9 @@ script:
 
     ''' HELPER FUNCTIONS '''
     def convert_timestamp(timestamp):
-      """
-      Gets a timestamp from MISP response (1546713469) and converts it to human readable format
-      """
+        """
+        Gets a timestamp from MISP response (1546713469) and converts it to human readable format
+        """
         return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 
     def replace_keys(obj_to_build):
