@@ -10,6 +10,9 @@ script: |-
   })
   ips = res[0]['Contents']
 
+  if not ips or "Too many requests" in ips:
+      return_error("No Indicators were created (possibly bad API key)")
+
   # Extract IPs into new Indicators
   for ip in ips:
       demisto.executeCommand("createNewIndicator", {
@@ -21,6 +24,7 @@ script: |-
       });
 
   demisto.results("All Indicators were created successfully")
+
 type: python
 tags: []
 comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicators
@@ -33,13 +37,6 @@ args:
 - name: limit
   description: 'Maximum number of IPs to retrieve, default is 50 '
   defaultValue: "200"
-- name: saveToContext
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Save the list of blacklisted IPs into the Context
-  defaultValue: "false"
 scripttarget: 0
 dependson:
   must:
