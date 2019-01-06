@@ -66,5 +66,6 @@ dependson:
   must:
   - sep-client-content
 timeout: 0s
+releaseNotes: "-"
 tests:
-  - No test - no test needed
+  - No test - postepone for later
