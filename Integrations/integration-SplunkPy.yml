@@ -32,7 +32,7 @@ configuration:
     | eval security_domain=if(isnull(security_domain),source,security_domain)
   type: 0
   required: false
-- display: Fetch incidents
+  - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
@@ -42,7 +42,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: 'Proxy - in format: 127.0.0.1:8080'
+  - display: 'Proxy - in format: 127.0.0.1:8080'
   name: proxy
   defaultvalue: ""
   type: 0
@@ -240,6 +240,7 @@ script:
         if VERIFY_CERTIFICATE:
             context.verify_mode = ssl.CERT_REQUIRED
         else:
+            context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
 
         try:
@@ -537,6 +538,5 @@ script:
       type: unknown
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
-  isfetch: true
   runonce: false
-releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"
+  releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"
