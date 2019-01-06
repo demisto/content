@@ -110,7 +110,7 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
-            elif file_status.lower() == 'm':
+            elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
                 all_tests.append(file_path)
 
     return modified_files_list, modified_tests_list, all_tests, is_conf_json
