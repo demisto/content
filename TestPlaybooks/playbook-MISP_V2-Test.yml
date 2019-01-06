@@ -318,7 +318,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      eventID:
+      event_id:
         simple: ${MISP.Event.ID}
     separatecontext: false
     view: |-
