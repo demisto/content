@@ -669,3 +669,8 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
   runonce: false
+releaseNotes: Rewrite of the current integration in python insread of JS
+tests:
+  - sep_-_test_endpoint_search
+
+
