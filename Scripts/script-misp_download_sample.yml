@@ -8,7 +8,7 @@ script: |+
   # Executing command if MISP V2 has an active instance
   misp_v2 = False
   for instance_name, data in demisto.getModules().items():
-      if data.get('brand') == "MISP V2" and data.get('state') == 'active':
+      if data.get('brand') == 'MISP V2' and data.get('state') == 'active':
           misp_v2 = True
           break
 
