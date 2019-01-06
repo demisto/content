@@ -26,57 +26,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "1":
-    id: "1"
-    taskid: 3aa71491-43fb-4e1a-8a03-613c19a59e50
-    type: condition
-    task:
-      id: 3aa71491-43fb-4e1a-8a03-613c19a59e50
-      version: -1
-      name: Is MISP V2 active?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: MISP V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
   "3":
     id: "3"
     taskid: 6a64fe33-1ca0-4300-865b-773a5712dbb3
@@ -112,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -152,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
@@ -164,7 +113,7 @@ tasks:
     task:
       id: 47e09105-6f16-4bc8-8cac-efe253b240b1
       version: -1
-      name: Untitled Task
+      name: End of test
       type: title
       iscommand: false
       brand: ""
@@ -173,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2820
         }
       }
     note: false
@@ -192,7 +141,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
@@ -242,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -280,7 +229,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -318,7 +267,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -350,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
@@ -378,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -406,7 +355,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -436,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
@@ -466,7 +415,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -504,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -542,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -585,7 +534,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -628,7 +577,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2295
         }
       }
     note: false
@@ -638,7 +587,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 2835,
         "width": 380,
         "x": 50,
         "y": 50
