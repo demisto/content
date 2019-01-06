@@ -780,9 +780,6 @@
             "misp_upload_sample": {
                 "name": "misp_upload_sample", 
                 "deprecated": true, 
-                "depends_on": [
-                    "internal-misp-upload-sample"
-                ], 
                 "script_executions": [
                     "getFilePath"
                 ]
@@ -3053,10 +3050,7 @@
         {
             "misp_download_sample": {
                 "name": "misp_download_sample", 
-                "deprecated": true, 
-                "depends_on": [
-                    "internal-misp-download-sample"
-                ]
+                "deprecated": true
             }
         }, 
         {
