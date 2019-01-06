@@ -184,6 +184,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 4.1.0
-releaseNotes: "New playbook: wrapper for DBotCreatePhishingClassifier - easy to use as job"
 tests:
   - CreatePhishingClassifierMLTest

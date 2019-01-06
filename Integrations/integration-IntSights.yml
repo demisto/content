@@ -50,6 +50,7 @@ script:
     import requests
     import json
     import base64
+    from datetime import datetime
 
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -88,6 +89,57 @@ script:
                 return_error('Error in API call to IntSights service %s - [%d] %s' % (path, r.status_code, r.text))
         return r
 
+    def convert_iso_string_to_python_date(date_in_iso_format):
+        iso_format = "%Y-%m-%dT%H:%M:%S"
+        date_in_python_format = datetime.strptime(date_in_iso_format, iso_format)
+        return date_in_python_format
+
+    def convert_python_date_to_unix_millisecond(python_date_object):
+        timestamp_in_unix_millisecond = date_to_timestamp(python_date_object, 'datetime.datetime')
+        return timestamp_in_unix_millisecond
+
+    def increase_iso_by_x_days(date_in_iso_format, num_of_days):
+        iso_format = "%Y-%m-%dT%H:%M:%S"
+        date_in_python_format = convert_iso_string_to_python_date(date_in_iso_format)
+        new_date_in_python_format = date_in_python_format + timedelta(days = int(num_of_days))
+        new_date_in_iso_format = new_date_in_python_format.isoformat()
+        return new_date_in_iso_format
+
+    def remove_milliseconds_from_iso(date_in_iso_format):
+        date_parts_arr = date_in_iso_format.split('.')
+        date_in_iso_without_milliseconds = date_parts_arr[0]
+        return date_in_iso_without_milliseconds
+
+    def increase_timestamp_by_x_days(date_in_unix_ms_timestamp, num_of_days):
+        date_in_iso = timestamp_to_datestring(date_in_unix_ms_timestamp)
+        date_in_iso_without_ms = remove_milliseconds_from_iso(date_in_iso)
+        date_in_iso_plus_x_days = increase_iso_by_x_days(date_in_iso_without_ms, num_of_days)
+        timestamp_in_unix_ms_plus_x_days = date_to_timestamp(date_in_iso_plus_x_days)
+        return timestamp_in_unix_ms_plus_x_days
+
+    def update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp):
+        params['foundDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['foundDateTo'] = now_date_in_unix_timestamp
+        params['sourceDateFrom'] = oldest_day_to_search_in_unix_timestamp
+        params['sourceDateTo'] = now_date_in_unix_timestamp
+
+    def update_params_with_delta_arg(params, time_delta_in_days_int):
+        now_date_in_iso = datetime.utcnow().isoformat()
+        now_date_in_iso_without_ms = remove_milliseconds_from_iso(now_date_in_iso)
+        now_date_in_unix_timestamp = date_to_timestamp(now_date_in_iso_without_ms)
+        oldest_day_to_search_in_unix_timestamp = increase_timestamp_by_x_days(now_date_in_unix_timestamp, -1*time_delta_in_days_int)
+        update_params_with_end_and_start_date(params, oldest_day_to_search_in_unix_timestamp, now_date_in_unix_timestamp)
+        del params['time-delta']
+
+
+    def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
+        if 'foundDateFrom' in params or 'foundDateTo' in params:
+            demisto.debug("ERROR in get_alerts() - can't use found-date-to or found-date-from arguments with time-delta argument")
+            return_error("Error: can't assign delta when assigned both found-date-to or found-date-from")
+        else:
+            update_params_with_delta_arg(params, time_delta_in_days_int)
+        return params
+
 
     def handle_filters():
         """
@@ -114,6 +166,9 @@ script:
         for k in demisto.args():
             if demisto.getArg(k):
                 params[argsConversion.get(k) or k] = demisto.getArg(k)
+        if demisto.getArg('time-delta'):
+            time_delta_in_days = demisto.getArg('time-delta')
+            update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
         return params
 
 
@@ -124,11 +179,14 @@ script:
             r = []
         else:
             r = resp.json()
-        alerts = []
+
+        alerts_HR = []
+        alerts_ctx = []
         for alert_id in r:
-            alert_information = get_alert_by_id_helper(alert_id)
-            alerts.append(alert_information)
-        return alerts
+            alert_informationHR, alert_informationCtx = get_alert_by_id_helper(alert_id)
+            alerts_HR.append(alert_informationHR)
+            alerts_ctx.append(alert_informationCtx)
+        return alerts_HR, alerts_ctx
 
 
     def extract_mail(replies):
@@ -158,26 +216,35 @@ script:
         return 'Unknown'
 
 
+    def extract_tags(tags):
+        pretty_tags = []
+        string_format = "ID: {0} - Name: {1}"
+        for tag in tags:
+            pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
+        return pretty_tags
+
+
     def get_alerts():
         """
         Gets all alerts and returns as a list.
         """
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx = get_alerts_helper(handle_filters())
 
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts},
-            'Contents': alerts,
-            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts_ctx},
+            'Contents': alerts_ctx,
+            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType'], removeNull=False),
             'ContentsFormat': formats['json']
         })
 
 
-    def alert_to_readable(r):
+    def alert_to_readable(r, parse_tags):
         """
         Convert alert to readable format
         """
-        return {
+
+        readable = {
             'ID': demisto.get(r,'_id'),
             'Severity': demisto.get(r,'Details.Severity'),
             'Type': demisto.get(r,'Details.Type'),
@@ -188,16 +255,31 @@ script:
             'SourceNetworkType': demisto.get(r,'Details.Source.NetworkType'),
             'IsClosed': demisto.get(r,'IsClosed'),
             'IsFlagged': demisto.get(r,'IsFlagged'),
-            'Assets': demisto.get(r,'Assets')
+            'Assets': demisto.get(r,'Assets'),
+            'Images': demisto.get(r, 'Details.Images'),
+            'Description': demisto.get(r, 'Details.Description'),
+            'Title': demisto.get(r, 'Details.Title'),
+            'TakedownStatus': demisto.get(r, 'TakedownStatus'),
+            'SubType': demisto.get(r, 'Details.SubType')
         }
+
+        tags = demisto.get(r, 'Details.Tags')
+        if parse_tags:
+            readable['Tags'] = extract_tags(tags)
+        else:
+            readable['Tag'] = []
+            for tag in tags:
+                readable['Tag'].append({'ID': tag.get('_id'), 'Name': tag.get('Name')})
+
+        return readable
 
 
     def get_alert_by_id_helper(alert_id):
         """
         Helper for getting details by ID
         """
-        r = req('GET', 'public/v1/data/alerts/get-alert/' + alert_id).json()
-        return alert_to_readable(r)
+        r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id).json()
+        return alert_to_readable(r, True), alert_to_readable(r, False)
 
 
     def get_alert_by_id():
@@ -205,12 +287,12 @@ script:
         Get alert details by id
         """
         alert_id = demisto.getArg('alert-id')
-        activity = get_alert_by_id_helper(alert_id)
+        activity_hr, activity_ctx = get_alert_by_id_helper(alert_id)
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity},
-            'Contents': activity,
-            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity_ctx},
+            'Contents': activity_hr,
+            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
             'ContentsFormat': formats['json']
         })
 
@@ -498,7 +580,8 @@ script:
             'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
             'Enrichment': {
                   'Status': demisto.get(r, 'Enrichment.Status'),
-                  'Data': demisto.get(r, 'Enrichment.Data')
+                  'Data': demisto.get(r, 'Enrichment.Data'),
+                  'Date': demisto.get(r, 'Enrichment.Data') # Backwards compatability issue
             }
         }
         ioc_readable = {
@@ -624,9 +707,9 @@ script:
             demisto.args()['is-closed'] = False
 
         demisto.args()['alert-type'] = demisto.getParam('type')
-        alerts = get_alerts_helper(handle_filters())
+        alerts_HR, alerts_ctx  = get_alerts_helper(handle_filters())
         incidents = []
-        for alert in alerts:
+        for alert in alerts_ctx:
             incidents.append({
                 'name': alert['Type'] + ' - ' + alert['ID'],
                 'occurred': alert['FoundDate'],
@@ -742,7 +825,7 @@ script:
         r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id).json()
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Insights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
             'Contents': r,
             'HumanReadable': tableToMarkdown('IntSights Blocklist Status for ' + alert_id, r, ['Status']),
             'ContentsFormat': formats['json']
@@ -1026,6 +1109,30 @@ script:
     - contextPath: IntSights.Alerts.IsFlagged
       description: Whether or not the alert is flagged
       type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
     description: Returns alert object by alert ID
   - name: intsights-get-ioc-by-value
     arguments:
@@ -1323,6 +1430,8 @@ script:
       description: Show flagged/unflagged alerts
     - name: is-closed
       description: Show closed/open alerts
+    - name: time-delta
+      description: Show alerts within specified time delta, given in days
     outputs:
     - contextPath: IntSights.Alerts.ID
       description: The alert ID
@@ -1354,6 +1463,30 @@ script:
     - contextPath: IntSights.Alerts.IsFlagged
       description: Whether or not the alert is flagged
       type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
     description: Fetch alerts
   - name: intsights-alert-takedown-request
     arguments:
@@ -1453,4 +1586,6 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Enhancing get_alerts command to get all alert details. Added option for getting alerts based on a given time delta (given in days)."
+tests:
+  - IntSights Test

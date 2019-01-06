@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5c1e9df8-f578-42a8-8be3-6dae353a2e62
+    taskid: 0da89571-63bb-4abd-848c-9c3b5b5dae55
     type: start
     task:
-      id: 5c1e9df8-f578-42a8-8be3-6dae353a2e62
+      id: 0da89571-63bb-4abd-848c-9c3b5b5dae55
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 3e974678-eb72-4dd0-8f7a-dd61bd7f8329
+    taskid: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
     type: regular
     task:
-      id: 3e974678-eb72-4dd0-8f7a-dd61bd7f8329
+      id: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
       version: -1
       name: zscaler-get-categories
       description: Returns a list of all categories
@@ -57,10 +57,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 5bf5795c-d703-4635-870f-d6a7b7a0ed1a
+    taskid: 9cd501ba-b434-49c5-8718-226deeba3a6a
     type: condition
     task:
-      id: 5bf5795c-d703-4635-870f-d6a7b7a0ed1a
+      id: 9cd501ba-b434-49c5-8718-226deeba3a6a
       version: -1
       name: Verify Get Categories output
       type: condition
@@ -86,7 +86,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Zscaler.Category.Name
+              simple: Zscaler.Category.Description
             iscontext: true
     view: |-
       {
@@ -99,10 +99,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 73b511f2-5ab2-447d-8c22-06182250d77d
+    taskid: c16700c7-cadf-48db-824b-bae75c6f56e3
     type: regular
     task:
-      id: 73b511f2-5ab2-447d-8c22-06182250d77d
+      id: c16700c7-cadf-48db-824b-bae75c6f56e3
       version: -1
       name: Add URL to URL category
       script: '|||zscaler-category-add-url'
@@ -129,10 +129,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 73141ed5-7fa1-43cd-81f1-d10a8c51f019
+    taskid: 3cc72806-2c79-4fe3-804c-88468220cb2d
     type: regular
     task:
-      id: 73141ed5-7fa1-43cd-81f1-d10a8c51f019
+      id: 3cc72806-2c79-4fe3-804c-88468220cb2d
       version: -1
       name: GenerateUUID
       description: Generates random UUID
@@ -157,10 +157,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 938375ed-dcea-4304-807a-60894328665e
+    taskid: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
     type: condition
     task:
-      id: 938375ed-dcea-4304-807a-60894328665e
+      id: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
       version: -1
       name: Verify Add URL to URL category output
       type: condition
@@ -201,10 +201,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: f7c6651b-2daf-4c57-85e1-6799dc88322e
+    taskid: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
     type: regular
     task:
-      id: f7c6651b-2daf-4c57-85e1-6799dc88322e
+      id: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
       version: -1
       name: Blacklist URL
       script: '|||zscaler-blacklist-url'
@@ -229,10 +229,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: ff8b56f3-e4ba-42d4-8ead-e8980597955d
+    taskid: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
     type: condition
     task:
-      id: ff8b56f3-e4ba-42d4-8ead-e8980597955d
+      id: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
       version: -1
       name: Verify Blacklist URL ouput
       type: condition
@@ -273,10 +273,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: dd956a55-67e6-4370-8e64-e794f0723d4c
+    taskid: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
     type: regular
     task:
-      id: dd956a55-67e6-4370-8e64-e794f0723d4c
+      id: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
       version: -1
       name: Get blacklist
       script: '|||zscaler-get-blacklist'
@@ -298,10 +298,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 13b3acc8-5711-45f0-8a8a-b11517794f86
+    taskid: 096936ff-8102-4b4c-8b60-ae16e5b880c1
     type: regular
     task:
-      id: 13b3acc8-5711-45f0-8a8a-b11517794f86
+      id: 096936ff-8102-4b4c-8b60-ae16e5b880c1
       version: -1
       name: Try to blacklist url which starts with https://
       script: '|||zscaler-blacklist-url'
@@ -327,10 +327,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 96960b07-e336-4dd6-8191-160ad7f65137
+    taskid: 9e2f856c-1f1c-41be-8241-0015d80711fc
     type: regular
     task:
-      id: 96960b07-e336-4dd6-8191-160ad7f65137
+      id: 9e2f856c-1f1c-41be-8241-0015d80711fc
       version: -1
       name: Ensure error occurred
       scriptName: isError
@@ -355,10 +355,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: fd9554cf-d516-4ed4-8fbc-6343317d4189
+    taskid: 0a12bea2-00c5-405f-88de-6324a0f2b995
     type: title
     task:
-      id: fd9554cf-d516-4ed4-8fbc-6343317d4189
+      id: 0a12bea2-00c5-405f-88de-6324a0f2b995
       version: -1
       name: Done
       type: title

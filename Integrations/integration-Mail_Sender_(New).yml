@@ -218,36 +218,28 @@ script:
                 })
             except:
                 return_error('Entry %s is not valid or is not a file entry' % (aid))
-        tf = {
-            'name': demisto.getArg('transientFile'),
-            'data': demisto.getArg('transientFileContent'),
-            'cid': demisto.getArg('transientFileCID')
-        }
-        if tf['name'] and tf['data']:
-            maintype, subtype = guess_type(tf['name'])
+
+        # handle transient files
+        args = demisto.args()
+        f_names = args.get('transientFile', [])
+        f_names = f_names if isinstance(f_names, (list, tuple)) else f_names.split(',')
+        f_contents = args.get('transientFileContent', [])
+        f_contents = f_contents if isinstance(f_contents, (list, tuple)) else f_contents.split(',')
+        f_cids = args.get('transientFileCID', [])
+        f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
+
+        for name, data, cid in map(None, f_names, f_contents, f_cids):
+            if name is None or data is None:
+                break
+            maintype, subtype = guess_type(name)
             attachments.append({
-                'name': tf['name'],
+                'name': name,
                 'maintype': maintype,
                 'subtype': subtype,
-                'data': tf['data'],
-                'cid': tf['cid']
+                'data': data,
+                'cid': cid
             })
-        i = 1
-        tfname = demisto.getArg('transientFile.%d' % (i))
-        while tfname:
-            tfc = demisto.getArg('transientFileContent.%d' % (i))
-            tfi = demisto.getArg('transientFileCID.%d' % (i))
-            if tfname and tfc:
-                maintype, subtype = guess_type(tfname)
-                attachments.append({
-                    'name': tfname,
-                    'maintype': maintype,
-                    'subtype': subtype,
-                    'data': tfc,
-                    'cid': tfi
-                })
-            i += 1
-            tfname = demisto.getArg('transientFile.%d' % (i))
+
         return attachments
 
 
@@ -389,18 +381,23 @@ script:
         email itself
       isArray: true
     - name: transientFile
-      description: Desired name for attached file. Multiple files are supported. (e.g.
-        transientFile.1="t1.txt" transientFileContent.1="test 2" transientFile.2="t3.txt"
-        transientFileContent.2="test 3")
+      description: Desired name for attached file. Multiple files are
+        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+        transientFileContent="test 2,temporary file content,third file content"
+        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
     - name: transientFileContent
-      description: Content for attached file. Multiple files are supported. (e.g.
-        transientFile.1="t1.txt" transientFileContent.1="test 2" transientFile.2="t3.txt"
-        transientFileContent.2="test 3")
+      description: Content for attached file. Multiple files are
+        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+        transientFileContent="test 2,temporary file content,third file content"
+        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
     - name: transientFileCID
       description: CID for attached file if we want it inline. Multiple files are
-        supported. (e.g. transientFile.1="t1.txt" transientFileContent.1="test 2"
-        transientFileCID.1="t1.txt@xxx.yyy" transientFile.2="t3.txt" transientFileContent.2="test
-        3")
+        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+        transientFileContent="test 2,temporary file content,third file content"
+        transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
     - name: templateParams
       description: 'Replace {varname} variables with values from this argument. Expected
         values are in the form of a JSON document like {"varname": {"value": "some
@@ -408,3 +405,4 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
+releaseNotes: "-"
