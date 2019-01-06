@@ -672,9 +672,9 @@ script:
             })
 
     def add_tag():
-    """
-    Function will add tag to given UUID of event or attribute.
-    """
+        """
+        Function will add tag to given UUID of event or attribute.
+        """
         uuid = demisto.args().get('uuid')
         tag = demisto.args().get('tag')
 
@@ -1034,7 +1034,7 @@ script:
     - contextPath: MISP.Event.Attribute.UUID
       description: Attribute's UUID
     - contextPath: MISP.Event.Attribute.ShadowAttribute
-      description: Attribute's  ShadowAttribute
+      description: Attribute's ShadowAttribute
     - contextPath: MISP.Event.Attribute.ToIDs
       description: is to_ids flag set
     - contextPath: MISP.Event.Attribute.Category
