@@ -820,6 +820,6 @@ inputs:
   value: company.com
   description: The domains for the company to try and match closeness of sender. Comma
     separated.
-releaseNotes: "Deprecated Playbook - adding no tests"
+releaseNotes: "-"
 tests:
-  - No Tests - Deprecated playbook
+  - No test - Deprecated playbook
