@@ -65,8 +65,7 @@ dependson:
   must:
   - file
   - url
-  - Osxcollector
 timeout: 0s
-releaseNotes: '-'
+releaseNotes: "-"
 tests:
-  - No tests
+  - No test - need to revisit
