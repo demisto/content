@@ -61,6 +61,7 @@ LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
 INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+TESTS_REGEX = "Tests/.*"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX,
                  CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
@@ -111,6 +112,7 @@ def checked_type(file_path):
 
 
 def get_modified_files(files_string):
+    naming_problem = False
     all_files = files_string.split('\n')
     added_files_list = set([])
     modified_files_list = set([])
@@ -124,12 +126,16 @@ def get_modified_files(files_string):
 
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
-        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+        elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
-        if file_status.lower() not in KNOWN_FILE_STATUSES:
+        elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
+        elif not re.match(TESTS_REGEX, file_path, re.IGNORECASE):
+            print_error("The file {} does not match any file name convention, "
+                        "please check your code.".format(file_path))
+            naming_problem = True
 
-    return modified_files_list, added_files_list
+    return modified_files_list, added_files_list, naming_problem
 
 
 def validate_file_release_notes(file_path):
@@ -159,6 +165,8 @@ def validate_schema(file_path, matching_regex=None):
     if matching_regex is None:
         for regex in CHECKED_TYPES_REGEXES:
             if re.match(regex, file_path, re.IGNORECASE):
+                import pdb
+                pdb.set_trace()
                 matching_regex = regex
                 break
 
@@ -273,19 +281,21 @@ def get_modified_and_added_files(branch_name, is_circle):
     all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
 
     if is_circle:
-        modified_files, added_files = get_modified_files(all_changed_files_string)
+        modified_files, added_files, naming_problem = get_modified_files(all_changed_files_string)
 
     else:
-        files_string = run_git_command("git diff --name-status --no-merges")
+        files_string = run_git_command("git diff HEAD --name-status --no-merges")
 
-        modified_files, added_files = get_modified_files(files_string)
-        _, added_files_from_branch = get_modified_files(all_changed_files_string)
+        modified_files, added_files, naming_problem = get_modified_files(files_string)
+        _, added_files_from_branch, second_naming_problem = get_modified_files(all_changed_files_string)
+        naming_problem = naming_problem or second_naming_problem
+
         for mod_file in modified_files:
             if mod_file in added_files_from_branch:
                 added_files.add(mod_file)
                 modified_files = modified_files - set([mod_file])
 
-    return modified_files, added_files
+    return modified_files, added_files, naming_problem
 
 
 def get_from_version(file_path):
@@ -366,8 +376,7 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 
 def validate_committed_files(branch_name, is_circle):
-    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
-
+    modified_files, added_files, naming_problem = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
         id_set = json.load(id_set_file)
 
@@ -382,7 +391,7 @@ def validate_committed_files(branch_name, is_circle):
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
                                               script_set, test_playbook_set, is_circle) and has_schema_problem
 
-    if has_schema_problem:
+    if has_schema_problem or naming_problem:
         sys.exit(1)
 
 
@@ -579,7 +588,6 @@ def main():
     if branch_name != 'master':
         import logging
         logging.basicConfig(level=logging.CRITICAL)
-
         # validates only committed files
         validate_committed_files(branch_name, is_circle)
     else:
