@@ -14026,7 +14026,8 @@
             "RedLockTest": {
                 "name": "RedLockTest", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "implementing_commands": [
                     "redlock-search-alerts", 
