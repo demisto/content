@@ -504,6 +504,10 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test"
+        },
+        {
             "integrations" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
             "timeout" : 400,
@@ -942,6 +946,7 @@
         "Lastline": "Out of quota"
     },
     "nigthly_integrations": [
-        "Lastline"
+        "Lastline",
+        "TruSTAR"
     ]
 }

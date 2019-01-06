@@ -252,7 +252,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3170
         }
       }
     note: false
@@ -401,7 +401,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "13"
     scriptarguments:
       instance_name:
         complex:
@@ -426,12 +426,268 @@ tasks:
       }
     note: false
     timertriggers: []
+  "13":
+    id: "13"
+    taskid: 02374c7a-042b-44b9-8cf5-44968bf47848
+    type: regular
+    task:
+      id: 02374c7a-042b-44b9-8cf5-44968bf47848
+      version: -1
+      name: Query File
+      description: Query files as part of investigation
+      script: Cybereason|||cybereason-query-file
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      file_hash:
+        simple: b5962945811f8d275a3a69334dbc81e8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 97dc5b34-2a1b-43fc-8dbb-938cf5c1782a
+    type: condition
+    task:
+      id: 97dc5b34-2a1b-43fc-8dbb-938cf5c1782a
+      version: -1
+      name: Verify Query File Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cybereason.File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: b5962945811f8d275a3a69334dbc81e8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: b5962945811f8d275a3a69334dbc81e8
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.Machine
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.Malicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: be0d1cdb-730c-4ebc-8b12-3fd1998239ad
+    type: regular
+    task:
+      id: be0d1cdb-730c-4ebc-8b12-3fd1998239ad
+      version: -1
+      name: Query Domain
+      script: '|||cybereason-query-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      domain:
+        simple: analytics.twitter.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 063c664b-c5f9-4d7d-83b1-7f0dde02843e
+    type: condition
+    task:
+      id: 063c664b-c5f9-4d7d-83b1-7f0dde02843e
+      version: -1
+      name: Verify Query Domain Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cybereason.Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: analytics.twitter.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: analytics.twitter.com
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.Domain.Malicious
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.Domain.IsInternalDomain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.Domain.Reputation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 53b22162-ca38-46e0-8792-aafdb9e74bd5
+    type: regular
+    task:
+      id: 53b22162-ca38-46e0-8792-aafdb9e74bd5
+      version: -1
+      name: Query User
+      script: '|||cybereason-query-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      username:
+        simple: ec2amaz-5man2hc\network service
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 2599420f-572d-4693-8aa0-977f9e88016e
+    type: condition
+    task:
+      id: 2599420f-572d-4693-8aa0-977f9e88016e
+      version: -1
+      name: Verify Query User Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cybereason.User.Username
+            iscontext: true
+          right:
+            value:
+              simple: ec2amaz-5man2hc\network service
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.User.Domain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.User.LastMachineLoggedInTo
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.User.LocalSystem
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 3185,
         "width": 380,
         "x": 50,
         "y": 50
