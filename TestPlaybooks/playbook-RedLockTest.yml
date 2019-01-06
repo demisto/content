@@ -102,6 +102,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 9f255a7b-c1ab-4d57-894f-c95470ab405d
@@ -130,6 +131,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 69a75a43-d270-4fc5-869a-b7d304b5e79a
@@ -161,10 +163,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: 445a0039-f9b8-4b06-8ee6-1e160f3ecdf6
@@ -209,10 +212,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
     taskid: a4648276-9af9-4b41-811a-da27b32729cc
@@ -227,7 +231,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "23"
     scriptarguments:
       alert-id:
         simple: P-251
@@ -254,10 +258,11 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
     taskid: cf672c28-c34e-4ccb-87bf-57e5bb5f722f
@@ -282,10 +287,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1770
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
     taskid: ac7ca920-6453-4a2e-8af9-42c9b6378802
@@ -315,10 +321,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1830
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
     taskid: 1033d1bc-bda6-4a03-823c-731817e7857a
@@ -344,10 +351,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
     taskid: ed45d04a-0f18-4e7b-842a-75c85c33f71b
@@ -380,10 +388,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 580
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
     taskid: c9fcc93e-da98-4e6d-8092-ed6cdfe1f907
@@ -400,10 +409,40 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2010
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 4a35dd05-a6f5-4cf5-87b4-86d5357f7f5d
+    type: regular
+    task:
+      id: 4a35dd05-a6f5-4cf5-87b4-86d5357f7f5d
+      version: -1
+      name: wait 5 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
