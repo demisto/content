@@ -4928,6 +4928,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests - Deprecated playbook"
                 ]
             }
         }, 
