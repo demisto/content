@@ -24,7 +24,7 @@ script: |+
               fileContent = base64.b64decode(res[0]['Contents']['result'][0]['base64'])
               demisto.results(fileResult(filename, fileContent))
       else:
-          demisto.results('No such hash')
+          return_error('Hash length is invalid.')
 
 type: python
 tags: []
@@ -45,4 +45,5 @@ scripttarget: 0
 dependson:
   must:
   - internal-misp-download-sample
+releaseNotes: 'Script is deprecated, use misp-download-sample in MISP V2 integration instead'
 deprecated: true

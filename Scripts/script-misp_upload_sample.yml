@@ -63,4 +63,5 @@ scripttarget: 0
 dependson:
   must:
   - internal-misp-upload-sample
+releaseNotes: 'Script is deprecated, use misp-upload-sample in MISP V2 integration instead'
 deprecated: true

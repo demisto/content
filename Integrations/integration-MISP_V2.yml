@@ -102,12 +102,13 @@ script:
         'version': 'Version'
     }
 
+
     THREAT_LEVELS_WORDS = {
             '1': 'HIGH',
             '2': 'MEDIUM',
             '3': 'LOW',
             '4': 'UNDEFINED'
-        }
+    }
 
     ANALYSIS_WORDS = {
         '0': 'Initial',
@@ -117,11 +118,14 @@ script:
 
     ''' HELPER FUNCTIONS '''
     def convert_timestamp(timestamp):
+      """
+      Gets a timestamp from MISP response (1546713469) and converts it to human readable format
+      """
         return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 
     def replace_keys(obj_to_build):
         """
-        Replacing keys from MISP's format to Demisto's (ass appear in ENTITIESDICT)
+        Replacing keys from MISP's format to Demisto's (as appear in ENTITIESDICT)
         """
         if isinstance(obj_to_build, list):
             return [replace_keys(item) for item in obj_to_build]
@@ -157,7 +161,7 @@ script:
             'RelatedEvent',
             'Galaxy',
             'Tag'
-            ]
+        ]
 
         # Remove 'Event' keyword
         events = [event.get('Event') for event in response]
@@ -245,7 +249,7 @@ script:
         # hashFormat will be used only in output
         hash_format = get_hash_type(file_hash).upper()
         if hash_format == 'Unknown':
-            return_error("Invalid hash length, enter file hash of format MD5, SHA1 or SHA256")
+            return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
 
         # misp_response will remain the raw output of misp
         misp_response = MISP.search(value=file_hash)
