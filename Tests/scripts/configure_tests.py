@@ -262,13 +262,13 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_names or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
-                        re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+
+                if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)
 
                 else:
-                    id = collect_ids(file_path)
+                    id = get_name(file_path)
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
