@@ -737,6 +737,10 @@
             "playbookID": "AbuseIPDB Test"
         },
         {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB PopulateIndicators Test"
+        },
+        {
             "integrations" : "jira",
             "playbookID" : "JiraCreateIssue-example-test"
         },
