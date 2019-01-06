@@ -1,4 +1,4 @@
-id: c19e328d-0cf3-4a94-88b3-df670d984602
+id: SymantecEndpointProtection Test
 version: 56
 name: SymantecEndpointProtection Test
 description: This playbook tests the SEPM integration commands.
