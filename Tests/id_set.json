@@ -5263,6 +5263,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No Tests - Deprecated playbook"
                 ]
             }
         }, 
