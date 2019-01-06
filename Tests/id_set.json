@@ -5992,10 +5992,11 @@
         {
             "extract_indicators_from_file_-_generic": {
                 "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
-                    "ReadPDFFile", 
                     "Set", 
+                    "ReadPDFFile", 
+                    "ExtractIndicatorsFromWordDocument", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -6947,6 +6948,21 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "extract_indicators_from_file_-_generic": {
+                "name": "Extract Indicators From File - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
                 ]
             }
         }

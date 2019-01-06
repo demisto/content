@@ -33,12 +33,14 @@ def print_error(error_str):
 
 
 def run_git_command(command):
+    # import pdb
+    # pdb.set_trace()
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
+    output, err = p.communicate()
+    if err and 'CRLF will be replaced by LF' not in err:
         print_error("Failed to run git command " + command)
         sys.exit(1)
-    return p.stdout.read()
+    return output
 
 
 def checked_type(file_path):
@@ -336,7 +338,7 @@ def update_id_set():
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status")
+    files_string = run_git_command("git diff --name-status HEAD")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files = get_changed_files(files_string + '\n' + second_files_string)
 
