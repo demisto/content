@@ -3273,6 +3273,7 @@
             "DataHashReputation": {
                 "name": "DataHashReputation", 
                 "toversion": "3.0.1", 
+                "deprecated": true, 
                 "depends_on": [
                     "file"
                 ]
@@ -3759,7 +3760,6 @@
                 "name": "AnalyzeOSX", 
                 "depends_on": [
                     "url", 
-                    "Osxcollector", 
                     "file"
                 ]
             }
@@ -9472,7 +9472,14 @@
                     "tc-fetch-incidents", 
                     "tc-incident-associate-indicator", 
                     "domain", 
-                    "tc-get-incident-associate-indicators"
+                    "tc-get-incident-associate-indicators", 
+                    "tc-update-indicator", 
+                    "tc-delete-indicator-tag", 
+                    "tc-delete-indicator", 
+                    "tc-create-campaign", 
+                    "tc-create-event", 
+                    "tc-create-threat", 
+                    "tc-delete-group"
                 ]
             }
         }, 
@@ -12287,8 +12294,28 @@
         {
             "test-ThreatConnect": {
                 "name": "test-ThreatConnect", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "implementing_commands": [
-                    "tc-owners"
+                    "tc-delete-indicator-tag", 
+                    "tc-create-incident", 
+                    "tc-create-event", 
+                    "tc-owners", 
+                    "tc-create-campaign", 
+                    "tc-tag-indicator", 
+                    "tc-create-threat", 
+                    "tc-incident-associate-indicator", 
+                    "tc-get-tags", 
+                    "tc-get-indicators-by-tag", 
+                    "tc-delete-indicator", 
+                    "tc-indicators", 
+                    "tc-delete-group", 
+                    "tc-fetch-incidents", 
+                    "tc-add-indicator", 
+                    "tc-get-indicator", 
+                    "tc-update-indicator", 
+                    "tc-get-incident-associate-indicators"
                 ]
             }
         }, 
