@@ -565,12 +565,10 @@ script:
                     'Data': url,
                 }
                 if dbot_score == 3:
-                    url_obj['MISP'] = {
-                        'Malicious':{
-                            'Vendor': misp_organisation,
-                            'Description': f'IP Found in MISP event: {event.get("id")}'
-                            }
-                        }
+                    url_obj['Malicious'] = {
+                        'Vendor': misp_organisation,
+                        'Description': f'IP Found in MISP event: {event.get("id")}'
+                    }
                 md_obj = {
                     'EventID': event.get('id'),
                     'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
@@ -670,10 +668,13 @@ script:
                 'Contents': event,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': md,
+                'HumanReadable': md
             })
 
     def add_tag():
+    """
+    Function will add tag to given UUID of event or attribute.
+    """
         uuid = demisto.args().get('uuid')
         tag = demisto.args().get('tag')
 
@@ -830,7 +831,7 @@ script:
     arguments:
     - name: file
       required: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice that
         you can pass comma-separated multiple values to efficiently retrieve multiple
         responses.
     outputs:
