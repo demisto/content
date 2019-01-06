@@ -296,7 +296,7 @@ script:
             # Building entry
             ec = {
                 outputPaths.get('file'): file_list,
-                outputPaths.get('dbotscore'): dbot_list,
+                outputPaths.get('dbotscore'): dbot_list
             }
 
             md = tableToMarkdown(f'Results found in MISP for hash: {file_hash}', md_list)
@@ -362,7 +362,7 @@ script:
                 outputPaths.get('ip'): ip_list,
                 outputPaths.get('dbotscore'): dbot_list,
                 MISP_PATH: build_context(misp_response)
-                }
+            }
 
             md = tableToMarkdown(f'Results found in MISP for IP: {ip}', md_list)
             demisto.results({
@@ -377,7 +377,7 @@ script:
             demisto.results(f'No events found in MISP for IP: {ip}')
 
 
-    def upload_sample(old_method=False):
+    def upload_sample():
         """
         Misp needs to get files in base64. in the old integration (js) it was converted by a script.
         """
@@ -494,7 +494,7 @@ script:
         md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
         ec = {
             MISP_PATH: build_context(event)
-            }
+        }
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -558,7 +558,8 @@ script:
                     'Indicator': url,
                     'Type': 'url',
                     'Vendor': misp_organisation,
-                    'Score': dbot_score}
+                    'Score': dbot_score
+                }
 
                 url_obj = {
                     'Data': url,
