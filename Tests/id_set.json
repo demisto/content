@@ -4123,7 +4123,10 @@
                 ], 
                 "command_to_integration": {
                     "createNewIndicator": "Builtin"
-                }
+                }, 
+                "tests": [
+                    "AbuseIPDB PopulateIndicators Test"
+                ]
             }
         }, 
         {
@@ -5263,6 +5266,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -5657,6 +5663,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No Tests - for now"
                 ]
             }
         }, 
