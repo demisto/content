@@ -159,6 +159,7 @@ def get_integration_data(file_path):
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
 
+    tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     commands = data_dictionary.get('script', {}).get('commands', [])
@@ -171,6 +172,8 @@ def get_integration_data(file_path):
         integration_data['fromversion'] = fromversion
     if cmd_list:
         integration_data['commands'] = cmd_list
+    if tests:
+        integration_data['tests'] = tests
 
     return {id: integration_data}
 
@@ -181,6 +184,7 @@ def get_playbook_data(file_path):
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
 
+    tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     implementing_scripts = get_task_ids_from_playbook('scriptName', data_dictionary)
@@ -198,6 +202,8 @@ def get_playbook_data(file_path):
         playbook_data['implementing_playbooks'] = implementing_playbooks
     if implementing_commands:
         playbook_data['implementing_commands'] = implementing_commands
+    if tests:
+        playbook_data['tests'] = tests
 
     return {id: playbook_data}
 
@@ -209,10 +215,11 @@ def get_script_data(file_path):
     script_code = data_dictionary.get('script', '')
     name = data_dictionary.get('name', '-')
 
+    tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
-    depends_on = get_depends_on(data_dictionary)
+    depends_on, command_to_integration = get_depends_on(data_dictionary)
     script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code))))
 
     script_data['name'] = name
@@ -226,13 +233,24 @@ def get_script_data(file_path):
         script_data['depends_on'] = depends_on
     if script_executions:
         script_data['script_executions'] = script_executions
+    if command_to_integration:
+        script_data['command_to_integration'] = command_to_integration
+    if tests:
+        script_data['tests'] = tests
 
     return {id: script_data}
 
 
 def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
-    return list(set([cmd.split('|')[-1] for cmd in depends_on]))
+    depends_on_list = list(set([cmd.split('|')[-1] for cmd in depends_on]))
+    command_to_integration = {}
+    for cmd in depends_on:
+        splitted_cmd = cmd.split('|')
+        if splitted_cmd[0] and '|' in cmd:
+            command_to_integration[splitted_cmd[-1]] = splitted_cmd[0]
+
+    return depends_on_list, command_to_integration
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
