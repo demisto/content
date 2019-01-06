@@ -351,7 +351,7 @@ def enrich_for_integration_id(integration_id, integration_commands, script_set, 
 
                     updated_playbook_names.add(playbook_name)
                     enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set,
-                                           updated_playbook_names, catched_playbooks)
+                                           updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
         script_data = script.values()[0]
@@ -370,7 +370,7 @@ def enrich_for_integration_id(integration_id, integration_commands, script_set, 
                         updated_script_names.add(script_name)
                         enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names,
                                              updated_script_names, updated_playbook_names, catched_scripts,
-                                             catched_playbooks)
+                                             catched_playbooks, tests_set)
 
 
 def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbook_set, updated_playbook_names,
@@ -387,7 +387,7 @@ def enrich_for_playbook_id(given_playbook_id, playbook_names, script_set, playbo
 
                 updated_playbook_names.add(playbook_name)
                 enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names,
-                                       catched_playbooks)
+                                       catched_playbooks, tests_set)
 
 
 def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set, playbook_names, updated_script_names,
@@ -404,7 +404,8 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
 
                 updated_script_names.add(script_name)
                 enrich_for_script_id(script_name, script_names, script_set, playbook_set, playbook_names,
-                                     updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks)
+                                     updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks,
+                                     tests_set)
 
     for playbook in playbook_set:
         playbook_data = playbook.values()[0]
@@ -418,7 +419,7 @@ def enrich_for_script_id(given_script_id, script_names, script_set, playbook_set
 
                 updated_playbook_names.add(playbook_name)
                 enrich_for_playbook_id(playbook_name, playbook_names, script_set, playbook_set, updated_playbook_names,
-                                       catched_playbooks)
+                                       catched_playbooks, tests_set)
 
 
 def update_test_set(tests_set, tests):
