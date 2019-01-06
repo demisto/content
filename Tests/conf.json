@@ -606,8 +606,8 @@
             "timeout": 400
         },
         {
-            "integrations": "Cybereason",
             "playbookID": "Cybereason Test",
+            "integrations": "Cybereason",
             "timeout": 1200
         },
         {
