@@ -7,6 +7,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "Dell Secureworks",
+            "playbookID": "secureworks_test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
