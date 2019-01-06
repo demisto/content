@@ -31,7 +31,7 @@ script:
   script: |-
     import base64
     import requests
-    import copy
+    import time
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
 
     # disable insecure warnings
@@ -418,7 +418,7 @@ script:
         :return time in year--month--day format:
         """
         time_now = time.gmtime(time.time())
-        return f"{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}"
+        return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
 
 
     def create_event(ret_only_event_id=False):
