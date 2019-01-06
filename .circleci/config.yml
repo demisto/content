@@ -127,10 +127,6 @@ workflows:
   commit:
     jobs:
       - build
-          filters:
-            branches:
-              ignore:
-                - nightly-trigger
   nightly:
     triggers:
       - schedule:
@@ -138,6 +134,6 @@ workflows:
           filters:
             branches:
               only:
-                - nightly-trigger
+                - master
     jobs:
       - run_nightly_build
