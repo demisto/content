@@ -4123,7 +4123,10 @@
                 ], 
                 "command_to_integration": {
                     "createNewIndicator": "Builtin"
-                }
+                }, 
+                "tests": [
+                    "AbuseIPDB PopulateIndicators Test"
+                ]
             }
         }, 
         {
