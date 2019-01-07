@@ -117,7 +117,18 @@ jobs:
       - checkout
       - run:
           name: Prepare Enviornement
-          command: chmod +x ./Utils/*
+          command: |
+            chmod +x ./Utils/*
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+      - run:
+          name: Create Content Artifacts
+          command: python content_creator.py $CIRCLE_ARTIFACTS
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
       - run:
           name: Trigger nightly run
           command: ./Utils/trigger_content_nightly_build.sh master "$CIRCLECI_TOKEN"
@@ -134,6 +145,6 @@ workflows:
           filters:
             branches:
               only:
-                - nightly-trigger
+                - master
     jobs:
       - run_nightly_build
