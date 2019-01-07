@@ -6820,13 +6820,18 @@
                 "name": "Default", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "CloseInvestigation", 
                     "AssignAnalystToIncident"
                 ], 
                 "implementing_playbooks": [
                     "Extract Indicators - Generic", 
                     "Entity Enrichment - Generic", 
                     "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
