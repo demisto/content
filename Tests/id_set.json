@@ -1,6 +1,30 @@
 {
     "scripts": [
         {
+            "changeremediationslaonsevchange": {
+                "name": "ChangeRemediationSLAOnSevChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "setIncident"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
+            "stoptimetoassignonownerchange": {
+                "name": "StopTimeToAssignOnOwnerChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "stopTimer"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
             "AwsStopInstance": {
                 "name": "AwsStopInstance", 
                 "depends_on": [
@@ -4724,6 +4748,35 @@
     ], 
     "playbooks": [
         {
+            "Phishing Investigation - Generic": {
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Block Indicators - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "send-mail"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
+                ]
+            }
+        }, 
+        {
             "search_and_delete_emails_-_generic": {
                 "name": "Search And Delete Emails - Generic", 
                 "fromversion": "3.6.0", 
@@ -5945,7 +5998,8 @@
         {
             "Phishing Investigation - Generic": {
                 "name": "Phishing Investigation - Generic", 
-                "fromversion": 4.0, 
+                "toversion": "4.0.9", 
+                "fromversion": "4.0.0", 
                 "implementing_scripts": [
                     "AssignAnalystToIncident", 
                     "Set", 
@@ -15033,6 +15087,23 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "SLA Scripts - Test": {
+                "name": "SLA Scripts - Test", 
+                "implementing_scripts": [
+                    "StopTimeToAssignOnOwnerChange", 
+                    "ChangeRemediationSLAOnSevChange", 
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "setIncident", 
+                    "startTimer", 
+                    "resetTimer"
                 ]
             }
         }, 
