@@ -6119,6 +6119,9 @@
                     "nexpose-get-asset-vulnerability", 
                     "nexpose-get-asset", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -6160,6 +6163,9 @@
                 "implementing_commands": [
                     "qualys-host-list", 
                     "qualys-vulnerability-list"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -15098,6 +15104,15 @@
                     "setIncident", 
                     "startTimer", 
                     "resetTimer"
+                ]
+            }
+        }, 
+        {
+            "cveReputation Test": {
+                "name": "cveReputation Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "cveReputation"
                 ]
             }
         }
