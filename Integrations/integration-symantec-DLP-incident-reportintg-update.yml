@@ -101,31 +101,14 @@ script:
         if isinstance(o, datetime.datetime):
             return o.__str__()        
     
-        
-    def parse_date_range(daterange):
-        dateobj = datetime.now()
-        try:
-            number,time_unit = daterange.split(" ")
-            if time_unit.startswith("minute"):
-              start_time = end_time - timedelta(minutes=int(number))
-            if time_unit.startswith("hour"):
-                dateobj = dateobj - timedelta(hours=int(number))
-            elif time_unit.startswith("day"):
-                dateobj = dateobj - timedelta(days=int(number))
-            elif time_unit.startswith("month"):
-                dateobj = dateobj - timedelta(days=int(number)*30)
-            elif time_unit.startswith("year"):
-                dateobj = dateobj - timedelta(days=int(number)*365)
-        except Exception:
-            return_error('invalid dateformat supplied')
-        return dateobj
 
 
 
     def fetchincidents():
         last_run=demisto.getLastRun()
         if 'lt_time' not in last_run:
-            last_run['lt_time'] = parse_date_range(FETCH_TIME)
+            fetch_time,_ = parse_date_range(FETCH_TIME)
+            last_run['lt_time'] = fetch_time
         else:
             last_run['lt_time']= datetime.datetime.strptime(last_run['lt_time'],'%d/%m/%Y %H:%M:%S.%f')
 
@@ -174,7 +157,7 @@ script:
         demisto.results({'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents':json_res,
-        'EntryContext':{'Symantec':{"DLP":{'Incident':json_res}}}
+        'EntryContext':{'SymantecDLP':{'Incident':json_res[0]['incident']}}}
         })
         
     elif demisto.command() == 'dlp-update-incident':
@@ -188,9 +171,25 @@ script:
       required: true
       description: incident Id  from DLP console to fetch the data of
     outputs:
-    - contextPath: Symantec.DLP.Incident
-      description: DLP incident details
+    - contextPath: SymantecDLP.Incident.incidentId
+      description: DLP incident ID
       type: unknown
+    - contextPath: SymantecDLP.Incident.incidentCreationDate
+      description: DLP incident creation date
+    - contextPath: SymantecDLP.Incident.detectionDate
+      description: incident detection date
+    - contextPath: SymantecDLP.Incident.severity
+      description: incident severity
+    - contextPath: SymantecDLP.Incident.status
+      description: incident status
+    - contextPath: SymantecDLP.Incident.applicationName
+      description: application which triggered incident
+    - contextPath: SymantecDLP.Incident.userName
+      description: user who triggered the incident
+    - contextPath: SymantecDLP.Incident.machineName
+      description: target machine name
+    - contextPath: SymantecDLP.Incident.machineName.machineIP
+      description: target machine Ip
     description: fetches DLP incident details
   - name: dlp-update-incident
     arguments:
