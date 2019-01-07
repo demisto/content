@@ -1,7 +1,5 @@
 id: urlscan_malicious_Test
 version: -1
-id: urlscan_malicious_Test
-version: -1
 name: urlscan_malicious_Test
 starttaskid: "0"
 tasks:
