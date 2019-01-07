@@ -1,0 +1,62 @@
+id: playbook-Generate_log-bundleTest
+version: -1
+name: playbook-Generate_log-bundleTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4f4280ac-a9dd-4a18-87c6-a74bd94f9635
+    type: start
+    task:
+      id: 4f4280ac-a9dd-4a18-87c6-a74bd94f9635
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 2db33ab0-7ea2-4dec-8893-1e6b69b7571c
+    type: playbook
+    task:
+      id: 2db33ab0-7ea2-4dec-8893-1e6b69b7571c
+      version: -1
+      name: Generate log-bundle
+      playbookName: Generate log-bundle
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 295,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
