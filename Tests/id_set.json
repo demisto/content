@@ -861,11 +861,12 @@
         {
             "misp_upload_sample": {
                 "name": "misp_upload_sample", 
-                "depends_on": [
-                    "internal-misp-upload-sample"
-                ], 
+                "deprecated": true, 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "MISP V2 Test"
                 ]
             }
         }, 
@@ -3279,8 +3280,9 @@
         {
             "misp_download_sample": {
                 "name": "misp_download_sample", 
-                "depends_on": [
-                    "internal-misp-download-sample"
+                "deprecated": true, 
+                "tests": [
+                    "MISP V2 Test"
                 ]
             }
         }, 
@@ -11374,6 +11376,28 @@
                     "IntSights Test"
                 ]
             }
+        }, 
+        {
+            "MISP V2": {
+                "name": "MISP V2", 
+                "commands": [
+                    "misp-search", 
+                    "file", 
+                    "url", 
+                    "ip", 
+                    "internal-misp-create-event", 
+                    "misp-create-event", 
+                    "internal-misp-add-attribute", 
+                    "misp-download-sample", 
+                    "misp-add-attribute", 
+                    "misp-upload-sample", 
+                    "misp-delete-event", 
+                    "misp-add-tag"
+                ], 
+                "tests": [
+                    "MISP V2 Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15119,6 +15143,28 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "cveReputation"
+                ]
+            }
+        }, 
+        {
+            "MISP V2 Test": {
+                "name": "MISP V2 Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http", 
+                    "misp_download_sample", 
+                    "misp_upload_sample"
+                ], 
+                "implementing_commands": [
+                    "misp-search", 
+                    "misp-add-attribute", 
+                    "misp-create-event", 
+                    "url", 
+                    "ip", 
+                    "misp-download-sample", 
+                    "misp-upload-sample", 
+                    "file", 
+                    "misp-delete-event"
                 ]
             }
         }
