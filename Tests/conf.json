@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CVE Search",
+            "playbookID": "cveReputation Test"
+        },
+        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test"
         },
