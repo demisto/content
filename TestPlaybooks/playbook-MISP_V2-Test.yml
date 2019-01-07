@@ -205,9 +205,9 @@ tasks:
       id: e1400e84-63a8-446c-82a9-92b0275334e3
       version: -1
       name: Upload sample
-      scriptName: misp_upload_sample
+      script: MISP V2|||misp-upload-sample
       type: regular
-      iscommand: false
+      iscommand: true
       brand: MISP V2
     nexttasks:
       '#none#':
@@ -222,6 +222,7 @@ tasks:
       fileEntryID:
         simple: ${File.EntryID}
       info: {}
+      threat_level_id: {}
       to_ids: {}
     separatecontext: false
     view: |-
@@ -279,9 +280,9 @@ tasks:
       id: fd366686-fc45-4073-8c12-722f08f8a78f
       version: -1
       name: Download sample
-      scriptName: misp_download_sample
+      script: MISP V2|||misp-download-sample
       type: regular
-      iscommand: false
+      iscommand: true
       brand: MISP V2
     nexttasks:
       '#none#':
@@ -292,6 +293,7 @@ tasks:
         simple: ${MISP.Event.ID}
       hash:
         simple: ${File.MD5}
+      unzip: {}
     separatecontext: false
     view: |-
       {

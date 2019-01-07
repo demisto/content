@@ -15161,6 +15161,8 @@
                     "misp-create-event", 
                     "url", 
                     "ip", 
+                    "misp-download-sample", 
+                    "misp-upload-sample", 
                     "file", 
                     "misp-delete-event"
                 ]
