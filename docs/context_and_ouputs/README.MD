@@ -2,7 +2,6 @@
 
 To understand Incident Context, we must first know what an incident is. When we refer to "Incidents" in Demisto, we are talking about events. These events could be malicious files found in an email, someone losing their device, and even abnormal outbound traffic. How an analyst reacts to these incidents depends on the information they have at hand to make an informed decision. It is with the Incident Context, that this is achieved.   
 
-
 Context is a map (dictionary) /JSON object that is created for each incident and is used to store structured results from the integration commands and automation scripts. The context keys are strings and the values can be strings, numbers, objects, and arrays.
 
 The main use of context is to pass data between playbook tasks. Another usage is to capture the important structured data from automations and display the data in the incident summary.
