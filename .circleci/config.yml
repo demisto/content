@@ -110,39 +110,3 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-
-  run_nightly_build:
-    docker:
-      - image: ronykoz/content-build-node911:latest
-    steps:
-      - checkout
-      - run:
-          name: Prepare Enviornement
-          command: |
-            chmod +x ./Utils/*
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            source $BASH_ENV
-            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-            chmod +x ./Tests/scripts/*
-      - run:
-          name: Create Content Artifacts
-          command: python content_creator.py $CIRCLE_ARTIFACTS
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
-
-workflows:
-  version: 2
-  commit:
-    jobs:
-      - run_nightly_build
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 2 * * *" # UTC time
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - run_nightly_build
