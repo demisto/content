@@ -177,7 +177,7 @@ tasks:
       searchParameter:
         simple: shlepme.com
       url:
-        simple: https://google.com
+        simple: shlepme.com
     separatecontext: false
     view: |-
       {
