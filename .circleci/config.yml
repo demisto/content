@@ -129,15 +129,12 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - run:
-          name: Trigger nightly run
-          command: ./Utils/trigger_content_nightly_build.sh master "$CIRCLECI_TOKEN"
 
 workflows:
   version: 2
   commit:
     jobs:
-      - build
+      - run_nightly_build
   nightly:
     triggers:
       - schedule:
