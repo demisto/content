@@ -165,8 +165,6 @@ def validate_schema(file_path, matching_regex=None):
     if matching_regex is None:
         for regex in CHECKED_TYPES_REGEXES:
             if re.match(regex, file_path, re.IGNORECASE):
-                import pdb
-                pdb.set_trace()
                 matching_regex = regex
                 break
 
