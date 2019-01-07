@@ -1,4 +1,5 @@
 {
+	"releaseNotes": "-",
 	"incidentFields": [
 		{
 			"id": "incident_app",
@@ -1653,4 +1654,3 @@
 		}
 	]
 }
-

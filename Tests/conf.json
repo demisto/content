@@ -913,6 +913,9 @@
         {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
+        },
+        {
+          "playbookID": "SLA Scripts - Test"
         }
     ],
     "skipped_tests": {
