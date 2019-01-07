@@ -1,0 +1,130 @@
+id: Generate log-bundle
+version: -1
+name: Generate log-bundle
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7ef6ff66-54b1-4440-8bdc-a100049aab5d
+    type: start
+    task:
+      id: 7ef6ff66-54b1-4440-8bdc-a100049aab5d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 29d9ac74-5da6-4c05-89ea-79dd3029c3b2
+    type: regular
+    task:
+      id: 29d9ac74-5da6-4c05-89ea-79dd3029c3b2
+      version: -1
+      name: 'Generate logs '
+      scriptName: DemistoLogsBundle
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: fa1c9f48-3f42-4e31-87a9-cfedfe21cf5e
+    type: regular
+    task:
+      id: fa1c9f48-3f42-4e31-87a9-cfedfe21cf5e
+      version: -1
+      name: 'Send logs '
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attachIDs:
+        simple: ${lastCompletedTaskEntries}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Customer Logs
+      to:
+        simple: logs@demisto.com
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: e774426e-a47e-4311-82f7-f217864ce838
+    type: regular
+    task:
+      id: e774426e-a47e-4311-82f7-f217864ce838
+      version: -1
+      name: Done
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
