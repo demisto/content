@@ -187,7 +187,7 @@ script:
     - name: incidentId
       required: true
       description: incident Id  from DLP console to fetch the data of
-      outputs:
+    outputs:
     - contextPath: Symantec.DLP.Incident
       description: DLP incident details
       type: unknown
@@ -216,6 +216,6 @@ script:
       description: 'changes the status of the incident in DLP console NOTE:  status
         attributes are defined in the DLP console. '
     description: updates Symantec DLP incidents
-  dockerimage: ssudheerk99/zeep
+  dockerimage: demisto/zeep
   isfetch: true
   runonce: false
