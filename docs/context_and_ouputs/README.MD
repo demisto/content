@@ -1,9 +1,29 @@
 # Overview
+
+To understand Incident Context, we must first know what an incident is. When we refer to "Incidents" in Demisto, we are talking about events. These events could be malicious files found in an email, someone losing their device, and even abnormal outbound traffic. How an analyst reacts to these incidents depends on the information they have at hand to make an informed decision. It is with the Incident Context, that this is achieved.   
+
+
 Context is a map (dictionary) /JSON object that is created for each incident and is used to store structured results from the integration commands and automation scripts. The context keys are strings and the values can be strings, numbers, objects, and arrays.
 
 The main use of context is to pass data between playbook tasks. Another usage is to capture the important structured data from automations and display the data in the incident summary.
 
 Since context is used within playbooks, it is critical that the context outputs remain reproducible. Meaning, that the structure of the context does not change. 
+
+**ELI5:** If someone gives you an apple, the action of receiving the apple is an event (incident). You can observe some things about that apple. What color is it? How does it taste? Who gave it to you? These observations are part of the context of the apple receiving event. The context in Demisto is simply an organized way of viewing these observations. Observe below to view the context of the apple receiving event:
+
+```python
+"Apple": 
+    {
+    "Color": "Red",
+    "Taste": "Sweet",
+    "Occured Time": "Just now",
+    "Washed": False
+    }
+```
+
+If your goal is to eat a clean apple, we would look at the context and see that it has not been washed since the value is ```False```. We could have this trigger the playbook "Wash the apple".
+
+Context is how we know all of the details about an event.
 
 **Please Note:** When improving or replacing an existing integration, verify that the context outputs are backwards compatible. Otherwise, changes can break playbooks and prevent them from running.
 

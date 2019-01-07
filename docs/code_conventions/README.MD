@@ -34,6 +34,18 @@ apiVersion = "v1"
 username = demisto.params().get("url")
 ```
 
+## Arguments
+When naming an argument, the name should be all lowercase with spaces replaced by underscores. See the example below:
+
+### Do this:
+```
+email_header
+```
+ ### Not this:
+ ```python
+Email Header
+```
+
 ## Command Functions
 Command functions should be split into two functions. We will look at "sample_function" as an example below:
 
