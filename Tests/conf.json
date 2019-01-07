@@ -22,6 +22,10 @@
             "playbookID": "CirclIntegrationTest"
         },
         {
+            "integrations": "MISP V2",
+            "playbookID": "MISP V2 Test"
+        },
+        {
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {
