@@ -111,29 +111,9 @@ jobs:
           destination: artifacts
           when: always
 
-  run_nightly_build:
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: Prepare Enviornement
-          command: chmod +x ./Utils/*
-      - run:
-          name: Trigger nightly run
-          command: ./Utils/trigger_content_nightly_build.sh master "$CIRCLECI_TOKEN"
 
 workflows:
   version: 2
   commit:
     jobs:
       - build
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 2 * * *" # UTC time
-          filters:
-            branches:
-              only:
-                - nightly-trigger
-    jobs:
-      - run_nightly_build

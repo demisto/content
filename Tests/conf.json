@@ -932,7 +932,7 @@
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
         "FireEye HX Test": "Test unstable - to be fixed by @noac",
-        "CuckooTest": "Skipped due to unstable instance"
+        "CreatePhishingClassifierMLTest": "Test unstable - to be fixed by @Erez"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -959,7 +959,9 @@
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
-        "Netskope": "instance is down"
+        "Netskope": "instance is down",
+        "IntSights": "Issues with API",
+        "Cuckoo Sandbox": "instance is down"
     },
     "nigthly_integrations": [
         "Lastline",
