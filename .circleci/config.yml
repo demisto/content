@@ -110,3 +110,10 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
