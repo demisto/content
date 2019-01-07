@@ -1,7 +1,7 @@
 id: playbook0
 version: -1
 name: Default
-fromversion: 4.1.0
+fromversion: 3.5.0
 description: Default playbook, Enrich indicators in incident using one or more integrations
 starttaskid: "0"
 tasks:
@@ -51,7 +51,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: string.isEqual
           left:
             value:
               complex:
