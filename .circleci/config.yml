@@ -112,7 +112,8 @@ jobs:
           when: always
 
   run_nightly_build:
-    machine: true
+    docker:
+      - image: ronykoz/content-build-node911:latest
     steps:
       - checkout
       - run:
