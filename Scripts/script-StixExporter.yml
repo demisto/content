@@ -1,0 +1,35 @@
+commonfields:
+  id: 9e645ed6-109c-482d-815c-918ffceda200
+  version: 12
+name: StixExporter
+script: |-
+  from stix.core import STIXPackage
+  from stix.report import Report
+  from stix.report.header import Header
+  from stix.indicator import Indicator
+  from cybox.objects.file_object import File
+
+  stix_package = STIXPackage()
+  stix_report = Report()
+  stix_report.header = Header()
+  stix_report.header.description = "Getting Started!"
+
+  stix_indicator = Indicator()
+  stix_indicator.add_indicator_type("File Hash Watchlist")
+  file_obs = File()
+  file_obs.add_hash("01234567890abcdef01234567890abcdef")
+  file_obs.hashes[0].type_ = "MD5"
+  file_obs.hashes[0].type_.condition = "Equals"
+
+  # stix_package.add(stix_report)
+  stix_indicator.add_observable(file_obs)
+  pkg3 = STIXPackage()
+  pkg3.add_indicator(stix_indicator)
+  print(pkg3.to_xml())
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/stix
+runas: DBotWeakRole
