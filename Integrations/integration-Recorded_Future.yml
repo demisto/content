@@ -49,6 +49,8 @@ script:
     import requests
     import os
     import json
+    import urllib
+    import time
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -72,21 +74,55 @@ script:
     IP_THRESHOLD = int(demisto.params()['ip_threshold'])
     DOMAIN_THRESHOLD = int(demisto.params()['domain_threshold'])
 
+
+    DOMAIN_COLUMNS = {
+        'Name': 0,
+        'Risk': 1,
+        'RiskString': 2,
+        'Evidence': 3
+    }
+
+
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix):
+
+    def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
+          """
+            Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
+            Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+            :type date_str_or_dt: ``str`` or ``datetime.datetime``
+            :param date_str_or_dt: The date to be parsed. (required)
+
+            :type date_format: ``str``
+            :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type datetime.datetime). (optional)
+
+            :return: The parsed timestamp.
+            :rtype: ``int``
+          """
+          if isinstance(date_str_or_dt, basestring):
+              return int(time.mktime(time.strptime(date_str_or_dt, date_format))) * 1000
+
+          # otherwise datetime.datetime
+          return int(time.mktime(date_str_or_dt.timetuple())) * 1000
+
+
+    def http_request(method, url_suffix, params=None):
         LOG('running request with url=%s' % (BASE_URL + url_suffix))
+        params = params if params is not None else {}
+
         try:
             res = requests.request(
                 method,
                 BASE_URL + url_suffix,
+                params = params,
                 headers=HEADERS,
                 verify=USE_SSL
             )
             if res.status_code not in {200, 404}:
-                return_error('Your request failed with the following error: ' + error_reason + ' - ' + str(res.status_code))
+                return_error('Your request failed, status: {} details: {}'.format(str(res.status_code), res.content))
         except Exception, e:
             LOG(e)
-            raise
+            return_error(e.message)
         return res.text
 
     def translate_score(score, threshold):
@@ -201,8 +237,107 @@ script:
         })
 
     def domain_lookup(domain):
-        cmd_url = 'domain/' + domain + '?fields=sightings%2Ctimestamps%2Crisk'
-        response = http_request('get', cmd_url)
+        cmd_url = 'domain/' + domain
+        params = {
+            'fields': 'sightings,timestamps,risk'
+        }
+        #'?fields=sightings%2Ctimestamps%2Crisk'
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def url_command():
+        url = demisto.args().get('url')
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        response = json.loads(url_lookup(url))
+        if response and ('error' not in response):
+            data = response['data']
+            timestamps = data['timestamps']
+            risk = data['risk']
+            rf_score = risk['score']
+            sightings = data['sightings']
+            encoded_url = urllib.quote_plus(url) #.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+            hr = '### Recorded Future url reputation for ' + url + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += 'First reference collected on: ' + timestamps.get('firstSeen') + '\n'
+            hr += 'Latest reference collected on: ' + timestamps.get('lastSeen') + '\n'
+            hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/url:' + encoded_url + ')' + '\n'
+            hr_table = []
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['url']] = {
+                'Name': url,
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
+            }
+            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': url,
+                'Type': 'url',
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+            if (dbot_score == 3):
+                ec[outputPaths['url']]['Malicious'] = {
+                    'Vendor': 'Recorded Future',
+                    'Description': 'Score above ' + str(rf_score)
+                }
+        else:
+            hr = 'No records found'
+            ec = {
+                'DBotScore': {
+                    'Indicator': url,
+                    'Type': 'url',
+                    'Vendor': 'Recorded Future',
+                    'Score': 0
+                }
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def url_lookup(url):
+        encoded_url = urllib.quote_plus(url) #url.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+        cmd_url = 'url/' + encoded_url
+        params = {
+            'fields': 'sightings,timestamps,risk'
+        }
+        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+        response = http_request('get', cmd_url, params=params)
         return response
 
     def ip_command():
@@ -291,8 +426,12 @@ script:
         })
 
     def ip_lookup(ip):
-        cmd_url = 'ip/' + ip + '?fields=sightings%2Ctimestamps%2Crisk'
-        response = http_request('get', cmd_url)
+        cmd_url = 'ip/' + ip
+        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+        params = {
+            'fields': 'sightings,timestamps,risk'
+        }
+        response = http_request('get', cmd_url, params=params)
         return response
 
     def file_command():
@@ -382,8 +521,12 @@ script:
         })
 
     def file_lookup(file):
-        cmd_url = 'hash/' + file + '?fields=sightings%2Ctimestamps%2Crisk'
-        response = http_request('get', cmd_url)
+        cmd_url = 'hash/' + file
+        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+        params = {
+            'fields': 'sightings,timestamps,risk'
+        }
+        response = http_request('get', cmd_url, params=params)
         return response
 
     def get_related_entities_command():
@@ -488,10 +631,569 @@ script:
         })
 
     def get_related_entities(entity_value, entity_type):
-        cmd_url = entity_type + '/' + entity_value + '?fields=relatedEntities'
-        response = http_request('get', cmd_url)
+        cmd_url = entity_type + '/' + entity_value
+        #+ '?fields=relatedEntities'
+        params = {
+            'fields': 'relatedEntities'
+        }
+        response = http_request('get', cmd_url, params=params)
         return response
 
+    def hashlist_command():
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        limit = demisto.args().get('limit')
+        riskLower = demisto.args().get('riskLower')
+        riskHigher = demisto.args().get('riskHigher')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        response = json.loads(hashlist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        resultlist = response['data']['results']
+        for result in resultlist:
+            intelcard = result['intelCard']
+            timestamps = result['timestamps']
+            file = result['entity']['name']
+            risk = result['risk']
+            rf_score = risk['score']
+            sightings = result['sightings']
+            hr = '### Recorded Future file reputation for ' + file + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += '[Intelligence Card](' + intelcard + ')' + '\n'
+            hr_table = []
+            hash_type = determine_hash(file)
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['file']] = {
+                hash_type: file,
+                'RecordedFuture': {
+                    'Criticality': risk['criticalityLabel'],
+                    'FirstSeen': timestamps['firstSeen'],
+                    'LastSeen': timestamps['lastSeen']
+                }
+            }
+            dbot_score = translate_score(rf_score, FILE_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': file,
+                'Type': 'file',
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+            if (dbot_score == 3):
+                ec[outputPaths['file']]['Malicious'] = {
+                    'Vendor': 'Recorded Future',
+                    'Description': 'Score above ' + str(rf_score)
+                }
+
+            demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def hashlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+        cmd_url = 'hash/search'
+        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+        params = {
+            'fields': 'entity,intelCard,risk,sightings,timestamps'
+        }
+
+        if limit:
+            params['limit'] = limit
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+        if riskLower and riskHigher:
+            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def iplist_command():
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        limit = demisto.args().get('limit')
+        riskLower = demisto.args().get('riskLower')
+        riskHigher = demisto.args().get('riskHigher')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        response = json.loads(iplist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        resultlist = response['data']['results']
+        for result in resultlist:
+            intelcard = result['intelCard']
+            timestamps = result['timestamps']
+            ip = result['entity']['name']
+            risk = result['risk']
+            rf_score = risk['score']
+            sightings = result['sightings']
+            hr = '### Recorded Future IP reputation for ' + ip + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += '[Intelligence Card](' + intelcard + ')' + '\n'
+            hr_table = []
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['ip']] = {
+                'Address': ip,
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
+            }
+            dbot_score = translate_score(rf_score, IP_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': ip,
+                'Type': 'ip',
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+            if (dbot_score == 3):
+                ec[outputPaths['ip']]['Malicious'] = {
+                    'Vendor': 'Recorded Future',
+                    'Description': 'Score above ' + str(rf_score)
+                }
+
+            demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def iplist_lookup(limit, riskLower, riskHigher, orderby, direction):
+        cmd_url = 'ip/search'
+        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+        params = {
+            'fields': 'entity,intelCard,risk,sightings,timestamps'
+        }
+
+        if limit:
+            params['limit'] = limit
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+        if riskLower and riskHigher:
+            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def domainlist_command():
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        limit = demisto.args().get('limit')
+        riskLower = demisto.args().get('riskLower')
+        riskHigher = demisto.args().get('riskHigher')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        response = json.loads(domainlist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        resultlist = response['data']['results']
+        for result in resultlist:
+            timestamps = result['timestamps']
+            domain = result['entity']['name']
+            risk = result['risk']
+            rf_score = risk['score']
+            sightings = result['sightings']
+            hr = '### Recorded Future Domain reputation for ' + domain + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/idn:' + domain + ')' + '\n'
+            hr_table = []
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['domain']] = {
+                'Name': domain,
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
+            }
+            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+            if (dbot_score == 3):
+                ec[outputPaths['domain']]['Malicious'] = {
+                    'Vendor': 'Recorded Future',
+                    'Description': 'Score above ' + str(rf_score)
+            }
+
+            demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def domainlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+        cmd_url = 'domain/search'
+        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+        params = {
+            'fields': 'entity,intelCard,risk,sightings,timestamps'
+        }
+
+        if limit:
+            params['limit'] = limit
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+        if riskLower and riskHigher:
+            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def urllist_command():
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        limit = demisto.args().get('limit')
+        riskLower = demisto.args().get('riskLower')
+        riskHigher = demisto.args().get('riskHigher')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        response = json.loads(urllist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        resultlist = response['data']['results']
+        for result in resultlist:
+            timestamps = result['timestamps']
+            url = result['entity']['name']
+            intelcard = urllib.quote_plus(url) #.url.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+            risk = result['risk']
+            rf_score = risk['score']
+            sightings = result['sightings']
+            hr = '### Recorded Future URL reputation for ' + url + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/url:' + intelcard + ')' + '\n'
+            hr_table = []
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['url']] = {
+                'Address': url,
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
+            }
+            dbot_score = translate_score(rf_score, IP_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': url,
+                'Type': 'url',
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+            if (dbot_score == 3):
+                ec[outputPaths['url']]['Malicious'] = {
+                    'Vendor': 'Recorded Future',
+                    'Description': 'Score above ' + str(rf_score)
+                }
+
+            demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def urllist_lookup(limit, riskLower, riskHigher, orderby, direction):
+        cmd_url = 'url/search'
+        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+        params = {
+            'fields': 'entity,intelCard,risk,sightings,timestamps'
+        }
+
+        if limit:
+            params['limit'] = limit
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+        if riskLower and riskHigher:
+            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def vulnlist_command():
+        detailed = False if demisto.args().get('detailed') == 'false' else True
+        limit = demisto.args().get('limit')
+        riskLower = demisto.args().get('riskLower')
+        riskHigher = demisto.args().get('riskHigher')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        response = json.loads(vulnlist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        resultlist = response['data']['results']
+        for result in resultlist:
+            timestamps = result['timestamps']
+            vuln = result['entity']['name']
+            entity_id = result['entity']['id']
+            risk = result['risk']
+            rf_score = risk['score']
+            sightings = result['sightings']
+            vtype = result['entity']['type']
+            hr = '### Recorded Future Vulnerability info for ' + vuln + '\n'
+            hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
+            hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
+            hr += 'Summary: ' + risk.get('riskSummary') + '\n'
+            hr += 'Total references to this entity: ' + str(len(sightings)) + '\n'
+            hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/' + entity_id + ')' + '\n'
+            hr_table = []
+            if detailed:
+                evidence_details = risk['evidenceDetails']
+                for detail in evidence_details:
+                    hr_table.append({
+                        'Rule Criticality': detail.get('criticalityLabel'),
+                        'Evidence Summary': detail.get('evidenceString'),
+                        'Rule Triggered': detail.get('rule'),
+                        'Rule Triggered Time': detail.get('timestamp')
+                    })
+                hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            sightings_table = []
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
+            if sightings_table:
+                hr += tableToMarkdown('References collected for this CVE', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            ec = {}
+            ec[outputPaths['cve']] = {
+                'Indicator': vuln,
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
+            }
+
+            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
+            ec['DBotScore'] = {
+                'Indicator': vuln,
+                'Type': vtype,
+                'Vendor': 'Recorded Future',
+                'Score': dbot_score
+            }
+
+            demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
+    def vulnlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+        cmd_url = 'vulnerability/search'
+        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+        params = {
+            'fields': 'entity,intelCard,risk,sightings,timestamps'
+        }
+
+        if limit:
+            params['limit'] = limit
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+        if riskLower and riskHigher:
+            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+
+        response = http_request('get', cmd_url, params=params)
+        return response
+
+    def get_url_risklist_command():
+        specific_list = demisto.args().get('specific_list')
+
+        res = get_url_risklist(specific_list)
+
+        if not res:
+            return_error('Received empty response')
+
+        demisto.results(fileResult(filename='url_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+
+
+    def get_url_risklist(specific_list):
+        cmd_url = 'url/risklist'
+
+        params = {
+            'format': 'csv/splunk'
+        }
+
+        if specific_list:
+            params['list'] = specific_list
+
+        return http_request('get', cmd_url, params=params)
+
+    def get_domain_risklist_command():
+        specific_list = demisto.args().get('specific_list')
+
+        res = get_domain_risklist(specific_list)
+
+        if not res:
+            return_error('Received empty response')
+
+        demisto.results(fileResult(filename='domain_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+
+
+    def get_domain_risklist(specific_list):
+        cmd_url = 'domain/risklist'
+
+        params = {
+            'format': 'csv/splunk'
+        }
+
+        if specific_list:
+            params['list'] = specific_list
+
+        return http_request('get', cmd_url, params=params)
+
+    def get_ip_risklist_command():
+        specific_list = demisto.args().get('list')
+
+        res = get_ip_risklist(specific_list)
+
+        if not res:
+            return_error('Received empty response')
+
+        demisto.results(fileResult(filename='ip_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+
+
+    def get_ip_risklist(specific_list):
+        cmd_url = 'ip/risklist'
+
+        params = {
+            'format': 'csv/splunk'
+        }
+
+        if specific_list:
+            params['list'] = specific_list
+
+        return http_request('get', cmd_url, params=params)
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -504,6 +1206,9 @@ script:
         elif demisto.command() == 'domain':
             domain_command()
 
+        elif demisto.command() == 'url':
+            url_command()
+
         elif demisto.command() == 'ip':
             ip_command()
 
@@ -513,10 +1218,35 @@ script:
         elif demisto.command() == 'recorded-future-get-related-entities':
             get_related_entities_command()
 
+        elif demisto.command() == 'recorded-future-get-threats-hash':
+            hashlist_command()
+
+        elif demisto.command() == 'recorded-future-get-threats-ip':
+            iplist_command()
+
+        elif demisto.command() == 'recorded-future-get-threats-url':
+            urllist_command()
+
+        elif demisto.command() == 'recorded-future-get-threats-domain':
+            domainlist_command()
+
+        elif demisto.command() == 'recorded-future-get-threats-vulnerabilities':
+            vulnlist_command()
+
+        elif demisto.command() == 'recorded-future-get-url-risklist':
+            get_url_risklist_command()
+
+        elif demisto.command() == 'recorded-future-get-domain-risklist':
+            get_domain_risklist_command()
+
+        elif demisto.command() == 'recorded-future-get-ip-risklist':
+            get_ip_risklist_command()
+
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
         raise
+        return_error(e.message)
   type: python
   commands:
   - name: domain
@@ -858,4 +1588,441 @@ script:
       description: Domain related entity name (Malware)
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: detailed
+      defaultValue: "false"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Url.Name
+      description: URL name
+      type: string
+    - contextPath: Url.RecordedFuture.Criticality
+      description: URL criticality label
+      type: string
+    - contextPath: Url.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: Url.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Look up threat intel information for a url in Recorded Future.
+  - name: recorded-future-get-threats-hash
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Fetching evidence details if true. Evidence is a record that gets
+        generated if any of the risk rules on Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "50"
+      - "100"
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: riskLower
+      description: Lower Threshold score to return results for, default is 65
+      defaultValue: "65"
+    - name: riskHigher
+      description: Maximum threshold score to return results for, default is 99
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      description: Sort direction
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA-256
+      type: string
+    - contextPath: File.SHA512
+      description: File SHA-512
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1
+      type: string
+    - contextPath: File.MD5
+      description: File MD-5
+      type: string
+    - contextPath: File.CRC32
+      description: File CRC-32
+      type: string
+    - contextPath: File.CTPH
+      description: File CTPH
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: File.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: File.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns hash threats from Recorded Future
+  - name: recorded-future-get-threats-ip
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
+        if any of the risk rules on Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "50"
+      - "100"
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: riskLower
+      description: Lower Threshold score to return results for, default is 65
+      defaultValue: "65"
+    - name: riskHigher
+      description: Maximum threshold score to return results for, default is 99
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason for the vendor to make the
+        decision
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.RecordedFuture.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: IP.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: string
+    - contextPath: IP.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns IP threats from Recorded Future
+  - name: recorded-future-get-threats-url
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
+        if any of the risk rules on Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "50"
+      - "100"
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: riskLower
+      description: Lower Threshold score to return results for, default is 65
+      defaultValue: "65"
+    - name: riskHigher
+      description: Maximum threshold score to return results for, default is 99
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Url.Address
+      description: URL Address
+      type: string
+    - contextPath: Url.RecordedFuture.Criticality
+      description: URL criticality label
+      type: string
+    - contextPath: Url.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: Url.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns URL threats from the last seven days from Recorded Future
+  - name: recorded-future-get-threats-domain
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
+        if any of the risk rules on Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "50"
+      - "100"
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: riskLower
+      description: Lower Threshold score to return results for, default is 65
+      defaultValue: "65"
+    - name: riskHigher
+      description: Maximum threshold score to return results for, default is 99
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.RecordedFuture.Criticality
+      description: Domain criticality label
+      type: string
+    - contextPath: Domain.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: Domain.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns domain threats from the last seven days from Recorded Future
+  - name: recorded-future-get-threats-vulnerabilities
+    arguments:
+    - name: limit
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "50"
+      - "100"
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: riskLower
+      description: Lower Threshold score to return results for, default is 65
+      defaultValue: "65"
+    - name: riskHigher
+      description: Maximum threshold score to return results for, default is 99
+      defaultValue: "99"
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
+        if any of the risk rules on Recorded Future is triggered.
+      defaultValue: "false"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: CVE.Indicator
+      description: Vulnerability CVE ID
+      type: string
+    - contextPath: CVE.RecordedFuture.Criticality
+      description: CVE criticality label
+      type: string
+    - contextPath: CVE.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: CVE.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns vulnerability threats from the last seven days from Recorded
+      Future
+  - name: recorded-future-get-domain-risklist
+    arguments:
+    - name: list
+      description: Specify a URL list
+    description: Gets the domain risk list from Recorded Future
+  - name: recorded-future-get-url-risklist
+    arguments:
+    - name: list
+      description: Specify a domain list
+    description: Gets the URL risk list from Recorded Future
+  - name: recorded-future-get-ip-risklist
+    arguments:
+    - name: list
+      description: Specify an IP list
+    description: Gets the IP risk list from Recorded Future
   runonce: false
