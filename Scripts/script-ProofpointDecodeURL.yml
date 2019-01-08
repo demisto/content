@@ -60,4 +60,3 @@ outputs:
   description: Decoded URLs
 scripttarget: 0
 dockerimage: demisto/python3
-releaseNotes: "Gave more descriptive error for when url is not found in the query"
