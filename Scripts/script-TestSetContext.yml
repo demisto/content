@@ -1,0 +1,49 @@
+commonfields:
+  id: TestSetContext
+  version: -1
+name: TestSetContext
+script: |
+  if demisto.args().get('context') is None:
+      context = {
+          "AbuseIPDB.IP(val.IP == obj.IP)": {
+              "Address": "8.8.8.8",
+              "Score": 100,
+              "Asset": {
+                  "Hostname": "demisto.com"
+              },
+              "Events": [
+                  {
+                      "ID": 1,
+                      "Log": "hello 1"
+                  },
+                  {
+                      "ID": 2,
+                      "Log": "hello 2"
+                  }
+              ]
+          }
+      }
+
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['json'],
+          'Contents': context,
+          'EntryContext': context
+      })
+  else:
+      context = json.loads(demisto.args().get('context'))
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['json'],
+          'Contents': context,
+          'EntryContext': context
+      })
+type: python
+tags: []
+enabled: true
+args:
+- name: context
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "This script will set any object to the context"
