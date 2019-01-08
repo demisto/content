@@ -32,6 +32,5 @@
     "fieldCalcScript": "",
     "selectValues": [],
     "validationRegex": "",
-    "sla": 20,
-    "releaseNotes": "Added Detection SLA field"
+    "sla": 20
 }
