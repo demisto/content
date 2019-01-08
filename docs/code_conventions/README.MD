@@ -46,6 +46,29 @@ email_header
 Email Header
 ```
 
+Additionally, arguments are to be passed through the ```_command``` function and mustn't reside in the primary function. Observe the following:
+
+**Do This**
+
+```python
+def sample_function(arg1):
+    response = arg1 + 'is the argument'
+    return response
+
+def sample_function_command():
+    arg1 = demisto.args().get('arg1')
+    response = sample_function(arg1)
+    demisto.results('This is the response - {}'.format(response))
+```
+
+**Not This**
+```python
+def sample_function():
+    arg1 = demisto.args().get('arg1')
+    response = arg1 + 'is the argument'
+    demisto.results('This is the response - {}'.format(response))
+```
+
 ## Command Functions
 Command functions should be split into two functions. We will look at "sample_function" as an example below:
 
