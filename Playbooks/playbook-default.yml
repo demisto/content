@@ -272,6 +272,5 @@ inputs:
   required: false
   description: Should preform enrichment on all indicators in the incident
 outputs: []
-releaseNotes: "-"
 tests:
   - No test

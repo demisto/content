@@ -1901,7 +1901,6 @@ script:
     description: Get the results of a specified group export
   dockerimage: demisto/gvault
   runonce: false
-releaseNotes: 'New commands: gvault-get-drive-results, gvault-get-mail-results, gvault-get-groups-results, gvault-download-results.
 New playbooks: Google Vault - Search Mail, Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Display Results
 BREAKING COMPATIBILITY: context formation changed - Export objects moved into matching Matter objects'
 tests:
