@@ -6,6 +6,9 @@ We currently use CircleCI to test each of our integrations. The tests run for **
 ## Creating a Test Playbook
 
 ### Getting Started
+
+We **strongly** encourage you to [watch our "Code-Along" tutorial video](docs/tutorial-video/README.md) which covers many general questions you may have.
+
 To create a test playbook, we begin by navigating to the **Playbooks** tab in Demisto and clicking **New Playbook**. When running a test, it is often necessary for the first step to be **DeleteContext** which is found under the **Utilities** section in the Task Library. 
 
 "Delete Context" does just that, it deletes all of the context data. While not always vital, it ensures that a test playbook has a clean beginning to test from without conflicting data. This allows for a test to be "sterile" and can help us to eliminate unrelated issues from the test. 
