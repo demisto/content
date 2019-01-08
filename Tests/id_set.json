@@ -5144,6 +5144,9 @@
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state", 
                     "threat-grid-url-to-file"
+                ], 
+                "tests": [
+                    "Test-Detonate URL - ThreatGrid"
                 ]
             }
         }, 
