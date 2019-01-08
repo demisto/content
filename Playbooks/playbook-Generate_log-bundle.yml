@@ -1,6 +1,8 @@
 id: Generate log-bundle
 version: -1
 name: Generate log-bundle
+description: |-
+  New playbook for generating log-bundle and sends it to Demisto
 starttaskid: "0"
 tasks:
   "0":
