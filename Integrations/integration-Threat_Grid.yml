@@ -1024,7 +1024,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': {},
                 'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-                'Contents': {},
+                'Contents': r.content,
                 'ContentsFormat': formats['json']
             },
             fileResult(url, r.content)
