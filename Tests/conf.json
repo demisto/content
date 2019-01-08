@@ -11,6 +11,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "Demisto REST API",
+            "playbookID": "playbook-Generate_log-bundleTest"
+        },
+        {
             "integrations": "Dell Secureworks",
             "playbookID": "secureworks_test"
         },
