@@ -1595,6 +1595,5 @@ script:
   isfetch: true
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "-"
 tests:
     - secureworks_test
