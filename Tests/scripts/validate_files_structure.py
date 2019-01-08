@@ -59,11 +59,12 @@ CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_D
 CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
 LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
 INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX,
-                 CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
+                 CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
@@ -71,7 +72,7 @@ KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
 REGEXES_TO_SCHEMA_DIC={INTEGRATION_REGEX: "integration", PLAYBOOK_REGEX: "playbook", TEST_PLAYBOOK_REGEX:"test-playbook",
              SCRIPT_REGEX: "script", WIDGETS_REGEX: "widget", DASHBOARD_REGEX:"dashboard", CONNECTIONS_REGEX: "canvas-context-connections",
-             CLASSIFIER_REGEX: "classifier", LAYOUT_REGEX:"layout", INCIDENT_FIELDS_REGEX:"incidentfields"}
+             CLASSIFIER_REGEX: "classifier", LAYOUT_REGEX:"layout", INCIDENT_FIELDS_REGEX:"incidentfields", INCIDENT_FIELD_REGEX: "incidentfield"}
 
 SCHEMAS_PATH = "Tests/schemas/"
 
@@ -485,8 +486,6 @@ def validate_all_files():
     for regex in CHECKED_TYPES_REGEXES:
         splitted_regex = regex.split(".*")
         directory = splitted_regex[0]
-        prefix = splitted_regex[1]
-        suffix = splitted_regex[2]
         for root, dirs, files in os.walk(directory):
             print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
             for file_name in files:
@@ -495,13 +494,7 @@ def validate_all_files():
                 if file_name.startswith('.'):
                     continue
                 print "Validating " + file_name
-                if not file_name.lower().endswith(suffix):
-                     print_error("file " + file_path + " should end with " + suffix)
-                     found_wrong_name = True
-                if not file_name.lower().startswith(prefix):
-                     print_error("file " + file_path + " should start with " + prefix)
-                     found_wrong_name = True
-                if not validate_schema(file_path, regex):
+                if not validate_schema(file_path):
                     print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
                 if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
