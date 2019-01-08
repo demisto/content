@@ -11,6 +11,7 @@ tasks:
       id: 7ef6ff66-54b1-4440-8bdc-a100049aab5d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -33,6 +34,7 @@ tasks:
       id: 29d9ac74-5da6-4c05-89ea-79dd3029c3b2
       version: -1
       name: 'Generate logs '
+      description: "Generate log-bundle"
       scriptName: DemistoLogsBundle
       type: regular
       iscommand: false
@@ -57,6 +59,7 @@ tasks:
       id: fa1c9f48-3f42-4e31-87a9-cfedfe21cf5e
       version: -1
       name: 'Send logs '
+      description: "Send logs to Demisto"
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -96,6 +99,7 @@ tasks:
       id: e774426e-a47e-4311-82f7-f217864ce838
       version: -1
       name: Done
+      description: "Close investigation"
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -128,3 +132,6 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "New playbook for generating log-bundle and sends it to Demisto"
+tests:
+- playbook-Generate_log-bundleTest
