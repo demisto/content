@@ -4835,6 +4835,9 @@
                     "epo-get-latest-dat", 
                     "epo-get-current-dat", 
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5144,6 +5147,9 @@
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state", 
                     "threat-grid-url-to-file"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6104,6 +6110,9 @@
                 ], 
                 "implementing_commands": [
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
