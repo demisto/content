@@ -15170,6 +15170,14 @@
                     "misp-delete-event"
                 ]
             }
+        }, 
+        {
+            "Test-Detonate URL - ThreatGrid": {
+                "name": "Test-Detonate URL - ThreatGrid", 
+                "implementing_playbooks": [
+                    "Detonate URL - ThreatGrid"
+                ]
+            }
         }
     ]
 }

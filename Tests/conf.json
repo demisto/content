@@ -776,6 +776,10 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
