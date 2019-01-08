@@ -93,7 +93,8 @@ script:
     DEVICE_GROUP = demisto.params().get('device_group')
     if DEVICE_GROUP and VSYS:
         return_error('Can not configure both vsys and Device Group. Set vsys for Firewall, set Device Group for Panorama')
-
+    if not DEVICE_GROUP and not VSYS:
+        return_error('Set a vsys for Firewall or Device Group for Panorama')
     # setting security xpath relevant to FW or panorama managment
     XPATH_SECURITY_RULES = None
     if DEVICE_GROUP:
