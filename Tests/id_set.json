@@ -1,6 +1,30 @@
 {
     "scripts": [
         {
+            "changeremediationslaonsevchange": {
+                "name": "ChangeRemediationSLAOnSevChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "setIncident"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
+            "stoptimetoassignonownerchange": {
+                "name": "StopTimeToAssignOnOwnerChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "stopTimer"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
             "AwsStopInstance": {
                 "name": "AwsStopInstance", 
                 "depends_on": [
@@ -17,7 +41,10 @@
                 ], 
                 "script_executions": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "ProtectWise"
+                }
             }
         }, 
         {
@@ -55,7 +82,10 @@
                 ], 
                 "script_executions": [
                     "sensors"
-                ]
+                ], 
+                "command_to_integration": {
+                    "sensors": "ProtectWise"
+                }
             }
         }, 
         {
@@ -107,6 +137,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cb-binary"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -119,7 +152,6 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
                     "AdSearch", 
                     "addEntitlement"
                 ]
@@ -152,9 +184,14 @@
                     "cy-upload"
                 ], 
                 "script_executions": [
-                    "getEntry", 
                     "file", 
-                    "file"
+                    "getEntry"
+                ], 
+                "command_to_integration": {
+                    "file": "cylance"
+                }, 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -164,6 +201,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "panorama"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
                 ]
             }
         }, 
@@ -199,7 +239,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "event-pcap-info"
-                ]
+                ], 
+                "command_to_integration": {
+                    "event-pcap-info": "ProtectWise"
+                }
             }
         }, 
         {
@@ -225,6 +268,9 @@
                 "name": "CuckooDetonateFile", 
                 "depends_on": [
                     "cuckoo-create-task-from-file"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -302,7 +348,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scan-create"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-create": "Nessus"
+                }
             }
         }, 
         {
@@ -337,7 +386,10 @@
             "FetchFromInstance": {
                 "name": "FetchFromInstance", 
                 "fromversion": "4.0.0", 
-                "deprecated": true
+                "deprecated": true, 
+                "tests": [
+                    "No test - cannot create a dummy integration inorder to test that"
+                ]
             }
         }, 
         {
@@ -405,6 +457,13 @@
                 "depends_on": [
                     "servicenow-query-table", 
                     "servicenow-create-record"
+                ], 
+                "command_to_integration": {
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-create-record": "ServiceNow"
+                }, 
+                "tests": [
+                    "No test - Hibernating instance"
                 ]
             }
         }, 
@@ -431,14 +490,14 @@
             "SandboxDetonateFile": {
                 "name": "SandboxDetonateFile", 
                 "script_executions": [
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
-                    "IsIntegrationAvailable", 
-                    "getEntry", 
                     "CuckooDetonateFile", 
+                    "CuckooGetReport", 
                     "CuckooTaskStatus", 
-                    "CuckooGetReport"
+                    "IsIntegrationAvailable", 
+                    "getEntry"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -448,6 +507,9 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -485,7 +547,10 @@
                     "get_job_sample", 
                     "get_results", 
                     "scheduleEntry"
-                ]
+                ], 
+                "command_to_integration": {
+                    "get_job_sample": "VMRay"
+                }
             }
         }, 
         {
@@ -538,8 +603,8 @@
                     "ck-report"
                 ], 
                 "script_executions": [
-                    "getFilePath", 
-                    "getEntry"
+                    "getEntry", 
+                    "getFilePath"
                 ]
             }
         }, 
@@ -613,7 +678,10 @@
         {
             "d98506ea-fd06-49d6-8f1e-bb29ab06766e": {
                 "name": "VerifyContext", 
-                "deprecated": true
+                "deprecated": true, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -681,7 +749,10 @@
         }, 
         {
             "findIncidentsWithIndicator": {
-                "name": "findIncidentsWithIndicator"
+                "name": "findIncidentsWithIndicator", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -710,7 +781,10 @@
                 "name": "ElasticSearchDisplay", 
                 "depends_on": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "elasticsearch"
+                }
             }
         }, 
         {
@@ -746,6 +820,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "panorama"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
                 ]
             }
         }, 
@@ -816,6 +893,9 @@
                 "name": "JSONtoCSV", 
                 "script_executions": [
                     "getEntry"
+                ], 
+                "tests": [
+                    "JSONtoCSV-Test"
                 ]
             }
         }, 
@@ -829,7 +909,10 @@
         }, 
         {
             "ParseJSON": {
-                "name": "ParseJSON"
+                "name": "ParseJSON", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -856,10 +939,10 @@
                 "name": "IncidentSet", 
                 "toversion": "3.5.0", 
                 "script_executions": [
-                    "setOwner", 
-                    "setStage", 
                     "setIncident", 
-                    "setPlaybook"
+                    "setOwner", 
+                    "setPlaybook", 
+                    "setStage"
                 ]
             }
         }, 
@@ -909,9 +992,11 @@
                     "file"
                 ], 
                 "script_executions": [
-                    "file", 
                     "file"
-                ]
+                ], 
+                "command_to_integration": {
+                    "file": "VirusTotal"
+                }
             }
         }, 
         {
@@ -935,6 +1020,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "panorama"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
                 ]
             }
         }, 
@@ -1031,6 +1119,9 @@
                 "script_executions": [
                     "getEntries", 
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ZipFile-Test"
                 ]
             }
         }, 
@@ -1058,6 +1149,9 @@
                 "name": "CuckooDetonateURL", 
                 "depends_on": [
                     "cuckoo-create-task-from-url"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -1074,7 +1168,10 @@
         }, 
         {
             "WordTokenizer": {
-                "name": "WordTokenizer"
+                "name": "WordTokenizer", 
+                "tests": [
+                    "WordTokenizeTest"
+                ]
             }
         }, 
         {
@@ -1147,7 +1244,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scan-details"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-details": "Nessus"
+                }
             }
         }, 
         {
@@ -1232,6 +1332,9 @@
                     "qradar-get-search", 
                     "qradar-get-search-results", 
                     "qradar-searches"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -1252,7 +1355,12 @@
                     "scan-report-download", 
                     "scan-export", 
                     "scan-export-status"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-report-download": "Nessus", 
+                    "scan-export": "Nessus", 
+                    "scan-export-status": "Nessus"
+                }
             }
         }, 
         {
@@ -1299,7 +1407,10 @@
         }, 
         {
             "LoadJSON": {
-                "name": "LoadJSON"
+                "name": "LoadJSON", 
+                "tests": [
+                    "JSONtoCSV-Test"
+                ]
             }
         }, 
         {
@@ -1319,7 +1430,10 @@
         }, 
         {
             "BuildEWSQuery": {
-                "name": "BuildEWSQuery"
+                "name": "BuildEWSQuery", 
+                "tests": [
+                    "buildewsquery_test"
+                ]
             }
         }, 
         {
@@ -1343,12 +1457,18 @@
         {
             "PanoramaDynamicAddressGroup": {
                 "name": "PanoramaDynamicAddressGroup", 
-                "deprecated": true
+                "deprecated": true, 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
+                ]
             }
         }, 
         {
             "ActiveUsersD2": {
-                "name": "ActiveUsersD2"
+                "name": "ActiveUsersD2", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -1356,6 +1476,9 @@
                 "name": "ParseExcel", 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ParseExcel-test"
                 ]
             }
         }, 
@@ -1421,7 +1544,10 @@
         }, 
         {
             "DT": {
-                "name": "DT"
+                "name": "DT", 
+                "tests": [
+                    "No tests - script used for testing"
+                ]
             }
         }, 
         {
@@ -1476,7 +1602,10 @@
         }, 
         {
             "bffdcf72-2061-4767-83d5-3ff2a9e8afe7": {
-                "name": "BlockIP"
+                "name": "BlockIP", 
+                "tests": [
+                    "blockip_test_playbook"
+                ]
             }
         }, 
         {
@@ -1496,7 +1625,6 @@
                     "checkpoint"
                 ], 
                 "script_executions": [
-                    "checkpoint", 
                     "checkpoint"
                 ]
             }
@@ -1521,6 +1649,9 @@
                 "name": "CuckooGetScreenshot", 
                 "depends_on": [
                     "cuckoo-task-screenshot"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -1560,7 +1691,10 @@
                 ], 
                 "script_executions": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "splunk"
+                }
             }
         }, 
         {
@@ -1578,6 +1712,9 @@
                 "name": "ReadPDFFile", 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
                 ]
             }
         }, 
@@ -1605,6 +1742,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "panorama"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
                 ]
             }
         }, 
@@ -1637,7 +1777,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "observation-pcap-info"
-                ]
+                ], 
+                "command_to_integration": {
+                    "observation-pcap-info": "ProtectWise"
+                }
             }
         }, 
         {
@@ -1739,7 +1882,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "observation-search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "observation-search": "ProtectWise"
+                }
             }
         }, 
         {
@@ -1748,6 +1894,9 @@
                 "fromversion": "4.1.0", 
                 "script_executions": [
                     "getList"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -1789,7 +1938,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scan-host-details"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-host-details": "Nessus"
+                }
             }
         }, 
         {
@@ -1898,6 +2050,9 @@
                 "name": "JSONFileToCSV", 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "JSONtoCSV-Test"
                 ]
             }
         }, 
@@ -1912,10 +2067,10 @@
                 "fromversion": "3.5.1", 
                 "deprecated": true, 
                 "script_executions": [
-                    "setOwner", 
-                    "setStage", 
                     "setIncident", 
-                    "setPlaybook"
+                    "setOwner", 
+                    "setPlaybook", 
+                    "setStage"
                 ]
             }
         }, 
@@ -1987,6 +2142,13 @@
                 "depends_on": [
                     "servicenow-query-table", 
                     "servicenow-update-record"
+                ], 
+                "command_to_integration": {
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-update-record": "ServiceNow"
+                }, 
+                "tests": [
+                    "No test - Hibernating instance"
                 ]
             }
         }, 
@@ -2042,9 +2204,12 @@
                 ], 
                 "script_executions": [
                     "getFilePath", 
-                    "upload_sample", 
-                    "scheduleEntry"
-                ]
+                    "scheduleEntry", 
+                    "upload_sample"
+                ], 
+                "command_to_integration": {
+                    "upload_sample": "VMRay"
+                }
             }
         }, 
         {
@@ -2052,7 +2217,10 @@
                 "name": "PWObservationPcapDownload", 
                 "depends_on": [
                     "observation-pcap-download"
-                ]
+                ], 
+                "command_to_integration": {
+                    "observation-pcap-download": "ProtectWise"
+                }
             }
         }, 
         {
@@ -2077,7 +2245,6 @@
                 "fromversion": "3.5.0", 
                 "script_executions": [
                     "findIndicators", 
-                    "getIncidents", 
                     "getIncidents"
                 ]
             }
@@ -2090,9 +2257,8 @@
                     "file"
                 ], 
                 "script_executions": [
-                    "getEntries", 
                     "file", 
-                    "file"
+                    "getEntries"
                 ]
             }
         }, 
@@ -2109,6 +2275,9 @@
                 "name": "IsListExist", 
                 "script_executions": [
                     "getList"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -2154,7 +2323,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scan-details"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-details": "Nessus"
+                }
             }
         }, 
         {
@@ -2261,6 +2433,9 @@
                 "name": "ParseCSV", 
                 "script_executions": [
                     "getEntries"
+                ], 
+                "tests": [
+                    "TestParseCSV"
                 ]
             }
         }, 
@@ -2285,7 +2460,10 @@
                 ], 
                 "script_executions": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "elasticsearch"
+                }
             }
         }, 
         {
@@ -2399,6 +2577,9 @@
                 ], 
                 "script_executions": [
                     "IsIntegrationAvailable"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -2442,8 +2623,8 @@
                     "ipinfo_field"
                 ], 
                 "script_executions": [
-                    "ipinfo_field", 
-                    "ip"
+                    "ip", 
+                    "ipinfo_field"
                 ]
             }
         }, 
@@ -2474,7 +2655,10 @@
         }, 
         {
             "URLDecode": {
-                "name": "URLDecode"
+                "name": "URLDecode", 
+                "tests": [
+                    "URLDecode-Test"
+                ]
             }
         }, 
         {
@@ -2571,7 +2755,10 @@
         }, 
         {
             "CreateEmailHtmlBody": {
-                "name": "CreateEmailHtmlBody"
+                "name": "CreateEmailHtmlBody", 
+                "tests": [
+                    "CreateEmailHtmlBody_test_pb"
+                ]
             }
         }, 
         {
@@ -2602,7 +2789,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scan-launch"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scan-launch": "Nessus"
+                }
             }
         }, 
         {
@@ -2687,15 +2877,16 @@
                 "name": "EsmExample", 
                 "depends_on": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "esm"
+                }
             }
         }, 
         {
             "SetSeverityByScore": {
                 "name": "SetSeverityByScore", 
                 "script_executions": [
-                    "IncidentSet", 
-                    "IncidentSet", 
                     "IncidentSet"
                 ]
             }
@@ -2760,6 +2951,9 @@
                 "script_executions": [
                     "DBotPreparePhishingData", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -2829,12 +3023,18 @@
                 "name": "SplunkEmailParser", 
                 "depends_on": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "splunk"
+                }
             }
         }, 
         {
             "GetTime": {
-                "name": "GetTime"
+                "name": "GetTime", 
+                "tests": [
+                    "GetTime-Test"
+                ]
             }
         }, 
         {
@@ -2854,6 +3054,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "panorama"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb", 
+                    "blockip_test_playbook"
                 ]
             }
         }, 
@@ -2899,7 +3103,6 @@
                 "name": "GetDuplicatesMlv2", 
                 "fromversion": "3.5.0", 
                 "script_executions": [
-                    "getIncidents", 
                     "findIndicators", 
                     "getIncidents"
                 ]
@@ -2931,7 +3134,10 @@
         }, 
         {
             "CommonServerPython": {
-                "name": "CommonServerPython"
+                "name": "CommonServerPython", 
+                "tests": [
+                    "TestPYCommonServer"
+                ]
             }
         }, 
         {
@@ -2948,6 +3154,9 @@
                 "name": "DocumentationAutomation", 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "No test - Test not needed"
                 ]
             }
         }, 
@@ -3013,8 +3222,8 @@
                     "SendEmail"
                 ], 
                 "script_executions": [
-                    "SendEmail", 
-                    "RemoteExec"
+                    "RemoteExec", 
+                    "SendEmail"
                 ]
             }
         }, 
@@ -3050,6 +3259,12 @@
                 "name": "ServiceNowQueryIncident", 
                 "depends_on": [
                     "servicenow-query-table"
+                ], 
+                "command_to_integration": {
+                    "servicenow-query-table": "ServiceNow"
+                }, 
+                "tests": [
+                    "No test - Hibernating instance"
                 ]
             }
         }, 
@@ -3182,6 +3397,9 @@
                 "name": "CuckooGetReport", 
                 "depends_on": [
                     "cuckoo-get-task-report"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -3285,6 +3503,7 @@
             "DataHashReputation": {
                 "name": "DataHashReputation", 
                 "toversion": "3.0.1", 
+                "deprecated": true, 
                 "depends_on": [
                     "file"
                 ]
@@ -3310,6 +3529,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "file"
+                ], 
+                "tests": [
+                    "No test - deprecated old script"
                 ]
             }
         }, 
@@ -3361,7 +3583,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "scans-list"
-                ]
+                ], 
+                "command_to_integration": {
+                    "scans-list": "Nessus"
+                }
             }
         }, 
         {
@@ -3408,14 +3633,16 @@
                     "checkpoint"
                 ], 
                 "script_executions": [
-                    "checkpoint", 
                     "checkpoint"
                 ]
             }
         }, 
         {
             "RegexGroups": {
-                "name": "RegexGroups"
+                "name": "RegexGroups", 
+                "tests": [
+                    "RegexGroups Test"
+                ]
             }
         }, 
         {
@@ -3495,6 +3722,9 @@
                 "name": "CuckooTaskStatus", 
                 "depends_on": [
                     "cuckoo-view-task"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -3507,7 +3737,10 @@
                 ], 
                 "script_executions": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "ProtectWise"
+                }
             }
         }, 
         {
@@ -3532,7 +3765,6 @@
                 "fromversion": "3.5.0", 
                 "deprecated": true, 
                 "script_executions": [
-                    "getIncidents", 
                     "findIndicators", 
                     "getIncidents"
                 ]
@@ -3565,6 +3797,9 @@
                 "fromversion": "4.1.0", 
                 "script_executions": [
                     "DBotPredictTextLabel"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -3669,6 +3904,18 @@
             }
         }, 
         {
+            "CybereasonPreProcessingExample": {
+                "name": "CybereasonPreProcessingExample", 
+                "script_executions": [
+                    "getIncidents", 
+                    "setIncident"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
             "CBAlerts": {
                 "name": "CBAlerts", 
                 "depends_on": [
@@ -3720,7 +3967,10 @@
         }, 
         {
             "46e2109c-b735-458e-884f-030229a20830": {
-                "name": "SetByIncidentId"
+                "name": "SetByIncidentId", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -3760,11 +4010,24 @@
             }
         }, 
         {
+            "CopyContextToField": {
+                "name": "CopyContextToField", 
+                "script_executions": [
+                    "getContext", 
+                    "getIncidents", 
+                    "setIncident"
+                ], 
+                "tests": [
+                    "CopyContextToFieldTest"
+                ]
+            }
+        }, 
+        {
             "O365SearchEmails": {
                 "name": "O365SearchEmails", 
                 "script_executions": [
-                    "D2O365SearchAndDelete", 
-                    "D2O365ComplianceSearch"
+                    "D2O365ComplianceSearch", 
+                    "D2O365SearchAndDelete"
                 ]
             }
         }, 
@@ -3773,8 +4036,10 @@
                 "name": "AnalyzeOSX", 
                 "depends_on": [
                     "url", 
-                    "Osxcollector", 
                     "file"
+                ], 
+                "tests": [
+                    "No test - need to revisit"
                 ]
             }
         }, 
@@ -3783,7 +4048,10 @@
                 "name": "PWEventPcapDownload", 
                 "depends_on": [
                     "event-pcap-download"
-                ]
+                ], 
+                "command_to_integration": {
+                    "event-pcap-download": "ProtectWise"
+                }
             }
         }, 
         {
@@ -3825,9 +4093,9 @@
                     "ImpSfListEndpoints"
                 ], 
                 "script_executions": [
-                    "SendEmail", 
                     "ImpSfListEndpoints", 
-                    "ImpSfSetEndpointStatus"
+                    "ImpSfSetEndpointStatus", 
+                    "SendEmail"
                 ]
             }
         }, 
@@ -3858,6 +4126,9 @@
                 "name": "PagerDutyAlertOnIncident", 
                 "depends_on": [
                     "PagerDuty-submit-event"
+                ], 
+                "tests": [
+                    "PagerDuty Test"
                 ]
             }
         }, 
@@ -3865,6 +4136,21 @@
             "URLExtract": {
                 "name": "URLExtract", 
                 "deprecated": true
+            }
+        }, 
+        {
+            "AbuseIPDBPopulateIndicators": {
+                "name": "AbuseIPDBPopulateIndicators", 
+                "depends_on": [
+                    "abuseipdb-get-blacklist", 
+                    "createNewIndicator"
+                ], 
+                "command_to_integration": {
+                    "createNewIndicator": "Builtin"
+                }, 
+                "tests": [
+                    "AbuseIPDB PopulateIndicators Test"
+                ]
             }
         }, 
         {
@@ -3885,7 +4171,6 @@
                     "send-mail"
                 ], 
                 "script_executions": [
-                    "AdSearch", 
                     "AdSearch", 
                     "addOneTimeEntitlement"
                 ]
@@ -3978,6 +4263,9 @@
                 "name": "DemistoUploadFileToIncident", 
                 "depends_on": [
                     "demisto-api-multipart"
+                ], 
+                "tests": [
+                    "DemistoUploadFileToIncident Test"
                 ]
             }
         }, 
@@ -4010,7 +4298,6 @@
             "LinkIncidentsWithRetry": {
                 "name": "LinkIncidentsWithRetry", 
                 "script_executions": [
-                    "linkIncidents", 
                     "linkIncidents"
                 ]
             }
@@ -4047,6 +4334,9 @@
                 ], 
                 "script_executions": [
                     "checkpoint"
+                ], 
+                "tests": [
+                    "blockip_test_playbook"
                 ]
             }
         }, 
@@ -4064,6 +4354,9 @@
                 "depends_on": [
                     "jira-create-issue", 
                     "jira-delete-issue"
+                ], 
+                "tests": [
+                    "JiraCreateIssue-example-test"
                 ]
             }
         }, 
@@ -4100,6 +4393,9 @@
                 ], 
                 "script_executions": [
                     "QRadarFullSearch"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4164,8 +4460,11 @@
                 "name": "DBotTrainTextClassifier", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "getFilePath", 
-                    "createList"
+                    "createList", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -4188,7 +4487,10 @@
                 "deprecated": true, 
                 "depends_on": [
                     "search"
-                ]
+                ], 
+                "command_to_integration": {
+                    "search": "splunk"
+                }
             }
         }, 
         {
@@ -4238,10 +4540,13 @@
                 "name": "DBotPreparePhishingData", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
-                    "getContext", 
-                    "getIncidents", 
+                    "WordTokenizer", 
                     "createList", 
-                    "WordTokenizer"
+                    "getContext", 
+                    "getIncidents"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -4253,6 +4558,9 @@
                 ], 
                 "script_executions": [
                     "QRadarFullSearch"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4393,14 +4701,16 @@
             "TestCreateIncidents": {
                 "name": "TestCreateIncidents", 
                 "script_executions": [
-                    "createNewIncident", 
                     "createNewIncident"
                 ]
             }
         }, 
         {
             "TestPYCommonServer": {
-                "name": "TestPYCommonServer"
+                "name": "TestPYCommonServer", 
+                "tests": [
+                    "Test CommonServer"
+                ]
             }
         }, 
         {
@@ -4420,10 +4730,8 @@
             "SsdeepReputationTest": {
                 "name": "SsdeepReputationTest", 
                 "script_executions": [
-                    "findIndicators", 
                     "createNewIndicator", 
-                    "createNewIndicator", 
-                    "createNewIndicator"
+                    "findIndicators"
                 ]
             }
         }, 
@@ -4439,6 +4747,35 @@
         }
     ], 
     "playbooks": [
+        {
+            "Phishing Investigation - Generic": {
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Block Indicators - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "send-mail"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
+                ]
+            }
+        }, 
         {
             "search_and_delete_emails_-_generic": {
                 "name": "Search And Delete Emails - Generic", 
@@ -4474,6 +4811,10 @@
                 "implementing_commands": [
                     "setIncident", 
                     "rasterize-email"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
                 ]
             }
         }, 
@@ -4502,6 +4843,10 @@
                 "implementing_playbooks": [
                     "Get Original Email - Gmail", 
                     "Get Original Email - EWS"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
                 ]
             }
         }, 
@@ -4515,6 +4860,9 @@
                 "implementing_commands": [
                     "phish-ai-check-status", 
                     "phish-ai-scan-url"
+                ], 
+                "tests": [
+                    "Test-Detonate URL - Phish.AI"
                 ]
             }
         }, 
@@ -4532,6 +4880,9 @@
                     "cuckoo-view-task", 
                     "cuckoo-get-task-report", 
                     "cuckoo-create-task-from-url"
+                ], 
+                "tests": [
+                    "CuckooTest"
                 ]
             }
         }, 
@@ -4593,6 +4944,9 @@
                 "implementing_commands": [
                     "lastline-upload-file", 
                     "lastline-get-report"
+                ], 
+                "tests": [
+                    "Lastline - testplaybook"
                 ]
             }
         }, 
@@ -4756,6 +5110,9 @@
                     "tenable-io-launch-scan", 
                     "tenable-io-get-scan-report", 
                     "tenable-io-get-scan-status"
+                ], 
+                "tests": [
+                    "Tenable.io Scan Test"
                 ]
             }
         }, 
@@ -4768,6 +5125,9 @@
                     "Block File - Generic", 
                     "Block IP - Generic", 
                     "Block Account - Generic"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -4813,6 +5173,9 @@
                     "gvault-download-results", 
                     "gvault-export-status", 
                     "gvault-get-mail-results"
+                ], 
+                "tests": [
+                    "Google_Vault-Search_And_Display_Results_test"
                 ]
             }
         }, 
@@ -4876,6 +5239,10 @@
                 "implementing_commands": [
                     "crowdstrike-submit-sample", 
                     "crowdstrike-scan"
+                ], 
+                "tests": [
+                    "VxStream Test", 
+                    "detonate_file_-_generic_test"
                 ]
             }
         }, 
@@ -4886,6 +5253,9 @@
                 "implementing_commands": [
                     "cs-device-search", 
                     "cs-device-details"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4946,6 +5316,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -4989,6 +5362,9 @@
                     "gmail-get-attachments", 
                     "gmail-search", 
                     "gmail-get-mail"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5006,6 +5382,10 @@
                     "atd-get-report", 
                     "atd-check-status", 
                     "atd-file-upload"
+                ], 
+                "tests": [
+                    "Test Playbook McAfee ATD", 
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
@@ -5019,6 +5399,9 @@
                 "implementing_commands": [
                     "lastline-get-report", 
                     "lastline-upload-url"
+                ], 
+                "tests": [
+                    "Lastline - testplaybook"
                 ]
             }
         }, 
@@ -5081,6 +5464,10 @@
                     "ews-search-mailbox", 
                     "ews-get-attachment", 
                     "ews-get-items"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
                 ]
             }
         }, 
@@ -5169,6 +5556,9 @@
                     "gvault-download-results", 
                     "gvault-create-export-groups", 
                     "gvault-get-groups-results"
+                ], 
+                "tests": [
+                    "Google_Vault-Search_And_Display_Results_test"
                 ]
             }
         }, 
@@ -5181,6 +5571,9 @@
                     "Base64ListToFile", 
                     "DBotPredictPhishingEvaluation", 
                     "DBotPreparePhishingData"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -5195,6 +5588,9 @@
                     "Detonate URL - Lastline", 
                     "Detonate URL - ThreatGrid", 
                     "Detonate URL - McAfee ATD"
+                ], 
+                "tests": [
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
@@ -5208,6 +5604,9 @@
                 "implementing_commands": [
                     "tenable-sc-get-scan-report", 
                     "tenable-sc-launch-scan"
+                ], 
+                "tests": [
+                    "tenable-sc-test"
                 ]
             }
         }, 
@@ -5324,6 +5723,9 @@
                 "implementing_commands": [
                     "cb-get-hash-blacklist", 
                     "cb-block-hash"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -5353,6 +5755,9 @@
                 "implementing_commands": [
                     "bitdam-upload-file", 
                     "bitdam-get-verdict"
+                ], 
+                "tests": [
+                    "Detonate File - BitDam Test"
                 ]
             }
         }, 
@@ -5383,6 +5788,9 @@
                     "gvault-get-drive-results", 
                     "gvault-export-status", 
                     "gvault-download-results"
+                ], 
+                "tests": [
+                    "Google_Vault-Search_And_Display_Results_test"
                 ]
             }
         }, 
@@ -5446,6 +5854,9 @@
                     "qradar-get-search", 
                     "qradar-get-search-results", 
                     "qradar-searches"
+                ], 
+                "tests": [
+                    "test_Qradar"
                 ]
             }
         }, 
@@ -5528,6 +5939,9 @@
                 "implementing_commands": [
                     "zscaler-blacklist-ip", 
                     "checkpoint-block-ip"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -5575,13 +5989,17 @@
                     "sndbox-analysis-info", 
                     "sndbox-analysis-submit-sample", 
                     "sndbox-download-report"
+                ], 
+                "tests": [
+                    "Detonate File - SNDBOX - Test"
                 ]
             }
         }, 
         {
             "Phishing Investigation - Generic": {
                 "name": "Phishing Investigation - Generic", 
-                "fromversion": 4.0, 
+                "toversion": "4.0.9", 
+                "fromversion": "4.0.0", 
                 "implementing_scripts": [
                     "AssignAnalystToIncident", 
                     "Set", 
@@ -5600,6 +6018,10 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "send-mail"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
                 ]
             }
         }, 
@@ -5629,6 +6051,9 @@
                     "ReadPDFFile", 
                     "Set", 
                     "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
                 ]
             }
         }, 
@@ -5660,6 +6085,9 @@
                 "implementing_commands": [
                     "setIncident", 
                     "rasterize-email"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5691,6 +6119,9 @@
                     "nexpose-get-asset-vulnerability", 
                     "nexpose-get-asset", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -5732,6 +6163,9 @@
                 "implementing_commands": [
                     "qualys-host-list", 
                     "qualys-vulnerability-list"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -5787,6 +6221,9 @@
                     "panorama-push-status", 
                     "panorama-commit", 
                     "panorama-commit-status"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb"
                 ]
             }
         }, 
@@ -5861,6 +6298,9 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "Block File - Carbon Black Response"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -5880,6 +6320,9 @@
                 "fromversion": "4.0.0", 
                 "implementing_commands": [
                     "minemeld-add-to-miner"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -5995,6 +6438,9 @@
                     "cuckoo-get-task-report", 
                     "cuckoo-view-task", 
                     "cuckoo-create-task-from-file"
+                ], 
+                "tests": [
+                    "CuckooTest"
                 ]
             }
         }, 
@@ -6044,6 +6490,10 @@
                     "Entity Enrichment - Generic", 
                     "Email Address Enrichment - Generic", 
                     "Calculate Severity - Generic"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
                 ]
             }
         }, 
@@ -6059,6 +6509,9 @@
                 ], 
                 "implementing_commands": [
                     "closeInvestigation"
+                ], 
+                "tests": [
+                    "CreatePhishingClassifierMLTest"
                 ]
             }
         }, 
@@ -6098,6 +6551,9 @@
                     "slack-send", 
                     "demisto-api-get", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6116,6 +6572,9 @@
                     "gvault-create-export-mail", 
                     "gvault-export-status", 
                     "gvault-download-results"
+                ], 
+                "tests": [
+                    "Google_Vault-Search_And_Display_Results_test"
                 ]
             }
         }, 
@@ -6137,6 +6596,9 @@
                 "fromversion": "4.0.0", 
                 "implementing_commands": [
                     "ad-disable-account"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -6168,6 +6630,9 @@
                 ], 
                 "implementing_commands": [
                     "zscaler-blacklist-url"
+                ], 
+                "tests": [
+                    "block_indicators_-_generic_-_test"
                 ]
             }
         }, 
@@ -6190,6 +6655,9 @@
                     "tn-deploy-package", 
                     "tn-ask-question", 
                     "tn-get-saved-question"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6288,6 +6756,9 @@
                     "Detonate File - Lastline", 
                     "WildFire - Detonate file", 
                     "Detonate File - ThreatGrid"
+                ], 
+                "tests": [
+                    "Detonate File - Generic Test"
                 ]
             }
         }, 
@@ -6329,6 +6800,9 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-get-compliance-search", 
                     "ews-o365-start-compliance-search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6346,13 +6820,18 @@
                 "name": "Default", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "CloseInvestigation", 
                     "AssignAnalystToIncident"
                 ], 
                 "implementing_playbooks": [
                     "Extract Indicators - Generic", 
                     "Entity Enrichment - Generic", 
                     "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6380,6 +6859,10 @@
                     "atd-get-report", 
                     "atd-file-upload", 
                     "atd-check-status"
+                ], 
+                "tests": [
+                    "Test Playbook McAfee ATD", 
+                    "Detonate File - Generic Test"
                 ]
             }
         }, 
@@ -6507,6 +6990,9 @@
                 "implementing_commands": [
                     "wildfire-upload", 
                     "wildfire-report"
+                ], 
+                "tests": [
+                    "Wildfire Test"
                 ]
             }
         }, 
@@ -6523,6 +7009,9 @@
                 "implementing_commands": [
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state"
+                ], 
+                "tests": [
+                    "Detonate File - Generic Test"
                 ]
             }
         }
@@ -6540,7 +7029,15 @@
                     "cybereason-query-malops", 
                     "cybereason-malop-processes", 
                     "cybereason-add-comment", 
-                    "cybereason-update-malop-status"
+                    "cybereason-update-malop-status", 
+                    "cybereason-prevent-file", 
+                    "cybereason-unprevent-file", 
+                    "cybereason-query-file", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-user"
+                ], 
+                "tests": [
+                    "Cybereason Test"
                 ]
             }
         }, 
@@ -6831,6 +7328,9 @@
                     "ews-find-folders", 
                     "ews-get-attachment-item", 
                     "ews-move-item"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6955,6 +7455,9 @@
                 "name": "Aella Star Light", 
                 "commands": [
                     "aella-get-event"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7022,6 +7525,9 @@
                     "cb-process-list", 
                     "cb-get-file-from-endpoint", 
                     "cb-push-file-to-endpoint"
+                ], 
+                "tests": [
+                    "CarbonBlackLiveResponseTest"
                 ]
             }
         }, 
@@ -7080,6 +7586,9 @@
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
                     "fireeye-hx-get-host-set-information"
+                ], 
+                "tests": [
+                    "FireEye HX Test"
                 ]
             }
         }, 
@@ -7182,6 +7691,9 @@
                     "cuckoo-machines-list", 
                     "ck-machine-view", 
                     "cuckoo-machine-view"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7230,6 +7742,9 @@
                     "threat-grid-get-analysis-network-streams", 
                     "threat-grid-get-analysis-process", 
                     "threat-grid-get-analysis-processes"
+                ], 
+                "tests": [
+                    "ThreatGridTest"
                 ]
             }
         }, 
@@ -7260,6 +7775,9 @@
                     "qradar-create-reference-set-value", 
                     "qradar-update-reference-set-value", 
                     "qradar-delete-reference-set-value"
+                ], 
+                "tests": [
+                    "test_Qradar"
                 ]
             }
         }, 
@@ -7346,6 +7864,9 @@
                 "commands": [
                     "netskope-events", 
                     "netskope-alerts"
+                ], 
+                "tests": [
+                    "Netskope Test"
                 ]
             }
         }, 
@@ -7358,6 +7879,9 @@
                     "mwg-get-list-entry", 
                     "mwg-insert-entry", 
                     "mwg-delete-entry"
+                ], 
+                "tests": [
+                    "McAfeeWebGatewayTest"
                 ]
             }
         }, 
@@ -7400,6 +7924,9 @@
                     "cb-watchlist-set", 
                     "cb-alert-update", 
                     "cb-watchlist"
+                ], 
+                "tests": [
+                    "CarbonBlackResponseTest"
                 ]
             }
         }, 
@@ -7424,6 +7951,9 @@
                     "zscaler-get-categories", 
                     "zscaler-get-blacklist", 
                     "zscaler-get-whitelist"
+                ], 
+                "tests": [
+                    "Zscaler Test"
                 ]
             }
         }, 
@@ -7470,6 +8000,9 @@
                     "ip", 
                     "email", 
                     "device"
+                ], 
+                "tests": [
+                    "awake_security_test_pb"
                 ]
             }
         }, 
@@ -7548,6 +8081,9 @@
                     "as-update-case", 
                     "as-get-all-query-viewers", 
                     "as-case-delete"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7601,6 +8137,9 @@
                     "cylance-protect-delete-hash-from-lists", 
                     "cylance-protect-get-policy-details", 
                     "cylance-protect-delete-devices"
+                ], 
+                "tests": [
+                    "Cylance Protect v2 Test"
                 ]
             }
         }, 
@@ -7660,6 +8199,9 @@
                     "meraki-update-device", 
                     "meraki-claim-device", 
                     "meraki-update-firewall-rules"
+                ], 
+                "tests": [
+                    "Cisco-Meraki-Test"
                 ]
             }
         }, 
@@ -7682,6 +8224,9 @@
                 "name": "AWS Sagemaker", 
                 "commands": [
                     "predict-phishing"
+                ], 
+                "tests": [
+                    "Test_Sagemaker"
                 ]
             }
         }, 
@@ -7705,6 +8250,11 @@
                     "crowdstrike-get-screenshots", 
                     "crowdstrike-detonate-url", 
                     "crowdstrike-submit-file-by-url"
+                ], 
+                "tests": [
+                    "VxStream Test", 
+                    "detonate_file_-_generic_test", 
+                    "detonate_url_-_generic_test"
                 ]
             }
         }, 
@@ -7745,6 +8295,9 @@
                 "name": "Server Message Block (SMB)", 
                 "commands": [
                     "smb-download"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7806,6 +8359,9 @@
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident", 
                     "symantec-mss-incidents-list"
+                ], 
+                "tests": [
+                    "SymantecMSSTest"
                 ]
             }
         }, 
@@ -7814,6 +8370,9 @@
                 "name": "EWS Mail Sender", 
                 "commands": [
                     "send-mail"
+                ], 
+                "tests": [
+                    "EWS Mail Sender Test"
                 ]
             }
         }, 
@@ -7828,6 +8387,9 @@
                     "detonate-file", 
                     "detonate-file-remote", 
                     "wildfire-upload-file-remote"
+                ], 
+                "tests": [
+                    "Wildfire Test"
                 ]
             }
         }, 
@@ -7873,6 +8435,9 @@
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
                     "microsoft-atp-list-alerts"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7896,6 +8461,9 @@
                     "attivo-list-playbooks", 
                     "attivo-list-hosts", 
                     "attivo-list-users"
+                ], 
+                "tests": [
+                    "AttivoBotsinkTest"
                 ]
             }
         }, 
@@ -8012,6 +8580,9 @@
                     "umbrella-get-domain-timeline", 
                     "umbrella-get-ip-timeline", 
                     "umbrella-get-url-timeline"
+                ], 
+                "tests": [
+                    "Cisco Umbrella Test"
                 ]
             }
         }, 
@@ -8035,6 +8606,9 @@
                     "cbd-delete-rule-from-policy", 
                     "cbd-update-rule-in-policy", 
                     "cbd-set-policy"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -8079,6 +8653,9 @@
                 "commands": [
                     "activemq-send", 
                     "activemq-subscribe"
+                ], 
+                "tests": [
+                    "ActiveMQ Test"
                 ]
             }
         }, 
@@ -8212,6 +8789,9 @@
                     "aws-ec2-get-password-data", 
                     "aws-ec2-modify-network-interface-attribute", 
                     "aws-ec2-modify-instance-attribute"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -8259,6 +8839,9 @@
                     "sndbox-download-report", 
                     "sndbox-detonate-file", 
                     "sndbox-download-sample"
+                ], 
+                "tests": [
+                    "SNDBOX_Test"
                 ]
             }
         }, 
@@ -8311,6 +8894,9 @@
                     "mimecast-login", 
                     "mimecast-get-message", 
                     "mimecast-download-attachments"
+                ], 
+                "tests": [
+                    "Mimecast test"
                 ]
             }
         }, 
@@ -8344,6 +8930,9 @@
                     "redcanary-get-endpoint", 
                     "redcanary-get-endpoint-detections", 
                     "redcanary-get-detection"
+                ], 
+                "tests": [
+                    "RedCanaryTest"
                 ]
             }
         }, 
@@ -8361,6 +8950,10 @@
                     "joe-detonate-file", 
                     "joe-search", 
                     "joe-download-sample"
+                ], 
+                "tests": [
+                    "JoeSecurityTestPlaybook", 
+                    "JoeSecurityTestDetonation"
                 ]
             }
         }, 
@@ -8375,6 +8968,9 @@
                     "aws-cloudtrail-start-logging", 
                     "aws-cloudtrail-stop-logging", 
                     "aws-cloudtrail-lookup-events"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -8423,6 +9019,9 @@
                     "aws-get-instance-info", 
                     "aws-get-sg-info", 
                     "aws-get-ebs-volume-info"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -8432,6 +9031,9 @@
                 "commands": [
                     "arcsight-update-case", 
                     "arcsight-fetch-xml"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -8449,6 +9051,9 @@
                     "vt-comments-add", 
                     "vt-file-scan-upload-url", 
                     "vt-comments-get"
+                ], 
+                "tests": [
+                    "virusTotal-test-playbook"
                 ]
             }
         }, 
@@ -8580,6 +9185,9 @@
                     "domain", 
                     "url", 
                     "minemeld-get-all-miners-names"
+                ], 
+                "tests": [
+                    "minemeld_test"
                 ]
             }
         }, 
@@ -8622,6 +9230,9 @@
                     "scadafence-getAssetTraffic", 
                     "scadafence-createAlert", 
                     "scadafence-getAllConnections"
+                ], 
+                "tests": [
+                    "SCADAfence_test"
                 ]
             }
         }, 
@@ -8644,6 +9255,9 @@
                     "hashicorp-configure-engine", 
                     "hashicorp-reset-configuration", 
                     "hashicorp-create-token"
+                ], 
+                "tests": [
+                    "hashicorp_test"
                 ]
             }
         }, 
@@ -8732,6 +9346,9 @@
                 "commands": [
                     "venafi-get-certificates", 
                     "venafi-get-certificate-details"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -8767,6 +9384,9 @@
                     "abuseipdb-report-ip", 
                     "abuseipdb-get-blacklist", 
                     "abuseipdb-get-categories"
+                ], 
+                "tests": [
+                    "AbuseIPDB Test"
                 ]
             }
         }, 
@@ -8807,6 +9427,9 @@
                     "PagerDuty-get-users-notification", 
                     "PagerDuty-resolve-event", 
                     "PagerDuty-acknowledge-event"
+                ], 
+                "tests": [
+                    "PagerDuty Test"
                 ]
             }
         }, 
@@ -8831,6 +9454,9 @@
                     "gmail-move-mail-to-mailbox", 
                     "gmail-add-delete-filter", 
                     "gmail-add-filter"
+                ], 
+                "tests": [
+                    "GmailTest"
                 ]
             }
         }, 
@@ -8840,6 +9466,9 @@
                 "commands": [
                     "centreon-get-host-status", 
                     "centreon-get-service-status"
+                ], 
+                "tests": [
+                    "Centreon-Test-Playbook"
                 ]
             }
         }, 
@@ -8854,6 +9483,9 @@
                     "netwitness-get-machine-module", 
                     "netwitness-blacklist-ips", 
                     "netwitness-blacklist-domains"
+                ], 
+                "tests": [
+                    "NetWitness Endpoint Test"
                 ]
             }
         }, 
@@ -9006,6 +9638,9 @@
                     "aws-sqs-create-queue", 
                     "aws-sqs-delete-queue", 
                     "aws-sqs-purge-queue"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9100,6 +9735,9 @@
                     "vigilante-watchlist-remove-accounts", 
                     "vigilante-get-watchlist", 
                     "vigilante-account-usage-info"
+                ], 
+                "tests": [
+                    "InfoArmorVigilanteATITest"
                 ]
             }
         }, 
@@ -9167,6 +9805,9 @@
                     "aws-iam-set-default-policy-version", 
                     "aws-iam-create-account-alias", 
                     "aws-iam-delete-account-alias"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -9182,6 +9823,9 @@
                     "sep-command-status", 
                     "sep-quarantine", 
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "sep_-_test_endpoint_search"
                 ]
             }
         }, 
@@ -9190,6 +9834,9 @@
                 "name": "SumoLogic", 
                 "commands": [
                     "search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9199,7 +9846,8 @@
                 "commands": [
                     "pwned-email", 
                     "pwned-domain", 
-                    "email"
+                    "email", 
+                    "domain"
                 ]
             }
         }, 
@@ -9227,6 +9875,11 @@
                     "lastline-upload-file", 
                     "lastline-get-report", 
                     "lastline-get-task-list"
+                ], 
+                "tests": [
+                    "Lastline - testplaybook", 
+                    "Detonate URL - Generic Test", 
+                    "Detonate File - Generic Test"
                 ]
             }
         }, 
@@ -9238,6 +9891,9 @@
                     "urlscan-search", 
                     "urlscan-submit", 
                     "url"
+                ], 
+                "tests": [
+                    "urlscan_malicious_Test"
                 ]
             }
         }, 
@@ -9297,6 +9953,9 @@
                 "name": "Devo", 
                 "commands": [
                     "devo-query"
+                ], 
+                "tests": [
+                    "devo_test_playbook"
                 ]
             }
         }, 
@@ -9313,6 +9972,9 @@
                     "aws-securityhub-disable-import-findings-for-product", 
                     "aws-securityhub-list-enabled-products-for-import", 
                     "aws-securityhub-update-finding"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -9351,6 +10013,9 @@
                 "fromversion": "4.1.0", 
                 "commands": [
                     "whois"
+                ], 
+                "tests": [
+                    "whois_test"
                 ]
             }
         }, 
@@ -9389,6 +10054,9 @@
                     "circl-ssl-list-certificates", 
                     "circl-ssl-query-certificate", 
                     "circl-ssl-get-certificate"
+                ], 
+                "tests": [
+                    "CirclIntegrationTest"
                 ]
             }
         }, 
@@ -9426,6 +10094,10 @@
                     "panorama-list-applications", 
                     "panorama-commit-status", 
                     "panorama-push-status"
+                ], 
+                "tests": [
+                    "palo_alto_firewall_test_pb", 
+                    "palo_alto_panorama_test_pb"
                 ]
             }
         }, 
@@ -9439,6 +10111,9 @@
                     "icebrg-get-reports", 
                     "icebrg-get-report-indicators", 
                     "icebrg-get-report-assets"
+                ], 
+                "tests": [
+                    "Icebrg Test"
                 ]
             }
         }, 
@@ -9468,7 +10143,17 @@
                     "tc-fetch-incidents", 
                     "tc-incident-associate-indicator", 
                     "domain", 
-                    "tc-get-incident-associate-indicators"
+                    "tc-get-incident-associate-indicators", 
+                    "tc-update-indicator", 
+                    "tc-delete-indicator-tag", 
+                    "tc-delete-indicator", 
+                    "tc-create-campaign", 
+                    "tc-create-event", 
+                    "tc-create-threat", 
+                    "tc-delete-group"
+                ], 
+                "tests": [
+                    "test-ThreatConnect"
                 ]
             }
         }, 
@@ -9478,6 +10163,9 @@
                 "commands": [
                     "bitdam-upload-file", 
                     "bitdam-get-verdict"
+                ], 
+                "tests": [
+                    "Detonate File - BitDam Test"
                 ]
             }
         }, 
@@ -9494,6 +10182,9 @@
                     "aws-s3-list-bucket-objects", 
                     "aws-s3-put-bucket-policy", 
                     "aws-s3-upload-file"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -9540,6 +10231,9 @@
                 "fromversion": "1.6.2", 
                 "commands": [
                     "mimecast-query"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9577,6 +10271,9 @@
                     "aws-gd-archive-findings", 
                     "aws-gd-unarchive-findings", 
                     "aws-gd-update-findings-feedback"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9587,6 +10284,9 @@
                     "mimecast-login", 
                     "mimecast-discover", 
                     "mimecast-refresh-token"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9621,6 +10321,10 @@
                     "cs-resolve-detection", 
                     "cs-detection-search", 
                     "cs-detection-details"
+                ], 
+                "tests": [
+                    "CrowdStrike Endpoint Enrichment - Test", 
+                    "crowdstrike_falconhost_test"
                 ]
             }
         }, 
@@ -9659,6 +10363,9 @@
                     "servicenow-query-groups", 
                     "servicenow-query-users", 
                     "servicenow-get-table-name"
+                ], 
+                "tests": [
+                    "No test - Hibernating instance"
                 ]
             }
         }, 
@@ -9688,6 +10395,9 @@
                     "tenable-sc-list-users", 
                     "tenable-sc-get-system-licensing", 
                     "tenable-sc-get-system-information"
+                ], 
+                "tests": [
+                    "tenable-sc-test"
                 ]
             }
         }, 
@@ -9712,6 +10422,9 @@
                     "gvault-get-drive-results", 
                     "gvault-get-mail-results", 
                     "gvault-get-groups-results"
+                ], 
+                "tests": [
+                    "Google-Vault-Generic-Test"
                 ]
             }
         }, 
@@ -9777,6 +10490,9 @@
                     "box_files_get", 
                     "box_initiate", 
                     "box_files_get_info"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9820,6 +10536,9 @@
                     "fortigate-update-address-group", 
                     "fortigate-create-address-group", 
                     "fortigate-delete-address-group"
+                ], 
+                "tests": [
+                    "Fortigate Test"
                 ]
             }
         }, 
@@ -9836,6 +10555,9 @@
                     "rtir-ticket-attachments", 
                     "rtir-add-comment", 
                     "rtir-add-reply"
+                ], 
+                "tests": [
+                    "RTIR Test"
                 ]
             }
         }, 
@@ -9849,6 +10571,9 @@
                     "tenable-io-get-vulnerability-details", 
                     "tenable-io-get-vulnerabilities-by-asset", 
                     "tenable-io-get-scan-status"
+                ], 
+                "tests": [
+                    "Tenable.io test"
                 ]
             }
         }, 
@@ -9864,6 +10589,9 @@
                     "sw-list-blocked-domains", 
                     "sw-list-observations", 
                     "sw-list-sessions"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9893,6 +10621,10 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
                     "ews-o365-get-compliance-search-purge-status"
+                ], 
+                "tests": [
+                    "pyEWS_Test", 
+                    "EWS search-mailbox test"
                 ]
             }
         }, 
@@ -9936,6 +10668,9 @@
                     "secure-works-get-close-codes", 
                     "secure-works-get-tickets-ids", 
                     "secure-works-get-ticket-count"
+                ], 
+                "tests": [
+                    "Run all tests"
                 ]
             }
         }, 
@@ -9949,6 +10684,9 @@
                     "lum-destroy-user-session", 
                     "lum-get-http-access-logs", 
                     "lum-get-ssh-access-logs"
+                ], 
+                "tests": [
+                    "Luminate-TestPlaybook"
                 ]
             }
         }, 
@@ -9964,6 +10702,9 @@
                     "vt-private-search-file", 
                     "vt-private-hash-communication", 
                     "vt-private-download-file"
+                ], 
+                "tests": [
+                    "virusTotalPrivateAPI-test-playbook"
                 ]
             }
         }, 
@@ -10102,6 +10843,9 @@
                     "detonate-file", 
                     "detonate-url", 
                     "atd-check-status"
+                ], 
+                "tests": [
+                    "Test Playbook McAfee ATD"
                 ]
             }
         }, 
@@ -10122,6 +10866,9 @@
                     "aws-logs-put-metric-filter", 
                     "aws-logs-delete-metric-filter", 
                     "aws-logs-describe-metric-filters"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10186,6 +10933,9 @@
                     "epo-get-tables", 
                     "epo-find-system", 
                     "epo-get-version"
+                ], 
+                "tests": [
+                    "Test Playbook McAfee ePO"
                 ]
             }
         }, 
@@ -10335,6 +11085,9 @@
                     "netwitness-update-incident", 
                     "netwitness-delete-incident", 
                     "netwitness-get-alerts"
+                ], 
+                "tests": [
+                    "RSA NetWitness Test"
                 ]
             }
         }, 
@@ -10363,6 +11116,9 @@
                     "otrs-create-ticket", 
                     "otrs-update-ticket", 
                     "otrs-close-ticket"
+                ], 
+                "tests": [
+                    "OTRS Test"
                 ]
             }
         }, 
@@ -10473,6 +11229,9 @@
                 "fromversion": "3.6.0", 
                 "commands": [
                     "clue"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10508,6 +11267,9 @@
                     "vectra-sensors", 
                     "vec-get-host-by-id", 
                     "vec-get-detetctions-by-id"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10539,6 +11301,9 @@
                     "file", 
                     "isight-get-report", 
                     "isight-submit-file"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10567,6 +11332,9 @@
                 "commands": [
                     "phish-ai-scan-url", 
                     "phish-ai-check-status"
+                ], 
+                "tests": [
+                    "PhishAi-Test"
                 ]
             }
         }, 
@@ -10601,6 +11369,9 @@
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
                     "intsights-close-alert"
+                ], 
+                "tests": [
+                    "IntSights Test"
                 ]
             }
         }
@@ -10954,6 +11725,16 @@
                     "aws-ec2-waiter-snapshot_completed", 
                     "aws-ec2-copy-image", 
                     "aws-ec2-stop-instances"
+                ]
+            }
+        }, 
+        {
+            "CopyContextToFieldTest": {
+                "name": "CopyContextToFieldTest", 
+                "implementing_scripts": [
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "CopyContextToField"
                 ]
             }
         }, 
@@ -11834,6 +12615,14 @@
             }
         }, 
         {
+            "AbuseIPDB PopulateIndicators Test": {
+                "name": "AbuseIPDB PopulateIndicators Test", 
+                "implementing_scripts": [
+                    "AbuseIPDBPopulateIndicators"
+                ]
+            }
+        }, 
+        {
             "efc817d2-6660-4d4f-890d-90513ca1e180": {
                 "name": "Cisco Spark Test", 
                 "implementing_scripts": [
@@ -12044,6 +12833,15 @@
                     "ews-get-contacts", 
                     "ews-get-attachment", 
                     "ews-search-mailboxes"
+                ]
+            }
+        }, 
+        {
+            "SplunkPySearch_Test": {
+                "name": "SplunkPySearch_Test", 
+                "implementing_scripts": [
+                    "SplunkPySearch", 
+                    "VerifyHumanReadableContains"
                 ]
             }
         }, 
@@ -12283,8 +13081,28 @@
         {
             "test-ThreatConnect": {
                 "name": "test-ThreatConnect", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "implementing_commands": [
-                    "tc-owners"
+                    "tc-delete-indicator-tag", 
+                    "tc-create-incident", 
+                    "tc-create-event", 
+                    "tc-owners", 
+                    "tc-create-campaign", 
+                    "tc-tag-indicator", 
+                    "tc-create-threat", 
+                    "tc-incident-associate-indicator", 
+                    "tc-get-tags", 
+                    "tc-get-indicators-by-tag", 
+                    "tc-delete-indicator", 
+                    "tc-indicators", 
+                    "tc-delete-group", 
+                    "tc-fetch-incidents", 
+                    "tc-add-indicator", 
+                    "tc-get-indicator", 
+                    "tc-update-indicator", 
+                    "tc-get-incident-associate-indicators"
                 ]
             }
         }, 
@@ -12460,11 +13278,14 @@
                     "DeleteContext"
                 ], 
                 "implementing_commands": [
+                    "cybereason-query-user", 
                     "cybereason-malop-processes", 
+                    "cybereason-query-file", 
                     "cybereason-query-connections", 
-                    "cybereason-query-processes", 
                     "cybereason-is-probe-connected", 
-                    "cybereason-query-malops"
+                    "cybereason-query-malops", 
+                    "cybereason-query-domain", 
+                    "cybereason-query-processes"
                 ]
             }
         }, 
@@ -13632,6 +14453,9 @@
                 "name": "Test-Detonate URL - Phish.AI", 
                 "implementing_playbooks": [
                     "Detonate URL - Phish.AI"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -14028,7 +14852,8 @@
             "RedLockTest": {
                 "name": "RedLockTest", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "implementing_commands": [
                     "redlock-search-alerts", 
@@ -14268,6 +15093,32 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "SLA Scripts - Test": {
+                "name": "SLA Scripts - Test", 
+                "implementing_scripts": [
+                    "StopTimeToAssignOnOwnerChange", 
+                    "ChangeRemediationSLAOnSevChange", 
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "setIncident", 
+                    "startTimer", 
+                    "resetTimer"
+                ]
+            }
+        }, 
+        {
+            "cveReputation Test": {
+                "name": "cveReputation Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "cveReputation"
                 ]
             }
         }

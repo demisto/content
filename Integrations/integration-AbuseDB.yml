@@ -54,6 +54,7 @@ script:
     import requests
     import json
     import os
+    import csv
 
     ''' GLOBALS '''
     VERBOSE = True
@@ -161,26 +162,31 @@ script:
         if not isinstance(info, list):
             info = [info]
 
-        context, table, dbot_scores = [], [], []
+        context_ip_generic, context_ip, human_readable, dbot_scores = [], [], [], []
         for analysis in info:
-            analysis_info = {
+            ip_ec = {
+                "Address" : analysis.get("ipAddress"),
+                "Geo" : { "Country" : analysis.get("countryName") or analysis.get("countryCode") }
+                }
+            abuse_ec = {
                 "IP" : {
                     "Address" : analysis.get("ipAddress"),
+                    "Geo" : { "Country" : analysis.get("countryName") or analysis.get("countryCode") },
                     'AbuseConfidenceScore'  : analysis.get('abuseConfidenceScore'),
-                    "TotalReports" : analysis.get("totalReports") or analysis.get("numReports") or "0",
-                    "Geo" : { "Country" : analysis.get("countryName") or analysis.get("countryCode") }
+                    "TotalReports" : analysis.get("totalReports") or analysis.get("numReports") or "0"
                     }
                 }
+
             if verbose:
                 reports = sum([report_dict.get("categories") for report_dict in analysis.get("reports")], [])
                 categories = set(reports)
-                analysis_info["IP"]["Reports"] = { CATEGORIES_NAME[c] : reports.count(c) for c in categories }
+                abuse_ec["IP"]["Reports"] = { CATEGORIES_NAME[c] : reports.count(c) for c in categories }
 
-            table.append(dict(analysis_info.get("IP")))
+            human_readable.append(abuse_ec['IP'])
 
             dbot_score = getDBotScore(analysis, threshold)
             if dbot_score == 3:
-                analysis_info["IP"]["Malicious"] = {
+                ip_ec["Malicious"] = abuse_ec["IP"]["Malicious"] = {
                     'Vendor' : "AbuseIPDB",
                     'Detections' : 'The address was reported as Malicious by AbuseIPDB.'
                 }
@@ -190,39 +196,33 @@ script:
                 "Indicator" : analysis.get("ipAddress"),
                 "Type"      : "ip"
             })
-            context.append(analysis_info)
+            context_ip.append(abuse_ec)
+            context_ip_generic.append(ip_ec)
 
-        return createEntry(context, table, dbot_scores, title=ANALYSIS_TITLE)
+        return createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, title=ANALYSIS_TITLE)
 
 
-    def blacklist_to_entry(info):
-        if not isinstance(info, list):
-            info = [info]
+    def blacklist_to_entry(data, saveToContext):
+        if not isinstance(data, list):
+            data = [data]
 
-        context, table, dbot_scores = [], [], []
-        for analysis in info:
-            context.append({
-                "IP" : {
-                    "Address" : analysis.get("ipAddress"),
-                    'Malicious'  : {
-                        'Vendor' : "AbuseIPDB",
-                        'Detections' : 'The address was reported as Malicious by AbuseIPDB.'
-                        }
-                    }
-                })
-            dbot_scores.append({
-                "Score"     : BLACKLIST_SCORE,
-                "Vendor"    : "AbuseIPDB",
-                "Indicator" : analysis.get("ipAddress"),
-                "Type"      : "ip"
-            })
-            table.append({
-                "IP Address" : analysis.get("ipAddress"),
-                'Abuse Confidence Score'  : analysis.get('abuseConfidenceScore'),
-                "Total Reports" : analysis.get("totalReports") or analysis.get("numReports")
-            })
-
-        return createEntry(context, table, dbot_scores, title=BLACKLIST_TITLE)
+        ips = [d.get("ipAddress") for d in data]
+        context = {"Blacklist" : ips}
+        temp = demisto.uniqueFile()
+        with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+            wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+            for ip in ips:
+                wr.writerow([ip])
+        entry = {
+            'HumanReadable' : '',
+            'Contents': ips,
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['file'],
+            'File': "Blacklist.csv",
+            'FileID': temp,
+            'EntryContext': { 'AbuseIPDB' : createContext(context if saveToContext else None, removeNull=True) }
+        }
+        return entry
 
 
     def getDBotScore(analysis, threshold=THRESHOLD):
@@ -232,16 +232,17 @@ script:
         return dbot_score
 
 
-    def createEntry(context, table, dbot_scores, title):
+    def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, title):
         entry = {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
-            'Contents': context,
+            'Contents': context_ip,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, table, removeNull=True),
-            'EntryContext': {'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)' : createContext(context, removeNull=True),
-                'DBotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
-                    createContext(dbot_scores, removeNull=True),
+            'HumanReadable': tableToMarkdown(title, human_readable, removeNull=True),
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)' : createContext(context_ip_generic, removeNull=True),
+                'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)' : createContext(context_ip, removeNull=True),
+                'DBotScore' : createContext(dbot_scores, removeNull=True)
             }
         }
         return entry
@@ -277,13 +278,13 @@ script:
         return analysis
 
 
-    def get_blacklist_command(limit, days):
+    def get_blacklist_command(limit, days, saveToContext):
         params = {
             'maxAgeInDays' : days,
             "limit" : limit
         }
         analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params)
-        return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"))
+        return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
     def test_module():
@@ -347,6 +348,14 @@ script:
       description: Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80
       defaultValue: "80"
     outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: IP.Malicious.Detections
+      description: The Detections that led to the verdict
     - contextPath: AbuseIPDB.IP.Address
       description: IP address
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
@@ -355,7 +364,7 @@ script:
       description: The number of times this address has been reported
     - contextPath: AbuseIPDB.IP.Geo.Country
       description: Country associated with this IP Address
-    - contextPath: AbuseIPDB.IP.Address.Reports
+    - contextPath: AbuseIPDB.IP.Reports
       description: Reports summary (for "verbose" reports)
     - contextPath: DBotScore.Score
       description: Analysis score
@@ -385,14 +394,24 @@ script:
       description: Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80
       defaultValue: "80"
     outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: IP.Malicious.Detections
+      description: The Detections that led to the verdict
     - contextPath: AbuseIPDB.IP.Address
       description: IP address
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
       description: Confidence score fetched from AbuseIPDB
-    - contextPath: AbuseIPDB.IP.Geo.Country
-      description: Country associated with this IP Address
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported
+    - contextPath: AbuseIPDB.IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: AbuseIPDB.IP.Reports
+      description: Reports summary (for "verbose" reports)
     - contextPath: DBotScore.Score
       description: Analysis score
     - contextPath: DBotScore.Vendor
@@ -424,6 +443,13 @@ script:
     - name: limit
       description: 'Maximum number of IPs to retrieve, default is 50 '
       defaultValue: "50"
+    - name: saveToContext
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Save a list of blacklisted IPs into the Context
+      defaultValue: "false"
     outputs:
     - contextPath: AbuseIPDB.Blacklist
       description: List of blacklisted IPs
@@ -438,3 +464,4 @@ script:
   runonce: false
 tests:
   - AbuseIPDB Test
+releaseNotes: "fixed context issues. added AbuseIPDB-PopulateIndicators script"
