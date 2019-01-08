@@ -2674,6 +2674,9 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - postepone for later"
                 ]
             }
         }, 
