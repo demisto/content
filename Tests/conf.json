@@ -863,9 +863,6 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "playbook-Generate_log-bundleTest"
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
