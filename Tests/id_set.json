@@ -6413,6 +6413,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9850,6 +9853,9 @@
                     "pwned-domain", 
                     "email", 
                     "domain"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10672,7 +10678,7 @@
                     "secure-works-get-ticket-count"
                 ], 
                 "tests": [
-                    "Run all tests"
+                    "secureworks_test"
                 ]
             }
         }, 
