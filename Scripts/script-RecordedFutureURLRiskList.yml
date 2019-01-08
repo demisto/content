@@ -1,0 +1,67 @@
+commonfields:
+  id: RecordedFutureURLRiskList
+  version: -1
+name: RecordedFutureURLRiskList
+script: |-
+  specific_list = demisto.args().get('list')
+  command_args = {}
+
+  if specific_list:
+      dArgs['list'] = specific_list
+
+  res = demisto.executeCommand("recorded-future-get-url-risklist", command_args)
+
+  for entry in res:
+      if isError(entry):
+          return_error('Failed getting the risk list - {}' + entry['Contents'])
+      if entry.get('FileID'):
+          file_id = entry['FileID']
+
+  if not file_id:
+      return_error('Could not find the file')
+
+  file_path = demisto.getFilePath(file_id)
+
+  with open(file_path['path'], 'r') as file:
+      data = file.read().replace('\0', '')
+
+  #if '\0' in data:
+      #data = [row for row in data]
+
+  rows = data.split('\n')
+  if not rows or len(rows) == 0:
+      return_error('No data found')
+  for row in rows[1:]:
+      columns = row.split(',')
+      url = columns[0]
+      if url:
+          indicator_res = demisto.executeCommand('createNewIndicator', {
+              'type': 'URL',
+              'value': url.strip('\"'),
+              'source': 'Recorded Future',
+              'reputation': 'Bad',
+              'seenNow': 'true'
+          })
+
+          if isError(indicator_res[0]):
+              return_error('Error creating indiciator, ' + indicator_res[0]['Contents'])
+
+
+  demisto.results('URLs extracted successfully')
+
+  sys.exit(0)
+type: python
+tags:
+- RecordedFuture
+comment: Extracts the URL risk list from Recorded Future, and creates indicators accordingly.
+enabled: true
+args:
+- name: list
+  description: Specify a URL list, see the documentation for the available lists.
+scripttarget: 0
+dependson:
+  must: []
+  should:
+  - Recorded Future|||recorded-future-get-url-risklist
+timeout: 3.6µs
+runonce: false
