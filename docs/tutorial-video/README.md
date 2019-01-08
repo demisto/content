@@ -498,5 +498,3 @@ You also need to select which playbook to attach to the incident. In this case, 
 ## Resources
 
 [YodaSpeak Tutorial Pack.zip](https://github.com/demisto/etc/files/2737100/YodaSpeak.Tutorial.Pack.zip)
-
-
