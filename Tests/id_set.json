@@ -7035,6 +7035,26 @@
                     "Detonate File - Generic Test"
                 ]
             }
+        }, 
+        {
+            "Get File Sample From Hash - Generic": {
+                "name": "Get File Sample From Hash - Generic", 
+                "toversion": "3.1.0", 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Cylance Protect", 
+                    "Get File Sample From Hash - Carbon Black Enterprise Response"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic": {
+                "name": "Get File Sample From Hash - Generic", 
+                "toversion": "3.1.0", 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Cylance Protect", 
+                    "Get File Sample From Hash - Carbon Black Enterprise Response"
+                ]
+            }
         }
     ], 
     "integrations": [
