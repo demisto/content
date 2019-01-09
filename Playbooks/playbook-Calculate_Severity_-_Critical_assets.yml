@@ -148,6 +148,7 @@ tasks:
       id: 483350d5-ab17-44cd-87b3-0e2360ce3577
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
