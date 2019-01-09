@@ -80,12 +80,12 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: this is a test by playbook (1)
+        simple: this is a test by playbook
       cc: {}
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook
+        simple: special test via playbook (1)
       templateParams: {}
       to:
         simple: yarden@demistodev.com
