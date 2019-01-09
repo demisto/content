@@ -3,6 +3,7 @@ version: -1
 name: Default
 fromversion: 3.5.0
 description: Default playbook, Enrich indicators in incident using one or more integrations
+releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":
@@ -27,6 +28,8 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
     taskid: a8430dac-8cbb-47b3-8a87-2752cab0f36c
@@ -35,8 +38,8 @@ tasks:
       id: a8430dac-8cbb-47b3-8a87-2752cab0f36c
       version: -1
       name: Should perform enrichment?
-      description: ""
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -68,6 +71,8 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 145e7a29-471e-4702-8493-65b7abbea30c
@@ -98,6 +103,8 @@ tasks:
           "y": 1040
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: 09e4583d-597f-4955-897c-5bb5f24f4f57
@@ -121,6 +128,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: 44e6a83f-14cd-49f4-8c41-0ffde22d3c4f
@@ -145,6 +154,8 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 49cd29a6-4a83-44e6-8bdc-86136341411a
@@ -169,6 +180,8 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: 0e467280-8c85-40e6-84a0-4b11305dbcd7
@@ -193,6 +206,8 @@ tasks:
           "y": 865
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 52714931-6ca9-42ff-854f-af9d3bc9e3d0
@@ -216,37 +231,43 @@ tasks:
           "y": 1215
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 982a3b2c-9a7a-4367-8605-d3e639ef3d5f
+    taskid: e39abb8a-2dbe-415e-8541-ba414ee3dfa6
     type: regular
     task:
-      id: 982a3b2c-9a7a-4367-8605-d3e639ef3d5f
+      id: e39abb8a-2dbe-415e-8541-ba414ee3dfa6
       version: -1
-      name: Close investigation
-      description: ""
-      scriptName: CloseInvestigation
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     scriptarguments:
-      notes:
-        simple: 'Default enrichment playbook '
-      reason: {}
+      assetid: {}
+      closeNotes:
+        simple: Default Enrichment Playbook
+      closeReason: {}
+      id: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1395
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1440,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -260,5 +281,6 @@ inputs:
   required: false
   description: Should preform enrichment on all indicators in the incident
 outputs: []
+releaseNotes: "-"
 tests:
-- No test - Tested manually
+  - No test
