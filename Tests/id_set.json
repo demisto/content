@@ -4749,17 +4749,26 @@
         }, 
         {
             "RecordedFutureURLRiskList": {
-                "name": "RecordedFutureURLRiskList"
+                "name": "RecordedFutureURLRiskList", 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
             }
         }, 
         {
             "RecordedFutureIPRiskList": {
-                "name": "RecordedFutureIPRiskList"
+                "name": "RecordedFutureIPRiskList", 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
             }
         }, 
         {
             "RecordedFutureDomainRiskList": {
-                "name": "RecordedFutureDomainRiskList"
+                "name": "RecordedFutureDomainRiskList", 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
             }
         }
     ], 

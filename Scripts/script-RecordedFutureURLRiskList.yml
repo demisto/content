@@ -65,3 +65,5 @@ dependson:
   - Recorded Future|||recorded-future-get-url-risklist
 timeout: 3.6µs
 runonce: false
+tests:
+  - No test - fetches indicators
