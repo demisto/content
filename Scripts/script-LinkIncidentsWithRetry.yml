@@ -26,4 +26,3 @@ args:
 scripttarget: 0
 comment: |-
   Since running multiple link incidents in same time can cause DB version errors, plz use this script instead to overcome it
-releaseNotes: "Adding LinkIncidentsWithRetry script"
