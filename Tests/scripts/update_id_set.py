@@ -13,6 +13,8 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_SCRIPT_REGEX = "TestPlaybooks.*script-.*.yml"
+BETA_INTEGRATION_REGEX = "Beta_Integrations.*integration-.*.yml"
+BETA_PLAYBOOK_REGEX = "Beta_Integrations.*playbook-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_PLAYBOOK_REGEX]
 
@@ -353,7 +355,8 @@ def update_id_set():
 
     if added_files:
         for file_path in added_files:
-            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(get_script_or_integration_id(file_path), get_integration_data(file_path),
                                          file_path, integration_set)
                 print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
@@ -361,7 +364,8 @@ def update_id_set():
                 add_new_object_to_id_set(get_script_or_integration_id(file_path), get_script_data(file_path),
                                          file_path, script_set)
                 print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
-            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(collect_ids(file_path), get_playbook_data(file_path),
                                          file_path, playbook_set)
                 print("Adding {0} to id_set".format(collect_ids(file_path)))
@@ -376,7 +380,8 @@ def update_id_set():
 
     if modified_files:
         for file_path in modified_files:
-            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 integration_data = get_integration_data(file_path)
                 update_object_in_id_set(id, integration_data, file_path, integration_set)
@@ -387,7 +392,8 @@ def update_id_set():
                 script_data = get_script_data(file_path)
                 update_object_in_id_set(id, script_data, file_path, script_set)
                 print("updated {0} in id_set".format(id))
-            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 playbook_data = get_playbook_data(file_path)
                 update_object_in_id_set(id, playbook_data, file_path, playbook_set)
