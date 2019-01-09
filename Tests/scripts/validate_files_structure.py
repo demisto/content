@@ -131,8 +131,10 @@ def get_modified_files(files_string):
         elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
         elif not re.match(TESTS_REGEX, file_path, re.IGNORECASE):
-            print_error("The file {} does not match any file name convention, "
-                        "please check your code.".format(file_path))
+            print_error("The file {} does not match any file name convention in content, "
+                        "supporting the following file patterns:\n{}"
+                        "\n\nIf you downloaded the file from the Demisto as it is,"
+                        "then there is a poissiblity that something changed on server side".format(file_path, "\n".join(CHECKED_TYPES_REGEXES)))
             naming_problem = True
 
     return modified_files_list, added_files_list, naming_problem
