@@ -17,6 +17,6 @@ tests:
   Please make sure to write a reason, it is not a must but it would ease our lives. 
 * Please take into consideration that both the automatic and the manual mechanisms are working side
  by side and don't override each other, and don't worry it will not cause the same test to run more than once. 
-* Be ware if the both the automatic filter and the manual one don't find tests that should run for the current build 
+* Be ware if both the automatic filter and the manual one don't find tests that should run for the current build 
 it will fail the build with the message You've failed to provide tests for: <Test1>, <Test2> 
 
