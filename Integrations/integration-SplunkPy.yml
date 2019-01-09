@@ -32,7 +32,7 @@ configuration:
     | eval security_domain=if(isnull(security_domain),source,security_domain)
   type: 0
   required: false
-  - display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
