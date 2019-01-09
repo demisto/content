@@ -1,8 +1,9 @@
 id: get_file_sample_by_hash_-_cylance_protect
 version: -1
 name: Get File Sample By Hash - Cylance Protect
-description: Returns to the war-room a file sample correlating to SHA256 hashes in
-  the inputs using Cylance Protect integration
+fromversion: 3.5.0
+description: |-
+  Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
 starttaskid: "0"
 tasks:
   "0":
@@ -13,6 +14,7 @@ tasks:
       id: d947a1c1-7312-4f99-8f56-bfcb4b0c3dfe
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -86,6 +88,7 @@ tasks:
       id: af2e86ff-6413-4cd8-8d5f-799edb0770e6
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -339,6 +342,7 @@ tasks:
       id: 1a5cf78a-2b23-487e-8520-980ffc50bdf7
       version: -1
       name: Is Cylance V1 Protect enabled?
+      description: ""
       scriptName: Exists
       type: condition
       iscommand: false
