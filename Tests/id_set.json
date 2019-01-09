@@ -15235,7 +15235,7 @@
             }
         }, 
         {
-            "Get_File_Sample_From_Hash_-_Generic": {
+            "Get File Sample From Hash - Generic": {
                 "name": "Get File Sample From Hash - Generic", 
                 "fromversion": "3.1.0", 
                 "implementing_playbooks": [
