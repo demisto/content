@@ -165,7 +165,7 @@ def get_modified_files(files_string):
         elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
-        elif not unchecked_type(file_path) and (file_status.lower() == 'm' or file_status.lower() == 'a'):
+        elif not unchecked_type(file_path):
             print_error("The file {} does not match any file name convention in content, "
                         "supporting the following file patterns:\n{}"
                         "\n\nIf you downloaded the file from the Demisto as it is,"
