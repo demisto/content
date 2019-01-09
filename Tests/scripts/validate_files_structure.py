@@ -16,7 +16,7 @@ except ImportError:
     print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
     sys.exit(1)
 try:
-    import pykwalify  # noqa: F401
+    from pykwalify.core import Core
 except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
@@ -25,7 +25,6 @@ import re
 import os
 import json
 import argparse
-from pykwalify.core import Core
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
