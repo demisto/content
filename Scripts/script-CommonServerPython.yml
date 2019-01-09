@@ -446,7 +446,7 @@ script: |-
           if self.messages:
               text = 'Full Integration Log:\n' + '\n'.join(self.messages)
               if verbose:
-                demisto.log(text)
+                  demisto.log(text)
               demisto.info(text)
               self.messages = []
 
