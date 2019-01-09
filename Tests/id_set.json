@@ -15236,7 +15236,7 @@
         }, 
         {
             "get_file_sample_from_hash_-_generic": {
-                "name": "Get File Sample By Hash - Generic", 
+                "name": "Get File Sample From Hash - Generic", 
                 "fromversion": "3.1.0", 
                 "implementing_playbooks": [
                     "Get File Sample By Hash - Cylance Protect", 
