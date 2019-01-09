@@ -7,9 +7,10 @@ script: |
   import socket
 
   def unicode_dict_reader(utf8_data, **kwargs):
-      csv_reader = csv.DictReader(utf8_data, **kwargs)
+      csv_reader = csv.DictReader((line.replace('\0', '') for line in utf8_data), **kwargs)
       for row in csv_reader:
           yield {unicode(key, 'utf-8'):(unicode(value, 'utf-8') if value is not None else None) for key, value in row.iteritems()}
+
 
   def is_valid_ipv4_address(address):
       try:
@@ -179,7 +180,7 @@ enabled: true
 args:
 - name: entryID
   default: true
-  description: 'The war room entryID of the file.'
+  description: The war room entryID of the file.
 - name: file
   deprecated: true
   description: The name of the file. The file must be uploaded to the War Room.
@@ -212,5 +213,8 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Updated to replace null byte character with the empty string"
 tests:
-  - TestParseCSV
+  - No test - will update after making test playbook
