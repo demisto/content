@@ -31,7 +31,7 @@ USERNAME = demisto.params().get("url")
 **Please restrain from naming variables as shown below**
 ```python
 apiVersion = "v1"
-username = demisto.params().get("url")
+url = demisto.params().get("url")
 ```
 
 ## Arguments
