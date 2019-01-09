@@ -337,8 +337,14 @@ def update_id_set():
 
     print("Getting added files")
     files_string = run_git_command("git diff --name-status")
+
+    files_string = files_string + "A       Playbooks/playbook-Get_File_Sample_From_Hash_-_Generic.yml"
+    print files_string
+
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files = get_changed_files(files_string + '\n' + second_files_string)
+
+
 
     if added_files or modified_files:
         print("Updating id_set.json")
