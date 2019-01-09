@@ -117,69 +117,74 @@ script:
         res_json = raw.json()
         hr = makehash()
         ec = makehash()
+        maxmind_ec = makehash()
         ip_ec = makehash()
         if 'continent' in res_json:
             continent = res_json['continent']
             hr['Continent'] = continent['names']['en']
-            ip_ec['Geo']['Continent'] = continent['names']['en']
+            maxmind_ec['Geo']['Continent'] = continent['names']['en']
         if 'city' in res_json:
             city = res_json['city']
             hr['City'] = city['names']['en']
-            ip_ec['Geo']['City'] = city['names']['en']
+            maxmind_ec['Geo']['City'] = city['names']['en']
         if 'country' in res_json:
             country = res_json['country']
             hr['Country'] = country['names']['en']
+            maxmind_ec['Geo']['Country'] = country['names']['en']
             ip_ec['Geo']['Country'] = country['names']['en']
         if 'location' in res_json:
             location = res_json['location']
             hr['Location']['Latitude'] = location['latitude']
             hr['Location']['Longitude'] = location['longitude']
             ip_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
+            maxmind_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
             if 'time_zone' in location:
                 hr['TimeZone'] = location['time_zone']
-                ip_ec['Geo']['TimeZone'] = location['time_zone']
+                maxmind_ec['Geo']['TimeZone'] = location['time_zone']
             if 'accuracy_radius' in location:
                 hr['Accuracy Radius'] = location['accuracy_radius']
-                ip_ec['Geo']['Accuracy'] = location['accuracy_radius']
+                maxmind_ec['Geo']['Accuracy'] = location['accuracy_radius']
         if 'registered_country' in res_json:
             hr['ISO Code'] = res_json['registered_country']['iso_code']
-            ip_ec['ISO_Code'] = res_json['registered_country']['iso_code']
+            maxmind_ec['ISO_Code'] = res_json['registered_country']['iso_code']
             registration = res_json['registered_country']['names']['en']
             hr['Registered Country'] = registration
-            ip_ec['RegisteredCountry'] = registration
+            maxmind_ec['RegisteredCountry'] = registration
         if 'subdivisions' in res_json:
             subs = res_json['subdivisions'][0]
             hr['Subdivision'] = subs['names']['en']
-            ip_ec['Geo']['Subdivision'] = subs['names']['en']
+            maxmind_ec['Geo']['Subdivision'] = subs['names']['en']
         if 'traits' in res_json:
             traits = res_json['traits']
             if 'user_type' in traits:
                 hr['User Type'] = traits['user_type']
-                ip_ec['UserType'] = traits['user_type']
+                maxmind_ec['UserType'] = traits['user_type']
             if 'domain' in traits:
                 hr['Domain'] = traits['domain']
-                ip_ec['Domain'] = traits['domain']
+                maxmind_ec['Domain'] = traits['domain']
             if 'is_anonymous' in traits:
                 hr['Is Anonymous'] = traits['is_anonymous']
-                ip_ec['Anonymous'] = traits['is_anonymous']
+                maxmind_ec['Anonymous'] = traits['is_anonymous']
             if 'is_hosting_provider' in traits:
                 hr['Is Hosting Provider'] = traits['is_hosting_provider']
-                ip_ec['Host'] = traits['is_hosting_provider']
+                maxmind_ec['Host'] = traits['is_hosting_provider']
             if 'is_tor_exit_node' in traits:
                 hr['Is TOR Exit Node'] = traits['is_tor_exit_node']
-                ip_ec['Tor'] = traits['is_tor_exit_node']
+                maxmind_ec['Tor'] = traits['is_tor_exit_node']
             if 'autonomous_system_number' in traits:
                 hr['ASN'] = traits['autonomous_system_number']
                 ip_ec['ASN'] = traits['autonomous_system_number']
+                maxmind_ec['ASN'] = traits['autonomous_system_number']
             if 'autonomous_system_organization' in traits:
                 hr['Organization'] = traits['autonomous_system_organization']
-                ip_ec['Organization'] = traits['autonomous_system_organization']
+                maxmind_ec['Organization'] = traits['autonomous_system_organization']
             hr['IP'] = traits['ip_address']
             ip_ec['Address'] = traits['ip_address']
+            maxmind_ec['Address'] = traits['ip_address']
             if 'isp' in traits:
                 hr['ISP'] = traits['isp']
-                ip_ec['ISP'] = traits['isp']
-        return hr, ip_ec, res_json
+                maxmind_ec['ISP'] = traits['isp']
+        return hr, ip_ec, res_json, maxmind_ec
 
 
 
@@ -193,8 +198,11 @@ script:
     def geo_ip_command():
         query = demisto.args().get('ip')
         raw = get_geo_ip(query)
-        hr, ip_ec, res_json = format_results(raw)
-        ec = ({'IP(val.Address && val.Address == obj.Address)': ip_ec})
+        hr, ip_ec, res_json, maxmind_ec = format_results(raw)
+        ec = ({
+          'IP(val.Address && val.Address == obj.Address)': ip_ec,
+          'MaxMind': maxmind_ec
+          })
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
