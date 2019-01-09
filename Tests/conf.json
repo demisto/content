@@ -11,7 +11,7 @@
             "playbookID": "hashicorp_test"
         },
         {
-            "integrations": ["Demisto REST API", "Mail Sender"],
+            "integrations": ["Demisto REST API", "Mail Sender (New)"],
             "playbookID": "playbook-Generate_log-bundleTest"
         },
         {
