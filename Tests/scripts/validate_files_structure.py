@@ -46,9 +46,12 @@ LAYOUTS_DIR = "Layouts"
 CLASSIFIERS_DIR = "Classifiers"
 MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
+BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 
 # file types regexes
 INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
+BETA_INTEGRATION_REGEX = "{}.*integration-.*.yml".format(BETA_INTEGRATIONS_DIR)
+BETA_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(BETA_INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
 TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
@@ -64,6 +67,8 @@ MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
 DOCS_REGEX = "docs/.*"
+GITHUB_REGEX = ".github/.*"
+HOOKS_REGEX = ".hooks/.*"
 TESTS_REGEX = "Tests/.*"
 UTILS_REGEX = "Utils/.*"
 TOOLS_REGEX = "Tools/.*"
@@ -71,12 +76,12 @@ TESTDATA_REGEX = "TestData/.*"
 DOCKER_DIR_REGEX = "DockerImageFile/.*"
 DOCUMENTATION_REGEX = "Documentation/.*"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, BETA_INTEGRATION_REGEX, BETA_PLAYBOOK_REGEX,
+                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, LAYOUT_REGEX,
+                         INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
 
 UNCHECKED_TYPES_REGEXES = [TESTS_REGEX, UTILS_REGEX, TOOLS_REGEX, TESTDATA_REGEX, DOCS_REGEX, DOCUMENTATION_REGEX,
-                           DOCKER_DIR_REGEX]
+                           DOCKER_DIR_REGEX, GITHUB_REGEX, HOOKS_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
@@ -469,14 +474,16 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
             if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
                 has_schema_problem = True
 
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             if is_circle and not integration_valid_in_id_set(file_path, integration_set):
                 has_schema_problem = True
 
             if not is_circle and not is_valid_id(integration_set, get_script_or_integration_id(file_path), file_path):
                 has_schema_problem = True
 
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
                 has_schema_problem = True
 
@@ -495,7 +502,8 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
         if not is_release_branch() and not validate_file_release_notes(file_path):
             has_schema_problem = True
 
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
                 has_schema_problem = True
 
@@ -512,7 +520,8 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
                     (is_circle and not script_valid_in_id_set(file_path, script_set)):
                 has_schema_problem = True
 
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)):
