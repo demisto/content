@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Unique threat intel technology that automatically serves up relevant
   insights in real time and at unparalleled scale.
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://api.recordedfuture.com)
   name: server
   defaultvalue: ""
   type: 0
@@ -30,6 +30,17 @@ configuration:
   required: false
 - display: Domain Threshold. Minimum risk score from RF to consider the domain malicious.
   name: domain_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum risk score from RF to consider the URL malicious.
+  name: url_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Vulnerability Threshold. Minimum risk score from RF to consider the vulnerability
+    critical.
+  name: cve_threshold
   defaultvalue: "65"
   type: 0
   required: false
@@ -73,14 +84,8 @@ script:
     FILE_THRESHOLD = int(demisto.params()['file_threshold'])
     IP_THRESHOLD = int(demisto.params()['ip_threshold'])
     DOMAIN_THRESHOLD = int(demisto.params()['domain_threshold'])
-
-
-    DOMAIN_COLUMNS = {
-        'Name': 0,
-        'Risk': 1,
-        'RiskString': 2,
-        'Evidence': 3
-    }
+    URL_THRESHOLD = int(demisto.params()['url_threshold'])
+    CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
 
 
     ''' HELPER FUNCTIONS '''
@@ -88,6 +93,7 @@ script:
 
     def http_request(method, url_suffix, params=None):
         LOG('running request with url=%s' % (BASE_URL + url_suffix))
+
         params = params if params is not None else {}
 
         try:
@@ -99,9 +105,10 @@ script:
                 verify=USE_SSL
             )
             if res.status_code not in {200, 404}:
-                return_error('Your request failed, status: {} details: {}'.format(str(res.status_code), res.content))
+                error_str = 'Request failed, status: ' + str(res.status_code) + ', details: ' + res.text
+                return_error(error_str)
         except Exception, e:
-            LOG(e)
+            LOG(e.message)
             return_error(e.message)
         return res.text
 
@@ -274,17 +281,17 @@ script:
                 hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['url']] = {
-                'Name': url,
+                'Data': url,
                 'RecordedFuture': {
                     'Criticality': risk.get('criticalityLabel'),
                     'FirstSeen': timestamps.get('firstSeen'),
                     'LastSeen': timestamps.get('lastSeen')
                 }
             }
-            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
+            dbot_score = translate_score(rf_score, URL_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': url,
-                'Type': 'url',
+                'Type': 'URL',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -298,7 +305,7 @@ script:
             ec = {
                 'DBotScore': {
                     'Indicator': url,
-                    'Type': 'url',
+                    'Type': 'URL',
                     'Vendor': 'Recorded Future',
                     'Score': 0
                 }
@@ -518,14 +525,17 @@ script:
         entity_type = demisto.args().get('entityType').lower()
         if entity_type == 'file':
             entity_type = 'hash'
+        if entity_type == 'url':
+            entity_value = urllib.quote_plus(entity_value)
         response = json.loads(get_related_entities(entity_value, entity_type))
+
         ec = {}
         if response and ('error' not in response):
             hr = []
             entity_result_type = entity_result_type.split(',')
             entity_types = []
             if 'All' in entity_result_type:
-                entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware', 'RelatedAttackVector', 'URL']
+                entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware', 'RelatedAttackVector', 'RelatedURL']
             else:
                 if 'IP' in entity_result_type:
                     entity_types.append('RelatedIpAddress')
@@ -576,21 +586,27 @@ script:
             if ip_outputs:
                 hr += tableToMarkdown('IP Address', ip_outputs)
                 related_entities_ec['IPAddress'] = ip_outputs
+
             if hash_outputs:
                 hr += tableToMarkdown('Hash', hash_outputs)
                 related_entities_ec['Hash'] = hash_outputs
+
             if domain_outputs:
                 hr += tableToMarkdown('Domain', domain_outputs)
                 related_entities_ec['Domain'] = domain_outputs
+
             if attacker_outputs:
                 hr += tableToMarkdown('Attacker', attacker_outputs)
                 related_entities_ec['Attacker'] = attacker_outputs
+
             if malware_outputs:
                 hr += tableToMarkdown('Malware', malware_outputs)
                 related_entities_ec['Malware'] = malware_outputs
+
             if url_outputs:
-                hr += tableToMarkdown('URL', malware_outputs)
-                related_entities_ec['URL'] = malware_outputs
+                hr += tableToMarkdown('URL', url_outputs)
+                related_entities_ec['URL'] = url_outputs
+
 
             if hr:
                 hr = '### Recorded Future related entities to ' + entity_value + '\n' + hr
@@ -622,8 +638,12 @@ script:
                             'RelatedEntities': related_entities_ec
                         }
                     }
+            else:
+                hr = 'No results found'
         else:
             hr = 'No results found'
+
+
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -801,7 +821,7 @@ script:
             dbot_score = translate_score(rf_score, IP_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': ip,
-                'Type': 'ip',
+                'Type': 'IP',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -986,7 +1006,7 @@ script:
                 hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['url']] = {
-                'Address': url,
+                'Data': url,
                 'RecordedFuture': {
                     'Criticality': risk.get('criticalityLabel'),
                     'FirstSeen': timestamps.get('firstSeen'),
@@ -996,7 +1016,7 @@ script:
             dbot_score = translate_score(rf_score, IP_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': url,
-                'Type': 'url',
+                'Type': 'URL',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -1085,7 +1105,7 @@ script:
                 hr += tableToMarkdown('References collected for this CVE', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['cve']] = {
-                'Indicator': vuln,
+                'ID': vuln,
                 'RecordedFuture': {
                     'Criticality': risk.get('criticalityLabel'),
                     'FirstSeen': timestamps.get('firstSeen'),
@@ -1093,15 +1113,15 @@ script:
                 }
             }
 
-            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
-            ec['DBotScore'] = {
-                'Indicator': vuln,
-                'Type': vtype,
-                'Vendor': 'Recorded Future',
-                'Score': dbot_score
-            }
+            #dbot_score = translate_score(rf_score, CVE_THRESHOLD)
+            #ec['DBotScore'] = {
+            #    'Indicator': vuln,
+            #    'Type': vtype,
+            #    'Vendor': 'Recorded Future',
+            #    'Score': dbot_score
+            #}
 
-            demisto.results({
+        demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
             'ContentsFormat': formats['json'],
@@ -1248,6 +1268,7 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
+        raise
         return_error(e.message)
   type: python
   commands:
@@ -1427,6 +1448,7 @@ script:
       - Domain
       - Attacker
       - Malware
+      - URL
       description: The type of related entities to be returned in the result (Can
         be given as comma separated values, e.g. Hash,IP,Domain)
       defaultValue: All
@@ -1680,11 +1702,10 @@ script:
     - name: url
       required: true
       default: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      description: URL to get reputation of
     - name: detailed
+      description: Fetching evidence details if true. Evidence is a record that gets
+        generated if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1699,16 +1720,16 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    - contextPath: Url.Name
+    - contextPath: URL.Data
       description: URL name
       type: string
-    - contextPath: Url.RecordedFuture.Criticality
+    - contextPath: URL.RecordedFuture.Criticality
       description: URL criticality label
       type: string
-    - contextPath: Url.RecordedFuture.FirstSeen
+    - contextPath: URL.RecordedFuture.FirstSeen
       description: Risk first seen timestamp
       type: date
-    - contextPath: Url.RecordedFuture.LastSeen
+    - contextPath: URL.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
     description: Look up threat intel information for a url in Recorded Future.
@@ -1791,7 +1812,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    - contextPath: File.Criticality
+    - contextPath: File.RecordedFuture.Criticality
       description: Risk criticality label
       type: string
     - contextPath: File.RecordedFuture.FirstSeen
@@ -1939,19 +1960,19 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    - contextPath: Url.Address
-      description: URL Address
+    - contextPath: URL.Data
+      description: URL name
       type: string
-    - contextPath: Url.RecordedFuture.Criticality
+    - contextPath: URL.RecordedFuture.Criticality
       description: URL criticality label
       type: string
-    - contextPath: Url.RecordedFuture.FirstSeen
+    - contextPath: URL.RecordedFuture.FirstSeen
       description: Risk first seen timestamp
       type: date
-    - contextPath: Url.RecordedFuture.LastSeen
+    - contextPath: URL.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns URL threats from the last seven days from Recorded Future
+    description: Returns URL threats from Recorded Future
   - name: recorded-future-get-threats-domain
     arguments:
     - name: detailed
@@ -2023,7 +2044,7 @@ script:
     - contextPath: Domain.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns domain threats from the last seven days from Recorded Future
+    description: Returns domain threats Recorded Future
   - name: recorded-future-get-threats-vulnerabilities
     arguments:
     - name: limit
@@ -2071,19 +2092,7 @@ script:
       - desc
       description: Sort direction
     outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
-    - contextPath: CVE.Indicator
+    - contextPath: CVE.ID
       description: Vulnerability CVE ID
       type: string
     - contextPath: CVE.RecordedFuture.Criticality
@@ -2095,8 +2104,7 @@ script:
     - contextPath: CVE.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns vulnerability threats from the last seven days from Recorded
-      Future
+    description: Returns vulnerability threats from Recorded Future
   - name: recorded-future-get-domain-risklist
     arguments:
     - name: list
@@ -2120,7 +2128,7 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
-    description: Gets the domain risk list from Recorded Future
+    description: Gets the domain risk list as a CSV file from Recorded Future
   - name: recorded-future-get-url-risklist
     arguments:
     - name: list
@@ -2145,7 +2153,7 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
-    description: Gets the URL risk list from Recorded Future
+    description: Gets the URL risk list as a CSV file from Recorded Future
   - name: recorded-future-get-ip-risklist
     arguments:
     - name: list
@@ -2169,4 +2177,5 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
-    description: Gets the IP risk list from Recorded Future
+    description: Gets the IP risk list as a CSV file from Recorded Future
+  runonce: false
