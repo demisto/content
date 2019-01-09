@@ -1586,6 +1586,5 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
-releaseNotes: "Enhancing get_alerts command to get all alert details. Added option for getting alerts based on a given time delta (given in days)."
 tests:
   - IntSights Test
