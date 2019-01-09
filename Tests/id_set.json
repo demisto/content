@@ -2437,7 +2437,7 @@
                 ], 
                 "tests": [
                     "TestParseCSV", 
-                    "ParseCSVnullbytesTest - tests that script replaces nullbyte chars with empty strings"
+                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
