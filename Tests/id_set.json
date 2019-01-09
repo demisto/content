@@ -4750,6 +4750,11 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
+            }
         }
     ], 
     "playbooks": [
@@ -15195,6 +15200,18 @@
                 "name": "Test-Detonate URL - ThreatGrid", 
                 "implementing_playbooks": [
                     "Detonate URL - ThreatGrid"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
                 ]
             }
         }
