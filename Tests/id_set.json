@@ -7040,6 +7040,9 @@
                 "implementing_commands": [
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-scan"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }
@@ -8510,6 +8513,9 @@
                     "hybrid-analysis-search", 
                     "hybrid-analysis-detonate-file", 
                     "hybrid-analysis-get-report-status"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }, 
