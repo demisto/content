@@ -5149,7 +5149,7 @@
                     "threat-grid-url-to-file"
                 ], 
                 "tests": [
-                    "No test"
+                    "Test-Detonate URL - ThreatGrid"
                 ]
             }
         }, 
@@ -5909,6 +5909,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -15180,6 +15183,14 @@
                     "misp-upload-sample", 
                     "file", 
                     "misp-delete-event"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - ThreatGrid": {
+                "name": "Test-Detonate URL - ThreatGrid", 
+                "implementing_playbooks": [
+                    "Detonate URL - ThreatGrid"
                 ]
             }
         }
