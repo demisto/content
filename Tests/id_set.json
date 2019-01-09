@@ -841,7 +841,11 @@
         }, 
         {
             "SetIncidentCustomFields": {
-                "name": "SetIncidentCustomFields"
+                "name": "SetIncidentCustomFields", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - script should be phased out of use"
+                ]
             }
         }, 
         {
@@ -4859,6 +4863,9 @@
                     "epo-get-latest-dat", 
                     "epo-get-current-dat", 
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5168,6 +5175,9 @@
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state", 
                     "threat-grid-url-to-file"
+                ], 
+                "tests": [
+                    "Test-Detonate URL - ThreatGrid"
                 ]
             }
         }, 
@@ -5927,6 +5937,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6128,6 +6141,9 @@
                 ], 
                 "implementing_commands": [
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6437,6 +6453,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9883,6 +9902,9 @@
                     "pwned-domain", 
                     "email", 
                     "domain"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10705,7 +10727,7 @@
                     "secure-works-get-ticket-count"
                 ], 
                 "tests": [
-                    "Run all tests"
+                    "secureworks_test"
                 ]
             }
         }, 
@@ -15205,6 +15227,14 @@
                     "misp-upload-sample", 
                     "file", 
                     "misp-delete-event"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - ThreatGrid": {
+                "name": "Test-Detonate URL - ThreatGrid", 
+                "implementing_playbooks": [
+                    "Detonate URL - ThreatGrid"
                 ]
             }
         }

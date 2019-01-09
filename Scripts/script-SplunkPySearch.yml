@@ -39,4 +39,3 @@ scripttarget: 0
 dependson:
   must:
   - splunk-search
-releaseNotes: "Fixed 'Missing headers param' bug & added Error check for the command result"

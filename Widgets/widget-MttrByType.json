@@ -22,6 +22,5 @@
      "keys":["avg|openDuration / 3600"],
      "groupBy" : ["occurred(d)", "type"]
   },
-  "description": "Shows changes in Mean Time to Resolution, over time, while differentiating between incident types.",
-  "releaseNotes": "MTTR now also in timeline widget"
+  "description": "Shows changes in Mean Time to Resolution, over time, while differentiating between incident types."
 }
