@@ -539,4 +539,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-  releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"
+releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"
