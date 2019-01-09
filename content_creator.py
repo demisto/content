@@ -177,7 +177,7 @@ def main(circle_artifacts):
         os.mkdir(b)
         add_tools_to_bundle(b)
 
-    # convert_incident_fields_to_array()
+    convert_incident_fields_to_array()
 
     for d in DIR_TO_PREFIX.keys():
         scanned_packages = glob.glob(os.path.join(d, '*/'))
