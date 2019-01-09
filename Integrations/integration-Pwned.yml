@@ -315,6 +315,5 @@ script:
       related: ""
     description: Check if domain has been compromised
   runonce: false
-releaseNotes: "added DBot Score"
 tests:
   - "No test"

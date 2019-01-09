@@ -1644,12 +1644,5 @@ script:
     description: Adds a tag to the given UUID event or attribute.
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
-releaseNotes:
-  "
-  - added delete event command
-  - added outputs in misp-create-event, misp-add-attribute, misp-search
-  - deprecated internal misp commands
-  - required demisto/pymisp docker
-  "
 tests:
 - MISP V2 Test
