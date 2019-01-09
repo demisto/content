@@ -96,10 +96,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 9440cd51-77ad-494a-85ba-540dff69c5bf
+    taskid: 3cf82887-19ce-4df3-8283-51151f9e773f
     type: condition
     task:
-      id: 9440cd51-77ad-494a-85ba-540dff69c5bf
+      id: 3cf82887-19ce-4df3-8283-51151f9e773f
       version: -1
       name: Is there a username on the "CriticalUsers" list?
       description: Check if a username is on the "CriticalUsers" list.
@@ -115,7 +115,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: StringContainsArray
           left:
             value:
               complex:
@@ -148,7 +148,6 @@ tasks:
       id: 483350d5-ab17-44cd-87b3-0e2360ce3577
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -265,7 +264,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1185,
+          "x": 1175,
           "y": 529
         }
       }
@@ -273,10 +272,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 4042d3c2-9039-433f-8775-969881998cdd
+    taskid: 731ac547-3975-48b5-85d0-e26a89643dc3
     type: condition
     task:
-      id: 4042d3c2-9039-433f-8775-969881998cdd
+      id: 731ac547-3975-48b5-85d0-e26a89643dc3
       version: -1
       name: Is there an user account AD group that is part of the "CriticalGroups"
         list.
