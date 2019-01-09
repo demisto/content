@@ -215,9 +215,10 @@ outputs:
   description: 'The path of the training file. '
   type: string
 scripttarget: 0
-timeout: 6µs
+timeout: 12µs
 runonce: true
 dockerimage: demisto/dl:1.1
 fromversion: 4.1.0
+releaseNotes: "-"
 tests:
   - CreatePhishingClassifierMLTest

@@ -440,7 +440,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: whois.markmonitor.com
+              simple: whois.
     view: |-
       {
         "position": {
