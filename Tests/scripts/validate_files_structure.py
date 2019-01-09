@@ -62,11 +62,21 @@ INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
 INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+
+DOCS_REGEX = "docs/.*"
 TESTS_REGEX = "Tests/.*"
+UTILS_REGEX = "Utils/.*"
+TOOLS_REGEX = "Tools/.*"
+TESTDATA_REGEX = "TestData/.*"
+DOCKER_DIR_REGEX = "DockerImageFile/.*"
+DOCUMENTATION_REGEX = "Documentation/.*"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
+
+UNCHECKED_TYPES_REGEXES = [TESTS_REGEX, UTILS_REGEX, TOOLS_REGEX, TESTDATA_REGEX, DOCS_REGEX, DOCUMENTATION_REGEX,
+                           DOCKER_DIR_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
@@ -123,6 +133,13 @@ def checked_type(file_path):
     return False
 
 
+def unchecked_type(file_path):
+    for regex in UNCHECKED_TYPES_REGEXES:
+        if re.match(regex, file_path, re.IGNORECASE):
+            return True
+    return False
+
+
 def get_modified_files(files_string):
     naming_problem = False
     all_files = files_string.split('\n')
@@ -143,7 +160,7 @@ def get_modified_files(files_string):
         elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
-        elif not re.match(TESTS_REGEX, file_path, re.IGNORECASE):
+        elif not unchecked_type(file_path):
             print_error("The file {} does not match any file name convention in content, "
                         "supporting the following file patterns:\n{}"
                         "\n\nIf you downloaded the file from the Demisto as it is,"
