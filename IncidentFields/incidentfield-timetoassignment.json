@@ -32,6 +32,5 @@
     "fieldCalcScript": "",
     "selectValues": null,
     "validationRegex": "",
-    "sla": 0,
-    "releaseNotes": "Added Time to Assignment field"
+    "sla": 0
 }

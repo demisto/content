@@ -4835,6 +4835,9 @@
                     "epo-get-latest-dat", 
                     "epo-get-current-dat", 
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6110,6 +6113,9 @@
                 ], 
                 "implementing_commands": [
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6419,6 +6425,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9856,6 +9865,9 @@
                     "pwned-domain", 
                     "email", 
                     "domain"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10678,7 +10690,7 @@
                     "secure-works-get-ticket-count"
                 ], 
                 "tests": [
-                    "Run all tests"
+                    "secureworks_test"
                 ]
             }
         }, 
