@@ -42,7 +42,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-  - display: 'Proxy - in format: 127.0.0.1:8080'
+- display: 'Proxy - in format: 127.0.0.1:8080'
   name: proxy
   defaultvalue: ""
   type: 0
