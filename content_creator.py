@@ -9,6 +9,16 @@ import zipfile
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
+DIR_TO_PREFIX = {
+    'Integrations': 'integration',
+    'Scripts': 'script'
+}
+
+TYPE_TO_EXTENSION = {
+    'python': '.py',
+    'javascript': '.js'
+}
+
 TEST_DIR = 'TestPlaybooks'
 
 # temp folder names
@@ -19,6 +29,48 @@ BUNDLE_TEST = 'bundle_test'
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
+
+
+def merge_script_package_to_yml(package_path, dir):
+    output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir], os.path.basename(os.path.dirname(package_path)))
+    output_path = os.path.join(dir, output_filename)
+
+    yml_path = os.path.join(package_path, os.path.basename(os.path.dirname(package_path)) + '.yml')
+
+    with open(yml_path, 'r') as yml_file:
+        yml_data = yaml.safe_load(yml_file)
+
+    if dir == 'Scripts':
+        yml_data['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
+        script_type = TYPE_TO_EXTENSION[yml_data['type']]
+    else:
+        yml_data['script']['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
+        script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
+
+    script_path = os.path.join(package_path, os.path.basename(os.path.dirname(package_path)) + script_type)
+    with open(script_path, 'r') as script_file:
+        script_code = script_file.read()
+
+    script_code = clean_python_code(script_code)
+
+    lines = ['|-']
+    lines.extend('    {}'.format(line) for line in script_code.split('\n'))
+    script_code = '\n'.join(lines)
+
+
+
+    yml = yaml.dump(yml_data, default_flow_style=False)
+    yml = yml.replace('~~~REPLACE_SCRIPT_HERE~~~', script_code)
+
+    with open(output_path, 'w') as f:
+        f.write(yml)
+
+
+def clean_python_code(script_code):
+    script_code = script_code.replace("import demistomock as demisto", "")
+    script_code = script_code.replace("from CommonServerPython import \\*", "")
+    script_code = script_code.replace("from CommonServerUserPython import \\*", "")
+    return script_code
 
 
 def is_ge_version(ver1, ver2):
@@ -125,7 +177,13 @@ def main(circle_artifacts):
         os.mkdir(b)
         add_tools_to_bundle(b)
 
-    convert_incident_fields_to_array()
+    # convert_incident_fields_to_array()
+
+    for d in DIR_TO_PREFIX.keys():
+        scanned_packages = glob.glob(os.path.join(d, '*/'))
+        for package in scanned_packages:
+            print package
+            merge_script_package_to_yml(package, d)
 
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
