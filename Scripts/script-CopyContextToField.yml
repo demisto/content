@@ -1,0 +1,49 @@
+commonfields:
+  id: CopyContextToField
+  version: -1
+name: CopyContextToField
+script: |-
+  def get_context(incident_id):
+      res = demisto.executeCommand("getContext", {'id': incident_id})
+      try:
+        return res[0]['Contents'].get('context') or {}
+      except:
+        return {}
+
+  res = demisto.executeCommand("getIncidents", {"query": demisto.args()['incidentsQuery'], 'limit': int(demisto.args()['limit'])})
+  incidents = res[0]['Contents']['data']
+  src_context_key = demisto.args()['sourceContextKey']
+  target_incident_field = demisto.args()['targetIncidentField']
+  for i in incidents:
+      incident_id = i['id']
+      context = get_context(incident_id)
+      value = demisto.dt(context, src_context_key)
+      if value and not isinstance(value, list) and not isinstance(value, dict):
+          res = demisto.executeCommand("setIncident", {target_incident_field: value, 'id': i['id']})
+          if isError(res[0]):
+              return_error(res[0]['Contents'])
+  demisto.log("done")
+type: python
+tags:
+- Utility
+comment: Copy a context key to an incident field to multiple number of incidents,
+  based on a query.
+enabled: true
+args:
+- name: sourceContextKey
+  required: true
+  description: The context key to get the value from.
+- name: targetIncidentField
+  required: true
+  description: The incident field to set with the value.
+- name: incidentsQuery
+  required: true
+  description: 'The incidents query to apply the copy process. For example, to apply
+    this for all the incidents of Phishing type we will use this query: "type:Phishing"'
+- name: limit
+  description: Maximum number of incidents to edit.
+  defaultValue: "1000"
+scripttarget: 0
+runonce: false
+tests:
+  - CopyContextToFieldTest

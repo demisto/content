@@ -513,7 +513,7 @@ script:
                 'ServiceNow.Record(val.ID===obj.ID)': createContext(record)
             }
         else:
-            mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS}
+            mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS if k in record}
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow record' + record_id, mapped_record, removeNull=True)
             entry['EntryContext'] = {
@@ -612,7 +612,7 @@ script:
 
         result = res['result']
 
-        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS}
+        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
@@ -687,7 +687,7 @@ script:
 
         result = res['result']
 
-        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS}
+        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS if k in result}
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
@@ -882,7 +882,7 @@ script:
                 'ServiceNow.Record(val.ID===obj.ID)': createContext(records)
             }
         else:
-            mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS} for r in result]
+            mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS if k in r} for r in result]
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
             entry['EntryContext'] = {
@@ -3423,6 +3423,6 @@ script:
     description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-releaseNotes: "Handle empty responses and missing fields"
+releaseNotes: "-"
 tests:
   - No test - Hibernating instance

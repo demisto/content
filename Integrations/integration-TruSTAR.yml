@@ -1338,4 +1338,3 @@ script:
       type: string
     description: Check Domain reputation on TruStar
   dockerimage: demisto/trustar
-releaseNotes: "Added 4 new commands: file, url, ip and domain"

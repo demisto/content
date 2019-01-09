@@ -1,8 +1,6 @@
 import os
 import re
 import sys
-import json
-import base64
 import argparse
 import requests
 from subprocess import Popen, PIPE
@@ -160,6 +158,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
             as_user="False",
             attachments=content_team_attachments
         )
+
 
 if __name__ == "__main__":
     options = options_handler()
