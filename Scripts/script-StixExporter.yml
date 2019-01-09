@@ -1,5 +1,5 @@
 commonfields:
-  id: 9e645ed6-109c-482d-815c-918ffceda200
+  id: StixExporter
   version: 12
 name: StixExporter
 script: |-
