@@ -91,10 +91,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 788488f9-1103-4646-8634-5dad3a2d438c
+    taskid: 2d5408e8-2440-4eba-89cf-10633237785a
     type: condition
     task:
-      id: 788488f9-1103-4646-8634-5dad3a2d438c
+      id: 2d5408e8-2440-4eba-89cf-10633237785a
       version: -1
       name: Check results
       type: condition
@@ -110,7 +110,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${IP.ISP}
+              simple: ${MaxMind.ISP}
             iscontext: true
           right:
             value:
