@@ -98,6 +98,7 @@ def test_instances(secret_conf_path, server, username, password):
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
+                __delete_integrations_instances(c, instance_ids)
 
     return failed_integration, integrations_counter
 
