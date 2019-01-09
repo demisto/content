@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
