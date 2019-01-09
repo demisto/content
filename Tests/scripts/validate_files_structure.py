@@ -398,7 +398,7 @@ def validate_committed_files(branch_name, is_circle):
                                                  playbook_set, script_set, test_playbook_set, is_circle)
 
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
-                                              script_set, test_playbook_set, is_circle) and has_schema_problem
+                                              script_set, test_playbook_set, is_circle) or has_schema_problem
 
     if has_schema_problem:
         sys.exit(1)
