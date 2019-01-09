@@ -15257,18 +15257,6 @@
                     "ip"
                 ]
             }
-        }, 
-        {
-            "MaxMind Test": {
-                "name": "MaxMind Test", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "ip"
-                ]
-            }
         }
     ]
 }
