@@ -392,7 +392,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: c46fed822dadac3f31f9bb4d1a78a1d9eae4567b
+              simple: 37221925980c05deefac014f9a72b4765e716341
     view: |-
       {
         "position": {

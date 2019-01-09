@@ -22,7 +22,7 @@ configuration:
   defaultvalue: https://api.threatconnect.com
   type: 0
   required: true
-- display: defaultOrg
+- display: Default Organization
   name: defaultOrg
   defaultvalue: ""
   type: 0
@@ -37,415 +37,1070 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Rating threshold for Malicious Indicators
+  name: rating
+  defaultvalue: "3"
+  type: 0
+  required: false
+- display: Confidence threshold for Malicious Indicators
+  name: confidence
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Indicator Reputation Freshness (in days)
+  name: freshness
+  defaultvalue: "7"
+  type: 0
+  required: false
 script:
-  script: |-
+  script: |
+    ''' IMPORTS '''
+    import urllib
+    import datetime
+    from urlparse import urlparse
+
     from threatconnect import ThreatConnect
     from threatconnect.RequestObject import RequestObject
     from threatconnect.Config.IndicatorType import IndicatorType
     from threatconnect.Config.ResourceType import ResourceType
     from threatconnect.Config.FilterOperator import FilterOperator
-    import urllib
-    import datetime
-    from urlparse import urlparse
 
-    filePath= 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)'
-    ipPath= 'IP(val.Address && val.Address == obj.Address)'
-    urlPath= 'URL(val.Data && val.Data == obj.Data)'
-    domainPath= 'Domain(val.Name && val.Name == obj.Name)'
+    '''GLOBAL VARS'''
+    FRESHNESS = int(demisto.params()['freshness'])
+    MAX_CONTEXT = 100
 
-    defaultMaliciosConfidenceThreshold = 50
-    defaultMaliciosRatingThreshold = 3
+    ''' HELPER FUNCTIONS '''
+    def get_client():
+        params = demisto.params()
+        access = params['accessId']
+        secret = params['secretKey']
+        default_org = params['defaultOrg']
+        url = params['baseUrl']
+        proxy_ip = params['proxyIp']
+        proxy_port = params['proxyPort']
 
-    def escapeNewLines(indJson):
-        indJson = indJson.replace('\r', '<br>')
-        indJson = indJson.replace('\\n', '<br>')
-        return indJson
-
-    def getClient():
-        access = demisto.params()['accessId']
-        secert = demisto.params()['secretKey']
-        url = demisto.params()['baseUrl']
-        default_org = demisto.params()['defaultOrg']
-        proxy_ip = demisto.params()['proxyIp']
-        proxy_port = demisto.params()['proxyPort']
-        tc = ThreatConnect(access, secert, default_org, url)
+        tc = ThreatConnect(access, secret, default_org, url)
         if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
             tc.set_proxies(proxy_ip, int(proxy_port))
+
         return tc
 
-    def buildFilters(args):
-        filters = '?'
-        if demisto.get(args, 'ratingThreshold'):
-            filters = filters + 'rating%3E' + demisto.args()['ratingThreshold']
-        if demisto.get(args, 'confidenceThreshold'):
-            if len(filters) > 1:
-                filters = filters + '&'
-            filters = filters + 'threatAssessConfidence%3E' + demisto.args()['confidenceThreshold']
-        if len(filters) == 1:
-            return '' # no filters at all in this case
-        return filters
 
-    def createContext(indicators,contextPath,ratingThreshold,confidenceThreshold,indicatorType):
-        ec = {};
-        ec['DBotScore'] = [];
-        ec[contextPath] = [];
-        if ratingThreshold < 0:
-            ratingThreshold = defaultMaliciosRatingThreshold
-        if confidenceThreshold < 0:
-            confidenceThreshold = defaultMaliciosConfidenceThreshold
+    def calculate_freshness_time(freshness):
+        t = datetime.datetime.now() - datetime.timedelta(days=7)
+        return t.strftime('%Y-%m-%dT00:00:00Z')
+
+
+    def create_context(indicators, include_dbot_score=False):
+        context = {
+            'DBotScore' : [],
+            outputPaths['ip'] : [],
+            outputPaths['url'] : [],
+            outputPaths['domain'] : [],
+            outputPaths['file'] : [],
+            'TC.Indicator(val.ID && val.ID === obj.ID)' : [],
+        }
+        tc_type_to_demisto_type = {
+            'Address' : 'ip',
+            'URL' : 'url',
+            'Host' : 'domain',
+            'File' : 'file'
+        }
+        type_to_value_field = {
+            'Address' : 'ip',
+            'URL' : 'text',
+            'Host' : 'hostName',
+            'File' : 'md5',
+        }
+
         for ind in indicators:
             dbotScore = 0
-            if ind.confidence >= confidenceThreshold and ind.rating>= ratingThreshold:
+            indicator_type = tc_type_to_demisto_type.get(ind['type'], ind['type'])
+            value_field = type_to_value_field.get(ind['type'], 'summary')
+            value = ind.get(value_field, ind.get('summary', ''))
+
+            confidence = 0
+            if ind.get('confidence') is not None: # returned in specific indicator request - SDK
+                confidence = int(ind['confidence'])
+            else:
+                # returned in general indicator request - REST API
+                confidence = int(ind.get('threatAssessConfidence', 0))
+
+            rating = 0
+            if ind.get('rating') is not None: # returned in specific indicator request - SDK
+                rating = int(ind['rating'])
+            else:
+                # returned in general indicator request - REST API
+                rating = int(ind.get('threatAssessRating', 0))
+
+            if confidence >= demisto.params()['rating'] and rating >= demisto.params()['confidence']:
                 dbotScore = 3
                 desc = ''
                 if hasattr(ind, 'description'):
                     desc = ind.description
-                mal = {'Malicious':{'Vendor':'ThreatConnect','Description':desc}}
-                if indicatorType == 'ip':
-                    if hasattr(ind, 'summary'):
-                        mal['Address'] = ind.summary
-                elif indicatorType == 'hash':
-                    if hasattr(ind, 'md5'):
-                        mal['MD5'] = ind.md5
-                    if hasattr(ind, 'sha1'):
-                        mal['SHA1'] = ind.sha1
-                    if hasattr(ind, 'sha256'):
-                        mal['SHA256'] = ind.sha256
-                elif indicatorType == 'url':
-                    if hasattr(ind, 'indicator'):
-                        mal['Data'] = ind.indicator
-                elif indicatorType == 'domain':
-                    if hasattr(ind, 'hostName'):
-                        mal['Name'] = ind.hostName
-                mal['properties_to_append'] = ['Malicious'];
-                ec[contextPath] = mal;
-            elif ind.rating >=1:
+                mal = {
+                    'Malicious':{
+                        'Vendor' : 'ThreatConnect',
+                        'Description' : desc,
+                    }
+                }
+                if indicator_type == 'ip':
+                    mal['Address'] = value
+
+                elif indicator_type == 'file':
+                    mal['MD5'] = value
+                    mal['SHA1'] = ind.get('sha1')
+                    mal['SHA256'] = ind.get('sha256')
+
+                elif indicator_type == 'url':
+                    mal['Data'] = value
+
+                elif indicator_type == 'domain':
+                    mal['Name'] = value
+
+                contextPath = outputPaths.get(indicator_type)
+                if contextPath is not None:
+                    context[contextPath].append(mal)
+
+            elif rating >= 1:
                 dbotScore = 2
             else:
                 dbotScore = 1
-            ec['DBotScore'].append({'Indicator': ind.indicator, 'Type': indicatorType, 'Vendor': 'ThreatConnect', 'Score': dbotScore});
-        return ec
 
-    def getIndicatorsForDbot(args, indicatorValue, indicatorType):
-        tc = getClient()
-        indicators = tc.indicators()
-        filter1 = indicators.add_filter()
-        filter1.add_indicator(indicatorValue)
-        owners_arr = []
-        if demisto.get(demisto.args(), 'owners'):
-            owners = demisto.args()['owners'].split(",")
-            owners_arr.extend(owners)
-        else:
-            owners = tc.owners()
-            owners.retrieve()
-            for owner in owners:
-                owners_arr.append(owner.name)
-        filter1.add_owner(owners_arr)
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            filter1.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GE)
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GE)
-        if indicatorType:
-            filter1.add_pf_type(indicatorType, FilterOperator.EQ)
-        indicators.retrieve()
+            if include_dbot_score:
+                context['DBotScore'].append({
+                    'Indicator': value,
+                    'Score': dbotScore,
+                    'Type': indicator_type,
+                    'Vendor': 'ThreatConnect',
+                })
+
+            context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
+                'ID' : ind['id'],
+                'Name' : value,
+                'Type' : ind['type'],
+                'Owner' : ind['ownerName'],
+                'Description' : ind.get('description'),
+                'CreateDate' : ind['dateAdded'],
+                'LastModified' : ind['lastModified'],
+                'Rating' : rating,
+                'Confidence' : confidence,
+
+                # relevant for domain
+                'Active' : ind.get('whoisActive'),
+
+                # relevant for file
+                'File.MD5' : ind.get('md5'),
+                'File.SHA1' : ind.get('sha1'),
+                'File.SHA256' : ind.get('sha256'),
+            })
+
+        context = {k : createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if len(v) > 0}
+        return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
+
+
+    @logger
+    def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1, freshness=None):
+        tc = get_client()
+        indicators_obj = tc.indicators()
+        _filter = indicators_obj.add_filter()
+
+        if indicator_value is not None:
+            _filter.add_indicator(indicator_value)
+        if indicator_type is not None:
+            _filter.add_pf_type(indicator_type, FilterOperator.EQ)
+
+        if owners is not None:
+            owners = owners.split(",")
+            _filter.add_owner(owners)
+
+        if rating_threshold != -1:
+            _filter.add_pf_rating(rating_threshold, FilterOperator.GE)
+        if confidence_threshold != -1:
+            _filter.add_pf_confidence(confidence_threshold, FilterOperator.GE)
+        if freshness is not None:
+            _filter.add_pf_last_modified(calculate_freshness_time(freshness), FilterOperator.GE)
+
+        raw_indicators = indicators_obj.retrieve()
+        indicators = [json.loads(indicator.json) for indicator in raw_indicators]
+
         return indicators
 
-    def getIndicator(indicatorType, value, owners, limit, filters):
-        tc = getClient()
-        tc.set_api_result_limit(limit)
-        ro = RequestObject()
-        ro.set_http_method('GET')
-        ro.set_request_uri('/v2/indicators/'+indicatorType+'/'+value+filters)
-        if len(owners) > 0:
-            ro.set_owner(owners)
-            ro.set_owner_allowed(True)
-        results = tc.api_request(ro)
-        if results.headers['content-type'] == 'application/json':
-            data = results.json()
-            return json.dumps(data, indent=4)
 
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        tc = getClient()
-        owners = tc.owners()
-        owners.retrieve()
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'ip':
-        ip = demisto.args()['ip']
-        malRatingThreshold = -1
-        malConfidenceThreshold = -1
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            malRatingThreshold = int(demisto.args()['ratingThreshold'])
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
-        indicators = getIndicatorsForDbot(demisto.args(), ip, 'Address')
-        ec = createContext(indicators,ipPath,malRatingThreshold,malConfidenceThreshold,'ip')
-        indicatorsArr = []
-        for indicator in indicators:
-            indJson = escapeNewLines(indicator.json)
-            indicatorsArr.append(json.loads(indJson))
-        if len(indicators) == 0:
-            md = "## ThreatConnect IP Report for: " + ip + "\nNo results found!"
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect IP Reputation for: "+ip, indicatorsArr, ""),"Contents": json.dumps(indicatorsArr),"EntryContext": ec})
-        sys.exit(0)
-    if demisto.command() == 'url':
-        url = demisto.args()['url']
-        parsed_url = urlparse(url)
+    ''' FUNCTIONS '''
+    def ip_command():
+        args = demisto.args()
+        owners = args.get('owners')
+        rating_threshold = int(args.get('ratingThreshold', -1))
+        confidence_threshold = int(args.get('confidenceThreshold', -1))
+        ip_addr = args['ip']
+
+        ec, indicators = ip(ip_addr, owners, rating_threshold, confidence_threshold)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect IP Reputation for: {}'.format(ip_addr), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def ip(ip_addr, owners, rating_threshold, confidence_threshold):
+        indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
+
+        return ec, indicators
+
+
+    def url_command():
+        args = demisto.args()
+        owners = args.get('owners')
+        url_addr = args['url']
+        parsed_url = urlparse(url_addr)
         if not parsed_url.scheme:
             return_error('Please provide a valid URL including a protocol (http/https)')
-        malRatingThreshold = -1
-        malConfidenceThreshold = -1
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            malRatingThreshold = int(demisto.args()['ratingThreshold'])
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
-        indicators = getIndicatorsForDbot(demisto.args(), url, 'URL')
-        ec = createContext(indicators,urlPath,malRatingThreshold,malConfidenceThreshold,'url')
-        indicatorsArr = []
-        for indicator in indicators:
-            indJson = escapeNewLines(indicator.json)
-            indicatorsArr.append(json.loads(indJson))
-        if len(indicators) == 0:
-            md = "## ThreatConnect URL Report for: " + url + "\nNo results found!"
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect URL Reputation for: "+url, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
-        sys.exit(0)
-    if demisto.command() == 'file':
-        file = demisto.args()['file']
-        malRatingThreshold = -1
-        malConfidenceThreshold = -1
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            malRatingThreshold = int(demisto.args()['ratingThreshold'])
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
-        indicators = getIndicatorsForDbot(demisto.args(), file, 'File')
-        ec = createContext(indicators,filePath,malRatingThreshold,malConfidenceThreshold,'hash')
-        indicatorsArr = []
-        for indicator in indicators:
-            indJson = escapeNewLines(indicator.json)
-            indicatorsArr.append(json.loads(indJson))
-        if len(indicators) == 0:
-            md = "## ThreatConnect File Report for: " + file + "\nNo results found!"
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect File Reputation for: "+file, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
-        sys.exit(0)
-    if demisto.command() == 'domain':
-        domain = demisto.args()['domain']
-        malRatingThreshold = -1
-        malConfidenceThreshold = -1
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            malRatingThreshold = int(demisto.args()['ratingThreshold'])
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            malConfidenceThreshold = int(demisto.args()['confidenceThreshold'])
-        indicators = getIndicatorsForDbot(demisto.args(), domain, 'Host')
-        ec = createContext(indicators,domainPath,malRatingThreshold,malConfidenceThreshold,'domain')
-        indicatorsArr = []
-        for indicator in indicators:
-            indJson = escapeNewLines(indicator.json)
-            indicatorsArr.append(json.loads(indJson))
-        if len(indicators) == 0:
-            md = "## ThreatConnect Domain Report for: " + domain + "\nNo results found!"
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": md,"EntryContext": ec, "HumanReadable": md})
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect Domain Reputation for: "+domain, indicatorsArr, ""), "Contents": json.dumps(indicatorsArr),"EntryContext": ec})
-        sys.exit(0)
-    if demisto.command() == 'tc-owners':
-        tc = getClient()
+        rating_threshold = int(args.get('ratingThreshold', -1))
+        confidence_threshold = int(args.get('confidenceThreshold', -1))
+
+        ec, indicators = url(url_addr, owners, rating_threshold, confidence_threshold)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect URL Reputation for: {}'.format(url_addr), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def url(url_addr, owners, rating_threshold, confidence_threshold):
+        indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
+
+        return ec, indicators
+
+
+    def file_command():
+        args = demisto.args()
+        owners = args.get('owners')
+        file_name = args['file']
+        rating_threshold = int(args.get('ratingThreshold', -1))
+        confidence_threshold = int(args.get('confidenceThreshold', -1))
+
+        ec, indicators = _file(file_name, owners, rating_threshold, confidence_threshold)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect File Report for: {}'.format(file_name), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def _file(url_addr, owners, rating_threshold, confidence_threshold):
+        indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
+
+        return ec, indicators
+
+
+    def domain_command():
+        args = demisto.args()
+        owners = args.get('owners')
+        rating_threshold = int(args.get('ratingThreshold', -1))
+        confidence_threshold = int(args.get('confidenceThreshold', -1))
+        domain_addr = args['domain']
+
+        ec, indicators = domain(domain_addr, owners, rating_threshold, confidence_threshold)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Domain Reputation for: {}'.format(domain_addr), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def domain(domain_addr, owners, rating_threshold, confidence_threshold):
+        indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+        ec, indicators = create_context(indicators, include_dbot_score=True)
+
+        return ec, indicators
+
+
+    def tc_owners_command():
+        raw_owners = tc_owners()
+        owners = []
+        for owner in raw_owners['data']['owner']:
+            owners.append({
+                'ID' : owner['id'],
+                'Type' : owner['type'],
+                'Name' : owner['name'],
+            })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_owners,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Owners:', owners),
+            'EntryContext': {'TC.Owner(val.ID && val.ID === obj.ID)' : owners},
+        })
+
+
+    @logger
+    def tc_owners():
+        tc = get_client()
         ro = RequestObject()
         ro.set_http_method('GET')
         ro.set_request_uri('/v2/owners')
         results = tc.api_request(ro)
-        if results.headers['content-type'] == 'application/json':
-            data = results.json()
-            res = json.dumps(data, indent=4)
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
-    if demisto.command() == 'tc-indicators':
-        tc = getClient()
-        limit = 500
-        if demisto.get(demisto.args(), 'limit'):
-            limit = int(demisto.args()['limit'])
+
+        return results.json()
+
+
+    def tc_indicators_command():
+        args = demisto.args()
+        limit = int(args.get('limit', 500))
+        owners = args.get('owners')
+        ec, indicators, raw_response = tc_indicators(owners, limit)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Indicators:', indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_indicators(owners, limit):
+        tc = get_client()
         tc.set_api_result_limit(limit)
         ro = RequestObject()
         ro.set_http_method('GET')
-        ro.set_request_uri('/v2/indicators/')
-        owners = ''
-        if demisto.get(demisto.args(), 'owners'):
-            owners = demisto.args()['owners']
-        if len(owners) > 0:
+        ro.set_request_uri('/v2/indicators?resultLimit={}'.format(limit))
+
+        if owners is not None:
             ro.set_owner(owners)
             ro.set_owner_allowed(True)
-        results = tc.api_request(ro)
-        if results.headers['content-type'] == 'application/json':
-            data = results.json()
-            res = json.dumps(data, indent=4)
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
-        sys.exit(0)
-    if demisto.command() == 'tc-get-tags':
-        tc = getClient()
+
+        response = tc.api_request(ro).json()
+        indicators = response['data']['indicator']
+        ec, indicators = create_context(indicators, include_dbot_score=True)
+
+        return ec, indicators, response
+
+
+    def tc_get_tags_command():
+        raw_response = tc_get_tags()
+        tags = [t['name'] for t in raw_response['data']['tag']]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Tags:', tags, headers='Name'),
+            'EntryContext': {'TC.Tags' : tags},
+        })
+
+
+    @logger
+    def tc_get_tags():
+        tc = get_client()
         ro = RequestObject()
         ro.set_http_method('GET')
         ro.set_request_uri('/v2/tags')
-        results = tc.api_request(ro)
-        if results.headers['content-type'] == 'application/json':
-            data = results.json()
-            res = json.dumps(data, indent=4)
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
-        sys.exit(0)
-    if demisto.command() == 'tc-tag-indicator':
-        tc = getClient()
+
+        return tc.api_request(ro).json()
+
+
+    def tc_tag_indicator_command():
+        args = demisto.args()
+        indicator = args['indicator']
+        tag = args['tag']
+        owners = args.get('owner')
+        indicators = tc_tag_indicator(indicator, tag, owners)
+
+        md = []
+        for ind in indicators:
+            md.append('Indicator {} with ID {}, was tagged with: {}'.format(indicator, ind.id, tag))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': '\n'.join(md),
+        })
+
+
+    def tc_tag_indicator(indicator, tag, owners=None):
+        tc = get_client()
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
-        filter1.add_indicator(demisto.args()['indicator'])
-        owners_arr = []
-        if "owner" in demisto.args():
-            owners_arr.append(demisto.args()['owner'])
-        else:
-            owners = tc.owners()
-            owners.retrieve()
-            for owner in owners:
-                owners_arr.append(owner.name)
-        filter1.add_owner(owners_arr)
-        indicators.retrieve()
+        filter1.add_indicator(indicator)
 
+        if owners is not None:
+            owners = owners.split(",")
+            filter1.add_owner(owners)
+
+        indicators = indicators.retrieve()
         for indicator in indicators:
-            indicator.add_tag(demisto.args()['tag'])
+            indicator.add_tag(tag)
             indicator.commit()
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Indicator: "+demisto.args()['indicator']+" With id: "+str(indicator.id)+", was tagged with tag: "+demisto.args()['tag']})
-        sys.exit(0)
-    if demisto.command() == 'tc-get-indicator':
-        tc = getClient()
-        indicators = tc.indicators()
-        filter1 = indicators.add_filter()
-        filter1.add_indicator(demisto.args()['indicator'])
-        owners_arr = []
-        owners = tc.owners()
-        owners.retrieve()
-        for owner in owners:
-            owners_arr.append(owner.name)
-        filter1.add_owner(owners_arr)
-        if demisto.get(demisto.args(), 'ratingThreshold'):
-            filter1.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
-        if demisto.get(demisto.args(), 'confidenceThreshold'):
-            filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
-        indicators.retrieve()
 
-        indicatorsArr = []
-        for indicator in indicators:
-            indicatorsArr.append(json.loads(indicator.json))
-        if len(indicators) == 0:
-            demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Found no results for given indicator: "+demisto.args()['indicator']})
-        else:
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
-        sys.exit(0)
-    if demisto.command() == 'tc-get-indicators-by-tag':
-        tc = getClient()
+        return indicators
+
+
+    def tc_get_indicator_command():
+        args = demisto.args()
+        owners = args.get('owners')
+        rating_threshold = int(args.get('ratingThreshold', -1))
+        confidence_threshold = int(args.get('confidenceThreshold', -1))
+        indicator = args['indicator']
+
+        ec, indicators, raw_indicators = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect indicator for: {}'.format(indicator), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold):
+        raw_indicators = get_indicators(indicator, owners=owners, rating_threshold=rating_threshold, confidence_threshold=confidence_threshold)
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
+
+        return ec, indicators, raw_indicators
+
+
+    def tc_get_indicators_by_tag_command():
+        args = demisto.args()
+        tag = args['tag']
+        owner = args.get('owner')
+        response = tc_get_indicators_by_tag(tag, owner)
+        raw_indicators = response['data']['indicator']
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Indicators with tag: {}'.format(tag), indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_get_indicators_by_tag(tag, owner):
+        tc = get_client()
         ro = RequestObject()
         ro.set_http_method('GET')
-        ro.set_request_uri('/v2/tags/'+demisto.args()['tag']+'/indicators')
-        results = tc.api_request(ro)
-        if results.headers['content-type'] == 'application/json':
-            data = results.json()
-            res = json.dumps(data, indent=4)
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": res})
-        sys.exit(0)
-    if demisto.command() == 'tc-add-indicator':
-        tc = getClient()
-        indicators = tc.indicators()
-        indicator = indicators.add(demisto.args()['indicator'], demisto.params()['defaultOrg'])
-        if demisto.get(demisto.args(), 'rating'):
-            indicator.set_rating(int(demisto.args()['rating']))
-        if demisto.get(demisto.args(), 'confidence'):
-            indicator.set_confidence(int(demisto.args()['confidence']))
-        indicator.commit()
-        demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Created new indicator: "+demisto.args()['indicator']})
-        sys.exit(0)
-    if demisto.command() == 'tc-create-incident':
-        tc = getClient()
-        incidents = tc.incidents()
-        owner = demisto.params()['defaultOrg']
-        if demisto.get(demisto.args(), 'owner'):
-            owner = demisto.args()['owner']
-        incident = incidents.add(demisto.args()['incidentName'], owner)
-        eventDate = ""
-        if demisto.get(demisto.args(), 'eventDate'):
-            eventDate = demisto.args()['eventDate']
-        else:
-            d = datetime.datetime.utcnow()
-            dateStr = d.isoformat("T")
-            dateStr = dateStr[:dateStr.rfind(".")]
-            eventDate = dateStr + "Z"
-        incident.set_event_date(eventDate)
-        if demisto.get(demisto.args(), 'tag'):
-            incident.add_tag(demisto.args()['tag'])
-        if demisto.get(demisto.args(), 'securityLabel'):
-            incident.set_security_label(demisto.args()['securityLabel'])
-        if demisto.get(demisto.args(), 'description'):
-            incident.add_attribute('Description', demisto.args()['description'])
-        incident.commit()
-        demisto.results({"Type": 1, "ContentsFormat": "text", "Contents": "Created new incident: "+demisto.args()['incidentName']})
-        sys.exit(0)
-    if demisto.command() == 'tc-fetch-incidents':
-        tc = getClient()
-        incidents = tc.incidents()
-        if demisto.get(demisto.args(), 'incidentId') or demisto.get(demisto.args(), 'owner') or demisto.get(demisto.args(), 'incidentName'):
-            filter1 = incidents.add_filter()
-            if demisto.get(demisto.args(), 'incidentId'):
-                filter1.add_id(int(demisto.args()['incidentId']))
-            if demisto.get(demisto.args(), 'owner'):
-                filter1.add_owner(demisto.args()['owner'])
-            if demisto.get(demisto.args(), 'incidentName'):
-                filter1.add_pf_name(demisto.args()['incidentName'])
-        incidents.retrieve()
-        incidentsJsonArr = []
-        for incident in incidents:
-            incidentsJsonArr.append(json.loads(incident.json))
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(incidentsJsonArr), "EntryContext": {"ThreatConnect.incidents": incidentsJsonArr}})
-        sys.exit(0)
-    if demisto.command() == 'tc-get-incident-associate-indicators':
-        tc = getClient()
-        incidents = tc.incidents()
-        filter1 = incidents.add_filter()
-        filter1.add_id(int(demisto.args()['incidentId']))
-        if demisto.get(demisto.args(), 'owner'):
-            filter1.add_owner(demisto.args()['owner'])
-        incidents.retrieve()
-        indicatorsArr = []
-        for incident in incidents:
-            for indicator in incident.indicator_associations:
-                indicatorsArr.append(indicator.indicator)
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indicatorsArr)})
-        sys.exit(0)
-    if demisto.command() == 'tc-incident-associate-indicator':
-        tc = getClient()
-        incidents = tc.incidents()
-        filter1 = incidents.add_filter()
-        filter1.add_id(int(demisto.args()['incidentId']))
-        if demisto.get(demisto.args(), 'owner'):
-            filter1.add_owner(demisto.args()['owner'])
-        indType = ResourceType.URLS
-        indTypeStr = demisto.get(demisto.args(), 'indicatorType')
-        if indTypeStr == 'ADDRESSES':
-            indType = ResourceType.ADDRESSES
-        elif indTypeStr == 'EMAIL_ADDRESSES':
-            indType = ResourceType.EMAIL_ADDRESSES
-        elif indTypeStr == 'FILES':
-            indType = ResourceType.FILES
-        elif indTypeStr == 'HOSTS':
-            indType = ResourceType.HOSTS
-        elif indTypeStr == 'CUSTOM_INDICATORS':
-            indType = ResourceType.CUSTOM_INDICATORS
-        incidents.retrieve()
-        for incident in incidents:
-            incident.associate_indicator(indType, demisto.args()['indicator'])
+        cmd = '/v2/tags/{}/indicators'.format(tag)
+        if owner is not None:
+            cmd += '?owner={}'.format(owner)
 
-            incident.commit()
-            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": incident.json})
-        sys.exit(0)
+        ro.set_request_uri(cmd)
+
+        return tc.api_request(ro).json()
+
+
+    def tc_add_indicator_command():
+        args = demisto.args()
+        indicator = args['indicator']
+        owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
+        rating = int(args.get('rating', 0))
+        confidence = int(args.get('confidence', 0))
+
+        _indicator = tc_add_indicator(indicator, owner, rating, confidence)
+        # get the indicator for full object data
+        raw_indicators = get_indicators(indicator)
+        ec, indicators = create_context(raw_indicators)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Created new indicator successfully:', indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_add_indicator(indicator, organization, rating=0, confidence=0):
+        tc = get_client()
+        indicators = tc.indicators()
+        indicator = indicators.add(indicator, organization)
+        indicator.set_rating(rating)
+        indicator.set_confidence(confidence)
+
+        return json.loads(indicator.commit().json)
+
+
+    def tc_create_incident_command():
+        args = demisto.args()
+        incident_name = args['incidentName']
+        owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
+        event_date = args.get('eventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+        tag = args.get('tag')
+        security_label = args.get('securityLabel')
+        description = args.get('description')
+
+        raw_incident = tc_create_incident(incident_name, owner, event_date, tag, security_label, description)
+        ec = {
+                'ID' : raw_incident['id'],
+                'Name' : raw_incident['name'],
+                'Owner' : raw_incident['ownerName'],
+                'EventDate' : raw_incident['eventDate'],
+                'Tag' : tag,
+                'SecurityLabel' : security_label,
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_incident,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Incident {} Created Successfully'.format(incident_name),
+            'EntryContext': {
+                'TC.Incident(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+            },
+        })
+
+
+    @logger
+    def tc_create_incident(incident_name, owner, event_date, tag=None, security_label=None, description=None):
+        tc = get_client()
+        incidents = tc.incidents()
+        incident = incidents.add(incident_name, owner)
+        incident.set_event_date(event_date)
+        if tag is not None:
+            incident.add_tag(tag)
+        if security_label is not None:
+            incident.set_security_label(security_label)
+        if description is not None:
+            incident.add_attribute('Description', description)
+
+        return json.loads(incident.commit().json)
+
+
+    def tc_fetch_incidents_command():
+        args = demisto.args()
+        incident_id = args.get('incidentId')
+        incident_name = args.get('incidentName')
+        owner = args.get('owner')
+
+        raw_incidents = tc_fetch_incidents(incident_id, incident_name, owner)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_incidents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Incidents:', raw_incidents, headerTransform=pascalToSpace),
+            'EntryContext': {
+                'TC.Incident(val.ID && val.ID === obj.ID)' : createContext(raw_incidents, removeNull=True),
+                'ThreatConnect.incidents' : raw_incidents, # backward compatible
+            },
+        })
+
+
+    @logger
+    def tc_fetch_incidents(incident_id, incident_name, owner):
+        tc = get_client()
+        incidents = tc.incidents()
+        if any((incident_id, owner, incident_name)):
+            filter1 = incidents.add_filter()
+            if incident_id is not None:
+                filter1.add_id(int(incident_id))
+            if owner is not None:
+                filter1.add_owner(owner)
+            if incident_name is not None:
+                filter1.add_pf_name(incident_name)
+
+        incidents.retrieve()
+        return [json.loads(incident.json) for incident in incidents]
+
+
+    def tc_get_incident_associate_indicators_command():
+        args = demisto.args()
+        incident_id = int(args['incidentId'])
+        owners = args.get('owner')
+        if owners is not None:
+            owners = owners.split(",")
+
+        raw_indicators = tc_get_incident_associate_indicators(incident_id, owners)
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Incident Associated Indicators:', indicators, headerTransform=pascalToSpace),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_get_incident_associate_indicators(incident_id, owners):
+        tc = get_client()
+        incidents = tc.incidents()
+        _filter = incidents.add_filter()
+        _filter.add_id(incident_id)
+
+        incidents = incidents.retrieve()
+        indicators = []
+        for incident in incidents:
+            for ind in incident.indicator_associations:
+                if ind.type == 'File':
+                    indicators.append(ind.indicator['md5'])
+                else:
+                    indicators.append(ind.indicator)
+        if len(indicators) == 0:
+            return []
+
+        indicators_obj = tc.indicators()
+        _filter = indicators_obj.add_filter()
+        if owners is not None:
+            _filter.add_owner(owners)
+        for ind in indicators:
+            _filter.add_indicator(ind)
+
+        raw_indicators = indicators_obj.retrieve()
+        return [json.loads(indicator.json) for indicator in raw_indicators]
+
+
+    def tc_incident_associate_indicator_command():
+        args = demisto.args()
+        incident_id = int(args['incidentId'])
+        indicator = args['indicator']
+        types = {
+            'ADDRESSES' : ResourceType.ADDRESSES,
+            'EMAIL_ADDRESSES' : ResourceType.EMAIL_ADDRESSES,
+            'FILES' : ResourceType.FILES,
+            'HOSTS' : ResourceType.HOSTS,
+            'URLS' : ResourceType.URLS,
+        }
+        indicator_type = types.get(args['indicatorType'], args['indicatorType'])
+        owners = args.get('owner')
+        if owners is not None:
+            owners = owners.split(",")
+
+        incidents = tc_incident_associate_indicator(incident_id, indicator_type, indicator, owners)
+        md = []
+        for inc in incidents:
+            md.append('Incident {} with ID {}, was tagged with: {}'.format(inc['name'], inc['id'], indicator))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': incidents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable' : '\n'.join(md),
+            'EntryContext': {
+            'TC.Incident(val.ID && val.ID === obj.ID)' : createContext(incidents, removeNull=True),
+            }
+        })
+
+
+    @logger
+    def tc_incident_associate_indicator(incident_id, indicator_type, indicator, owners):
+        tc = get_client()
+        incidents = tc.incidents()
+        filter1 = incidents.add_filter()
+        filter1.add_id(incident_id)
+        if owners is not None:
+            filter1.add_owner(owners)
+        raw_incidents = incidents.retrieve()
+
+        incidents = []
+        for incident in raw_incidents:
+            incident.associate_indicator(indicator_type, indicator)
+            incidents.append(json.loads(incident.commit().json))
+
+        return incidents
+
+
+    def tc_update_indicator_command():
+        args = demisto.args()
+        indicator = args['indicator']
+        rating = args.get('rating')
+        confidence = args.get('confidence')
+        size = args.get('size')
+        dns_active = args.get('dnsActive')
+        whois_active = args.get('whoisActive')
+
+        raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size, dns_active=dns_active, whois_active=whois_active)
+        ec, indicators = create_context(raw_indicators)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '\n'.join('Indicator {} Updated Successfully'.format(ind['ID']) for ind in indicators),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None):
+        tc = get_client()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(indicator)
+
+        raw_indicators = []
+        for ind in indicators.retrieve():
+            if rating is not None:
+                ind.set_rating(rating)
+            if confidence is not None:
+                ind.set_confidence(int(confidence))
+            if ind.type == 'File' and size is not None:
+                ind.add_size(size)
+            if ind.type == 'Host' and dns_active is not None:
+                ind.set_dns_active(dns_active)
+            if ind.type == 'Host' and whois_active is not None:
+                ind.set_whois_active(whois_active)
+
+            raw_indicators.append(json.loads(ind.commit().json))
+
+        return raw_indicators
+
+
+    def tc_delete_indicator_command():
+        args = demisto.args()
+        indicator = args['indicator']
+
+        tc_delete_indicator(indicator)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Indicator {} removed Successfully'.format(indicator),
+        })
+
+
+    @logger
+    def tc_delete_indicator(indicator):
+        tc = get_client()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(indicator)
+        indicators = indicators.retrieve()
+        for ind in indicators:
+            ind.delete()
+
+
+    def tc_delete_indicator_tag_command():
+        args = demisto.args()
+        indicator = args['indicator']
+        tag = args['tag']
+
+        indicators = tc_delete_indicator_tag(indicator, tag)
+        raw_indicators = [json.loads(ind.json) for ind in indicators]
+        ec, _ = create_context(raw_indicators)
+
+        md = []
+        for ind in indicators:
+            md.append('Removed tag {} from indicator {}.'.format(tag, ind.indicator))
+        if len(md) == 0:
+            md.append('No indicators found')
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': raw_indicators,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable' : '\n'.join(md),
+            'EntryContext': ec,
+        })
+
+
+    @logger
+    def tc_delete_indicator_tag(indicator, tag, owners=None):
+        tc = get_client()
+        indicators = tc.indicators()
+        filter1 = indicators.add_filter()
+        filter1.add_indicator(indicator)
+
+        if owners is not None:
+            owners = owners.split(",")
+            filter1.add_owner(owners)
+
+        indicators = indicators.retrieve()
+        for indicator in indicators:
+            indicator.delete_tag(tag)
+            indicator.commit()
+
+        return indicators
+
+
+    def tc_create_campaign_command():
+        args = demisto.args()
+        name = args['name']
+        owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
+        first_seen = args.get('firstSeen', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+        tag = args.get('tag')
+        security_label = args.get('securityLabel')
+        description = args.get('description')
+
+        raw_campaign = tc_create_campaign(name, owner, first_seen, tag, security_label, description)
+        ec = {
+            'ID' : raw_campaign['id'],
+            'Name' : raw_campaign['name'],
+            'Owner' : raw_campaign['owner']['name'],
+            'FisrtSeen' : raw_campaign['firstSeen'],
+            'Tag' : tag,
+            'SecurityLabel' : security_label,
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_campaign,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Campaign {} Created Successfully'.format(name),
+            'EntryContext': {
+                'TC.Campaign(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+            },
+        })
+
+
+    @logger
+    def tc_create_campaign(name, owner, first_seen, tag=None, security_label=None, description=None):
+        tc = get_client()
+        ro = RequestObject()
+        ro.set_http_method('POST')
+        ro.set_request_uri('/v2/groups/campaigns')
+        body = {
+            'name': name,
+            'firstSeen': first_seen,
+        }
+        ro.set_body(json.dumps(body))
+        response = tc.api_request(ro).json()
+
+        if response.get('status') == 'Success':
+            output = response.get('data', {}).get('campaign', {})
+            event_id = output['id']
+            if description is not None:
+                #Associate Attribute description
+                ro = RequestObject()
+                ro.set_http_method('POST')
+                ro.set_request_uri('/v2/groups/events/{}/attributes'.format(event_id))
+                body = {
+                    'type' : 'Description',
+                    'value' : description,
+                    'displayed': 'true'
+                }
+                ro.set_body(json.dumps(body))
+                response = tc.api_request(ro).json()
+
+            return output
+        else:
+            return_error('Failed to create event')
+
+
+    def tc_create_event_command():
+        args = demisto.args()
+        name = args['name']
+        event_date = args.get('EventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+        status = args.get('status')
+        owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
+        description = args.get('description')
+        tag = args.get('tag')
+
+        raw_event = tc_create_event(name, owner, event_date, tag, status, description)
+        ec = {
+            'ID' : raw_event['id'],
+            'Name' : raw_event['name'],
+            'Owner' : raw_event['owner']['name'],
+            'Date' : raw_event['eventDate'],
+            'Tag' : tag,
+            'Status' : status,
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_event,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Incident {} Created Successfully'.format(name),
+            'EntryContext': {
+                'TC.Event(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+            },
+        })
+
+
+    def tc_create_event(name, owner, event_date, tag=None, status=None, description=None):
+        tc = get_client()
+        ro = RequestObject()
+        ro.set_http_method('POST')
+        ro.set_request_uri('/v2/groups/events')
+        body = {
+            'name': name,
+            'eventDate': event_date,
+            'status': status
+        }
+        ro.set_body(json.dumps(body))
+        response = tc.api_request(ro).json()
+
+        if response.get('status') == 'Success':
+            output = response.get('data', {}).get('event', {})
+            event_id = output['id']
+            if description is not None:
+                #Associate Attribute description
+                ro = RequestObject()
+                ro.set_http_method('POST')
+                ro.set_request_uri('/v2/groups/events/{}/attributes'.format(event_id))
+                body = {
+                    'type' : 'Description',
+                    'value' : description,
+                    'displayed': 'true'
+                }
+                ro.set_body(json.dumps(body))
+                response = tc.api_request(ro).json()
+
+            return output
+        else:
+            return_error('Failed to create event')
+
+
+    def tc_create_threat_command():
+        args = demisto.args()
+        name = args['name']
+        date = args.get('dateAdded', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+        owner = args.get('owner', demisto.params()['defaultOrg'])
+        if owner == '':
+            return_error('you must specify an owner via the command or the Organization parameter')
+
+        raw_threat = tc_create_threat(name, owner, date)
+        ec = {
+            'ID' : raw_threat['id'],
+            'Name' : raw_threat['name'],
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_threat,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Threat {} Created Successfully'.format(name),
+            'EntryContext': {
+                'TC.Threat(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+            },
+        })
+
+
+    def tc_create_threat(name, owner, date):
+        tc = get_client()
+        threats = tc.threats()
+        threat = threats.add(name, owner)
+        threat.set_date_added(date)
+
+        return json.loads(threat.commit().json)
+
+
+    def tc_delete_group_command():
+        args = demisto.args()
+        group_id = int(args['groupID'])
+        group_type = args['type']
+
+        success = tc_delete_group(group_id, group_type.lower())
+        if success:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': '{} {} deleted Successfully'.format(group_type.lower(), group_id),
+            })
+        else:
+            return_error('Failed to delete {} {}'.format(group_type, group_id))
+
+
+    def tc_delete_group(group_id, group_type):
+        tc = get_client()
+        ro = RequestObject()
+        ro.set_http_method('DELETE')
+        ro.set_request_uri('/v2/groups/{}/{}'.format(group_type, group_id))
+        response = tc.api_request(ro).json()
+
+        return response['status'] == 'Success'
+
+
+    def test_integration():
+        tc = get_client()
+        owners = tc.owners()
+        owners.retrieve()
+        demisto.results('ok')
+
+
+    ''' EXECUTION CODE '''
+    COMMANDS = {
+        'test-module' : test_integration,
+        'ip' : ip_command,
+        'url' : url_command,
+        'file' : file_command,
+        'domain' : domain_command,
+
+        'tc-owners' : tc_owners_command,
+        'tc-indicators' : tc_indicators_command,
+        'tc-get-tags' : tc_get_tags_command,
+        'tc-tag-indicator' : tc_tag_indicator_command,
+        'tc-get-indicator' : tc_get_indicator_command,
+        'tc-get-indicators-by-tag' : tc_get_indicators_by_tag_command,
+        'tc-add-indicator' : tc_add_indicator_command,
+
+        'tc-create-incident' : tc_create_incident_command,
+        'tc-fetch-incidents' : tc_fetch_incidents_command,
+        'tc-get-incident-associate-indicators' : tc_get_incident_associate_indicators_command,
+        'tc-incident-associate-indicator' : tc_incident_associate_indicator_command,
+        'tc-update-indicator' : tc_update_indicator_command,
+        'tc-delete-indicator' : tc_delete_indicator_command,
+        'tc-delete-indicator-tag' : tc_delete_indicator_tag_command,
+        'tc-create-campaign' : tc_create_campaign_command,
+        'tc-create-event' : tc_create_event_command,
+        'tc-create-threat' : tc_create_threat_command,
+        'tc-delete-group' : tc_delete_group_command,
+    }
+
+    try:
+        LOG('command is %s' % (demisto.command(), ))
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error('error has occurred: {}'.format(e.message, ))
+
   type: python
   commands:
   - name: ip
@@ -458,27 +1113,61 @@ script:
       description: 'client’s Organization or any Sources or Communities to which a
         client’s API User has been granted permission, comma separated: owner1,owner2,owner3'
     - name: ratingThreshold
-      description: filter on indicators rating grater then given value(value between
+      description: filter on indicators rating greater then given value(value between
         0 to 5)
     - name: confidenceThreshold
-      description: filter on indicators confidence grater then given value(value between
-        0 to 100)
+      description: filter on indicators confidence greater then given value(value
+        between 0 to 100)
     outputs:
-    - contextPath: IP.Address
-      description: Bad IP Address found
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: Indicator's value
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the full Description
-    description: search for IP indicator
+      type: string
+    description: Search for IP indicator
   - name: url
     arguments:
     - name: url
@@ -495,21 +1184,55 @@ script:
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
     outputs:
-    - contextPath: URL.Data
-      description: Bad URLs found
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: Indicator's value
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: search for URL indicator
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    description: Search for URL indicator
   - name: file
     arguments:
     - name: file
@@ -526,39 +1249,190 @@ script:
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
     outputs:
-    - contextPath: File.MD5
-      description: Bad hash found
-    - contextPath: File.SHA1
-      description: Bad hash SHA1
-    - contextPath: File.SHA256
-      description: Bad hash SHA256
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: Indicator's value
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: search for File indicator
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Search for File indicator
   - name: tc-owners
     arguments: []
-    description: retrieve possible owners from this account
+    outputs:
+    - contextPath: TC.Owner.Name
+      description: Owner Name
+      type: string
+    - contextPath: TC.Owner.ID
+      description: Owner ID
+      type: string
+    - contextPath: TC.Owner.Type
+      description: Owner Type
+      type: string
+    description: Retrieve all owners for this account
   - name: tc-indicators
     arguments:
     - name: owner
-      description: client’s Organization or any Sources or Communities to which a
-        client’s API User has been granted permission.
+      description: Filter by indicator's owner
     - name: limit
       description: int limit of results, default is 500
-    description: 'retrieve all indicators '
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator's value
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Retrieve a list of all indicators
   - name: tc-get-tags
     arguments: []
-    description: Get all ThreatConnect Tags in system
+    outputs:
+    - contextPath: TC.Tags
+      description: A list of tag names
+    description: Get a list of all ThreatConnect Tags
   - name: tc-tag-indicator
     arguments:
     - name: tag
@@ -566,11 +1440,10 @@ script:
       description: Tag value
     - name: indicator
       required: true
-      default: true
-      description: Indicator to tag, this is the value of indicator like ip, file
-        hash, url
+      description: Indicator to tag (This is the value of indicator like ip, file
+        hash, url)
     - name: owner
-      description: filter by owner
+      description: Filter by owner
     description: Tag an exiting indicator
   - name: tc-get-indicator
     arguments:
@@ -585,23 +1458,298 @@ script:
     - name: confidenceThreshold
       description: filter on indicators confidence grater then given value(value between
         0 to 100)
-    description: Get indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator's value
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Retrieve information about a specific indicator
   - name: tc-get-indicators-by-tag
     arguments:
     - name: tag
       required: true
       default: true
       description: Tag value to filter by
+    - name: owner
+      description: Filter by owner
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator's value
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
     description: Fetch all indicators that have given tag
   - name: tc-add-indicator
     arguments:
     - name: indicator
       required: true
-      description: The value of the indicator, can be hash/ip/domain/url
+      description: The value of the indicator (hash, ip, domain, url, email address
+        etc...)
     - name: rating
       description: indicator rating, like 2.5
     - name: confidence
       description: confidence in indicator, in scale of 1-100
+    - name: owner
+      description: Owner of new indicator, default will be defaultOrg param
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
     description: Add a new indicator to ThreatConnect
   - name: tc-create-incident
     arguments:
@@ -616,22 +1764,53 @@ script:
     - name: tag
       description: incident tag
     - name: securityLabel
+      auto: PREDEFINED
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
       description: security label like 'TLP Green'
     - name: description
       description: incident description attribute
+    outputs:
+    - contextPath: TC.Incident.Name
+      description: Incident group name
+      type: string
+    - contextPath: TC.Incident.Owner
+      description: Incident Owner
+      type: string
+    - contextPath: TC.Incident.EventDate
+      description: Event date
+      type: date
+    - contextPath: TC.Incident.Tag
+      description: Tag name
+      type: string
+    - contextPath: TC.Incident.SecurityLabel
+      description: Incident's security label
+      type: string
+    - contextPath: TC.Incident.ID
+      description: Incident's ID
     description: Create a new incident group
   - name: tc-fetch-incidents
     arguments:
     - name: incidentId
       default: true
-      description: filter by incident id too
+      description: filter by incident id
     - name: owner
       description: filter by owner
     - name: incidentName
       description: filter by incident name
     outputs:
-    - contextPath: ThreatConnect.incidents
-      description: Incidents from ThreatConnect
+    - contextPath: TC.Incident
+      description: Incident group name
+      type: string
+    - contextPath: TC.Incident.ID
+      description: Incident ID
+      type: string
+    - contextPath: TC.Incident.Owner
+      description: Incident's owner
+      type: string
     description: Fetch TC incidents
   - name: tc-incident-associate-indicator
     arguments:
@@ -655,30 +1834,148 @@ script:
       description: value of indicator (hash,ip, url...)
     - name: owner
       description: filter by owner
-    description: associate an indicator to an existing incident, please note indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Associate an indicator to an existing incident, please note indicator
       MUST exist prior to using this command, look at tc-add-indicator for that
   - name: domain
     arguments:
     - name: domain
       required: true
-      default: true
-      description: Domain name to check reputation
+      description: Domain name
     outputs:
-    - contextPath: Domain.Name
-      description: Bad domain found
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: Indicator's value
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-    - contextPath: DBotScore.Score
-      description: The actual score
-    description: Check domain reputation
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    description: Search for domain indicator
   - name: tc-get-incident-associate-indicators
     arguments:
     - name: incidentId
@@ -686,8 +1983,405 @@ script:
       default: true
       description: incident ID
     - name: owner
-      description: filter by owner too
-    description: Get incidents that are related to a specific indicator
+      description: filter indicators by owner
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator's value
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator's Type
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator's actual score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Get indicator that are related to a specific incident
+  - name: tc-update-indicator
+    arguments:
+    - name: indicator
+      required: true
+      description: Indicator's name
+    - name: rating
+      description: Indicator's rating
+    - name: confidence
+      description: Indicator's confidence
+    - name: size
+      description: Indicator's size (only for file indicators)
+    - name: dnsActive
+      description: Indicator's dnsActive (only for hosts indicator)
+    - name: whoisActive
+      description: Indicator's whoisActive (only for hosts indicator)
+    - name: updatedValues
+      description: 'A comma separated pair of field and value to be updated. For example:
+        "rating=3,confidence=42,description=helloWorld"'
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Update a ThreatConnect indicator
+  - name: tc-delete-indicator-tag
+    arguments:
+    - name: indicator
+      required: true
+      description: Indicator name
+    - name: tag
+      required: true
+      description: Tag name
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator's name
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator's description
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator's owner
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator's creation time
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator's last modification date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator's rating
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator's confidence
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator's Whois Active. Relevant for domains only
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: Indicator's md5. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: Indicator's sha1. Relevant for files only
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: Indicator's sha256. Relevant for files only
+      type: string
+    - contextPath: IP.Address
+      description: IP Indicator's address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full Description
+      type: string
+    - contextPath: URL.Data
+      description: URL Indicator's data
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full Description
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the full Description
+      type: string
+    - contextPath: File.MD5
+      description: File Indicator's md5
+      type: string
+    - contextPath: File.SHA1
+      description: File Indicator's sha1
+      type: string
+    - contextPath: File.SHA256
+      description: File Indicator's sha256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious Files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious Files, the full Description
+      type: string
+    description: Remove a tag from an indicator
+  - name: tc-delete-indicator
+    arguments:
+    - name: indicator
+      required: true
+      description: Indicator name
+    description: Delete an indicator from ThreatConnect
+  - name: tc-create-campaign
+    arguments:
+    - name: name
+      required: true
+      description: Campaign name
+    - name: firstSeen
+      description: The first seen date for the Campaign
+    - name: owner
+      description: Owner of new incident, default will be defaultOrg param
+    - name: description
+      description: Add description to the campaign
+    - name: tag
+      description: campaign tag
+    - name: securityLabel
+      description: Security label like 'TLP Green'
+    outputs:
+    - contextPath: TC.Campaign.Name
+      description: Campaign's name
+      type: string
+    - contextPath: TC.Campaign.Owner
+      description: Campaign's owner
+      type: string
+    - contextPath: TC.Campaign.FirstSeen
+      description: First seen date for the Campaign
+      type: date
+    - contextPath: TC.Campaign.Tag
+      description: Campaign's tag
+      type: string
+    - contextPath: TC.Campaign.SecurityLevel
+      description: Campaign's Security label
+      type: string
+    - contextPath: TC.Campaign.ID
+      description: Campaign ID
+      type: string
+    description: Create a ThreatConnect group from type Campaign
+  - name: tc-create-event
+    arguments:
+    - name: name
+      required: true
+      description: event Name
+    - name: eventDate
+      description: Event Date. if not specified, will use current date
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Needs Review
+      - False Positive
+      - No Further Action
+      - Escalated
+      description: Event's status
+    - name: owner
+      description: Event's owner
+    - name: description
+      description: Event description
+    - name: tag
+      description: Tag the event
+    outputs:
+    - contextPath: TC.Event.Name
+      description: Event name
+      type: string
+    - contextPath: TC.Event.Date
+      description: Event Date
+      type: date
+    - contextPath: TC.Event.Status
+      description: Event status
+      type: string
+    - contextPath: TC.Event.Owner
+      description: Event's owner
+      type: string
+    - contextPath: TC.Event.Tag
+      description: Event's tag
+      type: string
+    - contextPath: TC.Event.ID
+      description: Event ID
+      type: string
+    description: Create a ThreatConnect group from type Event
+  - name: tc-create-threat
+    arguments:
+    - name: name
+      required: true
+      description: Threats group name
+    outputs:
+    - contextPath: TC.Threat.Name
+      description: Threat's name
+      type: string
+    - contextPath: TC.Threat.ID
+      description: Threat's ID
+      type: string
+    description: Create a ThreatConnect group from type Threats
+  - name: tc-delete-group
+    arguments:
+    - name: groupID
+      required: true
+      description: Group's ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Incidents
+      - Events
+      - Campaigns
+      - Threats
+      description: Group type (Incident,Event,Campaign,Threat)
+    description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
   dockerimage: demisto/threatconnect-sdk
+  runonce: false
 tests:
-  - "test-ThreatConnect"
+  - test-ThreatConnect
