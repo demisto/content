@@ -12,7 +12,7 @@ script: |+
   function convertObject(obj) {
       var res = {};
       Object.keys(obj).forEach(function(key) {
-          res[stripToCliName(key)] = value[key];
+          res[stripToCliName(key)] = obj[key];
       });
       return res;
   }
