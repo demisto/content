@@ -820,3 +820,5 @@ inputs:
   value: company.com
   description: The domains for the company to try and match closeness of sender. Comma
     separated.
+tests:
+  - No test - Deprecated playbook

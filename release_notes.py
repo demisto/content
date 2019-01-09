@@ -17,6 +17,7 @@ LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
     "edit": "New/Edit",
     "close": "Close",
+    "quickView": "Quick View",
 }
 
 INTEGRATIONS_DIR = "Integrations"
@@ -513,7 +514,7 @@ def create_file_release_notes(file_name, delete_file_path):
         change_type = names[0]
         full_file_name = names[1]
 
-        if not "/" in full_file_name:
+        if "/" not in full_file_name:
             return
 
         file_type = full_file_name.split("/")[0]
