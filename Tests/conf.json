@@ -777,7 +777,8 @@
         },
         {
             "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 500
         },
         {
             "integrations": "Centreon",
