@@ -1,6 +1,6 @@
-id: Recorded Future Test
+id: Recorded Future_copy Test
 version: -1
-name: Recorded Future Test
+name: Recorded Future_copy Test
 starttaskid: "0"
 tasks:
   "0":
@@ -33,11 +33,11 @@ tasks:
       id: eb4e9484-cc92-448e-834b-993b103924a1
       version: -1
       name: recorded-future-get-related-entities
-      description: Look up threat intel context for an indicator in Recorded Future.
-      script: Recorded Future|||recorded-future-get-related-entities
+      description: Look up threat intel context for an indicator in Recorded Future_copy.
+      script: Recorded Future_copy|||recorded-future-get-related-entities
       type: regular
       iscommand: true
-      brand: Recorded Future
+      brand: Recorded Future_copy
     nexttasks:
       '#none#':
       - "2"
@@ -68,11 +68,11 @@ tasks:
       id: 212a5c7e-ecca-4ea3-834b-b1702d36ea74
       version: -1
       name: ip
-      description: Look up threat intel information for an IP in Recorded Future.
-      script: Recorded Future|||ip
+      description: Look up threat intel information for an IP in Recorded Future_copy.
+      script: Recorded Future_copy|||ip
       type: regular
       iscommand: true
-      brand: Recorded Future
+      brand: Recorded Future_copy
     nexttasks:
       '#none#':
       - "5"
@@ -106,10 +106,10 @@ tasks:
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
         Future.
-      script: Recorded Future|||domain
+      script: Recorded Future_copy|||domain
       type: regular
       iscommand: true
-      brand: Recorded Future
+      brand: Recorded Future_copy
     nexttasks:
       '#none#':
       - "6"
@@ -138,11 +138,11 @@ tasks:
       id: 4c018bdf-5072-4893-8e88-5a883cf59fd5
       version: -1
       name: file
-      description: Look up threat intel information for a file in Recorded Future.
-      script: Recorded Future|||file
+      description: Look up threat intel information for a file in Recorded Future_copy.
+      script: Recorded Future_copy|||file
       type: regular
       iscommand: true
-      brand: Recorded Future
+      brand: Recorded Future_copy
     nexttasks:
       '#none#':
       - "7"
@@ -302,10 +302,10 @@ tasks:
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
         Future.
-      script: Recorded Future|||domain
+      script: Recorded Future_copy|||domain
       type: regular
       iscommand: true
-      brand: Recorded Future
+      brand: Recorded Future_copy
     nexttasks:
       '#none#':
       - "10"
