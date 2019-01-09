@@ -85,26 +85,6 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
-          """
-            Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
-            Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
-
-            :type date_str_or_dt: ``str`` or ``datetime.datetime``
-            :param date_str_or_dt: The date to be parsed. (required)
-
-            :type date_format: ``str``
-            :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type datetime.datetime). (optional)
-
-            :return: The parsed timestamp.
-            :rtype: ``int``
-          """
-          if isinstance(date_str_or_dt, basestring):
-              return int(time.mktime(time.strptime(date_str_or_dt, date_format))) * 1000
-
-          # otherwise datetime.datetime
-          return int(time.mktime(date_str_or_dt.timetuple())) * 1000
-
 
     def http_request(method, url_suffix, params=None):
         LOG('running request with url=%s' % (BASE_URL + url_suffix))
@@ -151,7 +131,10 @@ script:
             return 'CRC32'
         else: return 'CTPH'
 
+
     ''' FUNCTIONS '''
+
+
     def domain_command():
         domain = demisto.args().get('domain')
         detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -241,7 +224,7 @@ script:
         params = {
             'fields': 'sightings,timestamps,risk'
         }
-        #'?fields=sightings%2Ctimestamps%2Crisk'
+
         response = http_request('get', cmd_url, params=params)
         return response
 
@@ -255,7 +238,7 @@ script:
             risk = data['risk']
             rf_score = risk['score']
             sightings = data['sightings']
-            encoded_url = urllib.quote_plus(url) #.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+            encoded_url = urllib.quote_plus(url)
             hr = '### Recorded Future url reputation for ' + url + '\n'
             hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
             hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
@@ -331,12 +314,12 @@ script:
         })
 
     def url_lookup(url):
-        encoded_url = urllib.quote_plus(url) #url.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+        encoded_url = urllib.quote_plus(url)
         cmd_url = 'url/' + encoded_url
         params = {
             'fields': 'sightings,timestamps,risk'
         }
-        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+
         response = http_request('get', cmd_url, params=params)
         return response
 
@@ -427,7 +410,7 @@ script:
 
     def ip_lookup(ip):
         cmd_url = 'ip/' + ip
-        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+
         params = {
             'fields': 'sightings,timestamps,risk'
         }
@@ -522,7 +505,7 @@ script:
 
     def file_lookup(file):
         cmd_url = 'hash/' + file
-        #+ '?fields=sightings%2Ctimestamps%2Crisk'
+
         params = {
             'fields': 'sightings,timestamps,risk'
         }
@@ -542,7 +525,7 @@ script:
             entity_result_type = entity_result_type.split(',')
             entity_types = []
             if 'All' in entity_result_type:
-                entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware', 'RelatedAttackVector']
+                entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware', 'RelatedAttackVector', 'URL']
             else:
                 if 'IP' in entity_result_type:
                     entity_types.append('RelatedIpAddress')
@@ -554,17 +537,22 @@ script:
                     entity_types.append('RelatedAttackVector')
                 if 'Malware' in entity_result_type:
                     entity_types.append('RelatedMalware')
+                if 'URL' in entity_result_type:
+                    entity_types.append('RelatedURL')
             ip_outputs = []
             hash_outputs = []
             domain_outputs = []
             attacker_outputs = []
             malware_outputs = []
+            url_outputs = []
+
             output_map = {
                 'RelatedIpAddress': ip_outputs,
                 'RelatedHash': hash_outputs,
                 'RelatedInternetDomainName': domain_outputs,
                 'RelatedAttackVector': attacker_outputs,
                 'RelatedMalware': malware_outputs,
+                'RelatedURL': url_outputs
             }
             related_entities = response['data']['relatedEntities']
             for related_entity in related_entities:
@@ -573,9 +561,14 @@ script:
                     for entity in entities:
                         hr_entity = {
                             'Count': entity['count'],
-                            'ID': entity['entity']['id'],
-                            'Name': entity['entity']['name']
+                            'ID': entity['entity']['id']
                         }
+
+                        if related_entity['type'] == 'RelatedURL':
+                            hr_entity['Data'] = entity['entity']['name']
+                        else:
+                            hr_entity['Name'] = entity['entity']['name']
+
                         output_map[related_entity['type']].append(hr_entity)
             hr = ''
 
@@ -595,6 +588,9 @@ script:
             if malware_outputs:
                 hr += tableToMarkdown('Malware', malware_outputs)
                 related_entities_ec['Malware'] = malware_outputs
+            if url_outputs:
+                hr += tableToMarkdown('URL', malware_outputs)
+                related_entities_ec['URL'] = malware_outputs
 
             if hr:
                 hr = '### Recorded Future related entities to ' + entity_value + '\n' + hr
@@ -619,6 +615,13 @@ script:
                             'RelatedEntities': related_entities_ec
                         }
                     }
+                elif entity_type == 'url':
+                    ec[outputPaths['url']] = {
+                        'Data': entity_value,
+                        'RecordedFuture': {
+                            'RelatedEntities': related_entities_ec
+                        }
+                    }
         else:
             hr = 'No results found'
         demisto.results({
@@ -632,7 +635,7 @@ script:
 
     def get_related_entities(entity_value, entity_type):
         cmd_url = entity_type + '/' + entity_value
-        #+ '?fields=relatedEntities'
+
         params = {
             'fields': 'relatedEntities'
         }
@@ -721,7 +724,7 @@ script:
 
     def hashlist_lookup(limit, riskLower, riskHigher, orderby, direction):
         cmd_url = 'hash/search'
-        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+
         params = {
             'fields': 'entity,intelCard,risk,sightings,timestamps'
         }
@@ -819,7 +822,7 @@ script:
 
     def iplist_lookup(limit, riskLower, riskHigher, orderby, direction):
         cmd_url = 'ip/search'
-        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+
         params = {
             'fields': 'entity,intelCard,risk,sightings,timestamps'
         }
@@ -916,7 +919,7 @@ script:
 
     def domainlist_lookup(limit, riskLower, riskHigher, orderby, direction):
         cmd_url = 'domain/search'
-        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+
         params = {
             'fields': 'entity,intelCard,risk,sightings,timestamps'
         }
@@ -946,7 +949,7 @@ script:
         for result in resultlist:
             timestamps = result['timestamps']
             url = result['entity']['name']
-            intelcard = urllib.quote_plus(url) #.url.replace('\"', '').replace(':', '%3A').replace('/', '%2F')
+            intelcard = urllib.quote_plus(url)
             risk = result['risk']
             rf_score = risk['score']
             sightings = result['sightings']
@@ -1014,7 +1017,7 @@ script:
 
     def urllist_lookup(limit, riskLower, riskHigher, orderby, direction):
         cmd_url = 'url/search'
-        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+
         params = {
             'fields': 'entity,intelCard,risk,sightings,timestamps'
         }
@@ -1109,7 +1112,7 @@ script:
 
     def vulnlist_lookup(limit, riskLower, riskHigher, orderby, direction):
         cmd_url = 'vulnerability/search'
-        #+ '?fields=entity%2CintelCard%2Crisk%2Csightings%2Ctimestamps&limit=' + limit + '&orderby=sevendayshits&riskScore=%5B' + riskLower +'%2C' + riskHigher + '%5D'
+
         params = {
             'fields': 'entity,intelCard,risk,sightings,timestamps'
         }
@@ -1245,7 +1248,6 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
         return_error(e.message)
   type: python
   commands:
@@ -1408,6 +1410,7 @@ script:
       - domain
       - ip
       - file
+      - url
       description: The type of entity to fetch context for. (Should be provided with
         its value in entityValue argument)
     - name: entityValue
@@ -1491,6 +1494,15 @@ script:
     - contextPath: File.RecordedFuture.RelatedEntities.Malware.Name
       description: File related entity name (Malware)
       type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.Count
+      description: File related entity count (URL)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.ID
+      description: File related entity ID (URL)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.Data
+      description: File related entity name (URL)
+      type: string
     - contextPath: IP.Address
       description: IP address
       type: string
@@ -1539,6 +1551,15 @@ script:
     - contextPath: IP.RecordedFuture.RelatedEntities.Malware.Name
       description: IP related entity name (Malware)
       type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.Count
+      description: IP related entity count (URL)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.ID
+      description: IP related entity ID (URL)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.Data
+      description: IP related entity name (URL)
+      type: string
     - contextPath: Domain.Name
       description: Domain name
       type: string
@@ -1586,6 +1607,72 @@ script:
       type: string
     - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.Name
       description: Domain related entity name (Malware)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.Count
+      description: Domain related entity count (URL)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.ID
+      description: Domain related entity ID (URL)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.Data
+      description: Domain related entity name (URL)
+      type: string
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: URL related entity count (IP)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: URL related entity ID (IP)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: URL related entity name (IP)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.Count
+      description: URL related entity count (Hash)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.ID
+      description: URL related entity ID (Hash)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.Name
+      description: URL related entity name (Hash)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.Count
+      description: URL related entity count (Domain)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.ID
+      description: URL related entity ID (Domain)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.Name
+      description: URL related entity name (Domain)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.Count
+      description: URL related entity count (Attacker)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.ID
+      description: URL related entity ID (Attacker)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.Name
+      description: URL related entity name (Attacker)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.Count
+      description: URL related entity count (Malware)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.ID
+      description: URL related entity ID (Malware)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.Name
+      description: URL related entity name (Malware)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.Count
+      description: URL related entity count (URL)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.ID
+      description: URL related entity ID (URL)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.Data
+      description: URL related entity name (URL)
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   - name: url
@@ -2013,13 +2100,13 @@ script:
   - name: recorded-future-get-domain-risklist
     arguments:
     - name: list
-      description: Specify a URL list
+      description: Specify a URL list, see the documentation for the available lists.
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File Name
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The EntryID of the file
       type: string
     - contextPath: InfoFile.Size
       description: File Size
@@ -2037,13 +2124,14 @@ script:
   - name: recorded-future-get-url-risklist
     arguments:
     - name: list
-      description: Specify a domain list
+      description: Specify a domain list, see the documentation for the available
+        lists.
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File Name
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The EntryID of the file
       type: string
     - contextPath: InfoFile.Size
       description: File Size
@@ -2061,13 +2149,13 @@ script:
   - name: recorded-future-get-ip-risklist
     arguments:
     - name: list
-      description: Specify an IP list
+      description: Specify an IP list, see the documentation for the available lists.
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File Name
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The EntryID of the file
       type: string
     - contextPath: InfoFile.Size
       description: File Size
@@ -2082,4 +2170,3 @@ script:
       description: File Extension
       type: string
     description: Gets the IP risk list from Recorded Future
-  runonce: false
