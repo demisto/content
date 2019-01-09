@@ -10603,6 +10603,15 @@
                     "intsights-close-alert"
                 ]
             }
+        }, 
+        {
+            "MaxMind GeoIP2": {
+                "name": "MaxMind GeoIP2", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "ip"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -14268,6 +14277,18 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "MaxMind Test": {
+                "name": "MaxMind Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "ip"
                 ]
             }
         }
