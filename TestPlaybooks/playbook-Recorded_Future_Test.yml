@@ -1,43 +1,44 @@
-id: Recorded Future_copy Test
-version: -1
-name: Recorded Future_copy Test
+id: Recorded Future Test
+version: 18
+name: Recorded Future Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 552dc470-85da-4fe9-8b43-de1115d16cbb
+    taskid: 551d738f-4cd3-482e-88e9-aeb5bd2eecd7
     type: start
     task:
-      id: 552dc470-85da-4fe9-8b43-de1115d16cbb
+      id: 551d738f-4cd3-482e-88e9-aeb5bd2eecd7
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: eb4e9484-cc92-448e-834b-993b103924a1
+    taskid: 1ec72f95-5977-434a-8df5-02bad33b0a4e
     type: regular
     task:
-      id: eb4e9484-cc92-448e-834b-993b103924a1
+      id: 1ec72f95-5977-434a-8df5-02bad33b0a4e
       version: -1
       name: recorded-future-get-related-entities
-      description: Look up threat intel context for an indicator in Recorded Future_copy.
-      script: Recorded Future_copy|||recorded-future-get-related-entities
+      description: Look up threat intel context for an indicator in Recorded Future.
+      script: Recorded Future|||recorded-future-get-related-entities
       type: regular
       iscommand: true
-      brand: Recorded Future_copy
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "2"
@@ -55,24 +56,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 195
+          "x": 910,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 212a5c7e-ecca-4ea3-834b-b1702d36ea74
+    taskid: 5359e30d-780f-4162-827d-a44de955e572
     type: regular
     task:
-      id: 212a5c7e-ecca-4ea3-834b-b1702d36ea74
+      id: 5359e30d-780f-4162-827d-a44de955e572
       version: -1
       name: ip
-      description: Look up threat intel information for an IP in Recorded Future_copy.
-      script: Recorded Future_copy|||ip
+      description: Look up threat intel information for an IP in Recorded Future.
+      script: Recorded Future|||ip
       type: regular
       iscommand: true
-      brand: Recorded Future_copy
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "5"
@@ -91,25 +93,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 265,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: e1892bfc-c8c2-496f-8a96-2ba343954e8d
+    taskid: fa3915d3-559e-4365-8bcd-13f7f0ec60de
     type: regular
     task:
-      id: e1892bfc-c8c2-496f-8a96-2ba343954e8d
+      id: fa3915d3-559e-4365-8bcd-13f7f0ec60de
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
         Future.
-      script: Recorded Future_copy|||domain
+      script: Recorded Future|||domain
       type: regular
       iscommand: true
-      brand: Recorded Future_copy
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "6"
@@ -125,24 +128,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 695,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 4c018bdf-5072-4893-8e88-5a883cf59fd5
+    taskid: 58175ab9-e8c1-49fc-8d05-b846ba1b6807
     type: regular
     task:
-      id: 4c018bdf-5072-4893-8e88-5a883cf59fd5
+      id: 58175ab9-e8c1-49fc-8d05-b846ba1b6807
       version: -1
       name: file
-      description: Look up threat intel information for a file in Recorded Future_copy.
-      script: Recorded Future_copy|||file
+      description: Look up threat intel information for a file in Recorded Future.
+      script: Recorded Future|||file
       type: regular
       iscommand: true
-      brand: Recorded Future_copy
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "7"
@@ -159,17 +163,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 1125,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: f47b44dd-5645-4ca3-81ad-4d0f188f9a4e
+    taskid: 16afadcb-5f3f-4963-85ef-5e6b56d5481c
     type: regular
     task:
-      id: f47b44dd-5645-4ca3-81ad-4d0f188f9a4e
+      id: 16afadcb-5f3f-4963-85ef-5e6b56d5481c
       version: -1
       name: VerifyContext IP
       description: |-
@@ -195,17 +200,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 9e6f3df4-6acc-42ce-8a94-395ffb7e19b4
+    taskid: daef6526-c3bb-402d-8394-66bd365edcd5
     type: regular
     task:
-      id: 9e6f3df4-6acc-42ce-8a94-395ffb7e19b4
+      id: daef6526-c3bb-402d-8394-66bd365edcd5
       version: -1
       name: VerifyContext - Domain
       description: |-
@@ -231,17 +237,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 695,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 435d1446-4696-4aac-8db2-23c3de4cd460
+    taskid: ba060184-88b8-4bc1-8549-cfaa29d7bf8d
     type: regular
     task:
-      id: 435d1446-4696-4aac-8db2-23c3de4cd460
+      id: ba060184-88b8-4bc1-8549-cfaa29d7bf8d
       version: -1
       name: VerifyContext - File
       description: |-
@@ -267,45 +274,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: f7a155c9-79e2-483d-8388-3c065b2ca732
-    type: title
-    task:
-      id: f7a155c9-79e2-483d-8388-3c065b2ca732
-      version: -1
-      name: Success!
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
+          "x": 1125,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: fb0af1ea-6b8a-48ed-88c2-b69e91522986
+    type: title
+    task:
+      id: fb0af1ea-6b8a-48ed-88c2-b69e91522986
+      version: -1
+      name: URL test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 81ae7b8c-06ec-410b-87f3-8267a4212b4f
+    taskid: 6c1d05a0-c0ca-444d-8d8f-9fb162e32161
     type: regular
     task:
-      id: 81ae7b8c-06ec-410b-87f3-8267a4212b4f
+      id: 6c1d05a0-c0ca-444d-8d8f-9fb162e32161
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
         Future.
-      script: Recorded Future_copy|||domain
+      script: Recorded Future|||domain
       type: regular
       iscommand: true
-      brand: Recorded Future_copy
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "10"
@@ -321,17 +333,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 370
+          "x": 1555,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: a1b417ff-65dc-4ced-8ca1-f46fe5c57b34
+    taskid: 6b701b87-b594-4df9-8305-c0703d9b25de
     type: condition
     task:
-      id: a1b417ff-65dc-4ced-8ca1-f46fe5c57b34
+      id: 6b701b87-b594-4df9-8305-c0703d9b25de
       version: -1
       name: Verify DBot Score=0
       type: condition
@@ -366,18 +379,709 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 1555,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 9b9e785f-8358-4e8b-8dc5-050a82daf74a
+    type: regular
+    task:
+      id: 9b9e785f-8358-4e8b-8dc5-050a82daf74a
+      version: -1
+      name: url
+      description: Look up threat intel information for a url in Recorded Future.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "13"
+      - "14"
+    scriptarguments:
+      detailed:
+        simple: "true"
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.batticaloa.mc.gov.lk/
+      using:
+        simple: Recorded Future_instance
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 574fc94d-be2c-447e-866f-11ba3700f57d
+    type: regular
+    task:
+      id: 574fc94d-be2c-447e-866f-11ba3700f57d
+      version: -1
+      name: VerifyContext - URL
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue:
+        simple: https://www.batticaloa.mc.gov.lk/
+      fields: {}
+      path:
+        simple: URL.Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: a6a47202-f0b6-41a3-8fb9-9a43e953b766
+    type: regular
+    task:
+      id: a6a47202-f0b6-41a3-8fb9-9a43e953b766
+      version: -1
+      name: VerifyContext - DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue:
+        simple: URL
+      fields: {}
+      path:
+        simple: DBotScore.Type
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 18784601-2de7-43af-805b-7137ac61d221
+    type: regular
+    task:
+      id: 18784601-2de7-43af-805b-7137ac61d221
+      version: -1
+      name: VerifyContext - RecordedFuture
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Criticality,FirstSeen,LastSeen
+      path:
+        simple: URL.RecordedFuture
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 76e2755a-57cd-4a97-8308-b6908f5b621c
+    type: regular
+    task:
+      id: 76e2755a-57cd-4a97-8308-b6908f5b621c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: f9d07f4f-aa05-416f-8b69-1a7296cf52a7
+    type: regular
+    task:
+      id: f9d07f4f-aa05-416f-8b69-1a7296cf52a7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 77bac36a-e4fb-4727-8c24-ffa2cdbc5fac
+    type: title
+    task:
+      id: 77bac36a-e4fb-4727-8c24-ffa2cdbc5fac
+      version: -1
+      name: Threats test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 419ba47a-4607-4c5c-8b7e-8ba7ba5dfb2e
+    type: regular
+    task:
+      id: 419ba47a-4607-4c5c-8b7e-8ba7ba5dfb2e
+      version: -1
+      name: recorded-future-get-threats-hash
+      description: Returns hash threats from Recorded Future
+      script: Recorded Future|||recorded-future-get-threats-hash
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      detailed: {}
+      direction: {}
+      limit: {}
+      orderby: {}
+      riskHigher: {}
+      riskLower: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 0653d269-614a-4a9c-8849-a17dcd24e80b
+    type: regular
+    task:
+      id: 0653d269-614a-4a9c-8849-a17dcd24e80b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "21"
+      - "23"
+      - "25"
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 238c4155-dc63-484f-800b-c3b5deeb4295
+    type: regular
+    task:
+      id: 238c4155-dc63-484f-800b-c3b5deeb4295
+      version: -1
+      name: VerifyContext - Hash
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: b18adb3b-16dc-4285-811d-41eed7754ad3
+    type: regular
+    task:
+      id: b18adb3b-16dc-4285-811d-41eed7754ad3
+      version: -1
+      name: recorded-future-get-threats-ip
+      description: Returns IP threats from Recorded Future
+      script: Recorded Future|||recorded-future-get-threats-ip
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      detailed: {}
+      direction: {}
+      limit: {}
+      orderby: {}
+      riskHigher: {}
+      riskLower: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 9fd3cf2a-4ef3-48e3-8221-f6f29283960c
+    type: regular
+    task:
+      id: 9fd3cf2a-4ef3-48e3-8221-f6f29283960c
+      version: -1
+      name: VerifyContext - IP
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 22adae2c-6e1f-4669-8386-74c38a22eab4
+    type: regular
+    task:
+      id: 22adae2c-6e1f-4669-8386-74c38a22eab4
+      version: -1
+      name: recorded-future-get-threats-url
+      description: Returns URL threats from Recorded Future
+      script: Recorded Future|||recorded-future-get-threats-url
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      detailed: {}
+      direction: {}
+      limit: {}
+      orderby: {}
+      riskHigher: {}
+      riskLower: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: d8c34d91-ca6b-4d02-8ee3-fd091834dd65
+    type: regular
+    task:
+      id: d8c34d91-ca6b-4d02-8ee3-fd091834dd65
+      version: -1
+      name: VerifyContext - URL
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 06d0a77b-a344-44d7-88f2-d28b6a0f0333
+    type: regular
+    task:
+      id: 06d0a77b-a344-44d7-88f2-d28b6a0f0333
+      version: -1
+      name: recorded-future-get-threats-domain
+      description: Returns domain threats Recorded Future
+      script: Recorded Future|||recorded-future-get-threats-domain
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      detailed:
+        simple: "true"
+      direction: {}
+      limit: {}
+      orderby: {}
+      riskHigher: {}
+      riskLower: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 5f803c89-8a56-41b0-88b0-db86af1781a2
+    type: regular
+    task:
+      id: 5f803c89-8a56-41b0-88b0-db86af1781a2
+      version: -1
+      name: VerifyContext - Domain
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 6567347c-ee11-46cc-81fa-9d02c6b830ff
+    type: regular
+    task:
+      id: 6567347c-ee11-46cc-81fa-9d02c6b830ff
+      version: -1
+      name: recorded-future-get-threats-vulnerabilities
+      description: Returns vulnerability threats from Recorded Future
+      script: Recorded Future|||recorded-future-get-threats-vulnerabilities
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      detailed: {}
+      direction: {}
+      limit: {}
+      orderby: {}
+      riskHigher: {}
+      riskLower: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: a86771d3-4e12-4567-8741-e0c5751b308e
+    type: regular
+    task:
+      id: a86771d3-4e12-4567-8741-e0c5751b308e
+      version: -1
+      name: VerifyContext - RecordedFuture
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Criticality,FirstSeen,LastSeen
+      path:
+        simple: Domain.RecordedFuture
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 0d0773e7-7159-44ef-82d6-a3b359a441e1
+    type: regular
+    task:
+      id: 0d0773e7-7159-44ef-82d6-a3b359a441e1
+      version: -1
+      name: VerifyContext - CVE
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID
+      path:
+        simple: CVE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: c4c1ff16-cae4-4bc6-8262-1b58e20b7f5c
+    type: title
+    task:
+      id: c4c1ff16-cae4-4bc6-8262-1b58e20b7f5c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 1670,
+        "height": 2515,
+        "width": 2100,
         "x": 50,
         "y": 50
       }

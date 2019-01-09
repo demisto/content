@@ -14772,13 +14772,20 @@
             "Recorded Future Test": {
                 "name": "Recorded Future Test", 
                 "implementing_scripts": [
-                    "VerifyContext"
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
                 "implementing_commands": [
+                    "recorded-future-get-threats-url", 
+                    "recorded-future-get-threats-domain", 
+                    "url", 
                     "ip", 
+                    "recorded-future-get-threats-hash", 
                     "domain", 
+                    "recorded-future-get-threats-vulnerabilities", 
                     "recorded-future-get-related-entities", 
-                    "file"
+                    "file", 
+                    "recorded-future-get-threats-ip"
                 ]
             }
         }, 
