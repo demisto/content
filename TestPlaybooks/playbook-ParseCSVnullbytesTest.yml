@@ -131,18 +131,22 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 9374d397-6652-435c-8d2c-27ccda68b2b1
+    taskid: 8186a2a2-db48-44e7-8af2-e059345c529a
     type: regular
     task:
-      id: 9374d397-6652-435c-8d2c-27ccda68b2b1
+      id: 8186a2a2-db48-44e7-8af2-e059345c529a
       version: -1
-      name: Awesome - Script is Removing Nullbyte Chars
+      name: Print Success To The War Room
+      scriptName: Print
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "16"
+    scriptarguments:
+      value:
+        simple: Awesome - Script is Removing Nullbyte Chars
     separatecontext: false
     view: |-
       {
@@ -155,23 +159,16 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: aca0f924-1c26-4fd1-89af-b82024acadf5
-    type: regular
+    taskid: 1a791e22-9f9b-4d65-8225-3b10f5a5f09d
+    type: title
     task:
-      id: aca0f924-1c26-4fd1-89af-b82024acadf5
+      id: 1a791e22-9f9b-4d65-8225-3b10f5a5f09d
       version: -1
-      name: closeInvestigation
+      name: Done
       description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes:
-        simple: ${AreValuesEqual}
-      closeReason: {}
-      id: {}
     separatecontext: false
     view: |-
       {
@@ -286,18 +283,22 @@ tasks:
     timertriggers: []
   "21":
     id: "21"
-    taskid: 452bc891-a295-497d-8b83-cecf2a019da9
+    taskid: d50b7273-025a-46df-8a00-c6f5ff156392
     type: regular
     task:
-      id: 452bc891-a295-497d-8b83-cecf2a019da9
+      id: d50b7273-025a-46df-8a00-c6f5ff156392
       version: -1
-      name: Uh-Oh - Script isn't removing nullbyte chars as expected
+      name: Print Failure To The War Room
+      scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "16"
+    scriptarguments:
+      message:
+        simple: Uh-Oh - Script isn't removing nullbyte chars as expected
     separatecontext: false
     view: |-
       {

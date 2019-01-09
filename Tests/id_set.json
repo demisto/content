@@ -15203,13 +15203,12 @@
             "ParseCSVnullbytesTest": {
                 "name": "ParseCSVnullbytesTest", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "FileCreateAndUpload", 
                     "ParseCSV", 
+                    "FileCreateAndUpload", 
+                    "PrintErrorEntry", 
+                    "Print", 
+                    "DeleteContext", 
                     "AreValuesEqual"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation"
                 ]
             }
         }
