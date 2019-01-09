@@ -30,5 +30,11 @@ x.x.x
 - [ ] Documentation (with link to it)
 - [ ] Code Review
 
+## Dependencies
+Mention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.
+- [ ] Dependency 1
+- [ ] Dependency 2
+- [ ] Dependency 3
+
 ## Additional changes
 Describe additional changes done, for example adding a function to common server.
