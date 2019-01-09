@@ -1,5 +1,5 @@
 id: get_file_sample_by_hash_-_cylance_protect_-_test
-version: 5
+version: -1
 name: Get File Sample By Hash - Cylance Protect - Test
 starttaskid: "0"
 tasks:
