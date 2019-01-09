@@ -11454,14 +11454,14 @@
                 "name": "Email Sender Python", 
                 "implementing_scripts": [
                     "Set", 
-                    "FileCreateAndUpload", 
+                    "RaiseError", 
                     "DeleteContext", 
-                    "Sleep"
+                    "Sleep", 
+                    "FileCreateAndUpload"
                 ], 
                 "implementing_commands": [
                     "googleapps-gmail-get-mail", 
                     "googleapps-gmail-search", 
-                    "ThrowException", 
                     "send-mail"
                 ]
             }
@@ -12036,8 +12036,8 @@
             "CrowdStrike Falcon Intel v2": {
                 "name": "CrowdStrike Falcon Intel v2", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "ThrowException"
+                    "RaiseError", 
+                    "DeleteContext"
                 ], 
                 "implementing_commands": [
                     "domain", 
