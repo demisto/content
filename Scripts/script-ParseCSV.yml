@@ -217,4 +217,5 @@ runonce: false
 runas: DBotWeakRole
 releaseNotes: "Updated to replace null byte character with the empty string"
 tests:
+  - TestParseCSV
   - ParseCSVnullbytesTest - tests that script replaces nullbyte chars with empty strings
