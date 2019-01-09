@@ -78,3 +78,5 @@ dependson:
   - cylance|||file
   - cy-upload
 timeout: 0s
+tests:
+  - No test - no instance

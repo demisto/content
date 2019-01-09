@@ -17,6 +17,7 @@ LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
     "edit": "New/Edit",
     "close": "Close",
+    "quickView": "Quick View",
 }
 
 INTEGRATIONS_DIR = "Integrations"
