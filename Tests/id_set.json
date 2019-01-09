@@ -11427,6 +11427,9 @@
                 "fromversion": "3.5.0", 
                 "commands": [
                     "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
                 ]
             }
         }, 
@@ -11436,6 +11439,9 @@
                 "fromversion": "3.5.0", 
                 "commands": [
                     "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
                 ]
             }
         }, 
@@ -11445,6 +11451,9 @@
                 "fromversion": "3.5.0", 
                 "commands": [
                     "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
                 ]
             }
         }
@@ -15179,9 +15188,9 @@
                     "closeInvestigation", 
                     "ip"
                 ]
-          }
-      },
-      {
+            }
+        }, 
+        {
             "SLA Scripts - Test": {
                 "name": "SLA Scripts - Test", 
                 "implementing_scripts": [
