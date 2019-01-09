@@ -543,7 +543,6 @@ def create_test_file(is_nightly):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-            files_string = 'm Integrations/integration-PagerDutyV2.yml'
         else:
             commit_string = run_git_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
