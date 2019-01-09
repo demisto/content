@@ -474,8 +474,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if not is_test_in_conf_json(file_path) or \
-                    (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)) or \
-                    validate_name_equals_id(file_path, collect_ids(file_path)):
+                    (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)):
                 has_schema_problem = True
 
             if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
