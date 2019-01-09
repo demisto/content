@@ -1,7 +1,5 @@
 import os
-import string
 import threading
-import select
 import sys
 import json
 import traceback
@@ -18,6 +16,7 @@ win = sys.platform.startswith('win')
 if win:
     __input_queue = queue.Queue()
 
+
 def read_input_loop():
     global __input_queue
     while True:
@@ -25,6 +24,7 @@ def read_input_loop():
         __input_queue.put(line)
         if line == '':
             break
+
 
 def __readWhileAvailable():
     if win:
@@ -44,6 +44,7 @@ def __readWhileAvailable():
         buff = sys.stdin.readline()
         # While available, read all the other chars
         return buff
+
 
 """Demisto instance for scripts only"""
 
@@ -394,6 +395,7 @@ def send_script_completed():
     sys.stdout.write('\\n')
     sys.stdout.flush()
 
+
 def send_script_exception(exc_type, exc_value, exc_traceback):
     ex_string = traceback.format_exception(exc_type, exc_value, exc_traceback)
     if ex_string == 'None\n':
@@ -402,6 +404,7 @@ def send_script_exception(exc_type, exc_value, exc_traceback):
     json.dump({'type': 'exception', 'args': {'exception': ex_string}}, sys.stdout)
     sys.stdout.write('\\n')
     sys.stdout.flush()
+
 
 def send_pong():
     json.dump({'type': 'pong'}, sys.stdout)
@@ -415,7 +418,7 @@ def do_ping_pong():
     while True:
         ping = __readWhileAvailable()
         if ping == 'ping\n':
-            send_pong() # return pong to server to indicate that everything is fine
+            send_pong()  # return pong to server to indicate that everything is fine
         else:
             return ping
 
@@ -424,10 +427,12 @@ backup_env_vars = {}
 for key in os.environ.keys():
     backup_env_vars[key] = os.environ[key]
 
+
 def rollback_system():
     os.environ = {}
     for key in backup_env_vars.keys():
         os.environ[key] = backup_env_vars[key]
+
 
 while True:
     contextString = do_ping_pong()
@@ -456,7 +461,7 @@ while True:
             'win': win
         }
 
-        exec(code, sub_globals, sub_globals)
+        exec(code, sub_globals, sub_globals)  # guardrails-disable-line
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -464,7 +469,6 @@ while True:
     except SystemExit:
         # print 'Will not stop on sys.exit(0)'
         pass
-
 
     rollback_system()
 
