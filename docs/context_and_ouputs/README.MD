@@ -8,21 +8,74 @@ The main use of context is to pass data between playbook tasks. Another usage is
 
 Since context is used within playbooks, it is critical that the context outputs remain reproducible. Meaning, that the structure of the context does not change. 
 
-**ELI5:** If someone gives you an apple, the action of receiving the apple is an event (incident). You can observe some things about that apple. What color is it? How does it taste? Who gave it to you? These observations are part of the context of the apple receiving event. The context in Demisto is simply an organized way of viewing these observations. Observe below to view the context of the apple receiving event:
+Let's look at a real world example that can show you how context is used:
+
+## URLScan
 
 ```python
-"Apple": 
-    {
-    "Color": "Red",
-    "Taste": "Sweet",
-    "Occured Time": "Just now",
-    "Washed": False
+
+    dbot_score = {
+        'Indicator': 'malware.wicar.org',
+        'Score': 3,
+        'Type': 'url'
     }
+    
+    url_cont = {
+        'Data': 'malware.wicar.org',
+        'Malicious': {
+            'Description': 'Match found in Urlscan.io database',
+            'Vendor': 'urlscan.io'
+        }
+    }
+    
+    cont = {
+        'ASN': 'AS40630',
+        'Certificates': {
+            'Issuer': 'Google Internet Authority G3',
+            'SubjectName': '*.googleapis.com',
+            'ValidFrom': '2018-12-04 09:33:00',
+            'ValidTo': '2019-02-26 09:33:00'
+        },
+        'Country': ['US', 'EU', 'IE', 'DE', 'NL'],
+        'Data': 'malware.wicar.org',
+        'RelatedIPs': {
+            'IP': '23.67.137.77',
+            'ASN': '20940'
+            },
+        'Subdomains': ["ws.sharethis.com", "www.wicar.org", "cdn2.editmysite.com", "l.sharethis.com", "t.sharethis.com", "www.google-analytics.com", "fonts.gstatic.com", "count-server.sharethis.com", "c.sharethis.mgr.consensu.org", "w.sharethis.com", "ajax.googleapis.com", "fonts.googleapis.com", "malware.wicar.org"],
+        'Certificates': {
+            "SubjectName": "*.googleapis.com",
+            "ValidFrom": "2018-12-04 09:33:00",
+            "ValidTo": "2019-02-26 09:33:00",
+            "Issuer": "Google Internet Authority G3"
+        }
+    }
+
+    ec = {
+        'URLScan(val.URL && val.URL == obj.URL)': cont,
+        'DBotScore': dbot_score,
+        'URL': url_cont
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': response,
+        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
+        'EntryContext': ec
+    })
 ```
 
-If your goal is to eat a clean apple, we would look at the context and see that it has not been washed since the value is ```False```. We could have this trigger the playbook "Wash the apple".
+In this example, we are pushing three different dictionaries into the context. ```cont``` which contains the context specific to URLScan, ```dbot_score``` which contains the DBot score context, and ```URL``` which is part of the context standard for URLs.
 
-Context is how we know all of the details about an event.
+In the Integration settings, we see:
+
+![screen shot 2019-01-09 at 14 54 40](https://user-images.githubusercontent.com/42912128/50900672-90a7c800-141e-11e9-946d-8d5352e279ec.png)
+
+These paths can be seen in the context found in the war room, here:
+
+![screen shot 2019-01-09 at 14 57 17](https://user-images.githubusercontent.com/42912128/50900776-e3817f80-141e-11e9-8263-d75cf6cf2dc0.png)
+
 
 **Please Note:** When improving or replacing an existing integration, verify that the context outputs are backwards compatible. Otherwise, changes can break playbooks and prevent them from running.
 
