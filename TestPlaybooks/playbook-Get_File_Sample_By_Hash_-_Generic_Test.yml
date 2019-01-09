@@ -1,5 +1,5 @@
 id: 304d7c60-09a2-42c2-8fc7-5d33718e3777
-version: 5
+version: 8
 name: Get File Sample By Hash - Generic - Test
 starttaskid: "0"
 tasks:
@@ -22,31 +22,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 7fe95a1c-23bc-439f-80d2-ccbb6110e090
-    type: playbook
-    task:
-      id: 7fe95a1c-23bc-439f-80d2-ccbb6110e090
-      version: -1
-      name: Get File Sample By Hash - Generic
-      playbookName: Get File Sample By Hash - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 560
         }
       }
     note: false
@@ -97,7 +72,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     scriptarguments:
       append: {}
       key:
@@ -141,6 +116,39 @@ tasks:
       }
     note: false
     timertriggers: []
+  "5":
+    id: "5"
+    taskid: a44f4c3a-e5b2-41c1-8a88-d620170da175
+    type: playbook
+    task:
+      id: a44f4c3a-e5b2-41c1-8a88-d620170da175
+      version: -1
+      name: Get File Sample By Hash - Generic
+      playbookName: Get File Sample By Hash - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      MD5: {}
+      SHA256:
+        simple: ${inputs.SHA256}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -153,5 +161,10 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: SHA256
+  value:
+    simple: ${File.SHA256}
+  required: false
+  description: ""
 outputs: []

@@ -1,9 +1,8 @@
-id: get_file_sample_by_hash_-_cylance_protect
-version: -1
+id: d2cb303b-beb8-41a6-87f2-313949267681
+version: 117
 name: Get File Sample By Hash - Cylance Protect
-fromversion: 3.5.0
-description: |-
-  Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
+description: Returns to the war-room a file sample correlating to SHA256 hashes in
+  the inputs using Cylance Protect integration
 starttaskid: "0"
 tasks:
   "0":
@@ -37,7 +36,7 @@ tasks:
       id: bb196c7a-ff84-44c7-81fd-625038a5bcf4
       version: -1
       name: Is Cylance V2 Protect enabled?
-      description: Checks if the the "Cylance Protect V2" integration is enabled
+      description: Checks if the the "Cylance Protect" integration is enabled
       scriptName: Exists
       type: condition
       iscommand: false
@@ -102,10 +101,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: b17b16b8-78a7-4522-89ce-890839581757
+    taskid: 283e4157-b249-4d36-8a57-c2983a3d61d4
     type: condition
     task:
-      id: b17b16b8-78a7-4522-89ce-890839581757
+      id: 283e4157-b249-4d36-8a57-c2983a3d61d4
       version: -1
       name: Do we have a SHA256?
       description: Checks for SHA256 in context
@@ -120,8 +119,7 @@ tasks:
       - "4"
     scriptarguments:
       value:
-        complex:
-          root: inputs.SHA256
+        simple: ${inputs.SHA256}
     separatecontext: false
     view: |-
       {
@@ -134,10 +132,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 886ea6f8-7fb2-4e7c-814e-3e6b9bb8fe8b
+    taskid: bfa8a0e5-39d1-4cae-82f5-aa6cca072232
     type: regular
     task:
-      id: 886ea6f8-7fb2-4e7c-814e-3e6b9bb8fe8b
+      id: bfa8a0e5-39d1-4cae-82f5-aa6cca072232
       version: -1
       name: Get download link from HASH
       description: Query Cylance Protect for HASH's link
@@ -150,11 +148,9 @@ tasks:
       - "5"
     scriptarguments:
       sha256:
-        complex:
-          root: inputs.SHA256
+        simple: ${inputs.SHA256}
       threshold: {}
       unzip: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -386,10 +382,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 1eacec95-bc5e-4b25-8f30-f4ddbf1ddb9f
+    taskid: 9a83a232-86f0-419b-8c7d-f441b6f6c46e
     type: condition
     task:
-      id: 1eacec95-bc5e-4b25-8f30-f4ddbf1ddb9f
+      id: 9a83a232-86f0-419b-8c7d-f441b6f6c46e
       version: -1
       name: Do we have a SHA256?
       description: Checks for SHA256 in context
@@ -404,8 +400,7 @@ tasks:
       - "11"
     scriptarguments:
       value:
-        complex:
-          root: inputs.SHA256
+        simple: ${inputs.SHA256}
     separatecontext: false
     view: |-
       {
@@ -418,10 +413,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 20c840b7-76ae-49b2-8402-d5300c570871
+    taskid: dea0c877-321d-4efa-8dfe-d2169fa93089
     type: regular
     task:
-      id: 20c840b7-76ae-49b2-8402-d5300c570871
+      id: dea0c877-321d-4efa-8dfe-d2169fa93089
       version: -1
       name: Get download link from HASH
       description: Query Cylance Protect for HASH's link
@@ -434,8 +429,7 @@ tasks:
       - "12"
     scriptarguments:
       sha256:
-        complex:
-          root: inputs.SHA256
+        simple: ${inputs.SHA256}
       threshold: {}
       unzip: {}
     continueonerror: true
