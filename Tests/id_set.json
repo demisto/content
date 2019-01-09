@@ -15223,6 +15223,16 @@
                     "Get File Sample From Hash - Generic"
                 ]
             }
+        }, 
+        {
+            "get_file_sample_by_hash_-_generic": {
+                "name": "Get File Sample By Hash - Generic", 
+                "fromversion": "3.5.0", 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Cylance Protect", 
+                    "Get File Sample By Hash - Carbon Black Enterprise Response"
+                ]
+            }
         }
     ]
 }
