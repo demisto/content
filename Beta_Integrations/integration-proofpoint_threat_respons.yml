@@ -350,3 +350,5 @@ script:
     description: Block hash
   runonce: false
 releaseNotes: DO NOT RELEASE
+tests:
+  - No test
