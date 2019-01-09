@@ -779,6 +779,11 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 500
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -965,8 +970,7 @@
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
-        "Netskope": "instance is down",
-        "Cuckoo Sandbox": "instance is down"
+        "Netskope": "instance is down"
     },
     "nigthly_integrations": [
         "Lastline",
