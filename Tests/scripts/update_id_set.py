@@ -33,8 +33,6 @@ def print_error(error_str):
 
 
 def run_git_command(command):
-    # import pdb
-    # pdb.set_trace()
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
     output, err = p.communicate()
     if err and 'CRLF will be replaced by LF' not in err:
@@ -222,7 +220,7 @@ def get_script_data(file_path):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code))))
+    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -271,6 +269,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
                     instance[obj_id] = obj_data[obj_id]
+                    break
 
 
 def add_new_object_to_id_set(obj_id, obj_data, file_path, instances_set):

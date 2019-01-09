@@ -1684,17 +1684,6 @@
             }
         }, 
         {
-            "ReadPDFFile": {
-                "name": "ReadPDFFile", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "ReadPDFFile-Test"
-                ]
-            }
-        }, 
-        {
             "ContextContains": {
                 "name": "ContextContains"
             }
@@ -1770,7 +1759,15 @@
         }, 
         {
             "ExtractIndicatorsFromTextFile": {
-                "name": "ExtractIndicatorsFromTextFile"
+                "name": "ExtractIndicatorsFromTextFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
             }
         }, 
         {
@@ -4735,10 +4732,24 @@
             }
         }, 
         {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
             "ExtractIndicatorsFromWordDocument": {
                 "name": "ExtractIndicatorsFromWordDocument", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
+                    "extractIndicators", 
                     "getFilePath"
                 ], 
                 "tests": [
@@ -4751,6 +4762,14 @@
                 "name": "ExtractIndicatorsFromTextFile", 
                 "toversion": "4.0.9", 
                 "fromversion": "3.6.0", 
+                "script_executions": [
+                    "ExtractDomain", 
+                    "ExtractEmail", 
+                    "ExtractHash", 
+                    "ExtractIP", 
+                    "ExtractURL", 
+                    "getFilePath"
+                ], 
                 "tests": [
                     "Extract Indicators From File - test"
                 ]
