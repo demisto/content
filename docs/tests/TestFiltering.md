@@ -13,7 +13,7 @@ tests:
 
 * If you want to run all tests you should add the tests section and add `Run all tests` as a test you would like to run. 
 * If you don't want to run tests for the file you just changed you should add the tests section
- and add `No test - <reason>` asa test you would like to run.
+ and add `No test - <reason>` as a test you would like to run.
   Please make sure to write a reason, it is not a must but it would ease our lives. 
 * Please take into consideration that both the automatic and the manual mechanisms are working side
  by side and don't override each other, and don't worry it will not cause the same test to run more than once. 
