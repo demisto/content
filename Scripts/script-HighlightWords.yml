@@ -1,0 +1,85 @@
+commonfields:
+  id: HighlightWords
+  version: -1
+name: HighlightWords
+script: |-
+  def get_context(incident_id):
+      res = demisto.executeCommand("getContext", {'id': incident_id});
+      try:
+          return res[0]['Contents']['context']
+      except:
+          return {}
+
+
+  def flat_incident(incident):
+      incident.update(get_context(incident['id']))
+      incident.update(incident.get('CustomFields', {}) or {})
+      return incident
+
+
+  HIGHLIGHT_WORD_STYLE_TEMPLATE = '**%s**'
+
+  WORDS = demisto.args()['words'].split(",")
+  WORDS.sort(reverse=True, key=lambda x: len(x))
+  TEXT_FIELDS = demisto.args()['textFields'].split(",")
+
+  incident = flat_incident(demisto.investigation())
+
+  text_parts = []
+  init_text = demisto.args().get('text')
+  if init_text:
+      text_parts.append(init_text)
+
+  for t in TEXT_FIELDS:
+      value = demisto.dt(incident, t)
+      if value:
+          text_parts.append(value)
+
+  if len(text_parts) == 0:
+      return_error("The input text is empty")
+
+  text_words = (" ".join(text_parts).lower()).split(" ")
+  marked_text_words = []
+
+  found = False
+  for text_word in text_words:
+      found_word_match = False
+      for w in WORDS:
+          if w in text_word:
+              found_word_match = True
+              break
+      if found_word_match:
+          marked_text_words.append(HIGHLIGHT_WORD_STYLE_TEMPLATE % text_word)
+          found = True
+      else:
+          marked_text_words.append(text_word)
+
+
+  marked_text = " ".join(marked_text_words)
+
+  if found:
+      entry = {
+          'Type': entryTypes['note'],
+          'Contents': marked_text,
+          'ContentsFormat': formats['text'],
+          'HumanReadable': marked_text,
+          'ReadableContentsFormat': formats['markdown']
+      }
+      demisto.results(entry)
+  else:
+      demisto.results("The text does not contains any of the input words")
+type: python
+tags: []
+comment: Highlight words inside a given text.
+args:
+- name: words
+  required: true
+  description: A list of words to highlight. Comma-seprated value.
+- name: textFields
+  description: Incident fields (or context keys) to extract the text from.
+- name: text
+scripttarget: 0
+runonce: false
+releaseNotes: "New script - highlight words in text"
+tests:
+  - HighlightWords_Test

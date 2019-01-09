@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "HighlightWords_Test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
