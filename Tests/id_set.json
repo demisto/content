@@ -4720,6 +4720,41 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordDocument": {
+                "name": "ExtractIndicatorsFromWordDocument", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromTextFile": {
+                "name": "ExtractIndicatorsFromTextFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
         }
     ], 
     "playbooks": [
