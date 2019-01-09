@@ -1,0 +1,349 @@
+id: ParseCSVnullbytesTest
+version: -1
+name: ParseCSVnullbytesTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 75044ff9-6377-4b1e-8456-6401ef8ef1f0
+    type: start
+    task:
+      id: 75044ff9-6377-4b1e-8456-6401ef8ef1f0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: fcfbd7c0-e07c-4d6e-87a3-8f6edb6c6661
+    type: regular
+    task:
+      id: fcfbd7c0-e07c-4d6e-87a3-8f6edb6c6661
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 0fcc0334-ebcc-425e-87ce-2e3e325b5c3b
+    type: regular
+    task:
+      id: 0fcc0334-ebcc-425e-87ce-2e3e325b5c3b
+      version: -1
+      name: ParseCSV
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      domains: {}
+      entryID: {}
+      extend-context:
+        simple: W_NullbyteChars=
+      file:
+        simple: nullbytechars_in_data.csv
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: e59b751a-1dd7-4e7d-82bb-febe8652de3b
+    type: regular
+    task:
+      id: e59b751a-1dd7-4e7d-82bb-febe8652de3b
+      version: -1
+      name: FileCreateAndUpload (With Nullbyte Chars)
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: "name, age\ndave, 31\nzach, \0\nReggie, 40\nMol\0ly, twenty-one\n\0,12\nCatherine,\0"
+      entryId: {}
+      filename:
+        simple: nullbytechars_in_data.csv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 9374d397-6652-435c-8d2c-27ccda68b2b1
+    type: regular
+    task:
+      id: 9374d397-6652-435c-8d2c-27ccda68b2b1
+      version: -1
+      name: Awesome - Script is Removing Nullbyte Chars
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: aca0f924-1c26-4fd1-89af-b82024acadf5
+    type: regular
+    task:
+      id: aca0f924-1c26-4fd1-89af-b82024acadf5
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${AreValuesEqual}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 39ce617a-7e85-4d8c-8113-28e5eff7512a
+    type: regular
+    task:
+      id: 39ce617a-7e85-4d8c-8113-28e5eff7512a
+      version: -1
+      name: FileCreateAndUpload (Without Nullbyte Chars)
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      data:
+        simple: "name, age\ndave, 31\nzach, \nReggie, 40\nMolly, twenty-one\n,12\nCatherine,"
+      entryId: {}
+      filename:
+        simple: data_without_nullbytechars.csv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 98ecaa2d-5711-40bf-81f5-84728fa992f5
+    type: regular
+    task:
+      id: 98ecaa2d-5711-40bf-81f5-84728fa992f5
+      version: -1
+      name: ParseCSV
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      domains: {}
+      entryID: {}
+      extend-context:
+        simple: WO_NullbyteChars=
+      file:
+        simple: data_without_nullbytechars.csv
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: da070aed-79f3-40d6-8182-058af1155004
+    type: condition
+    task:
+      id: da070aed-79f3-40d6-8182-058af1155004
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "14"
+    scriptarguments:
+      left:
+        simple: ${W_NullbyteChars}
+      right:
+        simple: ${WO_NullbyteChars}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 452bc891-a295-497d-8b83-cecf2a019da9
+    type: regular
+    task:
+      id: 452bc891-a295-497d-8b83-cecf2a019da9
+      version: -1
+      name: Uh-Oh - Script isn't removing nullbyte chars as expected
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 9ff147d4-60e4-4fa6-87bf-89c9001693da
+    type: title
+    task:
+      id: 9ff147d4-60e4-4fa6-87bf-89c9001693da
+      version: -1
+      name: Create 2 Files Using Same Data Except One File Has Nullbyte Chars In It
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
