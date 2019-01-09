@@ -443,11 +443,12 @@ script: |-
 
 
       def print_log(self, verbose=False):
-          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          if verbose:
-            demisto.log(text)
-          demisto.info(text)
-          self.messages = []
+          if self.messages:
+              text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+              if verbose:
+                demisto.log(text)
+              demisto.info(text)
+              self.messages = []
 
 
   """
