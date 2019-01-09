@@ -7,7 +7,7 @@ script: |-
   command_args = {}
 
   if specific_list:
-      dArgs['list'] = specific_list
+      command_args['list'] = specific_list
 
   res = demisto.executeCommand("recorded-future-get-url-risklist", command_args)
 

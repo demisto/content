@@ -2014,15 +2014,72 @@ script:
     arguments:
     - name: list
       description: Specify a URL list
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
     description: Gets the domain risk list from Recorded Future
   - name: recorded-future-get-url-risklist
     arguments:
     - name: list
       description: Specify a domain list
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
     description: Gets the URL risk list from Recorded Future
   - name: recorded-future-get-ip-risklist
     arguments:
     - name: list
       description: Specify an IP list
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
     description: Gets the IP risk list from Recorded Future
   runonce: false
