@@ -1,5 +1,4 @@
 {
-	"releaseNotes": "Added SLAs for quickview",
 	"typeId": "Phishing",
 	"kind": "quickView",
 	"layout": {
