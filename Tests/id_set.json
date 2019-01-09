@@ -2436,7 +2436,7 @@
                     "getEntries"
                 ], 
                 "tests": [
-                    "No test - will update after making test playbook"
+                    "ParseCSVnullbytesTest - tests that script replaces nullbyte chars with empty strings"
                 ]
             }
         }, 
@@ -15180,6 +15180,20 @@
                     "misp-upload-sample", 
                     "file", 
                     "misp-delete-event"
+                ]
+            }
+        }, 
+        {
+            "ParseCSVnullbytesTest": {
+                "name": "ParseCSVnullbytesTest", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "FileCreateAndUpload", 
+                    "ParseCSV", 
+                    "AreValuesEqual"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation"
                 ]
             }
         }
