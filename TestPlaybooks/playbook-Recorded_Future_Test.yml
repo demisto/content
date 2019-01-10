@@ -416,8 +416,6 @@ tasks:
       timeout: {}
       url:
         simple: https://www.batticaloa.mc.gov.lk/
-      using:
-        simple: Recorded Future_instance
       wait: {}
     separatecontext: false
     view: |-
