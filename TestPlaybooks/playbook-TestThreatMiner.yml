@@ -1,5 +1,5 @@
-id: ThreatMiner-Test
-version: -1
+id: 0951e543-6f41-4d36-8801-fddf70065c7a
+version: 31
 name: ThreatMiner - Test
 starttaskid: "0"
 tasks:
@@ -170,10 +170,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 79b236af-4333-4d81-85d9-d419f23962f8
+    taskid: ec31ad7d-4a1c-4be4-80f5-a8703e190729
     type: regular
     task:
-      id: 79b236af-4333-4d81-85d9-d419f23962f8
+      id: ec31ad7d-4a1c-4be4-80f5-a8703e190729
       version: -1
       name: domain command
       description: Retrieve data from ThreatMiner about a specified IP address.
@@ -188,6 +188,11 @@ tasks:
       domain:
         simple: google.com
       fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -233,10 +238,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 81a4b5e8-5f45-4b9c-80fd-df068eb8e3a3
+    taskid: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
     type: condition
     task:
-      id: 81a4b5e8-5f45-4b9c-80fd-df068eb8e3a3
+      id: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
       version: -1
       name: Verify domain results
       description: |2+
@@ -254,7 +259,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ThreatMiner.Domain.Whois.Domain Name
+              simple: Domain.Name
             iscontext: true
           right:
             value:
@@ -267,17 +272,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ThreatMiner.Domain.Subdomains
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: ThreatMiner.Domain.URI
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: ThreatMiner.Domain.MD5
+              simple: ThreatMiner.Domain.Whois
             iscontext: true
     view: |-
       {
@@ -377,10 +377,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: e34a85f3-c0f0-422a-87e7-ab137768f5fa
+    taskid: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
     type: condition
     task:
-      id: e34a85f3-c0f0-422a-87e7-ab137768f5fa
+      id: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
       version: -1
       name: Verify File(Samples)
       description: Verify File(Sample) Metadata, HTTP Traffic, Hosts, Mutants
@@ -417,6 +417,14 @@ tasks:
             value:
               simple: ThreatMiner.File.Domains
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: e6ff1bf0821f00384cdd25efb9b1cc09
     view: |-
       {
         "position": {
