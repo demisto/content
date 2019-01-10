@@ -141,3 +141,5 @@ runonce: false
 dockerimage: demisto/pdfx
 tests:
   - ReadPDFFile-Test
+releaseNotes:
+  - "Remove DT from DBotScore update"
