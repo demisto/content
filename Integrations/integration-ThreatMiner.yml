@@ -29,6 +29,7 @@ configuration:
   required: true
 script:
   script: |2
+
   ''' IMPORTS '''
   import datetime
   import time
@@ -46,7 +47,6 @@ script:
   MAX_RETURNED_ARRAY_SIZE = 30
 
   ''' HELPER FUNCTIONS '''
-
 
 def http_request(method, url, headers):
   try:
@@ -72,21 +72,14 @@ def http_request(method, url, headers):
     'Contents': 'error has occured: %s' % (e.message, ),
   })
 
-
 def get_domain_report_from_threat_miner(domain_name):
-  domain_whois = get_domain_whois_rawdata(domain_name)
-  passiveDNS = get_domain_passive_dns_rawdata(domain_name)
-  sub_domains = get_domain_subdomains_rawdata(domain_name)
-  domain_uris = get_domain_URI_rawdata(domain_name)
-  domainMD5 = get_domain_MD5_rawdata(domain_name)
   return {
-  'raw_whois': domain_whois,
-  'raw_passive_dns': passiveDNS,
-  'raw_sub_domains': sub_domains,
-  'raw_domain_uris': domain_uris,
-  'raw_domain_md5': domainMD5
+  'raw_whois': get_domain_whois_rawdata(domain_name),
+  'raw_passive_dns': get_domain_passive_dns_rawdata(domain_name),
+  'raw_sub_domains': get_domain_subdomains_rawdata(domain_name),
+  'raw_domain_uris': get_domain_URI_rawdata(domain_name),
+  'raw_domain_md5': get_domain_MD5_rawdata(domain_name)
 }
-
 
 def get_domain_whois_rawdata(domain_name):
   threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 1)
@@ -97,17 +90,6 @@ def get_domain_whois_rawdata(domain_name):
 
   return domain_whois[0]
 
-
-def get_domain_whois(whois):
-  return {
-  'Server': whois['raw_whois']['whois']['whois_server'],
-  'Create_date': whois['raw_whois']['whois']['creation_date'],
-  'Update_date': whois['raw_whois']['whois']['updated_date'],
-  'Expiration': whois['raw_whois']['whois']['expiration_date'],
-  'Name_servers': whois['raw_whois']['whois']['nameservers']
-}
-
-
 def get_domain_passive_dns_rawdata(domain_name):
   threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 2)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
@@ -117,29 +99,16 @@ def get_domain_passive_dns_rawdata(domain_name):
 
   return threatminer_results_as_array
 
-
 def get_domain_passive_dns(passive_dns, max_returned_array_size):
   if max_returned_array_size == -1:
     return passive_dns['raw_passive_dns']
   return passive_dns['raw_passive_dns'][:max_returned_array_size]
-
 
 def get_domain_subdomains_rawdata(domain_name):
   threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 5)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
   sub_domains_array = response.get('results', [])
   return sub_domains_array
-
-
-def get_domain_subdomains(sub_domains_array, max_returned_array_size):
-  sub_domains = []
-  if len(sub_domains_array) > 0:
-    if max_returned_array_size == -1:
-      return sub_domains_array['raw_sub_domains']
-    sub_domains = sub_domains_array['raw_sub_domains'][:max_returned_array_size]
-
-  return sub_domains;
-
 
 def get_domain_URI_rawdata(domain_name):
   threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 3)
@@ -163,47 +132,35 @@ def get_domain_URI(uris_raw_data, max_returned_array_size):
 
   return uris
 
-
 def get_domain_MD5_rawdata(domain_name):
   threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 4)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
   md5s = response.get('results', [])
   return md5s
 
-
-def get_domain_MD5(md5s, max_returned_array_size):
-  if len(md5s) == 0:
-    return []
-
-  if max_returned_array_size == -1:
-    return md5s['raw_domain_md5']
-
-  return md5s['raw_domain_md5'][:max_returned_array_size]
-
-
 def create_domain_command_markdown(domain, context):
   md = '## Threat_miner Domain report for: {}\n'.format(domain)
   threat_miner_found_results = False
 
-  if len(context['ThreatMiner']['Domain'].get('Whois', '')) != 0:
-    md += tableToMarkdown("Whois for {} domain".format(domain), context['ThreatMiner']['Domain']['Whois'],
+  if len(context.get('Whois', '')) != 0:
+    md += tableToMarkdown("Whois for {} domain".format(domain), context['Whois'],
     ['Domain Name', 'Server', 'Create Date', 'Update Date', 'Expiration', 'Name Servers'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['Domain'].get('PassiveDNS', '')) != 0:
+  if len(context.get('PassiveDNS', '')) != 0:
     md += tableToMarkdown("PassiveDNS for {} domain".format(domain),
-    context['ThreatMiner']['Domain']['PassiveDNS'], ['ip', 'first_seen', 'last_seen'])
+    context['PassiveDNS'], ['ip', 'first_seen', 'last_seen'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['Domain'].get('Subdomains', '')) != 0:
-    md += tableToMarkdown("{} Subdomains".format(domain), context['ThreatMiner']['Domain']['Subdomains'],
+  if len(context.get('Subdomains', '')) != 0:
+    md += tableToMarkdown("{} Subdomains".format(domain), context['Subdomains'],
     ['Subdomains'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['Domain'].get('URI', '')) != 0:
-    md += tableToMarkdown("{} URIs".format(domain), context['ThreatMiner']['Domain']['URI'],
+  if len(context.get('URI', '')) != 0:
+    md += tableToMarkdown("{} URIs".format(domain), context['URI'],
     ['Address', 'Last Seen'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['Domain'].get('MD5', '')) != 0:
+  if len(context.get('MD5', '')) != 0:
     md += tableToMarkdown("{} Related Samples(hash only)".format(domain),
-    context['ThreatMiner']['Domain']['MD5'], ['hashes'])
+    context['MD5'], ['hashes'])
     threat_miner_found_results = True
 
   if threat_miner_found_results == False:
@@ -211,43 +168,55 @@ def create_domain_command_markdown(domain, context):
 
   return md
 
-
-def get_domain_context_format(threat_miner_raw_results, max_returned_array_size, domain_name):
-  threat_miner_context = {
-  'ThreatMiner.Domain.Name': domain_name,
-  'ThreatMiner.Domain.Whois': get_domain_whois(threat_miner_raw_results),
-  'ThreatMiner.Domain.PassiveDNS': get_domain_passive_dns(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.Domain.Subdomains': get_domain_subdomains(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.Domain.URI': get_domain_URI(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.Domain.MD5': get_domain_MD5(threat_miner_raw_results, max_returned_array_size)
-}
-
-  return createContext(threat_miner_context, removeNull=True)
-
-
 def domain_command(max_returned_array_size):
   domain_name = demisto.args().get('domain')
   threat_miner_raw_results = get_domain_report_from_threat_miner(domain_name)
-  threat_miner_context = get_domain_context_format(threat_miner_raw_results, max_returned_array_size, domain_name)
-  markdown = create_domain_command_markdown(domain_name, threat_miner_context)
+
+  passive_dns = {}
+  subdomains = {}
+  md5s ={}
+  if max_returned_array_size == -1:
+    passive_dns = threat_miner_raw_results['raw_passive_dns']
+    subdomains =  threat_miner_raw_results['raw_sub_domains']
+    md5s = threat_miner_raw_results['raw_domain_md5']
+  else:
+    passive_dns = threat_miner_raw_results['raw_passive_dns'][:max_returned_array_size]
+    subdomains = threat_miner_raw_results['raw_sub_domains'][:max_returned_array_size]
+    md5s = threat_miner_raw_results['raw_domain_md5'][:max_returned_array_size]
+
+  threat_miner_context = {
+  'Name': domain_name,
+  'Whois': {
+    'Server': threat_miner_raw_results['raw_whois']['whois']['whois_server'],
+    'Create_date': threat_miner_raw_results['raw_whois']['whois']['creation_date'],
+    'Update_date': threat_miner_raw_results['raw_whois']['whois']['updated_date'],
+    'Expiration': threat_miner_raw_results['raw_whois']['whois']['expiration_date'],
+    'Name_servers': threat_miner_raw_results['raw_whois']['whois']['nameservers']
+  },
+  'PassiveDNS': passive_dns,
+  'Subdomains': subdomains,
+  'URI': get_domain_URI(threat_miner_raw_results, max_returned_array_size),
+  'MD5': md5s
+}
 
   domain_context = {
-  "Domain.Name": threat_miner_context['ThreatMiner']['Domain']['Name']
+  "Name": threat_miner_context['Name']
 }
 
   context = {
-  'ThreatMiner.Domain(val.Name && val.Name == obj.Name)': createContext(
-    threat_miner_context['ThreatMiner']['Domain'], removeNull=True),
-  'Domain(val.Name && val.Name == obj.Name)': createContext(domain_context, removeNull=True)
+  'ThreatMiner.Domain(val.Name && val.Name == obj.Name)': threat_miner_context,
+  'Domain(val.Name && val.Name == obj.Name)': domain_context
 }
 
+  markdown = create_domain_command_markdown(domain_name, threat_miner_context)
+
   demisto.results({
-  'Type': entryTypes['note'],
-  'Contents': threat_miner_raw_results,
-  'HumanReadable': markdown,
-  'EntryContext': context,
-  'ContentsFormat': formats['json']
-})
+    'Type': entryTypes['note'],
+    'Contents': threat_miner_raw_results,
+    'HumanReadable': markdown,
+    'EntryContext': context,
+    'ContentsFormat': formats['json']
+  })
 
 
 def get_ip_whois_rawdata(ip_address):
@@ -257,7 +226,6 @@ def get_ip_whois_rawdata(ip_address):
   if len(whois_rawdata) > 0:
     return whois_rawdata[0]
   return []
-
 
 def get_ip_whois(whois_rawdata, ip_address):
   ip_whois_results = {}
@@ -270,24 +238,12 @@ def get_ip_whois(whois_rawdata, ip_address):
 
   return ip_whois_results
 
-
 def get_ip_passiveDNS_rawdata(ip_address):
   threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 2)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_ip_url_postfix, DEFAULT_HEADERS)
   passiveDNSArray = response.get('results', [])
 
   return passiveDNSArray
-
-
-def get_ip_passiveDNS(passiveDNSArray, max_returned_array_size):
-  if len(passiveDNSArray) == 0:
-    return []
-
-  if max_returned_array_size == -1:
-    return passiveDNSArray['raw_passive_dns']
-
-  return passiveDNSArray['raw_passive_dns'][:max_returned_array_size]
-
 
 def get_ip_URI_rawdata(ip_address):
   threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 3)
@@ -312,7 +268,6 @@ def get_ip_URI(threatminer_results_as_array, max_returned_array_size):
 
   return URIs
 
-
 def get_ip_MD5_rawdata(ip_address):
   threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 4)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
@@ -324,12 +279,6 @@ def get_ip_MD5_rawdata(ip_address):
   return md5s
 
 
-def get_ip_MD5(md5s_raw_data, max_returned_array_size):
-  if max_returned_array_size == -1:
-    return md5s_raw_data['raw_ip_md5']
-  return md5s_raw_data['raw_ip_md5'][:max_returned_array_size]
-
-
 def get_ip_SSL_rawdata(ip_address):
   threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 5)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
@@ -338,37 +287,27 @@ def get_ip_SSL_rawdata(ip_address):
   return ssls_raw_data
 
 
-def get_ip_SSL(ssls, max_returned_array_size):
-  if len(ssls['raw_ip_ssl']) == 0:
-    return ssls['raw_ip_ssl']
-
-  if max_returned_array_size == -1:
-    return ssls['raw_ip_ssl'];
-
-  return ssls['raw_ip_ssl'][:max_returned_array_size]
-
-
 def create_ip_command_markdown(ip_address, context):
   md = '## Threat_miner IP report for: {}\n'.format(ip_address)
   threat_miner_found_results = False
 
-  if len(context['ThreatMiner']['IP']['Whois']) != 0:
-    md += tableToMarkdown("Whois for {}".format(ip_address), context['ThreatMiner']['IP']['Whois'],
+  if len(context['Whois']) != 0:
+    md += tableToMarkdown("Whois for {}".format(ip_address), context['Whois'],
     ['Address', 'Country', 'Org', 'Bgp', 'Reverse', 'ASN'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['IP']['PassiveDNS']) != 0:
-    md += tableToMarkdown("PassiveDNS for {}".format(ip_address), context['ThreatMiner']['IP']['PassiveDNS'],
+  if len(context['PassiveDNS']) != 0:
+    md += tableToMarkdown("PassiveDNS for {}".format(ip_address), context['PassiveDNS'],
     ['domain', 'first_seen', 'last_seen'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['IP']['URI']) != 0:
-    md += tableToMarkdown("{} URIs".format(ip_address), context['ThreatMiner']['IP']['URI'],
+  if len(context['URI']) != 0:
+    md += tableToMarkdown("{} URIs".format(ip_address), context['URI'],
     ['Uri_address', 'Last_seen'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['IP']['MD5']) != 0:
-    md += tableToMarkdown("{} MD5s".format(ip_address), context['ThreatMiner']['IP']['MD5'], ['MD5'])
+  if len(context['MD5']) != 0:
+    md += tableToMarkdown("{} MD5s".format(ip_address), context['MD5'], ['MD5'])
     threat_miner_found_results = True
-  if len(context['ThreatMiner']['IP']['SSL']) != 0:
-    md += tableToMarkdown("{} SSLs".format(ip_address), context['ThreatMiner']['IP']['SSL'], ['SSL'])
+  if len(context['SSL']) != 0:
+    md += tableToMarkdown("{} SSLs".format(ip_address), context['SSL'], ['SSL'])
     threat_miner_found_results = True
 
   if threat_miner_found_results == False:
@@ -376,51 +315,58 @@ def create_ip_command_markdown(ip_address, context):
 
   return md
 
-
 def get_ip_report_from_threat_miner(ip_address):
-  whois_raw_data = get_ip_whois_rawdata(ip_address)
-  passiveDNSRaw_data = get_ip_passiveDNS_rawdata(ip_address)
-  md5Raw_data = get_ip_MD5_rawdata(ip_address)
-  uri_raw_data = get_ip_URI_rawdata(ip_address)
-  ssl_raw_data = get_ip_SSL_rawdata(ip_address)
   return {
-  'raw_whois': whois_raw_data,
-  'raw_passive_dns': passiveDNSRaw_data,
-  'raw_ip_md5': md5Raw_data,
-  'raw_ip_uris': uri_raw_data,
-  'raw_ip_ssl': ssl_raw_data
+  'raw_whois': get_ip_whois_rawdata(ip_address),
+  'raw_passive_dns': get_ip_passiveDNS_rawdata(ip_address),
+  'raw_ip_md5': get_ip_MD5_rawdata(ip_address),
+  'raw_ip_uris': get_ip_URI_rawdata(ip_address),
+  'raw_ip_ssl': get_ip_SSL_rawdata(ip_address)
 }
-
-
-def get_ip_context_format(threat_miner_raw_results, max_returned_array_size, ip_address):
-  ip_context = {
-  'ThreatMiner.IP.Address': ip_address,
-  'ThreatMiner.IP.Whois': get_ip_whois(threat_miner_raw_results, ip_address),
-  'ThreatMiner.IP.PassiveDNS': get_ip_passiveDNS(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.IP.MD5': get_ip_MD5(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.IP.URI': get_ip_URI(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.IP.SSL': get_ip_SSL(threat_miner_raw_results, max_returned_array_size)
-}
-
-  return createContext(ip_context, removeNull=True)
-
 
 def ip_command(max_returned_array_size):
   ip_address = demisto.args().get('ip')
   if not is_ip_valid(ip_address):
     return_error('An invalid IP was specified')
   threat_miner_raw_results = get_ip_report_from_threat_miner(ip_address)
-  threat_miner_context = get_ip_context_format(threat_miner_raw_results, max_returned_array_size, ip_address)
+  passiveDns = {}
+  md5s = {}
+  ssls = {}
+
+  if max_returned_array_size == -1:
+    passiveDns = threat_miner_raw_results['raw_passive_dns']
+    md5s = threat_miner_raw_results['raw_ip_md5']
+    ssls = threat_miner_raw_results['raw_ip_ssl']
+  else:
+    ssls = threat_miner_raw_results['raw_ip_ssl'][:max_returned_array_size]
+    passiveDns = threat_miner_raw_results['raw_passive_dns'][:max_returned_array_size]
+    md5s = threat_miner_raw_results['raw_ip_md5'][:max_returned_array_size]
+
+  threat_miner_context = {
+  'Address': ip_address,
+  'Whois': {
+    'Address': ip_address,
+    'Reverse': threat_miner_raw_results['raw_whois']['reverse_name'],
+    'Bgp': threat_miner_raw_results['raw_whois']['bgp_prefix'],
+    'Country': threat_miner_raw_results['raw_whois']['cc'],
+    'ASN': threat_miner_raw_results['raw_whois']['asn'],
+    'Org': threat_miner_raw_results['raw_whois']['org_name']
+  },
+  'PassiveDNS': passiveDns,
+  'MD5': md5s,
+  'URI': get_ip_URI(threat_miner_raw_results, max_returned_array_size),
+  'SSL': ssls
+}
+
   markdown = create_ip_command_markdown(ip_address, threat_miner_context)
   ipcontext = {
-  "IP.Address": threat_miner_context['ThreatMiner']['IP']['Address'],
-  "IP.Geo.Country": threat_miner_context['ThreatMiner']['IP']['Whois']['Country'],
-  "IP.ASN": threat_miner_context['ThreatMiner']['IP']['Whois']['ASN'],
+  "IP.Address": threat_miner_context['Address'],
+  "IP.Geo.Country": threat_miner_context['Whois']['Country'],
+  "IP.ASN": threat_miner_context['Whois']['ASN'],
 }
   context = {
-  'ThreatMiner.IP(val.Address && val.Address == obj.Address)': createContext(
-    threat_miner_context['ThreatMiner']['IP'], removeNull=True),
-  'IP(val.Address && val.Address == obj.Address)': createContext(ipcontext, removeNull=True)
+  'ThreatMiner.IP(val.Address && val.Address == obj.Address)': threat_miner_context,
+  'IP(val.Address && val.Address == obj.Address)': ipcontext
 }
 
   demisto.results(
@@ -441,27 +387,11 @@ def get_file_whois_rawdata(hashed_file):
 
   return threatminer_results_as_array[0]
 
-
-def get_file_whois_and_update_theart_miner_file_context(rawdata_file, context):
-  if len(rawdata_file['raw_whois']) == 0:
-    return rawdata_file['raw_whois']
-
-  context['ThreatMiner']['File']['MD5'] = rawdata_file['raw_whois']['md5']
-  context['ThreatMiner']['File']['Architecture'] = rawdata_file['raw_whois']['architecture']
-  context['ThreatMiner']['File']['Sha1'] = rawdata_file['raw_whois']['sha1']
-  context['ThreatMiner']['File']['Sha256'] = rawdata_file['raw_whois']['sha256']
-  context['ThreatMiner']['File']['Type'] = rawdata_file['raw_whois']['file_type']
-  context['ThreatMiner']['File']['File_name'] = rawdata_file['raw_whois']['file_name']
-  context['ThreatMiner']['File']['Size'] = rawdata_file['raw_whois']['file_size']
-  context['ThreatMiner']['File']['Analyzed'] = rawdata_file['raw_whois']['date_analysed']
-
-
 def get_file_http_rawdata(hashed_file):
   threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 2)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
   file_http_raw_data = response.get('results', [])
   return file_http_raw_data
-
 
 def get_file_http(file_http_raw_data, max_returned_array_size):
   if len(file_http_raw_data['raw_file_https']) == 0:
@@ -483,9 +413,7 @@ def get_file_http(file_http_raw_data, max_returned_array_size):
       http_traffic_counter += 1
     else:
       break
-
   return http_traffics_info
-
 
 def get_file_domains_and_ip_rawdata(hashed_file):
   threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 3)
@@ -493,10 +421,9 @@ def get_file_domains_and_ip_rawdata(hashed_file):
   domain_and_ip_raw_data = response.get('results', [])
   return domain_and_ip_raw_data
 
-
 def get_file_domains_and_ip(domain_and_ip_raw_data, max_returned_array_size):
   if len(domain_and_ip_raw_data['raw_file_domains']) == 0:
-    return []
+    return {}
 
   threatminer_result = domain_and_ip_raw_data['raw_file_domains'][0]
   file_domains = threatminer_result['domains']
@@ -504,23 +431,20 @@ def get_file_domains_and_ip(domain_and_ip_raw_data, max_returned_array_size):
     return file_domains
   return file_domains[:max_returned_array_size]
 
-
 def get_file_mutants_rawdata(hashed_file):
   threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 4)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
   mutants_rawdata = response.get('results', [])
   return mutants_rawdata
 
-
 def get_file_mutants(mutants_rawdata, max_returned_array_size):
   if len(mutants_rawdata['raw_file_mutants']) == 0:
-    return []
+    return {}
 
   file_mutants = mutants_rawdata['raw_file_mutants'][0]
   if max_returned_array_size == -1:
     return file_mutants['mutants']
   return file_mutants['mutants'][:max_returned_array_size]
-
 
 def get_file_registry_keys_rawdata(hashed_file):
   threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 5)
@@ -528,13 +452,12 @@ def get_file_registry_keys_rawdata(hashed_file):
 
   threatminer_results_as_array = response.get('results', [])
   if len(threatminer_results_as_array) == 0:
-    return []
+    return {}
   return threatminer_results_as_array[0]
-
 
 def get_file_registry_keys(file_registry_keys, max_returned_array_size):
   if len(file_registry_keys['raw_file_registry']) == 0:
-    return []
+    return {}
 
   if max_returned_array_size == -1:
     return file_registry_keys['raw_file_registry']['registry_keys']
@@ -545,76 +468,68 @@ def get_file_AV_detection_rawdata(hashed_file):
   threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 6)
   response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
 
-  raw_file_av_dectection = response.get('results', [])
+  raw_file_av_dectection = response.get('results', {})
   return raw_file_av_dectection
-
 
 def get_file_AV_detection(raw_file_av_dectection):
   if len(raw_file_av_dectection['raw_file_av']) == 0:
-    return []
+    return {}
 
   fileAVDetection = raw_file_av_dectection['raw_file_av'][0]
-
   return fileAVDetection['av_detections']
 
-
 def get_file_report_from_threat_miner(hashed_file):
-  whois_raw_data = get_file_whois_rawdata(hashed_file)
-  file_https_raw_data = get_file_http_rawdata(hashed_file)
-  file_domains_raw_data = get_file_domains_and_ip_rawdata(hashed_file)
-  file_mutants_raw_data = get_file_mutants_rawdata(hashed_file)
-  file_registry_keys_raw_data = get_file_registry_keys_rawdata(hashed_file)
-  fileile_av_dectection_raw_data = get_file_AV_detection_rawdata(hashed_file)
   return {
-  'raw_whois': whois_raw_data,
-  'raw_file_https': file_https_raw_data,
-  'raw_file_domains': file_domains_raw_data,
-  'raw_file_mutants': file_mutants_raw_data,
-  'raw_file_registry': file_registry_keys_raw_data,
-  'raw_file_av': fileile_av_dectection_raw_data
+  'raw_whois': get_file_whois_rawdata(hashed_file),
+  'raw_file_https': get_file_http_rawdata(hashed_file),
+  'raw_file_domains': get_file_domains_and_ip_rawdata(hashed_file),
+  'raw_file_mutants': get_file_mutants_rawdata(hashed_file),
+  'raw_file_registry': get_file_registry_keys_rawdata(hashed_file),
+  'raw_file_av': get_file_AV_detection_rawdata(hashed_file)
 }
-
-
-def get_file_context_format(threat_miner_raw_results, max_returned_array_size, hashed_file):
-  context = {
-  'ThreatMiner.File.MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
-  'ThreatMiner.File.Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
-  'ThreatMiner.File.Sha1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
-  'ThreatMiner.File.Sha256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
-  'ThreatMiner.File.Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
-  'ThreatMiner.File.File_name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
-  'ThreatMiner.File.Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
-  'ThreatMiner.File.Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', ''),
-  'ThreatMiner.File.HTTP': get_file_http(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.File.Domains': get_file_domains_and_ip(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.File.Mutants': get_file_mutants(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.File.Registry': get_file_registry_keys(threat_miner_raw_results, max_returned_array_size),
-  'ThreatMiner.File.AV': get_file_AV_detection(threat_miner_raw_results)
-}
-
-  return createContext(context, removeNull=True)
-
 
 def get_dbot_scores_context(file_context, hashed_file):
   amount_of_detections = len(file_context.get('AV', ''))
   dbot_scores = get_dbot_score_report(amount_of_detections, hashed_file, file_context)
   return dbot_scores
 
-
 def file_command(max_returned_array_size):
   hashed_file = demisto.args().get('file')
   threat_miner_raw_results = get_file_report_from_threat_miner(hashed_file)
-  threat_miner_context = get_file_context_format(threat_miner_raw_results, max_returned_array_size, hashed_file)
+
+  threat_miner_context = {
+  'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
+  'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
+  'Sha1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+  'Sha256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+  'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
+  'File_name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
+  'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
+  'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', ''),
+  'HTTP': get_file_http(threat_miner_raw_results, max_returned_array_size),
+  'Domains': get_file_domains_and_ip(threat_miner_raw_results, max_returned_array_size),
+  'Mutants': get_file_mutants(threat_miner_raw_results, max_returned_array_size),
+  'Registry': get_file_registry_keys(threat_miner_raw_results, max_returned_array_size),
+  'AV': get_file_AV_detection(threat_miner_raw_results)
+}
   markdown = create_file_command_markdown(hashed_file, threat_miner_context)
 
-  file_context = threat_miner_context['ThreatMiner']['File']
+  file_context = {
+    'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
+    'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
+    'Sha1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+    'Sha256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+    'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
+    'File_name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
+    'Size': threat_miner_raßw_results['raw_whois'].get('file_size', ''),
+    'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', ''),
+  }
   dbot_scores = get_dbot_scores_context(file_context, hashed_file)
 
   context = {
-  'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': createContext(threat_miner_context['ThreatMiner']['File'],
-    removeNull=True),
-  'File(val.MD5 && val.MD5 == obj.MD5)': createContext(file_context, removeNull=True),
-  'DBot_score': createContext(dbot_scores, removeNull=True)
+  'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': threat_miner_context,
+  'File(val.MD5 && val.MD5 == obj.MD5)': file_context,
+  'DBot_score': dbot_scores
 }
 
   return demisto.results({'Type': entryTypes['note'],
@@ -622,7 +537,6 @@ def file_command(max_returned_array_size):
     'HumanReadable': markdown,
     'EntryContext': context,
     'ContentsFormat': formats['json']})
-
 
 def get_dbot_score_report(amount_of_detections, hashed_file, file_context):
   dbot = {}
@@ -636,7 +550,6 @@ def get_dbot_score_report(amount_of_detections, hashed_file, file_context):
     file_context['ThreatMiner.File.Malicious.Vendor'] = 'ThreatMiner'
     file_context['ThreatMiner.File.Malicious.Detections'] = amount_of_detections
   return dbot
-
 
 def get_dbot_score(amount_of_detections):
   malicious_threshold = int(demisto.args().get('threshold'))
@@ -655,39 +568,39 @@ def create_file_command_markdown(hashed_file, File_context):
   md += '\n'
   md += '**File MD5:** {}'.format(hashed_file)
   md += '\n'
-  md += '**File Architecture:** {}'.format(File_context['ThreatMiner']['File'].get('Architecture', 'Unkown'))
+  md += '**File Architecture:** {}'.format(File_context.get('Architecture', 'Unkown'))
   md += '\n'
-  md += '**File SHA1:** {}'.format(File_context['ThreatMiner']['File'].get('Sha1', 'Unknown'))
+  md += '**File SHA1:** {}'.format(File_context.get('Sha1', 'Unknown'))
   md += '\n'
-  md += '**File SHA256:** {}'.format(File_context['ThreatMiner']['File'].get('Sha256', 'Unkown'))
+  md += '**File SHA256:** {}'.format(File_context.get('Sha256', 'Unkown'))
   md += '\n'
-  md += '**File Type:** {}'.format(File_context['ThreatMiner']['File'].get('Type', 'Unkown'))
+  md += '**File Type:** {}'.format(File_context.get('Type', 'Unkown'))
   md += '\n'
-  md += '**File Name:** {}'.format(File_context['ThreatMiner']['File'].get('File_name', 'Unkown'))
+  md += '**File Name:** {}'.format(File_context.get('File_name', 'Unkown'))
   md += '\n'
-  md += '**File Size:** {}'.format(File_context['ThreatMiner']['File'].get('Size', 'Unkown'))
+  md += '**File Size:** {}'.format(File_context.get('Size', 'Unkown'))
   md += '\n'
-  md += '**File Analyzed:** {}'.format(File_context['ThreatMiner']['File'].get('Analyzed', 'Unkown'))
+  md += '**File Analyzed:** {}'.format(File_context.get('Analyzed', 'Unkown'))
 
-  if len(File_context['ThreatMiner']['File'].get('HTTP', '')) != 0:
+  if len(File_context.get('HTTP', '')) != 0:
     md += tableToMarkdown("HTTP for hashed file {}".format(hashed_file),
-    File_context['ThreatMiner']['File']['HTTP'], ['Domain', 'URL', 'User_agent'])
+    File_context['HTTP'], ['Domain', 'URL', 'User_agent'])
     threat_miner_found_results = True
-  if len(File_context['ThreatMiner']['File'].get('Domains', '')) != 0:
+  if len(File_context.get('Domains', '')) != 0:
     md += tableToMarkdown("Hashed file: {} Domains".format(hashed_file),
-                                          File_context['ThreatMiner']['File']['Domains'], ['domain', 'ip'])
+                                          File_context['Domains'], ['domain', 'ip'])
     threat_miner_found_results = True
-  if len(File_context['ThreatMiner']['File'].get('Mutants', '')) != 0:
+  if len(File_context.get('Mutants', '')) != 0:
     md += tableToMarkdown("Hashed file: {} Mutants".format(hashed_file),
-                                          File_context['ThreatMiner']['File']['Mutants'], ['Mutants'])
+                                          File_context['Mutants'], ['Mutants'])
     threat_miner_found_results = True
-  if len(File_context['ThreatMiner']['File'].get('Registry', '')) != 0:
+  if len(File_context.get('Registry', '')) != 0:
     md += tableToMarkdown("Hashed file: {} Registry keys".format(hashed_file),
-                                          File_context['ThreatMiner']['File']['Registry'], ['Registry'])
+                                          File_context['Registry'], ['Registry'])
     threat_miner_found_results = True
-  if len(File_context['ThreatMiner']['File'].get('AV', '')) != 0:
+  if len(File_context.get('AV', '')) != 0:
     md += tableToMarkdown("Hashed file: {} Anti Virus detections".format(hashed_file),
-                                          File_context['ThreatMiner']['File']['AV'], ['av', 'detection'])
+                                          File_context['AV'], ['av', 'detection'])
     threat_miner_found_results = True
 
   if threat_miner_found_results == False:
