@@ -522,7 +522,6 @@ script:
             if 'rootCauseElementHashes' in malop['simpleValues']:
                 if malop['simpleValues']['rootCauseElementHashes']['totalValues'] != 0:
                    involved_hashes.extend(malop['simpleValues']['rootCauseElementHashes']['values'])
-                        involved_hashes.append(hashcake)
 
             malop_output = {
                 'GUID': malop_id,
