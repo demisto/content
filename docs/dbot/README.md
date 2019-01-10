@@ -1,19 +1,26 @@
 # Overview
-Dbot is the Demisto machine learning bot which ingests information about indicators to determine if they are malicious or not. Since dbot requires a very specific dataset, we must format our data as per this article.
+DBot is the Demisto machine learning bot which ingests information about indicators to determine if they are malicious or not. Since DBot requires a very specific dataset, we must format our data as per this article.
 
 
 **Please Note**: We are unable to use the Demisto Transformers (DT) within the DBot score context. 
+
+For example, using the following in your DBot cpntext, will not work:
+
+```python
+DBotScore(val.Indicator == obj.Indicator)
+```
+
 ## Context Format
 ```python
       "DBotScore": {
-          "Indicator" : foo@demi.com,
-          "Type": email,
-          "Vendor": JoeSecurity,
+          "Indicator" : "foo@demi.com",
+          "Type": "email",
+          "Vendor": "JoeSecurity",
           "Score": 3
       } 
 ```
 
-The Dbot score must be at the root level of the context and contain **all** of the keys listed below.
+The DBot score must be at the root level of the context and contain **all** of the keys listed below.
 
 | Key | Meaning |
 | --- | ---|
@@ -34,7 +41,7 @@ Dbot uses an integer to represent the reputation of an indicator.
 | 3 | Bad |
 
 ## Malicious
-If the Dbot score is returned as a "3" or "Bad", we need to add to the context that a malicious indicator was found. To do this, we add an additional key to the URL, IP, or File context called "Malicious" as shown below:
+If the DBot score is returned as a "3" or "Bad", we need to add to the context that a malicious indicator was found. To do this, we add an additional key to the URL, IP, or File context called "Malicious" as shown below:
 
 ```python
 "URL": {

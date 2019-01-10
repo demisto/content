@@ -39,11 +39,11 @@ When naming an argument, the name should be all lowercase with spaces replaced b
 
 ### Do this:
 ```
-email_header
+!cylance-get-incident incident_id
 ```
  ### Not this:
  ```python
-Email Header
+!cylance-get-incident incidentId
 ```
 
 Additionally, arguments are to be passed through the ```_command``` function and mustn't reside in the primary function. Observe the following:
@@ -79,6 +79,7 @@ def sample_function():
     r = http_request()
     res = filter_results(r)
     results = magic_box(res)
+    return results
 ```
 
 ### sample_function_command
@@ -103,7 +104,7 @@ Functions that are minor and serve the purpose of supporting a main function are
 ```python
 ''' HELPER FUNCTIONS '''
 # Returns an item in a list at a given index
-def list_tool(item, list, number):
+def list_tool(item, number):
     if isinstance(item, list):
         return str(item[number])
     else:
@@ -155,7 +156,7 @@ In this instance, the ```val.URL && val.URL == obj.URL``` links together the res
 ## Logging
 In some cases, it may be necessary to pass some information to the logs in order to better assist ourselves with debugging in the future. 
 
-First, we need to ensure ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
+First, we need to ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
  
 To post to the logs, we use the following:
 ```
@@ -186,14 +187,12 @@ try:
         get_session_command()
 
 except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
     return_error(e.message)
 ```
 
 
 ## Common Server Functions
-If the function you just wrote seems like a workaround for something that should already exist, it probably does. Always check the script helper to see if a function already exists. Examples of Common Server Functions are as noted below:
+Before writing a function that seems like a workaround for something that should already exist, check the script helper to see if a function already exists. Examples of Common Server Functions are as noted below:
 
 ### fileResult
 This will return a file in the War Room by using the syntax below:
@@ -261,7 +260,7 @@ You may also use ```headerTransform``` to convert the existing keys into formatt
 ```demisto.args()``` returns a dict of arguments for a given command. We use this to get non-global variables. See below:
 
 ```python
-    query = demisto.args().get('url')
+    url = demisto.args().get('url')
 ```
  The argument above can be seen in the integration settings as shown below:
  

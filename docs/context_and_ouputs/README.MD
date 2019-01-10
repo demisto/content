@@ -38,17 +38,6 @@ Let's look at a real world example that can show you how context is used:
         },
         'Country': ['US', 'EU', 'IE', 'DE', 'NL'],
         'Data': 'malware.wicar.org',
-        'RelatedIPs': {
-            'IP': '23.67.137.77',
-            'ASN': '20940'
-            },
-        'Subdomains': ["ws.sharethis.com", "www.wicar.org", "cdn2.editmysite.com", "l.sharethis.com", "t.sharethis.com", "www.google-analytics.com", "fonts.gstatic.com", "count-server.sharethis.com", "c.sharethis.mgr.consensu.org", "w.sharethis.com", "ajax.googleapis.com", "fonts.googleapis.com", "malware.wicar.org"],
-        'Certificates': {
-            "SubjectName": "*.googleapis.com",
-            "ValidFrom": "2018-12-04 09:33:00",
-            "ValidTo": "2019-02-26 09:33:00",
-            "Issuer": "Google Internet Authority G3"
-        }
     }
 
     ec = {
