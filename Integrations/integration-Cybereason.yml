@@ -1676,6 +1676,9 @@ script:
     - contextPath: Cybereason.Malops.InvolvedHash
       description: List of file hashes involved in this Malop
       type: string
+    - contextPath: Cybereason.Malops.Status
+      description: Malop managemant status
+      type: string
     description: Returns a list of all Malops and details on the Malops.
   - name: cybereason-malop-processes
     arguments:
