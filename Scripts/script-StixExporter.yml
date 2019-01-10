@@ -26,6 +26,7 @@ script: |-
   pkg3 = STIXPackage()
   pkg3.add_indicator(stix_indicator)
   print(pkg3.to_xml())
+  print(demisto.args().get('ids','no ids'))
 type: python
 tags: []
 enabled: true
