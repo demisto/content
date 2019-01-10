@@ -52,8 +52,6 @@ script:
     requests.packages.urllib3.disable_warnings()
 
 
-
-
     '''GLOBAL VARS'''
     BASE_URL = demisto.params().get('url')
     APIKEY = demisto.params().get('apikey')
@@ -61,6 +59,7 @@ script:
     MODE = demisto.params().get('mode')
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
+
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
@@ -86,8 +85,6 @@ script:
         'Is TOR Exit Node',
         'Is Hosting Provider',
         'Is Anonymous']
-
-
 
 
     '''HELPER FUNCTIONS'''
@@ -188,8 +185,6 @@ script:
 
 
 
-
-
     ''' FUNCTIONS '''
     def get_geo_ip(query):
         raw = http_request(query, MODE)
@@ -197,8 +192,8 @@ script:
 
 
     def geo_ip_command():
-        query = demisto.args().get('ip')
-        raw = get_geo_ip(query)
+        ip_query = demisto.args().get('ip')
+        raw = get_geo_ip(ip_query)
         hr, ip_ec, res_json, maxmind_ec = format_results(raw)
         ec = ({
           'IP(val.Address && val.Address == obj.Address)': ip_ec,
@@ -211,8 +206,6 @@ script:
             'HumanReadable': tableToMarkdown('{} - Scan Results'.format(query), hr, hr_headers, removeNull=True),
             'EntryContext': ec
             })
-
-
 
 
     ''' EXECUTION CODE '''
@@ -238,56 +231,56 @@ script:
     - contextPath: IP.Address
       description: The IP address
       type: string
-    - contextPath: IP.Geo.City
-      description: The IP city
-      type: string
     - contextPath: IP.Geo.Country
       description: The IP country
       type: string
     - contextPath: IP.Geo.Location
       description: The IP geographic location in coordinates
       type: string
-    - contextPath: IP.Geo.TimeZone
+    - contextPath: MaxMind.Geo.TimeZone
       description: The time zone the IP is located
       type: string
-    - contextPath: IP.Geo.Accuracy
+    - contextPath: MaxMind.Geo.Accuracy
       description: The accuracy of the location
       type: number
-    - contextPath: IP.Geo.Continent
+    - contextPath: MaxMind.Geo.Continent
       description: The IP Continent
       type: string
-    - contextPath: IP.Geo.Subdivision
+    - contextPath: MaxMind.Geo.Subdivision
       description: The IP subdivision
       type: string
     - contextPath: IP.ASN
       description: The IP ASN
       type: string
-    - contextPath: IP.Organization
+    - contextPath: MaxMind.Organization
       description: The IP organization
       type: string
-    - contextPath: IP.Tor
+    - contextPath: MaxMind.Tor
       description: Is IP a Tor exit node?
       type: boolean
-    - contextPath: IP.Host
+    - contextPath: MaxMind.Host
       description: The IP host
       type: string
-    - contextPath: IP.Anonymous
+    - contextPath: MaxMind.Anonymous
       description: Is the IP anonymous?
       type: boolean
-    - contextPath: IP.UserType
+    - contextPath: MaxMind.UserType
       description: The IP user type
       type: string
-    - contextPath: IP.ISP
+    - contextPath: MaxMind.ISP
       description: The IP ISP
       type: string
-    - contextPath: IP.Domain
+    - contextPath: MaxMind.Domain
       description: The domain associated to the IP
       type: string
-    - contextPath: IP.ISO_Code
+    - contextPath: MaxMind.ISO_Code
       description: ISO code for the country the IP is located
       type: string
-    - contextPath: IP.RegisteredCountry
+    - contextPath: MaxMind.RegisteredCountry
       description: Country the IP is registered
+      type: string
+    - contextPath: MaxMind.City
+      description: City the IP is located in
       type: string
     description: Check IP reputation (when information is available, returns a JSON
       with details). Uses all configured Threat Intelligence feeds
