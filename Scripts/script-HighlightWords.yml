@@ -3,49 +3,31 @@ commonfields:
   version: -1
 name: HighlightWords
 script: |-
-  def get_context(incident_id):
-      res = demisto.executeCommand("getContext", {'id': incident_id});
-      try:
-          return res[0]['Contents']['context']
-      except:
-          return {}
-
-
-  def flat_incident(incident):
-      incident.update(get_context(incident['id']))
-      incident.update(incident.get('CustomFields', {}) or {})
-      return incident
-
-
   HIGHLIGHT_WORD_STYLE_TEMPLATE = '**%s**'
 
-  WORDS = demisto.args()['words'].split(",")
+  TERMS = demisto.args()['terms'].split(",")
+  WORDS, SENTENCES = [t.strip().lower() for t in TERMS if " " not in t.strip()], [t.strip().lower() for t in TERMS if " " in t.strip()]
   WORDS.sort(reverse=True, key=lambda x: len(x))
-  TEXT_FIELDS = demisto.args()['textFields'].split(",")
+  INIT_TEXT = demisto.args().get('text','').lower()
 
-  incident = flat_incident(demisto.investigation())
 
-  text_parts = []
-  init_text = demisto.args().get('text')
-  if init_text:
-      text_parts.append(init_text)
-
-  for t in TEXT_FIELDS:
-      value = demisto.dt(incident, t)
-      if value:
-          text_parts.append(value)
-
-  if len(text_parts) == 0:
+  if not INIT_TEXT:
       return_error("The input text is empty")
 
-  text_words = (" ".join(text_parts).lower()).split(" ")
+
+  for word in WORDS:
+      for sentence in SENTENCES:
+          if word in sentence:
+              return_error('The word "%s" is a substring of the sentance: "%s"' % (word, sentence))
+
+  text_words = INIT_TEXT.lower().split(" ")
   marked_text_words = []
 
   found = False
   for text_word in text_words:
       found_word_match = False
-      for w in WORDS:
-          if w in text_word:
+      for word in WORDS:
+          if word in text_word:
               found_word_match = True
               break
       if found_word_match:
@@ -56,6 +38,10 @@ script: |-
 
 
   marked_text = " ".join(marked_text_words)
+  for sentence in SENTENCES:
+      if sentence in marked_text:
+          marked_text = marked_text.replace(sentence, HIGHLIGHT_WORD_STYLE_TEMPLATE % sentence)
+          found = True
 
   if found:
       entry = {
@@ -72,12 +58,14 @@ type: python
 tags: []
 comment: Highlight words inside a given text.
 args:
-- name: words
-  required: true
-  description: A list of words to highlight. Comma-seprated value.
-- name: textFields
-  description: Incident fields (or context keys) to extract the text from.
 - name: text
+  required: true
+- name: terms
+  required: true
+  description: Terms to hightlight in the text. Can be words or sentances (that does
+    not includes comma). Notice taht if you used a sentances and word, the word should
+    be as part of a sentance, for example "thank,thank you" is invalid input. Comma-separated
+    value.
 scripttarget: 0
 runonce: false
 releaseNotes: "New script - highlight words in text"
