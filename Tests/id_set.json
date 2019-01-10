@@ -1299,6 +1299,7 @@
         {
             "ADGetGroupMembers": {
                 "name": "ADGetGroupMembers", 
+                "deprecated": true, 
                 "depends_on": [
                     "ad-search"
                 ]
@@ -4260,6 +4261,7 @@
         {
             "ADGetComputer": {
                 "name": "ADGetComputer", 
+                "deprecated": true, 
                 "depends_on": [
                     "ad-search"
                 ]

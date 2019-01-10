@@ -896,7 +896,9 @@ script:
     conn = None
     if NTLM_AUTH:
         # intialize connection to LDAP server with NTLM authentication
-        conn = Connection(server, user=SERVER_IP + '\\' + USERNAME, password=PASSWORD, authentication=NTLM)
+        # user example: domain\user
+        domain_user =  SERVER_IP + '\\' + USERNAME if '\\'  not in USERNAME else USERNAME
+        conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
     else:
         # here username should be the user dn
         conn =  Connection(server, user=USERNAME, password=PASSWORD)
