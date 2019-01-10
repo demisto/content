@@ -203,7 +203,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': res_json,
-            'HumanReadable': tableToMarkdown('{} - Scan Results'.format(query), hr, hr_headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('{} - Scan Results'.format(ip_query), hr, hr_headers, removeNull=True),
             'EntryContext': ec
             })
 
