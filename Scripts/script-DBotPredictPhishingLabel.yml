@@ -45,7 +45,7 @@ outputs:
 - contextPath: DBotPredictPhishingLabel.Label
   description: The suggested label
   type: string
-- contextPath: DBotPredictPhishingLabel.Pobability
+- contextPath: DBotPredictPhishingLabel.Probability
   description: 'The prediction probability '
   type: number
 - contextPath: DBotPredictPhishingLabel.InputTextNumberOfTokens
@@ -60,3 +60,4 @@ dockerimage: demisto/dl:1.1
 fromversion: 4.1.0
 tests:
   - CreatePhishingClassifierMLTest
+releaseNotes: "-"
