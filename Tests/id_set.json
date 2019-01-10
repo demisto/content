@@ -2440,7 +2440,8 @@
                     "getEntries"
                 ], 
                 "tests": [
-                    "TestParseCSV"
+                    "TestParseCSV", 
+                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
@@ -15195,6 +15196,19 @@
                 "name": "Test-Detonate URL - ThreatGrid", 
                 "implementing_playbooks": [
                     "Detonate URL - ThreatGrid"
+                ]
+            }
+        }, 
+        {
+            "ParseCSVnullbytesTest": {
+                "name": "ParseCSVnullbytesTest", 
+                "implementing_scripts": [
+                    "ParseCSV", 
+                    "FileCreateAndUpload", 
+                    "PrintErrorEntry", 
+                    "Print", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
                 ]
             }
         }
