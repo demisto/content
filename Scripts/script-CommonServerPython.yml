@@ -443,10 +443,12 @@ script: |-
 
 
       def print_log(self, verbose=False):
-          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          if verbose:
-            demisto.log(text)
-          demisto.info(text)
+          if self.messages:
+              text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+              if verbose:
+                  demisto.log(text)
+              demisto.info(text)
+              self.messages = []
 
 
   """
@@ -1159,16 +1161,23 @@ script: |-
       return True
 
 
-  def return_error(message):
+  def return_error(message, error=''):
       """
-         Returns error entry with given message and exits the script
+          Returns error entry with given message and exits the script
 
-         :type message: ``str``
-         :param message: The message to return in the entry (required)
+          :type message: ``str``
+          :param message: The message to return in the entry (required)
 
-         :return: Error entry object
-         :rtype: ``dict``
+          :type error: ``str``
+          :param error: The raw error message to log (optional)
+
+          :return: Error entry object
+          :rtype: ``dict``
       """
+      LOG(message)
+      if error:
+          LOG(error)
+      LOG.print_log()
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
@@ -1399,5 +1408,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
 tests:
   - TestPYCommonServer

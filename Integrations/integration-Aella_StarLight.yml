@@ -438,6 +438,5 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
 - No test
