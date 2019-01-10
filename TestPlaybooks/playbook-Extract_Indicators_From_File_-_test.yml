@@ -227,4 +227,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Chnaged test to look for email addresses instead of domains, due to a change in ExtractIndicatorsFromFile"
+releaseNotes: "Changed test to look for email addresses instead of domains, due to a change in ExtractIndicatorsFromFile"
