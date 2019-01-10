@@ -11432,30 +11432,6 @@
                     "MaxMind Test"
                 ]
             }
-        }, 
-        {
-            "MaxMind GeoIP2": {
-                "name": "MaxMind GeoIP2", 
-                "fromversion": "3.5.0", 
-                "commands": [
-                    "ip"
-                ], 
-                "tests": [
-                    "MaxMind Test"
-                ]
-            }
-        }, 
-        {
-            "MaxMind GeoIP2": {
-                "name": "MaxMind GeoIP2", 
-                "fromversion": "3.5.0", 
-                "commands": [
-                    "ip"
-                ], 
-                "tests": [
-                    "MaxMind Test"
-                ]
-            }
         }
     ], 
     "TestPlaybooks": [
@@ -15243,18 +15219,6 @@
                 "name": "Test-Detonate URL - ThreatGrid", 
                 "implementing_playbooks": [
                     "Detonate URL - ThreatGrid"
-                ]
-            }
-        }, 
-        {
-            "MaxMind Test": {
-                "name": "MaxMind Test", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "ip"
                 ]
             }
         }
