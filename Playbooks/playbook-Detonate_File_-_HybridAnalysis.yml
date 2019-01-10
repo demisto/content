@@ -1,0 +1,386 @@
+id: Detonate File - HybridAnalysis
+version: -1
+name: Detonate File - HybridAnalysis
+fromversion: 4.0.0
+description: |-
+  Detonates one or more files using the Joe Security - Joe Sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    type: start
+    task:
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      version: -1
+      name: ""
+      description: Detonates a file using HybridAnalysis
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 947670cb-4e57-4b07-8501-51d0b7563d56
+    type: regular
+    task:
+      id: 947670cb-4e57-4b07-8501-51d0b7563d56
+      version: -1
+      name: HybridAnalysis Upload File
+      description: Upload a file using HybridAnalysis
+      script: '|||hybrid-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entryId:
+        simple: ${inputs.File.EntryID}
+      environmentID:
+        simple: ${inputs.EnvironmentID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 3331390f-9148-4775-85f9-882c131a20ab
+    type: playbook
+    task:
+      id: 3331390f-9148-4775-85f9-882c131a20ab
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: HybridAnalysis
+          accessor: Submit.JobID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: jobID
+      PollingCommandName:
+        simple: hybrid-analysis-get-report-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: HybridAnalysis.Submit(val.State != 'SUCCESS').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    type: title
+    task:
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      version: -1
+      name: Done
+      description: Detonates a file using HybridAnalysis
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: cb44c359-3f5c-48a7-8af9-4ec32ff05576
+    type: condition
+    task:
+      id: cb44c359-3f5c-48a7-8af9-4ec32ff05576
+      version: -1
+      name: Is there a File to detonate?
+      description: Look for files to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: a46f8449-ab10-4f43-82b5-7cfe8b5ea638
+    type: condition
+    task:
+      id: a46f8449-ab10-4f43-82b5-7cfe8b5ea638
+      version: -1
+      name: Is HybridAnalysis sandbox enabled?
+      description: Check if integration instance is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Hybrid Analysis
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 6dce8e48-9eb4-425b-896c-1615bd8daefd
+    type: regular
+    task:
+      id: 6dce8e48-9eb4-425b-896c-1615bd8daefd
+      version: -1
+      name: HybridAnalysis Scan
+      description: '-'
+      script: '|||hybrid-analysis-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: ${inputs.File.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 900,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate. The File is taken from the context.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
+- key: Systems
+  value: {}
+  required: false
+  description: 'Operating system to run the analysis on (comma-separated). Supported
+    values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l,
+    w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
+    w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
+    lnxcentos1, android7_nougat'
+- key: Comments
+  value: {}
+  required: false
+  description: Comments for the analysis.
+- key: InternetAccess
+  value:
+    simple: "True"
+  required: false
+  description: Enable internet access (boolean). True= internet access (default),
+    False= no internet access.
+- key: ReportFileType
+  value: {}
+  required: false
+  description: 'The resource type to download. Default is html. Supported values are:
+    html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml,
+    irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots
+    (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample,
+    cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap,
+    pcapslim, memdumps, yara'
+- key: EnvironmentID
+  value:
+    simple: "100"
+  required: false
+  description: Hybrid Analysis environment ID to submit file to
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: date
+- contextPath: File.SHA1
+  description: SHA1 of the file
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.environmentId
+  description: 'Environment id of the file '
+- contextPath: File.analysis_start_time
+  description: Analysis start time of the file
+- contextPath: File.submitname
+  description: Submission name of the file
+  type: string
+- contextPath: File.classification_tags
+  description: List of classification tags of the file
+  type: string
+- contextPath: File.vxfamily
+  description: Family classification of the file
+  type: string
+- contextPath: File.total_network_connections
+  description: Total network connections of the file
+  type: string
+- contextPath: File.total_processes
+  description: Total processes count of the file
+- contextPath: File.total_signatures
+  description: Total signatures count if the file
+  type: string
+- contextPath: File.hosts
+  description: List of file's hosts
+  type: number
+- contextPath: File.isinteresting
+  description: If server found this file interesting
+  type: string
+- contextPath: File.domains
+  description: List of file's related domains
+  type: string
+- contextPath: File.isurlanalysis
+  description: If file analyzed by url
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: or malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: HybridAnalysis.Submit.State
+  description: The state of the process
+  type: string
+- contextPath: HybridAnalysis.Submit.SHA256
+  description: The submission SHA256
+  type: unknown
+- contextPath: HybridAnalysis.Submit.JobID
+  description: The JobID of the submission
+  type: unknown
+- contextPath: HybridAnalysis.Submit.EnvironmentID
+  description: The environmentID of the submission
+  type: unknown
+releaseNotes: "Hybrid Analysis Detonate file playbook"
+tests:
+  - "Detonate File - HybridAnalysis - Test"
