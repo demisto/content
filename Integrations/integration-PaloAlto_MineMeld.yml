@@ -1119,5 +1119,4 @@ script:
   runonce: false
 tests:
   - minemeld_test
-releaseNotes:
-  - "Remove DT from DBotScore update"
+releaseNotes: "Remove DT from DBotScore update"

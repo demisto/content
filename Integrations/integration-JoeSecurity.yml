@@ -981,5 +981,4 @@ script:
 tests:
   - JoeSecurityTestPlaybook
   - JoeSecurityTestDetonation
-releaseNotes:
-  - "Remove DT from DBotScore update"
+releaseNotes: "Remove DT from DBotScore update"
