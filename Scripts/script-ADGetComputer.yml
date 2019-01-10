@@ -191,3 +191,4 @@ outputs:
   description: The Endpoint hostname
 - contextPath: Endpoint.Groups
   description: The groups the endpoint is part of
+deprecated: true
