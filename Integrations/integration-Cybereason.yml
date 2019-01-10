@@ -521,7 +521,7 @@ script:
             involved_hashes = []
             if 'rootCauseElementHashes' in malop['simpleValues']:
                 if malop['simpleValues']['rootCauseElementHashes']['totalValues'] != 0:
-                    for hashcake in malop['simpleValues']['rootCauseElementHashes']['values']:
+                   involved_hashes.extend(malop['simpleValues']['rootCauseElementHashes']['values'])
                         involved_hashes.append(hashcake)
 
             malop_output = {
