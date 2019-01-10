@@ -11829,7 +11829,7 @@
             "Extract Indicators From File - test": {
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
-                    "RaiseError", 
+                    "PrintErrorEntry", 
                     "http"
                 ], 
                 "implementing_playbooks": [
