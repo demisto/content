@@ -6771,12 +6771,13 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "Detonate File - HybridAnalysis", 
                     "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
+                    "WildFire - Detonate file", 
                     "Detonate File - Cuckoo", 
                     "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - SNDBOX", 
                     "Detonate File - ThreatGrid"
                 ], 
                 "tests": [
@@ -7034,6 +7035,22 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis": {
+                "name": "Detonate File - HybridAnalysis", 
+                "fromversion": "4.0.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "hybrid-analysis-submit-sample", 
+                    "hybrid-analysis-scan"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }
@@ -8502,7 +8519,11 @@
                     "hybrid-analysis-scan", 
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-search", 
-                    "hybrid-analysis-detonate-file"
+                    "hybrid-analysis-detonate-file", 
+                    "hybrid-analysis-get-report-status"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }, 
@@ -11463,6 +11484,7 @@
                 "implementing_commands": [
                     "googleapps-gmail-get-mail", 
                     "googleapps-gmail-search", 
+                    "ThrowException", 
                     "send-mail"
                 ]
             }
@@ -15209,6 +15231,18 @@
                     "Print", 
                     "DeleteContext", 
                     "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis - Test": {
+                "name": "Detonate File - HybridAnalysis - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate File - HybridAnalysis"
                 ]
             }
         }
