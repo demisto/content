@@ -66,7 +66,11 @@ def http_request(method, url, headers):
     res.raise_for_status()
 
   except Exception, e:
-    raise (e)
+    demisto.results({
+    'Type': entryTypes['error'],
+    'ContentsFormat': formats['text'],
+    'Contents': 'error has occured: %s' % (e.message, ),
+  })
 
 
 def get_domain_report_from_threat_miner(domain_name):
@@ -610,8 +614,7 @@ def file_command(max_returned_array_size):
   'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': createContext(threat_miner_context['ThreatMiner']['File'],
     removeNull=True),
   'File(val.MD5 && val.MD5 == obj.MD5)': createContext(file_context, removeNull=True),
-  'DBot_score(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': createContext(
-    dbot_scores, removeNull=True)
+  'DBot_score': createContext(dbot_scores, removeNull=True)
 }
 
   return demisto.results({'Type': entryTypes['note'],
@@ -731,9 +734,13 @@ try:
     file_command(max_array_size)
 
 except Exception, e:
-  raise
+  demisto.results({
+  'Type': entryTypes['error'],
+  'ContentsFormat': formats['text'],
+  'Contents': 'error has occured: %s' % (e.message, ),
+})
 
-  type: python
+type: python
   commands:
   - name: domain
     arguments:
