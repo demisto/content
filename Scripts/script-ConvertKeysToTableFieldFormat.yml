@@ -23,7 +23,7 @@ script: |+
       return {
           ContentsFormat: formats.text,
           Type: entryTypes.error,
-          Contents: 'Only object supported. got -' + value
+          Contents: 'Invalid input. Expected object/collection, got: ' + value
       };
   }
 
