@@ -32,5 +32,6 @@
     "fieldCalcScript": "", 
     "selectValues": [], 
     "validationRegex": "", 
-    "sla": 7200
+    "sla": 7200,
+    "releaseNotes": "Changed SLA risk to be taken from server configuration."
   }
