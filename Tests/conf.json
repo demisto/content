@@ -26,9 +26,7 @@
         },
         {
             "integrations": "ThreatMiner",
-            "playbookID": "ThreatMiner-Test",
-            "timeout": 500,
-            "nightly": true
+            "playbookID": "ThreatMiner-Test"
         },
         {
           "integrations": "MISP V2",

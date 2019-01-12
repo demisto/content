@@ -10874,7 +10874,17 @@
                     "domain"
                 ]
             }
-        }, 
+        },
+        {
+            "ThreatMiner": {
+                "name": "ThreatMiner",
+                "commands": [
+                    "ip",
+                    "domain",
+                    "file"
+                ]
+            }
+        },
         {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
