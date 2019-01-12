@@ -10874,17 +10874,20 @@
                     "domain"
                 ]
             }
-        },
+        }, 
         {
             "ThreatMiner": {
-                "name": "ThreatMiner",
+                "name": "ThreatMiner", 
                 "commands": [
-                    "ip",
-                    "domain",
+                    "domain", 
+                    "ip", 
                     "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
                 ]
             }
-        },
+        }, 
         {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
@@ -15253,6 +15256,19 @@
                 ], 
                 "implementing_playbooks": [
                     "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
                 ]
             }
         }
