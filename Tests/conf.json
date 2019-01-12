@@ -3,8 +3,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "ParseCSVnullbytesTest"
+        },
+        {
+            "integrations": "CVE Search",
+            "playbookID": "cveReputation Test"
+        },
+        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test"
+        },
+        {
+            "integrations": "Dell Secureworks",
+            "playbookID": "secureworks_test"
         },
         {
             "playbookID": "Test CommonServer"
@@ -20,7 +31,14 @@
             "nightly": true
         },
         {
+          "integrations": "MISP V2",
+          "playbookID": "MISP V2 Test"
+        },
+        {
             "playbookID": "test-LinkIncidentsWithRetry"
+        },
+        {
+            "playbookID": "CopyContextToFieldTest"
         },
         {
             "integrations": "OTRS",
@@ -31,7 +49,8 @@
             "playbookID": "AttivoBotsinkTest"
         },
         {
-            "playbookID": "CreatePhishingClassifierMLTest"
+            "playbookID": "CreatePhishingClassifierMLTest",
+            "timeout" : 2400
         },
         {
             "integrations": "Cymon",
@@ -45,7 +64,8 @@
             "integrations": [
                 "Lastline",
                 "WildFire",
-                "SNDBOX"
+                "SNDBOX",
+                "VxStream"
             ],
             "playbookID" : "Detonate File - Generic Test",
             "timeout" : 2400,
@@ -60,6 +80,11 @@
             "playbookID": "Detonate File - SNDBOX - Test",
             "timeout": 2400,
             "nightly": true
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "timeout": 2400
         },
         {
             "playbookID": "WordTokenizeTest"
@@ -322,7 +347,7 @@
         {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -502,6 +527,10 @@
             "playbookID": "Splunk-Test"
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test"
+        },
+        {
             "integrations" : "McAfee NSM",
             "playbookID" : "McAfeeNSMTest",
             "timeout" : 400,
@@ -604,14 +633,14 @@
             "timeout": 400
         },
         {
+            "playbookID": "Cybereason Test",
+            "integrations": "Cybereason",
+            "timeout": 1200
+        },
+        {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test",
-            "timeout": 300
         },
         {
             "integrations": "Cisco Meraki",
@@ -732,7 +761,13 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test"
+            "playbookID": "AbuseIPDB Test",
+            "nightly": true
+        },
+        {
+            "integrations": "AbuseIPDB",
+            "playbookID": "AbuseIPDB PopulateIndicators Test",
+            "nightly": true
         },
         {
             "integrations" : "jira",
@@ -754,6 +789,11 @@
         {
             "integrations": "Phish.AI",
             "playbookID": "Test-Detonate URL - Phish.AI"
+        },
+        {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 500
         },
         {
             "integrations": "Centreon",
@@ -897,6 +937,9 @@
         {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
+        },
+        {
+          "playbookID": "SLA Scripts - Test"
         }
     ],
     "skipped_tests": {
@@ -910,7 +953,9 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
-        "tenable-sc-test": "Unstable instance = flaky test"
+        "tenable-sc-test": "Unstable instance = flaky test",
+        "XFE Test": "License expired",
+        "FireEye HX Test": "Test unstable - to be fixed by @noac"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -935,9 +980,12 @@
         "MimecastV2": "Several issues with instance",
         "AWS Sagemaker": "License expired, no renewal in the near future",
         "Attivo Botsink": "no instance, @Arian will update",
-        "carbonblackprotection": "License expired"
+        "carbonblackprotection": "License expired",
+        "Lastline": "Out of quota",
+        "Netskope": "instance is down"
     },
     "nigthly_integrations": [
-        "Lastline"
+        "Lastline",
+        "TruSTAR"
     ]
 }

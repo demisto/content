@@ -589,8 +589,8 @@ script:
         let title = `CB Response - Run Command ${args.name}`;
         let dataMap = COMMAND_DATA;
         let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
+            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
+            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
         ];
         return createEntry(title, command, dataMap, contextKeys, splitCamelCase);
     }
@@ -621,8 +621,8 @@ script:
         let dataMap = COMMAND_DATA;
         //keep CbResponse context for backward competability
         let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
+            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
+            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
@@ -648,7 +648,7 @@ script:
                 let translatedData = mapObjFunction(dataMap)(result);
                 let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
                 let context = {
-                    'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)': createContext(translatedData)
+                    'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)
                 };
                 entries.push({
                     Type: entryTypes.note,
@@ -706,8 +706,8 @@ script:
         let dataMap = COMMAND_DATA;
         //keep CbResponse context for backward competability
         let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
+            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
+            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
@@ -779,7 +779,7 @@ script:
         'directory list' : function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Directory Listing: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -793,7 +793,7 @@ script:
             //create entry to hold directory data
             dataMap = directoryData;
             title = `CB ${CB_PRODUCT} - Directory Listing`;
-            contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Files'];
+            contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Files'];
             let directoryListEntry = createEntry(
                 title,
                 data.files,
@@ -806,7 +806,7 @@ script:
         'put file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Push File: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -819,7 +819,7 @@ script:
         'get file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Get File From Path ${args.path}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID&&val.CbSessionID==obj.CbSessionID)'];
             if (data.status === 'complete') {
                 dataMap.push({to: 'FileID', from: 'file_id'});
             }
@@ -835,7 +835,7 @@ script:
         'kill': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Kill Process ${args.pid}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -851,7 +851,7 @@ script:
                 dataMap = dataMap.concat(processData);
             }
             let title = `CB ${CB_PRODUCT} - Execute Process: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -867,7 +867,7 @@ script:
                 dataMap = dataMap.concat(memdumpData);
             }
             let title = `CB ${CB_PRODUCT} - Memdump: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -880,7 +880,7 @@ script:
          'delete file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete File From Endpoint: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -912,7 +912,7 @@ script:
                     ReadableContentsFormat: formats.markdown,
                     HumanReadable: commandMD,
                     EntryContext: {
-                        'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
+                        'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
                     }
                 };
             }
@@ -936,8 +936,8 @@ script:
                 ReadableContentsFormat: formats.markdown,
                 HumanReadable: commandMD + '\n\n' + registryMD,
                 EntryContext: {
-                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandEntry,
-                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Values': registryEntry,
+                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandEntry,
+                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Values': registryEntry,
                     'RegistryKey': generalConetxt
                 }
             };
@@ -957,7 +957,7 @@ script:
             );
 
             let context = {
-                'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
+                'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
             };
             if (data.status !== 'complete') {
                 context.RegistryKey = collectRegistryDataToGeneralContext(data);
@@ -974,7 +974,7 @@ script:
          'reg create key': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -987,7 +987,7 @@ script:
          'reg delete key': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -1000,7 +1000,7 @@ script:
          'reg delete values': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -1013,7 +1013,7 @@ script:
          'reg set values': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -1040,7 +1040,7 @@ script:
                     ReadableContentsFormat: formats.markdown,
                     HumanReadable: commandMD,
                     EntryContext: {
-                       'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
+                       'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
                     }
                 };
             }
@@ -1072,8 +1072,8 @@ script:
                 ReadableContentsFormat: formats.markdown,
                 HumanReadable: commandMD + '\n\n' + processesMD,
                 EntryContext: {
-                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData,
-                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Process': processes,
+                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData,
+                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Process': processes,
                     'Process': processesCollection
                 }
             };
@@ -1090,8 +1090,8 @@ script:
         let dataMap = COMMAND_DATA;
         //keep CbResponse context for backward competability
         let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
+            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
+            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
         ];
         return createEntry(
             title,
@@ -1139,7 +1139,7 @@ script:
                 let translatedData = mapObjFunction(dataMap)(result);
                 let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
                 let context = {
-                    'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)': createContext(translatedData)
+                    'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)
                 };
                 return {
                     Type: entryTypes.note,
@@ -2665,5 +2665,6 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
+releaseNotes: "update the unique identifier for the context key"
 tests:
   - CarbonBlackLiveResponseTest

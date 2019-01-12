@@ -19,8 +19,8 @@
     }
   },
   "params":{
-     "keys":["avg|openDuration / (3600*24)"],
+     "keys":["avg|openDuration / 3600"],
      "groupBy" : ["occurred(d)", "type"]
   },
-  "description": ""
+  "description": "Shows changes in Mean Time to Resolution, over time, while differentiating between incident types."
 }
