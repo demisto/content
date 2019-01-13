@@ -13,6 +13,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: 'DBot Score : 2, default is Suspicious '
+  name: defaultdbotscore
+  defaultvalue: Suspicious
+  type: 0
+  required: false
 script:
   script: |
     DEFAULT_DBOT_SCORE = params.defaultdbotscore == 'Suspicious' ? 2 : 3;
@@ -317,4 +322,4 @@ script:
   runonce: false
 releaseNotes: "Fixed typo"
 tests:
-  - Pwned test
+  - "Pwned test"
