@@ -930,7 +930,7 @@
         },
         {
             "playbookID": "Pwned test",
-            "integration": "Pwned"
+            "integrations": "Pwned"
         },
         {
             "integrations": "duo",
