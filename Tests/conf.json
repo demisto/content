@@ -6,6 +6,7 @@
             "integrations": "Pwned",
             "playbookID": "Pwned test"
         },
+        {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
