@@ -317,4 +317,4 @@ script:
   runonce: false
 releaseNotes: "Fixed typo"
 tests:
-  - "Pwned test"
+  - Pwned test
