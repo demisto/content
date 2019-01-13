@@ -19,7 +19,7 @@ configuration:
   defaultvalue: SUSPICIOUS
   type: 0
   required: false
-- display: 'Domain Severity: The DBot score for compromised domains (SUSPICIOUS or
+- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or
     MALICIOUS)'
   name: defaultdbotscoreDomain
   defaultvalue: SUSPICIOUS
@@ -292,7 +292,11 @@ script:
       related: ""
     description: Check if an email has been compromised as part of past breaches
   - name: domain
-    arguments: []
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: domain to check
     outputs:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision

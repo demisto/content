@@ -15271,6 +15271,18 @@
                     "isError"
                 ]
             }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
+                ]
+            }
         }
     ]
 }
