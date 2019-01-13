@@ -4994,6 +4994,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -5726,6 +5729,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
