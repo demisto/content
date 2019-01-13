@@ -15,7 +15,7 @@ script: |-
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
-          'DBotScore(val.Indicator == obj.Indicator)':
+          'DBotScore':
           {
               'Indicator': entryID,
               'Type': 'file',
@@ -141,3 +141,4 @@ runonce: false
 dockerimage: demisto/pdfx
 tests:
   - ReadPDFFile-Test
+releaseNotes: "Remove DT from DBotScore update"
