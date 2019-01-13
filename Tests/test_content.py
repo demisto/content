@@ -83,15 +83,16 @@ def update_test_msg(integrations, test_message):
 
 
 def configure_proxy(c, proxy=""):
-    #r = c.req('GET', '/system/config', None)
-    #r.raise_for_status()
-    #version = r.json()['sysConf']['versn']
-    data = {"data": {"http_proxy": proxy, "https_proxy": proxy}, "version": -1}
+    http_proxy = https_proxy = proxy
+    if proxy:
+        http_proxy = "http://" + proxy
+        https_proxy = "https://" + proxy
+    data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
     return c.req('POST', '/system/config', data)
 
 
 def start_proxy(c, playbook_id, record=False):
-    r = configure_proxy(c, '')
+    configure_proxy(c, 'localhost:9997')
     # TODO: SSH to server
     action = '--server-replay' if not record else '--save-stream-file'
     return Popen(["mitmdump", "-p", "9997", action, "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
@@ -107,26 +108,31 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options):  # , slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
     # TODO: download mock file from repo
-    proxy_proc = start_proxy(c, playbook_id)
-    # run test
-    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
-    # use results
-    if succeed:
-        print 'PASS: %s succeed' % (test_message,)
-        succeed_playbooks.append(playbook_id)
+    if not os.path.isfile("{}.mock".format(playbook_id)):
+        print "Mock file does not exist, running without mock."
     else:
-        # bypass proxy
-        stop_proxy(c, proxy_proc)
-        proxy_proc = start_proxy(c, playbook_id, record=True)
+        proxy_proc = start_proxy(c, playbook_id)
+        # run test
         succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+        # use results
         if succeed:
             print 'PASS: %s succeed' % (test_message,)
             succeed_playbooks.append(playbook_id)
-            # TODO: upload mock file to repo
-        else:
-            print 'Failed: %s failed' % (test_message,)
-            failed_playbooks.append(playbook_id)
-            #notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+            print '------ Test %s end ------' % (test_message,)
+            return
+        stop_proxy(c, proxy_proc)
+        print "Test failed with mock, rerunning without mock."
+    # mock file not found or test failed:
+    proxy_proc = start_proxy(c, playbook_id, record=True)
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+    if succeed:
+        print 'PASS: %s succeed' % (test_message,)
+        succeed_playbooks.append(playbook_id)
+        # TODO: upload mock file to repo
+    else:
+        print 'Failed: %s failed' % (test_message,)
+        failed_playbooks.append(playbook_id)
+        #notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
     stop_proxy(c, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
