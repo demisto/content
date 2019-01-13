@@ -28,14 +28,14 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: f39217ca-2d8c-49be-860e-fb94588d9a3d
+    taskid: f1ff549a-65de-425d-825a-c650d972d0b1
     type: regular
     task:
-      id: f39217ca-2d8c-49be-860e-fb94588d9a3d
+      id: f1ff549a-65de-425d-825a-c650d972d0b1
       version: -1
-      name: pwned-email
+      name: Get email
       description: Check if an email has been compromised as part of past breaches
-      script: '|||pwned-email'
+      script: '|||email'
       type: regular
       iscommand: true
       brand: ""
@@ -57,13 +57,13 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 4ef0a37f-d751-431b-8568-0466ad35949c
+    taskid: b5b74d85-3653-4a50-8834-5d393b210677
     type: regular
     task:
-      id: 4ef0a37f-d751-431b-8568-0466ad35949c
+      id: b5b74d85-3653-4a50-8834-5d393b210677
       version: -1
-      name: Pwned domain
-      script: '|||pwned-domain'
+      name: Get domain
+      script: '|||domain'
       type: regular
       iscommand: true
       brand: ""
@@ -73,6 +73,12 @@ tasks:
     scriptarguments:
       domain:
         simple: adobe.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -85,10 +91,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: cefaa776-6c66-4b82-8a4c-c3f14dccad51
+    taskid: 1c446dee-3206-42ed-85c7-5629049721cb
     type: condition
     task:
-      id: cefaa776-6c66-4b82-8a4c-c3f14dccad51
+      id: 1c446dee-3206-42ed-85c7-5629049721cb
       version: -1
       name: Check domain dBot score
       type: condition
@@ -109,6 +115,30 @@ tasks:
               right:
                 value:
                   simple: "2"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: adobe.com
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: Pwned
     view: |-
       {
         "position": {
@@ -120,10 +150,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 1cc83b4c-9355-41bc-8fbc-362695b1c13d
+    taskid: 24b728c3-7e77-43b8-8984-c88bd076d58e
     type: condition
     task:
-      id: 1cc83b4c-9355-41bc-8fbc-362695b1c13d
+      id: 24b728c3-7e77-43b8-8984-c88bd076d58e
       version: -1
       name: Check email dBot score
       type: condition
@@ -144,11 +174,35 @@ tasks:
               right:
                 value:
                   simple: "0"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: example@demisto.com
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: Pwned
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1060
+          "y": 1070
         }
       }
     note: false
@@ -220,4 +274,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: "-"
