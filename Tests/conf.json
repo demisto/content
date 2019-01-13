@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Pwned",
+            "playbookID": "Pwned test"
+        },
+        {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
@@ -930,6 +934,10 @@
                 "VirusTotal - Private API",
                 "Demisto REST API"
             ]
+        },
+        {
+            "playbookID": "Pwned test",
+            "integrations": "Pwned"
         },
         {
             "integrations": "duo",
