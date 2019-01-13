@@ -28,17 +28,17 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: f1ff549a-65de-425d-825a-c650d972d0b1
+    taskid: ea094daa-7c49-4ea0-8be0-9650ed8f5997
     type: regular
     task:
-      id: f1ff549a-65de-425d-825a-c650d972d0b1
+      id: ea094daa-7c49-4ea0-8be0-9650ed8f5997
       version: -1
       name: Get email
       description: Check if an email has been compromised as part of past breaches
-      script: '|||email'
+      script: Pwned|||email
       type: regular
       iscommand: true
-      brand: ""
+      brand: Pwned
     nexttasks:
       '#none#':
         - "6"
@@ -57,28 +57,24 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: b5b74d85-3653-4a50-8834-5d393b210677
+    taskid: 264619f3-7d93-4bd4-8c4d-ef3b50fdc186
     type: regular
     task:
-      id: b5b74d85-3653-4a50-8834-5d393b210677
+      id: 264619f3-7d93-4bd4-8c4d-ef3b50fdc186
       version: -1
       name: Get domain
-      script: '|||domain'
+      script: Pwned|||domain
       type: regular
       iscommand: true
-      brand: ""
+      brand: Pwned
     nexttasks:
       '#none#':
         - "4"
     scriptarguments:
       domain:
         simple: adobe.com
-      fullResponse: {}
       long: {}
-      retries: {}
-      sampleSize: {}
       threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
