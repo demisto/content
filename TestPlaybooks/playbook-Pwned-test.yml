@@ -1,6 +1,6 @@
-id: "Pwned test"
+id: Pwned test
 version: -1
-name: "Pwned test"
+name: Pwned test
 starttaskid: "0"
 tasks:
   "0":
