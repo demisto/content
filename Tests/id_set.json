@@ -647,7 +647,10 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL"
+                "name": "ResolveShortenedURL", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -4750,6 +4753,11 @@
         {
             "GetFirstObject": {
                 "name": "GetFirstObject"
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
             }
         }
     ], 
@@ -15249,6 +15257,18 @@
                 ], 
                 "implementing_playbooks": [
                     "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
                 ]
             }
         }
