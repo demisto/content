@@ -7078,6 +7078,20 @@
                     "No test"
                 ]
             }
+        }, 
+        {
+            "QRadar - Get offense correlations ": {
+                "name": "QRadar - Get offense correlations", 
+                "toversion": "3.9.9", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "QRadarGetCorrelationLogs", 
+                    "QRadarGetOffenseCorrelations"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
         }
     ], 
     "integrations": [
