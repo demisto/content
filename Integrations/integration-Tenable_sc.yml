@@ -38,6 +38,12 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
 script:
   script: |
     import time
@@ -45,7 +51,7 @@ script:
     from requests import Request, Session
     import requests
     import json
-    import datetime
+    from datetime import datetime
     import time
 
 
@@ -62,6 +68,7 @@ script:
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
     SESSION = None
 
     def get_server_url():
@@ -74,7 +81,36 @@ script:
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/rest'
 
+    ACTION_TYPE_TO_VALUE = {
+        'notification': 'users.username',
+        'email': 'users.username',
+        'syslog': 'host',
+        'scan': 'scan.name',
+        'report': 'report.name',
+        'ticket': 'assignee.username'
+    }
+
     ''' HELPER FUNCTIONS '''
+    def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
+          """
+            Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
+            Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+            :type date_str_or_dt: ``str`` or ``datetime.datetime``
+            :param date_str_or_dt: The date to be parsed. (required)
+
+            :type date_format: ``str``
+            :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type datetime.datetime). (optional)
+
+            :return: The parsed timestamp.
+            :rtype: ``int``
+          """
+          if isinstance(date_str_or_dt, basestring):
+              return int(time.mktime(time.strptime(date_str_or_dt, date_format))) * 1000
+
+          # otherwise datetime.datetime
+          return int(time.mktime(date_str_or_dt.timetuple())) * 1000
+
     def send_request(path, method='get', body=None, params=None, headers=None):
         body = body if body is not None else {}
         params = params if params is not None else {}
@@ -215,7 +251,7 @@ script:
             'Type': p['policyTemplate'].get('name'),
             'Group': p['ownerGroup'].get('name'),
             'Owner': p['owner'].get('username'),
-            'LastModified': datetime.datetime.utcfromtimestamp(int(p['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if p['modifiedTime'] else ''
+            'LastModified': datetime.utcfromtimestamp(int(p['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if p['modifiedTime'] else ''
         } for p in policies]
 
         demisto.results({
@@ -302,7 +338,7 @@ script:
             'Tag': c['tags'],
             'Group': c.get('ownerGroup', {}).get('name'),
             'Owner': c.get('owner', {}).get('name'),
-            'LastModified': datetime.datetime.utcfromtimestamp(int(c['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if c['modifiedTime'] else ''
+            'LastModified': datetime.utcfromtimestamp(int(c['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if c['modifiedTime'] else ''
         } for c in credentials]
 
         demisto.results({
@@ -341,16 +377,7 @@ script:
         if len(assets) == 0:
             return_message('No assets found')
 
-        headers = [
-            'ID',
-            'Name',
-            'Tag',
-            'Owner',
-            'Group',
-            'Type'
-            'HostCount',
-            'LastModified'
-        ]
+        headers = ['ID','Name','Tag','Owner','Group','Type','HostCount','LastModified']
 
         mapped_assets = [{
             'ID': a['id'],
@@ -360,7 +387,7 @@ script:
             'Type': a['type'],
             'Group': a.get('ownerGroup', {}).get('name'),
             'HostCount': a['ipCount'],
-            'LastModified': datetime.datetime.utcfromtimestamp(int(a['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['modifiedTime'] else ''
+            'LastModified': datetime.utcfromtimestamp(int(a['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['modifiedTime'] else ''
         } for a in assets]
 
         demisto.results({
@@ -413,8 +440,8 @@ script:
             'Name': asset['name'],
             'Description': asset['description'],
             'Tag': asset['tags'],
-            'Created': datetime.datetime.utcfromtimestamp(int(asset['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['createdTime'] else '',
-            'Modified': datetime.datetime.utcfromtimestamp(int(asset['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['modifiedTime'] else '',
+            'Created': datetime.utcfromtimestamp(int(asset['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['createdTime'] else '',
+            'Modified': datetime.utcfromtimestamp(int(asset['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['modifiedTime'] else '',
             'Owner': asset.get('owner', {}).get('username'),
             'Group': asset.get('ownerGroup', {}).get('name'),
             'IPs': ips
@@ -682,7 +709,7 @@ script:
             'CreatorID': scan['creator'].get('id'),
             'Name': scan['name'],
             'Type': scan['type'],
-            'CreationTime': datetime.datetime.utcfromtimestamp(int(scan['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan['createdTime'] else '',
+            'CreationTime': datetime.utcfromtimestamp(int(scan['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan['createdTime'] else '',
             'OwnerName': scan['owner'].get('name'),
             'Reports': demisto.dt(scan['reports'], 'id')
         }
@@ -885,10 +912,10 @@ script:
             'Group': scan_results.get('ownerGroup', {}).get('name'),
             'Status': scan_results['status'],
             'Checks': scan_results['completedChecks'],
-            'StartTime': datetime.datetime.utcfromtimestamp(int(scan_results['startTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['startTime'] else '',
-            'EndTime': datetime.datetime.utcfromtimestamp(int(scan_results['finishTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['finishTime'] else '',
+            'StartTime': datetime.utcfromtimestamp(int(scan_results['startTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['startTime'] else '',
+            'EndTime': datetime.utcfromtimestamp(int(scan_results['finishTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['finishTime'] else '',
             'Duration': float(scan_results['scanDuration']) / 60 if scan_results['scanDuration'] else '',
-            'ImportTime': datetime.datetime.utcfromtimestamp(int(scan_results['importStart'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['importStart'] else '',
+            'ImportTime': datetime.utcfromtimestamp(int(scan_results['importStart'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['importStart'] else '',
             'ScannedIPs': scan_results['scannedIPs'],
             'Owner': scan_results['owner'].get('username'),
             'RepositoryName': scan_results['repository'].get('name')
@@ -1118,7 +1145,7 @@ script:
         }
 
         vuln_info = {
-            'Published': datetime.datetime.utcfromtimestamp(int(vuln['vulnPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['vulnPubDate'] else '',
+            'Published': datetime.utcfromtimestamp(int(vuln['vulnPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['vulnPubDate'] else '',
             'CPE': vuln['cpe'],
             'CVE': cves
         }
@@ -1137,8 +1164,8 @@ script:
 
         plugin_details = {
             'Family': vuln['family'].get('name'),
-            'Published': datetime.datetime.utcfromtimestamp(int(vuln['pluginPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['pluginPubDate'] else '',
-            'Modified': datetime.datetime.utcfromtimestamp(int(vuln['pluginModDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['pluginModDate'] else '',
+            'Published': datetime.utcfromtimestamp(int(vuln['pluginPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['pluginPubDate'] else '',
+            'Modified': datetime.utcfromtimestamp(int(vuln['pluginModDate'])).strftime('%Y-%m-%dT%H:%M:%SZ') if vuln['pluginModDate'] else '',
             'CheckType': vuln['checkType']
         }
 
@@ -1301,7 +1328,7 @@ script:
             'DNSName': device.get('dnsName'),
             'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
             'OsCPE': device.get('osCPE'),
-            'LastScan': datetime.datetime.utcfromtimestamp(int(device.get('lastScan'))).strftime('%Y-%m-%dT%H:%M:%SZ') if device.get('lastScan') and int(device['lastScan']) > 0 else '',
+            'LastScan': datetime.utcfromtimestamp(int(device.get('lastScan'))).strftime('%Y-%m-%dT%H:%M:%SZ') if device.get('lastScan') and int(device['lastScan']) > 0 else '',
             'TotalScore': device.get('total'),
             'LowSeverity': device.get('severityLow'),
             'MediumSeverity': device.get('severityMedium'),
@@ -1389,9 +1416,9 @@ script:
             'LastName': u['lastname'],
             'Title': u['title'],
             'Email': u['email'],
-            'Created': datetime.datetime.utcfromtimestamp(int(u['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['createdTime'] else '',
-            'Modified': datetime.datetime.utcfromtimestamp(int(u['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['modifiedTime'] else '',
-            'LastLogin': datetime.datetime.utcfromtimestamp(int(u['lastLogin'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['lastLogin'] else '',
+            'Created': datetime.utcfromtimestamp(int(u['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['createdTime'] else '',
+            'Modified': datetime.utcfromtimestamp(int(u['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['modifiedTime'] else '',
+            'LastLogin': datetime.utcfromtimestamp(int(u['lastLogin'])).strftime('%Y-%m-%dT%H:%M:%SZ') if u['lastLogin'] else '',
             'Role': u['role'].get('name')
         } for u in users]
 
@@ -1485,7 +1512,7 @@ script:
             'JavaStatus': diagnostics['statusJava'],
             'DiskStatus': diagnostics['statusDisk'],
             'DiskThreshold': diagnostics['statusThresholdDisk'],
-            'LastCheck': datetime.datetime.utcfromtimestamp(int(diagnostics['statusLastChecked'])).strftime('%Y-%m-%dT%H:%M:%SZ') if diagnostics['statusLastChecked'] else '',
+            'LastCheck': datetime.utcfromtimestamp(int(diagnostics['statusLastChecked'])).strftime('%Y-%m-%dT%H:%M:%SZ') if diagnostics['statusLastChecked'] else '',
         }
 
         headers = [
@@ -1535,14 +1562,14 @@ script:
         if len(alerts) == 0:
             return_message('No alerts found')
 
-        headers = ['ID','Name','Action','State','LastTriggered','LastEvaluated','Group','Owner']
+        headers = ['ID','Name','Actions','State','LastTriggered','LastEvaluated','Group','Owner']
         mapped_alerts = [{
             'ID': a['id'],
             'Name': a['name'],
             'State': 'Triggered' if a['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
             'Actions': demisto.dt(a['action'], 'type'),
-            'LastTriggered': datetime.datetime.utcfromtimestamp(int(a['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastTriggered'] and int(a['lastTriggered']) > 0 else 'Never',
-            'LastEvaluated': datetime.datetime.utcfromtimestamp(int(a['lastEvaluated'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastEvaluated'] else '',
+            'LastTriggered': datetime.utcfromtimestamp(int(a['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastTriggered'] and int(a['lastTriggered']) > 0 else 'Never',
+            'LastEvaluated': datetime.utcfromtimestamp(int(a['lastEvaluated'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastEvaluated'] else '',
             'Group': a['ownerGroup'].get('name'),
             'Owner': a['owner'].get('username')
         } for a in alerts]
@@ -1561,7 +1588,7 @@ script:
 
     def get_alert_command():
         alert_id = demisto.args()['alert_id']
-        res = get_alerts(None, alert_id)
+        res = get_alerts(alert_id = alert_id)
 
         if not res or 'response' not in res or not res['response']:
             return_message('Alert not found')
@@ -1573,15 +1600,17 @@ script:
 
         alert_headers = ['ID','Name','Description','LastTriggered','State','Behavior','Actions']
         query_headers = ['Trigger','Query']
+        action_headers = ['Type', 'Values']
+
+
         filter_headers = ['Name','Values']
         mapped_alert = {
             'ID': alert['id'],
             'Name': alert['name'],
             'Description': alert['description'],
-            'LastTriggered': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] and int(alert['lastTriggered']) > 0 else 'Never',
+            'LastTriggered': datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] and int(alert['lastTriggered']) > 0 else 'Never',
             'State': 'Triggered' if alert['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
-            'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on first trigger',
-            'Actions': demisto.dt(alert['action'], 'type')
+            'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on first trigger'
         }
 
         mapped_condition = {
@@ -1597,10 +1626,18 @@ script:
                 } for f in query.get('filters', [])]
             mapped_condition['Filter'] = mapped_filters
 
+        mapped_actions = [{
+            'Type': a['type'],
+            'Values': demisto.dt(a, '{}.{}'.format('definition', ACTION_TYPE_TO_VALUE[a['type']]))
+        } for a in alert['action']]
+
         hr = tableToMarkdown('Tenable.sc Alert', mapped_alert, headers=alert_headers, removeNull=True)
         hr += tableToMarkdown('Condition', mapped_condition, headers=query_headers, removeNull=True)
         if mapped_filters:
             hr += tableToMarkdown('Filters', mapped_filters, headers=filter_headers, removeNull=True)
+        if mapped_actions:
+            hr += tableToMarkdown('Actions', mapped_actions, headers=action_headers, removeNull=True)
+            mapped_alert['Action'] = mapped_actions
 
         mapped_alert['Condition'] = mapped_condition
 
@@ -1617,7 +1654,7 @@ script:
 
 
 
-    def get_alerts(fields, alert_id=None):
+    def get_alerts(fields=None, alert_id=None):
         path = 'alert'
         params = {}
 
@@ -1640,40 +1677,33 @@ script:
     def fetch_incidents():
         incidents = []
         last_run = demisto.getLastRun()
+        if not last_run:
+            last_run = {}
         if 'time' not in last_run:
-            timestamp = int(time.time())
+            # get timestamp in seconds
+            timestamp, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+            timestamp /= 1000
         else:
             timestamp = last_run['time']
 
-        res = get_alerts(fields='id,name,description,lastTriggered,triggerName,triggerOperator,triggerValue,action,query,owner')
+        max_timestamp = timestamp
+        res = get_alerts(fields='id,name,description,lastTriggered,triggerName,triggerOperator,triggerValue,action,query,owner,ownerGroup,schedule,canManage')
 
-        for alert in get_elements(res.get('response', {}), False):
+        alerts = get_elements(res.get('response', {}), manageable='false')
+        for alert in alerts:
+            # 0 corresponds to never triggered
             if int(alert.get('lastTriggered', 0)) > timestamp:
-                labels = []
-                for k,v in alert.iteritems():
-                    if isinstance(v, basestring):
-                        labels.append({
-                            'type': k,
-                            'value': v
-                        })
-                    else:
-                        labels.append({
-                            'type': k,
-                            'value': json.dumps(v)
-                        })
-
                 incidents.append({
                     'name': 'Tenable.sc Alert Triggered - ' + alert['name'],
-                    'labels': labels,
-                    'occurred': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    'details': json.dumps(alert),
+                    'occurred': datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
                     'rawJSON': json.dumps(alert)
                 })
 
-                timestamp = int(alert['lastTriggered'])
+                if(int(alert['lastTriggered']) > max_timestamp):
+                    max_timestamp = int(alert['lastTriggered'])
 
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': timestamp})
+        demisto.setLastRun({'time': max_timestamp})
 
 
     ''' LOGIC '''
@@ -2298,6 +2328,7 @@ script:
       - "false"
       description: Whether to return only manageable alerts. Returns both usable and
         manageable by default.
+      defaultValue: "false"
     outputs:
     - contextPath: TenableSC.Alert.ID
       description: Alert ID
@@ -2351,9 +2382,6 @@ script:
     - contextPath: TenableSC.Alert.LastTriggered
       description: Alert last triggered time
       type: date
-    - contextPath: TenableSC.Alert.Action
-      description: Alert action type
-      type: string
     - contextPath: TenableSC.Alert.Condition.Query
       description: Alert query name
       type: string
@@ -2362,7 +2390,12 @@ script:
       type: string
     - contextPath: TenableSC.Alert.Condition.Filter.Values
       description: Alert query filter values
-    description: Get information about a given alert in tenabel.sc
+    - contextPath: TenableSC.Alert.Action.Type
+      description: Alert action type
+      type: string
+    - contextPath: TenableSC.Alert.Action.Values
+      description: Alert action values
+    description: Get information about a given alert in Tenable.sc
   - name: tenable-sc-get-device
     arguments:
     - name: ip
@@ -2514,6 +2547,5 @@ script:
       type: date
     description: Get the system information and diagnostics from Tenable.sc
   isfetch: true
-releaseNotes: "Enabled fetch incidents (alerts), fixes to get-device command"
 tests:
   - tenable-sc-test

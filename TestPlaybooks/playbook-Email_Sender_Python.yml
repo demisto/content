@@ -1,5 +1,5 @@
 id: Mail Sender (New) Test
-version: 36
+version: 8
 name: Email Sender Python
 description: |-
   Email sender - python.
@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7afd7b35-263e-45cc-82fd-4549dd341e16
+    taskid: a9a75a06-3272-4ed7-8a1f-15540b4be4bd
     type: start
     task:
-      id: 7afd7b35-263e-45cc-82fd-4549dd341e16
+      id: a9a75a06-3272-4ed7-8a1f-15540b4be4bd
       version: -1
       name: ""
       iscommand: false
@@ -24,16 +24,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 285,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 555ee87d-b850-43b5-83d7-2c68634cbce4
+    taskid: 64b259dc-4df1-4e39-8f9d-ec7a588a67be
     type: regular
     task:
-      id: 555ee87d-b850-43b5-83d7-2c68634cbce4
+      id: 64b259dc-4df1-4e39-8f9d-ec7a588a67be
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -51,16 +53,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 451,
-          "y": 188
+          "x": 285,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 05aa4856-3bea-40b8-859e-5f99fca5fedb
+    taskid: b50230b2-bcbf-4d7c-8fce-7038b1166428
     type: regular
     task:
-      id: 05aa4856-3bea-40b8-859e-5f99fca5fedb
+      id: b50230b2-bcbf-4d7c-8fce-7038b1166428
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -81,7 +85,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook
+        simple: special test via playbook (1)
       templateParams: {}
       to:
         simple: yarden@demistodev.com
@@ -94,16 +98,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 445,
-          "y": 364
+          "x": 285,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: b0e380a2-0b40-4cd2-8738-36c085a6bbc8
+    taskid: 85285c64-ff34-4c22-86df-b8ab1cdff2f9
     type: regular
     task:
-      id: b0e380a2-0b40-4cd2-8738-36c085a6bbc8
+      id: 85285c64-ff34-4c22-86df-b8ab1cdff2f9
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -120,16 +126,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 534
+          "x": 285,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 84c9712a-c2bd-4d08-8483-33216fce7970
+    taskid: 7114d4c3-5ff1-4134-8be5-03912c75fa68
     type: regular
     task:
-      id: 84c9712a-c2bd-4d08-8483-33216fce7970
+      id: 7114d4c3-5ff1-4134-8be5-03912c75fa68
       version: -1
       name: Search for email sent and get ID
       script: google|||googleapps-gmail-search
@@ -155,16 +163,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 695
+          "x": 285,
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 6998a71d-a1a9-4412-852b-6330f41a35a4
+    taskid: a22a6e17-b6f7-43ea-8ef7-ef846b5b5a09
     type: condition
     task:
-      id: 6998a71d-a1a9-4412-852b-6330f41a35a4
+      id: a22a6e17-b6f7-43ea-8ef7-ef846b5b5a09
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -179,7 +189,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: Email.ID
@@ -187,16 +197,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
-          "y": 870
+          "x": 285,
+          "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: de200ca5-bca5-4f5e-8673-460ea7101497
+    taskid: 20fb26c6-b602-4b74-8b5e-19526f84e94c
     type: regular
     task:
-      id: de200ca5-bca5-4f5e-8673-460ea7101497
+      id: 20fb26c6-b602-4b74-8b5e-19526f84e94c
       version: -1
       name: Delete email list from context
       description: |-
@@ -218,16 +230,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 1262
+          "x": 397.5,
+          "y": 2295
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 082087e7-d308-4277-86e1-973e13e4ce1a
+    taskid: eed7199f-c448-457a-87b4-5632ab45c7af
     type: regular
     task:
-      id: 082087e7-d308-4277-86e1-973e13e4ce1a
+      id: eed7199f-c448-457a-87b4-5632ab45c7af
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -247,16 +261,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 1082
+          "x": 397.5,
+          "y": 2120
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 6d2577dc-1bcf-4690-80f3-b181526480a9
+    taskid: 568ed454-da71-4fb3-8ff8-8958a9c84502
     type: regular
     task:
-      id: 6d2577dc-1bcf-4690-80f3-b181526480a9
+      id: 568ed454-da71-4fb3-8ff8-8958a9c84502
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -273,16 +289,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1082
+          "x": 70,
+          "y": 1070
         }
       }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: c8f917bd-8d52-4b3f-82f7-41992dc74c59
+    taskid: 3367c22f-1f35-4bcb-8f47-5329347d02f0
     type: regular
     task:
-      id: c8f917bd-8d52-4b3f-82f7-41992dc74c59
+      id: 3367c22f-1f35-4bcb-8f47-5329347d02f0
       version: -1
       name: Search for email sent (ID)
       script: google|||googleapps-gmail-search
@@ -308,16 +326,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1240
+          "x": 70,
+          "y": 1245
         }
       }
+    note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: 44a3de1b-c11a-4b74-800b-7c5997f332bb
+    taskid: 161fab74-9799-4e8b-80cd-3b1d6808521b
     type: condition
     task:
-      id: 44a3de1b-c11a-4b74-800b-7c5997f332bb
+      id: 161fab74-9799-4e8b-80cd-3b1d6808521b
       version: -1
       name: Check if email was found
       type: condition
@@ -332,7 +352,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: Email.ID
@@ -340,16 +360,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1407
+          "x": 70,
+          "y": 1420
         }
       }
+    note: false
+    timertriggers: []
   "11":
     id: "11"
-    taskid: 6b964fdf-b21f-4874-827a-d82f4ee21aff
+    taskid: 45b73bd6-a398-4a20-882b-184960dedc43
     type: regular
     task:
-      id: 6b964fdf-b21f-4874-827a-d82f4ee21aff
+      id: 45b73bd6-a398-4a20-882b-184960dedc43
       version: -1
       name: Fetch email from google mail using message ID
       script: google|||googleapps-gmail-get-mail
@@ -370,16 +392,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 1440
+          "x": 397.5,
+          "y": 2470
         }
       }
+    note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 736fa30f-bf66-41f8-8ff4-ad2b87aad18c
+    taskid: a1306498-0c68-4a16-8543-346d26a64acd
     type: condition
     task:
-      id: 736fa30f-bf66-41f8-8ff4-ad2b87aad18c
+      id: a1306498-0c68-4a16-8543-346d26a64acd
       version: -1
       name: Check for attachments
       type: condition
@@ -394,12 +418,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: Email.Attachments
             iscontext: true
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: Email.[0].ID
@@ -411,38 +435,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 1627
+          "x": 397.5,
+          "y": 2645
         }
       }
+    note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: 3ad51b6b-5194-4413-88df-a2aa1272e1e7
+    taskid: 44957696-c783-4252-862b-44057742e48d
     type: title
     task:
-      id: 3ad51b6b-5194-4413-88df-a2aa1272e1e7
+      id: 44957696-c783-4252-862b-44057742e48d
       version: -1
       name: Test email was found with the attachment!
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -293,
-          "y": 1854
+          "x": 705,
+          "y": 2835
         }
       }
+    note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: 6e5eb27b-aff6-4a3b-869b-0f7640454a84
+    taskid: 881121a3-6850-41d1-8c48-4182c8e70f18
     type: regular
     task:
-      id: 6e5eb27b-aff6-4a3b-869b-0f7640454a84
+      id: 881121a3-6850-41d1-8c48-4182c8e70f18
       version: -1
       name: Email found without attachment
-      scriptName: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -453,39 +484,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 164,
-          "y": 1839
+          "x": 275,
+          "y": 2820
         }
       }
+    note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: 3f5618df-6422-4cc4-80e6-806c4393884c
+    taskid: 9e1cab3b-9302-408f-86df-c12d6c8c3395
     type: regular
     task:
-      id: 3f5618df-6422-4cc4-80e6-806c4393884c
+      id: 9e1cab3b-9302-408f-86df-c12d6c8c3395
       version: -1
       name: Test failed
-      scriptName: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
+      actual: {}
+      details: {}
       error:
         simple: Mail was not found after 30 sec.
+      expected: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 2112
+          "x": 50,
+          "y": 5095
         }
       }
+    note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: 30bd1bf5-932e-42cc-893f-db55abb6a20a
+    taskid: 18db611a-1571-40f6-856b-8ffbe287aeb3
     type: regular
     task:
-      id: 30bd1bf5-932e-42cc-893f-db55abb6a20a
+      id: 18db611a-1571-40f6-856b-8ffbe287aeb3
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -502,16 +540,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1597
+          "x": 50,
+          "y": 1595
         }
       }
+    note: false
+    timertriggers: []
   "17":
     id: "17"
-    taskid: ec7de29a-9e0f-46af-89e0-e4732b24b2a5
+    taskid: 2dff647f-dccc-4dae-87eb-142dfde8e288
     type: regular
     task:
-      id: ec7de29a-9e0f-46af-89e0-e4732b24b2a5
+      id: 2dff647f-dccc-4dae-87eb-142dfde8e288
       version: -1
       name: Search for email sent (ID)
       script: google|||googleapps-gmail-search
@@ -537,16 +577,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1759
+          "x": 50,
+          "y": 1770
         }
       }
+    note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: b8d70b34-2006-4f74-88da-3714a8dc92a9
+    taskid: a0a68c29-6e8c-4402-831c-2ea33911e94e
     type: condition
     task:
-      id: b8d70b34-2006-4f74-88da-3714a8dc92a9
+      id: a0a68c29-6e8c-4402-831c-2ea33911e94e
       version: -1
       name: Check if email was found
       type: condition
@@ -561,7 +603,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: Email.ID
@@ -569,10 +611,664 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 625,
-          "y": 1919
+          "x": 50,
+          "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 75830b28-b9dc-43ed-844b-13b434bdefb2
+    type: regular
+    task:
+      id: 75830b28-b9dc-43ed-844b-13b434bdefb2
+      version: -1
+      name: Start Over - Send several files
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 21873270-125e-4bfd-8498-d168e9dd6b43
+    type: regular
+    task:
+      id: 21873270-125e-4bfd-8498-d168e9dd6b43
+      version: -1
+      name: Send mail using python
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames:
+        simple: attach.txt
+      bcc: {}
+      body:
+        simple: this is a test by playbook
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: special test via playbook (2)
+      templateParams: {}
+      to:
+        simple: yarden@demistodev.com
+      transientFile:
+        simple: test.txt,test2.txt
+      transientFileCID: {}
+      transientFileContent:
+        simple: this is a test text inside a test attachment mail!,another mail content.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: b5b8d104-6bfc-4b4c-83a4-4cc413b8c70f
+    type: regular
+    task:
+      id: b5b8d104-6bfc-4b4c-83a4-4cc413b8c70f
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 66f4f4d8-7a98-4d32-8992-7177b1ba7263
+    type: regular
+    task:
+      id: 66f4f4d8-7a98-4d32-8992-7177b1ba7263
+      version: -1
+      name: Search for email sent and get ID
+      script: google|||googleapps-gmail-search
+      type: regular
+      iscommand: true
+      brand: google
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      fields: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
+          newer_than:1d
+      user-key:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 472d295d-768f-4948-84ff-fdbab47636a1
+    type: condition
+    task:
+      id: 472d295d-768f-4948-84ff-fdbab47636a1
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: f87abe99-c97d-4778-8f93-56ffe3ac7de1
+    type: regular
+    task:
+      id: f87abe99-c97d-4778-8f93-56ffe3ac7de1
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 9c31e109-9111-495e-8791-ed52b941c47a
+    type: regular
+    task:
+      id: 9c31e109-9111-495e-8791-ed52b941c47a
+      version: -1
+      name: Search for email sent and get ID
+      script: google|||googleapps-gmail-search
+      type: regular
+      iscommand: true
+      brand: google
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      fields: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
+          newer_than:1d
+      user-key:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: d85febe0-d7c4-436e-855a-c9acd0b726a8
+    type: condition
+    task:
+      id: d85febe0-d7c4-436e-855a-c9acd0b726a8
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 48969723-6515-473d-88e3-188535d8d78f
+    type: condition
+    task:
+      id: 48969723-6515-473d-88e3-188535d8d78f
+      version: -1
+      name: Check if email was found (if ID exists)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 949e9362-4c92-407b-8dbe-48b2bbce1b1b
+    type: regular
+    task:
+      id: 949e9362-4c92-407b-8dbe-48b2bbce1b1b
+      version: -1
+      name: Wait for mail to be received
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 5ffb18a9-3156-4b2a-8d63-9012cb1981a6
+    type: regular
+    task:
+      id: 5ffb18a9-3156-4b2a-8d63-9012cb1981a6
+      version: -1
+      name: Search for email sent and get ID
+      script: google|||googleapps-gmail-search
+      type: regular
+      iscommand: true
+      brand: google
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      fields: {}
+      include-spam-trash:
+        simple: "true"
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query:
+        simple: from:avishai@demistodev.onmicrosoft.com subject:special test via playbook
+          newer_than:1d
+      user-key:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 43e9ed8d-2444-456f-8b13-e27cfaffad11
+    type: regular
+    task:
+      id: 43e9ed8d-2444-456f-8b13-e27cfaffad11
+      version: -1
+      name: Save the retrieved mail's ID under a key for search in inbox
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Testmail.ID
+      value:
+        simple: ${Email.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: f8000a22-4984-41b1-8838-6631aab9aedf
+    type: regular
+    task:
+      id: f8000a22-4984-41b1-8838-6631aab9aedf
+      version: -1
+      name: Delete email list from context
+      description: |-
+        Because of how the googleapps integration is built, both fetching meta-data about the email ID and fetching the email itself, create record under Email key, which in turn duplicated a record with the same key&value of ID, thus preventing us from verifying our data later.
+
+        The simple solution: delete the old entry after the ID was stored in the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all: {}
+      key:
+        simple: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: 3a2756e2-6875-4eaa-8130-67890d3fd901
+    type: regular
+    task:
+      id: 3a2756e2-6875-4eaa-8130-67890d3fd901
+      version: -1
+      name: Fetch email from google mail using message ID
+      script: google|||googleapps-gmail-get-mail
+      type: regular
+      iscommand: true
+      brand: google
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      fields: {}
+      format: {}
+      message-id:
+        simple: ${Testmail.ID}
+      user-key:
+        simple: yarden@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: fb37566c-84d2-4c4c-8242-137b3df7732b
+    type: regular
+    task:
+      id: fb37566c-84d2-4c4c-8242-137b3df7732b
+      version: -1
+      name: Create a new File
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      data:
+        simple: WarRoom File
+      entryId: {}
+      filename:
+        simple: attachment1.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: 0207975a-b2c2-42bf-8521-c75fb58fca69
+    type: condition
+    task:
+      id: 0207975a-b2c2-42bf-8521-c75fb58fca69
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email.Attachments
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.[0].ID
+            iscontext: true
+          right:
+            value:
+              simple: Testmail.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 527caf79-a5b3-4342-885e-40ad1187e738
+    type: regular
+    task:
+      id: 527caf79-a5b3-4342-885e-40ad1187e738
+      version: -1
+      name: Email found without attachment
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        complex:
+          root: Email
+          accessor: Attachments
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+          - operator: count
+      details: {}
+      error:
+        simple: Not all attachments found.
+      expected:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 71d23c72-0700-4d2b-84da-e0ee31cdb200
+    type: title
+    task:
+      id: 71d23c72-0700-4d2b-84da-e0ee31cdb200
+      version: -1
+      name: Finished Successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 5985
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 3ab06c3a-c8ff-446d-88c3-dda32748692d
+    type: condition
+    task:
+      id: 3ab06c3a-c8ff-446d-88c3-dda32748692d
+      version: -1
+      name: Check for attachments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email.Attachments
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: Attachments
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -582,9 +1278,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2157,
-        "width": 1298,
-        "x": -293,
+        "height": 6015,
+        "width": 1382.5,
+        "x": 50,
         "y": 50
       }
     }

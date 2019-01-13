@@ -1,0 +1,197 @@
+id: AbuseIPDB Test
+version: -1
+rolename: []
+name: AbuseIPDB Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a52d26f-91f5-4593-877f-cea204711708
+    type: start
+    task:
+      id: 1a52d26f-91f5-4593-877f-cea204711708
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 96684ab0-2024-4053-8fdd-1caa1f10380b
+    type: regular
+    task:
+      id: 96684ab0-2024-4053-8fdd-1caa1f10380b
+      version: -1
+      name: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 09ee2f82-9976-4ced-8022-49e6c339094f
+    type: regular
+    task:
+      id: 09ee2f82-9976-4ced-8022-49e6c339094f
+      version: -1
+      name: check IP
+      script: AbuseIPDB|||ip
+      type: regular
+      iscommand: true
+      brand: AbuseIPDB
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      days:
+        simple: "10"
+      fullResponse: {}
+      ip:
+        simple: ' 178.62.60.225'
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      verbose:
+        simple: "true"
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 00625fcb-59fd-46ec-8ec9-fbb822b8217b
+    type: regular
+    task:
+      id: 00625fcb-59fd-46ec-8ec9-fbb822b8217b
+      version: -1
+      name: report IP
+      script: '|||abuseipdb-report-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      categories:
+        simple: "18"
+      ip:
+        simple: 127.0.0.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: b20ca14c-9a60-4460-82e2-02a4fe497747
+    type: regular
+    task:
+      id: b20ca14c-9a60-4460-82e2-02a4fe497747
+      version: -1
+      name: check IPs CIDR
+      script: '|||abuseipdb-check-cidr-block'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      days:
+        simple: "30"
+      limit: {}
+      network:
+        simple: 127.0.0.2/24
+      threshold: {}
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 37589341-a725-42ba-8c70-4952ed7be66b
+    type: regular
+    task:
+      id: 37589341-a725-42ba-8c70-4952ed7be66b
+      version: -1
+      name: blacklist
+      script: '|||abuseipdb-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      days: {}
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

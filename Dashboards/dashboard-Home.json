@@ -242,7 +242,7 @@
 				"id": "my-mean-time-to-resolution",
 				"version": 2,
 				"modified": "2018-02-28T15:55:31.609278+02:00",
-				"name": "My Mean Time To Resolution",
+				"name": "My Mean Time to Resolution",
 				"dataType": "incidents",
 				"widgetType": "duration",
 				"query": "-category:job and status:closed and owner:\"{me}\"",
