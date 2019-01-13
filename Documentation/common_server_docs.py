@@ -4,15 +4,15 @@ import sys
 import yaml
 from parinx import parser
 
-jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array", "array_to_hex_string",
-                "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash", "HMAC_SHA256_init", "HMAC_SHA256_write",
-                "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
+jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
+                  "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
+                  "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
-                "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                "createContextSingle", "IntegrationLogger", "tblToMd"]
+                  "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
+                  "createContextSingle", "IntegrationLogger", "tblToMd"]
 
-pyIrregularFuncs = {"LOG" : {"argList" : ["message"]}}
+pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
 jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
                     "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
@@ -20,17 +20,20 @@ jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "s
 
 markdownDescFuncs = ["createEntry"]
 
+
 def readJsonFile(filepath):
     with open(filepath, 'r') as f:
         out = json.load(f)
         return out
     return []
 
+
 def readYmlFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.load(f)
         return out
     return []
+
 
 def reformatPythonOutput(output, origin, language):
 
@@ -74,8 +77,8 @@ def reformatPythonOutput(output, origin, language):
 
     return res, isError
 
-def createJsDocumentation(path, origin, language):
 
+def createJsDocumentation(path, origin, language):
     isError = False
     commonServerJs = readJsonFile(path)
     x = []
@@ -118,6 +121,7 @@ def createJsDocumentation(path, origin, language):
         x.append(y)
     return x, isError
 
+
 def createPyDocumentation(path, origin, language):
     isErrorPy = False
     # create commonServerPy json doc
@@ -139,12 +143,15 @@ def createPyDocumentation(path, origin, language):
             else:
                 y = parser.parse_docstring(docstring)
                 y["name"] = a
-                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) == None else pyIrregularFuncs[a]["argList"]
+                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
+                    else pyIrregularFuncs[a]["argList"]
+
                 x.append(y)
 
     if isErrorPy:
         return None, isErrorPy
     return reformatPythonOutput(x, origin, language)
+
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
@@ -161,4 +168,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main(sys.argv[1:])

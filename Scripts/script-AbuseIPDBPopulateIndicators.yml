@@ -45,5 +45,5 @@ dependson:
 timeout: 900ns
 runonce: false
 runas: DBotWeakRole
-test:
+tests:
   - AbuseIPDB PopulateIndicators Test

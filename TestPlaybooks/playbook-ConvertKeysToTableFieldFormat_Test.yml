@@ -1,0 +1,518 @@
+id: ConvertKeysToTableFieldFormat_Test
+version: -1
+name: ConvertKeysToTableFieldFormat Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5283318-6d58-44bf-8e5f-8e1570896867
+    type: start
+    task:
+      id: e5283318-6d58-44bf-8e5f-8e1570896867
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: db4f8524-85b1-492b-8f97-fc292f644fda
+    type: regular
+    task:
+      id: db4f8524-85b1-492b-8f97-fc292f644fda
+      version: -1
+      name: Convert non object value should fail
+      scriptName: ConvertKeysToTableFieldFormat
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: dummy
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: ec079820-a5a1-41f7-861c-814e0e5a6959
+    type: condition
+    task:
+      id: ec079820-a5a1-41f7-861c-814e0e5a6959
+      version: -1
+      name: Got Error?
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 6c9a48c4-0c8e-4236-886b-aae14e3f97cd
+    type: regular
+    task:
+      id: 6c9a48c4-0c8e-4236-886b-aae14e3f97cd
+      version: -1
+      name: Failed with illegal input
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Expected ConvertKeysToTableFieldFormat to fail with a string input
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: c64dd608-602e-4715-8beb-f5b243a4037e
+    type: title
+    task:
+      id: c64dd608-602e-4715-8beb-f5b243a4037e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: cca986e6-427d-4793-8dba-6f1b633139ac
+    type: regular
+    task:
+      id: cca986e6-427d-4793-8dba-6f1b633139ac
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 0c444065-935f-4d18-8a1f-d3423759da74
+    type: title
+    task:
+      id: 0c444065-935f-4d18-8a1f-d3423759da74
+      version: -1
+      name: Test convert with object
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 616118cb-0418-4b68-88b8-c56baf26f4ee
+    type: title
+    task:
+      id: 616118cb-0418-4b68-88b8-c56baf26f4ee
+      version: -1
+      name: Check Illegal argument type
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 088f9066-4d9a-4b21-8f62-775965ace732
+    type: regular
+    task:
+      id: 088f9066-4d9a-4b21-8f62-775965ace732
+      version: -1
+      name: Create Object under A_Input
+      scriptName: ParseJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      extend-context:
+        simple: A_Input=.
+      value:
+        simple: '{ "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)":
+          true }'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 25e4dff9-8143-48cb-8de4-7fff2e9e8c68
+    type: regular
+    task:
+      id: 25e4dff9-8143-48cb-8de4-7fff2e9e8c68
+      version: -1
+      name: Convert array value to A_Output
+      scriptName: ConvertKeysToTableFieldFormat
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: A_Output=.
+      value:
+        simple: ${A_Input}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: d4bf115d-8596-4d5b-8f4e-3fa487b4c68f
+    type: condition
+    task:
+      id: d4bf115d-8596-4d5b-8f4e-3fa487b4c68f
+      version: -1
+      name: Ensure A_Output result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      pass:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: pass
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: A_Output
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: '{"engine":"val1","keywithspecialcharacters":true,"maxresults":13892378}'
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 5af3cd01-ab9e-4489-8064-542299fc7812
+    type: regular
+    task:
+      id: 5af3cd01-ab9e-4489-8064-542299fc7812
+      version: -1
+      name: Failed with object
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Did not get expected object result. got ${A_Input}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 1bcdaac8-ce55-4f88-8739-640476faaf11
+    type: title
+    task:
+      id: 1bcdaac8-ce55-4f88-8739-640476faaf11
+      version: -1
+      name: Test convert with Array
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: f577d8a1-cc25-4101-8f91-31659e68dd92
+    type: regular
+    task:
+      id: f577d8a1-cc25-4101-8f91-31659e68dd92
+      version: -1
+      name: Create Array under B_Input
+      scriptName: ParseJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context:
+        simple: B_Input=.
+      value:
+        simple: '[{ "Engine": "val1"}, { "Engine": "val2"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: d8548ae1-a7cf-467a-8fc1-75e4ccdbeb49
+    type: regular
+    task:
+      id: d8548ae1-a7cf-467a-8fc1-75e4ccdbeb49
+      version: -1
+      name: Convert array value to B_Output
+      scriptName: ConvertKeysToTableFieldFormat
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: B_Output=.
+      value:
+        simple: ${B_Input}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 6628e93d-b2ac-4edf-8028-daa46fc3a46b
+    type: condition
+    task:
+      id: 6628e93d-b2ac-4edf-8028-daa46fc3a46b
+      version: -1
+      name: Ensure B_Output result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      pass:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: pass
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: B_Output
+                accessor: '[0]'
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: '{"engine":"val1"}'
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: B_Output
+                accessor: '[1]'
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: '{"engine":"val2"}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: d69fc1f2-cd1e-433e-8731-0ba165948b05
+    type: regular
+    task:
+      id: d69fc1f2-cd1e-433e-8731-0ba165948b05
+      version: -1
+      name: Failed with array
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Did not get expected array result. got ${B_Input}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
