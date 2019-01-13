@@ -9907,7 +9907,7 @@
                     "domain"
                 ], 
                 "tests": [
-                    "No test"
+                    "Pwned test"
                 ]
             }
         }, 
@@ -15269,6 +15269,18 @@
                     "ConvertKeysToTableFieldFormat", 
                     "ParseJSON", 
                     "isError"
+                ]
+            }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
                 ]
             }
         }
