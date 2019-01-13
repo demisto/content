@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
             "playbookID": "ParseCSVnullbytesTest"
         },
         {
