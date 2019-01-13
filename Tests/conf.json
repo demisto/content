@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Pwned",
+            "playbookID": "Pwned test"
+        },
+        {
             "playbookID": "ParseCSVnullbytesTest"
         },
         {
