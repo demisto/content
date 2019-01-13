@@ -98,7 +98,7 @@ script:
             Vendor: 'Pwned',
             Score: score
         };
-        compEmail.DBotscore = dBotScore;
+        compEmail.DBotScore = dBotScore;
         return compEmail;
     }
     var domainToEc = function(domain,obj) {
@@ -315,5 +315,6 @@ script:
       related: ""
     description: Check if domain has been compromised
   runonce: false
+releaseNotes: "Fixed typo"
 tests:
-  - "No test"
+  - "Pwned test"
