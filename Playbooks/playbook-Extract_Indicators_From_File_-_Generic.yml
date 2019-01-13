@@ -3,8 +3,12 @@ version: -1
 name: Extract Indicators From File - Generic
 fromversion: 4.1.0
 description: |-
-  Extract indicators from a file.
-  Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).
+  Extracts indicators from a file.
+  Supported file types:
+  - PDF
+  - TXT
+  - HTM, HTML
+  - DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
@@ -38,9 +42,9 @@ tasks:
     task:
       id: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
       version: -1
-      name: Is there a file in context?
+      name: Is there a file?
       description: |
-        Check if there is a file in the playbook input.
+        Checks if there is a file in the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -159,8 +163,7 @@ tasks:
       id: 3ca29382-1b0a-4638-84ad-10fe5fcaefcc
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips .msg and
-        .eml files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -370,7 +373,7 @@ tasks:
     task:
       id: a9484da9-878d-4ddc-8ed1-83d1da6b9775
       version: -1
-      name: Read PDF file
+      name: Extract indicators from PDF file
       description: Extracts indicators from PDF files.
       scriptName: ReadPDFFile
       type: regular
@@ -421,9 +424,8 @@ tasks:
     task:
       id: 13fc7107-a648-4a45-8240-342f43d4540d
       version: -1
-      name: Is there a word document?
-      description: Checks if there is a word document  in context. This looks for
-        DOC and DOCXs files.
+      name: Is there a Word file?
+      description: Checks if there is a Word file (DOC, DOCX) in context.
       type: condition
       iscommand: false
       brand: ""
@@ -517,8 +519,8 @@ tasks:
     task:
       id: 9e130d59-4984-4699-810e-b95da0f8d32f
       version: -1
-      name: Read word document
-      description: Extracts indicators from word documents (DOC / DOCX files).
+      name: Extract indicators from Word file
+      description: Extracts indicators from word files (DOC, DOCX).
       scriptName: ExtractIndicatorsFromWordDocument
       type: regular
       iscommand: false

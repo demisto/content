@@ -1,7 +1,7 @@
 commonfields:
-  id: ExtractIndicatorsFromWordDocument
+  id: ExtractIndicatorsFromWordFile
   version: -1
-name: ExtractIndicatorsFromWordDocument
+name: ExtractIndicatorsFromWordFile
 fromversion: 4.1.0
 script: |-
   import subprocess
@@ -104,14 +104,14 @@ tags:
 - docx
 - word
 comment: |-
-  Used to extract indicators from ".doc" and ".docx" files created using Microsoft Word.
-  Currently, the script extracts data from the main body of the document (the "paragraphs"), the tables, and the core properties, such as author, subject, comments and so on. The script does not support indicator extraction from macros embedded into the document.
+  Used to extract indicators from Word files (DOC, DOCX).
+  The script does not extract data from macros (e.g., embedded code).
 enabled: true
 args:
 - name: entryID
   required: true
-  description: The entry ID of the word document to be parsed for indicators. The
-    document can be either in doc or docx format.
+  description: The entry ID of the word document to be parsed for indicators.
+    The document can be either in DOC or DOCX format.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/office-utils:1.0.0.45

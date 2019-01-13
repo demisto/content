@@ -1,7 +1,10 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-description: A test for extracting indicators from files.
+description: |-
+  A test playbook for extracting indicators from EML files.
+  Indicators: 
+  - Email addresses
 starttaskid: "0"
 tasks:
   "0":
@@ -35,8 +38,8 @@ tasks:
     task:
       id: 310bcf42-2403-485b-8f04-f49663039bba
       version: -1
-      name: Download file
-      description: "Downloads a file using HTTP get."
+      name: Download EML file
+      description: "Downloads an EML file using HTTP GET."
       scriptName: http
       type: regular
       iscommand: false
@@ -113,7 +116,7 @@ tasks:
     task:
       id: cf7bb8db-8b11-4c89-83df-34a814c194ea
       version: -1
-      name: Did we get the right email addresses?
+      name: Were the correct email addresses extracted?
       description: Checks whether specific email addresses were extracted from the
         EML file.
       type: condition
@@ -190,8 +193,8 @@ tasks:
     task:
       id: 24db5de9-e436-400f-8141-20fac79cfea8
       version: -1
-      name: RaiseError
-      description: "Raises an error with the specified message."
+      name: Make test fail
+      description: "Causes the test playbook to fail if the correct email addresses were not extracted."
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
