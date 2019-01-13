@@ -1,11 +1,13 @@
 import sys
 import yaml
 
+
 def readFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.load(f)
         return out
     return []
+
 
 def main(argv):
     # create commonServer js file to extract doc from
