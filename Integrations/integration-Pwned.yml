@@ -37,6 +37,7 @@ script:
                 Method: 'GET',
                 Headers: {
                     'Accept': ['application/json'],
+                    'User-Agent': ['Pwned'],
                 }
             },
             false,
