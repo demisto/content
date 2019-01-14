@@ -330,7 +330,7 @@ tasks:
       id: 4965fd9b-8efe-496c-8379-64d9e10ded8a
       version: -1
       name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound_copy
+      scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
       brand: ""

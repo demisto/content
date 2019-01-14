@@ -13964,8 +13964,7 @@
                     "DeleteContext", 
                     "Set", 
                     "Sleep", 
-                    "IsMaliciousIndicatorFound", 
-                    "IsMaliciousIndicatorFound_copy"
+                    "IsMaliciousIndicatorFound"
                 ], 
                 "implementing_commands": [
                     "createNewIndicator"
