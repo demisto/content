@@ -1,47 +1,446 @@
-commonfields:
-  id: Symantec Endpoint Protection
-  version: -1
-name: Symantec Endpoint Protection
-display: Symantec Endpoint Protection
 category: Endpoint
-image: data:image/png;base64,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
+commonfields: {id: Symantec Endpoint Protection 2, version: -1}
+configuration:
+- defaultvalue: ''
+  display: Server (e.g. https://1.2.3.4:8446)
+  name: server
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Authentication
+  name: authentication
+  options: []
+  required: true
+  type: 9
+- defaultvalue: ''
+  display: SEPM domain for the user
+  name: domain
+  options: []
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  options: []
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Use proxy system settings
+  name: proxy
+  options: []
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: 'Local time zone (for example: +02:30,-06:00)'
+  name: timeZone
+  options: []
+  required: false
+  type: 0
 description: Query the Symantec Endpoint Protection Manager using the official REST
   API.
 detaileddescription: Integration with Symantec Endpoint Protection Manager using the
   sepm REST API.
-configuration:
-- display: Server (e.g. https://1.2.3.4:8446)
-  name: server
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Authentication
-  name: authentication
-  defaultvalue: ""
-  type: 9
-  required: true
-- display: SEPM domain for the user
-  name: domain
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "false"
-  type: 8
-  required: false
-- display: Use proxy system settings
-  name: proxy
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: 'Local time zone (for example: +02:30,-06:00)'
-  name: timeZone
-  defaultvalue: ""
-  type: 0
-  required: false
+display: Symantec Endpoint Protection 2
+name: Symantec Endpoint Protection 2
 script:
-  script: |+
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: columns
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: computerName
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: lastUpdate
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: os
+      predefined: [CentOs, Debian, Fedora, MacOSX, Oracle, OSX, RedHat, SUSE, Ubuntu,
+        Win10, Win2K, Win7, Win8, WinEmb7, WinEmb8, WinEmb81, WinFundamental, WinNT,
+        Win2K3, Win2K8, Win2K8R2, WinVista, WinXP, WinXPEmb, WinXPProf64]
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: pageSize
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: computerNamed
+      predefined: []
+      required: false
+      
+    description: Get information about endpoints.
+    execution: false
+    name: sep-endpoints-info
+    outputs:
+    - {contextPath: SEPM.Endpoint.Hostname, description: The endpoint's hostname.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.Domain, description: The endpoint's domain., type: string}
+    - {contextPath: SEPM.Endpoint.IPAddresses, description: The endpoint's IP addresses.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.OS, description: The endpoint's OS information.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.Description, description: The endpoint's description.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.MACAddresses, description: The endpoint's MAC address.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.BIOSVersion, description: The endpoint's BIOS version.,
+      type: string}
+    - {contextPath: SEPM.Endpoint.DHCPServer, description: The endpoint's DHCP server
+        address., type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: ip
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: hostname
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: timeout
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: interval
+      predefined: []
+      required: false
+      
+    description: Updates the content of the given client.
+    execution: false
+    name: sep-update-content
+    outputs:
+    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+        command., type: Unknown}
+    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: ip
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: scanType
+      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: hostname
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: timeout
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: interval
+      predefined: []
+      required: false
+      
+    description: Scans an endpoint.
+    execution: false
+    name: sep-scan
+    outputs:
+    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+        command., type: string}
+    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+      type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: columns
+      predefined: []
+      required: false
+      
+    description: Get information about groups.
+    execution: false
+    name: sep-groups-info
+    outputs:
+    - {contextPath: SEPM.Groups, description: The list of groups., type: Unknown}
+  - arguments: []
+    description: Get the system information (version, AV definition).
+    execution: false
+    name: sep-system-info
+    outputs:
+    - {contextPath: SEPM.ServerAVDefVersion, description: The serverAV definition
+        version., type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: commandId
+      predefined: []
+      required: true
+      
+    description: Retrieves the status of a command.
+    execution: false
+    name: sep-command-status
+    outputs:
+    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+        command., type: string}
+    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+      type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: ip
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: hostname
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: timeout
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: interval
+      predefined: []
+      required: false
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: actionType
+      predefined: [Quarantine, Undo]
+      required: true
+      
+    description: Quarantines the endpoint according to its policy.
+    execution: false
+    name: sep-quarantine
+    outputs:
+    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+        command., type: string}
+    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+      type: string}
+  - arguments: []
+    description: Retrieves the client content.
+    execution: false
+    name: sep-client-content
+    outputs:
+    - {contextPath: SEPM.ClientContentVersions, description: The versions of the clients.,
+      type: string}
+    - {contextPath: SEPM.LastUpdated, description: The last-updated date., type: string}
+  - arguments: []
+    description: Retrieve a list of existing policies
+    execution: false
+    name: sep-list-policies
+    outputs:
+    - {contextPath: SEPM.PoliciesList.PolicyName, description: Name of policy, type: string}
+    - {contextPath: SEPM.PoliciesList.Type, description: Policy type, type: string}
+    - {contextPath: SEPM.PoliciesList.ID, description: Policy ID, type: string}
+    - {contextPath: SEPM.PoliciesList.Discription, description: Policy discription,
+      type: string}
+    - {contextPath: SEPM.PoliciesList.Enabled, description: True if enabled false
+        otherwise, type: boolean}
+    - {contextPath: SEPM.PoliciesList.AssignedLocations.GroupID, description: 'Group
+        ID of the locations assigned with this policy ', type: string}
+    - {contextPath: SEPM.PoliciesList.AssignedLocations.Locations, description: List
+        of locations IDs assigned with this policy, type: string}
+    - {contextPath: SEPM.PoliciesList.AssignedCloudGroups.GroupID, description: 'Cloud
+        Group ID of the locations assigned with this policy ', type: string}
+    - {contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations, description: List
+        of locations IDs belonging to a cloud group assigned with this policy, type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: groupID
+      predefined: []
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: locationID
+      predefined: []
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: policyType
+      predefined: []
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: policyID
+      predefined: []
+      required: true
+      
+    description: Assign existing policy to a designated location
+    execution: false
+    name: sep-assign-policie
+    outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: groupID
+      predefined: []
+      required: true
+      
+    description: Retrieve a list of location ID's for a given group
+    execution: false
+    name: sep-list-locations
+    outputs:
+    - {contextPath: SEPM.Locations.ID, description: The ID of the location, type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: endpoint
+      predefined: []
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: actionType
+      predefined: [Add, Remove]
+      required: true
+      
+    description: Quarantines the endpoint according to its policy.
+    execution: false
+    name: sep-endpoint-quarantine
+    outputs:
+    - {contextPath: SEPM.Quarantine.CommandID, description: ID of the invoked command,
+      type: string}
+    - {contextPath: SEPM.Quarantine.Action, description: The action type ('Add' or
+        'Remove'), type: string}
+    - {contextPath: SEPM.Quarantine.Endpoint, description: The endpoint identifier
+        (IP or Host Name), type: string}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: endpoint
+      predefined: []
+      required: true
+      
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: scanType
+      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
+      required: true
+      
+    description: Scans an endpoint.
+    execution: false
+    name: sep-scan-endpoint
+    outputs:
+    - {contextPath: SEPM.Scan.CommandID, description: ID of the invoked command, type: string}
+    - {contextPath: SEPM.Scan.Type, description: 'Type of the scan (ScanNow_Quick,
+        ScanNow_Full or ScanNow_Custom)', type: string}
+    - {contextPath: SEPM.Quarantine.Endpoint, description: The endpoint identifier
+        (IP or Host Name), type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: endpoint
+      predefined: []
+      required: false
+      
+    description: Updates the content of the given client.
+    execution: false
+    name: sep-update-endpoint-content
+    outputs: []
+  dockerimage: ''
+  isfetch: false
+  runonce: false
+  script: |-
     import requests
     import json
     import re
@@ -711,309 +1110,12 @@ script:
         scan_endpoint_command(token)
     if demisto.command() == 'sep-update-endpoint-content':
         update_endpoint_content_command(token)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   type: python
-  commands:
-  - name: sep-endpoints-info
-    arguments:
-    - name: columns
-      description: The columns to show.
-    - name: computerName
-      description: The host name of computer. Wild card is supported as '*'.
-    - name: lastUpdate
-      description: Indicates when a computer last updated its status. The default
-        value of 0 gets all the results.
-    - name: os
-      auto: PREDEFINED
-      predefined:
-      - CentOs
-      - Debian
-      - Fedora
-      - MacOSX
-      - Oracle
-      - OSX
-      - RedHat
-      - SUSE
-      - Ubuntu
-      - Win10
-      - Win2K
-      - Win7
-      - Win8
-      - WinEmb7
-      - WinEmb8
-      - WinEmb81
-      - WinFundamental
-      - WinNT
-      - Win2K3
-      - Win2K8
-      - Win2K8R2
-      - WinVista
-      - WinXP
-      - WinXPEmb
-      - WinXPProf64
-      description: The list of OS to filter.
-    - name: pageSize
-      description: The number of results to include on each page. The default is 20.
-    - name: computerNamed
-      description: Specify  computer name to filter results by this computer name
-    outputs:
-    - contextPath: SEPM.Endpoint.Hostname
-      description: The endpoint's hostname.
-      type: string
-    - contextPath: SEPM.Endpoint.Domain
-      description: The endpoint's domain.
-      type: string
-    - contextPath: SEPM.Endpoint.IPAddresses
-      description: The endpoint's IP addresses.
-      type: string
-    - contextPath: SEPM.Endpoint.OS
-      description: The endpoint's OS information.
-      type: string
-    - contextPath: SEPM.Endpoint.Description
-      description: The endpoint's description.
-      type: string
-    - contextPath: SEPM.Endpoint.MACAddresses
-      description: The endpoint's MAC address.
-      type: string
-    - contextPath: SEPM.Endpoint.BIOSVersion
-      description: The endpoint's BIOS version.
-      type: string
-    - contextPath: SEPM.Endpoint.DHCPServer
-      description: The endpoint's DHCP server address.
-      type: string
-    description: Get information about endpoints.
-  - name: sep-update-content
-    arguments:
-    - name: ip
-      description: The IP of the endpoint.
-    - name: hostname
-      description: The hostname of the endpoint.
-    - name: timeout
-      description: The timeout of the command.
-    - name: interval
-      description: The polling interval of the command.
-    outputs:
-    - contextPath: SEPM.LastCommand.CommandDetails
-      description: The details of the command.
-    - contextPath: SEPM.LastCommand.CommandId
-      description: The ID of the command.
-    description: Updates the content of the given client.
-  - name: sep-scan
-    arguments:
-    - name: ip
-      description: The IP of the endpoint.
-    - name: scanType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - ScanNow_Quick
-      - ScanNow_Full
-      - ScanNow_Custom
-      description: Type of scan.
-    - name: hostname
-      description: The hostname of the endpoint.
-    - name: timeout
-      description: The timeout of the command.
-    - name: interval
-      description: The polling interval of the command.
-    outputs:
-    - contextPath: SEPM.LastCommand.CommandDetails
-      description: The details of the command.
-      type: string
-    - contextPath: SEPM.LastCommand.CommandId
-      description: The ID of the command.
-      type: string
-    description: Scans an endpoint.
-  - name: sep-groups-info
-    arguments:
-    - name: columns
-      description: The columns to show.
-    outputs:
-    - contextPath: SEPM.Groups
-      description: The list of groups.
-    description: Get information about groups.
-  - name: sep-system-info
-    arguments: []
-    outputs:
-    - contextPath: SEPM.ServerAVDefVersion
-      description: The serverAV definition version.
-      type: string
-    description: Get the system information (version, AV definition).
-  - name: sep-command-status
-    arguments:
-    - name: commandId
-      required: true
-      description: The command ID.
-    outputs:
-    - contextPath: SEPM.LastCommand.CommandDetails
-      description: The details of the command.
-      type: string
-    - contextPath: SEPM.LastCommand.CommandId
-      description: The ID of the command.
-      type: string
-    description: Retrieves the status of a command.
-  - name: sep-quarantine
-    arguments:
-    - name: ip
-      description: The IP address of the endpoint.
-    - name: hostname
-      description: The hostname of the endpoint.
-    - name: timeout
-      description: The timeout of the command.
-    - name: interval
-      description: The polling interval of the command.
-    - name: actionType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - Quarantine
-      - Undo
-      description: The action type.
-    outputs:
-    - contextPath: SEPM.LastCommand.CommandDetails
-      description: The details of the command.
-      type: string
-    - contextPath: SEPM.LastCommand.CommandId
-      description: The ID of the command.
-      type: string
-    description: Quarantines the endpoint according to its policy.
-  - name: sep-client-content
-    arguments: []
-    outputs:
-    - contextPath: SEPM.ClientContentVersions
-      description: The versions of the clients.
-      type: string
-    - contextPath: SEPM.LastUpdated
-      description: The last-updated date.
-      type: string
-    description: Retrieves the client content.
-  - name: sep-list-policies
-    arguments: []
-    outputs:
-    - contextPath: SEPM.PoliciesList.PolicyName
-      description: Name of policy
-      type: string
-    - contextPath: SEPM.PoliciesList.Type
-      description: Policy type
-      type: string
-    - contextPath: SEPM.PoliciesList.ID
-      description: Policy ID
-      type: string
-    - contextPath: SEPM.PoliciesList.Discription
-      description: Policy discription
-      type: string
-    - contextPath: SEPM.PoliciesList.Enabled
-      description: True if enabled false otherwise
-      type: boolean
-    - contextPath: SEPM.PoliciesList.AssignedLocations.GroupID
-      description: 'Group ID of the locations assigned with this policy '
-      type: string
-    - contextPath: SEPM.PoliciesList.AssignedLocations.Locations
-      description: List of locations IDs assigned with this policy
-      type: string
-    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.GroupID
-      description: 'Cloud Group ID of the locations assigned with this policy '
-      type: string
-    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations
-      description: List of locations IDs belonging to a cloud group assigned with
-        this policy
-      type: string
-    description: 'Retrieve a list of existing policies '
-  - name: sep-assign-policie
-    arguments:
-    - name: groupID
-      required: true
-      description: 'The ID of the group the location belongs to '
-    - name: locationID
-      required: true
-      description: The ID of the designated location
-    - name: policyType
-      required: true
-      description: The type of policy to be assigned
-    - name: policyID
-      required: true
-      description: The ID of policy to be assigned
-    description: 'Assign existing policy to a designated location '
-  - name: sep-list-locations
-    arguments:
-    - name: groupID
-      required: true
-      description: The ID of the group holding the locations
-    outputs:
-    - contextPath: SEPM.Locations.ID
-      description: The ID of the location
-    description: 'Retrieve a list of location ID''s for a given group '
-  - name: sep-endpoint-quarantine
-    arguments:
-    - name: endpoint
-      required: true
-      description: IP or Host Name of the endpoint
-    - name: actionType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - Add
-      - Remove
-      description: Add or Remove
-    outputs:
-    - contextPath: SEPM.Quarantine.CommandID
-      description: ID of the invoked command
-      type: string
-    - contextPath: SEPM.Quarantine.Action
-      description: The action type ('Add' or 'Remove')
-      type: string
-    - contextPath: SEPM.Quarantine.Endpoint
-      description: The endpoint identifier (IP or Host Name)
-      type: string
-    description: Quarantines the endpoint according to its policy.
-  - name: sep-scan-endpoint
-    arguments:
-    - name: endpoint
-      required: true
-      description: IP or Host Name of the endpoint
-    - name: scanType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - ScanNow_Quick
-      - ScanNow_Full
-      - ScanNow_Custom
-      description: Type of the scan (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
-    outputs:
-    - contextPath: SEPM.Scan.CommandID
-      description: ID of the invoked command
-      type: string
-    - contextPath: SEPM.Scan.Type
-      description: Type of the scan (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
-      type: string
-    - contextPath: SEPM.Quarantine.Endpoint
-      description: The endpoint identifier (IP or Host Name)
-    description: Scans an endpoint.
-  - name: sep-update-endpoint-content
-    arguments:
-    - name: endpoint
-      description: IP or Host Name of the endpoint
-    description: Updates the content of the given client.
-  runonce: false
-releaseNotes: "Enhancments for the integration. New commands sep-list-policies - Retrieve a list of existing policies, sep-assign-policie - Assign existing policy to a designated location. sep-list-locations - Retrieve a list of location ID's for a given group. sep-endpoint-quarantine - Quarantines the endpoint according to its policy. sep-scan-endpoint - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given client."
-tests:
-  - No test
-
-
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAgCAYAAADZubxIAAASu0lEQVR42u1aCXSc1XUe75tsaTSa5d+X2TUaabRvtiFAIBQMLkRtCZRS1rD2hBPApNCYAE0xGGgA+5BS41KSQw0mNbaWWbTalm1wodiGkEDsYGxsZHnROpJGo9vvzYwkS5aKKT1AOLrnvDMz73/v/ffd797v3vckw1css/7w7/6rByNljW0bbkszTMm3S6zzDZdf4Z7xcizoqaDGc2capuTbIZ4s8ZwcNSek2czPPnmj9SfHG7Of+GRD+TzDlPzpS2Bu2rk/DBhr/vGWylazee4Sejtf6WouuGL384WzDFPyzRB6+07z4S1lF/Q0Lr0hGil+MBYOrIqF/P8UC+beQzVlf0nBCwtpJU0/fY5NshWruucq3wLLtT/wW9+sfu76lbqQ+SM8mgL2myJtoeLAQH1gTbzGvq8r6InGWvOJduQRbc8l2hbAZwlRczFR2N9GDd7mvrDrjuM1pYsSAKuqqml5P5Ms3uc4s/SAJDies0uW5Xg0lXu/bqEN5Zn91bk/PdXoOhlttRM1uamvxUPt293U0eKjzsZC6o0U00CwgKgOrTYfQAdosN4fj0fOezu0IrvKa8lcJXDupxTJ/oDFIjyZkWH5c8OUfP3yUdAudVU7/pMiuRRtyKHuxmyikI9i9dnUs9VFA9s0irdoNNTgoaG6QqItxXheQj1NJdTZUE4frXfSc1fPji+2p5Fm8X2YLSyt0cy+WsOUfP3S3ur3nNrmeKt/u4t6awooFlxCQ+FSogY/QPTGB+r9XZ1N+fs6mrLD0XB2y+Dm8o9pc2GU6nxErWX00Zbz6abzDPTqo5V0SaFGzgwHBcx5n+Wmu28wTMnXK7teN5jaWnzbosivHfWF1LWZAVtBA5EA9TQGdvY0OW7rfbNY+rDm4jm7n795Fu2+eRY76lD9khKq9j5N1f6Dr67KGcr3TSeP1Ux55kI63yXRfX/F/8pQVTXDMCVfo6xcOb27UXoh1hxAbi2nDgAbB+VSvffIQMR/e9t7Kz/31unW842PLvHPGsr3zqB7rqqgK/PstPrWbDreWnqyr9F1wWTzMufNE02mRbdlZRnXmK2mdaYs41qjxXjvItOiUsOU/D/l3U1LKnuCzh6KFFEstJR6W8qpN5R9YrDBfdnZzOd5RwGXbntLFcy0OHs2PXW9SM/ebKR3f5VLtNdP0SDfQoj88fMkiVui6dIeRREGdbtMukMlza6SoiukOdSjgiA8+G2x8bx580qNxkW3m0wmdpL46hiNXRlGQ4tfoO3lNIh8GwuXUV9DafzEZtftZzM/w5CR4eIcb+fzfsqWvVQgLYrdWLSo89NNuUPRrToNtOTQULMzSjW+a8dcW1qtFodD/R0AJgBMmi7/1uXSd3k8zr1ut7NTUSTiOO5bU3ljP/8qydinpuzAz7lfHcDNS7199aWdsYYyijWUA4wy6q7/zn/QhqoZXrPudPDudboorzAbDBPStGqRH3JbXFTAFZFdzSU7l7HvxTsKb4tuDRzqaXZSf1OAqDWHKJL/Br1XNXsU4MwbnC6N7A6FeN6y0mSaJ6B7gcWywGqxWCpFkbtJFMVvy3XmTJ63BlVVZgC3fqWXPSdf893dHyqkvnAxUUslxRvKB7veKD+HPRMWCIEcztNewDnIz8lB1aR6Tp+bPjddV23yATfvJZ9YRLLiPanomdczCjpeX/Zi37Y8sIGfiIEcKj5AkcX68FyLJfMhBjCoGQBnuSdliIwM1WIxLbdasy7LzMwUx7JAusbL/DIZbR4cRBAseRi3LGXAmWZzRr4kCXfLsnxfVlZWwbCxOS6rUFH4e+BA95jN5nz0TTsdDFm26pIkXYX1HuQ46wOZlswrFy5cmDUmLUFnVZUuFxYKphQj6QDxRpvNsjIzM/1KrJuW7Df64azXANw/YDzYSvwADnyFpmkXZkBG01UW73Bo1/C87aeiyN8lqEJgEiqfiY0GsObfYexDaHdgvVyfz4fgmUA6tuTWRuuKUC2XINIWU7y58u3Oza6RzeRb9FvLs/wDJdYiyuEK9vp1vz/1aLpoFu9ziHZEbjZyZoBkTv758LzPwgUXRZt06sP5eShYSNRQNkitcJyU2GzGOxxONQEwJ5gfMRqN6RPpJwjWSzVNjjkcOsmy+BB77/AzGG2t3Y41dHXAZrMVa5q63sZZCN+vxdhVsiIOKKrE5pEo8e0A4AeSxD+uaVIMczBPYc/azebM7yffJZgAwhpVFTtVTSbWQK2JBqDfMhoX+Eedy/wImy9I0k8w7zpFFdvYu/BOEkQO63IvMSq227X1LpeDNIyFsyV0AVUznaOLFi0qSe5DXa7r2u91Vn9oEnsvmE2LiqKN7XeUxWAj6PEk9tCf0EtNjoV9MFb8+YQO0RssOhKrLyXWaOdiouYlrxCN8WhDbkbuygCfSzmKi7yaZ6/O67JxnlFWreoRt+YGSDkkuAJdvKRdODznjxu93Img+2RfvZf6a8qwbin1R4qvGYn+9HRdtyvHkIOxYR6bt+0EVf8DotQ3FmDBBFr7LQMYn008Qif1aAbA2MP6AXQzIsyk6/KLAJyNO8EAlBXpGKLhYxiUgcR+DyRBk9th6IOYRxjPDNXEDKkoCoe+jwAKG38ULSzL0h6AwwxOgmBrwLg5CYA588NYi615XJLFIbwjKinC7wBwP9ZmAPYhqi8HC/y1JIm1GNeNZwzcdkTf64LAr0PhBXKxVGLsCafTTnh+yGbLWoNn25SkbnE4698YUsIJttXDDgtnacdau/DuI9gv+/3UhADH6kuGRgDeVkbxxvJnDWeIL80paI0eLOSSnORRPL92Ca4nPIqbkgD7iNN9q3HeGomuPVsWGz8N5b83gJuwvrpKosYyGmgqu+v0VWVZuFbV+A5VE4k1u1Mjl8vZjo1tYhE5GqnqehgBY5QoqC2P9Ymi0a8AwBTAK9A1G568HgVawqux9lo4h8jzJg/G7QNIDPg4LPo860dzqaryPtZl/Qd43ign1xWvxphbQOkcA5NRMyK8OuVgRxmlDwPMAGO0K4pCKxwvHy1LkLn7UwATGCMRVVjLDTAOML1EgALnNqYKrelwmldSLNTPUg0bD+ZW4Ji/ZzpDxyYf6J7pKyv8ERURDlD3w3lKYZcMI/SGzncN0/1EANMIwC2l1FOT/4uJxllNynka7+lwSdnkFJ2s9XtUN7kQ1XZNP+rOdY/JowcOLM84tLX4v/sbvNRbW07sCNZdXXg3yrox7ACgLsbGNiEntsFYCcMwSgMo7YJg/gs2BrnpMnjuIIssgHhzYp7M3Yy+AfT122xigvqx+YQjwJif8io/XC/M0h1aCBHCAPpE0/gRPbFWC/rYuw5bLOn28XtG2pA5zryEF6xvMGMjqo6jsr8oEU0MYBkAK3Ify6mj1bJwCaNipisoNmFLAC8zUBQWwYq4Y5gFTCZRgK7vYywD8h11TE4WX08xRC+cXYUjfJ+Biz2zdPOM4SwFABefTAKMFsmjY6+5X5q01Le5nnHKXnLIABjNDXDdANkuaY+PH/vu67mWthr/0f6Il6J1xUS4HYtWF1w32dqiaMllxYUoCXuxCWYgAK0ftNkSlD1X1eWPdIAB+tqUpG7bumSu0vewI1eKstcjmpkBDnMK500tPdvpcobcHhdzjoPKaP805NCtAHc8wAsB0A+dbmedw6ntR17sY06TAvgEouV7SYCtiQjWwCoAeLkhJUgTl7J+FvGizP9zcqymACgALAHI0WMSUkI+y916kl1O4nsTmCeiaHIYezuClngvnGopbLNCSUSvEGP6nTXAA5Hi1jiOSFFWCLWUAeiKFmr0pU18oaG5dcnZMQZg2XVCsSraGffaG88pHqj1UzTkoYFgLg1F8qm7Ju/Cz9NnIapSnuf+BUCxSGa5+cdJQLknWcQIIsDjMmAwYVvq2PFyauqcyQB2AWCPd2KAVTUJMKPFdDndiAIsjDUHWc5FxLTBmDsA7AeJFDEGYO5hzMOa6pkAy2IqgrnxAI85B2OtEvSfQB/TLQbH6MLvLtQI3djDCbQ29B3jOMtFkoT3JYs4VmBdf9YA924OrBpqLAN9BhJR3B8sONEfKc2dZPgsyaauccruBMBe1UNOwbEmUdmOk/6acx+heh/1hL1EAHkolN9Gu//MfzY6LVgw57scb0sYCYVXgh1gxAth7EEFFS4Ms4LRLX7HkM9uSk2b+0UBxhpbE05iVw7bbBkqDHkLixoYMg7wNyJFBJJUrqyGLmcJsH4po2jMZzn4fwXY4ZCzkX8PpSj6XVDxxcjxS5Gzz8ERb6nZbFzCvmNoJhz8R6qWADgOB7r3i0Rwcby+NDbYVEEdmxFpDcV0PFj2ZCJXTiC2LNs5umiPgppZBA94eHvF+DGnNl6gR3+Tv7+3Npu6wzmgZwcNVvsaWlurRkp+XuErQLNrM7i5SlXVmOpvhtFkXIENETO+yWpckQLYCuD2IZqGZBQsbKM4LhydP9/AnxXA2ZMDDDo9hDzplqQk7SedyDLi5ADmGYxhYJ5Q1STA0O9hNhcUHuX5MwHGuwh5OgGwpnEKxu5PVe0AeGS/C1Bf7EJjAIMtpBzDqDAnUobP05zIfQ9OEmfRDvbaMpzHmaSlpeVMejvWBjqORcprqaGQBhorqTNURJ81lnYfeGfxuZNFMW/jH3Mq+js6r6wZvzCtNEyPv+FZR3WI3kgOdTfnUDykDcVr/StOu6ZcgBusVuQ4UjThGLz9NVUV7seh/cfIsa+wIwaOUAzgI+lZ8wtGCw9hnZKMsEQTZWx0VOYC+PXJ45A4BmAYPcQoF54/FuBUDsb7D5nNogPRuSoVwYMA8jFUrmXsogQRdjRVRZ8BsKaPBVgWBFA0iixdHQFYUbI4gJio2NEOoUqvwr30xTgHZxqNC+9l67Bn0OUtGcUjuxjBe1+EXj2I6gfZHvBpBnXvdjh18vrcg8jJL3CciV2MPAZHP4bPVQx0s8Gc5nLJuqZZrHCYZF0x2Lz0snjEH+2JFFB7Qwkd35pPBxul/R/UirmGyWXORJ3xRv0+qtX7qc6Da8psGnzLR9FG597OxmVZowWVyCjnaRisl+VZKI0oGtuw2ZOgyJEzYMqLr0SR0QUAEwCDAa4bB/BLjO5wn32U0d8wwDBMhEUVov+wLNuG+6eh8NqOiALw0lENygDQAOYfG9aBGZ1V33ZQOADqcDr1LsWuXJyi7UfRWJE3IIqjd+ag5WU61nR7nGSzWYer3Zlut/6Cx+skl9uReMb0xHp/q6pgHhzv2HucLjt7nmjsN4BndliH+fNTheV3oOsh9DGWYs9HGnRoZsE8PyuLhxOuRC3wGIJobzLqPrxzTkdIr+ne4aHOhlyK1eVSV1imUzWOPVRfct7oxcfk8sEm98KudypWRrfn9Q6ECmiwpoKoLkDU4B7qaC66diIHAS3izll4muNsu2y85VOOt7Yh976PCvWXiIozqN8KShMlDlV24izYBfpynvZ4Npzmfmx+Jza7kdHiMOOgbzX6diH6Xz2tfxqjXgC/0+V0bvR6vVzqYuUSK2cJQofPoMsHvGh7XMWRC8D9AlETRCSVpFjoBhSD2wFymOfNi0euYAVLeWaWcauVt+wwmUx3jjq1SQCDYA3hj4LIHUM6eRM0viyZix2LRNF6I/TfjnaUpRgwWcRsNt3Ou/hxV6R8AY6Vv4St9kOfdui/FwXYo4qSLHR9PsNsi8VYyeoCTuLuHpn4SXWhv70l++OhFhdROJ9iYVxfvuEmqvX3UOPiJ7pDFYFjmy5bONbkNO3gtnz+WNh5SW8of/vA9lLqbi2j9roCikcqiYIBitf4n/+wxjHn8y7jGUCpNgttQodit1XIP/+VuDCQxN9gs/PHDZmeWmsGW+Ms+mew/qqqqgn6U7qMyrTh+ZOsOX7czImKz9Sas1PPp01uB6wxuUwbXQefZyunGssuiEf0g7TNR/FwJe6nSwFUAaIQd9R1eaeG6vQWqnG+TOGKNRSpeH4wbN/YtVXaF222A8xCigUr6CSOQ13NcIwWLw1uzq7r/DePyfAlBN49Jy1t/t/Ds9fC43eryfzbb+H55YYp+eLSF/F+d6je/jG1AGRcTvRFyqg/DLoF2NRUnDgrE4oxRDW+43ezh6jeiUjPAcj4vZX9/VfEd/zj3q9LrV9WH3Y+BT0m7mqRr1m+6QelrwUZzTZMyf9N2mqK8vsi7jpq8AGw4sR/TA6EAWxdBQ1uKaTB2hKiarRaAB/MA6XnAuQCAF7A/tvyWKxa/CntXgb6/PKSlTWfR9SuRUGyGYXQS8ilVyeob0q+nBxoVOf21jqv6goWBHuaC+NUnweA0UJ+gIpWhxbKTf7G2TkaXnKkO1LxdE+woNAwJX86svPl0kUDDYWlVF20mrYU7qK6nFMUZHTsjVMo+zB+b6FQ0S0na89VN2zYMPXfk98w+R8/ODLJ/SnkLAAAAABJRU5ErkJggg==
+releaseNotes: Enhancments for the integration. New commands sep-list-policies - Retrieve
+  a list of existing policies, sep-assign-policie - Assign existing policy to a designated
+  location. sep-list-locations - Retrieve a list of location ID's for a given group.
+  sep-endpoint-quarantine - Quarantines the endpoint according to its policy. sep-scan-endpoint
+  - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given
+  client.
+tests: [No test]
