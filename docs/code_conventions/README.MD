@@ -46,7 +46,7 @@ When naming an argument, the name should be all lowercase with spaces replaced b
 !cylance-get-incident incidentId
 ```
 
-Additionally, arguments are to be passed through the ```_command``` function and mustn't reside in the primary function. Observe the following:
+Additionally, arguments are to be passed through the ```sample_function_command``` function and must not reside in the primary ```sample_function``` function. Observe the following:
 
 **Do This**
 

@@ -44,13 +44,39 @@ Dbot uses an integer to represent the reputation of an indicator.
 If the DBot score is returned as a "3" or "Bad", we need to add to the context that a malicious indicator was found. To do this, we add an additional key to the URL, IP, or File context called "Malicious" as shown below:
 
 ```python
-"URL": {
-    "Data": "STRING, The URL",
-    "Malicious": {
-        "Vendor": "STRING, Vendor reporting the malicious status",
-        "Description": "STRING, Description of the malicious url"
+demisto.results({
+     "Type": entryTypes["note"],
+     "EntryContext": {
+        "URL": {
+            "Data": "STRING, The URL",
+            "Malicious": {
+                "Vendor": "STRING, Vendor reporting the malicious status",
+                "Description": "STRING, Description of the malicious url"
+            }
+        },
+         "File": {
+            "Data": "STRING, The File Hash",
+            "Malicious": {
+                "Vendor": "STRING, Vendor reporting the malicious status",
+                "Description": "STRING, Description of the malicious hash"
+            }
+        },
+         "IP": {
+            "Data": "STRING, The IP",
+            "Malicious":{
+                "Vendor": "STRING, Vendor reporting malicious",
+                "Description": "STRING, Description about why IP was determined malicious"
+    },
+        },
+         "Domain": {
+            "Data": "STRING, The Domain",
+            "Malicious": {
+                "Vendor": "STRING, Vendor reporting the malicious status",
+                "Description": "STRING, Description of the malicious domain"
+            }
+        }
     }
-}
+})
 ```
 
 Malicious has two key values, "Vendor" and "Description". Vendor is the entity reporting the malicious indicator and description explains briefly what was found. For example:
