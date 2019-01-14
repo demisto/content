@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -63,7 +63,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -90,7 +90,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 250,
           "y": 370
         }
       }
@@ -132,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -152,15 +152,15 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "20"
     scriptarguments:
       includeSuspicious: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 240,
+          "y": 1945
         }
       }
     note: false
@@ -201,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
@@ -221,64 +221,15 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "11"
+      - "16"
     scriptarguments:
       includeSuspicious: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: 32ac3a0e-51cd-4e88-8969-4e55e2238b17
-    type: condition
-    task:
-      id: 32ac3a0e-51cd-4e88-8969-4e55e2238b17
-      version: -1
-      name: IsMaliciuosFound-with-suspicious
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    scriptarguments:
-      includeSuspicious:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: 7141d570-3bb9-4b8b-8b4e-0953bc50e958
-    type: title
-    task:
-      id: 7141d570-3bb9-4b8b-8b4e-0953bc50e958
-      version: -1
-      name: All GOOD!!!
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1785
+          "x": 240,
+          "y": 910
         }
       }
     note: false
@@ -306,8 +257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -334,8 +285,120 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: ebb38caa-8b84-4722-8055-7ab188d49277
+    type: regular
+    task:
+      id: ebb38caa-8b84-4722-8055-7ab188d49277
+      version: -1
+      name: Set Domain.Malicious to True
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Domain.Malicious
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+    type: condition
+    task:
+      id: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+      version: -1
+      name: IsMaliciuosFound
+      scriptName: IsMaliciousIndicatorFound_copy
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    scriptarguments:
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+    type: title
+    task:
+      id: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+      version: -1
+      name: Done!!!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+    type: regular
+    task:
+      id: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -345,9 +408,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1800,
-        "width": 810,
-        "x": 265,
+        "height": 2135,
+        "width": 580,
+        "x": 50,
         "y": 50
       }
     }

@@ -13961,8 +13961,11 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
-                    "IsMaliciousIndicatorFound"
+                    "IsMaliciousIndicatorFound", 
+                    "IsMaliciousIndicatorFound_copy"
                 ], 
                 "implementing_commands": [
                     "createNewIndicator"

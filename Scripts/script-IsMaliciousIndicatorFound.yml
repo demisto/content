@@ -77,9 +77,9 @@ args:
   description: Override the query to search for malicious indicators in Demisto
 outputs:
 - contextPath: "yes"
-  description: if found any Malicious File/URL/IP in the investigation
+  description: if found any Malicious File/URL/IP/Email/Domain in the investigation
 - contextPath: "no"
-  description: if did not found any Malicious File/URL/IP in the investigation
+  description: if did not found any Malicious File/URL/IP/Email/Domain in the investigation
 scripttarget: 0
 releaseNotes: "Added support for Email and Domain indicators"
 tests:
