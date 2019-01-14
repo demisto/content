@@ -4797,6 +4797,9 @@
                 "fromversion": "3.6.0", 
                 "implementing_playbooks": [
                     "Search And Delete Emails - EWS"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5449,6 +5452,9 @@
                 ], 
                 "implementing_commands": [
                     "ews-get-attachment"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5766,6 +5772,9 @@
                 "implementing_commands": [
                     "ews-search-mailboxes", 
                     "ews-delete-items"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
