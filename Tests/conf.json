@@ -941,6 +941,9 @@
         },
         {
           "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "Ping Test Playbook"
         }
     ],
     "skipped_tests": {
