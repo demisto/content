@@ -1012,12 +1012,12 @@ script:
     description: Updates the content of the given client.
   runonce: false
 releaseNotes: Enhancments for the integration. New commands: 
-sep-list-policies - Retrieve a list of existing policies
-sep-assign-policie - Assign existing policy to a designated location
-sep-list-locations - Retrieve a list of location ID's for a given group
-sep-endpoint-quarantine - Quarantines the endpoint according to its policy.
-sep-scan-endpoint - Scans an endpoint.
-sep-update-endpoint-content - Updates the content of the given client.
+  sep-list-policies - Retrieve a list of existing policies
+  sep-assign-policie - Assign existing policy to a designated location
+  sep-list-locations - Retrieve a list of location ID's for a given group
+  sep-endpoint-quarantine - Quarantines the endpoint according to its policy.
+  sep-scan-endpoint - Scans an endpoint.
+  sep-update-endpoint-content - Updates the content of the given client.
 tests:
   - No test
 
