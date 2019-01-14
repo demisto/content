@@ -958,6 +958,7 @@ script:
       description: The ID of the group holding the locations
     outputs:
     - contextPath: SEPM.Locations.ID
+      desciption: The ID of the location
     description: 'Retrieve a list of location ID''s for a given group '
   - name: sep-endpoint-quarantine
     arguments:
