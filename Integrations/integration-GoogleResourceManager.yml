@@ -1,0 +1,484 @@
+category: IT Services
+commonfields: {id: Google Resource Manager, version: -1}
+configuration:
+- defaultvalue: ''
+  display: Authentication file contents
+  name: auth_json
+  options: []
+  required: true
+  type: 4
+- defaultvalue: v1
+  display: Google Resource Manager API Version
+  name: api_version
+  options: [v1, ' v2']
+  required: false
+  type: 15
+- defaultvalue: ''
+  display: Username
+  name: gsuite_credentials
+  options: []
+  required: false
+  type: 9
+description: Google Cloud Platform Resource Manager
+detaileddescription: Use these detailed instructions in order to retrieve the API
+  key
+display: Google Resource Manager
+name: Google Resource Manager
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: ['']
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.id
+      predefined: []
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: labels
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.type
+      predefined: []
+      required: true
+      secret: false
+    description: Create Project Resource
+    execution: false
+    name: grm-create-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: Project Name, type: String}
+    - {contextPath: GRM.Project.ProjectId, description: Unique ProjectId of the Created
+        Project, type: String}
+    - {contextPath: GRM.Project.Parent.ID, description: ID of Parent Resource of Created
+        Project, type: date}
+    - {contextPath: GRM.Project.Parent.Type, description: Type of Parent Resource
+        of Created Project, type: Unknown}
+    - {contextPath: GRM.Project.Labels, description: Labels of Created Project Resource,
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+      secret: false
+    description: Get Project Resource
+    execution: false
+    name: grm-get-project
+    outputs:
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.Labels, description: labels, type: Unknown}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+      secret: false
+    description: Lists projects that are visible to the user and satisfy  the specified
+      filter. This method returns the projects in an unspecified order.
+    execution: false
+    name: grm-list-projects
+    outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+      secret: false
+    description: Updates the attributes of the Project identified by the specified
+      projectId
+    execution: false
+    name: grm-update-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: labels, type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: pageSize
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: pageToken
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+      secret: false
+    description: Searches Organization resources that are visible to the user and
+      satisfy the specified filter. This method returns Organizations in an unspecified
+      order. New Organizations do not necessarily appear at the end of the results.
+    execution: false
+    name: grm-search-organizations
+    outputs:
+    - contextPath: GRM.Response.Organization
+      description: |-
+        object(Organization)
+
+        Organization that matched the search query
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: name
+      predefined: []
+      required: true
+      secret: false
+    description: Fetches an Organization resource identified by the specified resource
+      name.
+    execution: false
+    name: grm-get-organization
+    outputs:
+    - contextPath: GRM.Response.Organization
+      description: |-
+        object(Organization)
+
+        Organization that matched the name argument
+      type: Unknown
+  dockerimage: grm-integration
+  isfetch: false
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    from googleapiclient import discovery
+    # import oauth2client - deprecated
+    import google.auth
+    import google.oauth2.credentials
+    from google.oauth2 import service_account
+    import json
+    # oauth2client is deprecated - should implement alternative authentication scheme
+    from oauth2client.client import AccessTokenCredentials, OAuth2WebServerFlow, flow_from_clientsecrets
+    # from oauth2client import service_account
+
+    ''' GLOBALS/PARAMS '''
+
+    API_VERSION = demisto.getParam('api_version')
+    ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
+    PRIVATE_KEY_CONTENT = demisto.getParam('auth_json').encode('utf-8')
+    # ACCESS_TOKEN = demisto.getParam('access_token')
+    GRM = 'cloudresourcemanager'
+    SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
+
+
+    ''' HELPER FUNCTIONS '''
+
+    # ops = {
+    #     'get': get,
+    #     'create': create,
+    #     'delete': delete,
+    #     'list': list,
+    # }
+    #
+    # resources = {
+    #     'projects': projects,
+    #     'organizations': organizations,
+    #     'operations': operations,
+    #     'liens': liens,
+    #     'folders': folders
+    # }
+
+
+    def build_and_authorize():
+        # credentials, project = google.auth.default()    # establish Service credentials
+        # May need to change this to get refresh tokens?
+        # user_credentials = google.oauth2.credentials.Credentials(token='ACCESS_TOKEN', scopes=SCOPE)
+        # user_credentials = AccessTokenCredentials(ACCESS_TOKEN, 'my-user-agent/1.0')
+        # user_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+        #     scopes=SCOPE)
+        service_account_info = json.loads(PRIVATE_KEY_CONTENT.decode('utf-8'))
+        user_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+        service = discovery.build(GRM, API_VERSION, credentials=user_credentials)
+        return service
+
+    # def call_api(resourceType, op, op_args):
+    #     service = build_and_authorize()
+    #     operation = service.resources[resourceType]().ops[op](op_args).execute()
+    #     return operation
+
+
+    ''' MAIN FUNCTIONS '''
+
+
+    def test_module():
+        demisto.results('ok')
+        sys.exit(0)
+
+
+    def fetch_incidents():
+        # You can store the last run time...
+        demisto.setLastRun({'time': 'now'})
+        # And retrieve it for use later:
+        # lastRun = demisto.getLastRun()
+        # lastRun is a dictionary, with value "now" for key "time".
+        # JSON of the incident type created by this integration
+        demisto.incidents([{"Name": "Incident #1"}, {"Name": "Incident #2"}])
+        sys.exit(0)
+
+
+    def create_project(project_body):
+        service = build_and_authorize()
+        body = {'projectId': project_body['projectId']}
+        if 'parent.type' in project_body.keys() and 'parent.id' in project_body.keys():
+            body['parent'] = {
+                'type': project_body['parent.type'],
+                'id': project_body['parent.id']
+            }
+        if 'name' in project_body.keys():
+            body['name'] = project_body['name']
+        if 'labels' in project_body.keys():
+            body['labels'] = project_body['labels']
+        operation = service.projects().create(body=body).execute()
+        return operation
+
+
+    def create_project_command():
+        args = demisto.args()
+        response = create_project(args)
+        md = tableToMarkdown('Google Cloud Project Created', response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID==obj.ID)': response
+            }
+        })
+
+
+    def delete_project(project_id):
+        service = build_and_authorize()
+        operation = service.projects().delete(projectId=project_id).execute()
+        return operation
+
+
+    def delete_project_command():
+        project_id = demisto.args()['projectId']
+        response = delete_project(project_id)
+        md = tableToMarkdown('Deleted Google Cloud Project Details', response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID==obj.ID)': response
+            }
+        })
+
+
+    def get_project(project_id):
+        service = build_and_authorize()
+        operation = service.projects().get(projectId=project_id).execute()
+        return operation
+
+
+    def get_project_command():
+        project_id = demisto.args()['projectId']
+        response = get_project(project_id)
+        md = tableToMarkdown('Details of Google Cloud Project', response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID==obj.ID)': response
+            }
+        })
+
+
+    def list_projects(filter_list):
+        service = build_and_authorize()
+        operation = service.projects().list(filter=filter_list).execute()
+        return operation
+
+
+    def list_projects_command():
+        filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
+        response = list_projects(filter_list)
+        results = []
+        for project in response.get('projects', []):
+            md = tableToMarkdown("Project", project)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': project,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': {
+                    'GRM.Project(val.ID==obj.ID)': project
+                }
+            }
+            results.append(entry)
+        demisto.results(results)
+
+
+    def update_project(project_id, project_body):
+        service = build_and_authorize()
+        operation = service.projects().update(projectId=project_id, body=project_body)
+        return operation
+
+
+    def update_project_command():
+        project_id = demisto.args()['projectId'] if 'projectId' in demisto.args() else None
+        project_body = demisto.args()['project_body'] if 'project_body' in demisto.args() else None
+        response = update_project(project_id, project_body)
+        md = tableToMarkdown("Details of Updated GCP Project", response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID==obj.ID)': response
+            }
+        })
+
+
+    def search_organizations(req_body):
+        service = build_and_authorize()
+        operation = service.organizations().search(body=req_body).execute()
+        return operation
+
+
+    def search_organizations_command():
+        req_body = demisto.args()
+        results = []
+        next_page = True
+        while next_page:
+            response = search_organizations(req_body)
+            for organization in response.get('organizations', []):
+                md = tableToMarkdown("Organization", organization)
+                entry = {
+                    'Type': entryTypes['note'],
+                    'Contents': organization,
+                    'ContentsFormat': formats['json'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': md,
+                    'EntryContext': {
+                        'GRM.Organization(val.Name==obj.Name)': organization
+                    }
+                }
+                results.append(entry)
+            if 'nextPageToken' not in response:
+                next_page = False
+            else:
+                req_body['pageToken'] = response['nextPageToken']
+        demisto.results(results)
+
+
+    def get_organization(name):
+        service = build_and_authorize()
+        operation = service.organizations().get(name=name).execute()
+        return operation
+
+
+    def get_organization_command():
+        name = demisto.args()['name']
+        response = get_organization(name)
+        md = tableToMarkdown("Details of Fetched Organization", response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Organization(val.Name==obj.Name)': response
+            }
+        })
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    commands = {
+        "grm-create-project": create_project_command,
+        "grm-delete-project": delete_project_command,
+        "grm-get-project": get_project_command,
+        "grm-list-projects": list_projects_command,
+        "grm-update-project": update_project_command,
+        "grm-search-organizations": search_organizations_command,
+        "grm-get-organization": get_organization_command,
+    }
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            fetch_incidents()
+        elif demisto.command() in commands.keys():
+            commands[demisto.command()]()
+
+    # Log exceptions
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
