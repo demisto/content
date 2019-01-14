@@ -65,3 +65,6 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+releaseNotes: "Updated to use native ping utility"
+tests:
+  - Ping Test Playbook
