@@ -2350,6 +2350,7 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: 'Improved EWS instance configuration'
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
