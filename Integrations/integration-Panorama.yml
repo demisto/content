@@ -2052,7 +2052,7 @@ script:
     - name: ip_range
       description: IP range of the new address, e.g., 10.10.10.0-10.10.10.255
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Address name
       type: string
     - contextPath: Panorama.Addresses.Description
@@ -2074,7 +2074,7 @@ script:
       required: true
       description: Name of the address to delete
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Name of the address that was deleted
       type: string
     description: Delete an address object
