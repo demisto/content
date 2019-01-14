@@ -2707,6 +2707,9 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - postepone for later"
                 ]
             }
         }, 
@@ -9879,10 +9882,16 @@
                     "sep-system-info", 
                     "sep-command-status", 
                     "sep-quarantine", 
-                    "sep-client-content"
+                    "sep-client-content", 
+                    "sep-list-policies", 
+                    "sep-assign-policie", 
+                    "sep-list-locations", 
+                    "sep-endpoint-quarantine", 
+                    "sep-scan-endpoint", 
+                    "sep-update-endpoint-content"
                 ], 
                 "tests": [
-                    "sep_-_test_endpoint_search"
+                    "No test"
                 ]
             }
         }, 
