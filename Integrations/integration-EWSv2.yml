@@ -14,40 +14,30 @@ detaileddescription: |-
 
   In case of authentication error, make sure the user has full access permissions to the mailbox. For more information, read "How to config EWS Permissions" in the integration documentation.
 configuration:
-- display: 'Exchange URL or Server IP address '
-  name: ewsServer
-  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
-  type: 0
-  required: true
-- display: 'Authentication: Email address (for office365) or DOMAIN\USERNAME (e.g.
-    DEMISTO.INT\admin)'
+- display: Email address
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
-- display: Default Target Mailbox
+- display: Email address to fetch incidents from
   name: defaultTargetMailbox
   defaultvalue: ""
   type: 0
   required: true
-- display: Server Version (2007,2010,2010_SP2,2013,2016)
-  name: defaultServerVersion
-  defaultvalue: "2016"
+- display: Folder name to fetch incidents from (Supports Exchange Folder ID and sub-folders
+    e.g. Inbox/Phishing)
+  name: folder
+  defaultvalue: Inbox
   type: 0
   required: true
-- display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
-  name: authType
-  defaultvalue: Basic
-  type: 0
-  required: true
-- display: Has impersonation rights.
-  name: impersonation
+- display: Public Folder
+  name: isPublicFolder
   defaultvalue: "false"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "true"
+- display: Has impersonation rights.
+  name: impersonation
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
@@ -65,16 +55,40 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Folder name to fetch incidents from or Exchange Folder ID. Support also
-    sub-folders (e.g. Inbox\Phishing)
-  name: folder
-  defaultvalue: Inbox
+- display: |2-
+     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                           Manual Mode
+
+    Exchange Server Hostname or IP address
+  name: ewsServer
+  defaultvalue: ""
   type: 0
   required: false
-- display: Public Folder
-  name: isPublicFolder
-  defaultvalue: "false"
+- display: DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)
+  name: domainAndUserman
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007,2010,2010_SP2,2013,2016)'
+  name: defaultServerVersion
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
   type: 8
+  required: false
+- display: |2-
+     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                         Advanced Mode
+
+    Override Authentication Type (NTLM or Basic or Digest).
+  name: authType
+  defaultvalue: ""
+  type: 0
   required: false
 - display: HTTP requests to exchange server timeout
   name: requestTimeout
@@ -98,13 +112,14 @@ script:
 
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest, \
+        AutoDiscoverFailed
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
     from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
         EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, ItemAttachment, \
-        Version, Folder, HTMLBody, Body
+        Version, Folder, HTMLBody, Body, Build
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
@@ -165,20 +180,13 @@ script:
     # Load integratoin params from demisto
     USE_PROXY = demisto.params()['proxy']
     NON_SECURE = demisto.params()['insecure']
-    AUTH_METHOD_STR = demisto.params()['authType'].lower()
-    VERSION_STR = demisto.params()['defaultServerVersion']
+    AUTH_METHOD_STR = demisto.params().get('authType', '')
+    AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
+    VERSION_STR = demisto.params().get('defaultServerVersion', None)
     EWS_SERVER = demisto.params()['ewsServer']
     USERNAME = demisto.params()['credentials']['identifier']
-    ACCOUNT_EMAIL = demisto.params().get('defaultTargetMailbox', None)
-    if not ACCOUNT_EMAIL:
-        if "@" in USERNAME:
-            ACCOUNT_EMAIL = USERNAME
-        if "\\" in USERNAME:
-            user_domain = USERNAME.split("\\")
-            if len(user_domain) == 2:
-                ACCOUNT_EMAIL = user_domain[1] + "@" + user_domain[0]
-    if ACCOUNT_EMAIL is None:
-        raise Exception("Provide a valid email address")
+    MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
+    ACCOUNT_EMAIL = demisto.params()['defaultTargetMailbox']
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
     IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
@@ -186,7 +194,8 @@ script:
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
     IS_TEST_MODULE = False
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
-
+    AUTO_DISCOVERY = False
+    SERVER_BUILD = ""
 
     PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
     if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
@@ -214,10 +223,42 @@ script:
         return VERSIONS[version_str]
 
 
+    def get_build_autodiscover(context_dict):
+        build_params = context_dict["build"].split(".")
+        return Build(*build_params)
+
+
     def get_version(version_str):
         if version_str not in VERSIONS:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
+
+
+    def create_context_dict(account):
+        return {
+            "auth_type" : account.protocol.auth_type,
+            "service_endpoint" : account.protocol.service_endpoint,
+            "build" : str(account.protocol.version.build),
+            "api_version" : account.protocol.version.api_version
+        }
+
+
+    def prepare_context(credentials):
+        context_dict = demisto.getIntegrationContext()
+        global SERVER_BUILD
+        if not context_dict:
+            try:
+                account = Account(
+                    primary_smtp_address=ACCOUNT_EMAIL, autodiscover=True,
+                    access_type=ACCESS_TYPE, credentials=credentials,
+                )
+                os.environ['NO_PROXY'] = EWS_SERVER = account.protocol.service_endpoint
+                SERVER_BUILD = account.protocol.version.build
+                demisto.setIntegrationContext(create_context_dict(account))
+            except AutoDiscoverFailed:
+                return_error("Auto discovery failed, check credentials or configure manually")
+        else:
+            SERVER_BUILD = get_build_autodiscover(context_dict)
 
 
     def prepare():
@@ -233,28 +274,98 @@ script:
             remove_from_dict(os.environ, 'http_proxy')
             remove_from_dict(os.environ, 'HTTPS_PROXY')
             remove_from_dict(os.environ, 'https_proxy')
+            os.environ['NO_PROXY'] = EWS_SERVER or ""
 
-            os.environ['NO_PROXY'] = EWS_SERVER
-
-        version = get_version(VERSION_STR)
-        credentials = Credentials(username=USERNAME, password=PASSWORD)
-        config_args = {
-            'credentials': credentials,
-            'auth_type': get_auth_method(AUTH_METHOD_STR),
-            'version': version
-        }
-        if 'http' in EWS_SERVER.lower():
-            config_args['service_endpoint'] = EWS_SERVER
+        global AUTO_DISCOVERY,VERSION_STR,AUTH_METHOD_STR,USERNAME
+        AUTO_DISCOVERY = not EWS_SERVER
+        if AUTO_DISCOVERY:
+            credentials = Credentials(username=USERNAME, password=PASSWORD)
+            prepare_context(credentials)
+            return None, credentials
         else:
-            config_args['server'] = EWS_SERVER
-        config = Configuration(**config_args)
-        return config
+            if 'outlook.office365.com' in EWS_SERVER.lower():
+                if not AUTH_METHOD_STR:
+                    AUTH_METHOD_STR = 'Basic'
+                VERSION_STR = '2016'
+            else:
+                if MANUAL_USERNAME:
+                    USERNAME = MANUAL_USERNAME
+                if not AUTH_METHOD_STR:
+                    AUTH_METHOD_STR = 'ntlm'
+                if not VERSION_STR:
+                    return_error('Exchange Server Version is required for on-premise Exchange Servers.')
+
+            version = get_version(VERSION_STR)
+            credentials = Credentials(username=USERNAME, password=PASSWORD)
+            config_args = {
+                'credentials': credentials,
+                'auth_type': get_auth_method(AUTH_METHOD_STR),
+                'version': version
+            }
+            if not EWS_SERVER:
+                return_error("Exchange Server Hostname or IP Address is required for manual configuration.")
+            elif 'http' in EWS_SERVER.lower():
+                config_args['service_endpoint'] = EWS_SERVER
+            else:
+                config_args['server'] = EWS_SERVER
+
+
+            return Configuration(**config_args), None
+
+
+    def construct_config_args(context_dict, credentials):
+        auth_type = context_dict["auth_type"]
+        api_version = context_dict["api_version"]
+        service_endpoint = context_dict["service_endpoint"]
+        version = Version(get_build_autodiscover(context_dict), api_version)
+
+        config_args = {
+            'credentials' : credentials,
+            'auth_type' : auth_type,
+            'version' : version,
+            'service_endpoint' : service_endpoint
+        }
+        return config_args
+
+
+    def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
+        account = None
+        original_exc = None
+        context_dict = demisto.getIntegrationContext()
+
+        if context_dict:
+            try:
+                config_args = construct_config_args(context_dict, credentials)
+                account = Account(
+                    primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args), access_type=access_type,
+                )
+                account.root.effective_rights.read
+                return account
+            except Exception, original_exc:
+                pass
+
+        try:
+            account = Account(
+                primary_smtp_address=ACCOUNT_EMAIL, autodiscover=True, credentials=credentials, access_type=access_type,
+            )
+        except AutoDiscoverFailed:
+            return_error("Auto discovery failed, check credentials or configure manually")
+
+        autodiscover_result = create_context_dict(account)
+        if autodiscover_result == context_dict:
+            raise original_exc
+
+        if account_email == ACCOUNT_EMAIL:
+            demisto.setIntegrationContext(create_context_dict(account))
+        return account
 
 
     def get_account(account_email, access_type=ACCESS_TYPE):
-        return Account(
-            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
-        )
+        if not AUTO_DISCOVERY:
+            return Account(
+                primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+            )
+        return get_account_autodiscover(account_email, access_type)
 
 
     # LOGGING
@@ -269,9 +380,7 @@ script:
 
     # Exchange 2010 Fixes
     def fix_2010():
-        version = get_build(VERSION_STR)
-        if 'target-mailbox' in demisto.args():
-            version = get_account(demisto.args()['target-mailbox']).protocol.version.build
+        version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
         if version <= EXCHANGE_2010_SP2:
             for m in (Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList, exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest, exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
                 for i,f in enumerate(m.FIELDS):
@@ -1407,6 +1516,17 @@ script:
         return get_cs_status(search_name, 'Removed')
 
 
+    def get_autodiscovery_config():
+        config_dict = demisto.getIntegrationContext()
+        return {
+            'Type': entryTypes['note'],
+            'Contents': config_dict,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Auto-Discovery Exchange Configuration', config_dict)
+        }
+
+
     def test_module():
         try:
             global IS_TEST_MODULE
@@ -1423,6 +1543,9 @@ script:
                     "Success to authenticate, but user probably has no permissions to read from the specific folder."
                     "Check user permissions. You can try !ews-find-folders command to "
                     "get all the folders structure that the user has permissions to")
+        # except TransportError, e:
+        #     return_error("The server returned not valid data. Test Failed")
+
         demisto.results('ok')
 
 
@@ -1430,7 +1553,7 @@ script:
         demisto.results(str_to_unicode(obj))
 
 
-    config = prepare()
+    config, credentials = prepare()
     args = prepare_args(demisto.args())
     fix_2010()
     try:
@@ -1444,9 +1567,17 @@ script:
         elif demisto.command() == 'ews-delete-attachment':
             encode_and_submit_results(delete_attachments_for_message(**args))
         elif demisto.command() == 'ews-get-searchable-mailboxes':
-            encode_and_submit_results(get_searchable_mailboxes(config.protocol))
+            if AUTO_DISCOVERY:
+                protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
+            else:
+                protocol = config.protocol
+            encode_and_submit_results(get_searchable_mailboxes(protocol))
         elif demisto.command() == 'ews-search-mailboxes':
-            encode_and_submit_results(search_mailboxes(config.protocol, **args))
+            if AUTO_DISCOVERY:
+                protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
+            else:
+                protocol = config.protocol
+            encode_and_submit_results(search_mailboxes(protocol, **args))
         elif demisto.command() == 'ews-move-item-between-mailboxes':
             encode_and_submit_results(move_item_between_mailboxes(**args))
         elif demisto.command() == 'ews-move-item':
@@ -1483,6 +1614,8 @@ script:
             encode_and_submit_results(check_purge_compliance_search(**args))
         elif demisto.command() == 'ews-o365-remove-compliance-search':
             encode_and_submit_results(remove_compliance_search(**args))
+        elif demisto.command() == 'ews-get-autodiscovery-config':
+            encode_and_submit_results(get_autodiscovery_config())
 
 
     except Exception, e:
@@ -2210,6 +2343,10 @@ script:
     - contextPath: EWS.ComplianceSearch.Status
       description: The status of the compliance search
     description: Check the status of the purge operation on the compliance search.
+  - name: ews-get-autodiscovery-config
+    arguments: []
+    description: Returns the auto-discovery information. Can be used to configurate
+      Exchange server manually.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
