@@ -1428,7 +1428,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -13958,7 +13961,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
