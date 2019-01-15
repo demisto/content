@@ -11462,6 +11462,18 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "Alexa Rank Indicator": {
+                "name": "Alexa Rank Indicator", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "domain"
+                ], 
+                "tests": [
+                    "Alexa Test Playbook"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15300,6 +15312,17 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "awis-info"
                 ]
             }
         }
