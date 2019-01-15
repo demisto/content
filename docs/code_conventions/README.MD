@@ -4,6 +4,13 @@ The purpose of standardising our code conventions is to ensure uniformity among 
 ## Dates
 We do not use epoch time for customer facing results (Context, Human Readable, etc.). If the API you are working with requires the time format to be in epoch, then convert the date string into epoch as needed. Where possible, use the human readable format of date ```%Y-%m-%dT%H:%M:%S```
 
+```python
+time_epoch = '499137720'
+formatted_time = formatEpochDate(time_epoch)
+print(formatted_time)
+>>> '1985-10-26T01:22:00'
+```
+
 **Please note:** If the response returned is in epoch, it is best practices to convert it to ```%Y-%m-%dT%H:%M:%S```
 
 ## JSON, Dictionaries, and Object Formatting
@@ -210,10 +217,10 @@ File type can be specified, but defaults to "None" when not provided.
 Formats an epoch date to human readable
 
 ```python
-t = '1546330085'
+t = '499137720'
 human_readable = formatEpochDate(t)
 print human_readable
---> 'Tue, 01 Jan 2019 08:08:05 GMT'
+--> '1985-10-26T01:22:00'
 
 ```
 

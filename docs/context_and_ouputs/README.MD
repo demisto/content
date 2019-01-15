@@ -41,7 +41,7 @@ Let's look at a real world example that can show you how context is used:
     }
 
     ec = {
-        'URLScan(val.URL && val.URL == obj.URL)': cont,
+        'URLScan(val.URL && val.URL == obj.URL)': cont, # Please see the section on DT below
         'DBotScore': dbot_score,
         'URL': url_cont
     }
@@ -85,6 +85,8 @@ demisto.results({
     'EntryContext': ec
 })
 ```
+
+## DT (Demisto Transform Language)
 In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/etc/wiki/Demisto-Code-Conventions#linking-context).
 
 
