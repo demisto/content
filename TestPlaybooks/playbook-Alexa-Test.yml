@@ -26,16 +26,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 61108d8b-ff41-4c14-8cac-57dc3655ea1a
+    taskid: d87d7da9-eee3-46b4-889a-dc513098b669
     type: regular
     task:
-      id: 61108d8b-ff41-4c14-8cac-57dc3655ea1a
+      id: d87d7da9-eee3-46b4-889a-dc513098b669
       version: -1
       name: awis-info
       description: Provides an Alexa ranking of the URL in question.
-      script: Alexa Rank Indicator|||awis-info
+      script: Alexa Rank Indicator|||domain
       type: regular
       iscommand: true
       brand: Alexa Rank Indicator
@@ -43,7 +44,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      url:
+      domain:
         simple: google.com
     separatecontext: false
     view: |-
@@ -54,6 +55,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 53d60cd8-a705-4262-82b9-b821d8ae3526
@@ -86,12 +88,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 75b4c5fb-d8fc-4fcf-85d5-438a83aaff17
+    taskid: 2c6978d3-5285-49dc-84cf-352d38c93d0a
     type: condition
     task:
-      id: 75b4c5fb-d8fc-4fcf-85d5-438a83aaff17
+      id: 2c6978d3-5285-49dc-84cf-352d38c93d0a
       version: -1
       name: Check Trusted Site
       type: condition
@@ -111,7 +114,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "0"
     view: |-
       {
         "position": {
@@ -120,6 +123,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: 9a28e817-5bec-4651-8117-46a42fd2e8b4
@@ -152,16 +156,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 3ba3bbd1-bc6b-4612-8a8e-e116dd546b87
+    taskid: 3d0cefb3-fded-466f-8e62-506488bc1815
     type: regular
     task:
-      id: 3ba3bbd1-bc6b-4612-8a8e-e116dd546b87
+      id: 3d0cefb3-fded-466f-8e62-506488bc1815
       version: -1
       name: awis-info
       description: Provides an Alexa ranking of the URL in question.
-      script: Alexa Rank Indicator|||awis-info
+      script: Alexa Rank Indicator|||domain
       type: regular
       iscommand: true
       brand: Alexa Rank Indicator
@@ -169,8 +174,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      url:
-        simple: lexiapplications.com
+      domain:
+        simple: altcom.com.pl
     separatecontext: false
     view: |-
       {
@@ -180,14 +185,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 7f21b382-2ba1-4503-8cde-37c22204d919
+    taskid: 27211a2e-c2c9-4a6f-89d4-ddf38084bfa9
     type: condition
     task:
-      id: 7f21b382-2ba1-4503-8cde-37c22204d919
+      id: 27211a2e-c2c9-4a6f-89d4-ddf38084bfa9
       version: -1
-      name: Check Unlisted Site
+      name: Check Low Ranking Site
       type: condition
       iscommand: false
       brand: ""
@@ -205,7 +211,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: "2"
     view: |-
       {
         "position": {
@@ -214,6 +220,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 1df3dbf5-36bb-4b4e-841f-6ff2934622d2
@@ -246,16 +253,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 0ccbb5d3-86f1-4580-8ce3-4d7cb3c492ff
+    taskid: d2a068c0-3f76-4429-8e4a-e9485043ae58
     type: regular
     task:
-      id: 0ccbb5d3-86f1-4580-8ce3-4d7cb3c492ff
+      id: d2a068c0-3f76-4429-8e4a-e9485043ae58
       version: -1
       name: awis-info
       description: Provides an Alexa ranking of the URL in question.
-      script: Alexa Rank Indicator|||awis-info
+      script: Alexa Rank Indicator|||domain
       type: regular
       iscommand: true
       brand: Alexa Rank Indicator
@@ -263,8 +271,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      url:
-        simple: demisto.com
+      domain:
+        simple: shlepme.com
     separatecontext: false
     view: |-
       {
@@ -274,14 +282,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: a757e1e2-4447-4d6f-8669-4b44437d7e64
+    taskid: 5e717787-cf33-4752-8c78-822802074f09
     type: condition
     task:
-      id: a757e1e2-4447-4d6f-8669-4b44437d7e64
+      id: 5e717787-cf33-4752-8c78-822802074f09
       version: -1
-      name: Check Low Ranking Site
+      name: Check Unlisted Site
       type: condition
       iscommand: false
       brand: ""
@@ -299,7 +308,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "0"
     view: |-
       {
         "position": {
@@ -308,6 +317,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
     taskid: d3bc6702-551a-4991-8d27-2a0eb3bd2b1a
@@ -337,6 +347,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
