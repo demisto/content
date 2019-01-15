@@ -53,7 +53,7 @@ script:
       name: columns
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -61,7 +61,7 @@ script:
       name: computerName
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -69,7 +69,7 @@ script:
       name: lastUpdate
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -79,7 +79,7 @@ script:
         Win10, Win2K, Win7, Win8, WinEmb7, WinEmb8, WinEmb81, WinFundamental, WinNT,
         Win2K3, Win2K8, Win2K8R2, WinVista, WinXP, WinXPEmb, WinXPProf64]
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -87,7 +87,7 @@ script:
       name: pageSize
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -95,7 +95,7 @@ script:
       name: computerNamed
       predefined: []
       required: false
-      
+      secret: false
     description: Get information about endpoints.
     execution: false
     name: sep-endpoints-info
@@ -123,7 +123,7 @@ script:
       name: ip
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -131,7 +131,7 @@ script:
       name: hostname
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -139,7 +139,7 @@ script:
       name: timeout
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -147,7 +147,7 @@ script:
       name: interval
       predefined: []
       required: false
-      
+      secret: false
     description: Updates the content of the given client.
     execution: false
     name: sep-update-content
@@ -164,7 +164,7 @@ script:
       name: ip
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -172,7 +172,7 @@ script:
       name: scanType
       predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -180,7 +180,7 @@ script:
       name: hostname
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -188,7 +188,7 @@ script:
       name: timeout
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -196,7 +196,7 @@ script:
       name: interval
       predefined: []
       required: false
-      
+      secret: false
     description: Scans an endpoint.
     execution: false
     name: sep-scan
@@ -213,7 +213,7 @@ script:
       name: columns
       predefined: []
       required: false
-      
+      secret: false
     description: Get information about groups.
     execution: false
     name: sep-groups-info
@@ -234,7 +234,7 @@ script:
       name: commandId
       predefined: []
       required: true
-      
+      secret: false
     description: Retrieves the status of a command.
     execution: false
     name: sep-command-status
@@ -251,7 +251,7 @@ script:
       name: ip
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -259,7 +259,7 @@ script:
       name: hostname
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -267,7 +267,7 @@ script:
       name: timeout
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -275,7 +275,7 @@ script:
       name: interval
       predefined: []
       required: false
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -283,7 +283,7 @@ script:
       name: actionType
       predefined: [Quarantine, Undo]
       required: true
-      
+      secret: false
     description: Quarantines the endpoint according to its policy.
     execution: false
     name: sep-quarantine
@@ -328,7 +328,7 @@ script:
       name: groupID
       predefined: []
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -336,7 +336,7 @@ script:
       name: locationID
       predefined: []
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -344,7 +344,7 @@ script:
       name: policyType
       predefined: []
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -352,7 +352,7 @@ script:
       name: policyID
       predefined: []
       required: true
-      
+      secret: false
     description: Assign existing policy to a designated location
     execution: false
     name: sep-assign-policie
@@ -365,7 +365,7 @@ script:
       name: groupID
       predefined: []
       required: true
-      
+      secret: false
     description: Retrieve a list of location ID's for a given group
     execution: false
     name: sep-list-locations
@@ -379,7 +379,7 @@ script:
       name: endpoint
       predefined: []
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -387,7 +387,7 @@ script:
       name: actionType
       predefined: [Add, Remove]
       required: true
-      
+      secret: false
     description: Quarantines the endpoint according to its policy.
     execution: false
     name: sep-endpoint-quarantine
@@ -406,7 +406,7 @@ script:
       name: endpoint
       predefined: []
       required: true
-      
+      secret: false
     - default: false
       defaultValue: ''
       description: ''
@@ -414,7 +414,7 @@ script:
       name: scanType
       predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
       required: true
-      
+      secret: false
     description: Scans an endpoint.
     execution: false
     name: sep-scan-endpoint
@@ -431,8 +431,8 @@ script:
       isArray: false
       name: endpoint
       predefined: []
-      required: false
-      
+      required: true
+      secret: false
     description: Updates the content of the given client.
     execution: false
     name: sep-update-endpoint-content
@@ -444,6 +444,7 @@ script:
     import requests
     import json
     import re
+
     requests.packages.urllib3.disable_warnings()
 
     if not demisto.params()['proxy']:
@@ -454,10 +455,10 @@ script:
 
     # Default timeout and interval parameters for polling the response
     CLIENT_COMMAND_PARAMETERS = {
-        'sep-update-content'    : {'timeout': 120, 'interval': 10},
-        'sep-quarantine'        : {'timeout': 120, 'interval': 10},
+        'sep-update-content': {'timeout': 120, 'interval': 10},
+        'sep-quarantine': {'timeout': 120, 'interval': 10},
         #  Don't poll for scan response because it takes too long. The automation will do that
-        'sep-scan'              : {'timeout': 1, 'interval': 1}
+        'sep-scan': {'timeout': 1, 'interval': 1}
     }
 
     ENDPOINTS_INFO_DEFAULT_COLUMNS = [
@@ -493,14 +494,15 @@ script:
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    LITERALS    @@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    TOKEN = demisto.getIntegrationContext().get('TOKEN')
+    # TOKEN = demisto.getIntegrationContext().get('TOKEN')
     EPOCH_MINUTE = 60 * 1000
     EPOCH_HOUR = 60 * EPOCH_MINUTE
+
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    HELPER FUNCTIONS    @@@@@@@@@@@@@@@@@@@@@@@@@@
 
     def fix_url(base):
-        return (base if base.endswith('/') else (base + '/'))
+        return base if base.endswith('/') else (base + '/')
 
 
     def build_query_params(params):
@@ -516,7 +518,7 @@ script:
             'password': crads.get('password') if crads.get('password') else '',
             'domain': crads.get('domain') if crads.get('domain') else ''
         }
-        res = requests.post(url, headers={"Content-Type":"application/json"}, data=json.dumps(body), verify=not insecure)
+        res = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(body), verify=not insecure)
         return parse_response(res)
 
 
@@ -535,7 +537,7 @@ script:
         insecure = demisto.getParam('insecure')
         server = demisto.getParam('server')
         url = fix_url(server) + suffix
-        res = requests.post(url, headers = {'Authorization': 'Bearer ' + token}, data=body, verify = not insecure)
+        res = requests.post(url, headers={'Authorization': 'Bearer ' + token}, data=body, verify=not insecure)
         if (is_xml):
             parsed_response = xml2json(res.content)
         else:
@@ -547,7 +549,7 @@ script:
         insecure = demisto.getParam('insecure')
         server = demisto.getParam('server')
         url = fix_url(server) + suffix
-        res = requests.put(url, headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify = not insecure)
+        res = requests.put(url, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify=not insecure)
         # res = requests.put('https://httpbin.org/put', headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify = not insecure)
         parsed_response = parse_response(res)
         return parsed_response
@@ -580,7 +582,7 @@ script:
         if not column_arg:
             columns_list = default_list
             columns_list.sort()
-        elif column_arg == 'all' or column_arg =='*':
+        elif column_arg == 'all' or column_arg == '*':
             columns_list = []
         else:
             columns_list = argToList(column_arg)
@@ -590,6 +592,7 @@ script:
     def build_command_xml(data):
         return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
                 <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data)
+
 
     def build_client_xml(data):
         return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
@@ -623,7 +626,7 @@ script:
 
     def build_command_response_output(title, command_id, message, response):
         cmd_status_details = response.get('cmdStatusDetail')
-        cmd_status_details.pop('hardwareKey',None)
+        cmd_status_details.pop('hardwareKey', None)
 
         md = tableToMarkdown(title, cmd_status_details) + '\n'
         md += '### Command ID: {0}\n'.format(command_id)
@@ -639,22 +642,24 @@ script:
             },
             'HumanReadable': md,
             'EntryContext': {
-                'SEPM.LastCommand': createContext({'CommandDetails': cmd_status_details,'CommandId': command_id}, removeNull = True)
+                'SEPM.LastCommand': createContext({'CommandDetails': cmd_status_details, 'CommandId': command_id}, removeNull=True)
             }
         })
+
 
     def get_computer_id_by_ip(token, ip):
         xml = build_client_xml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip))
         res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
 
-        return demisto.get(json.loads(res_json) ,'Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId')
+        return demisto.get(json.loads(res_json), 'Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId')
 
 
     def get_computer_id_by_hostname(token, hostname):
-        xml = build_command_xml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname))
+        xml = build_client_xml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname))
         res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
 
-        return demisto.get(json.loads(res_son), 'resJson.Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId')
+        return demisto.get(json.loads(res_json), 'Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId')
+
 
     def get_computer_id(token, endpoint_ip, endpoint_host_name):
         if endpoint_ip:
@@ -664,7 +669,7 @@ script:
                 return_error('Failed to locate the endpoint by its IP address.')
         elif endpoint_host_name:
             try:
-                computer_id = get_computer_id_by_hostname(token, endpoint_ip)
+                computer_id = get_computer_id_by_hostname(token, endpoint_host_name)
             except Exception, ex:
                 return_error('Failed to locat the endpoint by its hostname.')
         else:
@@ -681,13 +686,13 @@ script:
             error_code = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode')
             error_message = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
             if error_code or error_message:
-                return_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+                return_error('An error response has returned from server: {0} with code: {1}'.format(error_message, error_code))
             else:
                 return_error('Could not retrieve command ID, no error was returned from server')
         return command_id
 
 
-    def scan (token, computer_id, scan_type):
+    def scan(token, computer_id, scan_type):
         xml = build_command_xml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computer_id, scan_type))
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
         command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId')
@@ -696,21 +701,23 @@ script:
             error_code = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorCode')
             error_message = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorMessage')
             if error_code or error_message:
-                return_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+                return_error('An error response has returned from server: {0} with code: {1}'.format(error_message, error_code))
             else:
                 return_error('Could not retrieve command ID, no error was returned from server')
         return command_id
 
 
     def quarantine(token, computer_id, action_type):
-        xml = build_command_xml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(action_type, computer_id));
+        xml = build_command_xml(
+            '<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(
+                action_type, computer_id));
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml);
         command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId')
         if not command_id:
             error_code = demisto.get(res_json, 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.inputErrors.errorCode')
             error_message = demisto.get(res_json, 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.inputErrors.errorMessage')
             if error_code or error_message:
-                return_error('An error response has returned from server: {0} with code: {1}'.format(errorMessage, errorCode))
+                return_error('An error response has returned from server: {0} with code: {1}'.format(error_message, error_code))
             else:
                 return_error('Could not retrieve command ID, no error was returned from server')
         return command_id
@@ -734,12 +741,12 @@ script:
 
     def change_assigined(policy):
         new_format = {
-           'Policy Name': policy.get('PolicyName'),
-           'Type': policy.get('Type'),
-           'ID': policy.get('ID'),
-           'Assigned': True if (policy.get('AssignedLocations') or policy.get('AssignedCloudGroups')) else False,
-           'Discription': policy.get('Discription'),
-           'Enabled': policy.get('Enabled')
+            'Policy Name': policy.get('PolicyName'),
+            'Type': policy.get('Type'),
+            'ID': policy.get('ID'),
+            'Assigned': True if (policy.get('AssignedLocations') or policy.get('AssignedCloudGroups')) else False,
+            'Discription': policy.get('Discription'),
+            'Enabled': policy.get('Enabled')
         }
         return new_format
 
@@ -755,13 +762,13 @@ script:
             'ID': policy['id'],
             'Discription': policy['desc'],
             'Enabled': policy['enabled'],
-            'AssignedLocations': map(lambda location:{
-               'GroupID': location.get('groupId'),
-               'Locations': location.get('locationIds')
+            'AssignedLocations': map(lambda location: {
+                'GroupID': location.get('groupId'),
+                'Locations': location.get('locationIds')
             }, policy.get('assignedtolocations') if policy.get('assignedtolocations') else []),
-            'AssignedCloudGroups': map(lambda location:{
-              'GroupID': location.get('groupId'),
-              'Locations': location.get('locationIds')
+            'AssignedCloudGroups': map(lambda location: {
+                'GroupID': location.get('groupId'),
+                'Locations': location.get('locationIds')
             }, policy.get('assignedtocloudgroups') if policy.get('assignedtocloudgroups') else []),
         }, policies_list)
 
@@ -775,7 +782,6 @@ script:
 
 
     def system_info_command(token):
-
         insecure = demisto.getParam('insecure')
         version_json = do_get(token, False, 'sepm/api/v1/version')
         avdef_json = do_get(token, False, 'sepm/api/v1/content/avdef/latest')
@@ -789,8 +795,8 @@ script:
         md += tableToMarkdown('AV Definitions', avdef_json)
 
         context = avdef_json.get('publishedBySymantec')
-        if(type(context) is dict):
-            context = createContext(context, removeNull = True)
+        if (type(context) is dict):
+            context = createContext(context, removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -821,7 +827,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': client_content_json,
             'HumanReadable': md,
-            'EntryContext': createContext({'SEPM.ClientContentVersions': client_content_json.get('clientDefStatusList'),'SEPM.LastUpdated': last_update_date}, removeNull = True)
+            'EntryContext': createContext({'SEPM.ClientContentVersions': client_content_json.get('clientDefStatusList'), 'SEPM.LastUpdated': last_update_date}, removeNull=True)
         })
 
 
@@ -863,8 +869,9 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': filtered_json_response,
             'HumanReadable': md,
+            'IgnoreAutoExtract': True,
             'EntryContext': {
-                'SEPM.Endpoint(val.computerName == obj.computerName)': createContext(entry_context, removeNull = True)
+                'SEPM.Endpoint(val.computerName == obj.computerName)': createContext(entry_context, removeNull=True)
             }
         })
 
@@ -881,7 +888,7 @@ script:
                 group[header] = entry[header]
             entry_context['SEPM.Groups'].append(group)
         deafult_headers = GROUPS_INFO_DEFAULT_COLUMNS
-        deafult_headers.remove('id')
+        # deafult_headers.remove('id')
         columns_list = choose_columns(columns, deafult_headers)
 
         md = tableToMarkdown('Groups Information', filtered_json_response, columns_list)
@@ -890,18 +897,43 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': json_res,
             'HumanReadable': md,
-            'EntryContext': createContext(entry_context, removeNull = True)
+            'IgnoreAutoExtract': True,
+            'EntryContext': createContext(entry_context, removeNull=True)
 
         })
 
+
     def command_status(token):
-        # Poll once for a response (timeout=1, interval=1)
         command_id = demisto.getArg('commandId')
-        response = poll_response(token, command_id, 1, 1)
-        message = 'Command is done.' if response.get('isDone') else 'Command is in progress. Run !sep-command-status to check again.';
 
-        return build_command_response_output('Command status:', command_id, message, response)
+        command_status_json = get_command_status_details(token, command_id)
+        cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
+        cmd_status_detail.pop('hardwareKey', None)
 
+        state_id = cmd_status_detail.get('stateId')
+        is_done = False
+        if state_id == '2' or state_id == '3':
+            is_done = True
+        message = 'Command is done.' if is_done else 'Command is in progress. Run !sep-command-status to check again.';
+
+        # md = tableToMarkdown(title, cmd_status_details) + '\n'
+        md = '### Command ID: {0}\n'.format(command_id)
+        md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
+        md += '### ' + message;
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': {
+                'cmdStatusDetail': cmd_status_detail,
+                'commandId': command_id
+            },
+            'HumanReadable': md,
+            'IgnoreAutoExtract': True,
+            'EntryContext': {
+                'SEPM.LastCommand': createContext({'CommandDetails': cmd_status_detail, 'CommandID': command_id}, removeNull=True)
+            }
+        })
 
 
     def run_client_command(token, command):
@@ -944,14 +976,15 @@ script:
 
         fixed_policie_list = sanitize_policies_list(policies_list)
         md_list = sanitize_policies_list_for_md(fixed_policie_list)
-        md = tableToMarkdown('List of existing policies', md_list, ['Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Discription' ])
+        md = tableToMarkdown('List of existing policies', md_list, ['Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Discription'])
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': policies_list,
             'HumanReadable': md,
+            'IgnoreAutoExtract': True,
             'EntryContext': {
-                'SEPM.PoliciesList': createContext(fixed_policie_list, removeNull = True)
+                'SEPM.PoliciesList': createContext(fixed_policie_list, removeNull=True)
             }
         })
 
@@ -976,16 +1009,19 @@ script:
         group_id = demisto.getArg('groupID')
         url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
         url_resp = do_get(token, False, url)
-        location_ids = map(lambda location_string: {'ID' : location_string.split('/')[-1]}, url_resp)
+        location_ids = map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp)
+        # demisto.results(location_ids )
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': url_resp,
-            'HumanReadable': tableToMarkdown('Locations', map(lambda location: {'Location ID' : location.get('id')} , location_ids)),
+            'HumanReadable': tableToMarkdown('Locations', map(lambda location: {'Location ID': location.get('ID')}, location_ids)),
+            'IgnoreAutoExtract': True,
             'EntryContext': {
                 'SEPM.Locations': location_ids
             }
         })
+
 
     def endpoint_quarantine_command(token):
         endpoint = demisto.getArg('endpoint')
@@ -999,11 +1035,12 @@ script:
         else:
             computer_id = get_computer_id(token, None, endpoint)
         command_id = quarantine(token, computer_id, action_type)
-        message = '### Initiated quarantine for endpoint {0}. Command ID: {1}.'.format(endpoint, command_id) if action == 'Add' else '### Removing endpoint: {0} from quarantine. Command ID: {1}.'.format(endpoint, command_id)
+        message = '### Initiated quarantine for endpoint {0}. Command ID: {1}.'.format(endpoint, command_id) if action == 'Add' else '### Removing endpoint: {0} from quarantine. Command ID: {1}.'.format(
+            endpoint, command_id)
         context = {
             'CommandID': command_id,
-            'Action' : action,
-            'Endpoint' : endpoint
+            'Action': action,
+            'Endpoint': endpoint
         }
 
         demisto.results({
@@ -1011,6 +1048,7 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': command_id,
             'HumanReadable': message,
+            'IgnoreAutoExtract': True,
             'EntryContext': {
                 'SEPM.Quarantine': context
             }
@@ -1031,8 +1069,8 @@ script:
         message = '### Initiated scan on endpoint: {0} with type: {1}. Command ID: {2}.'.format(endpoint, scan_type, command_id)
         context = {
             'CommandID': command_id,
-            'Type' : scan_type,
-            'Endpoint' : endpoint
+            'Type': scan_type,
+            'Endpoint': endpoint
         }
 
         demisto.results({
@@ -1040,6 +1078,7 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': command_id,
             'HumanReadable': message,
+            'IgnoreAutoExtract': True,
             'EntryContext': {
                 'SEPM.Scan': context
             }
@@ -1059,7 +1098,7 @@ script:
         message = '### Updating endpoint: {0}. Command ID: {1}.'.format(endpoint, command_id)
         context = {
             'CommandID': command_id,
-            'Endpoint' : endpoint
+            'Endpoint': endpoint
         }
 
         demisto.results({
@@ -1067,16 +1106,18 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': command_id,
             'HumanReadable': message,
+            'IgnoreAutoExtract': True,
             'EntryContext': {
                 'SEPM.Update': context
             }
         })
 
+
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS SWITCH    @@@@@@@@@@@@@@@@@@@@@@@@@@
     '''
     Before EVERY command the follwing tow lines are performed (do_auth and get_token_from_response)
     '''
-    resp = do_auth(server = demisto.getParam('server'), crads = demisto.getParam('authentication'), insecure = demisto.getParam('insecure'))
+    resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam('authentication'), insecure=demisto.getParam('insecure'))
     token = get_token_from_response(resp)
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
