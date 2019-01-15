@@ -61,7 +61,7 @@ script:
     execution: false
     name: grm-create-project
     outputs:
-    - {contextPath: GGM.Project.Name, description: name of the project, type: String}
+    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
     - {contextPath: GRM.Project.ID, description: projectId, type: String}
     - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
