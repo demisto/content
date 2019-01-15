@@ -523,8 +523,7 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
                 has_schema_problem = True
 
         if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if (is_circle and not script_valid_in_id_set(file_path, script_set)) or \
-                    changed_docker_image(file_path):
+            if (is_circle and not script_valid_in_id_set(file_path, script_set)):
                 has_schema_problem = True
 
         if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
