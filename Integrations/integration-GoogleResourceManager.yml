@@ -7,12 +7,6 @@ configuration:
   options: []
   required: true
   type: 4
-- defaultvalue: v1
-  display: Google Resource Manager API Version
-  name: api_version
-  options: [v1, ' v2']
-  required: false
-  type: 15
 - defaultvalue: ''
   display: Username
   name: gsuite_credentials
@@ -46,8 +40,8 @@ script:
     - default: false
       defaultValue: ''
       description: ''
-      isArray: false
-      name: labels
+      isArray: true
+      name: labels.attrs
       predefined: []
       required: false
       secret: false
@@ -66,6 +60,14 @@ script:
       name: parent.type
       predefined: []
       required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: true
+      name: labels.values
+      predefined: []
+      required: false
       secret: false
     description: Create Project Resource
     execution: false
@@ -116,7 +118,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: The name to update the project with
+      description: ''
       isArray: false
       name: name
       predefined: []
@@ -124,7 +126,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: The id of the parent resource to update the project to
+      description: ''
       isArray: false
       name: parent.id
       predefined: []
@@ -132,7 +134,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: The type of the parent resource to update the project to
+      description: ''
       isArray: false
       name: parent.type
       predefined: [organization, ' folder']
@@ -140,9 +142,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: List of label attribute names to update the project with *Note
-        - these tags will match to their corresponding indexed values in label.values.
-        Will not work if the arrays are of mismatched length.
+      description: ''
       isArray: true
       name: labels.attrs
       predefined: []
@@ -150,9 +150,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: List of label values to update the project with *Note - these values
-        will match to their corresponding indexed values in label.attrs. Will not
-        work if the arrays are of mismatched length.
+      description: ''
       isArray: true
       name: labels.values
       predefined: []
@@ -229,7 +227,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: The projectId value of the project you wish to delete
+      description: ''
       isArray: false
       name: projectId
       predefined: []
@@ -243,9 +241,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: The projectId of the project whose lifecycleState attribute has
-        been set to DELETE_REQUESTED (aka marked for deletion) and which you wish
-        to restore.
+      description: ''
       isArray: false
       name: projectId
       predefined: []
@@ -259,14 +255,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        string
-
-        The resource name of the new Folder's parent. Must be of the form folders/{folder_id} or organizations/{org_id}.
-
-        Authorization requires the following Google IAM permission on the specified resource parent:
-
-        resourcemanager.folders.create
+      description: ''
       isArray: false
       name: parent
       predefined: []
@@ -274,10 +263,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        string
-
-        Output only. The resource name of the Folder. Its format is folders/{folder_id}, for example: "folders/1234".
+      description: ''
       isArray: false
       name: name
       predefined: []
@@ -285,8 +271,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: The Folder's displayName must be distinct from all other Folder's
-        that share its parent.
+      description: ''
       isArray: false
       name: displayName
       predefined: []
@@ -308,10 +293,6 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-
     ''' IMPORTS '''
 
     from googleapiclient import discovery
@@ -324,10 +305,9 @@ script:
 
     ''' GLOBALS/PARAMS '''
 
-    API_VERSION = demisto.getParam('api_version')
+    API_VERSION = 'v1'
     ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
     PRIVATE_KEY_CONTENT = demisto.getParam('auth_json').encode('utf-8')
-    # ACCESS_TOKEN = demisto.getParam('access_token')
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 
@@ -360,13 +340,8 @@ script:
         if 'name' in keys:
             body['name'] = project_body['name']
         if 'labels.attrs' in keys and 'labels.values' in keys:
-            # throw an error if the quantity of label tags and label values dont match
             labels_attrs = argToList(project_body['labels.attrs'])
             labels_values = argToList(project_body['labels.values'])
-            # LOG(len(project_body['labels.attrs']))
-            # LOG(project_body['labels.attrs'])
-            # LOG(len(project_body['labels.values']))
-            # LOG(project_body['labels.values'])
             if len(labels_attrs) != len(labels_values):
                 err_msg = 'Label attrs array and Label values array do not match in length.\n'
                 err_msg += 'These arrays need to match in length because each string in labels.attrs'
@@ -400,16 +375,17 @@ script:
 
     def create_project(project_body):
         service = build_and_authorize()
-        body = {'projectId': project_body['projectId']}
-        if 'parent.type' in project_body.keys() and 'parent.id' in project_body.keys():
-            body['parent'] = {
-                'type': project_body['parent.type'],
-                'id': project_body['parent.id']
-            }
-        if 'name' in project_body.keys():
-            body['name'] = project_body['name']
-        if 'labels' in project_body.keys():
-            body['labels'] = project_body['labels']
+        # body = {'projectId': project_body['projectId']}
+        # if 'parent.type' in project_body.keys() and 'parent.id' in project_body.keys():
+        #     body['parent'] = {
+        #         'type': project_body['parent.type'],
+        #         'id': project_body['parent.id']
+        #     }
+        # if 'name' in project_body.keys():
+        #     body['name'] = project_body['name']
+        # if 'labels' in project_body.keys():
+        #     body['labels'] = project_body['labels']
+        body = make_project_body(project_body)
         operation = service.projects().create(body=body).execute()
         return operation
 
@@ -425,7 +401,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID&&val.ID==obj.ID)': response
+                'GRM.Operation(val.Name&&val.Name==obj.Name)': response
             }
         })
 
@@ -451,7 +427,10 @@ script:
         #     }
         # })
         if json.dumps(response) == '{}':
-            demisto.results('ok')
+            success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
+            demisto.results(success_msg)
+        else:
+            demisto.results('Unexpected return object from command execution. Results uncertain.')
 
 
     def undelete_project(project_id):
@@ -615,15 +594,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Operation(val.ID&&val.ID==obj.ID)': response
+                'GRM.Operation(val.Name&&val.Name==obj.Name)': response
             }
         })
 
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-    LOG('Command being called is %s' % (demisto.command()))
 
     commands = {
         "grm-create-project": create_project_command,
@@ -636,6 +613,8 @@ script:
         "grm-undelete-project": undelete_project_command,
         "grm-create-folder": create_folder_command,
     }
+
+    LOG('Command being called is %s' % (demisto.command()))
 
     try:
         if demisto.command() == 'test-module':
