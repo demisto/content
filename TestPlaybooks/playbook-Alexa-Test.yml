@@ -1,0 +1,353 @@
+id: Alexa Test Playbook
+version: -1
+rolename: []
+name: Alexa Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 808bd5d8-2546-4c71-8cd6-ac8a3cda848b
+    type: start
+    task:
+      id: 808bd5d8-2546-4c71-8cd6-ac8a3cda848b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 61108d8b-ff41-4c14-8cac-57dc3655ea1a
+    type: regular
+    task:
+      id: 61108d8b-ff41-4c14-8cac-57dc3655ea1a
+      version: -1
+      name: awis-info
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||awis-info
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 53d60cd8-a705-4262-82b9-b821d8ae3526
+    type: regular
+    task:
+      id: 53d60cd8-a705-4262-82b9-b821d8ae3526
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 75b4c5fb-d8fc-4fcf-85d5-438a83aaff17
+    type: condition
+    task:
+      id: 75b4c5fb-d8fc-4fcf-85d5-438a83aaff17
+      version: -1
+      name: Check Trusted Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 9a28e817-5bec-4651-8117-46a42fd2e8b4
+    type: regular
+    task:
+      id: 9a28e817-5bec-4651-8117-46a42fd2e8b4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 180
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 3ba3bbd1-bc6b-4612-8a8e-e116dd546b87
+    type: regular
+    task:
+      id: 3ba3bbd1-bc6b-4612-8a8e-e116dd546b87
+      version: -1
+      name: awis-info
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||awis-info
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: lexiapplications.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 350
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 7f21b382-2ba1-4503-8cde-37c22204d919
+    type: condition
+    task:
+      id: 7f21b382-2ba1-4503-8cde-37c22204d919
+      version: -1
+      name: Check Unlisted Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 510
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 1df3dbf5-36bb-4b4e-841f-6ff2934622d2
+    type: regular
+    task:
+      id: 1df3dbf5-36bb-4b4e-841f-6ff2934622d2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 180
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 0ccbb5d3-86f1-4580-8ce3-4d7cb3c492ff
+    type: regular
+    task:
+      id: 0ccbb5d3-86f1-4580-8ce3-4d7cb3c492ff
+      version: -1
+      name: awis-info
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||awis-info
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      url:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 350
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: a757e1e2-4447-4d6f-8669-4b44437d7e64
+    type: condition
+    task:
+      id: a757e1e2-4447-4d6f-8669-4b44437d7e64
+      version: -1
+      name: Check Low Ranking Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 510
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: d3bc6702-551a-4991-8d27-2a0eb3bd2b1a
+    type: regular
+    task:
+      id: d3bc6702-551a-4991-8d27-2a0eb3bd2b1a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 700
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 1260,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
