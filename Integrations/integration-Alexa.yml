@@ -12,104 +12,106 @@ detaileddescription: To use this integration, simply call ```!awis-info```. !awi
 configuration:
 - display: Sensitivity threshold for configuring which domains are suspicious versus
     trusted.
-  name: Threshold
-  defaultvalue: "100000"
+  name: threshold
+  defaultvalue: "2000000"
   type: 0
-  required: false
+  required: true
 script:
   script: |
     import urllib, sys, re
     import xml.etree.ElementTree as ET
-    import collections
+    from collections import defaultdict
 
-    THRESHOLD = int(demisto.params().get('Threshold'))
 
-    def makehash():
-            return collections.defaultdict(makehash)
+    """GLOBAL VARIABLES/CONSTANTS"""
+    THRESHOLD = int(demisto.params().get('threshold'))
 
-    def awis_command():
-        url = demisto.args().get('url')
-        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%url).read()
+
+    """MAIN FUNCTIONS"""
+    def awis(domain):
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%domain).read()
         root = ET.fromstring(xml)
-        dbot_scores = []
-        dbot_score = 0
-        malicious = None
-        domain = None
-        ec = makehash()
+        return root
 
+
+    """COMMAND FUNCTIONS"""
+    def awis_command():
+        domain = demisto.args().get('domain')
+        root = awis(domain)
+        dbot_ec = defaultdict()
+        dom_ec = defaultdict()
+        # Wrapping in Try Except since when no results are found, endpoint returns 404
         try:
-            domain = root.find("SD").attrib['HOST']
+            domain_res = root.find("SD").attrib['HOST']
             rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
-
             if int(rank) > THRESHOLD:
                 dbot_score = 2
-                malicious = {
-                        'Vendor' : 'Alexa',
-                        'Description' : '{} has a poor Alexa rank'.format(url),
-                        'Rank' : rank,
-                        'URL' : url
-            }
             else:
-                dbot_score = 1
-
+                dbot_score = 0
         except:
-            rank = -1
-            dbot_score = 3
-            malicious = {
-                        'Vendor' : 'Alexa',
-                        'Description' : '{} has a poor Alexa rank'.format(url),
-                        'Rank' : rank,
-                        'URL' : url
-            }
-
-        if dbot_score > 1:
-            ec['URL']['Malicious'] = malicious
-
-        ec['URL']['Data'] = url
-        ec['Domain']['Name'] = domain
-        ec['DBotScore']['Score'] = dbot_score
-        ec['DBotScore']['Vendor'] = 'Alexa'
-        ec['DBotScore']['Rank'] = rank
-        ec['DBotScore']['URL'] = url
-
-        # ec = {
-        #     'URL': {
-        #         'Data': url
-        #     },
-        #     'Domain': {
-        #         'Name': domain
-        #     },
-        #     'DBotScore': {
-        #         'Score': dbot_score,
-        #         'Vendor': 'Alexa',
-        #         'Rank': rank,
-        #         'URL': url
-        #         }
-        # }
-
+            rank = 'Unknown'
+            dbot_score = 2
+        dom_ec['Name'] = domain
+        dbot_ec['Score'] = dbot_score
+        dbot_ec['Vendor'] = 'Alexa'
+        dbot_ec['Rank'] = rank
+        dbot_ec['Domain'] = domain
+        ec = {
+            'Domain(val.Name && val.Name == obj.Name)': dom_ec,
+            'DBotScore': dbot_ec
+        }
         demisto.results({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['markdown'],
-                    'Contents': 'The rank of {} is {}'.format(url, rank),
-                    'HumanReadable': 'The rank of {} is {}'.format(url, rank),
+                    'Contents': 'The Alexa rank of {} is {}'.format(domain, rank),
+                    'HumanReadable': 'The Alexa rank of {} is {}'.format(domain, rank),
                     'EntryContext': ec
                     })
 
 
-    if demisto.command() == 'test-module':
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'awis-info':
-        awis_command()
-        sys.exit(0)
+    """EXECUTION BLOCK"""
+    try:
+        if demisto.command() == 'test-module':
+            domain = 'google.com'
+            root = awis(domain)
+            domain_res = root.find("SD").attrib['HOST']
+            rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
+            if rank == '1':
+                demisto.results('ok')
+            else:
+                demisto.results('Alexa failed to run')
+            sys.exit(0)
+        if demisto.command() == 'domain':
+            awis_command()
+            sys.exit(0)
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
-  - name: awis-info
+  - name: domain
     arguments:
-    - name: url
+    - name: domain
       required: true
-      description: URL to search
-    description: Provides an Alexa ranking of the URL in question.
+      description: domain to search
+    outputs:
+    - contextPath: Domain.Name
+      description: The Domain being checked
+      type: string
+    - contextPath: DBotScore.Score
+      description: DBot score returned
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor reporting the score
+      type: string
+    - contextPath: DBotScore.Rank
+      description: Alexa rank as determined by Amazon
+      type: number
+    - contextPath: DBotScore.Domain
+      description: Domain being reported
+      type: string
+    description: Provides an Alexa ranking of the Domain in question.
   runonce: false
 releaseNotes: Alexa integration checks site rankings
 fromversion: 3.5.0
