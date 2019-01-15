@@ -1,0 +1,929 @@
+commonfields:
+  id: AWS - Security Hub
+  version: -1
+name: AWS - Security Hub
+display: AWS - Security Hub
+category: IT Services
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAH3dJREFUeAHtWwt8VMXVn7mP3c0L8MEzj91NNomYUgJRqkUhQBXR+qpiUfFRRdRWrUVtfeAbP221FVGrWEVaLLX1TS0CVkjwAeWTJKAIyW6S3ZAAER9AyGb33jt3vv+5yS4hCUqAfr+vvy/z+23u3JkzZ+ae15xzZsJYX+mjQB8F+ijQR4E+CvRRoI8CfRToo0AfBfoo0EeBThTgneqHXZVS8sCo0hlcsrMdZJwvCVaueoFztPz7ipKTk+NTbHugVFUTpWHbtm1fdJlOycrKcns8HjsUCsXRx/1+fw6Px2Xdtm0NnWAzsrOzB9m2vaupqenLTu3JaiAQ6BeLxbyapqWhcRee9R04kzA+n8+TFg5ryYZOlXggYHaFR3c/zDtQCGFi7U14F52GsFLGtFBWlt6/f3+xadMmA306vjkb64w3NjYS/AHLEWVwXvG4hUyyKxhn7USTLIdxvrC2qvwnB1zBYXR4s7LOT9Hct0kuR3KFp9o2JIyxHdKWb8SkmN3Q0PA1oQ9k+e51udTLLNtujZlilkdTbuGKcorNGODlckPKmS7bPlfR9NkQ0mHg/y4hxfOhcPhBDLecJRYWZuTGzbu4wn6Mb8zRFQUyZUNYZLVl2r+pa4z8meBKWIm+y/flEo2rw5nEDFSwQHpAzrngbGOwvv48vFJneq7PdydQTcO6hwEKS+GbDMt6NNIYeZ3GoHC/z/cXTVFPEEJWC1M85HYrjwO2CAgNfOvbBpc3hcPhXQ50lz9HjMH5JRO+Z1tiLdYzL1RVdjPNkz96/Dx84w0q52Nqqsr/u8vch/Wa6/VegI/+GxEajDOlZLUQLK+mKCkcXIAmP18Tqb+GJglk+/7odrsuNy1TgNJNLk3PkVgY5IEpnDPTEO9zlY3VNV2hdoZ2EI9FhXUxCPcyUGgBv3+xS9WnEtMsYe8ARKuq8Dwaj/ltwzQmhRsby6DhbinEJ25VzydYmoMKwdG6LGF9Wl1fN7KIFWkxb+vLbt11voPTtndyKdNUVU118El7BuZ+EUN5wJ+33q2qo0xh7QTCvS5d99sduFVFZXHLeiAUrrvXmajLH6XL+yG/2pY8kQZzTZ1HJpl+umTzqA0kc/qofoQKFJbfqKsaMdcwhHWWnpYyMm4aFwi8E5NAz9MGDx5MZpQRXakNsqCig5ux+I3CEo7GEQN0l3oqhGOlETNvgpBW0mAqquRj6ekd5h2hMD6VWk3LKhNtfGSbZYywhCAGMAiVAlN9BtVhfg1hyIuMmDGhzYiPg3bfAKsQp3mELZhhirkAs6NZLRe5Na2duZa9VERbvxM35Vhh2TsIn4srj/h8viGAlQoDdbF+tA/Eh1txI3YdmL0Ea4Is0rfKCTR3T+WIMVhl0tkLuC2LExOZjHfUFacv0X4EntKw7Z/G4+ZkwzJ/UN/Q8C72JpuZ6hYQs4XwQ29SMjhP7TyXo22mfLSmMfKUFYvOkrb9dYcG7rHi8auDjfVPGsL+bXKMlC6qx0SsBswZa5vxH3JhTa9trv0cDJU2Z58kYKVg/TvqMtwUrgo1hstUt3udovFpqqK4aR7TFPPrGyMvEByE82IHHgs1bPMPtc3Nn9M4yexV1A5mDtIZc4TGgaM/EBII8y3Bhob5cdu+Q0jbdPpsmYGn6tS7/OnREegCc1CvGVq/5bvEnqCUYkGgePxoZ5CUN+JZMzDl2BWhg8Jy8EDYXz/zD/W3qm794kKffzboFJCMHws6Zjgm9gCodC63UpdMS4NWwcwydhTG7ta3bXP2a7y3JYdKkhPGmpubW5sZ+yg3M2cSzPidBX7/CdgDs6A6xyTMfHJMp4piiqc0TT2FmqD5a7Wt4duoDocP2wjLp7plY9eQcjvVqdhcafdfqG6xdgVxVkGwdozb9haC0yxtL1hKDqMOHdaKwOBNXZwzB47+dC0nnzw1ZWe0+R58wLkQGgWm6R+pg933bFyxorUrbOJ9/fq/R/NGl54JSV4A8t1B7fiI92EXr16z5pV9REsM6PIsLS3VGnexU2BSvIpqV2xZvzqpHV1AnVdfdva5Lo0v0FTtaOxrFvaBFTBY2zDrJUxh+2nufuMdPwzEs21su/Rp2B+x4OoOIEWR3YS+qKjIZextfQZadxWcM9pHGwST/4SXlc1VtUfzmJfln6moygxCC8Z8bhjyqghjjnXxNDbqts/vSagctJscLqfAHyMv2SlYYL9EnZ5YrLAUxfGwKWJxWjoD9FDv0USDuW9AaG7Hd+/ErwkiNqu1Of7Offfd1yN8Am9tRVmodkP5OBB6Hf1CVavHU1ui/0DP4SWTh27dJddgP1kFs7PQtNjGwMhxz7d/RPdR0ICjoUnzYMaOtiwrCrN1Zk2k7iw4Vb/AZ0c7PlxiK+uQ/e44etPSuqf1AlXTriIKw1Fb3Sas4lC4/goo32IyvVRISBI4sb4xqs4foz74BDFpiusj2yObE/3uoqIYXK49zjhFwa4m9wmk5O4EHL7jK6q3z7CvtTe1bgzLHzVxHFY6WWHK3Q6DNqyehMXMwvpPXfzWqskHh5yWdPDLMkXsWZi8EVD5mfAKi0GXp7GGq/NHl17X03yalAXwzHOIohC+HbQHE5w/K+t4zNq+F0rmjus6trHDLyDSuASh4O6sTIRf0NBRCexCcfZBNmzYsGPdmmsBhC+DzDeEVDKN31Tg872R7/Xfhfj1eCeWlbKSxpIQaFz/TgIPPihZV4T9IbUnJScJdPCVbuYIxut4Gs419moSjYe/wmLyd0JymHr2TrK9S6WkZKbeyrYcZ1kcRJYsv7i0OHMA21JWVhbrApp8DUyZ4mbbW6dABebXVq7+A3WAJjdiHz8NpPkRXp9JAndUQJRWmFjHLYZTnJnv810Hj/YzXdMe0xDMIoZl2PsGQMN+jiGwRIdXYCodbSMsXOPn5+bkvIekynAIvmOCiZEI2c6GgH0XtaPhURGdHOYh7EmBGz+e3lHO46a8ARpeZNrWc9zml8ABU1SN/9yfk1PDpZavKQwKBbNu2Z/CGXQEtxe64kzS+U9CMJNtWHSQXuDRT0o08jj7AdU5s3vcSwtGTRgJhvx5l6jeSeYVcnscpO44xGqVjV/LL/JGjn+tsHjC2AS+zs9UIaCQTIUGJ4WAQizMFoeZ71EDj2ocvAWmeCnFgOShYm98JsXlLseo4+HMLE2YTQRrzjYHPC6KQZ34WEqnjfZgtHuoDZN5nM/DHzALxqEdFg/Hi0aM8leY2hYivEtVR3p01/upqv4cvnODaYnNtA5sBm1SaqlIf2i0oQI+CCa9jv6nLcuYb5rGO5ZpbQezj0G+rX/91q3vYzuaQ7DwI/JTdNcKj0t5GnW3Zcttccu+Bl178cM6eWKdKYlti55YqxPzA4bW32PppsGXnDt+1aI3V36IxT+BfZDiQwt1ZG9kC/ytx/JHjVdrKsqeJCaQ9snt0XkIIWYAjvaVpQiA31U522pJBSGbGIJxE0GYsy0pfgQh+Jua1n9G9YdLHGfDcaya47+E9wviyGthkstTPK51ba3GTKQIYLIVx1nruvL1bL2ZaWReyTT2C3w91shVm8nPkDB4NhSJVMEU/hrMCQYj9c/RWKxppSVMIgJkSXF8ApjZ3Xle72KEPUOFJOesXcDA9hrAvoJ3fDlfhSeLRCIV0NozwcCfYq0++ER7IbzvYR9+OmdITo7C5S0xKR+LNEU2Z2ZmZrmkPMNtGB9shPdN4xMlMGTIQFt1fS+9+dgm+OYMmbJ787O8G4SmXIEAPQ9C24Zv+LDVMp5qbGpM+C7SlPbrcK+qkcnaC8HcRfhsl71bSuVPcPgywOkgPGgrMU/nJwllt1JcXDpgr7Qfwyeeg+8kLf8HU9UnpLDmQdzHgqgrbKnfiJh7IRhzMpj9olvndzLNbcRjsSsBcz1+2YzLV2Gyfp+anrK5bW/LPaDuzwH7ma56TpOqlWEZ5iK0jcE8q8CkPKhPTmIxWNjy/tpxZ69f/5yZaDtST0qApLlcw+u2bqV9cL+875Ga45vw5GZmFghNa4HgJMMjSnFCcGktSY/6m3AcbF+PDD7Q4KlTp6oVwebbMehexJAmnthf+LWweVVY2U/B1GlQEg8YthHa/CmYhz2UzCDfAHP5DNPsFmmxF4H/UwhOIc0DuFuCG8rmF449J0NEd5+HfckLDamorix/h6zEgdZyOO0FWd4zFZf+D8uwJlBC4nBw9Xasz+cboHEliATU6tpI3QW9Hd9b+F4xOIEcpvthUP52MOAuMHEwmHgTEBlg9qvYjX6fruavM1Ka0m1h8Vis7Sdg7nXQ9ABgvoLn8RAS5MgW8WUuJMk3V6129vwE7n/DU/V6vQWKqdj12+qdcNefnX1Oiu5+KxqNlSqprqq6ujrSHNrvuhYVDpELJzbdfA+0p6CdzGJPFob2+QNaBsx/OpLnOzB+Y8eEGnLYag+nTOSVp+KEifyT/TSbNL45q1nrtDaytKQQ+ylFrxlcUnJ26i5rTx3M9PZgZdno/FGl7wGjH1lBxH4iXRjxa8D0qzDPQDB8OWfK/FH5x75dVbPzDuyrD6pM+57NrQexMY5NTXPnbvxoxecdH9mrh9/rfQC4j6+L1F+Eo7YhblX7i2WZ9yDhX56Xk3OtrSgnw7N+MFXVXgDiEwg53ILyqGFcBtfseykubSmOHt6Dd/cdCKphYUuqDYfndSxC8fv9P9NhnWCp+uMQ4DMhrLtg0j+GsAx1c+Vh7OsT0R41mHwWhwJzc7Nzr0KCZgQISnHsaCGUP8EjvkAI49raRmc/Tc/z+RbhSPBljaln2irbXBcOP0IRAOPqTVzaqaDbK61m/F4wNOof5i9UXOzXWFsJ5vkS/sBvgo11i2EBPMiR36kpfBo47oGjuBbJ918iwzVCUdWh0rI0pMOqVU29Hj7Ihd286I4PPOCjxdqDWFgOhqc5B5O3S4tkLQqLnmDFYyFo6h2wu6QNX2DysUhdvllR07wCbmZtAikI/AAct7RoW/yQTRTmbtU19QLfEF+OIpWTPC7XOJeiOvikqs2AAKWlKOqTELICJOZLY9I+HbJ9ikfV71dtabbHn3K4tPgsJFg+gIA8QZpFa0RKcoJbUechzPoIfsdsfGsAscxfybxi7Ysw9hw4Z3cjF/2aR9Ee92fmXIgI40SP5roZsJfCYn2o2iKiacpErmkXEk7g/r6mqufBAduD+HkShKcI2bjJFAEgrVZhMbkAIdWtabr7doCn67p8U+XKCEXat4HKH3OdLUIYNgaMxCGFejeORl+G4/UQLOFkhBrPAkcEmbUmCFgKchiXwkqeRPP2msHwVs8CA9v6KenvEIJEgT0KoI61qxRS0VnmIGuA4sUCPsA+W5CAo+eWypUfoX0HhOGszu29qSPNvhySjbCFn+pWlbFw0KAI6vehYX6EBoU496tDWvEHOFBYqyA2hXqkgZGb4eH/SFW0QWTITMHvJq1oE+JWyjjpTL2Y1qDqSg62GjKKG2B/l1hGbAo0+CcITotxljwJ2v6ciMfficbjz2JcreZSZ9I4RBPwTMQ0ZNRuCTZFVsDDrYYwwA8hQqvno7vWaNTWwFuWgLQhkNeatt3oitRfBW1+wLCthXBMx/izcs5DTI8wUzwm2tpWxuLicTAuqnDtJwgLfbR2xbbWKw0Ni+NxUYq8wz04fAjFpfwI3/JHfNk9trSmtM9Lf3tTOM8FeJByzz0NsxUeTrSnDRwYhSnversCSgUZ55IcMcJ1SEVL0TaDuHU477kIrC01THMzgiC/W/CZYDxCVyWCeXRM9n1knJ8RXJ0PTegP5mw2NQQZoBK0o44m37q13xeIKbcheeGjd5i8ZRYIiEsCT6Wo2g6X27MYeIYo3OWsV5FwLD2pn6XrrkqFsSEQrgxkHDMQbn2x24ytJhwopi34a/jG0b7MzGJF5adjXW+FGQ7mSRY5S4UA4sxYbkKI4+SfweSrpaadi5OqEWQaEY3PoXk8bqUcr1BwNhSnaK/hG+pVl/tN5vPvQOz8uOTWUWTWKcOG5xehpqbGusbGT2gRWF/vCpRmIBa4s3ejeoQmHAN77DmIRnJIkPBfATN2BvL/I5BQeATEMhSXegP2pk8QL1aQGQYjH69pqC+EVhW27RI/xGH89TBlX4B4THDhoql8vlaEsogImL2H3il8aYnHzoiZxtkY/yg0LwWmdBGwjSHtwYHAHdCu8XGkb2OGGBeX9qVojYOBJrhAvHFKnFlv4oWrmn4vNHAYcgFvoMNJtICOlIszIITpHeAsNzu7RImZk2B9DAgcHQ1eRfMYnJ2CHPg4yzBuAhM3RU3jVGEaP4YVeAaCl4cLDH/zDx3qTeDp/Ow1gzH4a0jl0Z2RdK7rOO/o/I56+3vHKU6iD0J8ND7+68T7oTxxiLQCTIRTYX8pdWUJnKhPkTJMR6byA2h4JQ4icDFKuQz53xzs1Zlpx7jeQqboCWg+8hkKzmSdPRvHQ6wUqc2hYNJ7tI6AN3dWhtuzDHe21uF6zey4MGYjtwxh4F8i+2RgjysOgdC4m9Xgcmm/9djKNcQs0szO39GvX78N2CI2ejTtPOCOwPH7GPu4jtwZRI+3wlKvwYDR8MjzySsnIZJcub3NEmUknNizh9M8uJ2yF1r9gqK6zw54/Y+lau7ntYyMN0OR+luxnqextn5M9SCa6V66MqM7RJcWzBvBYgOUd+7o2ol9oz/uIMHSIJ3ClUmJIda2bfAo5cno/wz5Eufoi7u1hPYPBxxwHUZR1bW4PmPC2dlId5JA5FWkPoJZ5aThhi2uA9MHwRHa5PbwTVCK/nC47oMS4YDHagORLyz051a5Nf4qzmXXYR9bRKuxTWsdHnlqatonBT7fOx7N/QekHbfgBtY83Lj4raoq1+Z7fR8NSE2tgBc+BvZ1mYoNEux1LALhoNJ+QU7+Hd4t9me2HGuMGQbkgzxthbmjwpwLJu9J010r8VsHbfRZzJrT0NSwEtdwcA9Lezjf5y9L13BxgLHBBherbGGvgWxOMlujm9G3DBbsblOI8qgZdejvTNzpT68ZDCleBiJm7JbBiYQHRApCcnNwmYz2PBDRfgBMHUR9Iqo/DqLimonyJCS5FNJqfNfbv4Fy1zCnPjB+GcEdaiFTCk6db5rsV4TD4nJBa7xtGmLM9+k9vHXr8pZYWwmoeyXSfZdb0b0l9Y2N63BgUGkKczKcolPhba5D3v2RqGlOoT2MxtVta/jAMo0Twcxl0PQzLEu+1Gabk+o/r28ObQ3fZRrxS6BhI6Gwn+Mu1knhxnA5toj3CQ57YJxwJErMtp/FVaKZtsp/R23oj2FzvhJaORcxbCgej49H0qMGDqcLElmKHPUKgElPetqVEIabQbNxUpEftNn2yVjfZ7jc9xocvpNAvxr0nS4Me47J5Hl0KSExZ+cnYHpXOtKYDZC2j0NV5RMDIycU4bYRNnQ+hyvay7hF8gEwHpXEypUnIMBzbAsODedvYcxlOHz4C5ysC3Su5W+uXBlJwvZVjjgFnA2/N1j7ZQeGSVv8GJpZfOxQfyS0oezdo4f6xkBSLoPZWarq+iPQmGPwDree/WpgyqCnWo29r0DrhyOEuuKYod7RkNb/gurTRbThw3yBlZ831beOOOWso/ofnTXp2CE5+dlD/Dt37AjHerOuPtieKXBADc4rHj8TQ2bgR+b2IyQIbo/b1mkICebCi4Rg8GZ4nkNxXncu0+UmnBevQfJiGNrfhFdbjkBoNzzQAoy9AgzNhPm+k6vKSuwhy9H2OTzO1+Fq3Io96Cs4FvPhKP0M7Y7mA/ZL7J3TcRvksEw48P2/Lz0yOFA87l5o6H1wqHAEx2uhfaeBETg2ZOkYUIFT1umKdO8W0liNNh/iwvsAvxCBJWWo6GJ48goKmLUB2ZcHbVUZhpjlN6D4Llw/Lq3+eFV1YHTpSdD2xRCYTOzlIdyxuUW1bQUXC34HDR+cluou/KZUZr43fzhuKZ+JNSHxxN+95PLL1+NaEaKk/51C8zNu9guGw/861BkLcnNPxPpldV3dx51xIDddxIU4Bl786s7tXevfzcsbFLXtk0L19Uu69tF7NyeLLtyh/S4Q/O3p500cEdpQfg68tolgZBraynCEd1KwYvXm6sp3t7lTPDDN8j3KMYO5awGD+FK9SFOVKTjf/BGQXwDGI3xRfg3NnwfYDUj1nUDMpclDFWVrwZiHIUQuupxHGltTtXop7jjMhBMxoK0tPongeioIZS5FxnE9cJ6F/kxYhudeWrCwoSCnILcn+H9Hm2TW+fi+mwg3blqODHh9C3o7D9Z9s7Cc26f7DeWmuBjh3oP7NfbwEhX8eCak48D10I0j8y7lq/hX+Vi0zhX5RkIbQpXla3CC1IgU29edz2c3rVn+FYZPDowadw609nYw5VabidvglXYqYLvklfBGp+P/lBZDo9Gwr0hB581oErwl0Yqz4hZoO6UKD3hTAXmCR7EV/ALaM5/G0YXAl15c+E+Eo3fh9Wpq+3cXxKH/lZxDcEranJZ8/z9S6cZgrZ+os3ZxJImcKzuOROaPHjccqQHsryzY07pDlavJPCyh25GmMMbAq76NYnls1I/BsapIeMpgbrfhqltdJQ0y//bcvBNPv8plWQqu3SD3yuO4O7Oq2wA0lNIV27oITquUZEhCwpjvy5+FtF1OYgz+3eRsaMHd0PJhEM73UxR+86f19c3UT8kMzHkjfAUYG/m2Oz1tNuLWr6CFb+Di1ROhcKisHc7/MwjuMaGG8ANIMiARId+mu1TYQv6F79kORzFXV/kihEjIKrHBgFkLfLBK7LpQJDyFcFBB+5PwO4LBhuSJVXvHQfzFWPJPhkGgSHhZod9faAn2fG1D/akdw3kgx3cP/J9roCwGSP94baT+KerrxuBNZWV7AyPHP4G9dBau2AzFB9WASFOx+L3czZ/sQNjjY/P65dvR8Ra0/Q7SypoNqyk1941ly7r3anAN6BZYjd8xI9ZgABqEs8DgG7ZUlYV7GoxLfBY+GiGZeArPSYBfiTjz/WBtsArw9GPY205BivElVZE3CVVdCZM3K4bjQTh8I/K9udOxPpxna+dgnt0wtc/EWlofwrDrkXDDP3XJAYTDKXAQ8e1DqI41Dof9mQA5XYh/zHnZlsZ0jC9UU1LCVkv0ftDsUZ17plma1Yo846sQuOJgOFiFe9Xpsb2tMxRNGdeOtMtfLkcEfLmg2b6CfMJYUCLRAOWSvsSLsNVUJFqLE++wf7lYR5Gm8TNh7ifgG38T8PmCuBK0vNseTIOyjuK/Au7ZGOgHny7DsxKXzE8J/ausMYH0SD6DleW446yNRvLgV/j9Ege3xXTL45vmGDXmhCsVrk4F0QW06F6c4gTB7LV5OXklNE4IG8eA7OWacPiPtbW1W5lLu50IAaKPAgNxpUg+BS1dG4wEN+uacgOEZD8n54Bzc/Y3nLPOrmmoqUvAUMYKue0dsAbWlvCWMLJoO2ExlsMvdY4KzdbYD8EsjKj778SY/Z7IsGE9+G/EfT8I2rH7wXzLC1K1t26pq/uELASY/U9YUGfubhpMeEhD8CCJpt9Bl8CoKTiIiM6FJH+XBsEbf4nxtF+EKt/Z+W1Iqive2wgY+n1rgYTy+++/X77yyit0ZOkcWwa8AdxRtuBs2H9BWwE0rQBCOinP6z+XECLjRfpgIw88GLVcCNKn1E5lc20t1ZPvTmPHH5g7DSY+2QShojTmtxakEF9Cnvg+AM7GNd6pWM+fDzyIfwDze0XnflwcnAMBTZjgzl04k8XNzU5X7MDQUIiEOFnkx1jxSHrtUYOTcL2o0L7I7FaKWy8CIV/HpDDPHAmR6FKnrxe4vg004A9MfunFP35dUlKiJ2BDkVAlrgM9DFbm0nxII34FWz8Xe9GQxA97ZZGt85Ug9gbG7ezE2Ly8vABMmiMIkAJkBvEPfR0F3+JP1HvzzDhmwBLMkxnwBZBWZGeo3L2oN+M7w2IN4PU+XuHyva9zP9bspIb3tfEiJJlW03vyQ/Z1HlqtaRefjEWMBlOvx39ETEdK8lK8k4NywtY97feqDw1z91GeNM864LV27/zyTtJmgkDc6EYoNg3zV5IFwp3dpbiCemFhYeEwgoHDdZFps404znNhXa+BYtOGe4cPdcZZ4gmAOAwHf+tggc4g4Rmem5uP+g+6r6B7i63Qf/rJFPLmqXf9+vVRPF6Hn/Ac1lRRHamu7z7qIFs4r4XJLaFv6RDqGZ1H4vv65fn9l1MbwrUxeEy0VfUf9H7EGAyNyHMQ6tpKejpF4e11wQKJpiPxJG8Xzu+FkNwr8n25u+H5boIJbgDuodylgskomvI4iLJJxIxwwOevwxHTb3HMN626uroFMC+jr8WQbbXMsOqwd4pBw4a84IzjbC4INh3Cs90U9l9hif7utH/LH/yraAVErYVi8QQo/POXwPQRuAywINF2KE/u0v4OwTOstnho9xdfViPL5ziSSVy4y4245+pAjr8Bd6fXoH8B/I5Qsv9IVApHT5yYN3KchAftnOwQTnjhdzhtxaWlR2KOrjjIFFPIUJibe8KBtgFoaBY5XqW+0m4xNWkEfvS/tfsV+m/CgoKCzP0aD+KFLMWInBHJg5YCX8Fx8AF2QeuSmb2DQHNAkKLc3By6unwggOF+v7fz/ATnmLcDDehtO5yq5TB9pyOMWE1jUcd/GvJlyIYl48He4vxPhc/3+8fhYtzPEauHasN1SaH/3/4e5UhOmDVAORf/sPIQ9rgB9KM6Qq7zj+Qc/ym4kDuYhdCpSnPrc/5T1ty3zj4K9FGgjwJ9FOijQB8FjhwF/gfFPN0jW/rSyQAAAABJRU5ErkJggg==
+description: Amazon Web Services Security Hub Service .
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Security Hub Severity level
+  name: sh_severity
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Additional Filters
+  name: additionalFilters
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Archive Findings after fetch
+  name: archiveFindings
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    import boto3
+    import json
+    import datetime
+
+    AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
+    AWS_SH_SEVERITY = demisto.params()['sh_severity']
+
+
+    def aws_session(service='securityhub',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
+
+    def parse_finding_ids(finding_ids):
+        id_list = finding_ids.replace(" ", "")
+        findingsids = id_list.split(",")
+        return findingsids
+
+    def parse_filter_field(filter_str):
+        filters = {}
+        regex = re.compile(r'name=([\w\d_:.-]+),value=(.*),comparison=([ /\w\d@_,.\*-]+)', flags=re.I)
+        for f in filter_str.split(';'):
+            match = regex.match(f)
+            if match is None:
+                demisto.log('could not parse filter: %s' % (f, ))
+                continue
+
+            filters.update({
+                match.group(1):[{
+                    'Value' : match.group(2),
+                    'Comparison' : match.group(3).upper()
+                    }]
+                })
+
+        return filters
+
+    class DatetimeEncoder(json.JSONEncoder):
+      def default(self, obj):
+        if isinstance (obj, datetime.datetime):
+            return obj.strftime ('%Y-%m-%dT%H:%M:%S')
+        elif isinstance (obj, datetime.date):
+            return obj.strftime ('%Y-%m-%d')
+        elif isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+    def create_entry(title,data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+    def raise_error(error):
+        return {
+            'Type' : entryTypes['error'],
+            'ContentsFormat' : formats['text'],
+            'Contents' : str(error)
+        }
+
+    def get_findings(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            kwargs = {}
+            if args.get('filters'):
+                kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
+            response = client.get_findings(**kwargs)
+            for finding in response['Findings']:
+                data.append({
+                    'Id': finding['Id'],
+                    'ProductArn': finding['ProductArn'],
+                    'GeneratorId': finding['GeneratorId'],
+                    'AwsAccountId': finding['AwsAccountId'],
+                    'CreatedAt': finding['CreatedAt'],
+                    'UpdatedAt': finding['UpdatedAt'],
+                    'SeverityNormalized': finding['Severity']['Normalized'],
+                    'Types': finding['Types'],
+
+                })
+            if 'SequenceNumber' in response: data.update({'SequenceNumber': response['SequenceNumber']})
+            if 'MD5OfMessageBody' in response: data.update({'MD5OfMessageBody': response['MD5OfMessageBody']})
+            if 'MD5OfMessageAttributes' in response: data.update({'MD5OfMessageAttributes': response['MD5OfMessageAttributes']})
+
+            ec = {'AWS.SecurityHub.Findings(obj.Id === val.Id)': response['Findings']}
+            return  create_entry('AWS Security Hub Findings',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+
+    def get_master_account(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            obj = vars(client._client_config)
+            response = client.get_master_account()
+            master = response['Master']
+            data = ({
+                'AccountId': invite['AccountId'],
+                'InvitationId': invite['InvitationId'],
+                'InvitedAt': datetime.datetime.strftime(invite['InvitedAt'], '%Y-%m-%dT%H:%M:%SZ'),
+                'MemberStatus': invite['MemberStatus'],
+                'Region': obj['_user_provided_options']['region_name'],
+            })
+
+            ec = {'AWS.SecurityHub.MasterAccount(obj.AccountId === val.AccountId)': data}
+            return  create_entry('AWS Security Hub Master Account',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_members(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            obj = vars(client._client_config)
+            data = []
+            kwargs = {'OnlyAssociated':True if args.get('onlyAssociated') == 'True'  else False,}
+            response = client.list_members()
+            for member in response['Members']:
+                data.append({
+                    'AccountId': member['AccountId'],
+                    'Email': member['Email'],
+                    'MasterId': member['MasterId'],
+                    'MemberStatus': member['MemberStatus'],
+                    'InvitedAt': datetime.datetime.strftime(invite['InvitedAt'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'UpdatedAt': datetime.datetime.strftime(invite['UpdatedAt'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'Region': obj['_user_provided_options']['region_name'],
+                })
+
+            ec = {'AWS.SecurityHub.MemberAccounts(obj.AccountId === val.AccountId)': data}
+            return  create_entry('AWS Security Hub Member Accounts',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def enable_security_hub(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+
+            response = client.enable_security_hub()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Security Hub is now enabled"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def disable_security_hub(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+
+            response = client.disable_security_hub()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Security Hub is now disabled"
+
+        except Exception as e:
+            return raise_error(e)
+
+
+    def enable_import_findings_for_product(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {'ProductArn':args.get('productArn')}
+            response = client.enable_import_findings_for_product(**kwargs)
+
+            data = ({
+                'ProductSubscriptionArn': response['ProductSubscriptionArn'],
+            })
+
+            ec = {'AWS.SecurityHub.ProductSubscriptions': data}
+            return  create_entry('AWS Security Hub Enable import findings for product',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def disable_import_findings_for_product(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {'ProductSubscriptionArn':args.get('productSubscriptionArn')}
+            response = client.disable_import_findings_for_product()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Security Hub product subscription is now disabled"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_enabled_products_for_import(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+
+            response = client.list_enabled_products_for_import()
+            for subscription in response['ProductSubscriptions']:
+                data.append({
+                    'ProductSubscriptionArn': response['ProductSubscriptionArn'],
+                })
+
+            ec = {'AWS.SecurityHub.ProductSubscriptions(obj.ProductSubscriptionArn === val.ProductSubscriptionArn)': data}
+            return  create_entry('AWS Security Hub Enabled products for import',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def update_finding(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {
+                'Filters':{
+                        'Id': [
+                            {
+                                'Value': args.get('findingId'),
+                                'Comparison': 'EQUALS'
+                            },
+                        ]
+                },
+                'RecordState':args.get('recordState'),
+            }
+            if args.get('note') and args.get('updatedBy'):
+                kwargs.update({'Note':{'Text': args.get('note'),'UpdatedBy': args.get('updatedBy')}})
+
+            response = client.update_findings(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Finding was archived"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def severity_mapping(severity):
+        if severity >= 1 and severity <= 30:
+            demistoSevirity = 1
+        elif severity >= 31 and severity <= 70:
+            demistoSevirity = 2
+        elif severity >= 71 and severity <= 100:
+            demistoSevirity = 3
+        else:
+            demistoSevirity = 0
+
+        return demistoSevirity
+
+    def sh_severity_mapping(severity):
+        if severity == 'Low':
+            shSevirity = 1
+        elif severity == 'Medium':
+            shSevirity = 31
+        elif severity == 'High':
+            shSevirity = 71
+        else:
+            shSevirity = 0
+
+        return shSevirity
+
+
+    def parse_incident_from_finding(finding):
+        incident = {}
+        incident['occurred'] = finding['CreatedAt']
+        incident['severity'] = severity_mapping(finding['Severity']['Normalized'])
+        incident['rawJSON'] = json.dumps(finding)
+        return incident
+
+    def parse_finding_ids_for_archive(finding_ids):
+        findingIdsForArchive = []
+        id_list = finding_ids.replace(" ", "")
+        findingsids = id_list.split(",")
+        for id in findingsids:
+            findingIdsForArchive.append({
+                'Value': id,
+                'Comparison': 'EQUALS'
+            })
+        return findingIdsForArchive
+
+    def fetch_incidents():
+        try:
+            client = aws_session()
+            incidents = []
+
+            last_run = demisto.getLastRun().get('lastRun', None)
+            if last_run is None:
+                time = datetime.datetime.utcnow() - datetime.timedelta(days=15)
+                last_run = time.isoformat("T") + "Z"
+
+            d = datetime.datetime.utcnow() # <-- get time in UTC
+
+            filters = {
+                "CreatedAt": [{
+                    "Start": str(last_run),
+                    "End": str(d.isoformat("T") + "Z")
+                }],
+            "SeverityNormalized": [{
+                "Gte": sh_severity_mapping(AWS_SH_SEVERITY),
+            }]
+            }
+            if demisto.params()['additionalFilters'] is not None:
+                filters.update(parse_filter_field(demisto.params()['additionalFilters']))
+
+            response = client.get_findings(Filters=filters)
+            for finding in response['Findings']:
+                incident = parse_incident_from_finding(finding)
+                incidents.append(incident)
+
+            demisto.setLastRun({'lastRun': d.isoformat("T") + "Z"})
+            demisto.incidents(incidents)
+
+            if archiveFindings:
+                kwargs = {
+                    'Filters':{
+                            'Id': parse_finding_ids_for_archive(incidents['Id'])
+                    },
+                    'RecordState': 'ARCHIVED',
+                    'Note':{
+                        'Text': 'Archived by Demisto',
+                        'UpdatedBy': 'Demisto'
+                    }
+                }
+
+                response = client.update_findings(**kwargs)
+
+        except Exception as e:
+            return raise_error(e)
+
+
+    def test_function():
+        try:
+            client = aws_session()
+            response = client.get_findings()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'ok'
+
+        except Exception as e:
+            return raise_error(e)
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        result = test_function()
+
+    if demisto.command() == 'aws-securityhub-get-findings':
+        result = get_findings(demisto.args())
+
+    if demisto.command() == 'aws-securityhub-get-master-account':
+        result = get_master_account(demisto.args())
+
+    if demisto.command() == 'aws-securityhub-list-members':
+        result = list_members(demisto.args())
+
+    if demisto.command() == 'aws-securityhub-enable-security-hub':
+        result = enable_security_hub(demisto.args())
+
+    if demisto.command() == 'aws-securityhub-disable-security-hub':
+        result = disable_security_hub(demisto.args())
+
+    if demisto.command() == 'aws-securityhub-update-finding':
+        result = update_finding(demisto.args())
+
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+        sys.exit(0)
+
+    demisto.results(result)
+    sys.exit(0)
+
+  type: python
+  commands:
+  - name: aws-securityhub-get-findings
+    arguments:
+    - name: filters
+      description: The filter to use. See documentation for options.
+    outputs:
+    - contextPath: AWS.SecurityHub.Findings.SchemaVersion
+      description: The schema version for which a finding is formatted.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Id
+      description: The security findings provider-specific identifier for a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ProductArn
+      description: The ARN generated by Security Hub that uniquely identifies a third-party
+        company (security findings provider) once this provider's product (solution
+        that generates findings) is registered with Security Hub.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.GeneratorId
+      description: This is the identifier for the solution-specific component (a discrete
+        unit of logic) that generated a finding. In various security findings provider's
+        solutions, this generator can be called a rule, a check, a detector, a plug-in,
+        etc.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.AwsAccountId
+      description: The AWS account ID in which a finding is generated.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Types
+      description: One or more finding types in the format of 'namespace/category/classifier'
+        that classify a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.FirstObservedAt
+      description: An ISO8601-formatted timestamp that indicates when the potential
+        security issue captured by a finding was first observed by the security findings
+        provider.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.LastObservedAt
+      description: An ISO8601-formatted timestamp that indicates when the potential
+        security issue captured by a finding was most recently observed by the security
+        findings provider.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.CreatedAt
+      description: An ISO8601-formatted timestamp that indicates when the potential
+        security issue captured by a finding was created by the security findings
+        provider.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.UpdatedAt
+      description: An ISO8601-formatted timestamp that indicates when the finding
+        record was last updated by the security findings provider.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Severity.Product
+      description: The native severity as defined by the security findings provider's
+        solution that generated the finding.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Severity.Normalized
+      description: The normalized severity of a finding.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Confidence
+      description: A finding's confidence. Confidence is defined as the likelihood
+        that a finding accurately identifies the behavior or issue that it was intended
+        to identify. Confidence is scored on a 0-100 basis using a ratio scale. 0
+        equates zero percent confidence and 100 equates to 100 percent confidence.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Criticality
+      description: The level of importance assigned to the resources associated with
+        the finding. A score of 0 means the underlying resources have no criticality,
+        and a score of 100 is reserved for the most critical resources.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Title
+      description: A finding's title.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Description
+      description: A finding's description.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Remediation.Recommendation.Text
+      description: The recommendation of what to do about the issue described in a
+        finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Remediation.Recommendation.Url
+      description: A URL to link to general remediation information for the finding
+        type of a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.SourceUrl
+      description: A URL that links to a page about the current finding in the security
+        findings provider's solution.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ProductFields
+      description: A data type where security findings providers can include additional
+        solution-specific details that are not part of the defined AwsSecurityFinding
+        format.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.UserDefinedFields
+      description: A list of name/value string pairs associated with the finding.
+        These are custom, user-defined fields added to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Malware.Name
+      description: The name of the malware that was observed.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Malware.Type
+      description: The type of the malware that was observed.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Malware.Path
+      description: The filesystem path of the malware that was observed.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Malware.State
+      description: The state of the malware that was observed.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.Direction
+      description: Indicates the direction of network traffic associated with a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.Protocol
+      description: The protocol of network-related information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.SourceIpV4
+      description: The source IPv4 address of network-related information about a
+        finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.SourceIpV6
+      description: The source IPv6 address of network-related information about a
+        finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.SourcePort
+      description: The source port of network-related information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.SourceDomain
+      description: The source domain of network-related information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.SourceMac
+      description: he source media access control (MAC) address of network-related
+        information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.DestinationIpV4
+      description: The destination IPv4 address of network-related information about
+        a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.DestinationIpV6
+      description: The destination IPv6 address of network-related information about
+        a finding.
+      type: string
+    - contextPath: 'AWS.SecurityHub.Findings.Network.DestinationPort '
+      description: The destination port of network-related information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Network.DestinationDomain
+      description: The destination domain of network-related information about a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Process.Name
+      description: The name of the process.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Process.Path
+      description: The path to the process executable.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Process.Pid
+      description: The process ID.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Process.ParentPid
+      description: The parent process ID.
+      type: number
+    - contextPath: AWS.SecurityHub.Findings.Process.LaunchedAt
+      description: The date/time that the process was launched.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Process.TerminatedAt
+      description: The date/time that the process was terminated.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ThreatIntelIndicators.Type
+      description: The type of a threat intel indicator.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ThreatIntelIndicators.Value
+      description: The value of a threat intel indicator.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ThreatIntelIndicators.Category
+      description: The category of a threat intel indicator.
+      type: string
+    - contextPath: 'AWS.SecurityHub.Findings.ThreatIntelIndicators.LastObservedAt '
+      description: The date/time of the last observation of a threat intel indicator.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ThreatIntelIndicators.Source
+      description: The source of the threat intel.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.ThreatIntelIndicators.SourceUrl
+      description: The URL for more details from the source of the threat intel.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Type
+      description: Specifies the type of the resource for which details are provided.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Id
+      description: The canonical identifier for the given resource type.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Partition
+      description: The canonical AWS partition name to which the region is assigned.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Region
+      description: The canonical AWS external region name where this resource is located.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Tags
+      description: A list of AWS tags associated with a resource at the time the finding
+        was processed.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.Type
+      description: The instance type of the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.ImageId
+      description: The Amazon Machine Image (AMI) ID of the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.IpV4Addresses
+      description: The IPv4 addresses associated with the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.IpV6Addresses
+      description: The IPv6 addresses associated with the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.KeyName
+      description: The key name associated with the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.IamInstanceProfileArn
+      description: The IAM profile ARN of the instance.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.VpcId
+      description: The identifier of the VPC in which the instance was launched.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.SubnetId
+      description: The identifier of the subnet in which the instance was launched.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsEc2Instance.LaunchedAt
+      description: The date/time the instance was launched.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsS3Bucket.OwnerId
+      description: The canonical user ID of the owner of the S3 bucket.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsS3Bucket.OwnerName
+      description: The display name of the owner of the S3 bucket.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsIamAccessKey.UserName
+      description: The user associated with the IAM access key related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsIamAccessKey.Status
+      description: The status of the IAM access key related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.AwsIamAccessKey.CreatedAt
+      description: The creation date/time of the IAM access key related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.Container.Name
+      description: The name of the container related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.Container.ImageId
+      description: The identifier of the image related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.Container.ImageName
+      description: The name of the image related to a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.Container.LaunchedAt
+      description: The date/time that the container was started.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Resources.Details.Other
+      description: The details of a resource that does not have a specific sub-field
+        for the resource type defined.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Compliance.Status
+      description: Indicates the result of a compliance check.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.VerificationState
+      description: Indicates the veracity of a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.WorkflowState
+      description: The workflow state of a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.RecordState
+      description: The record state of a finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.RelatedFindings.ProductArn
+      description: The ARN of the solution that generated a related finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.RelatedFindings.Id
+      description: The solution-generated identifier for a related finding.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Note.Text
+      description: The text of a note.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Note.UpdatedBy
+      description: The principal that created a note.
+      type: string
+    - contextPath: AWS.SecurityHub.Findings.Note.UpdatedAt
+      description: The timestamp of when the note was updated.
+      type: string
+    description: Lists and describes Security Hub-aggregated findings that are specified
+      by filter attributes.
+  - name: aws-securityhub-get-master-account
+    arguments: []
+    outputs:
+    - contextPath: AWS.SecurityHub.MasterAccount.AccountId
+      description: The account ID of the master Security Hub account who sent the
+        invitation.
+      type: string
+    - contextPath: AWS.SecurityHub.MasterAccount.InvitationId
+      description: The ID of the invitation sent by the master Security Hub account.
+      type: string
+    - contextPath: AWS.SecurityHub.MasterAccount.InvitedAt
+      description: The timestamp of when the invitation was sent.
+      type: date
+    - contextPath: AWS.SecurityHub.MasterAccount.MemberStatus
+      description: The current relationship status between the inviter and invitee
+        accounts.
+      type: string
+    - contextPath: AWS.SecurityHub.MasterAccount.Region
+      description: The AWS Region.
+      type: string
+    description: Provides the details for the Security Hub master account to the current
+      member account.
+  - name: aws-securityhub-list-members
+    arguments:
+    - name: onlyAssociated
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies what member accounts the response includes based on their
+        relationship status with the master account. The default value is TRUE. If
+        onlyAssociated is set to TRUE, the response includes member accounts whose
+        relationship status with the master is set to ENABLED or DISABLED. If onlyAssociated
+        is set to FALSE, the response includes all existing member accounts.
+    outputs:
+    - contextPath: AWS.SecurityHub.MemberAccounts.AccountId
+      description: The AWS account ID of a Security Hub member account.
+      type: string
+    - contextPath: AWS.SecurityHub.MemberAccounts.Email
+      description: The email of a Security Hub member account.
+      type: string
+    - contextPath: AWS.SecurityHub.MemberAccounts.MasterId
+      description: The AWS account ID of the master Security Hub account to this member
+        account.
+      type: string
+    - contextPath: AWS.SecurityHub.MemberAccounts.MemberStatus
+      description: The status of the relationship between the member account and its
+        master account.
+      type: string
+    - contextPath: AWS.SecurityHub.MemberAccounts.InvitedAt
+      description: Time stamp at which the member account was invited to Security
+        Hub.
+      type: date
+    - contextPath: AWS.SecurityHub.MemberAccounts.UpdatedAt
+      description: Time stamp at which this member account was updated.
+      type: date
+    - contextPath: AWS.SecurityHub.MemberAccounts.Region
+      description: The AWS Region
+      type: string
+    description: Lists details about all member accounts for the current Security
+      Hub master account.
+  - name: aws-securityhub-enable-security-hub
+    arguments: []
+    description: Enables the AWS Security Hub service.
+    execution: true
+  - name: aws-securityhub-disable-security-hub
+    arguments: []
+    description: Disables the AWS Security Hub Service.
+    execution: true
+  - name: aws-securityhub-enable-import-findings-for-product
+    arguments:
+    - name: productArn
+      required: true
+      description: The ARN of the product that generates findings that you want to
+        import into Security Hub.
+    outputs:
+    - contextPath: AWS.SecurityHub.ProductSubscriptions.ProductSubscriptionArn
+      description: The ARN of a resource that represents your subscription to the
+        product that generates the findings that you want to import into Security
+        Hub.
+      type: string
+    description: Enables you to import findings generated by integrated third-party
+      providers into Security Hub.
+    execution: true
+  - name: aws-securityhub-disable-import-findings-for-product
+    arguments:
+    - name: productSubscriptionArn
+      required: true
+      description: The ARN of a resource that represents your subscription to a supported
+        product.
+    description: Stops you from being able to import findings generated by integrated
+      third-party providers into Security Hub.
+    execution: true
+  - name: aws-securityhub-list-enabled-products-for-import
+    arguments: []
+    outputs:
+    - contextPath: AWS.SecurityHub.ProductSubscriptions.ProductSubscriptionArn
+      description: A list of ARNs for the resources that represent your subscriptions
+        to products.
+      type: string
+    description: Lists all Security Hub-integrated third-party findings providers.
+  - name: aws-securityhub-update-finding
+    arguments:
+    - name: findingId
+      required: true
+      description: The security hub finding id.
+    - name: recordState
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - ARCHIVED
+      description: The desired record  state
+    - name: note
+      description: add a note, must be used with updatedBy argument.
+    - name: updatedBy
+      description: The principal that updated the note.
+    description: Updates the AWS Security Hub-aggregated findings Record state.
+    execution: true
+  dockerimage: demisto/boto3:1.9.55
+  isfetch: true
+  runonce: false
+tests:
+  - No Tests

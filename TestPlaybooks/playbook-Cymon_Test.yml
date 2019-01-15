@@ -1,0 +1,1357 @@
+id: playbook-Cymon_Test
+version: -1
+name: playbook-Cymon_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9a1d5dd2-4234-4a44-83a6-f0699a47d6f5
+    type: start
+    task:
+      id: 9a1d5dd2-4234-4a44-83a6-f0699a47d6f5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 00ee1074-8df4-4fdf-8973-5363a5b7a3e4
+    type: title
+    task:
+      id: 00ee1074-8df4-4fdf-8973-5363a5b7a3e4
+      version: -1
+      name: Test Existent IP Command
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 2a4413e6-c422-42ef-8e5b-64f009657cce
+    type: regular
+    task:
+      id: 2a4413e6-c422-42ef-8e5b-64f009657cce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: b265fc6e-844a-462c-817b-91e5bd5efc15
+    type: regular
+    task:
+      id: b265fc6e-844a-462c-817b-91e5bd5efc15
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: Cymon|||ip
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "4"
+        - "5"
+        - "7"
+        - "34"
+    scriptarguments:
+      execution-timeout:
+        simple: "60"
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: e380d504-92b2-4d81-860e-a192864376bb
+    type: condition
+    task:
+      id: e380d504-92b2-4d81-860e-a192864376bb
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "6"
+    scriptarguments:
+      string:
+        simple: ${IP.Address}
+      substring:
+        simple: 8.8.8.8
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 67698dc7-2ea2-4b43-8c13-1fbc13f68d57
+    type: condition
+    task:
+      id: 67698dc7-2ea2-4b43-8c13-1fbc13f68d57
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "6"
+    scriptarguments:
+      string:
+        simple: ${IP.Malicious.Vendor}
+      substring:
+        simple: Cymon
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 90d1fdcf-380c-4c7c-8131-7a4ed023ddee
+    type: title
+    task:
+      id: 90d1fdcf-380c-4c7c-8131-7a4ed023ddee
+      version: -1
+      name: Test Non-Existent IP Command
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: f24373b9-27f0-4f90-86fd-92b259f9f108
+    type: regular
+    task:
+      id: f24373b9-27f0-4f90-86fd-92b259f9f108
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ASN, Geo.Country, Malicious.Description
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 4e262032-04b4-4479-8e73-25855cb8a86a
+    type: regular
+    task:
+      id: 4e262032-04b4-4479-8e73-25855cb8a86a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 4362fcf1-2965-44a3-8615-0d1f82023cac
+    type: regular
+    task:
+      id: 4362fcf1-2965-44a3-8615-0d1f82023cac
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: Cymon|||ip
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "10"
+    scriptarguments:
+      execution-timeout:
+        simple: "60"
+      fullResponse: {}
+      ip:
+        simple: 18.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 0949d038-b3ee-4a09-842b-ecee13e55189
+    type: condition
+    task:
+      id: 0949d038-b3ee-4a09-842b-ecee13e55189
+      version: -1
+      name: Verify Context is Empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "11"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotExists
+              left:
+                value:
+                  complex:
+                    root: IP
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 23907805-43f6-426b-8ca5-8f8a8c8ed01f
+    type: title
+    task:
+      id: 23907805-43f6-426b-8ca5-8f8a8c8ed01f
+      version: -1
+      name: Test IP Command with full_response = true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 2f827ee1-6061-4861-8b7b-9e9125026df2
+    type: regular
+    task:
+      id: 2f827ee1-6061-4861-8b7b-9e9125026df2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: cb6723f5-8970-4d6d-86fa-1d454a59094f
+    type: regular
+    task:
+      id: cb6723f5-8970-4d6d-86fa-1d454a59094f
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: Cymon|||ip
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "16"
+        - "14"
+        - "15"
+    scriptarguments:
+      execution-timeout:
+        simple: "60"
+      fullResponse:
+        simple: "true"
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: d856a0c6-1b55-43f0-8157-4464d0ef55c1
+    type: regular
+    task:
+      id: d856a0c6-1b55-43f0-8157-4464d0ef55c1
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ASN, Geo.Country, Malicious.Description
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: b542ea3d-9b4a-4cdd-859c-20ea7b70eaac
+    type: condition
+    task:
+      id: b542ea3d-9b4a-4cdd-859c-20ea7b70eaac
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "17"
+    scriptarguments:
+      string:
+        simple: ${IP.Malicious.Vendor}
+      substring:
+        simple: Cymon
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 469df6b8-412e-4c3c-8337-6d6127aa664f
+    type: condition
+    task:
+      id: 469df6b8-412e-4c3c-8337-6d6127aa664f
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "17"
+    scriptarguments:
+      string:
+        simple: ${IP.Address}
+      substring:
+        simple: 8.8.8.8
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 5d282a63-7b9b-4688-8128-48ec1ed80f0b
+    type: title
+    task:
+      id: 5d282a63-7b9b-4688-8128-48ec1ed80f0b
+      version: -1
+      name: Test IP Command with Non-Valid IP
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: b08bba65-5d01-4bb8-89c5-d954e8ef03f2
+    type: regular
+    task:
+      id: b08bba65-5d01-4bb8-89c5-d954e8ef03f2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 223e939f-9999-4b32-86a9-48e52386bb28
+    type: regular
+    task:
+      id: 223e939f-9999-4b32-86a9-48e52386bb28
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: Cymon|||ip
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "22"
+    scriptarguments:
+      execution-timeout:
+        simple: "60"
+      fullResponse:
+        simple: "true"
+      ip:
+        simple: 18.8.8.8iyt
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 382c8c23-fe6e-4f97-8b85-7c998c0c1e81
+    type: title
+    task:
+      id: 382c8c23-fe6e-4f97-8b85-7c998c0c1e81
+      version: -1
+      name: Test Domain Command with None-Valid Domain
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: e01b9048-0450-4580-800d-4c891f341235
+    type: regular
+    task:
+      id: e01b9048-0450-4580-800d-4c891f341235
+      version: -1
+      name: ValidateErrorExistence
+      scriptName: ValidateErrorExistence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 869243a7-de7e-434e-8880-97c6ea44d790
+    type: regular
+    task:
+      id: 869243a7-de7e-434e-8880-97c6ea44d790
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: cb96b17f-f954-431b-89d8-0f3792f6bfea
+    type: regular
+    task:
+      id: cb96b17f-f954-431b-89d8-0f3792f6bfea
+      version: -1
+      name: domain
+      description: Retrieves a report on a given domain
+      script: Cymon|||domain
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "25"
+    scriptarguments:
+      domain:
+        simple: asdfd23rf.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: f1cd39e0-ca4f-41d4-8c11-208c696669fa
+    type: condition
+    task:
+      id: f1cd39e0-ca4f-41d4-8c11-208c696669fa
+      version: -1
+      name: Verify Context is Empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "26"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotExists
+              left:
+                value:
+                  complex:
+                    root: Domain
+                iscontext: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: Cymon.Domain
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3615
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 859644fd-8cd2-4070-88b3-72bc9856e4fb
+    type: title
+    task:
+      id: 859644fd-8cd2-4070-88b3-72bc9856e4fb
+      version: -1
+      name: Test Domain Command with Valid Domain
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3795
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: c32d3c2d-5efa-491c-81ef-36a5b484cd1b
+    type: regular
+    task:
+      id: c32d3c2d-5efa-491c-81ef-36a5b484cd1b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3930
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 08853c7e-b00f-41e3-8ad3-d4cfb4a6e351
+    type: regular
+    task:
+      id: 08853c7e-b00f-41e3-8ad3-d4cfb4a6e351
+      version: -1
+      name: domain
+      description: Retrieves a report on a given domain
+      script: Cymon|||domain
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "30"
+        - "31"
+        - "32"
+        - "33"
+    scriptarguments:
+      domain:
+        simple: google.com
+      execution-timeout:
+        simple: "60"
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: df6497aa-f7ff-4113-85ed-818b5e8a0460
+    type: title
+    task:
+      id: df6497aa-f7ff-4113-85ed-818b5e8a0460
+      version: -1
+      name: Test Domain Command with full_response = true
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4520
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 531d96db-3762-4e91-8867-7e0cdc589c93
+    type: condition
+    task:
+      id: 531d96db-3762-4e91-8867-7e0cdc589c93
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "29"
+    scriptarguments:
+      string:
+        simple: ${Domain.Name}
+      substring:
+        simple: google.com
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: 394a0ca9-7bcd-43ba-880e-04c0d8487254
+    type: condition
+    task:
+      id: 394a0ca9-7bcd-43ba-880e-04c0d8487254
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "29"
+    scriptarguments:
+      string:
+        simple: ${Domain.Malicious.Vendor}
+      substring:
+        simple: Cymon
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: 9d21e4d5-ca0e-4803-85bd-1f3e5c8ed299
+    type: regular
+    task:
+      id: 9d21e4d5-ca0e-4803-85bd-1f3e5c8ed299
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "29"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title,
+          Domain.Activities.Hostname, \nDomain.Activities.IP"
+      path:
+        simple: Cymon
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 236bafdb-8d17-4cdc-8aca-bb74054a526f
+    type: regular
+    task:
+      id: 236bafdb-8d17-4cdc-8aca-bb74054a526f
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "29"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Malicious.Description
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: d83a0a79-e3a9-4157-8cba-2f2d5d9abbee
+    type: regular
+    task:
+      id: d83a0a79-e3a9-4157-8cba-2f2d5d9abbee
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: IP.Domains
+      path:
+        simple: Cymon
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 2f652326-b0f6-46d6-897a-35b2a4dce481
+    type: regular
+    task:
+      id: 2f652326-b0f6-46d6-897a-35b2a4dce481
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 44e7e61d-7d64-4425-8bdb-7e7dc0c7b786
+    type: regular
+    task:
+      id: 44e7e61d-7d64-4425-8bdb-7e7dc0c7b786
+      version: -1
+      name: domain
+      description: Retrieves a report on a given domain
+      script: Cymon|||domain
+      type: regular
+      iscommand: true
+      brand: Cymon
+    nexttasks:
+      '#none#':
+        - "38"
+        - "39"
+        - "40"
+        - "37"
+    scriptarguments:
+      domain:
+        simple: google.com
+      execution-timeout:
+        simple: "60"
+      fullResponse:
+        simple: "true"
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: fd22df77-3f1f-4b07-8d4a-94fd624aba61
+    type: condition
+    task:
+      id: fd22df77-3f1f-4b07-8d4a-94fd624aba61
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "41"
+    scriptarguments:
+      string:
+        simple: ${Domain.Malicious.Vendor}
+      substring:
+        simple: Cymon
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+  "38":
+    id: "38"
+    taskid: a2f24ba8-4dfc-4609-85d3-a4e2e980b1c2
+    type: condition
+    task:
+      id: a2f24ba8-4dfc-4609-85d3-a4e2e980b1c2
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "41"
+    scriptarguments:
+      string:
+        simple: ${Domain.Name}
+      substring:
+        simple: google.com
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: c4f7d873-4ae6-4628-845d-24162bc363f5
+    type: regular
+    task:
+      id: c4f7d873-4ae6-4628-845d-24162bc363f5
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "41"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: "Domain.Activities.Tags, Domain.Activities.Time, Domain.Activities.Title,
+          Domain.Activities.Hostname, \nDomain.Activities.IP"
+      path:
+        simple: Cymon
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: 23b60bfa-8cb8-4e46-8bda-356c22ca9f54
+    type: regular
+    task:
+      id: 23b60bfa-8cb8-4e46-8bda-356c22ca9f54
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "41"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Malicious.Description
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: 7eac3ee3-971d-436f-8e49-94965542d25b
+    type: title
+    task:
+      id: 7eac3ee3-971d-436f-8e49-94965542d25b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 5180
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5195,
+        "width": 1790,
+        "x": -250,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

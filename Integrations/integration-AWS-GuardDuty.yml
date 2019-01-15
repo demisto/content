@@ -1329,3 +1329,5 @@ script:
   dockerimage: demisto/boto3
   isfetch: true
   runonce: false
+tests:
+  - No test

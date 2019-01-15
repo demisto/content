@@ -1,0 +1,883 @@
+commonfields:
+  id: Exabeam
+  version: -1
+name: Exabeam
+display: Exabeam
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: Exabeam user behavior integration
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    from datetime import datetime, timedelta
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBALS '''
+    URL = demisto.params()['url'']
+    if URL[-1] != '/':
+        URL += '/'
+    URL_LOGIN = URL + 'api/'
+    URL_UBA = URL + 'uba/api/'
+    SESSION = requests.session()
+    SESSION.headers.update({'Accept': 'application/json'})
+    if demisto.params()['insecure']:
+        SESSION.verify = False
+
+    ''' HELPERS '''
+    def convert_unix_to_date(d):
+        ''' Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS '''
+        if d:
+            dt = datetime.utcfromtimestamp(d / 1000)
+            return dt.strftime('%m/%d/%Y %H:%M:%S')
+        return 'N/A'
+
+    def convert_date_to_unix(d):
+        ''' Convert a given date to millis since epoch '''
+        return int((d - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+
+    def login():
+        ''' Login using the credentials and store the cookie '''
+        http_request('POST', URL_LOGIN + 'auth/login', data={
+            'username': demisto.params()['credentials']['identifier'],
+            'password': demisto.params()['credentials']['password']
+        })
+
+    def logout():
+        ''' Logout from the session '''
+        http_request('GET', URL_LOGIN + 'auth/logout', None)
+
+    def http_request(method, path, data):
+        ''' Do the actual HTTP request '''
+        if method == 'GET':
+            respone = SESSION.get(path, params=data)
+        else:
+            respone = SESSION.post(path, data=data)
+        if respone.status_code != requests.codes.ok:
+            text = respone.text
+            if text:
+                try:
+                    res = respone.json()
+                    text = 'Code: [%s], Error: [%s]' % (res.get('_apiErrorCode'), res.get('internalError'))
+                except:
+                    pass
+            return_error('Error in API call to Exabeam [%d] - %s' % (respone.status_code, text))
+        if not respone.text:
+            return {}
+        return respone.json()
+
+    def get_watchlist_id():
+        ''' Return watchlist id based on given parameters '''
+        if not demisto().args['id'] and not demisto.args()['title']:
+            logout()
+            return_error('Please provide either ID or title')
+        wid = demisto.args()['id']
+        if not wid:
+             watchlist = http_request('GET', URL_UBA + 'watchlist', None)
+             for item in watchlist:
+                 if item.get('title').lower() == demisto.args()['title'].lower():
+                     watchlist_id = item.get('watchlistId')
+                     break
+        if not watchlist_id:
+            logout()
+            return_error('Unable to find watchlist with the given title')
+        return watchlist
+
+    ''' FUNCTIONS '''
+    def exabeam_users():
+        ''' Return user statistics '''
+        res = http_request('GET', URL_UBA + 'kpi/count/users', None)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('User statistics', [res], ['highRisk', 'recent', 'total'])
+        })
+
+    def exabeam_assets():
+        ''' Return asset statistics '''
+        res = http_request('GET', URL_UBA + 'kpi/count/assets', None)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Asset statistics', [res], ['highRisk', 'recent', 'total'])
+        })
+
+    def exabeam_sessions():
+        ''' Return session statistics '''
+        res = http_request('GET', URL_UBA + 'kpi/count/sessions', None)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Session statistics', [res], ['highRisk', 'recent', 'total'])
+        })
+
+    def exabeam_events():
+        ''' Return event statistics '''
+        res = http_request('GET', URL_UBA + 'kpi/count/events', None)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Event statistics', [res], ['recent', 'total'])
+        })
+
+    def exabeam_anomalies():
+        res = http_request('GET', URL_UBA + 'kpi/count/anomalies', None)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Anomalies statistics', [res], ['recent', 'total'])
+        })
+
+    def exabeam_notable():
+        ''' Return notable users in a specific period of time '''
+        res = http_request(
+            'GET',
+            URL_UBA + 'users/notable',
+            {
+                'numberOfResults': demisto.args()['number-of-results'],
+                'unit': demisto.args()['unit'],
+                'num': demisto.args()['num']
+            }
+            )
+
+        if res.get('users'):
+            users = [{
+                'Highest': u['highestRiskScore'],
+                'Name': u['userFullName'],
+                'Username': demisto.get(u, 'user.username'),
+                'Email': demisto.get(u, 'user.info.email'),
+                'Department': demisto.get(u, 'user.info.department'),
+                'DN': demisto.get(u, 'user.info.dn'),
+                'RiskScore': demisto.get(u, 'user.riskScore'),
+                'NotableSessionIDs': u.get('notableSessionIds', [])
+            } for u in res['users']]
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': res,
+                'HumanReadable': tableToMarkdown('Notables', users, ['Name', 'Username', 'Email', 'Department', 'DN', 'RiskScore', 'Highest', 'NotableSessionIDs']),
+                'EntryContext': {'Exabeam.Notable': res['users']}
+            })
+
+        else:
+            demisto.results('No notable users found in the requested period')
+
+    def exabeam_lockouts():
+        ''' Return lockouts '''
+        res = http_request(
+            'GET',
+            URL_UBA + 'lockouts/accountLockouts',
+            {
+                'numberOfResults': demisto.getArg('number-of-results'),
+                'unit': demisto.getArg('unit'),
+                'num': demisto.getArg('num')
+            })
+        if res.get('lockouts'):
+            lockouts = [{
+                'Name': demisto.get(l, 'user.info.fullName'),
+                'Username': demisto.get(l, 'user.username'),
+                'Email': demisto.get(l, 'user.info.email'),
+                'Department': demisto.get(l, 'user.info.department'),
+                'DN': demisto.get(l, 'user.info.dn'),
+                'Title': demisto.get(l, 'user.info.title'),
+                'RiskScore': demisto.get(l, 'user.riskScore'),
+                'Executive': demisto.get(l, 'isUserExecutive'),
+                'LockoutTime': convert_unix_to_date(demisto.get(l, 'firstLockoutEvent.time')),
+                'Host': demisto.get(l, 'firstLockoutEvent.host'),
+                'LockoutRisk': demisto.get(l, 'lockoutInfo.riskScore'),
+                'LoginHost': demisto.get(l, 'lockoutInfo.loginHost')
+            } for l in res['lockouts']]
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': res,
+                'HumanReadable': tableToMarkdown('Lockouts', lockouts, ['User', 'Username', 'Email', 'Department', 'DN', 'Title', 'RiskScore', 'Executive', 'LockoutTime', 'Host', 'LockoutRisk', 'LoginHost']),
+                'EntryContext': {'Exabeam.Lockout': res['lockouts']}
+            })
+        else:
+            demisto.results('No lockouts found in the requested period')
+
+    def exabeam_timeline():
+        ''' Returns session, triggered rules and events of a user '''
+        res = http_request('GET', URL_UBA + 'user/%s/timeline/entities/all' % demisto.args()['username'], None)
+        risk_score = 0
+        session = ''
+        for entity in res.get('entities', []):
+            if entity.get('tp') == 'session' and entity.get('rs', 0) > risk_score:
+                risk_score = entity.get('rs', 0)
+                session = entity.get('id')
+        if session:
+            session_info =  http_request('GET', URL_UBA + 'session/%s/info' % session, None)
+            si = session_info.get('sessionInfo')
+            if not si:
+                return_error('Unable to find session info')
+            session_data = {
+                'Username': si.get('username'),
+                'RiskScore': si.get('riskScore'),
+                'InitialRiskScore': si.get('initialRiskScore'),
+                'NumOfReasons': si.get('numOfReasons'),
+                'LoginHost': si.get('loginHost'),
+                'Zones': ','.join(si.get('zones', [])),
+                'Assets': si.get('numOfAssets'),
+                'Events': si.get('numOfEvents'),
+                'SecurityEvents': si.get('numOfSecurityEvents')
+            }
+            md = tableToMarkdown(
+                'Session %s from %s to %s' % (session, convert_unix_to_date(si.get('startTime')), convert_unix_to_date(si.get('endTime'))),
+                [session_data],
+                ['Username', 'RiskScore', 'InitialRiskScore', 'NumOfReasons', 'LoginHost', 'Zones', 'Assets', 'Events', 'SecurityEvents'])
+
+            triggered_rules_data = [{
+                'ID': tr.get('ruleId'),
+                'Type': tr.get('ruleType'),
+                'Name': demisto.get(session_info, 'rules.%s.ruleName' % (tr.get('ruleId'))),
+                'EventID': tr.get('eventId'),
+                'SessionID': tr.get('sessionId'),
+                'Source': demisto.get(session_info, 'triggeredRuleEvents.%s.fields.source' % (tr.get('eventId'))),
+                'Domain': demisto.get(session_info, 'triggeredRuleEvents.%s.fields.domain' % (tr.get('eventId'))),
+                'Host': demisto.get(session_info, 'triggeredRuleEvents.%s.fields.host' % (tr.get('eventId'))),
+                'DestIP': demisto.get(session_info, 'triggeredRuleEvents.%s.fields.dest_ip' % (tr.get('eventId'))),
+                'EventType': demisto.get(session_info, 'triggeredRuleEvents.%s.fields.event_type' % (tr.get('eventId')))
+            } for tr in session_info.get('triggeredRules')]
+
+            md += '\n' + tableToMarkdown('Triggered Rules',
+                triggered_rules_data,
+                ['ID', 'Type', 'Name', 'EventID', 'SessionID', 'EventType', 'Source', 'Domain', 'Host', 'DestIP'])
+            session_data['TriggeredRules'] = triggered_rules_data
+            events = http_request(
+                'GET',
+                URL_UBA + 'timeline/events/start',
+                {
+                'username': demisto.args()['username'],
+                'sequenceTypes': 'session',
+                'startSequenceType': 'session',
+                'startSequenceId': session,
+                'preferredNumberOfEvents': 200
+                }
+                )
+
+            events_data = [{
+                'Type': ev.get('tp'),
+                'Count': ev.get('c'),
+                'Start': convert_unix_to_date(ev.get('ts')),
+                'End': convert_unix_to_date(ev.get('te')),
+                'Sources': [es.get('fields', {}).get('source') for es in ev.get('es')]
+            } for ev in events.get('aggregatedEvents', [])]
+
+            md += '\n' + tableToMarkdown('Timeline', events_data, ['Type', 'Count', 'Start', 'End'])
+            session_data['Events'] = events_data
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': events,
+                'HumanReadable': md,
+                'EntryContext': {'Exabeam.Timeline': session_data}
+            })
+        else:
+            demisto.results('No risk score exists for the given user')
+
+    def exabeam_session_entities():
+        ''' Returns session entities for a given user, can be filtered by container-type, container-id '''
+        res = http_request(
+            'GET',
+            URL_UBA + 'user/%s/timeline/entities' % demisto.args()['username'],
+            {
+                'numberOfResults': demisto.args()['number-of-results'],
+                'unit': demisto.args()['unit'],
+                'num': demisto.args()['num'],
+                'endContainerType': demisto.args()['container-type'],
+                'endContainerId': demisto.args()['container-id']
+            }
+            )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res
+        })
+
+    def exabeam_user_info():
+        ''' Returns user info '''
+        username = demisto.args()['username']
+        res = http_request('GET', URL_UBA + 'user/%s/info' % username, None)
+        if res.get('username'):
+            u = {
+                'Username': res['username'],
+                'AccountNames': ','.join(res.get('accountNames', [])),
+                'Executive': res['isExecutive'],
+                'WatchList': res['isOnWatchlist'],
+                'Name': demisto.get(res, 'userInfo.info.fullName'),
+                'ID': demisto.get(res, 'userInfo.info.accountId'),
+                'Department': demisto.get(res, 'userInfo.info.department'),
+                'DN': demisto.get(res, 'userInfo.info.dn'),
+                'Email': demisto.get(res, 'userInfo.info.email'),
+                'Type': demisto.get(res, 'userInfo.info.employeeType'),
+                'Groups': demisto.get(res, 'userInfo.info.group'),
+                'SID': demisto.get(res, 'userInfo.info.sid'),
+                'Title': demisto.get(res, 'userInfo.info.title'),
+                'RiskScore': demisto.get(res, 'userInfo.riskScore'),
+                'AverageRiskScore': demisto.get(res, 'userInfo.averageRiskScore'),
+                'Labels': demisto.get(res, 'userInfo.labels'),
+                'FirstSeen': convert_unix_to_date(demisto.get(res, 'userInfo.firstSeen')),
+                'LastSeen': convert_unix_to_date(demisto.get(res, 'userInfo.lastSeen')),
+                'LastSessionID': demisto.get(res, 'userInfo.lastSessionId'),
+                'PastScores': ','.join(map(str, demisto.get(res, 'userInfo.pastScores')))
+            }
+
+            md = tableToMarkdown('User info', [u], ['Name', 'Username', 'Email', 'Department', 'DN', 'Groups',
+                'Title', 'RiskScore', 'AverageRiskScore', 'Executive', 'WatchList', 'AccountNames', 'ID',
+                'Type', 'SID', 'Labels', 'FirstSeen', 'LastSeen', 'LastSessionID', 'PastScores'])
+
+            if demisto.get(res, 'userInfo.info.photo'):
+                md += '\n![Photo](data:image/png;base64,' + demisto.get(res, 'userInfo.info.photo') + ')\n'
+
+            # Let's get the sessions as well
+            notable_res = http_request(
+                'GET',
+                URL_UBA + 'users/notable',
+                {
+                    'numberOfResults': 100,
+                    'unit': 'd',
+                    'num': 7
+                }
+                )
+            if notable_res.get('users'):
+                for un in notable_res['users']:
+                    if demisto.get(un, 'user.username') == username:
+                        u['NotableList'] = True
+                        md += '\n## User is on the notable list\n'
+                        notable_session_ids = un.get('notableSessionIds', [])
+                        if notable_session_ids:
+                            u['NoteableSessionIDs'] = notable_session_ids
+                            session_res = http_request(
+                                'GET',
+                                URL_UBA + 'user/%s/riskTimeline/data' % username,
+                                {
+                                    'unit': 'd',
+                                    'num': 7,
+                                    'endTimeSequenceType': 'session',
+                                    'endTimeSequenceId': notable_session_ids[0]
+                                )
+                            if session_res.get('sessions'):
+                                md += '\n' + tableToMarkdown('Sessions', session_res['sessions'])
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': res,
+                'HumanReadable': md,
+                'EntryContext': {'Account(val.Email && val.Email === obj.Email || val.ID && val.ID === obj.ID || val.Username && val.Username === obj.Username)': u}
+            })
+
+        else:
+            demisto.results('No username with [' + username + '] found')
+
+    def exabeam_triggered_rules():
+        ''' Return triggered rules for a given container '''
+        res = http_request(
+            'GET',
+            URL_UBA + 'triggeredRules',
+            {
+                'containerType': demisto.args()['container-type'],
+                'containerId': demisto.args()['container-id']
+            }
+            )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res
+        })
+
+    def exabeam_watchlists():
+        ''' Retrieve current list of watchlists '''
+        res = http_request('GET', URL_UBA + 'watchlist', None)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Watchlists', res, ['title', 'watchlistId']),
+            'EntryContext': {'Exabeam.Watchlists': res}
+        })
+
+    def exabeam_watchlist():
+        watchlist_id = get_watchlist_id()
+        res = http_request('GET', URL_UBA + 'watchlist/%s/' % watchlist_id, {'numberOfResults': demisto.args()['num']})
+
+        users = [{
+            'Name': demisto.get(u, 'user.info.fullName'),
+            'Department': demisto.get(u, 'user.info.department'),
+            'Username': u.get('username'),
+            'RiskScore': demisto.get(u, 'user.riskScore'),
+            'IsExecutive': u.get('isExecutive')
+        } for u in res.get('users', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': tableToMarkdown('Watchlist %s [%s] - %d users' % (res.get('title'), res.get('category'), res.get('totalNumberOfUsers')),
+                                            users,
+                                            ['Name', 'Department', 'Username', 'RiskScore', 'IsExecutive']),
+            'EntryContext': {'Exabeam.Watchlist.%s' % res.get('title'): users}
+        })
+
+    def exabeam_watchlist_add():
+        ''' Adds a user to a given watchlist '''
+        watchlist_id = get_watchlist_id()
+        username = demisto.args()['username']
+        res = http_request(
+            'PUT',
+            URL_UBA + 'watchlist/%s/add' % watchlist_id,
+            {
+                'items[]': username,
+                'category': 'Users'
+            }
+            )
+
+        if res.get('numberAdded') == 1:
+            md = 'User %s added to watchlist %s' % (username, res.get('title'))
+        else:
+            md = 'User %s was already on watchlist %s' % (username, res.get('title'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': md
+        })
+
+    def exabeam_watchlist_remove():
+        watchlist_id = get_watchlist_id()
+        username = demisto.args()['username']
+        res = http_request('PUT', URL_UBA + 'watchlist/%s/remove' % watchlist_id, {
+            'items[]': username,
+            'category': 'Users',
+            'watchlistId': watchlist_id
+        })
+        if res.get('numberRemoved') == 1:
+            md = 'User %s removed from watchlist %s' % (username, res.get('title'))
+        else:
+            md = 'User %s was not on watchlist %s' % (username, res.get('title'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': md
+        })
+
+    ''' EXECUTION '''
+    login()
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+
+        elif demisto.command() == 'xb-users':
+            exabeam_users()
+
+        elif demisto.command() == 'xb-assets':
+            exabeam_assets()
+
+        elif demisto.command() == 'xb-sessions':
+            exabeam_sessions()
+
+        elif demisto.command() == 'xb-events':
+            exabeam_events()
+
+        elif demisto.command() == 'xb-anomalies':
+            exabeam_anomalies()
+
+        elif demisto.command() == 'xb-notable':
+            exabeam_notable()
+
+        elif demisto.command() == 'xb-lockouts':
+            exabeam_lockouts()
+
+        elif demisto.command() == 'xb-timeline':
+            exabeam_timeline()
+
+        elif demisto.command() == 'xb-session-entities':
+            exabeam_session_entities()
+
+        elif demisto.command() == 'xb-userinfo':
+            exabeam_userinfo()
+
+        elif demisto.command() == 'xb-triggered-rules':
+            exabeam_triggerred_rules()
+
+        elif demisto.command() == 'xb-watchlists':
+            exabeam_watchlists()
+
+        elif demisto.command() == 'xb-watchlist':
+            exabeam_watchlist()
+
+        elif demisto.command() == 'xb-watchlist-add':
+            exabeam_watchlist_add()
+
+        elif demisto.command() == 'xb-watchlist-remove':
+            exabeam_watchlist_remove()
+
+        else:
+            logout()
+            return_error('Unrecognized command: ' + demisto.command())
+
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+
+    logout()
+  type: python
+  commands:
+  - name: xb-users
+    arguments: []
+    description: Return the total number of users managed by Exabeam
+  - name: xb-assets
+    arguments: []
+    description: Return the total number of assets managed by Exabeam
+  - name: xb-sessions
+    arguments: []
+    description: Return the total number of tracked sessions by Exabeam
+  - name: xb-events
+    arguments: []
+    description: Return the total number of events processed by Exabeam
+  - name: xb-anomalies
+    arguments: []
+    description: Display anomaly statistics
+  - name: xb-notable
+    arguments:
+    - name: number-of-results
+      default: true
+      description: Number of records to return
+      defaultValue: "100"
+    - name: unit
+      auto: PREDEFINED
+      predefined:
+      - d
+      - M
+      description: The unit of the num argument. Can be d for days, w for weeks, M
+        for months
+      defaultValue: d
+    - name: num
+      description: The number of units (days, weeks, etc.)
+      defaultValue: "1"
+    outputs:
+    - contextPath: Exabeam.Notable.Highest
+      description: Highest risk score of the user
+      type: number
+    - contextPath: Exabeam.Notable.Name
+      description: User full name
+      type: string
+    - contextPath: Exabeam.Notable.Username
+      description: User name
+      type: string
+    - contextPath: Exabeam.Notable.Email
+      description: User email
+      type: string
+    - contextPath: Exabeam.Notable.Department
+      description: User department
+      type: string
+    - contextPath: Exabeam.Notable.DN
+      description: User dn
+      type: string
+    - contextPath: Exabeam.Notable.RiskScore
+      description: User risk score
+      type: number
+    - contextPath: Exabeam.Notable.NotableSessionIDs
+      description: User notable session Ids
+      type: string
+    description: Display the notable users
+  - name: xb-lockouts
+    arguments:
+    - name: number-of-results
+      default: true
+      description: Number of records to return
+      defaultValue: "100"
+    - name: unit
+      auto: PREDEFINED
+      predefined:
+      - d
+      - M
+      description: The unit of the num argument. Can be d for days, w for weeks, M
+        for months
+      defaultValue: d
+    - name: num
+      description: The number of units (days, weeks, etc.)
+      defaultValue: "1"
+    outputs:
+    - contextPath: Exabeam.Lockout.isUserExecutive
+      description: Is the user an executive
+      type: boolean
+    - contextPath: Exabeam.Lockout.user.username
+      description: Username of user
+      type: string
+    - contextPath: Exabeam.Lockout.user.riskScore
+      description: Risk score of user
+      type: number
+    - contextPath: Exabeam.Lockout.user.firstSeen
+      description: When did we first see the user
+      type: date
+    - contextPath: Exabeam.Lockout.user.lastSeen
+      description: When did we last see the user
+      type: date
+    - contextPath: Exabeam.Lockout.user.lastSessionId
+      description: Last session id of the user
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.department
+      description: User department
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.dn
+      description: User DN
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.email
+      description: User email
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.fullName
+      description: User full name
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.group
+      description: User groups
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.location
+      description: User location
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.manager
+      description: Users' manager
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.sid
+      description: User identifier
+      type: string
+    - contextPath: Exabeam.Lockout.user.info.title
+      description: User title
+      type: string
+    - contextPath: Exabeam.Lockout.lockoutInfo.lockoutId
+      description: ID of the lockout
+      type: string
+    - contextPath: Exabeam.Lockout.lockoutInfo.loginHost
+      description: The login host for lockout
+    - contextPath: Exabeam.Lockout.lockoutInfo.riskScore
+      description: Risk score for lockout
+      type: number
+    - contextPath: Exabeam.Lockout.lockoutInfo.isRisky
+      description: Is this risky
+      type: boolean
+    description: List all the Exabeam lockout users.
+  - name: xb-timeline
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to act upon
+    description: Display the timeline events for a given user
+  - name: xb-session-entities
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to act upon
+    - name: number-of-results
+      default: true
+      description: Number of records to return
+      defaultValue: "100"
+    - name: unit
+      auto: PREDEFINED
+      predefined:
+      - d
+      - w
+      - M
+      description: The unit of the num argument. Can be d for days, w for weeks, M
+        for months
+      defaultValue: d
+    - name: num
+      description: The number of units (days, weeks, etc.)
+      defaultValue: "1"
+    - name: container-type
+      description: Container type for the filter - accepts container types like session,
+        etc.
+      defaultValue: session
+    - name: container-id
+      description: The container ID we want to filter by
+    description: Display the session entities for a given user filter by container
+  - name: xb-userinfo
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to act upon
+    outputs:
+    - contextPath: Account.Username
+      description: Username of user
+      type: string
+    - contextPath: Account.AccountNames
+      description: All account names we know about
+      type: string
+    - contextPath: Account.Executive
+      description: Is this user an executive
+      type: boolean
+    - contextPath: Account.WatchList
+      description: Is this user on a watch list
+      type: boolean
+    - contextPath: Account.Name
+      description: Name of he user
+      type: string
+    - contextPath: Account.ID
+      description: Account ID of the user
+      type: string
+    - contextPath: Account.Department
+      description: Department of user
+      type: string
+    - contextPath: Account.DN
+      description: DN of user
+      type: string
+    - contextPath: Account.Email
+      description: Email of user
+      type: string
+    - contextPath: Account.Type
+      description: Type of account
+      type: string
+    - contextPath: Account.Groups
+      description: Groups for the user
+      type: string
+    - contextPath: Account.SID
+      description: SID of the user
+      type: string
+    - contextPath: Account.Title
+      description: Title of the user
+      type: string
+    - contextPath: Account.RiskScore
+      description: Risk score of the user
+      type: number
+    - contextPath: Account.AverageRiskScore
+      description: Average risk score of the user
+      type: number
+    - contextPath: Account.Labels
+      description: Any labels assigned to the user
+      type: string
+    - contextPath: Account.FirstSeen
+      description: First time user was seen
+      type: date
+    - contextPath: Account.LastSeen
+      description: Last time user was seen
+      type: date
+    - contextPath: Account.LastSessionID
+      description: Last session ID of the user
+      type: string
+    - contextPath: Account.PastScores
+      description: All past scores of the user
+      type: number
+    - contextPath: Account.LoginHost
+      description: The last session login host
+      type: string
+    - contextPath: Account.LoginLabel
+      description: Last session login label
+      type: string
+    - contextPath: Account.NotableList
+      description: Is the user on the notable list
+      type: boolean
+    - contextPath: Account.NotableSessionIDs
+      description: List of session IDs
+      type: string
+    description: Display information about the given user
+  - name: xb-triggered-rules
+    arguments:
+    - name: container-type
+      description: Container type for the filter - accepts container types like session,
+        etc.
+      defaultValue: session
+    - name: container-id
+      description: The container ID we want to filter by
+    description: Display the triggered rules for a given container
+  - name: xb-watchlists
+    arguments: []
+    outputs:
+    - contextPath: Exabeam.Watchlists
+      description: Watchlists
+    description: Retrieve the list of watchlists we currently have
+  - name: xb-watchlist
+    arguments:
+    - name: id
+      default: true
+      description: Watchlist ID to retrieve data from
+    - name: title
+      description: Watchlist title to retrieve data from
+    - name: num
+      description: Number of users to retrieve
+      defaultValue: "100"
+    outputs:
+    - contextPath: Exabeam.Watchlists
+      description: Watchlists
+    description: Retrieve the users on a given watchlist. You must provide either
+      id or title.
+  - name: xb-watchlist-add
+    arguments:
+    - name: id
+      default: true
+      description: Watchlist ID to add user to
+    - name: title
+      description: Watchlist title to add user to
+    - name: username
+      required: true
+      description: The username to act upon
+    - name: watch-until-days
+      description: How many days should we watch the given user
+      defaultValue: "7"
+    description: Add a user to the watchlist. You must provide either id or title.
+    execution: true
+  - name: xb-watchlist-remove
+    arguments:
+    - name: id
+      default: true
+      description: Watchlist ID to remove user from
+    - name: title
+      description: Watchlist title to remove user from
+    - name: username
+      required: true
+      description: The username to act upon
+    description: Remove a user from the watchlist. You must provide either id or title.
+    execution: true
+  runonce: false
+releaseNotes: "New integration"
+tests:
+- No test

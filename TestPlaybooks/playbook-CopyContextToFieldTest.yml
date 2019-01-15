@@ -1,0 +1,189 @@
+id: CopyContextToFieldTest
+version: -1
+name: CopyContextToFieldTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e94df9b6-f714-4ece-83cc-f1c39654a276
+    type: start
+    task:
+      id: e94df9b6-f714-4ece-83cc-f1c39654a276
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1877675a-9e37-4572-8021-4216e1cc4abe
+    type: regular
+    task:
+      id: 1877675a-9e37-4572-8021-4216e1cc4abe
+      version: -1
+      name: Set context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: testKey
+      value:
+        simple: Some test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
+    type: regular
+    task:
+      id: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
+      version: -1
+      name: 'Copy '
+      scriptName: CopyContextToField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      incidentsQuery:
+        simple: id:${incident.id}
+      limit: {}
+      sourceContextKey:
+        simple: testKey
+      targetIncidentField:
+        simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
+    type: condition
+    task:
+      id: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
+      version: -1
+      name: Check incident name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: Some test
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 0f800087-c005-4435-8a16-0a1d6238e230
+    type: title
+    task:
+      id: 0f800087-c005-4435-8a16-0a1d6238e230
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
+    type: regular
+    task:
+      id: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
+      version: -1
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Incident name different then expected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,318 @@
+id: TestStringReplace
+version: -1
+name: TestStringReplace
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2890e141-d456-4bd5-86f7-ed8f3c6de006
+    type: start
+    task:
+      id: 2890e141-d456-4bd5-86f7-ed8f3c6de006
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 888fe22b-4c17-4252-814b-83b723556699
+    type: regular
+    task:
+      id: 888fe22b-4c17-4252-814b-83b723556699
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: db8380ab-4b05-46a3-826a-0d635dd1b068
+    type: regular
+    task:
+      id: db8380ab-4b05-46a3-826a-0d635dd1b068
+      version: -1
+      name: StringReplace - default arguments
+      description: |-
+        case-Insensitive : true (default)
+        replace-All: true (default)
+        multi-line: true (default)
+      scriptName: StringReplace
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      caseInsensitive: ""
+      contextKey: string
+      data: cdbbdccDbdbdbbdsbz
+      multiLine: ""
+      newValue: AA
+      regex: d(b+)d
+      replaceAll: ""
+      str: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 394
+        }
+      }
+  "6":
+    id: "6"
+    taskid: a82bae46-1ac3-45e1-8de4-02379e00ea6b
+    type: regular
+    task:
+      id: a82bae46-1ac3-45e1-8de4-02379e00ea6b
+      version: -1
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      field1: StringReplace.Result
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: cAAccAAbAAsbz
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 05aa82f7-937e-4286-8da3-3161046bfdb0
+    type: regular
+    task:
+      id: 05aa82f7-937e-4286-8da3-3161046bfdb0
+      version: -1
+      name: StringReplace- case-insensitive, multi-line
+      description: "case-Insensitive : true (default)\nreplace-All: false \nmulti-line:
+        true (default)"
+      scriptName: StringReplace
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      caseInsensitive: ""
+      contextKey: string
+      data: cdbbdccDbdbdbbdsbz
+      multiLine: ""
+      newValue: AA
+      regex: d(b+)d
+      replaceAll: "false"
+      str: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 736
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 6b029309-3013-431f-8d95-4333b4487bc2
+    type: regular
+    task:
+      id: 6b029309-3013-431f-8d95-4333b4487bc2
+      version: -1
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      field1: StringReplace.Result
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: cAAccDbdbdbbdsbz
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 910
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 302bd7df-7329-427c-8167-40c59e8bbf88
+    type: regular
+    task:
+      id: 302bd7df-7329-427c-8167-40c59e8bbf88
+      version: -1
+      name: StringReplace- multi-line, replace-all
+      description: "case-Insensitive :false\nreplace-All: true \nmulti-line: true
+        (default)"
+      scriptName: StringReplace
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseInsensitive: "false"
+      contextKey: string
+      data: cdbbdccDbdbdbbdsbz
+      multiLine: ""
+      newValue: AA
+      regex: d(b+)d
+      replaceAll: ""
+      str: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1077
+        }
+      }
+  "10":
+    id: "10"
+    taskid: ea31c298-358a-4b50-88f8-b843fe351c2e
+    type: regular
+    task:
+      id: ea31c298-358a-4b50-88f8-b843fe351c2e
+      version: -1
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      field1: StringReplace.Result
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: cAAccDbAAbbdsbz
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1238
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 931b498f-2afa-4bf8-8d59-0e94d9aeb9e5
+    type: regular
+    task:
+      id: 931b498f-2afa-4bf8-8d59-0e94d9aeb9e5
+      version: -1
+      name: StringReplace- no match
+      description: "case-Insensitive :true (default)\nreplace-All: true (default)
+        \nmulti-line: true (default)"
+      scriptName: StringReplace
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      caseInsensitive: ""
+      contextKey: string
+      data: Hello World
+      multiLine: ""
+      newValue: AA
+      regex: earth
+      replaceAll: ""
+      str: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1401
+        }
+      }
+  "12":
+    id: "12"
+    taskid: ebebb846-0ac9-4295-852e-6735b9558ed9
+    type: regular
+    task:
+      id: ebebb846-0ac9-4295-852e-6735b9558ed9
+      version: -1
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: StringReplace.Result
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: Hello World
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1563
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1608,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

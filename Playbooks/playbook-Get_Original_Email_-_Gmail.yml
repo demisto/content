@@ -136,6 +136,7 @@ tasks:
       user-key:
         complex:
           root: inputs.User
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -243,6 +244,7 @@ tasks:
         simple: InReplyTo
       value:
         simple: ${Gmail.Headers(val.Name == "In-Reply-To").Value}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -291,6 +293,7 @@ tasks:
       user-key:
         complex:
           root: inputs.From
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -331,6 +334,7 @@ tasks:
                 value:
                   simple: (?i)([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$
               replaceWith: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -358,11 +362,13 @@ tasks:
       - "6"
     scriptarguments:
       all: {}
+      index: {}
       key:
         simple: Gmail
       keysToKeep: {}
       subplaybook:
         simple: "yes"
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -396,6 +402,7 @@ tasks:
       value:
         simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
           && h.Value == val.InReplyTo).length > 0)}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -434,6 +441,7 @@ tasks:
         complex:
           root: OriginalEmail
           accessor: Mailbox
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -503,6 +511,7 @@ tasks:
         simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From:
           val[''From''], Text: val[''Body''], HTML: val[''HTML''], Headers: val[''Headers''],
           CC: val[''CC''], BCC: val[''BCC'']}}'
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -595,3 +604,5 @@ outputs:
 - contextPath: File
   description: Original attachments
   type: unknown
+tests:
+  - No test

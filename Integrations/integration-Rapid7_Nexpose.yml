@@ -2095,4 +2095,3 @@ script:
     description: Returns a list of scans.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added ability to view, stop, pause and resume scans."

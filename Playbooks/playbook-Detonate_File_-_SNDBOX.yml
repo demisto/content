@@ -1,0 +1,651 @@
+id: Detonate File - SNDBOX
+version: -1
+name: Detonate File - SNDBOX
+fromversion: 4.0.0
+description: |-
+  Detonates a File using the SNDBOX.
+  Advanced Threat Defense supports the following File Types:
+  Microsoft (2003 and earlier)
+  doc, dot, xls, csv, xlt, xlm, ppt, pot, pps
+
+  Microsoft (2007 and later):
+  docx, docm, dotx, dotm, dotm, xlsx, xlsm, xltx, xltm, xlsb, xla, xlam, iqy, pptx, pptm, potx, ppsx, xml
+
+  Other:
+  pe32, rtf, pdf, vbs, vbe, ps1, js, lnk, html, bat
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    type: start
+    task:
+      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: cf1337d2-c99c-450b-8901-49614b2d9c39
+    type: playbook
+    task:
+      id: cf1337d2-c99c-450b-8901-49614b2d9c39
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      Ids:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: sndbox-analysis-info
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: SNDBOX.Analysis(val.status != 'finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ff8f8315-a4a4-4fe8-8008-c8ed819d3787
+    type: regular
+    task:
+      id: ff8f8315-a4a4-4fe8-8008-c8ed819d3787
+      version: -1
+      name: SNDBOX Get Report
+      description: Retrieve the reports from McAfee ATD.
+      script: '|||sndbox-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: SNDBOXAnalysis
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: SNDBOXAnalysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      type:
+        simple: json
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    type: title
+    task:
+      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 638f2725-3b53-453a-8c6d-6924686d24fa
+    type: condition
+    task:
+      id: 638f2725-3b53-453a-8c6d-6924686d24fa
+      version: -1
+      name: Is SNDBOX enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SNDBOX
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 105ec989-1fbe-4631-8eb8-4a1e10c68c85
+    type: regular
+    task:
+      id: 105ec989-1fbe-4631-8eb8-4a1e10c68c85
+      version: -1
+      name: SNDBOX Get Info
+      description: Updates the status of the tasks in the context.
+      script: '|||sndbox-analysis-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: ecc6003d-d40d-48d4-85fc-b7ffa076196d
+    type: condition
+    task:
+      id: ecc6003d-d40d-48d4-85fc-b7ffa076196d
+      version: -1
+      name: Is File type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    type: regular
+    task:
+      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      version: -1
+      name: Set File to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    type: condition
+    task:
+      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      version: -1
+      name: Is there a File to Detonate?
+      description: Checks that there is a file in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 4076e5e1-d0fc-4bb0-8008-409053367a9e
+    type: regular
+    task:
+      id: 4076e5e1-d0fc-4bb0-8008-409053367a9e
+      version: -1
+      name: Set Context
+      description: '-'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: SNDBOXAnalysis
+      value:
+        complex:
+          root: SNDBOX
+          accessor: Analysis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 9caed2f8-0d19-4950-8c2c-5bfdf48f54b0
+    type: condition
+    task:
+      id: 9caed2f8-0d19-4950-8c2c-5bfdf48f54b0
+      version: -1
+      name: Check finish
+      description: '-'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SNDBOXAnalysis
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SNDBOXAnalysis.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: finished
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 06783b62-db07-4a32-8b18-17b530538c51
+    type: regular
+    task:
+      id: 06783b62-db07-4a32-8b18-17b530538c51
+      version: -1
+      name: SNDBOX Upload File
+      description: Uploads the submission to SNDBOX.
+      script: '|||sndbox-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file_id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:DOC|DOT|XLS|CSV|XLT|XLM|PPT|POT|PPS|DOCX|DOCM|DOTX|DOTM|DOTM|XLSX|XLSM|XLTX|XLTM|XLSB|XLA|XLAM|IQY|PPTX|PPTM|POTX|PPSX|XML|PE32|RTF|PDF|VBS|VBE|PS1|JS|LNK|HTML|BAT)\b
+              ignorecase: true
+          accessor: EntryID
+      should_wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file to detonate. File is taken from the context.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: SNDBOX.Analysis.ID
+  description: Analysis ID
+  type: string
+- contextPath: SNDBOX.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: SNDBOX.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: SNDBOX.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: SNDBOX.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: SNDBOX.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: SNDBOX.Analysis.Link
+  description: Analysis Link
+  type: string
+- contextPath: SNDBOX.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: DBotScore.Vendor
+  description: 'The name of the vendor: SNDBOX'
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The name of the sample file or URL
+- contextPath: DBotScore.Type
+  description: file
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: DBotScore.Malicious.Vendor
+  description: 'The name of the vendor: SNDBOX'
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub analysis detection statuses
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 of the file
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: InfoFile.Extension
+  description: File Extension
+  type: string
+- contextPath: File.Size
+  description: File Size
+  type: number
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Name
+  description: The sample name
+  type: string
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file
+  type: string
+- contextPath: File.EntryID
+  description: War-Room Entry ID of the file
+  type: string
+- contextPath: File.Info
+  description: Basic information of the file
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Extension
+  description: File Extension
+  type: string
+tests:
+  - Detonate File - SNDBOX - Test
