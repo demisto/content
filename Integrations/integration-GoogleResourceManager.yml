@@ -73,7 +73,15 @@ script:
     execution: false
     name: grm-create-project
     outputs:
-    - {contextPath: GRM.Operation.Name, description: Operation Name, type: String}
+    - {contextPath: GGM.Project.Name, description: name of the project, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
@@ -167,6 +175,9 @@ script:
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
@@ -198,12 +209,12 @@ script:
     execution: false
     name: grm-search-organizations
     outputs:
-    - contextPath: GRM.Response.Organization
-      description: |-
-        object(Organization)
-
-        Organization that matched the search query
-      type: Unknown
+    - {contextPath: GRM.Organization.Name, description: name of the organization in
+        format <type/number> e.g. 'organizations/1245345444', type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
+    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+        the organization resource was created, type: Date}
   - arguments:
     - default: false
       defaultValue: ''
@@ -218,12 +229,12 @@ script:
     execution: false
     name: grm-get-organization
     outputs:
-    - contextPath: GRM.Response.Organization
-      description: |-
-        object(Organization)
-
-        Organization that matched the name argument
-      type: Unknown
+    - {contextPath: GRM.Organization.Name, description: name of the organization in
+        format <type/number> e.g. 'organizations/1245345444', type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
+    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+        the organization resource was created, type: Date}
   - arguments:
     - default: false
       defaultValue: ''
@@ -237,7 +248,8 @@ script:
       my-project-123) for deletion.
     execution: true
     name: grm-delete-project
-    outputs: []
+    outputs:
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -251,7 +263,8 @@ script:
       example, my-project-123).
     execution: false
     name: grm-undelete-project
-    outputs: []
+    outputs:
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -299,6 +312,7 @@ script:
     import googleapiclient
     from google.oauth2 import service_account
     import json
+    import time
 
     ''' GLOBALS/PARAMS '''
 
@@ -352,27 +366,57 @@ script:
         return body
 
 
+    def poll_operation(operation):
+        """Query status of long running operation and return results if completed"""
+        name = operation.get('name')
+        while not operation.get('done'):
+            # delay 1 second and then retry and see if the operation finished
+            time.sleep(1)
+            service = build_and_authorize()
+            # get the latest state of the long-running operation
+            operation = service.operations().get(name=name).execute()
+        if not operation.get('error'):
+            return operation.get('response')
+        else:
+            e = operation.get('error')
+            err_code = e.get('code')
+            err_msg = e.get('message')
+            err_details = "".join(e.get('details'))
+            full_err_msg = "error code: {}\nerror message: {}\nerror details: {}".format(err_code, err_msg, err_details)
+            raise Exception(full_err_msg)
+
+
     ''' MAIN FUNCTIONS '''
 
 
     def test_module():
         commands['grm-list-projects']()
         demisto.results('ok')
-        sys.exit(0)
 
 
     def create_project(project_body):
         service = build_and_authorize()
         body = make_project_body(project_body)
         operation = service.projects().create(body=body).execute()
-        return operation
+        response = poll_operation(operation)
+        return response
 
 
     def create_project_command():
         """Create a project in the Google Cloud Platform."""
         args = demisto.args()
         response = create_project(args)
-        md = tableToMarkdown('Google Cloud Project Created', response)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': response.get('parent'),
+            'Labels': response.get('labels')
+        }
+        md = tableToMarkdown('Google Cloud Project Created', context)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -380,7 +424,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Operation(val.Name&&val.Name==obj.Name)': response
+                'GRM.Project(val.ID&&val.ID==obj.ID)': context
             }
         })
 
@@ -396,10 +440,23 @@ script:
         project_id = demisto.args()['projectId']
         response = delete_project(project_id)
         if json.dumps(response) == '{}':
+            response = get_project(project_id)
+            # Parse response into context
+            context = {
+                'ID': response.get('projectId'),
+                'State': response.get('lifecycleState')
+            }
             success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
-            demisto.results(success_msg)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': success_msg,
+                'ContentsFormat': formats['text'],
+                'EntryContext': {
+                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                }
+            })
         else:
-            demisto.results('Unexpected return object from command execution. Results uncertain.')
+            demisto.results('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
     def undelete_project(project_id):
@@ -412,7 +469,24 @@ script:
         """Set the lifcycleState attribute of a specified project back to ACTIVE."""
         project_id = demisto.args()['projectId']
         response = undelete_project(project_id)
-        demisto.results('ok')
+        if json.dumps(response) == '{}':
+            response = get_project(project_id)
+            # Parse response into context
+            context = {
+                'ID': response.get('projectId'),
+                'State': response.get('lifecycleState')
+            }
+            success_msg = 'The lifecycleState attribute of Project {} has been set to ACTIVE'.format(project_id)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': success_msg,
+                'ContentsFormat': formats['text'],
+                'EntryContext': {
+                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                }
+            })
+        else:
+            demisto.results('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
     def get_project(project_id):
@@ -425,7 +499,17 @@ script:
         """Retrieves the Project identified by the specified projectId."""
         project_id = demisto.args()['projectId']
         response = get_project(project_id)
-        md = tableToMarkdown('Details of Google Cloud Project', response)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': response.get('parent'),
+            'Labels': response.get('labels')
+        }
+        md = tableToMarkdown('Details of Google Cloud Project', context)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -433,7 +517,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID&&val.ID==obj.ID)': response
+                'GRM.Project(val.ID&&val.ID==obj.ID)': context
             }
         })
 
@@ -450,7 +534,17 @@ script:
         response = list_projects(filter_list)
         results = []
         for project in response.get('projects', []):
-            md = tableToMarkdown("Project", project)
+            # Parse project into context
+            context = {
+                'Name': project.get('name'),
+                'ID': project.get('projectId'),
+                'Number': project.get('projectNumber'),
+                'State': project.get('lifecycleState'),
+                'CreateTime': project.get('createTime'),
+                'Parent': project.get('parent'),
+                'Labels': project.get('labels')
+            }
+            md = tableToMarkdown("Project", context)
             entry = {
                 'Type': entryTypes['note'],
                 'Contents': project,
@@ -458,7 +552,7 @@ script:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
                 'EntryContext': {
-                    'GRM.Project(val.ID&&val.ID==obj.ID)': project
+                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
                 }
             }
             results.append(entry)
@@ -471,14 +565,36 @@ script:
         return operation
 
 
+    # Does not work How I would think it would ---- NEEDS ATTENTION
     def update_project_command():
         """Updates the attributes of the Project identified by the specified projectId."""
         project_id = demisto.args()['projectId']
         project_body = demisto.args()
-        del project_body['projectId']
+        # del project_body['projectId']
         project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
-        demisto.results('ok')
+        response = get_project(project_id)
+        # Parse response into context
+        context = {
+            'Name': response['name'],
+            'ID': response['projectId'],
+            'Number': response['projectNumber'],
+            'State': response['lifecycleState'],
+            'CreateTime': response['createTime'],
+            'Parent': response['parent'],
+            'Labels': response['labels']
+        }
+        md = tableToMarkdown('Details of Updated Google Cloud Project', context)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID&&val.ID==obj.ID)': context
+            }
+        })
 
 
     def search_organizations(req_body):
@@ -495,7 +611,14 @@ script:
         while next_page:
             response = search_organizations(req_body)
             for organization in response.get('organizations', []):
-                md = tableToMarkdown("Organization", organization)
+                # Parse organization into context
+                context = {
+                    'Name': organization.get('name'),
+                    'DisplayName': organization.get('displayName'),
+                    'State': organization.get('lifecycleState'),
+                    'CreateTime': organization.get('creationTime')
+                }
+                md = tableToMarkdown("Organization", context)
                 entry = {
                     'Type': entryTypes['note'],
                     'Contents': organization,
@@ -503,7 +626,7 @@ script:
                     'ReadableContentsFormat': formats['markdown'],
                     'HumanReadable': md,
                     'EntryContext': {
-                        'GRM.Organization(val.Name&&val.Name==obj.Name)': organization
+                        'GRM.Organization(val.Name&&val.Name==obj.Name)': context
                     }
                 }
                 results.append(entry)
@@ -524,7 +647,14 @@ script:
         """Fetches an Organization resource identified by the specified resource name."""
         name = demisto.args()['name']
         response = get_organization(name)
-        md = tableToMarkdown("Details of Fetched Organization", response)
+        # Parse response into context
+        context = {
+            'Name': response.get('name'),
+            'DisplayName': response.get('displayName'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('creationTime')
+        }
+        md = tableToMarkdown("Details of Fetched Organization", context)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -532,7 +662,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Organization(val.Name&&val.Name==obj.Name)': response
+                'GRM.Organization(val.Name&&val.Name==obj.Name)': context
             }
         })
 
@@ -587,6 +717,7 @@ script:
             test_module()
         elif demisto.command() in commands.keys():
             commands[demisto.command()]()
+            LOG.print_log()
 
     # Log exceptions
     except Exception as e:
