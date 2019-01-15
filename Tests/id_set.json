@@ -443,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -11459,18 +11462,6 @@
                     "MISP V2 Test"
                 ]
             }
-        }, 
-        {
-            "Alexa Rank Indicator": {
-                "name": "Alexa Rank Indicator", 
-                "fromversion": "3.5.0", 
-                "commands": [
-                    "domain"
-                ], 
-                "tests": [
-                    "Alexa Test Playbook"
-                ]
-            }
         }
     ], 
     "TestPlaybooks": [
@@ -15301,13 +15292,14 @@
             }
         }, 
         {
-            "Alexa Test Playbook": {
-                "name": "Alexa Test Playbook", 
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "implementing_commands": [
-                    "awis-info"
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
                 ]
             }
         }
