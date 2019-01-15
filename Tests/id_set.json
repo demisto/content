@@ -11611,8 +11611,7 @@
                     "grm-search-organizations", 
                     "grm-get-organization", 
                     "grm-delete-project", 
-                    "grm-undelete-project", 
-                    "grm-create-folder"
+                    "grm-undelete-project"
                 ]
             }
         }
