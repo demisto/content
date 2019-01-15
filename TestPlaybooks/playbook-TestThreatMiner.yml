@@ -1,5 +1,5 @@
 id: ThreatMiner-Test
-version: 31
+version: -1
 name: ThreatMiner - Test
 starttaskid: "0"
 tasks:

@@ -545,8 +545,8 @@ script:
         threat_miner_context = {
             'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
             'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
-            'Sha1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
-            'Sha256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+            'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+            'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
             'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
             'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
             'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
@@ -562,8 +562,8 @@ script:
         file_context = {
             'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
             'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
-            'Sha1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
-            'Sha256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+            'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+            'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
             'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
             'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
             'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
@@ -831,10 +831,10 @@ script:
     - contextPath: ThreatMiner.File.MD5
       description: File MD5
       type: string
-    - contextPath: ThreatMiner.File.Sha1
+    - contextPath: ThreatMiner.File.SHA1
       description: File SHA-1
       type: string
-    - contextPath: ThreatMiner.File.Sha256
+    - contextPath: ThreatMiner.File.SHA256
       description: File SHA-256
       type: string
     - contextPath: ThreatMiner.File.Type
@@ -882,10 +882,10 @@ script:
     - contextPath: File.MD5
       description: File MD5
       type: string
-    - contextPath: File.Sha1
+    - contextPath: File.SHA1
       description: File SHA-1
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: File SHA-256
       type: string
     - contextPath: File.Malicious.Detections
