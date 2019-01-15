@@ -443,10 +443,7 @@
         }, 
         {
             "Ping": {
-                "name": "Ping", 
-                "tests": [
-                    "Ping Test Playbook"
-                ]
+                "name": "Ping"
             }
         }, 
         {
