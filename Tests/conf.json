@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Pwned",
+            "playbookID": "Pwned test"
+        },
+        {
+            "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
             "playbookID": "ParseCSVnullbytesTest"
         },
         {
@@ -787,7 +794,7 @@
         {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 500
+            "timeout": 1000
         },
         {
             "integrations": "Centreon",
