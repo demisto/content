@@ -443,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -15285,6 +15288,18 @@
                 "implementing_commands": [
                     "domain", 
                     "email"
+                ]
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
                 ]
             }
         }
