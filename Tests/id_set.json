@@ -11424,18 +11424,6 @@
         {
             "MaxMind GeoIP2": {
                 "name": "MaxMind GeoIP2", 
-                "fromversion": "3.5.0", 
-                "commands": [
-                    "ip"
-                ], 
-                "tests": [
-                    "MaxMind Test"
-                ]
-            }
-        }, 
-        {
-            "MaxMind GeoIP2": {
-                "name": "MaxMind GeoIP2", 
                 "commands": [
                     "ip"
                 ], 
