@@ -2,17 +2,11 @@ category: IT Services
 commonfields: {id: Google Resource Manager, version: -1}
 configuration:
 - defaultvalue: ''
-  display: Authentication file contents
+  display: Service Account Authentication File Contents
   name: auth_json
   options: []
   required: true
   type: 4
-- defaultvalue: ''
-  display: Username
-  name: gsuite_credentials
-  options: []
-  required: false
-  type: 9
 description: Google Cloud Platform Resource Manager
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
@@ -299,7 +293,6 @@ script:
     ''' GLOBALS/PARAMS '''
 
     API_VERSION = 'v1'
-    ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
     SERVICE_ACT_CRDNTLS_FILE_CONTENTS = demisto.params()['auth_json'].encode('utf-8')
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
