@@ -979,6 +979,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-  tests:
-    - No test - generic playbook
-  releaseNotes: "Add no test"
+tests:
+  - No test - generic playbook
+releaseNotes: "Add no test"

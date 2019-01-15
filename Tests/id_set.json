@@ -6743,6 +6743,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - generic playbook"
                 ]
             }
         }, 
