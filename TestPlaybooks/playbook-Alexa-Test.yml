@@ -308,7 +308,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: "2"
     view: |-
       {
         "position": {
