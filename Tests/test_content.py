@@ -5,7 +5,7 @@ import json
 import string
 import random
 import argparse
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 
 import requests
 
@@ -332,6 +332,7 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
+    call(['ssh-keyscan', '-H', 'public_ip', '>>', '~/.ssh/known_hosts'])
 
     failed_playbooks = []
     succeed_playbooks = []
