@@ -1,4 +1,5 @@
 import os
+import signal
 import sys
 import json
 import string
@@ -11,7 +12,7 @@ import requests
 sys.path.append('/Users/benparadise/dev/demisto-py')
 
 import demisto
-# from slackclient import SlackClient
+from slackclient import SlackClient
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -37,11 +38,11 @@ def options_handler():
     parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
-    # parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
-    # parser.add_argument('-t', '--slack', help='The token for slack', required=True)
-    # parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
-    # parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
-    # parser.add_argument('-g', '--buildName', help='The build name', required=True)
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser.add_argument('-t', '--slack', help='The token for slack', required=True)
+    parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
+    parser.add_argument('-g', '--buildName', help='The build name', required=True)
     options = parser.parse_args()
 
     return options
@@ -91,36 +92,37 @@ def configure_proxy(c, proxy=""):
     return c.req('POST', '/system/config', data)
 
 
-def start_proxy(c, playbook_id, record=False):
+def start_proxy(c, public_ip, playbook_id, record=False):
     configure_proxy(c, 'localhost:9997')
-    # TODO: SSH to server
     action = '--server-replay' if not record else '--save-stream-file'
-    return Popen(["mitmdump", "-p", "9997", action, "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
+    return Popen(["ssh", '-t', "ec2-user@{}".format(public_ip), "mitmdump", "-p", "9997", action, "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
 
 
 def stop_proxy(c, p):
     configure_proxy(c, '')
-    # TODO: SSH to server
-    p.terminate()
+    print "proxy outputs:"
+    print p.stdout.read()  # DEBUG
+    print p.stderr.read()  # DEBUG
+    p.send_signal(signal.SIGINT)
 
 
-def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options):  # , slack, CircleCI, buildNumber, server_url, build_name):
+def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
     # TODO: download mock file from repo
     if not os.path.isfile("{}.mock".format(playbook_id)):
         print "Mock file does not exist, running without mock."
     else:
-        proxy_proc = start_proxy(c, playbook_id)
+        proxy_proc = start_proxy(c, public_ip, playbook_id)
         # run test
         succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
         # use results
+        stop_proxy(c, proxy_proc)
         if succeed:
             print 'PASS: %s succeed' % (test_message,)
             succeed_playbooks.append(playbook_id)
             print '------ Test %s end ------' % (test_message,)
             return
-        stop_proxy(c, proxy_proc)
         print "Test failed with mock, rerunning without mock."
     # mock file not found or test failed:
     proxy_proc = start_proxy(c, playbook_id, record=True)
@@ -132,7 +134,7 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        #notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
     stop_proxy(c, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
@@ -160,21 +162,21 @@ def get_user_name_from_circle(circleci_token, build_number):
     return user_details.get('name', '')
 
 
-# def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url, build_name):
-#     circle_user_name = get_user_name_from_circle(CircleCI, build_number)
-#     sc = SlackClient(slack)
-#     user_id = retrieve_id(circle_user_name, sc)
-#
-#     text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
-#
-#     if user_id:
-#         sc.api_call(
-#             "chat.postMessage",
-#             channel=user_id,
-#             username="Content CircleCI",
-#             as_user="False",
-#             text=text
-#         )
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url, build_name):
+    circle_user_name = get_user_name_from_circle(CircleCI, build_number)
+    sc = SlackClient(slack)
+    user_id = retrieve_id(circle_user_name, sc)
+
+    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
+
+    if user_id:
+        sc.api_call(
+            "chat.postMessage",
+            channel=user_id,
+            username="Content CircleCI",
+            as_user="False",
+            text=text
+        )
 
 
 def retrieve_id(circle_user_name, sc):
@@ -275,11 +277,11 @@ def main():
     server = options.server
     conf_path = options.conf
     secret_conf_path = options.secret
-    # is_nightly = options.nightly
-    # slack = options.slack
-    # CircleCI = options.circleci
-    # buildNumber = options.buildNumber
-    # build_name = options.buildName
+    is_nightly = options.nightly
+    slack = options.slack
+    CircleCI = options.circleci
+    buildNumber = options.buildNumber
+    build_name = options.buildName
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -311,6 +313,9 @@ def main():
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
+
+    with open('public_ip', 'rb') as f:
+        public_ip = f.read()
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -360,9 +365,9 @@ def main():
         set_integration_params(demisto_api_key, integrations, secret_params)
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, failed_playbooks, integrations, playbook_id,
-                 succeed_playbooks, test_message, test_options) #, slack, CircleCI,
-                 # buildNumber, server, build_name)
+        run_test(c, public_ip, failed_playbooks, integrations, playbook_id,
+                 succeed_playbooks, test_message, test_options, slack, CircleCI,
+                 buildNumber, server, build_name)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
