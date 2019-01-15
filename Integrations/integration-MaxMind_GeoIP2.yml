@@ -7,7 +7,7 @@ category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Enriches IP addresses
 detaileddescription: 'The MaxMind GeoIP2 integration allows you to query the MaxMind
-  API service and retrieve a JSON of all details. '
+  API service and retrieve a JSON of all details.'
 configuration:
 - display: API Key
   name: apikey
@@ -66,7 +66,7 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-    hr_headers = [
+    HR_HEADERS = [
         'IP',
         'Domain',
         'ASN',
@@ -93,7 +93,7 @@ script:
 
 
     '''HELPER FUNCTIONS'''
-    def http_request(query, MODE):
+    def http_request(query):
         r = requests.request(
             'GET',
             BASE_URL + MODE +'/'+ query,
@@ -102,21 +102,15 @@ script:
             auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY)
         )
         if r.status_code is not 200:
-            return_error('Error in API call to MaxMind [%d] - %s' % (r.status_code, r.reason))
+            return_error('Error in API call to MaxMind, got status code - {} and a reason: {}'.format(r.status_code, r.reason))
         return r
 
 
-    ''' Allows nested keys to be accesible '''
-    def makehash():
-        return collections.defaultdict(makehash)
-
-
     def format_results(raw):
-        res_json = raw.json()
-        hr = makehash()
-        ec = makehash()
-        maxmind_ec = makehash()
-        ip_ec = makehash()
+        hr = defaultdict()
+        ec = defaultdict()
+        maxmind_ec = defaultdict()
+        ip_ec = defaultdict()
         if 'continent' in res_json:
             continent = res_json['continent']
             hr['Continent'] = continent['names']['en']
@@ -182,31 +176,32 @@ script:
             if 'isp' in traits:
                 hr['ISP'] = traits['isp']
                 maxmind_ec['ISP'] = traits['isp']
-        return hr, ip_ec, res_json, maxmind_ec
+        return hr, ip_ec, maxmind_ec
 
 
 
     ''' FUNCTIONS '''
     def get_geo_ip(query):
-        raw = http_request(query, MODE)
-        return raw
+        raw = http_request(query)
+        res_json = raw.json()
+        return res_json
 
 
     def geo_ip_command():
         ip_query = demisto.args().get('ip')
-        raw = get_geo_ip(ip_query)
-        hr, ip_ec, res_json, maxmind_ec = format_results(raw)
+        res_json = get_geo_ip(ip_query)
+        hr, ip_ec, maxmind_ec = format_results(res_json)
         ec = ({
           'IP(val.Address && val.Address == obj.Address)': ip_ec,
-          'MaxMind': maxmind_ec
-          })
+          'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec
+        })
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': res_json,
-            'HumanReadable': tableToMarkdown('{} - Scan Results'.format(ip_query), hr, hr_headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('{} - Scan Results'.format(ip_query), hr, HR_HEADERS, removeNull=True),
             'EntryContext': ec
-            })
+        })
 
 
     ''' EXECUTION CODE '''
@@ -283,10 +278,12 @@ script:
     - contextPath: MaxMind.City
       description: City the IP is located in
       type: string
+    - contextPath: IP.Address
+      description: IP address being queried.
+      type: string
     description: Check IP reputation (when information is available, returns a JSON
       with details). Uses all configured Threat Intelligence feeds
   runonce: false
-fromversion: 3.5.0
 releaseNotes: "Newly released"
 tests:
   - MaxMind Test
