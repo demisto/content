@@ -13,9 +13,22 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+    or MALICIOUS)'
+  name: defaultdbotscoreEmail
+  defaultvalue: SUSPICIOUS
+  type: 0
+  required: false
+- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or
+    MALICIOUS)'
+  name: defaultdbotscoreDomain
+  defaultvalue: SUSPICIOUS
+  type: 0
+  required: false
 script:
   script: |
-    DEFAULT_DBOT_SCORE = params.defaultdbotscore == 'Suspicious' ? 2 : 3;
+    DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS' ? 2 : 3;
+    DEFAULT_DBOT_SCORE_DOMAIN = params.defaultdbotscoreDomain == 'SUSPICIOUS' ? 2 : 3;
 
     var sendRequest = function(url) {
         var res = http(
@@ -79,12 +92,12 @@ script:
         var compEmail = {};
         var score = 0;
         if (compSites.length > 0) {
-            score = DEFAULT_DBOT_SCORE;
+            score = DEFAULT_DBOT_SCORE_EMAIL;
             var emailContext = {
                 'Address': email,
                 'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')}
             };
-            if (DEFAULT_DBOT_SCORE === 3){
+            if (DEFAULT_DBOT_SCORE_EMAIL === 3){
                 emailContext.Malicious = {
                     Vendor: 'Pwned',
                     Description: 'The email has been compromised',
@@ -98,7 +111,7 @@ script:
             Vendor: 'Pwned',
             Score: score
         };
-        compEmail.DBotscore = dbotScore;
+        compEmail.DBotScore = dBotScore;
         return compEmail;
     }
     var domainToEc = function(domain,obj) {
@@ -110,12 +123,12 @@ script:
         var compDomain = {};
         var score = 0;
         if (compSites.length > 0) {
-            score = DEFAULT_DBOT_SCORE;
+            score = DEFAULT_DBOT_SCORE_DOMAIN;
             var domainContext = {
                 'Name': domain,
                 'Compromised': {Vendor:'Pwned', Reason: compSites.join(', ')},
             };
-            if (DEFAULT_DBOT_SCORE === 3){
+            if (DEFAULT_DBOT_SCORE_DOMAIN === 3){
                 domainContext.Malicious = {
                     Vendor: 'Pwned',
                     Description: 'The domain has been compromised',
@@ -279,7 +292,11 @@ script:
       related: ""
     description: Check if an email has been compromised as part of past breaches
   - name: domain
-    arguments: []
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: domain to check
     outputs:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision
@@ -315,5 +332,6 @@ script:
       related: ""
     description: Check if domain has been compromised
   runonce: false
+releaseNotes: "Fixed typo"
 tests:
-  - "No test"
+  - Pwned test
