@@ -53,8 +53,7 @@ script:
                     'Type' : entryTypes['note'],
                     'ContentsFormat' : formats['markdown'],
                     'Contents' : 'We found nothing to analyze in your uploaded email',
-                    'HumanReadable' : 'We found nothing to analyze in your uploaded email',
-                    'EntryContext' : { }
+                    'HumanReadable' : 'We found nothing to analyze in your uploaded email'
                     }
 
     ''' HELPER FUNCTIONS '''
