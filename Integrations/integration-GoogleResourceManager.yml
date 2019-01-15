@@ -103,7 +103,16 @@ script:
       filter. This method returns the projects in an unspecified order.
     execution: false
     name: grm-list-projects
-    outputs: []
+    outputs:
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
