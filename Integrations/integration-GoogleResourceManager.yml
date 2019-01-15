@@ -566,6 +566,7 @@ script:
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
+    # Command Switch Panel
     commands = {
         "grm-create-project": create_project_command,
         "grm-delete-project": delete_project_command,
@@ -589,6 +590,7 @@ script:
 
     # Log exceptions
     except Exception as e:
+        # Output HttpError errors from googleapiclient to the warroom nicely
         if type(e) is googleapiclient.errors.HttpError:
             if e.resp.get('content-type').startswith('application/json'):
                 err_json = json.loads((e.content).decode('utf-8'))
@@ -601,10 +603,12 @@ script:
                 LOG(full_err_msg)
                 LOG.print_log()
                 return_error(full_err_msg)
+        # If there is an Exception message return it to the warroom
         elif hasattr(e, 'message'):
             LOG(e.message)
             LOG.print_log()
             return_error(e.message)
+        # Otherwise output the exception itself to the warroom
         else:
             LOG(str(e))
             LOG.print_log()
