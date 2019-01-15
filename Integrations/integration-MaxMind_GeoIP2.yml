@@ -86,17 +86,18 @@ script:
         'Is Hosting Provider',
         'Is Anonymous']
 
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
 
     '''HELPER FUNCTIONS'''
     def http_request(query, MODE):
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
         r = requests.request(
             'GET',
             BASE_URL + MODE +'/'+ query,
-            headers=headers,
+            headers=HEADERS,
             verify=INSECURE,
             auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY)
         )
