@@ -297,9 +297,6 @@ script:
 
     from googleapiclient import discovery
     import googleapiclient
-    # import oauth2client - deprecated
-    # import google.auth
-    # import google.oauth2.credentials
     from google.oauth2 import service_account
     import json
 
@@ -307,9 +304,10 @@ script:
 
     API_VERSION = 'v1'
     ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
-    SERVICE_ACT_CRDNTLS_FILE_CONTENTS = demisto.getParam('auth_json').encode('utf-8')
+    SERVICE_ACT_CRDNTLS_FILE_CONTENTS = demisto.params()['auth_json'].encode('utf-8')
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
+
 
     ''' HELPER FUNCTIONS '''
 
@@ -320,12 +318,6 @@ script:
         Use the service_account credential file generated in the Google Cloud Platform to build the Google
         Resource Manager API Service object via which commands in the integration will make API calls.
         """
-        # credentials, project = google.auth.default()    # establish Service credentials
-        # May need to change this to get refresh tokens?
-        # user_credentials = google.oauth2.credentials.Credentials(token='ACCESS_TOKEN', scopes=SCOPE)
-        # user_credentials = AccessTokenCredentials(ACCESS_TOKEN, 'my-user-agent/1.0')
-        # user_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS),
-        #     scopes=SCOPE)
         service_account_info = json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS.decode('utf-8'))
         service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
         service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
@@ -333,7 +325,7 @@ script:
 
 
     def make_project_body(project_body):
-        '''Create the project body argument used when calling the GRM API to create or update a project.'''
+        """Create and return the project body argument used when calling the GRM API to create or update a project."""
         keys = project_body.keys()
         body = {}
         if 'projectId' in keys:
@@ -359,6 +351,7 @@ script:
                     body['labels'][lbl_tag] = lbl_val
         return body
 
+
     ''' MAIN FUNCTIONS '''
 
 
@@ -368,36 +361,15 @@ script:
         sys.exit(0)
 
 
-    def fetch_incidents():
-        # You can store the last run time...
-        demisto.setLastRun({'time': 'now'})
-        # And retrieve it for use later:
-        # lastRun = demisto.getLastRun()
-        # lastRun is a dictionary, with value "now" for key "time".
-        # JSON of the incident type created by this integration
-        demisto.incidents([{"Name": "Incident #1"}, {"Name": "Incident #2"}])
-        sys.exit(0)
-
-
     def create_project(project_body):
         service = build_and_authorize()
-        # body = {'projectId': project_body['projectId']}
-        # if 'parent.type' in project_body.keys() and 'parent.id' in project_body.keys():
-        #     body['parent'] = {
-        #         'type': project_body['parent.type'],
-        #         'id': project_body['parent.id']
-        #     }
-        # if 'name' in project_body.keys():
-        #     body['name'] = project_body['name']
-        # if 'labels' in project_body.keys():
-        #     body['labels'] = project_body['labels']
         body = make_project_body(project_body)
         operation = service.projects().create(body=body).execute()
         return operation
 
 
     def create_project_command():
-        '''Create a project in the Google Cloud Platform.'''
+        """Create a project in the Google Cloud Platform."""
         args = demisto.args()
         response = create_project(args)
         md = tableToMarkdown('Google Cloud Project Created', response)
@@ -420,20 +392,9 @@ script:
 
 
     def delete_project_command():
-        '''Set the lifcycleState attribute of a specified project to DELETE_REQUESTED.'''
+        """Set the lifcycleState attribute of a specified project to DELETE_REQUESTED."""
         project_id = demisto.args()['projectId']
         response = delete_project(project_id)
-        # md = tableToMarkdown('Deleted Google Cloud Project Details', response)
-        # demisto.results({
-        #     'Type': entryTypes['note'],
-        #     'Contents': response,
-        #     'ContentsFormat': formats['json'],
-        #     'ReadableContentsFormat': formats['markdown'],
-        #     'HumanReadable': md,
-        #     'EntryContext': {
-        #         'GRM.Project(val.ID==obj.ID)': response
-        #     }
-        # })
         if json.dumps(response) == '{}':
             success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
             demisto.results(success_msg)
@@ -448,7 +409,7 @@ script:
 
 
     def undelete_project_command():
-        '''Set the lifcycleState attribute of a specified project back to ACTIVE.'''
+        """Set the lifcycleState attribute of a specified project back to ACTIVE."""
         project_id = demisto.args()['projectId']
         response = undelete_project(project_id)
         demisto.results('ok')
@@ -461,7 +422,7 @@ script:
 
 
     def get_project_command():
-        '''Retrieves the Project identified by the specified projectId.'''
+        """Retrieves the Project identified by the specified projectId."""
         project_id = demisto.args()['projectId']
         response = get_project(project_id)
         md = tableToMarkdown('Details of Google Cloud Project', response)
@@ -484,7 +445,7 @@ script:
 
 
     def list_projects_command():
-        '''Lists Projects that are visible to the user and satisfy the specified filter if one is provided.'''
+        """Lists Projects that are visible to the user and satisfy the specified filter if one is provided."""
         filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
         response = list_projects(filter_list)
         results = []
@@ -511,23 +472,12 @@ script:
 
 
     def update_project_command():
-        '''Updates the attributes of the Project identified by the specified projectId.'''
+        """Updates the attributes of the Project identified by the specified projectId."""
         project_id = demisto.args()['projectId']
         project_body = demisto.args()
         del project_body['projectId']
         project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
-        # md = tableToMarkdown("Details of Updated GCP Project", response)
-        # demisto.results({
-        #     'Type': entryTypes['note'],
-        #     'Contents': response,
-        #     'ContentsFormat': formats['json'],
-        #     'ReadableContentsFormat': formats['markdown'],
-        #     'HumanReadable': md,
-        #     'EntryContext': {
-        #         'GRM.Project(val.ID&&val.ID==obj.ID)': response
-        #     }
-        # })
         demisto.results('ok')
 
 
@@ -538,7 +488,7 @@ script:
 
 
     def search_organizations_command():
-        '''Searches Organization resources that are visible to the user and satisfy the specified filter (if provided).'''
+        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided)."""
         req_body = demisto.args()
         results = []
         next_page = True
@@ -571,7 +521,7 @@ script:
 
 
     def get_organization_command():
-        '''Fetches an Organization resource identified by the specified resource name.'''
+        """Fetches an Organization resource identified by the specified resource name."""
         name = demisto.args()['name']
         response = get_organization(name)
         md = tableToMarkdown("Details of Fetched Organization", response)
@@ -597,7 +547,7 @@ script:
 
 
     def create_folder_command():
-        '''Creates a Folder in the resource hierarchy.'''
+        """Creates a Folder in the resource hierarchy."""
         parent = demisto.args()['parent']
         name = demisto.args()['name']
         response = create_folder(parent, name)
@@ -612,7 +562,6 @@ script:
                 'GRM.Operation(val.Name&&val.Name==obj.Name)': response
             }
         })
-
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -635,9 +584,6 @@ script:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
-        elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            fetch_incidents()
         elif demisto.command() in commands.keys():
             commands[demisto.command()]()
 
