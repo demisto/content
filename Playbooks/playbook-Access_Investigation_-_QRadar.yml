@@ -338,3 +338,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No test - There is no way to test playbook based incidents
+releaseNotes: "Add no test"

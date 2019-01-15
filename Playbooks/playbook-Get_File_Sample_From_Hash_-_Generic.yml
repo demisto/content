@@ -15,6 +15,7 @@ tasks:
       id: 38a19f0d-fa42-4db5-8bd8-e787836d6a64
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -39,6 +40,7 @@ tasks:
       id: 2b67ca26-e093-4dca-8aed-c0d490b74b91
       version: -1
       name: ""
+      description: ""
       playbookName: Get File Sample From Hash - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
@@ -60,10 +62,10 @@ tasks:
     task:
       id: a986e95e-6e50-454b-8667-f3995523b3e4
       version: -1
-      name: Get File Sample By Hash - Cylance Protect
+      name: ""
       description: Returns to the war-room a file sample correlating to SHA256 hashes
         in the inputs using Cylance Protect integration
-      playbookName: Get File Sample By Hash - Cylance Protect
+      playbookName: Get File Sample From Hash - Cylance Protect
       type: playbook
       iscommand: false
       brand: ""

@@ -5562,6 +5562,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - There is no way to test playbook based incidents"
                 ]
             }
         }, 
@@ -15281,6 +15284,32 @@
                 "implementing_commands": [
                     "domain", 
                     "email"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
                 ]
             }
         }
