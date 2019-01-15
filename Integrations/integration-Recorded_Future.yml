@@ -291,7 +291,7 @@ script:
             dbot_score = translate_score(rf_score, URL_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': url,
-                'Type': 'URL',
+                'Type': 'url',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -305,7 +305,7 @@ script:
             ec = {
                 'DBotScore': {
                     'Indicator': url,
-                    'Type': 'URL',
+                    'Type': 'url',
                     'Vendor': 'Recorded Future',
                     'Score': 0
                 }
@@ -805,7 +805,8 @@ script:
                     'Title': raw_sighting.get('title')
                 }
                 if raw_sighting['url']:
-                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                    raw_sighting['url'] = raw_sighting['url'].encode('utf-8')
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url']).encode('utf-8')
                 sightings_table.append(sighting)
             if sightings_table:
                 hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
@@ -1218,6 +1219,29 @@ script:
 
         return http_request('get', cmd_url, params=params)
 
+    def get_vulnerability_risklist_command():
+        specific_list = demisto.args().get('list')
+
+        res = get_vulnerability_risklist(specific_list)
+
+        if not res:
+            return_error('Received empty response')
+
+        demisto.results(fileResult(filename='cve_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+
+
+    def get_vulnerability_risklist(specific_list):
+        cmd_url = 'vulnerability/risklist'
+
+        params = {
+            'format': 'csv/splunk'
+        }
+
+        if specific_list:
+            params['list'] = specific_list
+
+        return http_request('get', cmd_url, params=params)
+
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
 
@@ -1264,6 +1288,9 @@ script:
 
         elif demisto.command() == 'recorded-future-get-ip-risklist':
             get_ip_risklist_command()
+
+        elif demisto.command() == 'recorded-future-get-vulnerability-risklist':
+            get_vulnerability_risklist_command()
 
     except Exception, e:
         LOG(e.message)
@@ -2125,7 +2152,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file
       type: string
-    - contextPath: File.Extension
+    - contextPath: InfoFile.Extension
       description: File Extension
       type: string
     description: Gets the domain risk list as a CSV file from Recorded Future
@@ -2150,7 +2177,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file
       type: string
-    - contextPath: File.Extension
+    - contextPath: InfoFile.Extension
       description: File Extension
       type: string
     description: Gets the URL risk list as a CSV file from Recorded Future
@@ -2174,9 +2201,33 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file
       type: string
-    - contextPath: File.Extension
+    - contextPath: InfoFile.Extension
       description: File Extension
       type: string
     description: Gets the IP risk list as a CSV file from Recorded Future
+  - name: recorded-future-get-vulnerability-risklist
+    arguments:
+    - name: list
+      description: Specify a vulnerability list, see the documentation for the available
+        lists.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File Name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+    description: Gets the vulnerability (CVE) risk list from Recorded Future
   runonce: false
 releaseNotes: "-"
