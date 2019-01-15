@@ -22,6 +22,13 @@ sleep 90s
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+# install mitmproxy
+ssh ${USER}@${PUBLIC_IP} 'wget https://snapshots.mitmproxy.org/4.0.4/mitmproxy-4.0.4-linux.tar.gz'
+ssh ${USER}@${PUBLIC_IP} 'tar -xzvf mitmproxy-4.0.4-linux.tar.gz'
+ssh ${USER}@${PUBLIC_IP} 'rm mitmproxy-4.0.4-linux.tar.gz'
+ssh ${USER}@${PUBLIC_IP} 'sudo chmod +x mitm*'
+ssh ${USER}@${PUBLIC_IP} 'sudo mv mitm* /usr/local/bin'
+
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
