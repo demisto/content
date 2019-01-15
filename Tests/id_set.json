@@ -15322,7 +15322,7 @@
                     "DeleteContext"
                 ], 
                 "implementing_commands": [
-                    "awis-info"
+                    "domain"
                 ]
             }
         }
