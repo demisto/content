@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatMiner",
+            "playbookID": "ThreatMiner-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test"
         },
@@ -30,10 +34,6 @@
         {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
-        },
-        {
-            "integrations": "ThreatMiner",
-            "playbookID": "ThreatMiner-Test"
         },
         {
             "integrations": "MISP V2",
