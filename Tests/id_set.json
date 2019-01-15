@@ -8909,7 +8909,8 @@
                     "recorded-future-get-threats-vulnerabilities", 
                     "recorded-future-get-domain-risklist", 
                     "recorded-future-get-url-risklist", 
-                    "recorded-future-get-ip-risklist"
+                    "recorded-future-get-ip-risklist", 
+                    "recorded-future-get-vulnerability-risklist"
                 ]
             }
         }, 
