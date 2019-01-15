@@ -574,7 +574,7 @@ script:
         context = {
             'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': threat_miner_context,
             'File(val.MD5 && val.MD5 == obj.MD5)': file_context,
-            'DBot_score': dbot_scores
+            'DBotScore': dbot_scores
         }
 
         return demisto.results({'Type': entryTypes['note'],
@@ -911,5 +911,3 @@ script:
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
-tests:
-  - ThreatMiner-Test
