@@ -123,7 +123,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
             return
         print "Test failed with mock, rerunning without mock."
     # mock file not found or test failed:
-    proxy_proc = start_proxy(c, playbook_id, record=True)
+    proxy_proc = start_proxy(c, public_ip, playbook_id, record=True)
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
