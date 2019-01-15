@@ -307,7 +307,7 @@ script:
 
     API_VERSION = 'v1'
     ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
-    PRIVATE_KEY_CONTENT = demisto.getParam('auth_json').encode('utf-8')
+    SERVICE_ACT_CRDNTLS_FILE_CONTENTS = demisto.getParam('auth_json').encode('utf-8')
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 
@@ -315,19 +315,25 @@ script:
 
 
     def build_and_authorize():
+        """Return a service object via which can call GRM API.
+
+        Use the service_account credential file generated in the Google Cloud Platform to build the Google
+        Resource Manager API Service object via which commands in the integration will make API calls.
+        """
         # credentials, project = google.auth.default()    # establish Service credentials
         # May need to change this to get refresh tokens?
         # user_credentials = google.oauth2.credentials.Credentials(token='ACCESS_TOKEN', scopes=SCOPE)
         # user_credentials = AccessTokenCredentials(ACCESS_TOKEN, 'my-user-agent/1.0')
-        # user_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+        # user_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS),
         #     scopes=SCOPE)
-        service_account_info = json.loads(PRIVATE_KEY_CONTENT.decode('utf-8'))
-        user_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
-        service = discovery.build(GRM, API_VERSION, credentials=user_credentials)
+        service_account_info = json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS.decode('utf-8'))
+        service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+        service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
         return service
 
 
     def make_project_body(project_body):
+        '''Create the project body argument used when calling the GRM API to create or update a project.'''
         keys = project_body.keys()
         body = {}
         if 'projectId' in keys:
@@ -391,6 +397,7 @@ script:
 
 
     def create_project_command():
+        '''Create a project in the Google Cloud Platform.'''
         args = demisto.args()
         response = create_project(args)
         md = tableToMarkdown('Google Cloud Project Created', response)
@@ -413,6 +420,7 @@ script:
 
 
     def delete_project_command():
+        '''Set the lifcycleState attribute of a specified project to DELETE_REQUESTED.'''
         project_id = demisto.args()['projectId']
         response = delete_project(project_id)
         # md = tableToMarkdown('Deleted Google Cloud Project Details', response)
@@ -440,6 +448,7 @@ script:
 
 
     def undelete_project_command():
+        '''Set the lifcycleState attribute of a specified project back to ACTIVE.'''
         project_id = demisto.args()['projectId']
         response = undelete_project(project_id)
         demisto.results('ok')
@@ -452,6 +461,7 @@ script:
 
 
     def get_project_command():
+        '''Retrieves the Project identified by the specified projectId.'''
         project_id = demisto.args()['projectId']
         response = get_project(project_id)
         md = tableToMarkdown('Details of Google Cloud Project', response)
@@ -474,6 +484,7 @@ script:
 
 
     def list_projects_command():
+        '''Lists Projects that are visible to the user and satisfy the specified filter if one is provided.'''
         filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
         response = list_projects(filter_list)
         results = []
@@ -500,6 +511,7 @@ script:
 
 
     def update_project_command():
+        '''Updates the attributes of the Project identified by the specified projectId.'''
         project_id = demisto.args()['projectId']
         project_body = demisto.args()
         del project_body['projectId']
@@ -526,6 +538,7 @@ script:
 
 
     def search_organizations_command():
+        '''Searches Organization resources that are visible to the user and satisfy the specified filter (if provided).'''
         req_body = demisto.args()
         results = []
         next_page = True
@@ -558,6 +571,7 @@ script:
 
 
     def get_organization_command():
+        '''Fetches an Organization resource identified by the specified resource name.'''
         name = demisto.args()['name']
         response = get_organization(name)
         md = tableToMarkdown("Details of Fetched Organization", response)
@@ -583,6 +597,7 @@ script:
 
 
     def create_folder_command():
+        '''Creates a Folder in the resource hierarchy.'''
         parent = demisto.args()['parent']
         name = demisto.args()['name']
         response = create_folder(parent, name)
