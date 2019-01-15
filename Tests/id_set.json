@@ -11599,6 +11599,22 @@
                     "Alexa Test Playbook"
                 ]
             }
+        },
+        {
+            "Google Resource Manager": {
+                "name": "Google Resource Manager", 
+                "commands": [
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-list-projects", 
+                    "grm-update-project", 
+                    "grm-search-organizations", 
+                    "grm-get-organization", 
+                    "grm-delete-project", 
+                    "grm-undelete-project", 
+                    "grm-create-folder"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [

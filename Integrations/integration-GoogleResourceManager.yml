@@ -71,15 +71,7 @@ script:
     execution: false
     name: grm-create-project
     outputs:
-    - {contextPath: GRM.Project.Name, description: Project Name, type: String}
-    - {contextPath: GRM.Project.ProjectId, description: Unique ProjectId of the Created
-        Project, type: String}
-    - {contextPath: GRM.Project.Parent.ID, description: ID of Parent Resource of Created
-        Project, type: date}
-    - {contextPath: GRM.Project.Parent.Type, description: Type of Parent Resource
-        of Created Project, type: Unknown}
-    - {contextPath: GRM.Project.Labels, description: Labels of Created Project Resource,
-      type: Unknown}
+    - {contextPath: GRM.Operation.Name, description: Operation Name, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -97,7 +89,6 @@ script:
     - {contextPath: GRM.Project.ID, description: projectId, type: String}
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.Name, description: name, type: String}
-    - {contextPath: GRM.Project.Labels, description: labels, type: Unknown}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
   - arguments:
@@ -123,6 +114,50 @@ script:
       predefined: []
       required: true
       secret: false
+    - default: false
+      defaultValue: ''
+      description: The name to update the project with
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: The id of the parent resource to update the project to
+      isArray: false
+      name: parent.id
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: The type of the parent resource to update the project to
+      isArray: false
+      name: parent.type
+      predefined: [organization, ' folder']
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: List of label attribute names to update the project with *Note
+        - these tags will match to their corresponding indexed values in label.values.
+        Will not work if the arrays are of mismatched length.
+      isArray: true
+      name: labels.attrs
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: List of label values to update the project with *Note - these values
+        will match to their corresponding indexed values in label.attrs. Will not
+        work if the arrays are of mismatched length.
+      isArray: true
+      name: labels.values
+      predefined: []
+      required: false
+      secret: false
     description: Updates the attributes of the Project identified by the specified
       projectId
     execution: false
@@ -134,7 +169,6 @@ script:
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: labels, type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
@@ -192,21 +226,101 @@ script:
 
         Organization that matched the name argument
       type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: The projectId value of the project you wish to delete
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+      secret: false
+    description: Marks the Project identified by the specified project_id (for example,
+      my-project-123) for deletion.
+    execution: true
+    name: grm-delete-project
+    outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: The projectId of the project whose lifecycleState attribute has
+        been set to DELETE_REQUESTED (aka marked for deletion) and which you wish
+        to restore.
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+      secret: false
+    description: Restores the Project identified by the specified project_id (for
+      example, my-project-123).
+    execution: false
+    name: grm-undelete-project
+    outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: |-
+        string
+
+        The resource name of the new Folder's parent. Must be of the form folders/{folder_id} or organizations/{org_id}.
+
+        Authorization requires the following Google IAM permission on the specified resource parent:
+
+        resourcemanager.folders.create
+      isArray: false
+      name: parent
+      predefined: []
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        string
+
+        Output only. The resource name of the Folder. Its format is folders/{folder_id}, for example: "folders/1234".
+      isArray: false
+      name: name
+      predefined: []
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: The Folder's displayName must be distinct from all other Folder's
+        that share its parent.
+      isArray: false
+      name: displayName
+      predefined: []
+      required: false
+      secret: false
+    description: |-
+      Creates a Folder in the resource hierarchy. Returns an Operation which can be used to track the progress of the folder creation workflow. Upon success the Operation.response field will be populated with the created Folder.
+
+      In order to succeed, the addition of this new Folder must not violate the Folder naming, height or fanout constraints.
+
+      The Folder's displayName must be distinct from all other Folder's that share its parent.
+      The addition of the Folder must not cause the active Folder hierarchy to exceed a height of 4. Note, the full active + deleted Folder hierarchy is allowed to reach a height of 8; this provides additional headroom when moving folders that contain deleted folders.
+      The addition of the Folder must not cause the total number of Folders under its parent to exceed 100.
+      If the operation fails due to a folder constraint violation, some errors may be returned by the folders.create request, with status code FAILED_PRECONDITION and an error description. Other folder constraint violations will be communicated in the Operation, with the specific PreconditionFailure returned via the details list in the Operation.error field.
+    execution: false
+    name: grm-create-folder
+    outputs: []
   dockerimage: grm-integration
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+
     ''' IMPORTS '''
 
     from googleapiclient import discovery
+    import googleapiclient
     # import oauth2client - deprecated
-    import google.auth
-    import google.oauth2.credentials
+    # import google.auth
+    # import google.oauth2.credentials
     from google.oauth2 import service_account
     import json
-    # oauth2client is deprecated - should implement alternative authentication scheme
-    from oauth2client.client import AccessTokenCredentials, OAuth2WebServerFlow, flow_from_clientsecrets
-    # from oauth2client import service_account
 
     ''' GLOBALS/PARAMS '''
 
@@ -217,23 +331,7 @@ script:
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 
-
     ''' HELPER FUNCTIONS '''
-
-    # ops = {
-    #     'get': get,
-    #     'create': create,
-    #     'delete': delete,
-    #     'list': list,
-    # }
-    #
-    # resources = {
-    #     'projects': projects,
-    #     'organizations': organizations,
-    #     'operations': operations,
-    #     'liens': liens,
-    #     'folders': folders
-    # }
 
 
     def build_and_authorize():
@@ -248,16 +346,43 @@ script:
         service = discovery.build(GRM, API_VERSION, credentials=user_credentials)
         return service
 
-    # def call_api(resourceType, op, op_args):
-    #     service = build_and_authorize()
-    #     operation = service.resources[resourceType]().ops[op](op_args).execute()
-    #     return operation
 
+    def make_project_body(project_body):
+        keys = project_body.keys()
+        body = {}
+        if 'projectId' in keys:
+            body['projectId'] = project_body['projectId']
+        if 'parent.type' in keys and 'parent.id' in keys:
+            body['parent'] = {
+                'type': project_body['parent.type'],
+                'id': project_body['parent.id']
+            }
+        if 'name' in keys:
+            body['name'] = project_body['name']
+        if 'labels.attrs' in keys and 'labels.values' in keys:
+            # throw an error if the quantity of label tags and label values dont match
+            labels_attrs = argToList(project_body['labels.attrs'])
+            labels_values = argToList(project_body['labels.values'])
+            # LOG(len(project_body['labels.attrs']))
+            # LOG(project_body['labels.attrs'])
+            # LOG(len(project_body['labels.values']))
+            # LOG(project_body['labels.values'])
+            if len(labels_attrs) != len(labels_values):
+                err_msg = 'Label attrs array and Label values array do not match in length.\n'
+                err_msg += 'These arrays need to match in length because each string in labels.attrs'
+                err_msg += ' is assigned the value of the string in the corresponding index in the labels.values array.'
+                raise IndexError(err_msg)
+            else:
+                body['labels'] = {}
+                for lbl_tag, lbl_val in zip(labels_attrs, labels_values):
+                    body['labels'][lbl_tag] = lbl_val
+        return body
 
     ''' MAIN FUNCTIONS '''
 
 
     def test_module():
+        commands['grm-list-projects']()
         demisto.results('ok')
         sys.exit(0)
 
@@ -300,7 +425,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID==obj.ID)': response
+                'GRM.Project(val.ID&&val.ID==obj.ID)': response
             }
         })
 
@@ -314,17 +439,31 @@ script:
     def delete_project_command():
         project_id = demisto.args()['projectId']
         response = delete_project(project_id)
-        md = tableToMarkdown('Deleted Google Cloud Project Details', response)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                'GRM.Project(val.ID==obj.ID)': response
-            }
-        })
+        # md = tableToMarkdown('Deleted Google Cloud Project Details', response)
+        # demisto.results({
+        #     'Type': entryTypes['note'],
+        #     'Contents': response,
+        #     'ContentsFormat': formats['json'],
+        #     'ReadableContentsFormat': formats['markdown'],
+        #     'HumanReadable': md,
+        #     'EntryContext': {
+        #         'GRM.Project(val.ID==obj.ID)': response
+        #     }
+        # })
+        if json.dumps(response) == '{}':
+            demisto.results('ok')
+
+
+    def undelete_project(project_id):
+        service = build_and_authorize()
+        operation = service.projects().undelete(projectId=project_id).execute()
+        return operation
+
+
+    def undelete_project_command():
+        project_id = demisto.args()['projectId']
+        response = undelete_project(project_id)
+        demisto.results('ok')
 
 
     def get_project(project_id):
@@ -344,7 +483,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID==obj.ID)': response
+                'GRM.Project(val.ID&&val.ID==obj.ID)': response
             }
         })
 
@@ -368,7 +507,7 @@ script:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
                 'EntryContext': {
-                    'GRM.Project(val.ID==obj.ID)': project
+                    'GRM.Project(val.ID&&val.ID==obj.ID)': project
                 }
             }
             results.append(entry)
@@ -382,20 +521,23 @@ script:
 
 
     def update_project_command():
-        project_id = demisto.args()['projectId'] if 'projectId' in demisto.args() else None
-        project_body = demisto.args()['project_body'] if 'project_body' in demisto.args() else None
+        project_id = demisto.args()['projectId']
+        project_body = demisto.args()
+        del project_body['projectId']
+        project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
-        md = tableToMarkdown("Details of Updated GCP Project", response)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                'GRM.Project(val.ID==obj.ID)': response
-            }
-        })
+        # md = tableToMarkdown("Details of Updated GCP Project", response)
+        # demisto.results({
+        #     'Type': entryTypes['note'],
+        #     'Contents': response,
+        #     'ContentsFormat': formats['json'],
+        #     'ReadableContentsFormat': formats['markdown'],
+        #     'HumanReadable': md,
+        #     'EntryContext': {
+        #         'GRM.Project(val.ID&&val.ID==obj.ID)': response
+        #     }
+        # })
+        demisto.results('ok')
 
 
     def search_organizations(req_body):
@@ -419,7 +561,7 @@ script:
                     'ReadableContentsFormat': formats['markdown'],
                     'HumanReadable': md,
                     'EntryContext': {
-                        'GRM.Organization(val.Name==obj.Name)': organization
+                        'GRM.Organization(val.Name&&val.Name==obj.Name)': organization
                     }
                 }
                 results.append(entry)
@@ -447,9 +589,36 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Organization(val.Name==obj.Name)': response
+                'GRM.Organization(val.Name&&val.Name==obj.Name)': response
             }
         })
+
+
+    def create_folder(parent, name):
+        API_VERSION = 'v2'
+        service = build_and_authorize()
+        API_VERSION = 'v1'
+        req_body = {'name': name}
+        operation = service.folders().create(parent=parent, body=req_body)
+        return operation
+
+
+    def create_folder_command():
+        parent = demisto.args()['parent']
+        name = demisto.args()['name']
+        response = create_folder(parent, name)
+        md = tableToMarkdown("Folder Creation Operation", response)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Operation(val.ID&&val.ID==obj.ID)': response
+            }
+        })
+
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -464,6 +633,8 @@ script:
         "grm-update-project": update_project_command,
         "grm-search-organizations": search_organizations_command,
         "grm-get-organization": get_organization_command,
+        "grm-undelete-project": undelete_project_command,
+        "grm-create-folder": create_folder_command,
     }
 
     try:
@@ -478,7 +649,24 @@ script:
 
     # Log exceptions
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
+        if type(e) is googleapiclient.errors.HttpError:
+            if e.resp.get('content-type').startswith('application/json'):
+                err_json = json.loads((e.content).decode('utf-8'))
+                error_code = (err_json.get('error').get('code'))
+                error_msg = (err_json.get('error').get('message'))
+                error_reason = (err_json.get('error').get('errors')[0].get('reason'))
+                error_status = (err_json.get('error').get('status'))
+                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
+                                                                                   error_reason, error_status)
+                LOG(full_err_msg)
+                LOG.print_log()
+                return_error(full_err_msg)
+        elif hasattr(e, 'message'):
+            LOG(e.message)
+            LOG.print_log()
+            return_error(e.message)
+        else:
+            LOG(str(e))
+            LOG.print_log()
+            return_error(str(e))
   type: python
