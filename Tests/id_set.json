@@ -4012,6 +4012,7 @@
                 "name": "AnalyzeOSX", 
                 "depends_on": [
                     "url", 
+                    "Osxcollector", 
                     "file"
                 ], 
                 "tests": [
@@ -6943,6 +6944,17 @@
                     "Detonate File - Generic Test"
                 ]
             }
+        }, 
+        {
+            "TestPacketsled": {
+                "name": "TestPacketsled", 
+                "implementing_commands": [
+                    "packetsled-get-flows", 
+                    "packetsled-get-pcaps", 
+                    "packetsled-get-files", 
+                    "packetsled-get-incidents"
+                ]
+            }
         }
     ], 
     "integrations": [
@@ -9107,13 +9119,7 @@
                 "commands": [
                     "minemeld-add-to-miner", 
                     "minemeld-remove-from-miner", 
-                    "minemeld-retrieve-miner", 
-                    "minemeld-get-indicator-from-miner", 
-                    "ip", 
-                    "file", 
-                    "domain", 
-                    "url", 
-                    "minemeld-get-all-miners-names"
+                    "minemeld-retrieve-list"
                 ], 
                 "tests": [
                     "minemeld_test"
@@ -11300,6 +11306,34 @@
                 ], 
                 "tests": [
                     "IntSights Test"
+                ]
+            }
+        }, 
+        {
+            "Alexa Rank Indicator": {
+                "name": "Alexa Rank Indicator", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "domain"
+                ], 
+                "tests": [
+                    "Alexa Test Playbook"
+                ]
+            }
+        }, 
+        {
+            "McAfee Advanced Threat Defense": {
+                "name": "McAfee Advanced Threat Defense", 
+                "commands": [
+                    "atd-file-upload", 
+                    "atd-get-task-ids", 
+                    "atd-get-report", 
+                    "atd-list-analyzer-profiles", 
+                    "atd-list-user", 
+                    "atd-login", 
+                    "detonate-file", 
+                    "detonate-url", 
+                    "atd-check-status"
                 ]
             }
         }
@@ -15020,6 +15054,33 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "awis-info"
+                ]
+            }
+        }, 
+        {
+            "fd79e55e-016c-43f8-8cca-97870c975233": {
+                "name": "Thread Grid Test", 
+                "implementing_scripts": [
+                    "Sleep", 
+                    "Exists", 
+                    "echo"
+                ], 
+                "implementing_commands": [
+                    "threat-grid-get-sample-state-by-id", 
+                    "threat-grid-get-threat-summary-by-id", 
+                    "threat-grid-upload-sample", 
+                    "threat-grid-get-samples"
                 ]
             }
         }
