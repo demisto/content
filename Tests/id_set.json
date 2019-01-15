@@ -443,7 +443,7 @@
         }, 
         {
             "Ping": {
-                "name": "Ping",
+                "name": "Ping", 
                 "tests": [
                     "Ping Test Playbook"
                 ]
@@ -650,7 +650,7 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL",
+                "name": "ResolveShortenedURL", 
                 "tests": [
                     "No test"
                 ]
@@ -1431,7 +1431,7 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound",
+                "name": "IsMaliciousIndicatorFound", 
                 "tests": [
                     "Test-IsMaliciousIndicatorFound"
                 ]
@@ -4760,7 +4760,7 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
-        },
+        }, 
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
@@ -5008,7 +5008,7 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
-                ],
+                ], 
                 "tests": [
                     "No Tests"
                 ]
@@ -5743,7 +5743,7 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
-                ],
+                ], 
                 "tests": [
                     "No test - Deprecated playbook"
                 ]
@@ -10897,17 +10897,17 @@
         }, 
         {
             "ThreatMiner": {
-                "name": "ThreatMiner",
+                "name": "ThreatMiner", 
                 "commands": [
-                    "domain",
-                    "ip",
+                    "domain", 
+                    "ip", 
                     "file"
-                ],
+                ], 
                 "tests": [
                     "ThreatMiner-Test"
                 ]
             }
-        },
+        }, 
         {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
@@ -13977,8 +13977,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "DeleteContext",
-                    "Set",
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -15279,52 +15279,52 @@
                     "Detonate File - HybridAnalysis"
                 ]
             }
-        },
+        }, 
         {
             "ConvertKeysToTableFieldFormat_Test": {
-                "name": "ConvertKeysToTableFieldFormat Test",
+                "name": "ConvertKeysToTableFieldFormat Test", 
                 "implementing_scripts": [
-                    "DeleteContext",
-                    "PrintErrorEntry",
-                    "ConvertKeysToTableFieldFormat",
-                    "ParseJSON",
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
                     "isError"
                 ]
             }
-        },
+        }, 
         {
             "Pwned test": {
-                "name": "Pwned test",
+                "name": "Pwned test", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ],
+                ], 
                 "implementing_commands": [
-                    "domain",
+                    "domain", 
                     "email"
                 ]
             }
-        },
+        }, 
         {
             "ThreatMiner-Test": {
-                "name": "ThreatMiner - Test",
+                "name": "ThreatMiner - Test", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ],
+                ], 
                 "implementing_commands": [
-                    "ip",
-                    "domain",
+                    "ip", 
+                    "domain", 
                     "file"
                 ]
             }
-        },
+        }, 
         {
             "Ping Test Playbook": {
-                "name": "Ping Test Playbook",
+                "name": "Ping Test Playbook", 
                 "implementing_scripts": [
-                    "PrintErrorEntry",
-                    "DeleteContext",
-                    "Ping",
-                    "isError",
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
                     "PrintContext"
                 ]
             }
