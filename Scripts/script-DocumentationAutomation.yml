@@ -257,6 +257,5 @@ args:
   defaultValue: "True"
 scripttarget: 0
 runonce: false
-dockerimage: demisto/docs
 tests:
   - No test - Test not needed
