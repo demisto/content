@@ -647,7 +647,10 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL"
+                "name": "ResolveShortenedURL", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -841,7 +844,11 @@
         }, 
         {
             "SetIncidentCustomFields": {
-                "name": "SetIncidentCustomFields"
+                "name": "SetIncidentCustomFields", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - script should be phased out of use"
+                ]
             }
         }, 
         {
@@ -1421,7 +1428,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -2436,7 +2446,8 @@
                     "getEntries"
                 ], 
                 "tests": [
-                    "TestParseCSV"
+                    "TestParseCSV", 
+                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
@@ -4746,6 +4757,11 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
+            }
         }
     ], 
     "playbooks": [
@@ -4989,6 +5005,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -5721,6 +5740,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -6766,12 +6788,13 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "Detonate File - HybridAnalysis", 
                     "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
+                    "WildFire - Detonate file", 
                     "Detonate File - Cuckoo", 
                     "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - SNDBOX", 
                     "Detonate File - ThreatGrid"
                 ], 
                 "tests": [
@@ -7029,6 +7052,22 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis": {
+                "name": "Detonate File - HybridAnalysis", 
+                "fromversion": "4.0.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "hybrid-analysis-submit-sample", 
+                    "hybrid-analysis-scan"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }
@@ -8497,7 +8536,11 @@
                     "hybrid-analysis-scan", 
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-search", 
-                    "hybrid-analysis-detonate-file"
+                    "hybrid-analysis-detonate-file", 
+                    "hybrid-analysis-get-report-status"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }, 
@@ -9867,7 +9910,7 @@
                     "domain"
                 ], 
                 "tests": [
-                    "No test"
+                    "Pwned test"
                 ]
             }
         }, 
@@ -11450,9 +11493,10 @@
                 "name": "Email Sender Python", 
                 "implementing_scripts": [
                     "Set", 
-                    "FileCreateAndUpload", 
+                    "RaiseError", 
                     "DeleteContext", 
-                    "Sleep"
+                    "Sleep", 
+                    "FileCreateAndUpload"
                 ], 
                 "implementing_commands": [
                     "googleapps-gmail-get-mail", 
@@ -12032,8 +12076,8 @@
             "CrowdStrike Falcon Intel v2": {
                 "name": "CrowdStrike Falcon Intel v2", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "ThrowException"
+                    "RaiseError", 
+                    "DeleteContext"
                 ], 
                 "implementing_commands": [
                     "domain", 
@@ -13917,7 +13961,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -15191,6 +15236,55 @@
                 "name": "Test-Detonate URL - ThreatGrid", 
                 "implementing_playbooks": [
                     "Detonate URL - ThreatGrid"
+                ]
+            }
+        }, 
+        {
+            "ParseCSVnullbytesTest": {
+                "name": "ParseCSVnullbytesTest", 
+                "implementing_scripts": [
+                    "ParseCSV", 
+                    "FileCreateAndUpload", 
+                    "PrintErrorEntry", 
+                    "Print", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis - Test": {
+                "name": "Detonate File - HybridAnalysis - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
+                ]
+            }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
                 ]
             }
         }
