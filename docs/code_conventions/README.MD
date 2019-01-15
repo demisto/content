@@ -28,8 +28,8 @@ Do not list multiple items on one line as demonstrated below:
 demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : content })
 ```
 
-## Global Variables
-When using a global variable, the variable name must be in all caps. This makes it easier to quickly find inputs in your code. For example:
+## Global Variables / Integration Constants
+When using a global variable or Integration Constant, the variable name must be in all caps. This makes it easier to quickly find inputs in your code. For example:
 ```python
 API_VERSION = "v1"
 USERNAME = demisto.params().get("url")
