@@ -40,7 +40,7 @@ configuration:
   - insights
 - display: Base URL
   name: url
-  defaultvalue: https://geoip.maxmind.com/geoip/v2.1/
+  defaultvalue: https://geoip.maxmind.com/geoip/
   type: 0
   required: true
 script:
@@ -59,6 +59,7 @@ script:
     MODE = demisto.params().get('mode')
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
+    API_VERSION = 'v2.1'
 
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
@@ -96,7 +97,7 @@ script:
     def http_request(query):
         r = requests.request(
             'GET',
-            BASE_URL + MODE +'/'+ query,
+            BASE_URL + API_VERSION + '/' + MODE +'/'+ query,
             headers=HEADERS,
             verify=INSECURE,
             auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY)
