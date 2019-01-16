@@ -591,7 +591,7 @@ script:
     def search_organizations_command():
         """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided)."""
         req_body = demisto.args()
-        results = []
+        contexts = []
         next_page = True
         while next_page:
             response = search_organizations(req_body)
@@ -603,23 +603,23 @@ script:
                     'State': organization.get('lifecycleState'),
                     'CreateTime': organization.get('creationTime')
                 }
-                md = tableToMarkdown("Organization", context)
-                entry = {
-                    'Type': entryTypes['note'],
-                    'Contents': organization,
-                    'ContentsFormat': formats['json'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': md,
-                    'EntryContext': {
-                        'GRM.Organization(val.Name && val.Name === obj.Name)': context
-                    }
-                }
-                results.append(entry)
+                contexts.append(context)
             if 'nextPageToken' not in response:
                 next_page = False
             else:
                 req_body['pageToken'] = response['nextPageToken']
-        demisto.results(results)
+        md = tableToMarkdown("Organizations", contexts)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Organization(val.Name && val.Name === obj.Name)': contexts
+            }
+        }
+        demisto.results(entry)
 
 
     def get_organization(name):
