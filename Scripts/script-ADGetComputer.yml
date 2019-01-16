@@ -193,3 +193,5 @@ outputs:
   description: The groups the endpoint is part of
 deprecated: true
 releaseNotes: "New AD Query integration is being released, implementing a similar command. The script is being deprecated."
+tests:
+  - No test

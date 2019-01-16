@@ -125,3 +125,5 @@ outputs:
   description: The Account display name
 deprecated: true
 releaseNotes: "New AD Query integration is being released, implementing a similar command. The script is being deprecated."
+tests:
+  - No test

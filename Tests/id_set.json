@@ -1308,6 +1308,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4273,6 +4276,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "ad-search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 

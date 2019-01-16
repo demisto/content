@@ -338,3 +338,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No test
