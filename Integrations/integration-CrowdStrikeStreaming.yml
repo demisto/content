@@ -1,0 +1,269 @@
+category: Authentication
+commonfields: {id: integration-CrowdStrikeStreaming, version: -1}
+configuration:
+- defaultvalue: ''
+  display: Fetch incidents
+  name: isFetch
+  options: []
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Incident type
+  name: incidentType
+  options: []
+  required: false
+  type: 13
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Token
+  name: token
+  options: []
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  options: []
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy
+  name: proxy
+  options: []
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  options: []
+  required: false
+  type: 0
+description: Integration Template
+detaileddescription: Use these detailed instructions in order to retrieve the API
+  key
+display: CrowdStrikeStreamingV2
+name: integration-CrowdStrikeStreaming
+script:
+  commands: []
+  dockerimage: ''
+  isfetch: true
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from distutils.util import strtobool
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    TOKEN = demisto.params().get('token')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    # How many time before the first fetch to retrieve incidents
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    # Headers to be sent in requests
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' KEY DICTIONARY '''
+
+    DETECTIONS_BASE_KEY_MAP = {
+        'Detections.device.hostname': 'ScanResults.System',
+        'Detections.device.cid': 'customerIDString',
+        'Detections.hostinfo.domain': 'MachineDomain',
+    }
+
+    DETECTIONS_BEHAVIORS_KEY_MAP = {
+        'filename': 'FileName',
+        'scenario': 'ScanDetectName', #  the value doesn't match 100%, but it's close
+        'md5': 'MD5String',
+        'sha256': 'SHA256String',
+        'ioc_type': 'IOCType',
+        'ioc_value': 'IOCValue',
+        'cmdline': 'CommandLine',
+        'user_name': 'UserName'
+    }
+
+    #   Pattern: {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+    DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+        {
+            'Path': 'parent_details.parent_process_graph_id',
+            'NewKey': 'SensorID',
+            'Delim': ':',
+            'Index': 1
+        },
+        {
+            'Path': 'parent_details.parent_process_graph_id',
+            'NewKey': 'ParentProcessID',
+            'Delim': ':',
+            'Index': 2
+        },
+        {
+            'Path': 'parent_details.parent_process_graph_id',
+            'NewKey': 'ProcessStartTime',
+            'Delim': ':',
+            'Index': 2
+        },
+        {
+            'Path': 'triggering_process_graph_id',
+            'NewKey': 'ProcessID',
+            'Delim': ':',
+            'Index': 2
+        },
+    ]
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        res = requests.request(
+            method,
+            SERVER + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS,
+            auth=(USERNAME, PASSWORD)
+        )
+        # Handle error responses gracefully
+        if res.status_code not in {200}:
+            return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+
+        return res.json()
+
+
+    def behavior_to_incident(behavior, raw_response):
+        labels = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
+        labels.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+        for path, new_key in DETECTIONS_BASE_KEY_MAP.iteritems():
+            labels[new_key] = demisto.get(raw_response, path)
+        incident = {
+            'name': 'Example Incident: ' + behavior.get('name'),
+            'occurred': behavior.get('timestamp'),
+            'rawJSON': json.dumps(behavior),
+            'labels': labels
+        }
+        return incident
+
+
+    def get_trasnformed_dict(old_dict, transformation_dict):
+        """
+           Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+        """
+        new_dict = {}
+        for k in old_dict.keys():
+            if k in transformation_dict:
+                new_dict[transformation_dict[k]] = old_dict[k]
+        return new_dict
+
+
+    def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
+        """
+           Extracts new values out of old_dict using a json structure of:
+           {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+        """
+        new_dict = {}
+        for trans_dict in transformation_dict_arr:
+            try:
+                val = demisto.get(old_dict, trans_dict['Path'])
+                if 'split' in dir(val):
+                    i = trans_dict['Index']
+                    new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
+            except:
+                pass #todo: ASK the content team what's the recommended way to log (i'll log this into the log)
+        return new_dict
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        samples = http_request('GET', 'items/samples')
+
+
+    def get_detections_request(last_behavior):
+        # The service endpoint to request from
+        endpoint_url = "detects/queries/detects/v1"
+        # Dictionary of params for the request
+        params = {
+            'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior),
+            'sort': 'first_behavior.desc'
+        }
+        # Send a request using our http_request wrapper
+        response = http_request('GET', endpoint_url, params)
+        # Check if response contains errors
+        if response.get('errors'):
+            return_error(response.get('errors'))
+        # Check if response contains any data to parse
+        if 'data' in response:
+            return response.get('data')
+        # If neither was found, return back empty results
+        return {}
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+
+        incidents = []
+        items = get_detections_request(last_fetch)
+        for item in demisto.get(items, 'Detections.behaviors'):
+            incident = behavior_to_incident(item, items)
+            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_date > last_fetch:
+                last_fetch = incident_date
+                incidents.append(incident)
+
+        demisto.setLastRun({'time' : last_fetch})
+        demisto.incidents(incidents)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            fetch_incidents()
+
+    # Log exceptions
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise e
+  type: python
