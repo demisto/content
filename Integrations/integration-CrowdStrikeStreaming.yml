@@ -54,6 +54,9 @@ script:
   isfetch: true
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     import json
@@ -192,8 +195,9 @@ script:
                     i = trans_dict['Index']
                     new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
             except:
-                pass #todo: ASK the content team what's the recommended way to log (i'll log this into the log)
+                LOG('Error with: {}'.format(trans_dict))
         return new_dict
+
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
 
