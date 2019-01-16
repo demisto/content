@@ -96,7 +96,8 @@ def configure_proxy(c, proxy=""):
 def start_proxy(c, public_ip, playbook_id, record=False):
     configure_proxy(c, 'localhost:9997')
     action = '--server-replay' if not record else '--save-stream-file'
-    return Popen(["mitmdump", "-p", "9997", action, "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
+    return Popen(["ssh", '-o', 'StrictHostKeyChecking=no', '-t', "ec2-user@{}".format(public_ip), "mitmdump", "-p", "9997", action,
+                  "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
 
 
 def stop_proxy(c, p):
