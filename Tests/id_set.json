@@ -4827,9 +4827,12 @@
                     "Extract Indicators From File - test"
                 ]
             },
-            {
+        },
+        {
+            "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }
     ], 
     "playbooks": [
         {
