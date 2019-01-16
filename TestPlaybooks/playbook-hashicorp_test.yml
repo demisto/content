@@ -1,0 +1,648 @@
+id: hashicorp_test
+version: -1
+name: hashicorp_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e26c1a8a-a9f2-4b21-886d-39eb298181c9
+    type: start
+    task:
+      id: e26c1a8a-a9f2-4b21-886d-39eb298181c9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: d8caa391-a351-42c5-8cbc-db60e34113bb
+    type: regular
+    task:
+      id: d8caa391-a351-42c5-8cbc-db60e34113bb
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: a7ad5342-af8a-465e-897c-c0eda3ae1cf5
+    type: regular
+    task:
+      id: a7ad5342-af8a-465e-897c-c0eda3ae1cf5
+      version: -1
+      name: hashicorp-list-secrets-engines
+      description: List all secrets engines that exist in HashiCorp Vault
+      script: HashiCorp Vault|||hashicorp-list-secrets-engines
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: c2344a8e-bc97-4261-8748-f5f738d38a24
+    type: regular
+    task:
+      id: c2344a8e-bc97-4261-8748-f5f738d38a24
+      version: -1
+      name: hashicorp-list-secrets
+      description: List secrets (names) for a specified KV V2 engine
+      script: HashiCorp Vault|||hashicorp-list-secrets
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      engine:
+        complex:
+          root: HashiCorp
+          accessor: Engine
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: secret/
+              field:
+                value:
+                  simple: Path
+              getField:
+                value:
+                  simple: Path
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: f41943d5-fd3d-4f81-8662-0a27ad6e43f5
+    type: regular
+    task:
+      id: f41943d5-fd3d-4f81-8662-0a27ad6e43f5
+      version: -1
+      name: hashicorp-get-secret-metadata
+      description: Returns information about a specified secret in a specified KV
+        V2 engine
+      script: HashiCorp Vault|||hashicorp-get-secret-metadata
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      engine_path:
+        simple: secret/
+      secret_path:
+        complex:
+          root: HashiCorp
+          accessor: Secret
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_secret
+              field:
+                value:
+                  simple: Path
+              getField:
+                value:
+                  simple: Path
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 505a18a3-7728-4862-8f47-35e3fe643df5
+    type: condition
+    task:
+      id: 505a18a3-7728-4862-8f47-35e3fe643df5
+      version: -1
+      name: Is deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: HashiCorp
+                accessor: Secret.Version
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: "2"
+                    field:
+                      value:
+                        simple: Number
+                    getField:
+                      value:
+                        simple: Deleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: dd22f8f9-ce54-4b5b-8f72-27eca69feb8c
+    type: regular
+    task:
+      id: dd22f8f9-ce54-4b5b-8f72-27eca69feb8c
+      version: -1
+      name: hashicorp-undelete-secret
+      description: Undeletes (restores) a secret on HashiCorp (for KV engine version
+        2)
+      script: HashiCorp Vault|||hashicorp-undelete-secret
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      engine_path:
+        simple: secret/
+      secret_path:
+        simple: test_secret
+      versions:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 082d381a-7ac7-43ea-8412-58157d251488
+    type: regular
+    task:
+      id: 082d381a-7ac7-43ea-8412-58157d251488
+      version: -1
+      name: hashicorp-delete-secret
+      description: Deletes the data under a specified secret given the secret path.
+        Performs a soft delete that allows you to run the hashicorp-undelete-secret
+        command if necessary (for KV engine version 2)
+      script: HashiCorp Vault|||hashicorp-delete-secret
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      engine_path:
+        simple: secret/
+      secret_path:
+        simple: test_secret
+      versions:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 64693243-4ce7-42d9-892d-9e7b741e038f
+    type: regular
+    task:
+      id: 64693243-4ce7-42d9-892d-9e7b741e038f
+      version: -1
+      name: hashicorp-undelete-secret
+      description: Undeletes (restores) a secret on HashiCorp (for KV engine version
+        2)
+      script: HashiCorp Vault|||hashicorp-undelete-secret
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      engine_path:
+        simple: secret/
+      secret_path:
+        simple: test_secret
+      versions:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 98b2db1e-d670-4a6a-8a68-b8395a42c444
+    type: regular
+    task:
+      id: 98b2db1e-d670-4a6a-8a68-b8395a42c444
+      version: -1
+      name: hashicorp-destroy-secret
+      description: Permanently deletes a secret (for KV engine version 2)
+      script: HashiCorp Vault|||hashicorp-destroy-secret
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      engine_path:
+        simple: secret/
+      secret_path:
+        simple: test_secret
+      versions:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 1b49ca60-403f-4363-884e-457e3289ce2e
+    type: regular
+    task:
+      id: 1b49ca60-403f-4363-884e-457e3289ce2e
+      version: -1
+      name: hashicorp-enable-engine
+      description: Enables a new secrets engine at the specified path
+      script: HashiCorp Vault|||hashicorp-enable-engine
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      audit_non_hmac_request_keys: {}
+      audit_non_hmac_response_keys: {}
+      default_lease_ttl: {}
+      description: {}
+      force_no_cache: {}
+      kv_version: {}
+      listing_visibility: {}
+      local: {}
+      max_lease_ttl: {}
+      passthrough_request_headers: {}
+      path:
+        simple: 'test_${TimeNowUnix} '
+      seal_wrap: {}
+      type:
+        simple: kv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: e8ffe6fa-a8c3-492e-8ba0-96629e7b2b58
+    type: regular
+    task:
+      id: e8ffe6fa-a8c3-492e-8ba0-96629e7b2b58
+      version: -1
+      name: hashicorp-disable-engine
+      description: When a secrets engine is no longer needed, it can be disabled.
+        All secrets under the engine are revoked and the corresponding vault data
+        and configurations are removed.
+      script: HashiCorp Vault|||hashicorp-disable-engine
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      path:
+        simple: test_${TimeNowUnix} /
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 0796bf6e-0deb-4b7b-846a-fd9f59b4ff17
+    type: regular
+    task:
+      id: 0796bf6e-0deb-4b7b-846a-fd9f59b4ff17
+      version: -1
+      name: hashicorp-list-policies
+      description: List all configured policies
+      script: HashiCorp Vault|||hashicorp-list-policies
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+    type: regular
+    task:
+      id: 801af8f1-fc76-4602-8b6e-6b11015e7a0b
+      version: -1
+      name: hashicorp-get-policy
+      description: Get information for a policy
+      script: '|||hashicorp-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      name:
+        complex:
+          root: HashiCorp
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: default
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 6af3231e-333f-4e22-861c-1e882f75ba09
+    type: regular
+    task:
+      id: 6af3231e-333f-4e22-861c-1e882f75ba09
+      version: -1
+      name: hashicorp-create-token
+      description: Creates a new authentication token
+      script: HashiCorp Vault|||hashicorp-create-token
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      display_name:
+        simple: test
+      explicit_max_ttl: {}
+      meta: {}
+      no_default_policy: {}
+      no_parent: {}
+      num_uses: {}
+      period: {}
+      policies:
+        simple: ${HashiCorp.Policy.Name}
+      renewable: {}
+      role_name:
+        simple: test
+      ttl:
+        simple: 10m
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 50862b62-7095-4237-8edb-b1d41532497d
+    type: regular
+    task:
+      id: 50862b62-7095-4237-8edb-b1d41532497d
+      version: -1
+      name: hashicorp-configure-engine
+      description: Configure a secrets engine to fetch secrets from
+      script: HashiCorp Vault|||hashicorp-configure-engine
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      path:
+        simple: secret/
+      type:
+        simple: kv
+      version:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: ade8806b-6c71-4c6e-84eb-2270446828b4
+    type: regular
+    task:
+      id: ade8806b-6c71-4c6e-84eb-2270446828b4
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 7e17043c-4906-43f5-80c1-615b77c996bb
+    type: regular
+    task:
+      id: 7e17043c-4906-43f5-80c1-615b77c996bb
+      version: -1
+      name: hashicorp-reset-configuration
+      description: Reset the engines configuration
+      script: HashiCorp Vault|||hashicorp-reset-configuration
+      type: regular
+      iscommand: true
+      brand: HashiCorp Vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3040,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

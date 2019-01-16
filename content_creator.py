@@ -38,7 +38,8 @@ def is_ge_version(ver1, ver2):
 
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
-        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w',
+                               zipfile.ZIP_DEFLATED)
         zipf.comment = '{ "system": true }'
         for root, _, files in os.walk(d):
             for file in files:

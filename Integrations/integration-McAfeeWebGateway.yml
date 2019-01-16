@@ -223,7 +223,7 @@ script:
 
     function insert_entry(list_id, entry_pos, name, description) {
         var cmd_url = '/list/' + list_id + '/entry/' + entry_pos + '/insert';
-        var query = '<listEntry><entry>' + name + '</entry><description>' + (description || '') + '</description></listEntry>';
+        var query = '<listEntry><entry>' + escapeXMLChars(name) + '</entry><description>' + escapeXMLChars(description || '') + '</description></listEntry>';
         var res = '';
 
         login();
@@ -360,3 +360,5 @@ script:
       description: Entry Position in table
     description: Delete an entry from a list
   runonce: false
+tests:
+  - McAfeeWebGatewayTest
