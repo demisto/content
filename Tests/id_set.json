@@ -4786,6 +4786,11 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "RecordedFutureVulnerabilityRiskList": {
+                "name": "RecordedFutureVulnerabilityRiskList"
+            }
         }
     ], 
     "playbooks": [
