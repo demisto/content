@@ -963,9 +963,7 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac",
-        "Phishing test - attachment": "Reached number of allowed submissions per month, untill 1/2/19",
-        "Phishing test - Inline": "Reached number of allowed submissions per month, untill 1/2/19"
+        "FireEye HX Test": "Test unstable - to be fixed by @noac"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -993,7 +991,8 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19"
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
+        "VirusTotal": "Reached number of allowed submissions"
     },
     "nigthly_integrations": [
         "Lastline",
