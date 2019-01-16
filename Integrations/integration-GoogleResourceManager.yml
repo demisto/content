@@ -380,7 +380,10 @@ script:
             'Number': response.get('projectNumber'),
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
-            'Parent': response.get('parent'),
+            'Parent': {
+                'ID': project.get('parent').get('id'),
+                'Type': project.get('parent').get('type')
+            },
             'Labels': response.get('labels')
         }
         md = tableToMarkdown('Google Cloud Project Created', context)
@@ -416,7 +419,10 @@ script:
                 'Number': response.get('projectNumber'),
                 'State': response.get('lifecycleState'),
                 'CreateTime': response.get('createTime'),
-                'Parent': response.get('parent'),
+                'Parent': {
+                    'ID': project.get('parent').get('id'),
+                    'Type': project.get('parent').get('type')
+                },
                 'Labels': response.get('labels')
             }
             success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
@@ -452,7 +458,10 @@ script:
                 'Number': response.get('projectNumber'),
                 'State': response.get('lifecycleState'),
                 'CreateTime': response.get('createTime'),
-                'Parent': response.get('parent'),
+                'Parent': {
+                    'ID': project.get('parent').get('id'),
+                    'Type': project.get('parent').get('type')
+                },
                 'Labels': response.get('labels')
             }
             success_msg = 'The lifecycleState attribute of Project {} has been set to ACTIVE'.format(project_id)
@@ -486,7 +495,10 @@ script:
             'Number': response.get('projectNumber'),
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
-            'Parent': response.get('parent'),
+            'Parent': {
+                'ID': project.get('parent').get('id'),
+                'Type': project.get('parent').get('type')
+            },
             'Labels': response.get('labels')
         }
         md = tableToMarkdown('Details of Google Cloud Project', context)
@@ -522,7 +534,10 @@ script:
                 'Number': project.get('projectNumber'),
                 'State': project.get('lifecycleState'),
                 'CreateTime': project.get('createTime'),
-                'Parent': project.get('parent'),
+                'Parent': {
+                    'ID': project.get('parent').get('id'),
+                    'Type': project.get('parent').get('type')
+                },
                 'Labels': project.get('labels')
             }
             contexts.append(context)
@@ -563,7 +578,10 @@ script:
             'Number': response.get('projectNumber'),
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
-            'Parent': response.get('parent'),
+            'Parent': {
+                'ID': project.get('parent').get('id'),
+                'Type': project.get('parent').get('type')
+            },
             'Labels': response.get('labels')
         }
         md = tableToMarkdown('Details of Updated Google Cloud Project', context)
