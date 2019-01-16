@@ -1,19 +1,275 @@
-commonfields:
-  id: Google Resource Manager
-  version: -1
-name: Google Resource Manager
-display: Google Resource Manager
 category: IT Services
+commonfields: {id: Google Resource Manager, version: -1}
+configuration:
+- defaultvalue: ''
+  display: Service Account Authentication File Contents
+  name: auth_json
+  options: []
+  required: true
+  type: 4
 description: Google Cloud Platform Resource Manager
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
-configuration:
-- display: Service Account Authentication File Contents
-  name: auth_json
-  defaultvalue: ""
-  type: 4
-  required: true
+display: Google Resource Manager
+name: Google Resource Manager
 script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: ['']
+      required: true
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: true
+      name: labels.attrs
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.type
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: true
+      name: labels.values
+      predefined: []
+      required: false
+    description: Create Project Resource
+    execution: false
+    name: grm-create-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+    description: Get Project Resource
+    execution: false
+    name: grm-get-project
+    outputs:
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+    description: Lists projects that are visible to the user and satisfy  the specified
+      filter. This method returns the projects in an unspecified order.
+    execution: false
+    name: grm-list-projects
+    outputs:
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: parent.type
+      predefined: [organization, ' folder']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: true
+      name: labels.attrs
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: true
+      name: labels.values
+      predefined: []
+      required: false
+    description: Updates the attributes of the Project identified by the specified
+      projectId
+    execution: false
+    name: grm-update-project
+    outputs:
+    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: pageSize
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: pageToken
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: filter
+      predefined: []
+      required: false
+    description: Searches Organization resources that are visible to the user and
+      satisfy the specified filter. This method returns Organizations in an unspecified
+      order. New Organizations do not necessarily appear at the end of the results.
+    execution: false
+    name: grm-search-organizations
+    outputs:
+    - {contextPath: GRM.Organization.Name, description: name of the organization in
+        format <type/number> e.g. 'organizations/1245345444', type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
+    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+        the organization resource was created, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: name
+      predefined: []
+      required: true
+    description: Fetches an Organization resource identified by the specified resource
+      name.
+    execution: false
+    name: grm-get-organization
+    outputs:
+    - {contextPath: GRM.Organization.Name, description: name of the organization in
+        format <type/number> e.g. 'organizations/1245345444', type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
+    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+        the organization resource was created, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+    description: Marks the Project identified by the specified project_id (for example,
+      my-project-123) for deletion.
+    execution: true
+    name: grm-delete-project
+    outputs:
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ''
+      isArray: false
+      name: projectId
+      predefined: []
+      required: true
+    description: Restores the Project identified by the specified project_id (for
+      example, my-project-123).
+    execution: false
+    name: grm-undelete-project
+    outputs:
+    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
+    - {contextPath: GRM.Project.ID, description: projectId, type: String}
+    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+        resource was created, type: Date}
+    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Parent, description: '''id'' and ''type'' of the parent',
+      type: Unknown}
+  dockerimage: grm-integration
+  isfetch: false
+  runonce: false
   script: |-
     ''' IMPORTS '''
 
@@ -257,7 +513,7 @@ script:
         """Lists Projects that are visible to the user and satisfy the specified filter if one is provided."""
         filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
         response = list_projects(filter_list)
-        results = []
+        contexts = []
         for project in response.get('projects', []):
             # Parse project into context
             context = {
@@ -269,19 +525,19 @@ script:
                 'Parent': project.get('parent'),
                 'Labels': project.get('labels')
             }
-            md = tableToMarkdown("Project", context)
-            entry = {
-                'Type': entryTypes['note'],
-                'Contents': project,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': md,
-                'EntryContext': {
-                    'GRM.Project(val.ID && val.ID === obj.ID)': context
-                }
+            contexts.append(context)
+        md = tableToMarkdown("Projects", contexts)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'GRM.Project(val.ID && val.ID === obj.ID)': contexts
             }
-            results.append(entry)
-        demisto.results(results)
+        }
+        demisto.results(entry)
 
 
     def update_project(project_id, project_body):
@@ -475,236 +731,5 @@ script:
             LOG.print_log()
             return_error(str(e))
   type: python
-  commands:
-  - name: grm-create-project
-    arguments:
-    - name: projectId
-      required: true
-      predefined:
-      - ""
-    - name: parent.id
-      required: true
-    - name: labels.attrs
-      isArray: true
-    - name: name
-    - name: parent.type
-      required: true
-    - name: labels.values
-      isArray: true
-    outputs:
-    - contextPath: GRM.Project.Name
-      description: name of the project
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Create Project Resource
-  - name: grm-get-project
-    arguments:
-    - name: projectId
-      required: true
-    outputs:
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.Name
-      description: name
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Get Project Resource
-  - name: grm-list-projects
-    arguments:
-    - name: filter
-    outputs:
-    - contextPath: GRM.Project.Name
-      description: name
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Lists projects that are visible to the user and satisfy  the specified
-      filter. This method returns the projects in an unspecified order.
-  - name: grm-update-project
-    arguments:
-    - name: projectId
-      required: true
-    - name: name
-    - name: parent.id
-    - name: parent.type
-      predefined:
-      - organization
-      - ' folder'
-    - name: labels.attrs
-      isArray: true
-    - name: labels.values
-      isArray: true
-    outputs:
-    - contextPath: GRM.Project.Name
-      description: name of the project
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Updates the attributes of the Project identified by the specified
-      projectId
-  - name: grm-search-organizations
-    arguments:
-    - name: pageSize
-    - name: pageToken
-    - name: filter
-    outputs:
-    - contextPath: GRM.Organization.Name
-      description: name of the organization in format <type/number> e.g. 'organizations/1245345444'
-      type: String
-    - contextPath: GRM.Organization.DisplayName
-      description: displayName
-      type: String
-    - contextPath: GRM.Organization.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Organization.CreateTime
-      description: creationTime - the time the organization resource was created
-      type: Date
-    description: Searches Organization resources that are visible to the user and
-      satisfy the specified filter. This method returns Organizations in an unspecified
-      order. New Organizations do not necessarily appear at the end of the results.
-  - name: grm-get-organization
-    arguments:
-    - name: name
-      required: true
-    outputs:
-    - contextPath: GRM.Organization.Name
-      description: name of the organization in format <type/number> e.g. 'organizations/1245345444'
-      type: String
-    - contextPath: GRM.Organization.DisplayName
-      description: displayName
-      type: String
-    - contextPath: GRM.Organization.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Organization.CreateTime
-      description: creationTime - the time the organization resource was created
-      type: Date
-    description: Fetches an Organization resource identified by the specified resource
-      name.
-  - name: grm-delete-project
-    arguments:
-    - name: projectId
-      required: true
-    outputs:
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.Name
-      description: name
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Marks the Project identified by the specified project_id (for example,
-      my-project-123) for deletion.
-    execution: true
-  - name: grm-undelete-project
-    arguments:
-    - name: projectId
-      required: true
-    outputs:
-    - contextPath: GRM.Project.State
-      description: lifecycleState
-      type: String
-    - contextPath: GRM.Project.Number
-      description: projectNumber
-      type: String
-    - contextPath: GRM.Project.ID
-      description: projectId
-      type: String
-    - contextPath: GRM.Project.Name
-      description: name
-      type: String
-    - contextPath: GRM.Project.CreateTime
-      description: createTime - The time the resource was created
-      type: Date
-    - contextPath: GRM.Project.Labels
-      description: Labels of the project
-      type: Unknown
-    - contextPath: GRM.Project.Parent
-      description: '''id'' and ''type'' of the parent'
-      type: Unknown
-    description: Restores the Project identified by the specified project_id (for
-      example, my-project-123).
-  dockerimage: grm-integration
-  runonce: false
-releaseNotes: "New integration"
-tests:
-  - GoogleResourceManager-Test
+releaseNotes: New integration
+tests: [GoogleResourceManager-Test]

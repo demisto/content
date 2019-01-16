@@ -15547,6 +15547,27 @@
                     "domain"
                 ]
             }
+        },
+        {
+            "GoogleResourceManager-Test": {
+                "name": "GoogleResourceManager-Test", 
+                "implementing_scripts": [
+                    "GenerateUUID", 
+                    "Print", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "grm-search-organizations", 
+                    "grm-update-project", 
+                    "grm-undelete-project", 
+                    "grm-get-organization", 
+                    "closeInvestigation", 
+                    "grm-delete-project", 
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-list-projects"
+                ]
+            }
         }
     ]
 }
