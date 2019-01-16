@@ -354,14 +354,17 @@ script:
 
 
     def test_module():
+        """If the list_projects_command executes successfully then the test completed and returns 'ok'"""
         commands['grm-list-projects']()
         demisto.results('ok')
 
 
     def create_project(project_body):
+        """Build service object and return the result of calling the API 'create' function for the projects resource."""
         service = build_and_authorize()
         body = make_project_body(project_body)
         operation = service.projects().create(body=body).execute()
+        # Get back result of long-running operation
         response = poll_operation(operation)
         return response
 
@@ -388,12 +391,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
             }
         })
 
 
     def delete_project(project_id):
+        """Build service object and return the result of calling the API 'delete' function for the projects resource."""
         service = build_and_authorize()
         operation = service.projects().delete(projectId=project_id).execute()
         return operation
@@ -421,7 +425,7 @@ script:
                 'Contents': success_msg,
                 'ContentsFormat': formats['text'],
                 'EntryContext': {
-                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                    'GRM.Project(val.ID && val.ID === obj.ID)': context
                 }
             })
         else:
@@ -429,6 +433,7 @@ script:
 
 
     def undelete_project(project_id):
+        """Build service object and return the result of calling the API 'undelete' function for the projects resource."""
         service = build_and_authorize()
         operation = service.projects().undelete(projectId=project_id).execute()
         return operation
@@ -456,7 +461,7 @@ script:
                 'Contents': success_msg,
                 'ContentsFormat': formats['text'],
                 'EntryContext': {
-                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                    'GRM.Project(val.ID && val.ID === obj.ID)': context
                 }
             })
         else:
@@ -464,6 +469,7 @@ script:
 
 
     def get_project(project_id):
+        """Build service object and return the result of calling the API 'get' function for the projects resource."""
         service = build_and_authorize()
         operation = service.projects().get(projectId=project_id).execute()
         return operation
@@ -491,12 +497,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                'GRM.Project(val.ID && val.ID == obj.ID)': context
             }
         })
 
 
     def list_projects(filter_list):
+        """Build service object and return the result of calling the API 'list' function for the projects resource."""
         service = build_and_authorize()
         operation = service.projects().list(filter=filter_list).execute()
         return operation
@@ -526,7 +533,7 @@ script:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
                 'EntryContext': {
-                    'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                    'GRM.Project(val.ID && val.ID === obj.ID)': context
                 }
             }
             results.append(entry)
@@ -534,6 +541,7 @@ script:
 
 
     def update_project(project_id, project_body):
+        """Build service object and return the result of calling the API 'update' function for the projects resource."""
         service = build_and_authorize()
         operation = service.projects().update(projectId=project_id, body=project_body)
         return operation
@@ -550,13 +558,13 @@ script:
         response = get_project(project_id)
         # Parse response into context
         context = {
-            'Name': response['name'],
-            'ID': response['projectId'],
-            'Number': response['projectNumber'],
-            'State': response['lifecycleState'],
-            'CreateTime': response['createTime'],
-            'Parent': response['parent'],
-            'Labels': response['labels']
+            'Name': response.get('name'),
+            'ID': response.get('projectId'),
+            'Number': response.get('projectNumber'),
+            'State': response.get('lifecycleState'),
+            'CreateTime': response.get('createTime'),
+            'Parent': response.get('parent'),
+            'Labels': response.get('labels')
         }
         md = tableToMarkdown('Details of Updated Google Cloud Project', context)
         demisto.results({
@@ -566,12 +574,15 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID&&val.ID==obj.ID)': context
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
             }
         })
 
 
     def search_organizations(req_body):
+        """
+        Build service object and return the result of calling the API 'search' function for the organizations resource.
+        """
         service = build_and_authorize()
         operation = service.organizations().search(body=req_body).execute()
         return operation
@@ -600,7 +611,7 @@ script:
                     'ReadableContentsFormat': formats['markdown'],
                     'HumanReadable': md,
                     'EntryContext': {
-                        'GRM.Organization(val.Name&&val.Name==obj.Name)': context
+                        'GRM.Organization(val.Name && val.Name === obj.Name)': context
                     }
                 }
                 results.append(entry)
@@ -612,6 +623,7 @@ script:
 
 
     def get_organization(name):
+        """Build service object and return the result of calling the API 'get' function for the organizations resource."""
         service = build_and_authorize()
         operation = service.organizations().get(name=name).execute()
         return operation
@@ -636,12 +648,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Organization(val.Name&&val.Name==obj.Name)': context
+                'GRM.Organization(val.Name && val.Name === obj.Name)': context
             }
         })
 
 
     def create_folder(parent, name):
+        """Build service object and return the result of calling the API 'create' function for the folders resource."""
         API_VERSION = 'v2'
         service = build_and_authorize()
         API_VERSION = 'v1'
@@ -663,7 +676,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Operation(val.Name&&val.Name==obj.Name)': response
+                'GRM.Operation(val.Name && val.Name === obj.Name)': response
             }
         })
 
@@ -691,7 +704,6 @@ script:
             test_module()
         elif demisto.command() in commands.keys():
             commands[demisto.command()]()
-            LOG.print_log()
 
     # Log exceptions
     except Exception as e:
