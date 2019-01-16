@@ -4826,7 +4826,7 @@
                 "tests": [
                     "Extract Indicators From File - test"
                 ]
-            },
+            }
         },
         {
             "ConvertKeysToTableFieldFormat": {
