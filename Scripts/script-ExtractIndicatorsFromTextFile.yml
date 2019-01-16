@@ -23,9 +23,14 @@ script: |-
       data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
 
       # Extract indicators (omitting context output, letting auto-extract work)
-      demisto.results(str(demisto.executeCommand("extractIndicators", {
-          'text': data
-      })[0][u'Contents']))
+      indicators_hr = demisto.executeCommand("extractIndicators", {
+          'text': data})[0][u'Contents']
+      demisto.results( {
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['text'],
+          'Contents': indicators_hr,
+          'HumanReadable': indicators_hr
+                       })
 type: python
 tags: []
 comment: |-

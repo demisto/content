@@ -4740,7 +4740,7 @@
                     "getFilePath"
                 ], 
                 "tests": [
-                    "ReadPDFFile-Test"
+                    "Extract Indicators From File - test"
                 ]
             }
         }, 
@@ -4768,6 +4768,19 @@
                     "ExtractHash", 
                     "ExtractIP", 
                     "ExtractURL", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
                     "getFilePath"
                 ], 
                 "tests": [
@@ -6048,9 +6061,9 @@
                 "name": "Extract Indicators From File - Generic", 
                 "fromversion": "4.1.0", 
                 "implementing_scripts": [
+                    "ExtractIndicatorsFromWordFile", 
                     "Set", 
                     "ReadPDFFile", 
-                    "ExtractIndicatorsFromWordDocument", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -11830,10 +11843,11 @@
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
                     "PrintErrorEntry", 
+                    "DeleteContext", 
                     "http"
                 ], 
                 "implementing_playbooks": [
-                    "Extract Indicators From File - Generic"
+                    "Extract Indicators From File - Generic_dev"
                 ]
             }
         }, 

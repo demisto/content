@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: da3a5643-2e84-43b5-8e37-60032a95355b
+    taskid: 7c475fe8-ef6f-4203-8649-88c8ee1355a4
     type: start
     task:
-      id: da3a5643-2e84-43b5-8e37-60032a95355b
+      id: 7c475fe8-ef6f-4203-8649-88c8ee1355a4
       version: -1
       name: ""
       description: ""
@@ -37,10 +37,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+    taskid: 7d301230-7301-4a9c-879f-2e3b4366a3d7
     type: condition
     task:
-      id: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+      id: 7d301230-7301-4a9c-879f-2e3b4366a3d7
       version: -1
       name: Is there a file?
       description: |
@@ -75,10 +75,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+    taskid: 864c6f5e-7214-4a36-8c37-80f7057bd36e
     type: regular
     task:
-      id: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+      id: 864c6f5e-7214-4a36-8c37-80f7057bd36e
       version: -1
       name: Set file to local context
       description: Set the input file into local context.
@@ -96,6 +96,7 @@ tasks:
       value:
         complex:
           root: inputs.File
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -108,10 +109,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 3c91d141-7645-4300-8610-51328a06369a
+    taskid: cc0c7ac6-f764-47df-8f1e-cfbdcbd25c4e
     type: title
     task:
-      id: 3c91d141-7645-4300-8610-51328a06369a
+      id: cc0c7ac6-f764-47df-8f1e-cfbdcbd25c4e
       version: -1
       name: Done
       description: ""
@@ -130,10 +131,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 6173b352-964a-40f2-825d-8c0346ef8910
+    taskid: a3d79b72-2b6b-498f-887a-d406249d18e8
     type: title
     task:
-      id: 6173b352-964a-40f2-825d-8c0346ef8910
+      id: a3d79b72-2b6b-498f-887a-d406249d18e8
       version: -1
       name: Extract Indicators from file
       description: ""
@@ -157,13 +158,14 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 3ca29382-1b0a-4638-84ad-10fe5fcaefcc
+    taskid: 5e2997db-65a5-49a7-8f9a-87892701e8fe
     type: condition
     task:
-      id: 3ca29382-1b0a-4638-84ad-10fe5fcaefcc
+      id: 5e2997db-65a5-49a7-8f9a-87892701e8fe
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and
+        EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -223,7 +225,17 @@ tasks:
                     right:
                       value:
                         simple: Composite Document File V2 Document, No summary info
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: message/rfc822
                 accessor: EntryID
+                transformers:
+                - operator: uniq
             iscontext: true
     view: |-
       {
@@ -236,10 +248,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 6bc70b1a-93a4-4e4e-827e-0627901f9618
+    taskid: e077b5e8-a546-4da5-86ea-fb327ead5a2e
     type: regular
     task:
-      id: 6bc70b1a-93a4-4e4e-827e-0627901f9618
+      id: e077b5e8-a546-4da5-86ea-fb327ead5a2e
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -296,7 +308,17 @@ tasks:
               right:
                 value:
                   simple: Composite Document File V2 Document, No summary info
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: message/rfc822
           accessor: EntryID
+          transformers:
+          - operator: uniq
       maxFileSize: {}
     reputationcalc: 2
     separatecontext: false
@@ -311,10 +333,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 6f18e685-32a4-4d00-88f6-f06c3132a8ba
+    taskid: 542f7e7a-6978-480e-8356-cc7cda51a6d7
     type: condition
     task:
-      id: 6f18e685-32a4-4d00-88f6-f06c3132a8ba
+      id: 542f7e7a-6978-480e-8356-cc7cda51a6d7
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -355,6 +377,8 @@ tasks:
                         simple: application/pdf
                     ignorecase: true
                 accessor: EntryID
+                transformers:
+                - operator: uniq
             iscontext: true
           ignorecase: true
     view: |-
@@ -368,10 +392,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: a9484da9-878d-4ddc-8ed1-83d1da6b9775
+    taskid: 34c98942-d6e9-4db6-81e9-a04339cdf58c
     type: regular
     task:
-      id: a9484da9-878d-4ddc-8ed1-83d1da6b9775
+      id: 34c98942-d6e9-4db6-81e9-a04339cdf58c
       version: -1
       name: Extract indicators from PDF file
       description: Extracts indicators from PDF files.
@@ -405,6 +429,8 @@ tasks:
                   simple: application/pdf
               ignorecase: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
       maxFileSize: {}
     reputationcalc: 2
     separatecontext: false
@@ -419,10 +445,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 13fc7107-a648-4a45-8240-342f43d4540d
+    taskid: d729d532-4b81-4cef-8baa-278a442408de
     type: condition
     task:
-      id: 13fc7107-a648-4a45-8240-342f43d4540d
+      id: d729d532-4b81-4cef-8baa-278a442408de
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -460,24 +486,26 @@ tasks:
                     right:
                       value:
                         simple: Microsoft Word
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: doc
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
                 accessor: EntryID
+                transformers:
+                - operator: uniq
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.Info
-            iscontext: true
-          right:
-            value:
-              simple: doc
-        - operator: isEqualString
-          left:
-            value:
-              simple: File.Info
-            iscontext: true
-          right:
-            value:
-              simple: docs
     view: |-
       {
         "position": {
@@ -489,10 +517,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: f97f529a-4428-4639-83a0-799106ca755e
+    taskid: c552720b-f6fc-49be-8c2a-1beb7178c737
     type: title
     task:
-      id: f97f529a-4428-4639-83a0-799106ca755e
+      id: c552720b-f6fc-49be-8c2a-1beb7178c737
       version: -1
       name: No File To Parse
       description: ""
@@ -514,14 +542,14 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 9e130d59-4984-4699-810e-b95da0f8d32f
+    taskid: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
     type: regular
     task:
-      id: 9e130d59-4984-4699-810e-b95da0f8d32f
+      id: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
-      scriptName: ExtractIndicatorsFromWordDocument
+      scriptName: ExtractIndicatorsFromWordFile
       type: regular
       iscommand: false
       brand: ""
@@ -549,7 +577,7 @@ tasks:
               right:
                 value:
                   simple: Microsoft Word
-          - - operator: isEqualString
+            - operator: isEqualString
               left:
                 value:
                   simple: File.Info
@@ -566,6 +594,8 @@ tasks:
                 value:
                   simple: docx
           accessor: EntryID
+          transformers:
+          - operator: uniq
     reputationcalc: 2
     separatecontext: false
     view: |-

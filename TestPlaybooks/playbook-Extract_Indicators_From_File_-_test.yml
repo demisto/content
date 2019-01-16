@@ -1,18 +1,16 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-description: |-
-  A test playbook for extracting indicators from EML files.
-  Indicators: 
-  - Email addresses
+description: "A test playbook for extracting indicators from EML files.\nIndicators:
+  \n- Email addresses"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 050e140a-fb12-4a9d-8377-6a28555aa232
+    taskid: db62a776-8c18-427e-882f-f7ed688bdcf0
     type: start
     task:
-      id: 050e140a-fb12-4a9d-8377-6a28555aa232
+      id: db62a776-8c18-427e-882f-f7ed688bdcf0
       version: -1
       name: ""
       description: ""
@@ -20,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -33,20 +31,20 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 310bcf42-2403-485b-8f04-f49663039bba
+    taskid: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
     type: regular
     task:
-      id: 310bcf42-2403-485b-8f04-f49663039bba
+      id: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
       version: -1
-      name: Download EML file
-      description: "Downloads an EML file using HTTP GET."
+      name: Download TXT file
+      description: Downloads a TXT file using HTTP GET.
       scriptName: http
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       body: {}
       filename: {}
@@ -60,65 +58,29 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/textwithindicators.txt
       username: {}
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 5ff01c5c-935e-491c-8864-185c32cef8b6
-    type: playbook
-    task:
-      id: 5ff01c5c-935e-491c-8864-185c32cef8b6
-      version: -1
-      name: Extract Indicators From File - Generic
-      description: |-
-        Extract indicators from a file.
-        Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: File
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "x": -180,
+          "y": 570
         }
       }
     note: false
     timertriggers: []
   "3":
     id: "3"
-    taskid: cf7bb8db-8b11-4c89-83df-34a814c194ea
+    taskid: 620415d6-33b2-4055-8d76-ce93d7b8aedb
     type: condition
     task:
-      id: cf7bb8db-8b11-4c89-83df-34a814c194ea
+      id: 620415d6-33b2-4055-8d76-ce93d7b8aedb
       version: -1
-      name: Were the correct email addresses extracted?
-      description: Checks whether specific email addresses were extracted from the
-        EML file.
+      name: Were the correct indicators extracted?
+      description: Checks whether specific indicators were extracted from each one
+        of the downloaded files.
       type: condition
       iscommand: false
       brand: ""
@@ -129,47 +91,63 @@ tasks:
       - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
       condition:
-      - - operator: isExists
+      - - operator: containsGeneral
           left:
             value:
               complex:
-                root: Account
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Account.Email.Address
-                      iscontext: true
-                    right:
-                      value:
-                        simple: shachar@demisto.com
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Account.Email.Address
-                      iscontext: true
-                    right:
-                      value:
-                        simple: yaakovi@demisto.com
-                accessor: Email.Address
+                root: URL
+                accessor: Data
             iscontext: true
+          right:
+            value:
+              simple: http://www.txttesturl.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://www.pdftesturl.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://www.doctesturl.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://www.docxtesturl.com
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 70,
+          "y": 1065
         }
       }
     note: false
     timertriggers: []
   "4":
     id: "4"
-    taskid: b5bfcc1c-491c-43fa-8456-90fcfc6ee773
+    taskid: 44c63007-771f-4c5b-8ef2-62e9857feb24
     type: title
     task:
-      id: b5bfcc1c-491c-43fa-8456-90fcfc6ee773
+      id: 44c63007-771f-4c5b-8ef2-62e9857feb24
       version: -1
       name: Done
       description: ""
@@ -180,21 +158,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 70,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
   "5":
     id: "5"
-    taskid: 24db5de9-e436-400f-8141-20fac79cfea8
+    taskid: b637222e-8d0a-4b36-8157-211518859d3a
     type: regular
     task:
-      id: 24db5de9-e436-400f-8141-20fac79cfea8
+      id: b637222e-8d0a-4b36-8157-211518859d3a
       version: -1
       name: Make test fail
-      description: "Causes the test playbook to fail if the correct email addresses were not extracted."
+      description: Causes the test playbook to fail if the correct email addresses
+        were not extracted.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -210,8 +189,220 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 338,
-          "y": 709
+          "x": 470,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
+    type: playbook
+    task:
+      id: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
+      version: -1
+      name: Extract Indicators From File - Generic_dev
+      playbookName: Extract Indicators From File - Generic_dev
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 889
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: fba4e84a-c285-49ba-8579-90f4c735b7b8
+    type: title
+    task:
+      id: fba4e84a-c285-49ba-8579-90f4c735b7b8
+      version: -1
+      name: Download Files
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "1"
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 8726ac21-b307-4695-8404-5d1be7d090cf
+    type: regular
+    task:
+      id: 8726ac21-b307-4695-8404-5d1be7d090cf
+      version: -1
+      name: Download DOC file
+      description: Downloads a DOC file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 2d6acf31-9480-4bce-8536-199a117b9a9a
+    type: regular
+    task:
+      id: 2d6acf31-9480-4bce-8536-199a117b9a9a
+      version: -1
+      name: Download DOCX file
+      description: Downloads a DOCX file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docxwithindicators.docx
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+    type: regular
+    task:
+      id: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+      version: -1
+      name: Download PDF file
+      description: Downloads a PDF file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfwithindicators.pdf
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 80b24b26-62f5-410c-8db8-621b66828f94
+    type: regular
+    task:
+      id: 80b24b26-62f5-410c-8db8-621b66828f94
+      version: -1
+      name: Delete Context
+      description: Delete the context of the incident to start with clear context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -221,9 +412,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 668,
-        "x": 50,
+        "height": 1580,
+        "width": 1820,
+        "x": -660,
         "y": 50
       }
     }

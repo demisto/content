@@ -87,7 +87,6 @@ script: |-
                           "HumanReadable": md
                           })
 
-          # Extract indicators using auto-extract
           all_pdf_data = ""
           if metadata:
               for k,v in metadata.iteritems():
@@ -98,10 +97,16 @@ script: |-
               for u in URLs:
                   u = u["Data"] + " "
                   all_pdf_data += u
-              # Extract indicators (omitting context output, letting auto-extract work)
-          demisto.results(str(demisto.executeCommand("extractIndicators", {
-              'text': all_pdf_data
-          })[0][u'Contents']))
+
+          # Extract indicators (omitting context output, letting auto-extract work)
+          indicators_hr = demisto.executeCommand("extractIndicators", {
+              'text': all_pdf_data})[0][u'Contents']
+          demisto.results( {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['text'],
+              'Contents': indicators_hr,
+              'HumanReadable': indicators_hr
+                           })
 
       else:
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "EntryID {0} path could not be found".format(entryID) } )
@@ -147,4 +152,4 @@ dockerimage: demisto/pdfx
 runas: DBotWeakRole
 releaseNotes: "Updated script to use the enhanced extractIndicators command"
 tests:
-  - ReadPDFFile-Test 
+  - Extract Indicators From File - test
