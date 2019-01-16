@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Pwned",
+            "playbookID": "Pwned test"
+        },
+        {
+            "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
+            "playbookID": "ParseCSVnullbytesTest"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
@@ -20,6 +30,10 @@
         {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
+        },
+        {
+            "integrations": "MISP V2",
+            "playbookID": "MISP V2 Test"
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -51,7 +65,8 @@
             "integrations": [
                 "Lastline",
                 "WildFire",
-                "SNDBOX"
+                "SNDBOX",
+                "VxStream"
             ],
             "playbookID" : "Detonate File - Generic Test",
             "timeout" : 2400,
@@ -66,6 +81,11 @@
             "playbookID": "Detonate File - SNDBOX - Test",
             "timeout": 2400,
             "nightly": true
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "timeout": 2400
         },
         {
             "playbookID": "WordTokenizeTest"
@@ -772,6 +792,11 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 1000
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -916,6 +941,9 @@
         },
         {
           "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "Ping Test Playbook"
         }
     ],
     "skipped_tests": {
@@ -931,8 +959,7 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac",
-        "CreatePhishingClassifierMLTest": "Test unstable - to be fixed by @Erez"
+        "FireEye HX Test": "Test unstable - to be fixed by @noac"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -959,9 +986,7 @@
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
-        "Netskope": "instance is down",
-        "IntSights": "Issues with API",
-        "Cuckoo Sandbox": "instance is down"
+        "Netskope": "instance is down"
     },
     "nigthly_integrations": [
         "Lastline",
