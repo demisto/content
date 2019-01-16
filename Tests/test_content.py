@@ -100,7 +100,7 @@ def stop_proxy(c, p):
     configure_proxy(c, '')
     print "proxy outputs:"
     print p.stdout.read()  # DEBUG
-    print p.stderr.read()  # DEBUG
+    print p.stderr.read()  # DEBUG a
     p.send_signal(signal.SIGINT)
 
 
