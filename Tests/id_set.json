@@ -4745,8 +4745,8 @@
             }
         }, 
         {
-            "ExtractIndicatorsFromWordDocument": {
-                "name": "ExtractIndicatorsFromWordDocument", 
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
                     "extractIndicators", 
@@ -11847,7 +11847,7 @@
                     "http"
                 ], 
                 "implementing_playbooks": [
-                    "Extract Indicators From File - Generic_dev"
+                    "Extract Indicators From File - Generic"
                 ]
             }
         }, 
