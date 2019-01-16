@@ -10896,6 +10896,19 @@
             }
         }, 
         {
+            "ThreatMiner": {
+                "name": "ThreatMiner", 
+                "commands": [
+                    "domain", 
+                    "ip", 
+                    "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
+                ]
+            }
+        }, 
+        {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
                 "fromversion": "3.5.0", 
@@ -15288,6 +15301,19 @@
                 "implementing_commands": [
                     "domain", 
                     "email"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
                 ]
             }
         }, 
