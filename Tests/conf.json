@@ -965,6 +965,12 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "Google Resource Manager",
+            "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
         }
     ],
     "skipped_tests": {
