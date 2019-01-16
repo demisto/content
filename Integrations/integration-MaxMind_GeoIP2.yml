@@ -213,7 +213,7 @@ script:
         if demisto.command() == 'ip':
             geo_ip_command()
         if demisto.command() == 'test-module':
-            raw = http_request('8.8.8.8', MODE)
+            raw = http_request('8.8.8.8')
             demisto.results('ok')
     except Exception as e:
         LOG(e)
