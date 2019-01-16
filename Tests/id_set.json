@@ -11612,6 +11612,9 @@
                     "grm-get-organization", 
                     "grm-delete-project", 
                     "grm-undelete-project"
+                ], 
+                "tests": [
+                    "GoogleResourceManager-Test"
                 ]
             }
         }
