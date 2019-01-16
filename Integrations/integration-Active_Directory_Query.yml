@@ -1316,6 +1316,6 @@ script:
     description: Retrieve the list of persons or computers that are members of the
       specified group.
   runonce: false
-  dockerimage: demisto/ldap
+  dockerimage: demisto/ldap:1.0.0.75
 tests:
   - Active Directory Test
