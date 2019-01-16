@@ -992,7 +992,7 @@
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
-        "VirusTotal": "Reached number of allowed submissions"
+        "VirusTotal - Private API": "Reached number of allowed submissions"
     },
     "nigthly_integrations": [
         "Lastline",
