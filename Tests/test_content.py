@@ -98,10 +98,10 @@ def start_proxy(c, public_ip, playbook_id, record=False):
 
 def stop_proxy(c, p):
     configure_proxy(c, '')
+    p.send_signal(signal.SIGINT)
     print "proxy outputs:"
     print p.stdout.read()  # DEBUG
-    print p.stderr.read()  # DEBUG a
-    p.send_signal(signal.SIGINT)
+    print p.stderr.read()  # DEBUG
 
 
 def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
