@@ -1,4 +1,4 @@
-category: Authentication
+category: End Point
 commonfields: {id: integration-CrowdStrikeStreaming, version: -1}
 configuration:
 - defaultvalue: ''
@@ -43,10 +43,10 @@ configuration:
   options: []
   required: false
   type: 0
-description: Integration Template
+description: The Falcon Streaming API (formerly known as the Falcon Firehose API)
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
-display: CrowdStrikeStreamingV2
+display: CrowdStrike Falcon Streaming V2
 name: integration-CrowdStrikeStreaming
 script:
   commands: []
@@ -202,15 +202,15 @@ script:
         """
         Performs basic get request to get item samples
         """
-        samples = http_request('GET', 'items/samples')
+        return http_request('GET', 'detects/queries/detects/v1')
 
 
-    def get_detections_request(last_behavior):
+    def get_detections_request(last_behavior_time):
         # The service endpoint to request from
         endpoint_url = "detects/queries/detects/v1"
         # Dictionary of params for the request
         params = {
-            'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior),
+            'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior_time),
             'sort': 'first_behavior.desc'
         }
         # Send a request using our http_request wrapper
@@ -244,7 +244,7 @@ script:
                 last_fetch = incident_date
                 incidents.append(incident)
 
-        demisto.setLastRun({'time' : last_fetch})
+        demisto.setLastRun({'time': last_fetch})
         demisto.incidents(incidents)
 
 
