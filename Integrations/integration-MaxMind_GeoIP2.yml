@@ -46,7 +46,7 @@ configuration:
 script:
   script: |
     import requests
-    import collections
+    from collections import defaultdict
     from requests.auth import HTTPBasicAuth
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -106,11 +106,11 @@ script:
         return r
 
 
-    def format_results(raw):
+    def format_results(res_json):
         hr = defaultdict()
         ec = defaultdict()
-        maxmind_ec = defaultdict()
-        ip_ec = defaultdict()
+        maxmind_ec = defaultdict(lambda: defaultdict(int))
+        ip_ec = defaultdict(lambda: defaultdict(int))
         if 'continent' in res_json:
             continent = res_json['continent']
             hr['Continent'] = continent['names']['en']
@@ -126,10 +126,13 @@ script:
             ip_ec['Geo']['Country'] = country['names']['en']
         if 'location' in res_json:
             location = res_json['location']
-            hr['Location']['Latitude'] = location['latitude']
-            hr['Location']['Longitude'] = location['longitude']
             ip_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
             maxmind_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
+            demisto.results({
+                'Type': entryTypes['map'],
+                'ContentsFormat': formats['json'],
+                'Contents': {'lat': location['latitude'], 'lng': location['longitude']}
+            })
             if 'time_zone' in location:
                 hr['TimeZone'] = location['time_zone']
                 maxmind_ec['Geo']['TimeZone'] = location['time_zone']
