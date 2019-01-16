@@ -1,6 +1,7 @@
 id: Get File Sample From Hash - Generic - Test
 version: -1
 name: Get File Sample From Hash - Generic - Test
+toversion: 3.1.0
 starttaskid: "0"
 tasks:
   "0":
