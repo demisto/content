@@ -340,3 +340,4 @@ inputs: []
 outputs: []
 tests:
   - No test
+releaseNotes: Add 'No test' to playbook
