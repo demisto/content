@@ -5568,6 +5568,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6746,6 +6749,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7013,7 +7019,7 @@
         {
             "Get File Sample From Hash - Generic": {
                 "name": "Get File Sample From Hash - Generic", 
-                "toversion": "3.1.0",
+                "toversion": "3.1.0", 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Cylance Protect", 
                     "Get File Sample From Hash - Carbon Black Enterprise Response"
@@ -15342,16 +15348,16 @@
                     "Get File Sample By Hash - Generic"
                 ]
             }
-        },
+        }, 
         {
             "Get File Sample From Hash - Generic - Test": {
-                "name": "Get File Sample From Hash - Generic - Test",
-                "toversion": "3.1.0",
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
                 "implementing_scripts": [
-                    "DeleteContext",
-                    "VerifyContext",
+                    "DeleteContext", 
+                    "VerifyContext", 
                     "Set"
-                ],
+                ], 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Generic"
                 ]
