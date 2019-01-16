@@ -139,7 +139,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 500
+          "timeout": 700
         },
         {
             "integrations": "Tenable.sc",
@@ -987,7 +987,7 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month"
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19"
     },
     "nigthly_integrations": [
         "Lastline",
