@@ -1,5 +1,5 @@
 id: Recorded Future Test
-version: 18
+version: -1
 name: Recorded Future Test
 starttaskid: "0"
 tasks:
@@ -466,32 +466,47 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: a6a47202-f0b6-41a3-8fb9-9a43e953b766
-    type: regular
+    taskid: 85357c0e-b5f9-4981-82c7-d41ae3364523
+    type: condition
     task:
-      id: a6a47202-f0b6-41a3-8fb9-9a43e953b766
+      id: 85357c0e-b5f9-4981-82c7-d41ae3364523
       version: -1
-      name: VerifyContext - DBotScore
+      name: Verify - DBotScore
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "17"
-    scriptarguments:
-      expectedValue:
-        simple: URL
-      fields: {}
-      path:
-        simple: DBotScore.Type
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future
+                accessor: Type
+            iscontext: true
+          right:
+            value:
+              simple: url
     view: |-
       {
         "position": {
