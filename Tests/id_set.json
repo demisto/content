@@ -3167,9 +3167,6 @@
         {
             "DocumentationAutomation": {
                 "name": "DocumentationAutomation", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
                 "tests": [
                     "No test - Test not needed"
                 ]
