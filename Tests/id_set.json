@@ -4816,19 +4816,6 @@
             }
         }, 
         {
-            "ExtractIndicatorsFromWordFile": {
-                "name": "ExtractIndicatorsFromWordFile", 
-                "fromversion": "4.1.0", 
-                "script_executions": [
-                    "extractIndicators", 
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "Extract Indicators From File - test"
-                ]
-            }
-        },
-        {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
