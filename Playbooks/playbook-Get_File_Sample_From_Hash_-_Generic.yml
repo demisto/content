@@ -62,10 +62,9 @@ tasks:
     task:
       id: a986e95e-6e50-454b-8667-f3995523b3e4
       version: -1
-      name: Get File Sample By Hash - Cylance Protect
-      description: Returns to the war-room a file sample correlating to SHA256 hashes
-        in the inputs using Cylance Protect integration
-      playbookName: Get File Sample By Hash - Cylance Protect
+      description: ""
+      name: ""
+      playbookName: Get File Sample From Hash - Cylance Protect
       type: playbook
       iscommand: false
       brand: ""

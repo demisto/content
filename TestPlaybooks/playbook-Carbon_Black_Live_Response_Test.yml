@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b96592b0-ec18-41b9-89e9-d717824616f8
+    taskid: 8df055a8-fd75-410f-8828-61f7950a64f0
     type: start
     task:
-      id: b96592b0-ec18-41b9-89e9-d717824616f8
+      id: 8df055a8-fd75-410f-8828-61f7950a64f0
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,11 @@ tasks:
     timertriggers: []
   "30":
     id: "30"
-    taskid: 52a2c448-a375-4bd1-8e44-1220bc2ba5cd
+    taskid: ca3603da-0da2-4dec-8dbb-e263f1084c2b
     type: regular
     task:
-      id: 52a2c448-a375-4bd1-8e44-1220bc2ba5cd
+      id: ca3603da-0da2-4dec-8dbb-e263f1084c2b
+
       version: -1
       name: Close session
       script: carbonblackliveresponse|||cb-session-close
@@ -43,6 +44,15 @@ tasks:
       session:
         complex:
           root: CbLiveResponse
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CbLiveResponse.Sessions.CbSensorID
+                iscontext: true
+              right:
+                value:
+                  simple: "17"
           accessor: Sessions.CbSessionID
     separatecontext: false
     view: |-
@@ -56,10 +66,10 @@ tasks:
     timertriggers: []
   "39":
     id: "39"
-    taskid: 81ac785b-a100-4722-8030-941f3234ac9b
+    taskid: 16d8de88-9129-4daf-8dcf-715cd0bbc6c2
     type: regular
     task:
-      id: 81ac785b-a100-4722-8030-941f3234ac9b
+      id: 16d8de88-9129-4daf-8dcf-715cd0bbc6c2
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -85,10 +95,10 @@ tasks:
     timertriggers: []
   "41":
     id: "41"
-    taskid: c212ea73-a1b9-453e-89de-52e851d98f24
+    taskid: c2d7d938-88d4-43d1-854c-b282fee1c463
     type: regular
     task:
-      id: c212ea73-a1b9-453e-89de-52e851d98f24
+      id: c2d7d938-88d4-43d1-854c-b282fee1c463
       version: -1
       name: 'Create a session for sensor #17'
       script: '|||cb-session-create-and-wait'
@@ -119,10 +129,10 @@ tasks:
     timertriggers: []
   "47":
     id: "47"
-    taskid: 01d41ff9-d104-4961-8927-7340b66053bb
+    taskid: 6d880cb1-571a-4424-86ee-51a44d6928ae
     type: regular
     task:
-      id: 01d41ff9-d104-4961-8927-7340b66053bb
+      id: 6d880cb1-571a-4424-86ee-51a44d6928ae
       version: -1
       name: 'List open sessions for sensor #17'
       script: '|||cb-list-sessions'
@@ -149,10 +159,10 @@ tasks:
     timertriggers: []
   "56":
     id: "56"
-    taskid: 6fd03363-8eb5-43f3-8da6-2d1454e234ac
+    taskid: 17d718ef-f980-4657-8bf7-f43a14b608cb
     type: condition
     task:
-      id: 6fd03363-8eb5-43f3-8da6-2d1454e234ac
+      id: 17d718ef-f980-4657-8bf7-f43a14b608cb
       version: -1
       name: Check if there's an active session
       type: condition
@@ -188,10 +198,18 @@ tasks:
           right:
             value:
               simple: None
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions.CbSensorID
+            iscontext: true
+          right:
+            value:
+              simple: "17"
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 797.5,
           "y": 835
         }
       }
@@ -199,10 +217,10 @@ tasks:
     timertriggers: []
   "57":
     id: "57"
-    taskid: 41ee04ab-f68f-4f91-8e18-5bb2a14227f4
+    taskid: a61b2c94-8f91-4bdd-8304-96e16bd87fb9
     type: regular
     task:
-      id: 41ee04ab-f68f-4f91-8e18-5bb2a14227f4
+      id: a61b2c94-8f91-4bdd-8304-96e16bd87fb9
       version: -1
       name: Create test file
       scriptName: TestCreateWordFile
@@ -229,10 +247,10 @@ tasks:
     timertriggers: []
   "58":
     id: "58"
-    taskid: 52f1b660-426b-495c-8d12-374c57b963c2
+    taskid: b1f86001-250d-41ed-8afc-d00b38d4eea9
     type: regular
     task:
-      id: 52f1b660-426b-495c-8d12-374c57b963c2
+      id: b1f86001-250d-41ed-8afc-d00b38d4eea9
       version: -1
       name: 'Upload test file to sensor #15'
       script: '|||cb-push-file-to-endpoint'
@@ -264,10 +282,10 @@ tasks:
     timertriggers: []
   "60":
     id: "60"
-    taskid: e661ef1c-8c39-4406-8f7a-c5bd096a7cae
+    taskid: eeee6767-965b-4592-829b-e98a916bc079
     type: regular
     task:
-      id: e661ef1c-8c39-4406-8f7a-c5bd096a7cae
+      id: eeee6767-965b-4592-829b-e98a916bc079
       version: -1
       name: Download uploaded file from the sensor
       script: '|||cb-get-file-from-endpoint'
@@ -297,10 +315,10 @@ tasks:
     timertriggers: []
   "61":
     id: "61"
-    taskid: 9f4194a2-5996-442a-8fd7-f03b4d5afb0a
+    taskid: 10bcf518-ef60-4e5d-8146-2fd113e7ba5e
     type: regular
     task:
-      id: 9f4194a2-5996-442a-8fd7-f03b4d5afb0a
+      id: 10bcf518-ef60-4e5d-8146-2fd113e7ba5e
       version: -1
       name: Delete uploaded file from the endpoint
       script: '|||cb-file-delete-from-endpoint'
@@ -328,10 +346,10 @@ tasks:
     timertriggers: []
   "64":
     id: "64"
-    taskid: 6f617591-d547-4c25-835b-47d2cf160212
+    taskid: 37e3d2da-4afc-4c1b-85aa-ab6965961090
     type: title
     task:
-      id: 6f617591-d547-4c25-835b-47d2cf160212
+      id: 37e3d2da-4afc-4c1b-85aa-ab6965961090
       version: -1
       name: Test Uploading Files
       type: title
@@ -352,10 +370,10 @@ tasks:
     timertriggers: []
   "65":
     id: "65"
-    taskid: 903066c0-cb45-40bc-818d-15917ba1555d
+    taskid: 89f66401-328e-4e25-8b3b-483e7d68dfe9
     type: title
     task:
-      id: 903066c0-cb45-40bc-818d-15917ba1555d
+      id: 89f66401-328e-4e25-8b3b-483e7d68dfe9
       version: -1
       name: 'Open a new Session and Execute Command '
       type: title
@@ -376,10 +394,10 @@ tasks:
     timertriggers: []
   "66":
     id: "66"
-    taskid: af785d2c-c611-4b09-875f-87c589293932
+    taskid: 1a7ecd94-091c-4c31-8d2d-b5081a4e0615
     type: title
     task:
-      id: af785d2c-c611-4b09-875f-87c589293932
+      id: 1a7ecd94-091c-4c31-8d2d-b5081a4e0615
       version: -1
       name: Execute Commands Without Session Managment
       type: title
@@ -400,10 +418,10 @@ tasks:
     timertriggers: []
   "67":
     id: "67"
-    taskid: 4f99e52a-6399-4f4c-82c6-524c6ef1aeab
+    taskid: 0d4f807b-f25e-4c67-8763-dfa53d7a6dab
     type: regular
     task:
-      id: 4f99e52a-6399-4f4c-82c6-524c6ef1aeab
+      id: 0d4f807b-f25e-4c67-8763-dfa53d7a6dab
       version: -1
       name: 'List active sessions for sensor #15 '
       script: '|||cb-list-sessions'
@@ -430,10 +448,10 @@ tasks:
     timertriggers: []
   "70":
     id: "70"
-    taskid: f8b98e21-e8bc-459a-8037-1ee98028e87c
+    taskid: 6cd22d17-c364-4c37-8091-e799618ef392
     type: regular
     task:
-      id: f8b98e21-e8bc-459a-8037-1ee98028e87c
+      id: 6cd22d17-c364-4c37-8091-e799618ef392
       version: -1
       name: 'List ''c:\Users'' Directory '
       script: carbonblackliveresponse|||cb-command-create-and-wait
@@ -473,10 +491,10 @@ tasks:
     timertriggers: []
   "71":
     id: "71"
-    taskid: 94428eb2-e997-4a72-8b0b-fe26689a3dbd
+    taskid: 79b374d7-ee1d-4c71-8212-ad1831a3aec2
     type: regular
     task:
-      id: 94428eb2-e997-4a72-8b0b-fe26689a3dbd
+      id: 79b374d7-ee1d-4c71-8212-ad1831a3aec2
       version: -1
       name: Keep Session Alive
       script: carbonblackliveresponse|||cb-keepalive
@@ -490,6 +508,15 @@ tasks:
       session:
         complex:
           root: CbLiveResponse
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CbLiveResponse.Sessions.CbSensorID
+                iscontext: true
+              right:
+                value:
+                  simple: "17"
           accessor: Sessions.CbSessionID
     separatecontext: false
     view: |-
@@ -503,10 +530,10 @@ tasks:
     timertriggers: []
   "72":
     id: "72"
-    taskid: 22488099-6ef8-4d31-864c-3cfa06d9e90c
+    taskid: b69503c9-3f21-4505-800d-2609feaf3464
     type: regular
     task:
-      id: 22488099-6ef8-4d31-864c-3cfa06d9e90c
+      id: b69503c9-3f21-4505-800d-2609feaf3464
       version: -1
       name: Wait
       scriptName: Sleep
@@ -531,10 +558,10 @@ tasks:
     timertriggers: []
   "73":
     id: "73"
-    taskid: 35837ff7-4379-4afc-880b-f711300e4db5
+    taskid: 9481ade1-ed60-48ed-8231-5e15fe24eabf
     type: regular
     task:
-      id: 35837ff7-4379-4afc-880b-f711300e4db5
+      id: 9481ade1-ed60-48ed-8231-5e15fe24eabf
       version: -1
       name: 'List ''c:\Users'' Directory '
       script: carbonblackliveresponse|||cb-command-create-and-wait
@@ -571,10 +598,10 @@ tasks:
     timertriggers: []
   "74":
     id: "74"
-    taskid: 781e7f78-aa25-46a0-8bd4-1fec54e6af75
+    taskid: 592d3ddc-409a-420d-89be-80346a70e4a7
     type: condition
     task:
-      id: 781e7f78-aa25-46a0-8bd4-1fec54e6af75
+      id: 592d3ddc-409a-420d-89be-80346a70e4a7
       version: -1
       name: Check if there's an active session
       type: condition
@@ -602,6 +629,14 @@ tasks:
           right:
             value:
               simple: "null"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions.CbSensorID
+            iscontext: true
+          right:
+            value:
+              simple: "15"
     view: |-
       {
         "position": {
@@ -613,10 +648,10 @@ tasks:
     timertriggers: []
   "75":
     id: "75"
-    taskid: bb0b8009-2445-4c0b-8bdf-61edd4ff11bf
+    taskid: 58794193-5f40-40ee-8927-c87bffe266c9
     type: title
     task:
-      id: bb0b8009-2445-4c0b-8bdf-61edd4ff11bf
+      id: 58794193-5f40-40ee-8927-c87bffe266c9
       version: -1
       name: Try Executing Commands
       type: title
@@ -637,10 +672,10 @@ tasks:
     timertriggers: []
   "76":
     id: "76"
-    taskid: fc8f6b05-f1a9-49ba-86c2-2ba88264f802
+    taskid: 97cd8a88-05a7-4200-8e08-0b92e9e26d7c
     type: title
     task:
-      id: fc8f6b05-f1a9-49ba-86c2-2ba88264f802
+      id: 97cd8a88-05a7-4200-8e08-0b92e9e26d7c
       version: -1
       name: Test Using CB Response Instance
       type: title

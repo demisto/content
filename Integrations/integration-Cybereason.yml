@@ -518,6 +518,11 @@ script:
                 machine_name = machine.get('name', '')
                 affected_machines.append(machine_name)
 
+            involved_hashes = []
+            if 'rootCauseElementHashes' in malop['simpleValues']:
+                if malop['simpleValues']['rootCauseElementHashes']['totalValues'] != 0:
+                   involved_hashes.extend(malop['simpleValues']['rootCauseElementHashes']['values'])
+
             malop_output = {
                 'GUID': malop_id,
                 'Link': SERVER + '/#/malop/' + malop_id,
@@ -526,7 +531,8 @@ script:
                 'Suspects':suspects_string,
                 'LastUpdateTime': malop_last_update_time,
                 'Status': management_status,
-                'AffectedMachines': affected_machines
+                'AffectedMachine': affected_machines,
+                'InvolvedHash': involved_hashes
             }
             outputs.append(malop_output)
         ec = {
@@ -538,7 +544,7 @@ script:
             'Contents': data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachines']),
+            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']),
             'EntryContext': ec
         })
 
@@ -1663,6 +1669,15 @@ script:
     - contextPath: Cybereason.Malops.LastUpdatedTime
       description: Last updated time of malop
       type: string
+    - contextPath: Cybereason.Malops.AffectedMachine
+      description: List of machines affected by this Malop
+      type: string
+    - contextPath: Cybereason.Malops.InvolvedHash
+      description: List of file hashes involved in this Malop
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: Malop managemant status
+      type: string
     description: Returns a list of all Malops and details on the Malops.
   - name: cybereason-malop-processes
     arguments:
@@ -1908,3 +1923,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
+releaseNotes: "Added involved hashes and affected machines outputs to query-malops command"
