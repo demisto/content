@@ -2383,5 +2383,6 @@ script:
     description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
   dockerimage: demisto/threatconnect-sdk
   runonce: false
+releaseNotes: "-"
 tests:
   - test-ThreatConnect
