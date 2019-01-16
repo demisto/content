@@ -9,29 +9,95 @@ script: |-
   reload(sys)
   sys.setdefaultencoding('utf-8')
 
-  entryID = demisto.args()['entryID']
+  def get_yaml_obj(entry_id):
+      yml_file_path = demisto.getFilePath(entry_id)['path']
+      with open(yml_file_path, 'r') as yml_file:
+          data = yaml.safe_load(yml_file)
 
-  res = demisto.executeCommand('getFilePath', {'id': entryID})
-  if isError(res[0]):
-      demisto.results(res)
-      sys.exit(0)
+      return data
 
-  path = res[0]['Contents']['path']
 
-  yamlFile  = open(path)
-  dataMap = yaml.safe_load(yamlFile)
-  yamlFile.close()
+  def get_command_examples(entry_id):
+      if entry_id is None:
+          return []
+
+      examples_path = demisto.getFilePath(entry_id)['path']
+      with open(examples_path, 'r') as examples_file:
+          data = examples_file.read().split('\n')
+
+      return data
+
+
+  def find_cmd_example(command_examples, cmd):
+      valid_examples = [example for example in command_examples
+          if example.startswith(cmd) or example.startswith('!{}'.format(cmd))]
+
+      return valid_examples[0] if len(valid_examples) > 0 else ' '
+
+
+  def extract_command(cmd_example):
+      parts = cmd_example.split(' ')
+
+      return parts[0], dict([p.replace('"', '').split('=') for p in parts[1:]])
+
+
+  def generate_command_example(cmd, cmd_example):
+      context_example = ''
+      md_example = ''
+      if cmd_example != ' ':
+          try:
+              example_cmd, kwargs = extract_command(cmd_example)
+              res = demisto.executeCommand(example_cmd, kwargs)
+
+              for entry in res:
+                  if isError(entry):
+                      demisto.results(res)
+                      raise RuntimeError('something went wrong with your command.')
+
+              raw_context = entry.get('EntryContext')
+              context = {k.split('(')[0] : v for k, v in raw_context.items()}
+
+              context_example = json.dumps(context, indent=4)
+              md_example = entry.get('HumanReadable', json.dumps(entry['Contents']))
+
+          except RuntimeError as e:
+              demisto.results("The provided example for cmd {} has failed...".format(cmd['name']))
+              demisto.results(res)
+          except Exception as e:
+              demisto.results('Error encountered in the processing of command {}, error was: {}'.format(cmd['name'], str(e)) +
+                  ". Please check your command inputs and outputs")
+      else:
+          demisto.results('did not get any example for {}. please add it manually.'.format(cmd['name']))
+
+      example = [
+          '',
+          '##### Command Example',
+          '`{}`'.format(cmd_example),
+          '',
+          '##### Context Example',
+          '```',
+          '{}'.format(context_example),
+          '```',
+          '',
+          '##### Human Readable Output',
+          '{}'.format(md_example),
+          '',
+          ]
+      return example
+
 
   def addLines(line):
-      output = ''
+      output = []
       lastDigit = 0
       for i in range(len(line)):
           if line[i].isdigit():
               if line[i+1] == '.':
-                  output += line[lastDigit:i] + '\n'
+                  output.append(line[lastDigit:i])
                   lastDigit = i
-      output += line[lastDigit:len(line)] + '\n'
+      output.append(line[lastDigit:len(line)])
+
       return output
+
 
   def addErrorLines(scriptToScan, scriptType):
       res = ''
@@ -74,157 +140,145 @@ script: |-
                   res += '* ' + line[afterErrorKeyIdx:] + '\n'
       return res
 
-  name = dataMap['name']
-  doc = ''
 
-  # Overview
-  doc += '## Overview\n'
-  doc += '---\n'
-  if 'overview' in demisto.args():
-      doc += demisto.args()['overview'] + '\n'
+  def generate_section(title, data):
+      section = [
+          '## {}'.format(title),
+          '---',
+          '',
+      ]
 
-  doc += 'This integration was integrated and tested with version xx of ' + name + '\n'
+      if data is not None:
+          section.append(addLines(data))
 
-  # Playbooks
-  doc += "## {} Playbook\n".format(name)
-  doc += '---\n'
+      return section
 
-  # Use-cases
-  doc += '## Use Cases\n'
-  doc += '---\n'
-
-  if 'useCases' in demisto.args():
-      doc +=addLines(demisto.args()['useCases']) + '\n'
-
-  #Setup integration to work with Demisto
-
-  doc += '\n## Configure ' + name + ' on Demisto\n'
-  doc += '---\n'
-
-  if 'setupOnIntegration' in demisto.args():
-      doc += addLines(demisto.args()['setupOnIntegration']) + '\n'
 
   #Setup integration on Demisto
+  def generate_setup_section(yaml_data):
+      section = [
+          '1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.',
+          '2. Search for {}.'.format(yaml_data['name']),
+          '3. Click __Add instance__ to create and configure a new integration instance.',
+          '    * __Name__: a textual name for the integration instance.',
+      ]
+      for conf in yaml_data['configuration']:
+          if conf['display']:
+              section.append('    * __{}__'.format(conf['display']))
+          else:
+              section.append('    * __{}__'.format(conf['name']))
+      section.append('4. Click __Test__ to validate the URLs, token, and connection.')
 
-  doc += '''
-  1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-  2. Search for ''' + name + '''.
-  3. Click __Add instance__ to create and configure a new integration instance.
-      * __Name__: a textual name for the integration instance.
-  '''
+      return section
 
-  j=2
-  for i in range(len(dataMap['configuration'])):
-      if (dataMap['configuration'][i]['display']):
-          doc += '    * __' + dataMap['configuration'][i]['display'] +'__\n'
-      else:
-          doc += '    * __' + dataMap['configuration'][i]['name'] +'__\n'
-      j += 1
-  doc += '4. Click __Test__ to validate the URLs, token, and connection.' +'\n'
-
-
-  # Fetched incidents data
-
-  doc += '\n## Fetched Incidents Data\n'
-  doc += '---\n'
-
-  if 'fetchedData' in demisto.args():
-      doc +=addLines(demisto.args()['fetchedData']) + '\n'
 
   # Commands
+  def generate_commands_section(yaml_data, command_examples):
+      section = [
+          '## Commands',
+          '---',
+          'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.',
+          'After you successfully execute a command, a DBot message appears in the War Room with the command details.'
+      ]
+      commands = yaml_data['script']['commands']
+      command_list = ['{}. {}'.format(i + 1, cmd['name']) for i, cmd in enumerate(commands)]
+      section.extend(command_list)
 
-  doc += '\n## Commands\n'
-  doc += '---\n'
-  doc += 'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.\n'
-  doc += 'After you successfully execute a command, a DBot message appears in the War Room with the command details.\n'
+      for i, cmd in enumerate(commands):
+          section.extend(generate_single_command_section(i, cmd, find_cmd_example(command_examples, cmd['name'])))
 
-  for i in range(len(dataMap['script']['commands'])):
-      doc += str(i+1) + '. ' + dataMap['script']['commands'][i]['name'] + '\n'
+      return section
 
-  for i in range(len(dataMap['script']['commands'])):
-      try:
-          doc += '### ' + dataMap['script']['commands'][i]['name'] + '\n'
-          doc += '---\n'
-          doc += str(dataMap['script']['commands'][i].get('description'," ")) + '\n'
-          doc += '##### Base Command\n\n'
-          doc += '`' + dataMap['script']['commands'][i]['name'] + '`' + '\n'
 
-          #Inputs
-          doc += '##### Input\n\n'
-          if len(dataMap['script']['commands'][i]['arguments']) != 0:
-              doc += '| **Argument Name** | **Description** | **Required** |\n'
-              doc += '| --- | --- | --- |\n'
-              for j in range(len(dataMap['script']['commands'][i]['arguments'])):
-                  doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
-                  if not (dataMap['script']['commands'][i]['arguments'][j].get('description', False)):
-                      demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['arguments'][j]['name'] +\
-                      " of command " + dataMap['script']['commands'][i]['name'])
-                      sys.exit(0)
-                  doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | '
-                  doc += ('Required' if str(dataMap['script']['commands'][i]['arguments'][j].get('required')).lower() == 'true' else 'Optional')  + ' | \n'
-          else:
-              doc += 'There are no input arguments for this command.'
-          #Context output
-          doc += '\n\n##### Context Output\n\n'
-          if 'outputs' in dataMap['script']['commands'][i]:
-              doc += '| **Path** | **Type** | **Description** |\n'
-              doc += '| --- | --- | --- |\n'
-              for k in range(len(dataMap['script']['commands'][i]['outputs'])):
-                  doc += '| ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
-                  doc += str(dataMap['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
-                  if not (dataMap['script']['commands'][i]['outputs'][k].get('description', False)):
-                      demisto.results("Error! You are missing description in output " + dataMap['script']['commands'][i]['outputs'][j]['name'] + \
-                      " of command " + dataMap['script']['commands'][i]['name'])
-                      sys.exit(0)
-                  doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
-          else:
-              doc += 'There is no context output for this command.'
-          #Raw output:
-          doc += '\n\n##### Command Example\n'
-          doc += '` `\n\n'
-          doc += '##### Context Example\n'
-          doc += '```\n\n```\n\n'
-          doc += '##### Human Readable Output\n\n'
+  def generate_single_command_section(index, cmd, cmd_example):
+      section = [
+          '### {}'.format(cmd['name']),
+          '---',
+          cmd.get('description', ' '),
+          '##### Base Command',
+          '',
+          '`{}`'.format(cmd['name']),
+          '##### Input',
+          '',
+      ]
 
-          doc += '\n'
-      except Exception as e:
-          demisto.results("Error encountered in the processing of command " + \
-          dataMap['script']['commands'][i]['name'] + ", error was missing a " + str(e) + \
-          ". Please check your command inputs and outputs")
-          sys.exit(0)
+      #Inputs
+      if len(cmd['arguments']) == 0:
+          section.append('There are no input arguments for this command.')
+      else:
+          section.extend([
+              '| **Argument Name** | **Description** | **Required** |',
+              '| --- | --- | --- |',
+          ])
+          for arg in cmd['arguments']:
+              if not arg.get('description'):
+                  demisto.results('Error! You are missing description in input {} of command {}'.format(arg['name'], cmd['name']))
+              required_status = 'Required' if arg.get('required') == True else 'Optional'
+              section.append('| {} | {} | {} | '.format(arg['name'], arg['description'], required_status))
+          section.append('')
 
+      #Context output
+      section.extend([
+          '',
+          '##### Context Output',
+          '',
+      ])
+      outputs = cmd.get('outputs')
+      if outputs is None:
+          section.append('There is no context output for this command.')
+      else:
+          section.extend([
+              '| **Path** | **Type** | **Description** |',
+              '| --- | --- | --- |'
+          ])
+          for output in outputs:
+              if not output.get('description'):
+                  demisto.results('Error! You are missing description in output {} of command {}'.format(output['name'], cmd['name']))
+              section.append('| {} | {} | {} | '.format(output['contextPath'], output.get('type', 'unknown'), output['description']))
+          section.append('')
+
+      #Raw output:
+      section.extend(generate_command_example(cmd, cmd_example))
+
+      return section
+
+
+  args = demisto.args()
+  yml_data = get_yaml_obj(args['entryID'])
+  command_examples = get_command_examples(args.get('commands'))
+
+  docs = []
+  docs.extend(generate_section('Overview', args.get('overview')))
+  docs.append('This integration was integrated and tested with version xx of {}'.format(yml_data['name']))
+  # Playbooks
+  docs.extend(generate_section('{} Playbook'.format(yml_data['name']), None))
+  # Use-cases
+  docs.extend(generate_section('Use Cases', args.get('useCases')))
+  # Setup integration to work with Demisto
+  docs.extend(generate_section('Configure {} on Demisto'.format(yml_data['name']), args.get('setupOnIntegration')))
+  # Setup integration on Demisto
+  docs.extend(generate_setup_section(yml_data))
+  # Fetched incidents data
+  docs.extend(generate_section('Fetched Incidents Data', args.get('fetchedData')))
+  # Commands
+  docs.extend(generate_commands_section(yml_data, command_examples))
   # Additional info
-
-  doc += '\n## Additional Information\n'
-  doc += '---\n'
-
-  if 'addInfo' in demisto.args():
-      doc +=addLines(demisto.args()['addInfo']) + '\n'
-
+  docs.extend(generate_section('Additional Information', args.get('addInfo')))
   # Known limitations
-
-  doc += '\n## Known Limitations\n'
-  doc += '---\n'
-
-  if 'limit' in demisto.args():
-      doc +=addLines(demisto.args()['limit']) + '\n'
-
+  docs.extend(generate_section('Known Limitations', args.get('limit')))
   # Troubleshooting
-
-  doc += '\n## Troubleshooting\n'
-  doc += '---\n'
-
-  if 'troubleshooting' in demisto.args():
-      doc +=addLines(demisto.args()['troubleshooting'])
-
+  docs.extend(generate_section('Troubleshooting', args.get('troubleshooting')))
   # Possible Errors
 
-  if 'True' == demisto.args()['withErrors']:
-      doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
-      doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
+  if demisto.args()['withErrors'] == 'True':
+      docs.extend([
+          ''
+          '## Possible Errors (DO NOT PUBLISH ON ZENDESK):',
+      ])
+      docs.append(addErrorLines(yml_data['script']['script'], yml_data['script']['type']))
 
-  filename = name + '-documantation.txt'
-  demisto.results(fileResult(filename, doc))
+  filename = '{}-documantation_new.txt'.format(yml_data['name'])
+  demisto.results(fileResult(filename, '\n'.join(docs), file_type=entryTypes['entryInfoFile']))
 type: python
 tags: []
 comment: Automates integration documentation
@@ -255,8 +309,11 @@ args:
   - "False"
   description: Flag for creating documentation with errors
   defaultValue: "True"
+- name: commands
+  description: Entry ID for file containing command examples. Each Command should
+    be in a separate line.
 scripttarget: 0
 runonce: false
-releaseNotes: Changed to use default docker image
+releaseNotes: added auto-generated examples
 tests:
   - No test - Test not needed
