@@ -944,6 +944,11 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query"
+
         }
     ],
     "skipped_tests": {
