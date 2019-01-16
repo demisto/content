@@ -381,8 +381,8 @@ script:
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
             'Parent': {
-                'ID': project.get('parent').get('id'),
-                'Type': project.get('parent').get('type')
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
             },
             'Labels': response.get('labels')
         }
@@ -420,8 +420,8 @@ script:
                 'State': response.get('lifecycleState'),
                 'CreateTime': response.get('createTime'),
                 'Parent': {
-                    'ID': project.get('parent').get('id'),
-                    'Type': project.get('parent').get('type')
+                    'ID': response.get('parent').get('id'),
+                    'Type': response.get('parent').get('type')
                 },
                 'Labels': response.get('labels')
             }
@@ -459,8 +459,8 @@ script:
                 'State': response.get('lifecycleState'),
                 'CreateTime': response.get('createTime'),
                 'Parent': {
-                    'ID': project.get('parent').get('id'),
-                    'Type': project.get('parent').get('type')
+                    'ID': response.get('parent').get('id'),
+                    'Type': response.get('parent').get('type')
                 },
                 'Labels': response.get('labels')
             }
@@ -496,8 +496,8 @@ script:
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
             'Parent': {
-                'ID': project.get('parent').get('id'),
-                'Type': project.get('parent').get('type')
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
             },
             'Labels': response.get('labels')
         }
@@ -579,8 +579,8 @@ script:
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('createTime'),
             'Parent': {
-                'ID': project.get('parent').get('id'),
-                'Type': project.get('parent').get('type')
+                'ID': response.get('parent').get('id'),
+                'Type': response.get('parent').get('type')
             },
             'Labels': response.get('labels')
         }
@@ -607,7 +607,9 @@ script:
 
 
     def search_organizations_command():
-        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided)."""
+        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided).
+        :return: entry
+        """
         req_body = demisto.args()
         contexts = []
         next_page = True
@@ -641,14 +643,26 @@ script:
 
 
     def get_organization(name):
-        """Build service object and return the result of calling the API 'get' function for the organizations resource."""
+        """Build service object and return the result of calling the API 'get' function for the organizations resource.
+
+        :param name: (string)
+            name of the Organization in format <type/number> e.g. 'organizations/1245345444'
+
+        :return:
+            The response from calling the API that takes the form of a Organization object.
+        """
         service = build_and_authorize()
         operation = service.organizations().get(name=name).execute()
         return operation
 
 
     def get_organization_command():
-        """Fetches an Organization resource identified by the specified resource name."""
+        """Fetches an Organization resource identified by the specified resource name.
+
+        Returns:
+            The entry to the warroom. The table will show each property of the fetched organization with its
+            associated value.
+        """
         name = demisto.args()['name']
         response = get_organization(name)
         # Parse response into context
@@ -672,7 +686,12 @@ script:
 
 
     def create_folder(parent, name):
-        """Build service object and return the result of calling the API 'create' function for the folders resource."""
+        """Build service object and return the result of calling the API 'create' function for the folders resource.
+
+        :param parent:
+        :param name:
+        :return:
+        """
         API_VERSION = 'v2'
         service = build_and_authorize()
         API_VERSION = 'v1'
