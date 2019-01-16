@@ -443,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -647,7 +650,10 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL"
+                "name": "ResolveShortenedURL", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -1426,7 +1432,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -4753,6 +4762,11 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
+            }
         }
     ], 
     "playbooks": [
@@ -4996,6 +5010,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -5728,6 +5745,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -9895,7 +9915,7 @@
                     "domain"
                 ], 
                 "tests": [
-                    "No test"
+                    "Pwned test"
                 ]
             }
         }, 
@@ -13973,7 +13993,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -15272,6 +15293,42 @@
                 ], 
                 "implementing_playbooks": [
                     "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
+                ]
+            }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
+                ]
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
                 ]
             }
         }, 
