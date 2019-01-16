@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatMiner",
+            "playbookID": "ThreatMiner-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test"
         },
