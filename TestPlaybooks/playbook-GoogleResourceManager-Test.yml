@@ -1,0 +1,834 @@
+id: GoogleResourceManager-Test
+version: -1
+name: GoogleResourceManager-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6c0d47de-0684-4fe3-8f6f-19a1d7c84434
+    type: start
+    task:
+      id: 6c0d47de-0684-4fe3-8f6f-19a1d7c84434
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 31eb5486-23da-4b5e-883d-566cc66e8673
+    type: regular
+    task:
+      id: 31eb5486-23da-4b5e-883d-566cc66e8673
+      version: -1
+      name: grm-create-project
+      description: Create Project Resource
+      script: Google Resource Manager|||grm-create-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      labels.attrs:
+        simple: test,playbook
+      labels.values:
+        simple: yes,super_true
+      name:
+        simple: Test Project Creation
+      parent.id:
+        simple: "690006273490"
+      parent.type:
+        simple: organization
+      projectId:
+        complex:
+          root: ${ProjectId
+          accessor: NeedsProcessing}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 973792f3-7d25-4327-8332-06ef54764ac1
+    type: regular
+    task:
+      id: 973792f3-7d25-4327-8332-06ef54764ac1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ff8914f5-496c-4ce3-8ba4-8d2228a909fb
+    type: condition
+    task:
+      id: ff8914f5-496c-4ce3-8ba4-8d2228a909fb
+      version: -1
+      name: Verify Project Creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.State
+            iscontext: true
+          right:
+            value:
+              simple: ACTIVE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test Project Creation
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.ID
+            iscontext: true
+          right:
+            value:
+              simple: ${ProjectId.NeedsProcessing}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 46cfa3ce-6a9c-46ff-8f12-c9cb218c60de
+    type: regular
+    task:
+      id: 46cfa3ce-6a9c-46ff-8f12-c9cb218c60de
+      version: -1
+      name: grm-delete-project
+      description: Marks the Project identified by the specified project_id (for example,
+        my-project-123) for deletion.
+      script: Google Resource Manager|||grm-delete-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      projectId:
+        simple: ${GRM.Project.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: d159735d-bbd9-4650-8b11-19f39869dea8
+    type: condition
+    task:
+      id: d159735d-bbd9-4650-8b11-19f39869dea8
+      version: -1
+      name: Verify Project Deletion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.State
+            iscontext: true
+          right:
+            value:
+              simple: DELETE_REQUESTED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: ce773d2f-5e10-4cb1-8027-af8823a1cc40
+    type: regular
+    task:
+      id: ce773d2f-5e10-4cb1-8027-af8823a1cc40
+      version: -1
+      name: grm-undelete-project
+      description: Restores the Project identified by the specified project_id (for
+        example, my-project-123).
+      script: Google Resource Manager|||grm-undelete-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      projectId:
+        simple: ${GRM.Project.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 18bad98a-f538-4d31-877a-6d702bba25dc
+    type: condition
+    task:
+      id: 18bad98a-f538-4d31-877a-6d702bba25dc
+      version: -1
+      name: Verify Project Undeletion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.State
+            iscontext: true
+          right:
+            value:
+              simple: ACTIVE
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: eff898c9-f517-43a4-8108-4465316fc714
+    type: regular
+    task:
+      id: eff898c9-f517-43a4-8108-4465316fc714
+      version: -1
+      name: grm-get-project
+      description: Get Project Resource
+      script: Google Resource Manager|||grm-get-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      projectId:
+        simple: ${ProjectId.NeedsProcessing}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: f89b9946-b99e-45de-8c79-7be2a3a66571
+    type: condition
+    task:
+      id: f89b9946-b99e-45de-8c79-7be2a3a66571
+      version: -1
+      name: Verify Get Project
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Project.ID
+            iscontext: true
+          right:
+            value:
+              simple: ProjectId.NeedsProcessing
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 866cb06c-fdc9-4479-8efa-136a3136368f
+    type: regular
+    task:
+      id: 866cb06c-fdc9-4479-8efa-136a3136368f
+      version: -1
+      name: grm-search-organizations
+      description: Searches Organization resources that are visible to the user and
+        satisfy the specified filter. This method returns Organizations in an unspecified
+        order. New Organizations do not necessarily appear at the end of the results.
+      script: Google Resource Manager|||grm-search-organizations
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      filter: {}
+      pageSize: {}
+      pageToken: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 1add4a9b-b1f4-4e8e-8ddb-78b91c0193c4
+    type: condition
+    task:
+      id: 1add4a9b-b1f4-4e8e-8ddb-78b91c0193c4
+      version: -1
+      name: Verify Search Organizations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Organization.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: demistodev.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 2830bd70-6041-4fc0-8268-ac8ae2c3c894
+    type: regular
+    task:
+      id: 2830bd70-6041-4fc0-8268-ac8ae2c3c894
+      version: -1
+      name: grm-get-organization
+      description: Fetches an Organization resource identified by the specified resource
+        name.
+      script: Google Resource Manager|||grm-get-organization
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      name:
+        simple: organizations/690006273490
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 306efe7c-3b55-4dc0-81e1-7eb6f78a862b
+    type: condition
+    task:
+      id: 306efe7c-3b55-4dc0-81e1-7eb6f78a862b
+      version: -1
+      name: Verify Get Organization
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GRM.Organization.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: demistodev.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: d6db8d42-1d6c-4bdc-8ceb-ed8bcaa6065e
+    type: regular
+    task:
+      id: d6db8d42-1d6c-4bdc-8ceb-ed8bcaa6065e
+      version: -1
+      name: grm-list-projects
+      description: Lists projects that are visible to the user and satisfy  the specified
+        filter. This method returns the projects in an unspecified order.
+      script: Google Resource Manager|||grm-list-projects
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3375
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 4d376089-6643-4d77-80dd-5170e858397a
+    type: regular
+    task:
+      id: 4d376089-6643-4d77-80dd-5170e858397a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ProjectId.NeedsProcessing
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 8a2bf404-16e7-4dfc-8a66-08e719f73915
+    type: condition
+    task:
+      id: 8a2bf404-16e7-4dfc-8a66-08e719f73915
+      version: -1
+      name: Verify List Projects (that one of the projects output to context is the
+        one created at the beginning of the playbook)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: ProjectId.NeedsProcessing
+            iscontext: true
+          right:
+            value:
+              simple: GRM.Project.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: aded8653-e7e6-436c-8c6e-40480992ff5c
+    type: regular
+    task:
+      id: aded8653-e7e6-436c-8c6e-40480992ff5c
+      version: -1
+      name: grm-delete-project (Cleanup Project Created for Test)
+      description: Marks the Project identified by the specified project_id (for example,
+        my-project-123) for deletion.
+      script: Google Resource Manager|||grm-delete-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      projectId:
+        simple: ${ProjectId.NeedsProcessing}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3725
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 585c7876-7036-478a-8913-67493b5533e7
+    type: regular
+    task:
+      id: 585c7876-7036-478a-8913-67493b5533e7
+      version: -1
+      name: grm-update-project -- Untested
+      description: Updates the attributes of the Project identified by the specified
+        projectId
+      script: Google Resource Manager|||grm-update-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    scriptarguments:
+      labels.attrs: {}
+      labels.values: {}
+      name: {}
+      parent.id: {}
+      parent.type: {}
+      projectId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 1a4f0bff-b8d8-437f-83e4-4a605468b487
+    type: regular
+    task:
+      id: 1a4f0bff-b8d8-437f-83e4-4a605468b487
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 71063eb8-065d-41d7-8db9-9b2264302f8d
+    type: regular
+    task:
+      id: 71063eb8-065d-41d7-8db9-9b2264302f8d
+      version: -1
+      name: GenerateUUID
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 561adc60-e39a-4c4b-8f64-8ad0c5a0b2f3
+    type: regular
+    task:
+      id: 561adc60-e39a-4c4b-8f64-8ad0c5a0b2f3
+      version: -1
+      name: print to the warroom
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      extend-context:
+        simple: ProjectId.NeedsProcessing=
+      value:
+        complex:
+          root: GeneratedUUID
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: z
+              toReplace:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: test-
+              suffix: {}
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: a9e522f3-6c77-4a53-89ab-d2255bc26027
+    type: regular
+    task:
+      id: a9e522f3-6c77-4a53-89ab-d2255bc26027
+      version: -1
+      name: DeleteContext (Keep ProjectId.NeedsProcessing)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ProjectId
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: b1e5831a-3b89-44b2-88a0-c1309acb5be6
+    type: regular
+    task:
+      id: b1e5831a-3b89-44b2-88a0-c1309acb5be6
+      version: -1
+      name: DeleteContext (Keep ProjectId.NeedsProcessing)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ProjectId.NeedsProcessing
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2675
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3945,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
