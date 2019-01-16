@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -62,7 +62,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -147,7 +147,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 895
         }
       }
     note: false
@@ -177,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
@@ -212,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false
@@ -242,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1420
         }
       }
     note: false
@@ -277,7 +277,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1595
         }
       }
     note: false
@@ -306,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1975
+          "y": 1945
         }
       }
     note: false
@@ -342,7 +342,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2150
+          "y": 2120
         }
       }
     note: false
@@ -374,7 +374,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2325
+          "y": 2295
         }
       }
     note: false
@@ -409,7 +409,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2500
+          "y": 2470
         }
       }
     note: false
@@ -439,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2850
+          "y": 2820
         }
       }
     note: false
@@ -474,7 +474,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3025
+          "y": 2995
         }
       }
     note: false
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3375
+          "y": 3345
         }
       }
     note: false
@@ -537,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 3170
         }
       }
     note: false
@@ -556,7 +556,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -574,17 +574,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3550
+          "y": 3520
         }
       }
     note: false
     timertriggers: []
   "17":
     id: "17"
-    taskid: aded8653-e7e6-436c-8c6e-40480992ff5c
+    taskid: 6690c8d7-4c83-4002-8246-183af97fdabc
     type: regular
     task:
-      id: aded8653-e7e6-436c-8c6e-40480992ff5c
+      id: 6690c8d7-4c83-4002-8246-183af97fdabc
       version: -1
       name: grm-delete-project (Cleanup Project Created for Test)
       description: Marks the Project identified by the specified project_id (for example,
@@ -604,38 +604,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3725
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: 585c7876-7036-478a-8913-67493b5533e7
-    type: regular
-    task:
-      id: 585c7876-7036-478a-8913-67493b5533e7
-      version: -1
-      name: grm-update-project -- Untested
-      description: Updates the attributes of the Project identified by the specified
-        projectId
-      script: Google Resource Manager|||grm-update-project
-      type: regular
-      iscommand: true
-      brand: Google Resource Manager
-    scriptarguments:
-      labels.attrs: {}
-      labels.values: {}
-      name: {}
-      parent.id: {}
-      parent.type: {}
-      projectId: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
+          "y": 4045
         }
       }
     note: false
@@ -664,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3900
+          "y": 4220
         }
       }
     note: false
@@ -690,7 +659,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -745,7 +714,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 545
         }
       }
     note: false
@@ -779,7 +748,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1770
         }
       }
     note: false
@@ -813,7 +782,80 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2675
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 3a0eb8b4-9051-4096-8c55-54208692a4e2
+    type: regular
+    task:
+      id: 3a0eb8b4-9051-4096-8c55-54208692a4e2
+      version: -1
+      name: grm-update-project
+      description: Updates the attributes of the Project identified by the specified
+        projectId
+      script: Google Resource Manager|||grm-update-project
+      type: regular
+      iscommand: true
+      brand: Google Resource Manager
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      labels.attrs: {}
+      labels.values: {}
+      name:
+        simple: Updated Name Name
+      parent.id:
+        simple: "690006273490"
+      parent.type:
+        simple: organization
+      projectId:
+        simple: ${ProjectId.NeedsProcessing}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 51989d6f-f37b-40cb-85ff-77c3147b75de
+    type: condition
+    task:
+      id: 51989d6f-f37b-40cb-85ff-77c3147b75de
+      version: -1
+      name: Verify Update Project Command Changed the Project's name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: Updated Name Name
+          right:
+            value:
+              simple: GRM.Project.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
         }
       }
     note: false
@@ -823,8 +865,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3945,
-        "width": 810,
+        "height": 4265,
+        "width": 380,
         "x": 50,
         "y": 50
       }

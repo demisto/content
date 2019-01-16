@@ -15560,12 +15560,12 @@
                     "grm-search-organizations", 
                     "grm-update-project", 
                     "grm-undelete-project", 
-                    "grm-get-organization", 
+                    "grm-list-projects", 
                     "closeInvestigation", 
                     "grm-delete-project", 
                     "grm-create-project", 
                     "grm-get-project", 
-                    "grm-list-projects"
+                    "grm-get-organization"
                 ]
             }
         }
