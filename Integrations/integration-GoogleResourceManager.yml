@@ -134,14 +134,14 @@ script:
       isArray: false
       name: parent.id
       predefined: []
-      required: false
+      required: true
     - default: false
       defaultValue: ''
       description: ''
       isArray: false
       name: parent.type
       predefined: [organization, ' folder']
-      required: false
+      required: true
     - default: false
       defaultValue: ''
       description: ''
