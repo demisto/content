@@ -558,7 +558,7 @@ script:
     def update_project(project_id, project_body):
         """Build service object and return the result of calling the API 'update' function for the projects resource."""
         service = build_and_authorize()
-        operation = service.projects().update(projectId=project_id, body=project_body)
+        operation = service.projects().update(projectId=project_id, body=project_body).execute()
         return operation
 
 
@@ -567,10 +567,8 @@ script:
         """Updates the attributes of the Project identified by the specified projectId."""
         project_id = demisto.args()['projectId']
         project_body = demisto.args()
-        # del project_body['projectId']
         project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
-        response = get_project(project_id)
         # Parse response into context
         context = {
             'Name': response.get('name'),
