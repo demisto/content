@@ -182,3 +182,4 @@ script:
     description: Rasterize an image file
   dockerimage: demisto/rasterize
   runonce: false
+  releaseNotes: Added size arguments to rasterize-image command
