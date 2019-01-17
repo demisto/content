@@ -944,6 +944,9 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "Test-PcapHTTPExtractor"
         }
     ],
     "skipped_tests": {
