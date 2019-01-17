@@ -40,7 +40,7 @@ configuration:
   - insights
 - display: Base URL
   name: url
-  defaultvalue: https://geoip.maxmind.com/geoip/
+  defaultvalue: https://geoip.maxmind.com/
   type: 0
   required: true
 script:
