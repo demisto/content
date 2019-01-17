@@ -64,10 +64,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 5359e30d-780f-4162-827d-a44de955e572
+    taskid: ff0d7416-a03b-47d8-8685-2348db37b922
     type: regular
     task:
-      id: 5359e30d-780f-4162-827d-a44de955e572
+      id: ff0d7416-a03b-47d8-8685-2348db37b922
       version: -1
       name: ip
       description: Look up threat intel information for an IP in Recorded Future.
@@ -88,6 +88,8 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
+      using:
+        simple: Recorded Future_instance
       wait: {}
     separatecontext: false
     view: |-
@@ -101,10 +103,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: fa3915d3-559e-4365-8bcd-13f7f0ec60de
+    taskid: 0d97aeae-34a9-4256-8ac7-ea66a2dad09c
     type: regular
     task:
-      id: fa3915d3-559e-4365-8bcd-13f7f0ec60de
+      id: 0d97aeae-34a9-4256-8ac7-ea66a2dad09c
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
@@ -124,6 +126,8 @@ tasks:
       enclave-ids: {}
       long: {}
       threshold: {}
+      using:
+        simple: Recorded Future_instance
     separatecontext: false
     view: |-
       {
@@ -136,10 +140,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 58175ab9-e8c1-49fc-8d05-b846ba1b6807
+    taskid: 57a9623e-0d36-418d-8e0a-698f02b02c71
     type: regular
     task:
-      id: 58175ab9-e8c1-49fc-8d05-b846ba1b6807
+      id: 57a9623e-0d36-418d-8e0a-698f02b02c71
       version: -1
       name: file
       description: Look up threat intel information for a file in Recorded Future.
@@ -158,6 +162,8 @@ tasks:
       long: {}
       retries: {}
       threshold: {}
+      using:
+        simple: Recorded Future_instance
       wait: {}
     separatecontext: false
     view: |-
@@ -306,10 +312,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 6c1d05a0-c0ca-444d-8d8f-9fb162e32161
+    taskid: 8dbe6f72-8f70-4943-87b3-38f1ee80ca9a
     type: regular
     task:
-      id: 6c1d05a0-c0ca-444d-8d8f-9fb162e32161
+      id: 8dbe6f72-8f70-4943-87b3-38f1ee80ca9a
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
@@ -329,6 +335,8 @@ tasks:
       enclave-ids: {}
       long: {}
       threshold: {}
+      using:
+        simple: Recorded Future_instance
     separatecontext: false
     view: |-
       {
@@ -387,17 +395,17 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 9b9e785f-8358-4e8b-8dc5-050a82daf74a
+    taskid: d25d6c47-e390-4ea4-87b6-f18e1ae6b62c
     type: regular
     task:
-      id: 9b9e785f-8358-4e8b-8dc5-050a82daf74a
+      id: d25d6c47-e390-4ea4-87b6-f18e1ae6b62c
       version: -1
       name: url
       description: Look up threat intel information for a url in Recorded Future.
-      script: '|||url'
+      script: Recorded Future|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: Recorded Future
     nexttasks:
       '#none#':
       - "12"
@@ -406,17 +414,10 @@ tasks:
     scriptarguments:
       detailed:
         simple: "true"
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
       url:
         simple: https://www.batticaloa.mc.gov.lk/
-      wait: {}
+      using:
+        simple: Recorded Future_instance
     separatecontext: false
     view: |-
       {

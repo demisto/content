@@ -1856,7 +1856,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets         generated
+      description: Fetching evidence details if true. Evidence is a record that gets generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
@@ -1935,7 +1935,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets         generated
+      description: Fetching evidence details if true. Evidence is a record that gets generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
@@ -2007,7 +2007,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets         generated
+      description: Fetching evidence details if true. Evidence is a record that gets generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
@@ -2094,7 +2094,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets         generated
+      description: Fetching evidence details if true. Evidence is a record that gets generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: orderby
