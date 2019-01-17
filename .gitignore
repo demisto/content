@@ -3,3 +3,5 @@
 _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
+*.pyc
+
