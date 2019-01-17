@@ -11488,6 +11488,25 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "Fidelis Elevate Network": {
+                "name": "Fidelis Elevate Network", 
+                "commands": [
+                    "fidelis-get-alert", 
+                    "fidelis-delete-alert", 
+                    "fidelis-export-alert", 
+                    "fidelis-get-malware-data", 
+                    "fidelis-get-alert-pcap", 
+                    "fidelis-get-alert-report", 
+                    "fidelis-sandbox-upload", 
+                    "fidelis-list-alerts", 
+                    "fidelis-upload-pcap"
+                ], 
+                "tests": [
+                    "Fidelis-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15339,6 +15358,19 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Fidelis-Test": {
+                "name": "Fidelis-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "implementing_commands": [
+                    "fidelis-list-alerts", 
+                    "fidelis-get-alert"
                 ]
             }
         }
