@@ -271,9 +271,6 @@ def test_integration(client, integrations, playbook_id, options={}):
 
     test_pass = playbook_state == PB_Status.COMPLETED
     if test_pass:
-        # delete incident
-        __delete_incident(client, incident)
-
         # delete integration instance
         __delete_integrations_instances(client, instance_ids)
 
