@@ -2,11 +2,44 @@ category: IT Services
 commonfields: {id: Google Resource Manager, version: -1}
 configuration:
 - defaultvalue: ''
-  display: Service Account Authentication File Contents
-  name: auth_json
+  display: The Project ID of the project resource in which you created the Service
+    Account. The value can be found in the Service Account Key File which should have
+    downloaded when creating the Service Account in the Google Cloud Platform.
+  name: project_id
   options: []
-  required: true
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Value of the 'private_key_id' field in your JSON Service Account Key File.
+  name: private_key_id
+  options: []
+  required: false
   type: 4
+- defaultvalue: ''
+  display: Value of the 'private_key' field in your JSON Service Account Key File.
+  name: private_key
+  options: []
+  required: false
+  type: 4
+- defaultvalue: ''
+  display: Value of the 'client_email' field in your JSON Service Account Key File.
+  name: client_email
+  options: []
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Value of the 'client_id' field in your JSON Service Account Key File.
+  name: client_id
+  options: []
+  required: false
+  type: 4
+- defaultvalue: ''
+  display: Value of the 'client_x509_cert_url' field in your JSON Service Account
+    Key File.
+  name: client_x509_cert_url
+  options: []
+  required: false
+  type: 0
 description: Google Cloud Platform Resource Manager
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
@@ -17,64 +50,52 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
-        Example: tokyo-rain-123
+      description: ''
       isArray: false
       name: projectId
       predefined: ['']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        string
-        The id of the parent resource.
+      description: ''
       isArray: false
       name: parent.id
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The label keys associated with this Project.
-
-        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
-
-        No more than 256 labels can be associated with a given resource.
+      description: ''
       isArray: true
       name: labels.attrs
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The user-assigned display name of the Project. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
-        Example: My Project
+      description: ''
       isArray: false
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        string
-        Required field representing the resource type the parent.id is for. At present, the valid types are: "organization" and "folder".
+      description: ''
       isArray: false
       name: parent.type
       predefined: [organization, ' folder']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The label values associated with this Project.
-
-        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
-
-        No more than 256 labels can be associated with a given resource.
+      description: ''
       isArray: true
       name: labels.values
       predefined: []
       required: false
+      secret: false
     description: Create Project Resource
     execution: false
     name: grm-create-project
@@ -91,13 +112,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique ID of the Project to fetch.
-        Example: tokyo-rain-123
+      description: ''
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     description: Retrieves the Project identified by the specified projectId (for
       example, my-project-123).
     execution: false
@@ -115,19 +135,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: "An expression for filtering the results of the request. Filter\
-        \ rules are case insensitive. The fields eligible for filtering are:\n\tname\n\
-        \tid\n\tlabels.key\nwhere key is the name of a label\n\nSome examples:\nname:how*\t\
-        The project's name starts with \"how\".\nname:Howl\tThe project's name is\
-        \ Howl or howl.\nname:HOWL\tEquivalent to above.\nNAME:howl\tEquivalent to\
-        \ above.\nlabels.color:*\tThe project has the label color.\nlabels.color:red\t\
-        The project's label color has the value red.\nlabels.color:red labels.size:big\t\
-        The project's label color has the value red and its label size has the value\
-        \ big."
+      description: ''
       isArray: false
       name: filter
       predefined: []
       required: false
+      secret: false
     description: Lists projects that are visible to the user and satisfy  the specified
       filter. This method returns the projects in an unspecified order.
     execution: false
@@ -145,63 +158,52 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique ID of the Project to update.
-        Example: tokyo-rain-123
+      description: ''
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The string to update the Project name with. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
-        Example: My Project
+      description: ''
       isArray: false
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        string
-        The id of the parent resource.
+      description: ''
       isArray: false
       name: parent.id
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: 'Field representing the resource type the parent.id is for. At
-        present, the valid types are: "organization" and "folder".'
+      description: ''
       isArray: false
       name: parent.type
       predefined: [organization, ' folder']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The label keys to associate with this Project.
-
-        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
-
-        No more than 256 labels can be associated with a given resource.
+      description: ''
       isArray: true
       name: labels.attrs
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        The label values to associate with this Project.
-
-        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
-
-        No more than 256 labels can be associated with a given resource.
+      description: ''
       isArray: true
       name: labels.values
       predefined: []
       required: false
+      secret: false
     description: Updates the attributes of the Project identified by the specified
       projectId. Currently the only fields that can be updated are the project name
       and labels.
@@ -220,33 +222,28 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        number
-        The maximum number of Organizations to return in the response.
+      description: ''
       isArray: false
       name: pageSize
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: |-
-        string
-        A pagination token returned from a previous call to `organizations.search` that indicates from where listing should continue.
+      description: ''
       isArray: false
       name: pageToken
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: "Used to filter the Organizations to return in the response. Filter\
-        \ rules are case-insensitive.\n\nOrganizations may be filtered by `owner.directoryCustomerId`\
-        \ or by `domain`, where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
-        Organizations with\nowner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
-        Organizations corresponding to the domain google.com."
+      description: ''
       isArray: false
       name: filter
       predefined: []
       required: false
+      secret: false
     description: Searches Organization resources that are visible to the user and
       satisfy the specified filter. This method returns Organizations in an unspecified
       order. New Organizations do not necessarily appear at the end of the results.
@@ -262,11 +259,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: The resource name of the Organization to fetch, e.g. "organizations/1234".
+      description: ''
       isArray: false
       name: name
       predefined: []
       required: true
+      secret: false
     description: Fetches an Organization resource identified by the specified resource
       name.
     execution: false
@@ -281,13 +279,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique ID of the Project to delete.
-        Example: tokyo-rain-123
+      description: ''
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     description: Marks the Project identified by the specified project_id (for example,
       my-project-123) for deletion.
     execution: true
@@ -305,13 +302,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique ID of the Project to restore.
-        Example: tokyo-rain-123
+      description: ''
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     description: Restores the Project identified by the specified projectId (for example,
       my-project-123).
     execution: false
@@ -330,10 +326,6 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
-
     ''' IMPORTS '''
 
     from googleapiclient import discovery
@@ -341,11 +333,33 @@ script:
     from google.oauth2 import service_account
     import json
     import time
+    from collections import OrderedDict
 
     ''' GLOBALS/PARAMS '''
 
+    # Params for assembling object of the Service Account Credentials File Contents
+    SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id')
+    PRIVATE_KEY_ID = demisto.params().get('private_key_id')
+    PRIVATE_KEY = demisto.params().get('private_key')
+    CLIENT_EMAIL = demisto.params().get('client_email')
+    CLIENT_ID = demisto.params().get('client_id')
+    CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url')
+
+    AUTH_JSON = {
+        "type": "service_account",
+        "project_id": SERVICE_ACT_PROJECT_ID,
+        "private_key_id": PRIVATE_KEY_ID,
+        "private_key": PRIVATE_KEY,
+        "client_email": CLIENT_EMAIL,
+        "client_id": CLIENT_ID,
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": CLIENT_X509_CERT_URL
+    }
+
+    # Params for constructing googleapiclient service object
     API_VERSION = 'v1'
-    SERVICE_ACT_CRDNTLS_FILE_CONTENTS = demisto.params()['auth_json'].encode('utf-8')
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 
@@ -364,7 +378,8 @@ script:
             Google Resource Manager API Service object via which commands in the
             integration will make API calls
         """
-        service_account_info = json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS.decode('utf-8'))
+        auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
+        service_account_info = json.loads(auth_json_string)
         service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
         service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
         return service
