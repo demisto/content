@@ -4803,6 +4803,9 @@
                 "fromversion": "3.6.0", 
                 "implementing_playbooks": [
                     "Search And Delete Emails - EWS"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5455,6 +5458,9 @@
                 ], 
                 "implementing_commands": [
                     "ews-get-attachment"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5772,6 +5778,9 @@
                 "implementing_commands": [
                     "ews-search-mailboxes", 
                     "ews-delete-items"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10689,7 +10698,8 @@
                     "ews-o365-get-compliance-search", 
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
-                    "ews-o365-get-compliance-search-purge-status"
+                    "ews-o365-get-compliance-search-purge-status", 
+                    "ews-get-autodiscovery-config"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
