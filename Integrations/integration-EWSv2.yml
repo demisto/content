@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Exchange Web Services and Office 365 (mail)
 detaileddescription: |-
   For additional information go to:
-  https://support.demisto.com/hc/en-us/search?utf8=%E2%9C%93&query=ews
+  [https://support.demisto.com/hc/en-us/articles/360002253814-EWSv2](https://support.demisto.com/hc/en-us/articles/360002253814-EWSv2)
 configuration:
 - display: Email address
   name: credentials
