@@ -217,12 +217,12 @@ script:
         args = demisto.args()
         alert_id = args['alert_id'].split(',')
 
-        result = fidelis_delete_alert(alert_id)
+        fidelis_delete_alert(alert_id)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': result,
+            'Contents': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
         })
