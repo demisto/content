@@ -155,7 +155,7 @@ script:
             return 'ok';
         case 'email':
         case 'pwned-email':
-            var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/' + args.email;
+            var url = 'https://haveibeenpwned.com/api/v2/breachedaccount?email=' + args.email;
             var res = sendRequest(url);
             var md = dataToMd("Email",args.email,res);
             var ec = emailToEc(args.email,res || []);
