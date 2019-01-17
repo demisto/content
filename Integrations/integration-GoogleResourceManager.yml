@@ -17,46 +17,70 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
+        Example: tokyo-rain-123
       isArray: false
       name: projectId
       predefined: ['']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        string
+        The id of the parent resource.
       isArray: false
       name: parent.id
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The label keys associated with this Project.
+
+        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+
+        No more than 256 labels can be associated with a given resource.
       isArray: true
       name: labels.attrs
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The user-assigned display name of the Project. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
+        Example: My Project
       isArray: false
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        string
+        Required field representing the resource type the parent.id is for. At present, the valid types are: "organization" and "folder".
       isArray: false
       name: parent.type
-      predefined: []
+      predefined: [organization, ' folder']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The label values associated with this Project.
+
+        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+
+        No more than 256 labels can be associated with a given resource.
       isArray: true
       name: labels.values
       predefined: []
       required: false
+      secret: false
     description: Create Project Resource
     execution: false
     name: grm-create-project
@@ -73,12 +97,16 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The unique ID of the Project to fetch.
+        Example: tokyo-rain-123
       isArray: false
       name: projectId
       predefined: []
       required: true
-    description: Get Project Resource
+      secret: false
+    description: Retrieves the Project identified by the specified projectId (for
+      example, my-project-123).
     execution: false
     name: grm-get-project
     outputs:
@@ -94,11 +122,20 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: "An expression for filtering the results of the request. Filter\
+        \ rules are case insensitive. The fields eligible for filtering are:\n\tname\n\
+        \tid\n\tlabels.key\nwhere key is the name of a label\n\nSome examples:\nname:how*\t\
+        The project's name starts with \"how\".\nname:Howl\tThe project's name is\
+        \ Howl or howl.\nname:HOWL\tEquivalent to above.\nNAME:howl\tEquivalent to\
+        \ above.\nlabels.color:*\tThe project has the label color.\nlabels.color:red\t\
+        The project's label color has the value red.\nlabels.color:red labels.size:big\t\
+        The project's label color has the value red and its label size has the value\
+        \ big."
       isArray: false
       name: filter
       predefined: []
       required: false
+      secret: false
     description: Lists projects that are visible to the user and satisfy  the specified
       filter. This method returns the projects in an unspecified order.
     execution: false
@@ -116,48 +153,72 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The unique ID of the Project to update.
+        Example: tokyo-rain-123
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The string to update the Project name with. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
+        Example: My Project
       isArray: false
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        string
+        The id of the parent resource.
       isArray: false
       name: parent.id
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: 'Field representing the resource type the parent.id is for. At
+        present, the valid types are: "organization" and "folder".'
       isArray: false
       name: parent.type
       predefined: [organization, ' folder']
       required: true
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The label keys to associate with this Project.
+
+        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+
+        No more than 256 labels can be associated with a given resource.
       isArray: true
       name: labels.attrs
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The label values to associate with this Project.
+
+        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+
+        No more than 256 labels can be associated with a given resource.
       isArray: true
       name: labels.values
       predefined: []
       required: false
+      secret: false
     description: Updates the attributes of the Project identified by the specified
-      projectId
+      projectId. Currently the only fields that can be updated are the project name
+      and labels.
     execution: false
     name: grm-update-project
     outputs:
@@ -173,25 +234,36 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        number
+        The maximum number of Organizations to return in the response.
       isArray: false
       name: pageSize
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        string
+        A pagination token returned from a previous call to `organizations.search` that indicates from where listing should continue.
       isArray: false
       name: pageToken
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: "Used to filter the Organizations to return in the response. Filter\
+        \ rules are case-insensitive.\n\nOrganizations may be filtered by `owner.directoryCustomerId`\
+        \ or by `domain`, where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
+        Organizations with\nowner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
+        Organizations corresponding to the domain google.com."
       isArray: false
       name: filter
       predefined: []
       required: false
+      secret: false
     description: Searches Organization resources that are visible to the user and
       satisfy the specified filter. This method returns Organizations in an unspecified
       order. New Organizations do not necessarily appear at the end of the results.
@@ -207,11 +279,12 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: The resource name of the Organization to fetch, e.g. "organizations/1234".
       isArray: false
       name: name
       predefined: []
       required: true
+      secret: false
     description: Fetches an Organization resource identified by the specified resource
       name.
     execution: false
@@ -226,11 +299,14 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The unique ID of the Project to delete.
+        Example: tokyo-rain-123
       isArray: false
       name: projectId
       predefined: []
       required: true
+      secret: false
     description: Marks the Project identified by the specified project_id (for example,
       my-project-123) for deletion.
     execution: true
@@ -248,13 +324,16 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: |-
+        The unique ID of the Project to restore.
+        Example: tokyo-rain-123
       isArray: false
       name: projectId
       predefined: []
       required: true
-    description: Restores the Project identified by the specified project_id (for
-      example, my-project-123).
+      secret: false
+    description: Restores the Project identified by the specified projectId (for example,
+      my-project-123).
     execution: false
     name: grm-undelete-project
     outputs:
@@ -271,6 +350,10 @@ script:
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+
     ''' IMPORTS '''
 
     from googleapiclient import discovery
@@ -395,7 +478,31 @@ script:
 
 
     def create_project_command():
-        """Create a project in the Google Cloud Platform."""
+        """
+        Create a project in the Google Cloud Platform.
+
+        demisto parameter: (string) projectId
+            The unique ID of the Project to create
+
+        demisto parameter: (string) name
+            The name to give the new Project
+
+        demisto parameter: (string) parent.id
+            The id of the parent resource
+
+        demisto parameter: (string) parent.type
+            The resource type the parent.id is for
+
+        demisto parameter: (list) labels.attrs
+            The label keys to associate with the new Project
+
+        demisto parameter: (list) labels.values
+            The label values to associate with the new Project. The values are
+            assigned to their corresponding indexed key in labels.attrs
+
+        returns:
+            The new Project resource object
+        """
         args = demisto.args()
         response = create_project(args)
         # Parse response into context
@@ -432,7 +539,17 @@ script:
 
 
     def delete_project_command():
-        """Set the lifcycleState attribute of a specified project to DELETE_REQUESTED."""
+        """
+        Deletes the specified project.
+
+        Set the lifcycleState attribute of a specified project to DELETE_REQUESTED.
+
+        demisto parameter: (string) projectId
+            The unique ID of the Project to restore
+
+        returns:
+            Deleted project resource object
+        """
         project_id = demisto.args()['projectId']
         response = delete_project(project_id)
         if json.dumps(response) == '{}':
@@ -471,7 +588,17 @@ script:
 
 
     def undelete_project_command():
-        """Set the lifcycleState attribute of a specified project back to ACTIVE."""
+        """
+        Restores the specified project.
+
+        Sets the lifcycleState attribute of a specified project back to ACTIVE.
+
+        demisto parameter: (string) projectId
+            The unique ID of the Project to restore
+
+        returns:
+            Restored project resource object
+        """
         project_id = demisto.args()['projectId']
         response = undelete_project(project_id)
         if json.dumps(response) == '{}':
@@ -510,7 +637,15 @@ script:
 
 
     def get_project_command():
-        """Retrieves the Project identified by the specified projectId."""
+        """
+        Retrieves the Project identified by the specified projectId.
+
+        demisto parameter: (string) projectId
+            The unique ID of the Project to fetch
+
+        returns:
+            The project resource object specified by the projectId
+        """
         project_id = demisto.args()['projectId']
         response = get_project(project_id)
         # Parse response into context
@@ -547,7 +682,16 @@ script:
 
 
     def list_projects_command():
-        """Lists Projects that are visible to the user and satisfy the specified filter if one is provided."""
+        """
+        Lists Projects that are visible to the user and satisfy the specified
+        filter if one is provided.
+
+        demisto parameter: (string) filter -- optional
+            An expression for filtering the results of the request
+
+        returns:
+            Project resource objects that are visible to the user and satisfy the specified filter
+        """
         filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
         response = list_projects(filter_list)
         contexts = []
@@ -589,7 +733,31 @@ script:
 
     # Does not work How I would think it would ---- NEEDS ATTENTION
     def update_project_command():
-        """Updates the attributes of the Project identified by the specified projectId."""
+        """
+        Updates the attributes of the Project identified by the specified projectId.
+
+        demisto parameter: (string) projectId
+            The unique ID of the Project to update
+
+        demisto parameter: (string) name
+            The string to update the Project name with
+
+        demisto parameter: (string) parent.id
+            The id of the parent resource
+
+        demisto parameter: (string) parent.type
+            The resource type the parent.id is for
+
+        demisto parameter: (list) labels.attrs
+            The label keys to associate with this Project
+
+        demisto parameter: (list) labels.values
+            The label values to associate with this Project. The values are
+            assigned to their corresponding indexed key in labels.attrs
+
+        returns:
+            The updated Project resource object
+        """
         project_id = demisto.args()['projectId']
         project_body = demisto.args()
         project_body = make_project_body(project_body)
@@ -630,7 +798,23 @@ script:
 
 
     def search_organizations_command():
-        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided)."""
+        """
+        Searches Organization resources that are visible to the user and satisfy
+        the specified filter (if provided).
+
+        demisto parameter: (number) pageSize -- optional
+            The maximum number of Organizations to return in the response
+
+        demisto parameter: (string) pageToken -- optional
+            A pagination token returned from a previous call to organizations.search()
+            that indicates from where listing should continue
+
+        demisto parameter: (string) filter -- optional
+            Used to filter the Organizations to return in the response
+
+        returns:
+            List of Organization resource objects that are visible to the user and satisfy the specified filter
+        """
         req_body = demisto.args()
         contexts = []
         next_page = True
@@ -671,7 +855,7 @@ script:
             name of the Organization in format <type/number> e.g. 'organizations/1245345444'
 
         returns: (Organization) operation
-            The response from calling the API that takes the form of a Organization object.
+            The response from calling the API that takes the form of a Organization object
         """
         service = build_and_authorize()
         operation = service.organizations().get(name=name).execute()
@@ -679,7 +863,15 @@ script:
 
 
     def get_organization_command():
-        """Fetches an Organization resource identified by the specified resource name."""
+        """
+        Fetches an Organization resource identified by the specified resource name.
+
+        demisto parameter: (string) name
+            name of the Organization in format <type/number> e.g. 'organizations/1245345444'
+
+        returns:
+            The organization object with its associated fields
+        """
         name = demisto.args()['name']
         response = get_organization(name)
         # Parse response into context
