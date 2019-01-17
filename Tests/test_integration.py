@@ -180,6 +180,20 @@ def __delete_incident(client, incident):
     return True
 
 
+# return True if close-incident succeeded, False otherwise
+def __close_incident(client, incident):
+    res = client.req('POST', '/incident/close', {
+        'id': incident['id']
+    })
+
+    if res.status_code is not 200:
+        print_error('closing incident failed\nStatus code' + str(res.status_code))
+        print_error(pformat(res.json()))
+        return False
+
+    return True
+
+
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
@@ -271,6 +285,9 @@ def test_integration(client, integrations, playbook_id, options={}):
 
     test_pass = playbook_state == PB_Status.COMPLETED
     if test_pass:
+        # close incident
+        __close_incident(client, incident)
+        
         # delete integration instance
         __delete_integrations_instances(client, instance_ids)
 
