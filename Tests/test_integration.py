@@ -287,7 +287,7 @@ def test_integration(client, integrations, playbook_id, options={}):
     if test_pass:
         # close incident
         __close_incident(client, incident)
-        
+
         # delete integration instance
         __delete_integrations_instances(client, instance_ids)
 
