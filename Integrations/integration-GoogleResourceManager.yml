@@ -24,7 +24,6 @@ script:
       name: projectId
       predefined: ['']
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -34,7 +33,6 @@ script:
       name: parent.id
       predefined: []
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -47,7 +45,6 @@ script:
       name: labels.attrs
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -57,7 +54,6 @@ script:
       name: name
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -67,7 +63,6 @@ script:
       name: parent.type
       predefined: [organization, ' folder']
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -80,7 +75,6 @@ script:
       name: labels.values
       predefined: []
       required: false
-      secret: false
     description: Create Project Resource
     execution: false
     name: grm-create-project
@@ -104,7 +98,6 @@ script:
       name: projectId
       predefined: []
       required: true
-      secret: false
     description: Retrieves the Project identified by the specified projectId (for
       example, my-project-123).
     execution: false
@@ -135,7 +128,6 @@ script:
       name: filter
       predefined: []
       required: false
-      secret: false
     description: Lists projects that are visible to the user and satisfy  the specified
       filter. This method returns the projects in an unspecified order.
     execution: false
@@ -160,7 +152,6 @@ script:
       name: projectId
       predefined: []
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -170,7 +161,6 @@ script:
       name: name
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -180,7 +170,6 @@ script:
       name: parent.id
       predefined: []
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: 'Field representing the resource type the parent.id is for. At
@@ -189,7 +178,6 @@ script:
       name: parent.type
       predefined: [organization, ' folder']
       required: true
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -202,7 +190,6 @@ script:
       name: labels.attrs
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -215,7 +202,6 @@ script:
       name: labels.values
       predefined: []
       required: false
-      secret: false
     description: Updates the attributes of the Project identified by the specified
       projectId. Currently the only fields that can be updated are the project name
       and labels.
@@ -241,7 +227,6 @@ script:
       name: pageSize
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: |-
@@ -251,7 +236,6 @@ script:
       name: pageToken
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: "Used to filter the Organizations to return in the response. Filter\
@@ -263,7 +247,6 @@ script:
       name: filter
       predefined: []
       required: false
-      secret: false
     description: Searches Organization resources that are visible to the user and
       satisfy the specified filter. This method returns Organizations in an unspecified
       order. New Organizations do not necessarily appear at the end of the results.
@@ -284,7 +267,6 @@ script:
       name: name
       predefined: []
       required: true
-      secret: false
     description: Fetches an Organization resource identified by the specified resource
       name.
     execution: false
@@ -306,7 +288,6 @@ script:
       name: projectId
       predefined: []
       required: true
-      secret: false
     description: Marks the Project identified by the specified project_id (for example,
       my-project-123) for deletion.
     execution: true
@@ -331,7 +312,6 @@ script:
       name: projectId
       predefined: []
       required: true
-      secret: false
     description: Restores the Project identified by the specified projectId (for example,
       my-project-123).
     execution: false
