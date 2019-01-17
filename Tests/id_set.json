@@ -7683,6 +7683,9 @@
                     "ip", 
                     "phishme-search", 
                     "email"
+                ], 
+                "tests": [
+                    "Test - PhishMe"
                 ]
             }
         }, 

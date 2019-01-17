@@ -460,7 +460,6 @@ script:
       description: For malicious emails, the vendor that made the decision.
     - contextPath: Account.Email.Malicious.Description
       description: For malicious emails, the reason for the vendor to make the decision.
-    - contextPath: Account.Email.
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
     - contextPath: DBotScore.Type
