@@ -805,8 +805,8 @@ script:
                     'Title': raw_sighting.get('title')
                 }
                 if raw_sighting['url']:
-                    raw_sighting['url'] = raw_sighting['url'].encode('utf-8')
-                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url']).encode('utf-8')
+                    raw_sighting['url'] = raw_sighting['url']
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
                 hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
@@ -2230,4 +2230,4 @@ script:
       description: File extension
     description: Gets the vulnerability (CVE) risk list from Recorded Future
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added commands for retrieving threats by a specified order, also for retrieving risk lists as csv files (with additional scripts to create indicators using them)."
