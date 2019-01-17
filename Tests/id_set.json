@@ -1722,17 +1722,6 @@
             }
         }, 
         {
-            "ReadPDFFile": {
-                "name": "ReadPDFFile", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "ReadPDFFile-Test"
-                ]
-            }
-        }, 
-        {
             "ContextContains": {
                 "name": "ContextContains"
             }
@@ -1808,7 +1797,15 @@
         }, 
         {
             "ExtractIndicatorsFromTextFile": {
-                "name": "ExtractIndicatorsFromTextFile"
+                "name": "ExtractIndicatorsFromTextFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
             }
         }, 
         {
@@ -4770,6 +4767,63 @@
             }
         }, 
         {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromTextFile": {
+                "name": "ExtractIndicatorsFromTextFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "ExtractDomain", 
+                    "ExtractEmail", 
+                    "ExtractHash", 
+                    "ExtractIP", 
+                    "ExtractURL", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
@@ -4811,6 +4865,9 @@
                 "fromversion": "3.6.0", 
                 "implementing_playbooks": [
                     "Search And Delete Emails - EWS"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5463,6 +5520,9 @@
                 ], 
                 "implementing_commands": [
                     "ews-get-attachment"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5576,6 +5636,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5780,6 +5843,9 @@
                 "implementing_commands": [
                     "ews-search-mailboxes", 
                     "ews-delete-items"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6090,10 +6156,11 @@
         {
             "extract_indicators_from_file_-_generic": {
                 "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
-                    "ReadPDFFile", 
+                    "ExtractIndicatorsFromWordFile", 
                     "Set", 
+                    "ReadPDFFile", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -6759,6 +6826,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7068,6 +7138,21 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "extract_indicators_from_file_-_generic": {
+                "name": "Extract Indicators From File - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
                 ]
             }
         }, 
@@ -10322,6 +10407,9 @@
                 "commands": [
                     "search", 
                     "ip"
+                ], 
+                "tests": [
+                    "ShodanTest"
                 ]
             }
         }, 
@@ -10699,7 +10787,8 @@
                     "ews-o365-get-compliance-search", 
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
-                    "ews-o365-get-compliance-search-purge-status"
+                    "ews-o365-get-compliance-search-purge-status", 
+                    "ews-get-autodiscovery-config"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -11940,7 +12029,8 @@
             "Extract Indicators From File - test": {
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
-                    "RaiseError", 
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
                     "http"
                 ], 
                 "implementing_playbooks": [
@@ -15349,6 +15439,34 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
                 ]
             }
         }
