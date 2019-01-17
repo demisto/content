@@ -94,10 +94,11 @@ def configure_proxy(c, proxy=""):
 
 
 def start_proxy(c, public_ip, playbook_id, record=False):
-    configure_proxy(c, 'localhost:9997')
     action = '--server-replay' if not record else '--save-stream-file'
-    return Popen(["ssh", '-o', 'StrictHostKeyChecking=no', '-t', "ec2-user@{}".format(public_ip), "mitmdump", "-p",
-                  "9997", action, "{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
+    p = Popen(["ssh", '-o', 'StrictHostKeyChecking=no', '-t', "ec2-user@{}".format(public_ip), "mitmdump", "-p",
+               "9997", action, "Mocks/{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
+    configure_proxy(c, 'localhost:9997')
+    return p
 
 
 def stop_proxy(c, p):
@@ -111,7 +112,6 @@ def stop_proxy(c, p):
 def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
-    # TODO: download mock file from repo
     if not os.path.isfile("{}.mock".format(playbook_id)):
         print "Mock file does not exist, running without mock."
     else:
@@ -339,6 +339,9 @@ def main():
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
 
+    # TODO: download mock files from repo (only for tests to run)
+    # TODO: send files to remote machine
+
     failed_playbooks = []
     succeed_playbooks = []
     skipped_tests = set([])
@@ -403,6 +406,9 @@ def main():
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
+
+    # TODO: upload files to repo (only for tests to run)
+
     os.remove(FILTER_CONF)
 
     if len(failed_playbooks):
