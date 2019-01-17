@@ -10315,6 +10315,9 @@
                 "commands": [
                     "search", 
                     "ip"
+                ], 
+                "tests": [
+                    "ShodanTest"
                 ]
             }
         }, 
