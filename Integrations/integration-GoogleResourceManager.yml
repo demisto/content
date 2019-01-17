@@ -291,10 +291,14 @@ script:
 
 
     def build_and_authorize():
-        """Return a service object via which can call GRM API.
+        """
+        Return a service object via which can call GRM API.
 
         Use the service_account credential file generated in the Google Cloud Platform to build the Google
-        Resource Manager API Service object via which commands in the integration will make API calls.
+        Resource Manager API Service object.
+
+        returns: service
+            Google Resource Manager API Service object via which commands in the integration will make API calls
         """
         service_account_info = json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS.decode('utf-8'))
         service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
@@ -303,7 +307,12 @@ script:
 
 
     def make_project_body(project_body):
-        """Create and return the project body argument used when calling the GRM API to create or update a project."""
+        """
+        Create and return the project body argument used when calling the GRM API to create or update a project.
+
+        returns: (dict) body
+            dict object formatted to be used in the create or update API call
+        """
         keys = project_body.keys()
         body = {}
         if 'projectId' in keys:
@@ -331,7 +340,18 @@ script:
 
 
     def poll_operation(operation):
-        """Query status of long running operation and return results if completed"""
+        """
+        Query status of long running operation and return results if completed.
+
+        parameter: (Operation) operation
+            operation object returned from calls to the API that have a long execution time
+
+        raises: Exception
+            if long executing operation results in an error then raises an Exception that the operation was unsuccessful
+
+        returns: (Project) response
+            dict object representation of a Project Resource
+        """
         name = operation.get('name')
         while not operation.get('done'):
             # delay 1 second and then retry and see if the operation finished
@@ -605,9 +625,7 @@ script:
 
 
     def search_organizations_command():
-        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided).
-        :return: entry
-        """
+        """Searches Organization resources that are visible to the user and satisfy the specified filter (if provided)."""
         req_body = demisto.args()
         contexts = []
         next_page = True
@@ -641,12 +659,13 @@ script:
 
 
     def get_organization(name):
-        """Build service object and return the result of calling the API 'get' function for the organizations resource.
+        """
+        Build service object and return the result of calling the API 'get' function for the organizations resource.
 
-        :param name: (string)
+        parameter: (string) name
             name of the Organization in format <type/number> e.g. 'organizations/1245345444'
 
-        :return:
+        returns: (Organization) operation
             The response from calling the API that takes the form of a Organization object.
         """
         service = build_and_authorize()
@@ -655,12 +674,7 @@ script:
 
 
     def get_organization_command():
-        """Fetches an Organization resource identified by the specified resource name.
-
-        Returns:
-            The entry to the warroom. The table will show each property of the fetched organization with its
-            associated value.
-        """
+        """Fetches an Organization resource identified by the specified resource name."""
         name = demisto.args()['name']
         response = get_organization(name)
         # Parse response into context
@@ -684,12 +698,7 @@ script:
 
 
     def create_folder(parent, name):
-        """Build service object and return the result of calling the API 'create' function for the folders resource.
-
-        :param parent:
-        :param name:
-        :return:
-        """
+        """Build service object and return the result of calling the API 'create' function for the folders resource."""
         API_VERSION = 'v2'
         service = build_and_authorize()
         API_VERSION = 'v1'
