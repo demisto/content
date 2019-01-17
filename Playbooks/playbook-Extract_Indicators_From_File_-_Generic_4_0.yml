@@ -1,0 +1,432 @@
+id: extract_indicators_from_file_-_generic
+version: -1
+name: Extract Indicators From File - Generic
+fromversion: 3.6.0
+toversion: 4.0.9
+description: |-
+  Extract indicators from a file.
+  Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: da3a5643-2e84-43b5-8e37-60032a95355b
+    type: start
+    task:
+      id: da3a5643-2e84-43b5-8e37-60032a95355b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+    type: condition
+    task:
+      id: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+      version: -1
+      name: Is there a file in context?
+      description: |
+        Check if there is a file in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+    type: regular
+    task:
+      id: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+      version: -1
+      name: Set file to local context
+      description: Set the input file into local context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 3c91d141-7645-4300-8610-51328a06369a
+    type: title
+    task:
+      id: 3c91d141-7645-4300-8610-51328a06369a
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -73,
+          "y": 1027
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 190a8c7e-cdaf-4b32-8e28-f93153071b5a
+    type: title
+    task:
+      id: 190a8c7e-cdaf-4b32-8e28-f93153071b5a
+      version: -1
+      name: Extract Indicators from file
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
+    type: condition
+    task:
+      id: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
+      version: -1
+      name: Is there a text-based file
+      description: Check if there is a text-based file in context Skips .msg and .eml
+        files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASCII text
+                    ignorecase: true
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: news or mail
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: msg
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Composite Document File V2 Document, No summary info
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
+    type: regular
+    task:
+      id: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
+      version: -1
+      name: Extract indicators from text-based file
+      description: Extract indicators from text-based files.
+      scriptName: ExtractIndicatorsFromTextFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ASCII text
+              ignorecase: true
+          accessor: EntryID
+      maxFileSize: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 07542fb0-0931-468e-89ab-5d6550e1f99a
+    type: condition
+    task:
+      id: 07542fb0-0931-468e-89ab-5d6550e1f99a
+      version: -1
+      name: Is there a PDF file
+      description: Check if there is a PDF file in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: application/pdf
+                    ignorecase: true
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: application/pdf
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 582,
+          "y": 690
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 458345d2-ad32-449f-8c3d-0a54c61dc24d
+    type: regular
+    task:
+      id: 458345d2-ad32-449f-8c3d-0a54c61dc24d
+      version: -1
+      name: Read PDF file
+      description: Extract indicators from PDF files.
+      scriptName: ReadPDFFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+          accessor: EntryID
+      maxFileSize: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582,
+          "y": 865
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1042,
+        "width": 1035,
+        "x": -73,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file to extract indicators from.
+outputs:
+- contextPath: File.ModDate
+  description: The PDF File ModDate
+- contextPath: File.dc
+  description: The PDF File dc
+- contextPath: File.Producer
+  description: The PDF File producer
+- contextPath: File.Title
+  description: The PDF File Title
+- contextPath: File.xap
+  description: The PDF File xap
+- contextPath: File.Text
+  description: The PDF File extracted text
+- contextPath: File.Author
+  description: The PDF File Author
+- contextPath: URL.Data
+  description: List of URLs that were extracted from the PDF file
+- contextPath: File.xapmm
+  description: The PDF File xapmm
+- contextPath: File.CreationDate
+  description: The PDF File CreationDate
+- contextPath: File.Pages
+  description: Number of pages in PDF file
+- contextPath: Domain.Name
+  description: Extracted domains
+- contextPath: Account.Email.Address
+  description: Extracted emails
+- contextPath: File.MD5
+  description: Extracted MD5
+- contextPath: File.SHA1
+  description: Extracted SHA1
+- contextPath: File.SHA256
+  description: Extracted SHA256
+- contextPath: IP.Address
+  description: Extracted IPs
+releaseNotes: "Adjusted versioning"
+tests:
+  - Extract Indicators From File - test
