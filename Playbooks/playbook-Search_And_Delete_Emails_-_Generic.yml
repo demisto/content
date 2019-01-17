@@ -128,3 +128,6 @@ inputs:
   required: false
   description: The value of the malicious email's "AttachmentName" attribute.
 outputs: []
+releaseNotes: '-'
+tests:
+- No test
