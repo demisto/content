@@ -5574,6 +5574,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6755,6 +6758,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -15339,6 +15345,34 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
                 ]
             }
         }
