@@ -1,0 +1,286 @@
+id: Fidelis-Test
+version: 1
+name: Fidelis-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6bdcb396-e244-4f55-88ff-da7f14c6ec53
+    type: start
+    task:
+      id: 6bdcb396-e244-4f55-88ff-da7f14c6ec53
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 07dec817-b4c6-49f2-82d7-5eae36c61026
+    type: regular
+    task:
+      id: 07dec817-b4c6-49f2-82d7-5eae36c61026
+      version: -1
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 30bdd853-6b8f-48b7-8478-e7ce06d0e42a
+    type: regular
+    task:
+      id: 30bdd853-6b8f-48b7-8478-e7ce06d0e42a
+      version: -1
+      name: Get Alarms
+      script: '|||fidelis-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_time: {}
+      ioc: {}
+      severity: {}
+      start_time: {}
+      threat_score: {}
+      time_frame:
+        simple: Last 7 Days
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 8f719756-b071-4b18-8b17-139d89887f16
+    type: regular
+    task:
+      id: 8f719756-b071-4b18-8b17-139d89887f16
+      version: -1
+      name: Get Alarms - custom time frame
+      script: '|||fidelis-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      end_time:
+        simple: 2019-01-11T09:50:48Z
+      ioc: {}
+      severity: {}
+      start_time:
+        simple: 2019-01-09T07:50:48Z
+      threat_score: {}
+      time_frame:
+        simple: Custom
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 859e38b0-1306-4cb1-8dfd-090e0667a17c
+    type: condition
+    task:
+      id: 859e38b0-1306-4cb1-8dfd-090e0667a17c
+      version: -1
+      name: Check Get Alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 40064643-6049-4f42-8e21-6515f6099f97
+    type: regular
+    task:
+      id: 40064643-6049-4f42-8e21-6515f6099f97
+      version: -1
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Test condition was not satisfied.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 235efe53-8c8c-4c6d-8340-610172208bfa
+    type: regular
+    task:
+      id: 235efe53-8c8c-4c6d-8340-610172208bfa
+      version: -1
+      name: Get Specific Alert
+      script: '|||fidelis-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert_id:
+        simple: ${Fidelis.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d3896958-a3b0-4230-8ef9-dd66cf3960ce
+    type: condition
+    task:
+      id: d3896958-a3b0-4230-8ef9-dd66cf3960ce
+      version: -1
+      name: Check Get Alert
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Alert.Protocol
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: dfa9266a-cb13-49fe-809d-e5e69c528ef4
+    type: title
+    task:
+      id: dfa9266a-cb13-49fe-809d-e5e69c528ef4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
