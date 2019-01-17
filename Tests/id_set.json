@@ -4765,6 +4765,15 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "PcapHTTPExtractor": {
+                "name": "PcapHTTPExtractor", 
+                "script_executions": [
+                    "getEntries", 
+                    "getFilePath"
+                ]
+            }
         }
     ], 
     "playbooks": [
