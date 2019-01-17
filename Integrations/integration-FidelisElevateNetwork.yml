@@ -124,7 +124,7 @@ script:
             'getLast': False,
             'page': 1,
             'referenceTime': '',
-            'size': 25,
+            'size': 200,
             'supportPaging': True,
         }
 
@@ -145,7 +145,9 @@ script:
             'value': '',
         }
 
-        if time_frame in ['Today', 'Yesterday']:
+        if time_frame is None:
+            return settings
+        elif time_frame in ['Today', 'Yesterday']:
             settings['key'] = time_frame.lower()
         elif 'Last' in time_frame:
             settings['key'] = 'last'
@@ -172,9 +174,6 @@ script:
 
         return settings
 
-
-    def alert_list_to_entry(raw_alerts):
-        pass
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
     def fidelis_get_alert_command():
@@ -395,18 +394,23 @@ script:
     @logger
     def fidelis_list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, _type=None, threat_score=None, ioc=None, additional_columns=None):
         columns = additional_columns if additional_columns is not None else []
+
+        filters = [{'simple': {'column': 'ACTION', 'operator': '=', 'value': 'alert'}}]
+        if severity is not None:
+            filters.append({'simple': {'column': 'SEVERITY', 'operator': 'IN', 'value': severity}})
+        if _type is not None:
+            filters.append({'simple': {'column': 'ALERT_TYPE', 'operator': 'IN', 'value': _type}})
+        if threat_score is not None:
+            filters.append({'simple':{'column': 'FIDELIS_SCORE', 'operator': '>', 'value': threat_score}})
+        if ioc is not None:
+            filters.append({'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}})
+
         data = {
             'columns': columns + ['ALERT_ID', 'ALERT_TIME', 'SUMMARY', 'SEVERITY', 'ALERT_TYPE', ],
             'filter': {
                 'composite': {
                     'logic': 'and',
-                    'filters': [{
-                        'simple': {
-                            'column': 'ACTION',
-                            'operator': '=',
-                            'value': 'alert',
-                        }
-                    }],
+                    'filters': filters,
                 }
             },
             'order': [{'column': 'ALERT_TIME', 'direction': 'DESC'}],
@@ -567,10 +571,6 @@ script:
       required: true
       description: Alert ID
       isArray: true
-    outputs:
-    - contextPath: Fidelis.Alert.ID
-      description: Deleted alert ID
-      type: string
     description: Delete an alert from Fidelis Elevate
   - name: fidelis-export-alert
     arguments:
@@ -682,6 +682,18 @@ script:
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID
+      type: string
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time
+      type: date
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary
+      type: string
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type
       type: string
     description: List open Alerts from Fidelis Elevate
   - name: fidelis-upload-pcap
