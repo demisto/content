@@ -12563,25 +12563,21 @@
                 "implementing_commands": [
                     "panorama-list-applications", 
                     "panorama-create-rule", 
-                    "panorama-list-address-groups", 
+                    "panorama-delete-rule", 
                     "panorama-create-address-group", 
                     "panorama-list-addresses", 
                     "panorama-get-address-group", 
                     "panorama-get-url-category", 
-                    "panorama-delete-rule", 
                     "panorama", 
                     "panorama-edit-rule", 
-                    "panorama-get-service-group", 
                     "panorama-get-url-filter", 
-                    "panorama-delete-address", 
+                    "panorama-list-address-groups", 
                     "panorama-get-custom-url-category", 
                     "panorama-edit-address-group", 
-                    "panorama-move-rule", 
-                    "panorama-delete-service-group", 
-                    "panorama-delete-address-group", 
                     "panorama-create-address", 
-                    "panorama-list-services", 
-                    "panorama-create-service-group"
+                    "panorama-delete-address-group", 
+                    "panorama-move-rule", 
+                    "panorama-delete-address"
                 ]
             }
         }, 
