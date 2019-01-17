@@ -294,11 +294,12 @@ script:
         """
         Return a service object via which can call GRM API.
 
-        Use the service_account credential file generated in the Google Cloud Platform to build the Google
-        Resource Manager API Service object.
+        Use the service_account credential file generated in the Google Cloud
+        Platform to build the Google Resource Manager API Service object.
 
         returns: service
-            Google Resource Manager API Service object via which commands in the integration will make API calls
+            Google Resource Manager API Service object via which commands in the
+            integration will make API calls
         """
         service_account_info = json.loads(SERVICE_ACT_CRDNTLS_FILE_CONTENTS.decode('utf-8'))
         service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
@@ -308,7 +309,8 @@ script:
 
     def make_project_body(project_body):
         """
-        Create and return the project body argument used when calling the GRM API to create or update a project.
+        Create and return the project body argument used when calling the GRM API
+        to create or update a project.
 
         returns: (dict) body
             dict object formatted to be used in the create or update API call
@@ -328,9 +330,10 @@ script:
             labels_attrs = argToList(project_body['labels.attrs'])
             labels_values = argToList(project_body['labels.values'])
             if len(labels_attrs) != len(labels_values):
-                err_msg = 'Label attrs array and Label values array do not match in length.\n'
-                err_msg += 'These arrays need to match in length because each string in labels.attrs'
-                err_msg += ' is assigned the value of the string in the corresponding index in the labels.values array.'
+                err_msg = 'Label attrs array and Label values array do not match'\
+                    ' in length.\nThese arrays need to match in length because '\
+                    'each string in labels.attrs is assigned the value of the '\
+                    'string in the corresponding index in the labels.values array.'
                 raise IndexError(err_msg)
             else:
                 body['labels'] = {}
@@ -344,10 +347,12 @@ script:
         Query status of long running operation and return results if completed.
 
         parameter: (Operation) operation
-            operation object returned from calls to the API that have a long execution time
+            operation object returned from calls to the API that have a long
+            execution time
 
         raises: Exception
-            if long executing operation results in an error then raises an Exception that the operation was unsuccessful
+            if long executing operation results in an error then raises an
+            Exception that the operation was unsuccessful
 
         returns: (Project) response
             dict object representation of a Project Resource
