@@ -240,8 +240,8 @@ tags:
   - pcap
   - http
   - pcapng
-  - Utilities
   - Utility
+comment: An automated script that allows to parse and extract http flows from a pcap/pcapng file.
 enabled: true
 args:
 - name: pcapFileName
