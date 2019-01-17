@@ -443,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -1428,7 +1431,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -10900,6 +10906,19 @@
             }
         }, 
         {
+            "ThreatMiner": {
+                "name": "ThreatMiner", 
+                "commands": [
+                    "domain", 
+                    "ip", 
+                    "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
+                ]
+            }
+        }, 
+        {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
                 "fromversion": "3.5.0", 
@@ -13968,7 +13987,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -15291,6 +15311,31 @@
                 "implementing_commands": [
                     "domain", 
                     "email"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
+                ]
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
                 ]
             }
         }
