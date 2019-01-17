@@ -1342,7 +1342,7 @@ script: |-
       if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
           return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
-      if not isinstance(timezone, int) or not isinstance(timezone, float):
+      if not isinstance(timezone, (int, float)):
           return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
       end_time = datetime.now() + timedelta(hours=timezone)
