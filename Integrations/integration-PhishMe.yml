@@ -435,7 +435,7 @@ script:
     - name: str
       required: true
       default: true
-      description: String to search
+      description: String to searchp
     - name: limit
       description: Limit of strings to search
       defaultValue: "10"
