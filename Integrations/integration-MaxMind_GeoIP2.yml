@@ -107,6 +107,14 @@ script:
         return r
 
 
+    def create_map_entry(lat, lng):
+        demisto.results({
+            'Type': entryTypes['map'],
+            'ContentsFormat': formats['json'],
+            'Contents': {'lat': lat, 'lng': lng}
+        })
+
+
     def format_results(res_json):
         hr = defaultdict()
         maxmind_ec = defaultdict(lambda: defaultdict(int))
@@ -128,11 +136,7 @@ script:
             location = res_json['location']
             ip_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
             maxmind_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
-            demisto.results({
-                'Type': entryTypes['map'],
-                'ContentsFormat': formats['json'],
-                'Contents': {'lat': location['latitude'], 'lng': location['longitude']}
-            })
+            create_map_entry(location['latitude'], location['longitude'])
             if 'time_zone' in location:
                 hr['TimeZone'] = location['time_zone']
                 maxmind_ec['Geo']['TimeZone'] = location['time_zone']
