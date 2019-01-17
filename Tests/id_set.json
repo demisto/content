@@ -4772,9 +4772,9 @@
                 "script_executions": [
                     "getEntries", 
                     "getFilePath"
-                ],
+                ], 
                 "tests": [
-                    "Test-PcapHTTPExtractor"
+                    "blockip_test_playbook"
                 ]
             }
         }
