@@ -109,7 +109,6 @@ script:
 
     def format_results(res_json):
         hr = defaultdict()
-        ec = defaultdict()
         maxmind_ec = defaultdict(lambda: defaultdict(int))
         ip_ec = defaultdict(lambda: defaultdict(int))
         if 'continent' in res_json:
