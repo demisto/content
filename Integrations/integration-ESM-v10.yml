@@ -1093,11 +1093,11 @@ script:
             final_result = case_events_to_entry(res)
 
         elif demisto.command() == 'esm-get-organization-list':
-            res = esm.get_organizations(True)
+            res = esm.get_organizations()
             final_result = organizations_to_entry(res)
 
         elif demisto.command() == 'esm-get-user-list':
-            res = esm.get_users(True)
+            res = esm.get_users()
             final_result = users_to_entry(res)
 
         elif demisto.command() == 'esm-fetch-alarms':
