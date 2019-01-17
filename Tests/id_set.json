@@ -1722,17 +1722,6 @@
             }
         }, 
         {
-            "ReadPDFFile": {
-                "name": "ReadPDFFile", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "ReadPDFFile-Test"
-                ]
-            }
-        }, 
-        {
             "ContextContains": {
                 "name": "ContextContains"
             }
@@ -1808,7 +1797,15 @@
         }, 
         {
             "ExtractIndicatorsFromTextFile": {
-                "name": "ExtractIndicatorsFromTextFile"
+                "name": "ExtractIndicatorsFromTextFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
             }
         }, 
         {
@@ -4762,6 +4759,63 @@
             }
         }, 
         {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromTextFile": {
+                "name": "ExtractIndicatorsFromTextFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "ExtractDomain", 
+                    "ExtractEmail", 
+                    "ExtractHash", 
+                    "ExtractIP", 
+                    "ExtractURL", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
@@ -6094,10 +6148,11 @@
         {
             "extract_indicators_from_file_-_generic": {
                 "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
-                    "ReadPDFFile", 
+                    "ExtractIndicatorsFromWordFile", 
                     "Set", 
+                    "ReadPDFFile", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -7074,6 +7129,21 @@
             }
         }, 
         {
+            "extract_indicators_from_file_-_generic": {
+                "name": "Extract Indicators From File - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+       },
+       {
             "Detonate File - HybridAnalysis": {
                 "name": "Detonate File - HybridAnalysis", 
                 "fromversion": "4.0.0", 
@@ -11946,7 +12016,8 @@
             "Extract Indicators From File - test": {
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
-                    "RaiseError", 
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
                     "http"
                 ], 
                 "implementing_playbooks": [
@@ -14307,7 +14378,7 @@
                 ]
             }
         }, 
-        {
+      {
             "process_email_-_generic_-_test": {
                 "name": "Process Email - Generic - Test", 
                 "implementing_scripts": [
