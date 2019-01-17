@@ -48,7 +48,7 @@ script: |+
           }
       ]
       """
-      csv_reader = csv.DictReader(utf8_data, **kwargs)
+      csv_reader = csv.DictReader((line.replace('\0', '') for line in utf8_data), **kwargs)
       arr = []
       no_name_columns_counter = 0
       for row in csv_reader:
