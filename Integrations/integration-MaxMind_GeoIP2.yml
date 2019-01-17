@@ -59,7 +59,7 @@ script:
     MODE = demisto.params().get('mode')
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
-    API_VERSION = 'v2.1'
+    API_VERSION = 'geoip/v2.1'
 
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
@@ -237,6 +237,9 @@ script:
     - contextPath: IP.Geo.Location
       description: The IP geographic location in coordinates
       type: string
+    - contextPath: IP.ASN
+      description: The IP ASN
+      type: string
     - contextPath: MaxMind.Geo.TimeZone
       description: The time zone the IP is located
       type: string
@@ -248,9 +251,6 @@ script:
       type: string
     - contextPath: MaxMind.Geo.Subdivision
       description: The IP subdivision
-      type: string
-    - contextPath: IP.ASN
-      description: The IP ASN
       type: string
     - contextPath: MaxMind.Organization
       description: The IP organization
@@ -281,9 +281,6 @@ script:
       type: string
     - contextPath: MaxMind.City
       description: City the IP is located in
-      type: string
-    - contextPath: IP.Address
-      description: IP address being queried.
       type: string
     description: Check IP reputation (when information is available, returns a JSON
       with details). Uses all configured Threat Intelligence feeds
