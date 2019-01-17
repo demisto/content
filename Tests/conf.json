@@ -948,6 +948,10 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "Phishme Intelligence",
+            "playbookID": "Test - PhishMe"
         }
     ],
     "skipped_tests": {

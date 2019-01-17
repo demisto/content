@@ -11634,7 +11634,7 @@
             }
         }, 
         {
-            "8984405a-4274-470a-8a34-a437d8e2e1c5": {
+            "Test - PhishMe": {
                 "name": "Test - PhishMe", 
                 "implementing_scripts": [
                     "CloseInvestigation", 
