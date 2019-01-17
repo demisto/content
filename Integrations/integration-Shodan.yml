@@ -58,6 +58,7 @@ script:
             var urlArgs = {};
             urlArgs.key = apiKey;
             urlArgs.query = args.query;
+            urlArgs.page = args.page;
             if ((args.factes) && (args.facets.length > 0)) {
                 urlArgs.factes = args.facets;
             }
@@ -113,6 +114,9 @@ script:
         on. Property names can also be in the format of "property:count", where "count"
         is the number of facets that will be returned for a property (i.e. "country:100"
         to get the top 100 countries for a search query)
+    - name: page
+      description: Result page number to be fetched. Each page contains up to 100 results.
+      defaultValue: "1"
     description: Search Shodan using the same query syntax as the website and use
       facets to get summary information for different properties.
   - name: ip
@@ -136,3 +140,6 @@ script:
       description: Hostname
     description: Returns all services that have been found on the given host IP.
   runonce: false
+releaseNotes: "Added page argument to search command - allows to choose page of result"
+tests:
+  - ShodanTest
