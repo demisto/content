@@ -1543,6 +1543,7 @@ script:
         )
 
         rule_output = {SECURITY_RULE_ARGS[key] : value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
+        rule_output['Name'] = rulename
 
         demisto.results({
             'Type': entryTypes['note'],
