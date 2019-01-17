@@ -1,6 +1,30 @@
 {
     "scripts": [
         {
+            "changeremediationslaonsevchange": {
+                "name": "ChangeRemediationSLAOnSevChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "setIncident"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
+            "stoptimetoassignonownerchange": {
+                "name": "StopTimeToAssignOnOwnerChange", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "stopTimer"
+                ], 
+                "tests": [
+                    "SLA Scripts - Test"
+                ]
+            }
+        }, 
+        {
             "AwsStopInstance": {
                 "name": "AwsStopInstance", 
                 "depends_on": [
@@ -419,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -623,7 +650,10 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL"
+                "name": "ResolveShortenedURL", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -817,7 +847,11 @@
         }, 
         {
             "SetIncidentCustomFields": {
-                "name": "SetIncidentCustomFields"
+                "name": "SetIncidentCustomFields", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - script should be phased out of use"
+                ]
             }
         }, 
         {
@@ -837,11 +871,12 @@
         {
             "misp_upload_sample": {
                 "name": "misp_upload_sample", 
-                "depends_on": [
-                    "internal-misp-upload-sample"
-                ], 
+                "deprecated": true, 
                 "script_executions": [
                     "getFilePath"
+                ], 
+                "tests": [
+                    "MISP V2 Test"
                 ]
             }
         }, 
@@ -1396,7 +1431,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -2408,7 +2446,8 @@
                     "getEntries"
                 ], 
                 "tests": [
-                    "TestParseCSV"
+                    "TestParseCSV", 
+                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
@@ -3252,8 +3291,9 @@
         {
             "misp_download_sample": {
                 "name": "misp_download_sample", 
-                "depends_on": [
-                    "internal-misp-download-sample"
+                "deprecated": true, 
+                "tests": [
+                    "MISP V2 Test"
                 ]
             }
         }, 
@@ -4776,20 +4816,41 @@
             }
         }, 
         {
-            "ExtractIndicatorsFromWordFile": {
-                "name": "ExtractIndicatorsFromWordFile", 
-                "fromversion": "4.1.0", 
-                "script_executions": [
-                    "extractIndicators", 
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "Extract Indicators From File - test"
-                ]
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
             }
         }
     ], 
     "playbooks": [
+        {
+            "Phishing Investigation - Generic": {
+                "name": "Phishing Investigation - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "AssignAnalystToIncident", 
+                    "Set", 
+                    "SendEmail"
+                ], 
+                "implementing_playbooks": [
+                    "Search And Delete Emails - Generic", 
+                    "Detonate File - Generic", 
+                    "Extract Indicators From File - Generic", 
+                    "Entity Enrichment - Generic", 
+                    "Process Email - Generic", 
+                    "Block Indicators - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "send-mail"
+                ], 
+                "tests": [
+                    "Phishing test - attachment", 
+                    "Phishing test - Inline"
+                ]
+            }
+        }, 
         {
             "search_and_delete_emails_-_generic": {
                 "name": "Search And Delete Emails - Generic", 
@@ -4847,6 +4908,9 @@
                     "epo-get-latest-dat", 
                     "epo-get-current-dat", 
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4998,6 +5062,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -5156,6 +5223,9 @@
                     "threat-grid-upload-sample", 
                     "threat-grid-get-samples-state", 
                     "threat-grid-url-to-file"
+                ], 
+                "tests": [
+                    "Test-Detonate URL - ThreatGrid"
                 ]
             }
         }, 
@@ -5727,6 +5797,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -5915,6 +5988,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6012,7 +6088,8 @@
         {
             "Phishing Investigation - Generic": {
                 "name": "Phishing Investigation - Generic", 
-                "fromversion": 4.0, 
+                "toversion": "4.0.9", 
+                "fromversion": "4.0.0", 
                 "implementing_scripts": [
                     "AssignAnalystToIncident", 
                     "Set", 
@@ -6116,6 +6193,9 @@
                 ], 
                 "implementing_commands": [
                     "servicenow-incident-create"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6133,6 +6213,9 @@
                     "nexpose-get-asset-vulnerability", 
                     "nexpose-get-asset", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -6174,6 +6257,9 @@
                 "implementing_commands": [
                     "qualys-host-list", 
                     "qualys-vulnerability-list"
+                ], 
+                "tests": [
+                    "No test - Should review soon"
                 ]
             }
         }, 
@@ -6419,6 +6505,9 @@
                     "Calculate Severity - Generic", 
                     "Entity Enrichment - Generic", 
                     "Detonate File - Generic"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6757,12 +6846,13 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "Detonate File - HybridAnalysis", 
                     "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
+                    "WildFire - Detonate file", 
                     "Detonate File - Cuckoo", 
                     "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - SNDBOX", 
                     "Detonate File - ThreatGrid"
                 ], 
                 "tests": [
@@ -6828,13 +6918,18 @@
                 "name": "Default", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "CloseInvestigation", 
                     "AssignAnalystToIncident"
                 ], 
                 "implementing_playbooks": [
                     "Extract Indicators - Generic", 
                     "Entity Enrichment - Generic", 
                     "Calculate Severity - Generic"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7030,6 +7125,22 @@
                 ], 
                 "tests": [
                     "Extract Indicators From File - test"
+                ]
+            }
+       },
+       {
+            "Detonate File - HybridAnalysis": {
+                "name": "Detonate File - HybridAnalysis", 
+                "fromversion": "4.0.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "hybrid-analysis-submit-sample", 
+                    "hybrid-analysis-scan"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }
@@ -8498,7 +8609,11 @@
                     "hybrid-analysis-scan", 
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-search", 
-                    "hybrid-analysis-detonate-file"
+                    "hybrid-analysis-detonate-file", 
+                    "hybrid-analysis-get-report-status"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }, 
@@ -9864,7 +9979,11 @@
                 "commands": [
                     "pwned-email", 
                     "pwned-domain", 
-                    "email"
+                    "email", 
+                    "domain"
+                ], 
+                "tests": [
+                    "Pwned test"
                 ]
             }
         }, 
@@ -10687,7 +10806,7 @@
                     "secure-works-get-ticket-count"
                 ], 
                 "tests": [
-                    "Run all tests"
+                    "secureworks_test"
                 ]
             }
         }, 
@@ -10843,6 +10962,19 @@
                 "commands": [
                     "ip", 
                     "domain"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner": {
+                "name": "ThreatMiner", 
+                "commands": [
+                    "domain", 
+                    "ip", 
+                    "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
                 ]
             }
         }, 
@@ -11391,6 +11523,28 @@
                     "IntSights Test"
                 ]
             }
+        }, 
+        {
+            "MISP V2": {
+                "name": "MISP V2", 
+                "commands": [
+                    "misp-search", 
+                    "file", 
+                    "url", 
+                    "ip", 
+                    "internal-misp-create-event", 
+                    "misp-create-event", 
+                    "internal-misp-add-attribute", 
+                    "misp-download-sample", 
+                    "misp-add-attribute", 
+                    "misp-upload-sample", 
+                    "misp-delete-event", 
+                    "misp-add-tag"
+                ], 
+                "tests": [
+                    "MISP V2 Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -11425,9 +11579,10 @@
                 "name": "Email Sender Python", 
                 "implementing_scripts": [
                     "Set", 
-                    "FileCreateAndUpload", 
+                    "RaiseError", 
                     "DeleteContext", 
-                    "Sleep"
+                    "Sleep", 
+                    "FileCreateAndUpload"
                 ], 
                 "implementing_commands": [
                     "googleapps-gmail-get-mail", 
@@ -12008,8 +12163,8 @@
             "CrowdStrike Falcon Intel v2": {
                 "name": "CrowdStrike Falcon Intel v2", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "ThrowException"
+                    "RaiseError", 
+                    "DeleteContext"
                 ], 
                 "implementing_commands": [
                     "domain", 
@@ -13893,7 +14048,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -14203,7 +14359,7 @@
                 ]
             }
         }, 
-        {
+      {
             "process_email_-_generic_-_test": {
                 "name": "Process Email - Generic - Test", 
                 "implementing_scripts": [
@@ -15111,6 +15267,136 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "SLA Scripts - Test": {
+                "name": "SLA Scripts - Test", 
+                "implementing_scripts": [
+                    "StopTimeToAssignOnOwnerChange", 
+                    "ChangeRemediationSLAOnSevChange", 
+                    "Set", 
+                    "PrintErrorEntry", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "setIncident", 
+                    "startTimer", 
+                    "resetTimer"
+                ]
+            }
+        }, 
+        {
+            "cveReputation Test": {
+                "name": "cveReputation Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "cveReputation"
+                ]
+            }
+        }, 
+        {
+            "MISP V2 Test": {
+                "name": "MISP V2 Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http", 
+                    "misp_download_sample", 
+                    "misp_upload_sample"
+                ], 
+                "implementing_commands": [
+                    "misp-search", 
+                    "misp-add-attribute", 
+                    "misp-create-event", 
+                    "url", 
+                    "ip", 
+                    "misp-download-sample", 
+                    "misp-upload-sample", 
+                    "file", 
+                    "misp-delete-event"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - ThreatGrid": {
+                "name": "Test-Detonate URL - ThreatGrid", 
+                "implementing_playbooks": [
+                    "Detonate URL - ThreatGrid"
+                ]
+            }
+        }, 
+        {
+            "ParseCSVnullbytesTest": {
+                "name": "ParseCSVnullbytesTest", 
+                "implementing_scripts": [
+                    "ParseCSV", 
+                    "FileCreateAndUpload", 
+                    "PrintErrorEntry", 
+                    "Print", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis - Test": {
+                "name": "Detonate File - HybridAnalysis - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
+                ]
+            }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
+                ]
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
                 ]
             }
         }

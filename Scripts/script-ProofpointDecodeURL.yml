@@ -13,23 +13,26 @@ script: |
   valid_versions = ['v1', 'v2']
 
   def find_version(url):
-       match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url)
-       return match.group('version')
+      match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url)
+      return match.group('version')
 
   def ppdecode(url, return_all=False):
       try:
           version = find_version(url)
       except AttributeError:
-          raise RuntimeError('This does not appear to be a valid proofpoint url: {}'.format(url))
+          return_error('This does not appear to be a valid proofpoint url: {}'.format(url))
       else:
           if version not in valid_versions:
-              raise RuntimeError('Ppdecode is unprepared to handle this version of proofpoint urls: {}'.format(url))
+              return_error('Ppdecode is unprepared to handle this version of proofpoint urls: {}'.format(url))
       parsed_url = urlparse(url)
       query_components = parse_qs(parsed_url.query)
-      if sys.version_info[0] < 3:
-          translated_url = query_components['u'][0].translate(string.maketrans('-_', '%/'))
+      if 'u' in query_components:
+          if sys.version_info[0] < 3:
+              translated_url = query_components['u'][0].translate(string.maketrans('-_', '%/'))
+          else:
+              translated_url = query_components['u'][0].translate(str.maketrans('-_', '%/'))
       else:
-          translated_url = query_components['u'][0].translate(str.maketrans('-_', '%/'))
+          return_error('A URL was not detected in the query.')
       decoded_url = unquote(translated_url)
       query_components['decoded_url'] = decoded_url
       query_components['proofpoint_version'] = version
@@ -42,8 +45,7 @@ script: |
 
 
   except RuntimeError as e:
-      demisto.results({"Type":entryTypes["error"], "ContentsFormat":formats["text"], "Contents":str(e)})
-      sys.exit(e)
+      return_error(str(e))
 type: python
 tags: []
 comment: Decode ProofPoint URLs to get the actual URLs
