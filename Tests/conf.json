@@ -996,7 +996,8 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19"
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
+        "Fidelis Elevate Network": "cannot access instance from cirlce, access is with whitelist IPs"
     },
     "nigthly_integrations": [
         "Lastline",
