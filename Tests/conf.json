@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatMiner",
+            "playbookID": "ThreatMiner-Test"
+        },
+        {
             "integrations": "Pwned",
             "playbookID": "Pwned test"
         },
@@ -139,7 +143,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 500
+          "timeout": 700
         },
         {
             "integrations": "Tenable.sc",
@@ -794,7 +798,7 @@
         {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "Centreon",
@@ -941,6 +945,9 @@
         },
         {
           "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "Ping Test Playbook"
         }
     ],
     "skipped_tests": {
@@ -983,7 +990,8 @@
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
-        "Netskope": "instance is down"
+        "Netskope": "instance is down",
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19"
     },
     "nigthly_integrations": [
         "Lastline",

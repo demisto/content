@@ -330,8 +330,47 @@ def changed_command_name_or_arg(file_path):
     return False
 
 
-def changed_context(file_path):
+def changed_docker_image(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    is_docker_added = re.search("\+([ ]+)?dockerimage: .*", change_string)
+    is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", change_string)
+    if is_docker_added or is_docker_deleted:
+        print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                    " this is not allowed.".format(file_path))
+        return True
+
+    return False
+
+
+def validate_version(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
+    is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
+
+    if is_incorrect_version or is_incorrect_version_secondary:
+        print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
+        return True
+
+    return False
+
+
+def validate_fromversion_on_modified(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
+    is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
+
+    if is_added_from_version or is_added_from_version_secondary:
+        print_error("You've added fromversion to an existing file in the system, this is not allowed, please undo. "
+                    "the file was {}.".format(file_path))
+        return True
+
+    return False
+
+
+def changed_context(file_path):
+    with open(file_path, 'r') as file_data:
+        change_string = file_data.read()
+
     deleted_groups = re.search("-([ ]+)?- contextPath: (.*)", change_string)
     added_groups = re.search("\+([ ]+)?- contextPath: (.*)", change_string)
     if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
@@ -407,6 +446,12 @@ def validate_committed_files(branch_name, is_circle):
 def is_valid_id(objects_set, compared_id, file_path):
     from_version = get_from_version(file_path)
 
+    data_dict = get_json(file_path)
+    if data_dict.get('name') != compared_id:
+        print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
+                    " the file is {}".format(file_path))
+        return False
+
     for obj in objects_set:
         obj_id = obj.keys()[0]
         obj_data = obj.values()[0]
@@ -463,7 +508,8 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
     has_schema_problem = False
     for file_path in modified_files:
         print "Validating {}".format(file_path)
-        if not validate_schema(file_path) or changed_id(file_path):
+        if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
+                validate_fromversion_on_modified(file_path):
             has_schema_problem = True
         if not is_release_branch() and not validate_file_release_notes(file_path):
             has_schema_problem = True
@@ -482,13 +528,15 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
 
         if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                    (is_circle and not script_valid_in_id_set(file_path, script_set)):
+                    (is_circle and not script_valid_in_id_set(file_path, script_set)) or \
+                    changed_docker_image(file_path):
                 has_schema_problem = True
 
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                    (is_circle and not integration_valid_in_id_set(file_path, integration_set)):
+                    (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
+                    changed_docker_image(file_path):
                 has_schema_problem = True
 
     return has_schema_problem
