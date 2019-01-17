@@ -963,7 +963,8 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac"
+        "FireEye HX Test": "Test unstable - to be fixed by @noac",
+        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
