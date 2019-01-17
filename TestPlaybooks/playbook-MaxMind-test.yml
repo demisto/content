@@ -79,6 +79,8 @@ tasks:
     scriptarguments:
       ip:
         simple: 8.8.8.8
+      using:
+        simple: MaxMind GeoIP2_instance_1
     separatecontext: false
     view: |-
       {
