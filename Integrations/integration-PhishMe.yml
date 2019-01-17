@@ -191,7 +191,7 @@ script:
                 'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
             };
             ec.Account = {
-                outputPaths['email']: {
+                'Account.Email(val.Address && val.Address === obj.Address)': {
                     'Address': sender_name,
                     'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
                 }

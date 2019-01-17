@@ -15334,6 +15334,24 @@
                     "PrintContext"
                 ]
             }
+        }, 
+        {
+            "Test - PhishMe Intelligence": {
+                "name": "Test - PhishMe Intelligence", 
+                "implementing_scripts": [
+                    "CloseInvestigation", 
+                    "IsGreaterThan", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ], 
+                "implementing_commands": [
+                    "url", 
+                    "phishme-search", 
+                    "email", 
+                    "file", 
+                    "ip"
+                ]
+            }
         }
     ]
 }
