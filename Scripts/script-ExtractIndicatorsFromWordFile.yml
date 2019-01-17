@@ -141,7 +141,7 @@ args:
     document can be either in DOC or DOCX format.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/office-utils:1.0.0.45
+dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
 releaseNotes: "A new script to extract indicators from word documents (.doc and .docx files)"
 tests:
