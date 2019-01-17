@@ -1328,8 +1328,8 @@ script: |-
         :type to_timestamp: ``bool``
         :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
 
-        :type timezone: ``int`` or ``string``
-        :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2). You can also pass +0300. By default equals to zero 0
+        :type timezone: ``int``
+        :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
 
         :return: The parsed date range.
         :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
@@ -1343,7 +1343,7 @@ script: |-
           return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
       if not isinstance(timezone, int) or not isinstance(timezone, float):
-          return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone)
+          return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
       end_time = datetime.now() + timedelta(hours=timezone)
       start_time = datetime.now() + timedelta(hours=timezone)
