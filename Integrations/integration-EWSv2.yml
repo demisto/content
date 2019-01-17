@@ -1539,8 +1539,6 @@ script:
                     "Success to authenticate, but user probably has no permissions to read from the specific folder."
                     "Check user permissions. You can try !ews-find-folders command to "
                     "get all the folders structure that the user has permissions to")
-        # except TransportError, e:
-        #     return_error("The server returned not valid data. Test Failed")
 
         demisto.results('ok')
 
