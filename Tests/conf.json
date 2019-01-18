@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "StringContainsArray_test"
+        },
+        {
             "integrations": "ThreatMiner",
             "playbookID": "ThreatMiner-Test"
         },
