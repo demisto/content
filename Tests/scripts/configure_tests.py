@@ -202,9 +202,11 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
+            command_to_integration = test_playbook_data.get('command_to_integration', {})
             for command in test_playbook_data.get('implementing_commands', []):
                 for integration_id, integration_commands in integration_to_command.items():
-                    if command in integration_commands:
+                    if command in integration_commands and (not command_to_integration.get(command) or
+                                                            command_to_integration.get(command) in integration_ids):
                         tests_set.add(test_playbook_id)
                         catched_intergrations.add(integration_id)
 
@@ -332,7 +334,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
-                                  updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
+                                  updated_playbook_names, catched_scripts, catched_playbooks, tests_set,
+                                  integration_ids)
 
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
@@ -358,16 +361,19 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 
 def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
                               playbook_names, script_names, updated_script_names, updated_playbook_names,
-                              catched_scripts, catched_playbooks, tests_set):
+                              catched_scripts, catched_playbooks, tests_set, integration_ids):
     for playbook in playbook_set:
         playbook_data = playbook.values()[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
         implementing_commands = playbook_data.get('implementing_commands', [])
+        command_to_integration = playbook_data.get('command_to_integration', {})
         for integration_command in integration_commands:
             if integration_command in implementing_commands and playbook_toversion >= given_version[1]:
-                if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                if playbook_name not in playbook_names and playbook_name not in updated_playbook_names and \
+                        (not command_to_integration.get(integration_command) or
+                         command_to_integration.get(integration_command) in integration_ids):
                     tests = playbook_data.get('tests', [])
                     if tests:
                         catched_playbooks.add(playbook_name)
