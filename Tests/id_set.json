@@ -9519,6 +9519,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -15300,6 +15301,19 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "gmail-search"
                 ]
             }
         }
