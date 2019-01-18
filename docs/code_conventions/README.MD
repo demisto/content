@@ -343,6 +343,23 @@ Will produce a note in the war room as seen below:
 
 <img width="743" src="https://user-images.githubusercontent.com/42912128/50571514-4cc91900-0db5-11e9-9f89-ae4a607ff2ba.png">
 
+### AutoExtract
+As part of ```demisto.results()``` there is a field called ```IgnoreAutoExtract``` which prevents the built-in autoextract tool from enriching IPs, URLs, Files, and other indicators from the result. To use this, see the example below:
+
+```python
+demisto.results({
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['text'],
+    'Contents': command_id,
+    'HumanReadable': message,
+    'IgnoreAutoExtract': True,
+    'EntryContext': {
+        'SEPM.Quarantine': context
+    }
+})
+```
+**Please Note:** By default, IgnoreAutoExtract is set to ```False```.
+
 ## Quality Examples of Integrations
 * [McAfee Advanced Threat Defence](https://github.com/demisto/content/blob/master/Integrations/integration-McAfee-ATD.yml)
 * [Joe Security](https://github.com/demisto/content/blob/master/Integrations/integration-JoeSecurity.yml)
