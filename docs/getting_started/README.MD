@@ -51,18 +51,4 @@ Arguments are variables for a command that are dynamic and can be changed each t
 * **List Options** - Add options separated by a comma to include a dropdown list of options for the argument.
 
 ### Outputs
-Please [read here](/docs/context_and_ouputs/README.MD) to learn more about Outputs and Context.
-
-## Content development lifecycle
-1. [Define/gather use cases](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BUse-cases%5D)
-2. [Design of the integration and the commands](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BDesign%5D/_edit)
-3. Implementation and code conventions in [JavaScript](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BImplementation-in-JavaScript%5D) or [Python](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BImplementation-in-Python%5D)
-4. [Test the integration and add test playbook](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BTests%5D)
-5. [Add documentation](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BDocumentation%5D)
-6. [Mapping/Incident Types/Layouts/Custom Fields](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BMapping%5D)
-
-
-
-
-
-
+Please [read here](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) to learn more about Outputs and Context.
