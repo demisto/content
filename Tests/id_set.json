@@ -4759,6 +4759,14 @@
             }
         }, 
         {
+            "StringContainsArray": {
+                "name": "StringContainsArray", 
+                "tests": [
+                    "StringContainsArray_test"
+                ]
+            }
+        }, 
+        {
             "ReadPDFFile": {
                 "name": "ReadPDFFile", 
                 "toversion": "4.0.9", 
@@ -6243,6 +6251,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - tested manually"
                 ]
             }
         }, 
@@ -6415,8 +6426,10 @@
                 "name": "Calculate Severity - Critical assets", 
                 "fromversion": "4.0.0", 
                 "implementing_scripts": [
-                    "StringContains", 
                     "Set"
+                ], 
+                "tests": [
+                    "calculate_severity_-_critical_assets_-_test"
                 ]
             }
         }, 
@@ -7142,8 +7155,8 @@
                     "Extract Indicators From File - test"
                 ]
             }
-       },
-       {
+        }, 
+        {
             "Detonate File - HybridAnalysis": {
                 "name": "Detonate File - HybridAnalysis", 
                 "fromversion": "4.0.0", 
@@ -14378,7 +14391,7 @@
                 ]
             }
         }, 
-      {
+        {
             "process_email_-_generic_-_test": {
                 "name": "Process Email - Generic - Test", 
                 "implementing_scripts": [
@@ -15367,6 +15380,16 @@
                 ], 
                 "implementing_playbooks": [
                     "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "StringContainsArray_test": {
+                "name": "StringContainsArray_test", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
                 ]
             }
         }, 
