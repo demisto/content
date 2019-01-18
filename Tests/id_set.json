@@ -1722,17 +1722,6 @@
             }
         }, 
         {
-            "ReadPDFFile": {
-                "name": "ReadPDFFile", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "ReadPDFFile-Test"
-                ]
-            }
-        }, 
-        {
             "ContextContains": {
                 "name": "ContextContains"
             }
@@ -1808,7 +1797,15 @@
         }, 
         {
             "ExtractIndicatorsFromTextFile": {
-                "name": "ExtractIndicatorsFromTextFile"
+                "name": "ExtractIndicatorsFromTextFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
             }
         }, 
         {
@@ -4762,6 +4759,71 @@
             }
         }, 
         {
+            "StringContainsArray": {
+                "name": "StringContainsArray", 
+                "tests": [
+                    "StringContainsArray_test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromTextFile": {
+                "name": "ExtractIndicatorsFromTextFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "ExtractDomain", 
+                    "ExtractEmail", 
+                    "ExtractHash", 
+                    "ExtractIP", 
+                    "ExtractURL", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
@@ -4803,6 +4865,9 @@
                 "fromversion": "3.6.0", 
                 "implementing_playbooks": [
                     "Search And Delete Emails - EWS"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5455,6 +5520,9 @@
                 ], 
                 "implementing_commands": [
                     "ews-get-attachment"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5568,6 +5636,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5772,6 +5843,9 @@
                 "implementing_commands": [
                     "ews-search-mailboxes", 
                     "ews-delete-items"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6082,10 +6156,11 @@
         {
             "extract_indicators_from_file_-_generic": {
                 "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
-                    "ReadPDFFile", 
+                    "ExtractIndicatorsFromWordFile", 
                     "Set", 
+                    "ReadPDFFile", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -6176,6 +6251,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - tested manually"
                 ]
             }
         }, 
@@ -6348,8 +6426,10 @@
                 "name": "Calculate Severity - Critical assets", 
                 "fromversion": "4.0.0", 
                 "implementing_scripts": [
-                    "StringContains", 
                     "Set"
+                ], 
+                "tests": [
+                    "calculate_severity_-_critical_assets_-_test"
                 ]
             }
         }, 
@@ -6746,6 +6826,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7055,6 +7138,21 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "extract_indicators_from_file_-_generic": {
+                "name": "Extract Indicators From File - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
                 ]
             }
         }, 
@@ -10310,6 +10408,9 @@
                 "commands": [
                     "search", 
                     "ip"
+                ], 
+                "tests": [
+                    "ShodanTest"
                 ]
             }
         }, 
@@ -10687,7 +10788,8 @@
                     "ews-o365-get-compliance-search", 
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
-                    "ews-o365-get-compliance-search-purge-status"
+                    "ews-o365-get-compliance-search-purge-status", 
+                    "ews-get-autodiscovery-config"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -10893,6 +10995,19 @@
                 "commands": [
                     "ip", 
                     "domain"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner": {
+                "name": "ThreatMiner", 
+                "commands": [
+                    "domain", 
+                    "ip", 
+                    "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
                 ]
             }
         }, 
@@ -11915,7 +12030,8 @@
             "Extract Indicators From File - test": {
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
-                    "RaiseError", 
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
                     "http"
                 ], 
                 "implementing_playbooks": [
@@ -15269,6 +15385,16 @@
             }
         }, 
         {
+            "StringContainsArray_test": {
+                "name": "StringContainsArray_test", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
+            }
+        }, 
+        {
             "ConvertKeysToTableFieldFormat_Test": {
                 "name": "ConvertKeysToTableFieldFormat Test", 
                 "implementing_scripts": [
@@ -15289,6 +15415,19 @@
                 "implementing_commands": [
                     "domain", 
                     "email"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
                 ]
             }
         }, 
@@ -15314,6 +15453,34 @@
                 ], 
                 "implementing_commands": [
                     "gmail-search"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
                 ]
             }
         }
