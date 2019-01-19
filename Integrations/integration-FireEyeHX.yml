@@ -88,6 +88,9 @@ script:
         'Accept': 'application/json',
         'Content-type': 'application/json'
     }
+    PATCH_HEADERS = {
+        'Content-Type': 'text/plain'
+    }
     BASE_PATH = '{}/hx/api/{}'.format(SERVER_URL, VERSION)
     INDICATOR_MAIN_ATTRIBUTES = [
         'OS',
@@ -1396,6 +1399,82 @@ script:
     INDICATORS
 
     """
+    def new_indicator_request(category, create_text, description):
+        """
+        Create a new indicator
+        """
+        url = '{}/indicators/{}'.format(BASE_PATH, category)
+
+        body = {
+            'create_text':create_text,
+            'description':description
+        }
+
+        response = http_request(
+            'POST',
+            url,
+            headers = GET_HEADERS,
+        )
+        try:
+            return response.json().get('data')
+        except Exception as e:
+            raise ValueError('Failed to parse response body')
+
+
+    def create_indicator():
+
+        """
+        Get new indicator details
+        """
+
+        create_text = demisto.args().get('create_text')
+        description = demisto.args().get('description')
+        category = demisto.args().get('category')
+
+        response = new_indicator_request(category, create_text, description)
+
+        md_table =  {
+            'ID': response.get('_id'),
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('FireEye HX New Indicator - {}'.format(create_text) + ' created successfuly', md_table),
+            'EntryContext': {
+                "FireEyeHX.Indicators(obj._id===val._id)": response
+                }
+        }
+        demisto.results(entry)
+
+    def bulk_append_conditions_request():
+
+        """
+        Append conditions to indicator
+
+        """
+        name = demisto.args().get('name')
+        category = demisto.args().get('category')
+        body = demisto.args().get('condition')
+
+        url = '{}/indicators/{}/{}/conditions'.format(BASE_PATH, category, name)
+
+        body = """example.net,
+            example.org
+            example.lol
+            """
+        body = argToList(body)
+        response = http_request(
+            'PATCH',
+            url,
+            body = body,
+            headers = PATCH_HEADERS,
+        )
+
+        response = response.json()
+
+
 
     def get_indicator_request(category, name):
         """
@@ -2356,6 +2435,8 @@ script:
             containment_cancellation()
         elif command == 'fireeye-hx-host-containment':
             containment()
+        elif command == 'fireeye-hx-create-indicator':
+            create_indicator()
         elif command == 'fireeye-hx-get-indicator':
             get_indicator()
             get_indicator_conditions()
@@ -2379,7 +2460,8 @@ script:
             start_search()
         elif command == 'fireeye-hx-get-host-set-information':
             get_host_set_information()
-        sys.exit(0)
+        elif command == 'fireeye-hx-bulk-append-conditions-request':
+            bulk_append_conditions_request()
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
@@ -2432,7 +2514,8 @@ script:
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
     - contextPath: FireEyeHX.Hosts.os.bitness
@@ -2452,8 +2535,8 @@ script:
       description: The agent id running on the host to be contained. If the agentId
         is not specified, the hostName must be specified.
     outputs:
-    - contextPath: FireEyeHX.Hosts._id
-      description: FireEye HX Agent ID.
+  - contextPath: FireEyeHX.Hosts._id
+    description: FireEye HX Agent ID.
     - contextPath: FireEyeHX.Hosts.agent_version
       description: The agent version.
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
@@ -2487,7 +2570,8 @@ script:
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
     - contextPath: FireEyeHX.Hosts.os.bitness
@@ -2595,8 +2679,8 @@ script:
       description: Alert resulotion.
     - contextPath: FireEyeHX.Alerts.event_type
       description: Event type.
-    description: Get a list of alerts, use the different arguments to filter the
-      results returned.
+    description: Get a list of alerts, use the different arguments to filter the results
+      returned.
   - name: fireeye-hx-suppress-alert
     arguments:
     - name: alertId
@@ -2735,7 +2819,8 @@ script:
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
     - contextPath: FireEyeHX.Hosts.os.bitness
@@ -2789,12 +2874,12 @@ script:
       required: true
       description: The file path.
     - name: acquireUsing
-      required: false
-      description: Whether to aqcuire the file using the API or RAW. By default, raw file will be acquired. Use API option when file is encrypted.
       auto: PREDEFINED
       predefined:
       - API
       - RAW
+      description: Whether to aqcuire the file using the API or RAW. By default, raw
+        file will be acquired. Use API option when file is encrypted.
     - name: agentId
       description: The agent ID associated with the host that holds the file. If the
         hostName is not specified, the agentId must be specified.
@@ -2860,7 +2945,6 @@ script:
       description: The acquisition ID.
     description: Delete data acquisition.
   - name: fireeye-hx-search
-    description: Search endpoints to check all hosts or a subset of hosts for a specific file or indicator.
     arguments:
     - name: agentsIds
       description: IDs of agents to be searched
@@ -2896,29 +2980,30 @@ script:
     - name: fileFullPath
       description: Full path of file to search
     - name: fileFullPathOperator
-      description: Which operator to apply to the given file path
       auto: PREDEFINED
       predefined:
       - equals
       - not equals
       - contains
       - not contains
+      description: Which operator to apply to the given file path
     - name: dnsHostname
       description: DNS value to search for
     - name: dnsHostnameOperator
-      description: Which operator to apply to the given DNS
       auto: PREDEFINED
       predefined:
       - equals
       - not equals
       - contains
       - not contains
+      description: Which operator to apply to the given DNS
     - name: stopSearch
       auto: PREDEFINED
       predefined:
       - stopAndDelete
       - stop
-      description: Method in which search should be stopped after finding <limit> number of results
+      description: Method in which search should be stopped after finding <limit>
+        number of results
     outputs:
     - contextPath: FireEyeHX.Search.Results.Timestamp - Modified
       description: Time when the entry was last modified
@@ -3010,19 +3095,25 @@ script:
     - contextPath: FireEyeHX.Search.Results.id
       description: ID of the result
       type: string
+    description: Search endpoints to check all hosts or a subset of hosts for a specific
+      file or indicator.
   - name: fireeye-hx-get-host-set-information
-    description: Get a list of all host sets known to your HX Series appliance
     arguments:
     - name: hostSetID
       description: ID of a specific host set to get
     - name: offset
-      description: Specifies which record to start with in the response. The offset value must be an unsigned 32-bit integer. The default is 0.
+      description: Specifies which record to start with in the response. The offset
+        value must be an unsigned 32-bit integer. The default is 0.
     - name: limit
-      description: Specifies how many records are returned. The limit value must be an unsigned 32-bit integer. The default is 50.
+      description: Specifies how many records are returned. The limit value must be
+        an unsigned 32-bit integer. The default is 50.
     - name: search
-      description: Searches the names of all host sets connected to the specified HX appliance.
+      description: Searches the names of all host sets connected to the specified
+        HX appliance.
     - name: sort
-      description: Sorts the results by the specified field in ascending or descending order. The default is sorting by name in ascending order. Sortable fields are _id (host set ID) and name (host set name).
+      description: Sorts the results by the specified field in ascending or descending
+        order. The default is sorting by name in ascending order. Sortable fields
+        are _id (host set ID) and name (host set name).
     - name: name
       description: Specifies the name of host set to look for
     - name: type
@@ -3043,7 +3134,114 @@ script:
     - contextPath: FireEyeHX.HostSets.url
       description: Host set FireEye url
       type: string
+    description: Get a list of all host sets known to your HX Series appliance
+  - name: fireeye-hx-create-indicator
+    arguments:
+    - name: category
+      required: true
+      description: The indicator category
+    - name: create_text
+      description: The indicator name
+    - name: description
+      description: The indicator description
+    outputs:
+    - contextPath: FireEyeHX.Indicators.message
+      description: The message for creating new indicator
+      type: string
+    - contextPath: FireEyeHX.Indicators.route
+      description: The route of the new indicator
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.active_since
+      description: Date indicator became active.
+      type: date
+    - contextPath: FireEyeHX.Indicators.data.meta
+      description: Meta data for new indicator
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.display_name
+      description: The indicator display name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.name
+      description: The generated name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.created_by
+      description: Who created the indicator
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.url
+      description: The data URL
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.create_text
+      description: The indicator create text
+    - contextPath: FireEyeHX.Indicators.data.platforms
+      description: List of families of operating systems.
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.create_actor._id
+      description: The ID of the actor
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.create_actor.username
+      description: Actor user name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.signature
+      description: 'Signature of indicator '
+      type: string
+    - contextPath: FireEyeHX.Indicators.data._revision
+      description: Indicator revision
+      type: string
+    - contextPath: FireEyeHX.Indicators.data._id
+      description: FireEye unique indicator ID.
+      type: string
+    - contextPath: FireEyeHX.Indicator.data.description
+      description: Indicator description
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.category._id
+      description: Category ID
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.category.name
+      description: Category name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.category.share_mode
+      description: Category share mode
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.category.uri_name
+      description: Category uri name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.category.url
+      description: Category URL
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.uri_name
+      description: The indicator uri name
+      type: string
+    - contextPath: FireEyeHX.Indicators.data.stats.active_conditions
+      description: Indicator active conditions
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.stats.alerted_agents
+      description: Total number of agents with HX alerts associated with this indicator.
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.stats.source_alerts
+      description: Total number of source alerts associated with this indicator.
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.update_actor._id
+      description: Update actor ID
+      type: number
+    - contextPath: FireEyeHX.Indicators.data.update_actor.username
+      description: Update actor name
+      type: string
+    description: Create new indicator
+  - name: fireeye-hx-bulk-append-conditions-request
+    arguments:
+    - name: category
+      required: true
+      description: The indicator category
+    - name: name
+      required: true
+      description: The name of the indicator
+    - name: Condition
+      required: true
+      description: Add conditions to indicator . conditions must be separated with
+        a comma
+      isArray: true
+    description: Bulk append conditions to indicator
   isfetch: true
   runonce: false
+releaseNotes: "added function - create new indicator"
 tests:
   - FireEye HX Test
