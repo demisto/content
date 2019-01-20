@@ -1399,39 +1399,39 @@ script:
     INDICATORS
 
     """
-    def new_indicator_request(category, create_text, description):
+    def new_indicator_request(category, indicator_name, description):
         """
         Create a new indicator
         """
         url = '{}/indicators/{}'.format(BASE_PATH, category)
 
         body = {
-            'create_text':create_text,
+            'indicator_name':indicator_name,
             'description':description
         }
 
         response = http_request(
             'POST',
             url,
-            headers = GET_HEADERS,
+            headers = GET_HEADERS
         )
         try:
             return response.json().get('data')
         except Exception as e:
-            raise ValueError('Failed to parse response body')
+            raise ValueError('Failed to parse response body, unexpected response structure from the server.')
 
 
     def create_indicator():
-
         """
         Get new indicator details
+        returns a success message to the war room
         """
 
-        create_text = demisto.args().get('create_text')
+        indicator_name = demisto.args().get('indicator_name')
         description = demisto.args().get('description')
         category = demisto.args().get('category')
 
-        response = new_indicator_request(category, create_text, description)
+        response = new_indicator_request(category, indicator_name, description)
 
         md_table =  {
             'ID': response.get('_id'),
@@ -1441,40 +1441,12 @@ script:
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FireEye HX New Indicator - {}'.format(create_text) + ' created successfuly', md_table),
+            'HumanReadable': tableToMarkdown('FireEye HX New Indicator - {}'.format(indicator_name) + ' created successfuly', md_table),
             'EntryContext': {
                 "FireEyeHX.Indicators(obj._id===val._id)": response
                 }
         }
         demisto.results(entry)
-
-    def bulk_append_conditions_request():
-
-        """
-        Append conditions to indicator
-
-        """
-        name = demisto.args().get('name')
-        category = demisto.args().get('category')
-        body = demisto.args().get('condition')
-
-        url = '{}/indicators/{}/{}/conditions'.format(BASE_PATH, category, name)
-
-        body = """example.net,
-            example.org
-            example.lol
-            """
-        body = argToList(body)
-        response = http_request(
-            'PATCH',
-            url,
-            body = body,
-            headers = PATCH_HEADERS,
-        )
-
-        response = response.json()
-
-
 
     def get_indicator_request(category, name):
         """
@@ -2460,8 +2432,6 @@ script:
             start_search()
         elif command == 'fireeye-hx-get-host-set-information':
             get_host_set_information()
-        elif command == 'fireeye-hx-bulk-append-conditions-request':
-            bulk_append_conditions_request()
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
@@ -2535,8 +2505,8 @@ script:
       description: The agent id running on the host to be contained. If the agentId
         is not specified, the hostName must be specified.
     outputs:
-  - contextPath: FireEyeHX.Hosts._id
-    description: FireEye HX Agent ID.
+    - contextPath: FireEyeHX.Hosts._id
+      description: FireEye HX Agent ID.
     - contextPath: FireEyeHX.Hosts.agent_version
       description: The agent version.
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
@@ -3140,106 +3110,87 @@ script:
     - name: category
       required: true
       description: The indicator category
-    - name: create_text
+    - name: indicator_name
+      required: true
       description: The indicator name
     - name: description
       description: The indicator description
     outputs:
-    - contextPath: FireEyeHX.Indicators.message
-      description: The message for creating new indicator
-      type: string
-    - contextPath: FireEyeHX.Indicators.route
-      description: The route of the new indicator
-      type: string
-    - contextPath: FireEyeHX.Indicators.data.active_since
+    - contextPath: FireEyeHX.Indicators.active_since
       description: Date indicator became active.
       type: date
-    - contextPath: FireEyeHX.Indicators.data.meta
+    - contextPath: FireEyeHX.Indicators.meta
       description: Meta data for new indicator
       type: string
-    - contextPath: FireEyeHX.Indicators.data.display_name
+    - contextPath: FireEyeHX.Indicators.display_name
       description: The indicator display name
       type: string
-    - contextPath: FireEyeHX.Indicators.data.name
-      description: The generated name
+    - contextPath: FireEyeHX.Indicators.name
+      description: The indicator name as displayed in the UI.
       type: string
-    - contextPath: FireEyeHX.Indicators.data.created_by
-      description: Who created the indicator
+    - contextPath: FireEyeHX.Indicators.created_by
+      description: The "Created By" field as displayed in UI
       type: string
-    - contextPath: FireEyeHX.Indicators.data.url
+    - contextPath: FireEyeHX.Indicators.url
       description: The data URL
       type: string
-    - contextPath: FireEyeHX.Indicators.data.create_text
+    - contextPath: FireEyeHX.Indicators.create_text
       description: The indicator create text
-    - contextPath: FireEyeHX.Indicators.data.platforms
+    - contextPath: FireEyeHX.Indicators.platforms
       description: List of families of operating systems.
       type: string
-    - contextPath: FireEyeHX.Indicators.data.create_actor._id
+    - contextPath: FireEyeHX.Indicators.create_actor._id
       description: The ID of the actor
       type: number
-    - contextPath: FireEyeHX.Indicators.data.create_actor.username
+    - contextPath: FireEyeHX.Indicators.create_actor.username
       description: Actor user name
       type: string
-    - contextPath: FireEyeHX.Indicators.data.signature
+    - contextPath: FireEyeHX.Indicators.signature
       description: 'Signature of indicator '
       type: string
-    - contextPath: FireEyeHX.Indicators.data._revision
+    - contextPath: FireEyeHX.Indicators._revision
       description: Indicator revision
       type: string
-    - contextPath: FireEyeHX.Indicators.data._id
+    - contextPath: FireEyeHX.Indicators._id
       description: FireEye unique indicator ID.
       type: string
-    - contextPath: FireEyeHX.Indicator.data.description
+    - contextPath: FireEyeHX.Indicator.description
       description: Indicator description
       type: string
-    - contextPath: FireEyeHX.Indicators.data.category._id
+    - contextPath: FireEyeHX.Indicators.category._id
       description: Category ID
       type: number
-    - contextPath: FireEyeHX.Indicators.data.category.name
+    - contextPath: FireEyeHX.Indicators.category.name
       description: Category name
       type: string
-    - contextPath: FireEyeHX.Indicators.data.category.share_mode
+    - contextPath: FireEyeHX.Indicators.category.share_mode
       description: Category share mode
       type: string
-    - contextPath: FireEyeHX.Indicators.data.category.uri_name
+    - contextPath: FireEyeHX.Indicators.category.uri_name
       description: Category uri name
       type: string
-    - contextPath: FireEyeHX.Indicators.data.category.url
+    - contextPath: FireEyeHX.Indicators.category.url
       description: Category URL
       type: string
-    - contextPath: FireEyeHX.Indicators.data.uri_name
+    - contextPath: FireEyeHX.Indicators.uri_name
       description: The indicator uri name
       type: string
-    - contextPath: FireEyeHX.Indicators.data.stats.active_conditions
+    - contextPath: FireEyeHX.Indicators.stats.active_conditions
       description: Indicator active conditions
       type: number
-    - contextPath: FireEyeHX.Indicators.data.stats.alerted_agents
+    - contextPath: FireEyeHX.Indicators.stats.alerted_agents
       description: Total number of agents with HX alerts associated with this indicator.
       type: number
-    - contextPath: FireEyeHX.Indicators.data.stats.source_alerts
+    - contextPath: FireEyeHX.Indicators.stats.source_alerts
       description: Total number of source alerts associated with this indicator.
       type: number
-    - contextPath: FireEyeHX.Indicators.data.update_actor._id
+    - contextPath: FireEyeHX.Indicators.update_actor._id
       description: Update actor ID
       type: number
-    - contextPath: FireEyeHX.Indicators.data.update_actor.username
+    - contextPath: FireEyeHX.Indicators.update_actor.username
       description: Update actor name
       type: string
     description: Create new indicator
-  - name: fireeye-hx-bulk-append-conditions-request
-    arguments:
-    - name: category
-      required: true
-      description: The indicator category
-    - name: name
-      required: true
-      description: The name of the indicator
-    - name: Condition
-      required: true
-      description: Add conditions to indicator . conditions must be separated with
-        a comma
-      isArray: true
-    description: Bulk append conditions to indicator
   isfetch: true
   runonce: false
 releaseNotes: "added function - create new indicator"
