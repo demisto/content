@@ -28,14 +28,16 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: c7ac9a5c-a5c1-4d97-8c8a-17bb763b6bc1
+    taskid: bb196c7a-ff84-44c7-81fd-625038a5bcf4
     type: condition
     task:
-      id: c7ac9a5c-a5c1-4d97-8c8a-17bb763b6bc1
+      id: bb196c7a-ff84-44c7-81fd-625038a5bcf4
       version: -1
-      name: Is Cylance Protect enabled?
+      name: Is Cylance V2 Protect enabled?
       description: Checks if the the "Cylance Protect" integration is enabled
       scriptName: Exists
       type: condition
@@ -43,24 +45,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "9"
       "yes":
       - "3"
     scriptarguments:
-      extend-context: {}
       value:
         complex:
           root: modules
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: modules.brand
                 iscontext: true
               right:
                 value:
-                  simple: Cylance Protect
-          - - operator: string.isEqual
+                  simple: Cylance Protect v2
+          - - operator: isEqualString
               left:
                 value:
                   simple: modules.state
@@ -77,6 +78,8 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: af2e86ff-6413-4cd8-8d5f-799edb0770e6
@@ -93,16 +96,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1420
+          "x": -180,
+          "y": 1930
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: b17b16b8-78a7-4522-89ce-890839581757
+    taskid: 283e4157-b249-4d36-8a57-c2983a3d61d4
     type: condition
     task:
-      id: b17b16b8-78a7-4522-89ce-890839581757
+      id: 283e4157-b249-4d36-8a57-c2983a3d61d4
       version: -1
       name: Do we have a SHA256?
       description: Checks for SHA256 in context
@@ -117,58 +122,54 @@ tasks:
       - "4"
     scriptarguments:
       value:
-        complex:
-          root: inputs.SHA256
+        simple: ${inputs.SHA256}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 160,
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 7423c51e-e44c-4032-8367-fd7a8d61bfba
+    taskid: bfa8a0e5-39d1-4cae-82f5-aa6cca072232
     type: regular
     task:
-      id: 7423c51e-e44c-4032-8367-fd7a8d61bfba
+      id: bfa8a0e5-39d1-4cae-82f5-aa6cca072232
       version: -1
       name: Get download link from HASH
       description: Query Cylance Protect for HASH's link
-      script: Cylance Protect|||cylance-protect-download-threat
+      script: Cylance Protect v2|||cylance-protect-download-threat
       type: regular
       iscommand: true
-      brand: Cylance Protect
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
-      extend-context:
-        simple: DownloadLink=url
-      filters: {}
-      headers: {}
-      page_number: {}
-      page_size: {}
       sha256:
-        complex:
-          root: inputs.SHA256
-      sorts: {}
-    continueonerror: true
+        simple: ${inputs.SHA256}
+      threshold: {}
+      unzip: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 160,
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 48dcc1b9-1421-4626-80a8-fa0a364253a3
+    taskid: a2dfc6e8-e78a-4cc0-8de5-be4a8c155931
     type: condition
     task:
-      id: 48dcc1b9-1421-4626-80a8-fa0a364253a3
+      id: a2dfc6e8-e78a-4cc0-8de5-be4a8c155931
       version: -1
       name: Did we get a download link?
       description: Checks for a download link in context
@@ -182,26 +183,28 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      extend-context: {}
       left: {}
       right: {}
       value:
         complex:
-          root: DownloadLink
+          root: File
+          accessor: DownloadURL
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 160,
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 2de88281-102e-4a58-8fea-cd3072417d05
+    taskid: d12daf11-c3b1-4079-8b6d-4bbc6023cc4d
     type: regular
     task:
-      id: 2de88281-102e-4a58-8fea-cd3072417d05
+      id: d12daf11-c3b1-4079-8b6d-4bbc6023cc4d
       version: -1
       name: Download File (ZIP format)
       description: Send an HTTP request to download the zip file
@@ -224,18 +227,22 @@ tasks:
       proxy: {}
       saveAsFile:
         simple: "yes"
+      unsecure: {}
       url:
         complex:
-          root: DownloadLink
+          root: File
+          accessor: DownloadURL
       username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 160,
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: 917958d1-9c25-4f8d-84f3-5e272848d939
@@ -260,7 +267,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Extension
@@ -273,10 +280,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 160,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
@@ -299,7 +308,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Extension
@@ -319,18 +328,306 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 160,
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 1a5cf78a-2b23-487e-8520-980ffc50bdf7
+    type: condition
+    task:
+      id: 1a5cf78a-2b23-487e-8520-980ffc50bdf7
+      version: -1
+      name: Is Cylance V1 Protect enabled?
+      description: ""
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "10"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cylance Protect
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 9a83a232-86f0-419b-8c7d-f441b6f6c46e
+    type: condition
+    task:
+      id: 9a83a232-86f0-419b-8c7d-f441b6f6c46e
+      version: -1
+      name: Do we have a SHA256?
+      description: Checks for SHA256 in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: dea0c877-321d-4efa-8dfe-d2169fa93089
+    type: regular
+    task:
+      id: dea0c877-321d-4efa-8dfe-d2169fa93089
+      version: -1
+      name: Get download link from HASH
+      description: Query Cylance Protect for HASH's link
+      script: Cylance Protect|||cylance-protect-download-threat
+      type: regular
+      iscommand: true
+      brand: Cylance Protect
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      sha256:
+        simple: ${inputs.SHA256}
+      threshold: {}
+      unzip: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: a5416443-e7db-45d3-86eb-86810cc208d6
+    type: condition
+    task:
+      id: a5416443-e7db-45d3-86eb-86810cc208d6
+      version: -1
+      name: Did we get a download link?
+      description: Checks for a download link in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        complex:
+          root: Cylance
+          accessor: Threat.Url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 98e64df6-7105-455f-8298-9101e96b04a9
+    type: regular
+    task:
+      id: 98e64df6-7105-455f-8298-9101e96b04a9
+      version: -1
+      name: Download File (ZIP format)
+      description: Send an HTTP request to download the zip file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: ${inputs.SHA256}.zip
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        complex:
+          root: Cylance
+          accessor: Threat.Url
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 1f0dd602-7af3-4cf2-8d52-92fe5ab4ead0
+    type: condition
+    task:
+      id: 1f0dd602-7af3-4cf2-8d52-92fe5ab4ead0
+      version: -1
+      name: Did we successfully download the ZIP file?
+      description: Checks for ZIP file format in context
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 7e6d9805-2917-46d9-891c-a944aa45b1f8
+    type: regular
+    task:
+      id: 7e6d9805-2917-46d9-891c-a944aa45b1f8
+      version: -1
+      name: Unzip File
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+              ignorecase: true
+          accessor: EntryID
+      extend-context: {}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        complex:
+          root: inputs.ZipPassword
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_2_#default#": 0.23,
+      "9_2_#default#": 0.17
+    },
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 830,
-        "x": 50,
+        "height": 1945,
+        "width": 1160,
+        "x": -620,
         "y": 50
       }
     }
@@ -352,3 +649,4 @@ outputs:
 - contextPath: File
   description: The sample file
   type: unknown
+releaseNotes: Update playbook to support Cylance Protect v2 and Cylance Protect v1 integrations
