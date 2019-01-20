@@ -25,6 +25,14 @@ script: |-
 
               })
               return
+      else:
+              demisto.results
+              ({
+                  "Type" : entryTypes["error"],
+                  "ContentsFormat" : formats["text"],
+                  "Contents" : "An email can't be sent to the owner of the incident, because no owner was assigned."
+
+              })
 
   def get_subject():
       incident_name = demisto.incidents()[0].get("name")
