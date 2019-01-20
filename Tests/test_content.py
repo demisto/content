@@ -5,7 +5,7 @@ import json
 import string
 import random
 import argparse
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 
 import requests
 
@@ -101,12 +101,13 @@ def start_proxy(c, public_ip, playbook_id, record=False):
     return p
 
 
-def stop_proxy(c, p):
+def stop_proxy(c, public_ip, p):
     configure_proxy(c, '')
     p.send_signal(signal.SIGINT)
-    print "proxy outputs:"
-    print p.stdout.read()  # DEBUG
-    print p.stderr.read()  # DEBUG
+    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "rm", "-rf" "/tmp/_MEI*"])
+    print "proxy outputs:"  # DEBUG
+    print p.stdout.read()   # DEBUG
+    print p.stderr.read()   # DEBUG
 
 
 def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
@@ -119,7 +120,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
         # run test
         succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
         # use results
-        stop_proxy(c, proxy_proc)
+        stop_proxy(c, public_ip, proxy_proc)
         if succeed:
             print 'PASS: %s succeed' % (test_message,)
             succeed_playbooks.append(playbook_id)
@@ -137,7 +138,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
         notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-    stop_proxy(c, proxy_proc)
+    stop_proxy(c, public_ip, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
 
@@ -407,7 +408,7 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    # TODO: upload files to repo (only for tests to run)
+    # TODO: upload new/updated files to repo
 
     os.remove(FILTER_CONF)
 
