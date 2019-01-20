@@ -414,3 +414,6 @@ inputs:
   required: true
   description: The deletion type (trash, soft, or hard).
 outputs: []
+releaseNotes: '-'
+tests:
+- No test
