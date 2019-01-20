@@ -370,7 +370,7 @@ script:
             commit_status_output['Details'] = result['response']['result']['job']['details']['line']
 
         if (result['response']['result']['job']['status'] == 'PEND'):
-            push_status_output['Status'] = 'Pending'
+            commit_status_output['Status'] = 'Pending'
 
         demisto.results({
             'Type': entryTypes['note'],
