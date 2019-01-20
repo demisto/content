@@ -11588,6 +11588,18 @@
                     "MaxMind Test"
                 ]
             }
+        }, 
+        {
+            "Alexa Rank Indicator": {
+                "name": "Alexa Rank Indicator", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "domain"
+                ], 
+                "tests": [
+                    "Alexa Test Playbook"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15490,6 +15502,17 @@
                 ], 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain"
                 ]
             }
         }
