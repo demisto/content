@@ -71,7 +71,7 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params=None, data=None):
+    def http_request(method, url_suffix, data=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         headers = {}
         if SESSION_ID is not None:
@@ -83,7 +83,6 @@ script:
             SERVER_URL + url_suffix,
             data=None if data is None else json.dumps(data),
             headers=headers,
-            # params=params,
             verify=not INSECURE,
         )
 
@@ -103,9 +102,9 @@ script:
                 res = http_request('GET', url)
                 if res.get('error') is not None:
                     raise requests.HTTPError('Failed to login: {}'.format(res['error']))
+                SESSION_ID = res.get('uid')
             except requests.ConnectionError as ce:
                 return_error('Demisto has encounter a connection error, please check the server_url parameter')
-            SESSION_ID = res.get('uid')
 
 
     def logout():
@@ -516,10 +515,7 @@ script:
         elif command == 'fidelis-upload-pcap':
             fidelis_upload_pcap_command()
 
-    except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+    except Exception as e:
         return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
     finally:
         logout()
