@@ -145,7 +145,7 @@
         {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
-          "nightly": false,
+          "nightly": true,
           "timeout": 900
         },
         {
