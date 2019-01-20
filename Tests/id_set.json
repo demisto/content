@@ -8591,7 +8591,8 @@
                     "microsoft-atp-get-file-related-machines", 
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
-                    "microsoft-atp-list-alerts"
+                    "microsoft-atp-list-alerts", 
+                    "microsoft-atp-update-alert"
                 ], 
                 "tests": [
                     "No test"
@@ -9617,6 +9618,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -11057,7 +11059,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
@@ -11575,6 +11576,17 @@
                 ], 
                 "tests": [
                     "MISP V2 Test"
+                ]
+            }
+        }, 
+        {
+            "MaxMind GeoIP2": {
+                "name": "MaxMind GeoIP2", 
+                "commands": [
+                    "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
                 ]
             }
         }
@@ -15303,6 +15315,18 @@
             }
         }, 
         {
+            "MaxMind Test": {
+                "name": "MaxMind Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "ip"
+                ]
+            }
+        }, 
+        {
             "SLA Scripts - Test": {
                 "name": "SLA Scripts - Test", 
                 "implementing_scripts": [
@@ -15439,6 +15463,19 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "gmail-search"
                 ]
             }
         }, 
