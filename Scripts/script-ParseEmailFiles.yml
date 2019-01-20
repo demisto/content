@@ -3369,60 +3369,60 @@ args:
 outputs:
 - contextPath: Email.To
   description: Email 'to' addresses
-  type: String
+  type: string
 - contextPath: Email.CC
   description: Email 'cc' addresses
-  type: String
+  type: string
 - contextPath: Email.From
   description: Email 'from' sender
-  type: String
+  type: string
 - contextPath: Email.Subject
   description: Email subject
-  type: String
+  type: string
 - contextPath: Email.HTML
   description: Email 'html' body if exists
-  type: String
+  type: string
 - contextPath: Email.Text
   description: Email 'text' body if exists
-  type: String
+  type: string
 - contextPath: Email.Headers
   description: The full email headers as a single string
-  type: String
+  type: string
 - contextPath: Email.HeadersMap
   description: The full email headers json
   type: Unknown
 - contextPath: Email.AttachedEmails
   description: Array of attached .msg files
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.From
   description: Email 'from' sender
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.To
   description: Email 'to' addresses
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.CC
   description: Email 'cc' addresses
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.Subject
   description: Attached email subject
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.Text
   description: Email 'text' body if exists
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.HTML
   description: Email 'html' body if exists
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.AttachedEmails
   description: Array of attached .msg files of the attached .msg file (it is recursive)
-  type: String
+  type: string
 - contextPath: Email.AttachedEmails.Attachments
   description: The list of attachment names in the email
-  type: String
+  type: string
 - contextPath: Email.Attachments
   description: The list of attachment names in the email
-  type: String
+  type: string
 - contextPath: Email.Format
   description: The format of the email if available
-  type: String
+  type: string
 scripttarget: 0
 runonce: false
