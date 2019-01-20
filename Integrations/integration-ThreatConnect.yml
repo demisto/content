@@ -87,7 +87,7 @@ script:
 
 
     def calculate_freshness_time(freshness):
-        t = datetime.datetime.now() - datetime.timedelta(days=7)
+        t = datetime.datetime.now() - datetime.timedelta(days=freshness)
         return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
@@ -2383,5 +2383,6 @@ script:
     description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
   dockerimage: demisto/threatconnect-sdk
   runonce: false
+releaseNotes: "-"
 tests:
   - test-ThreatConnect
