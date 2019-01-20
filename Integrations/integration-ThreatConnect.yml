@@ -750,8 +750,15 @@ script:
         size = args.get('size')
         dns_active = args.get('dnsActive')
         whois_active = args.get('whoisActive')
+        false_positive = args.get('falsePositive', 'False') == 'True'
+        observations = int(args.get('observations', 0))
+        security_label = args.get('securityLabel')
+        threat_assess_confidence = int(args.get('threatAssessConfidence', -1))
+        threat_assess_rating = int(args.get('threatAssessRating', -1))
 
-        raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size, dns_active=dns_active, whois_active=whois_active)
+        raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size, dns_active=dns_active,
+            whois_active=whois_active, false_positive=false_positive, observations=observations, security_label=security_label,
+            threat_assess_confidence=threat_assess_confidence, threat_assess_rating=threat_assess_rating)
         ec, indicators = create_context(raw_indicators)
 
         demisto.results({
@@ -765,7 +772,8 @@ script:
 
 
     @logger
-    def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None):
+    def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None,
+            false_positive=False, observations=0, security_label=None, threat_assess_confidence=-1, threat_assess_rating=-1):
         tc = get_client()
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
@@ -777,6 +785,17 @@ script:
                 ind.set_rating(rating)
             if confidence is not None:
                 ind.set_confidence(int(confidence))
+            if false_positive:
+                ind.add_false_positive()
+            if observations != 0:
+                ind.add_observation(observations)
+            if security_label is not None:
+                ind.add_security_label(security_label)
+            if threat_assess_confidence != -1:
+                ind.set_threat_assess_confidence(threat_assess_confidence)
+            if threat_assess_rating != -1:
+                ind.set_threat_assess_rating(threat_assess_rating)
+
             if ind.type == 'File' and size is not None:
                 ind.add_size(size)
             if ind.type == 'Host' and dns_active is not None:
@@ -2097,6 +2116,26 @@ script:
     - name: updatedValues
       description: 'A comma separated pair of field and value to be updated. For example:
         "rating=3,confidence=42,description=helloWorld"'
+    - name: falsePositive
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: mark indicator as false positive
+    - name: observations
+      description: Number observations on this Indicator
+    - name: securityLabel
+      auto: PREDEFINED
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+      description: security label like 'TLP Green'
+    - name: threatAssessConfidence
+      description: Assess confidence
+    - name: threatAssessRating
+      description: Assess rating
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
@@ -2383,6 +2422,6 @@ script:
     description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
   dockerimage: demisto/threatconnect-sdk
   runonce: false
-releaseNotes: "-"
+releaseNotes: "add support in updating indicator's fields"
 tests:
   - test-ThreatConnect
