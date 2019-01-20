@@ -287,6 +287,7 @@ tasks:
       URL:
         complex:
           root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -469,6 +470,5 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
-releaseNotes: "Added Cuckoo Sandbox to detonation products"
 tests:
 - Detonate URL - Generic Test

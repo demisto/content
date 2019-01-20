@@ -1,0 +1,1198 @@
+commonfields:
+  id: RSA NetWitness Endpoint
+  version: -1
+name: RSA NetWitness Endpoint
+display: RSA NetWitness Endpoint
+category: Endpoint
+image: data:image/png;base64,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
+description: 'RSA NetWitness Endpoint provides deep visibility beyond basic endpoint
+  security solutions by monitoring and collecting activity across all of your endpoints on
+  and off your network. The RSA Demisto integration provides access to information
+  about endpoints, modules and indicators. '
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:30022)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: ""
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    """
+
+    IMPORTS
+
+    """
+    import requests
+    import os
+    import math
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    """
+
+    HANDLE PROXY
+
+    """
+
+
+    def set_proxies():
+        if demisto.params()['proxy']:
+            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
+            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
+            proxies = {
+                'http': http,
+                'https': https
+            }
+            return proxies
+        return None
+
+
+    """
+
+    GLOBAL VARS
+
+    """
+
+    SERVER_URL = demisto.params()['server']
+    BASE_PATH = '{}/api/v2'.format(SERVER_URL) if SERVER_URL.endswith('/') else '{}/api/v2'.format(SERVER_URL)
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    USE_SSL = not demisto.params()['insecure']
+    PROXIES = set_proxies()
+
+    MACHINE_DATA_EXTENDED = [
+        "AgentID",
+        "MachineName",
+        "LocalIP",
+        "RemoteIP",
+        "MAC",
+        "MachineStatus",
+        "IIOCScore",
+        "IIOCLevel0",
+        "IIOCLevel1",
+        "IIOCLevel2",
+        "IIOCLevel3",
+        "AntiVirusDisabled",
+        "Comment",
+        "ContainmentStatus",
+        "ContainmentSupported",
+        "Country",
+        "DNS",
+        "DomainName",
+        "FirewallDisabled",
+        "Gateway",
+        "Group",
+        "Idle",
+        "InstallTime",
+        "InstallationFailed",
+        "LastScan",
+        "LastSeen",
+        "NetworkSegment",
+        "OperatingSystem",
+        "OrganizationUnit",
+        "Platform",
+        "Scanning",
+        "UserName",
+        "VersionInfo"
+    ]
+
+    MACHINE_DATA = [
+        'MachineName',
+        'MachineGUID',
+        'Online',
+        'OperatingSystem',
+        'LastScan',
+        'IOCScore',
+        'MacAddress',
+        'LocalIp'
+    ]
+
+    IOC_DATA = [
+        "Description",
+        "Type",
+        "MachineCount",
+        "ModuleCount",
+        "IOCLevel",
+        "Priority",
+        "Active",
+        "LastExecuted",
+        "Alertable",
+        "IOCTriggeredOnMachine"
+    ]
+
+    MODULE_DATA = [
+        'ModuleName',
+        'ModuleID',
+        'Description',
+        'IOCScore',
+        'AnalyticsScore',
+        'GlobalMachineCount',
+        'MD5',
+        'SHA256'
+    ]
+
+    MODULE_DATA_EXTENDED = [
+        "ModuleID",
+        "ModuleName",
+        "FullPath",
+        "FirstSeenName",
+        "FirstSeenDate",
+        "MD5",
+        "SHA1",
+        "SHA256",
+        "IIOCLevel0",
+        "IIOCLevel1",
+        "IIOCLevel2",
+        "IIOCLevel3",
+        "IIOCScore",
+        "Blacklisted",
+        "Graylisted",
+        "Whitelisted",
+        "MachineCount",
+        "RiskScore",
+        "AVDefinitionHash",
+        "AVDescription",
+        "AVFirstThreat",
+        "AVScanResult",
+        "AccessNetwork",
+        "AnalysisTime",
+        "AppDataLocal",
+        "AppDataRoaming",
+        "AutoStartCategory",
+        "Autorun",
+        "BlacklistCategory",
+        "BlockingStatus",
+        "Desktop",
+        "Downloaded",
+        "DownloadedTime",
+        "FakeStartAddress",
+        "FileAccessDenied",
+        "FileAccessTime",
+        "FileCreationTime",
+        "FileEncrypted",
+        "FileHiddenAttributes",
+        "FileModificationTime",
+        "FileName",
+        "FileOccurrences",
+        "Floating",
+        "HashLookup",
+        "Hooking",
+        "ImportedDLLCount",
+        "ImportedDLLs",
+        "LiveConnectRiskEnum",
+        "LiveConnectRiskReason",
+        "Loaded",
+        "OriginalFileName",
+        "Packed",
+        "Platform",
+        "RelativeFileName",
+        "RelativePath",
+        "RemoteFileName",
+        "RemotePath",
+        "Signature",
+        "SignatureTimeStamp",
+        "SizeInBytes",
+        "Status",
+        "YaraDefinitionHash",
+        "YaraScanDescription",
+        "YaraScanFirstThreat",
+        "YaraScanresult",
+        "Windows",
+        "WritetoExecutable",
+        "SysWOW64",
+        "System32",
+        "Temporary",
+        "TooManyConnections",
+        "User",
+        "SignatureValid",
+        "SignedbyMicrosoft",
+        "SignatureExpired",
+        "SignaturePresent",
+        "RenametoExecutable",
+        "ReservedName",
+        "ProcessAccessDenied",
+        "ProgramData",
+        "ProgramFiles",
+        "ReadDocument",
+        "MD5Collision",
+        "InstallerDirectory",
+        "LikelyPacked",
+        "Listen",
+        "ImageHidden",
+        "ImageMismatch",
+        "FirewallAuthorized",
+        "AutorunScheduledTask",
+        "Beacon"
+    ]
+
+    MODULE_DATA_EXTENDED_CONTEXT = [
+        "ModuleID",
+        "FileName",
+        "FullPath",
+        "MD5",
+        "RiskScore",
+        "SHA1",
+        "SHA256",
+        "IIOCScore",
+        "Blacklisted",
+        "Graylisted",
+        "Whitelisted",
+        "MachineCount",
+        "IIOCLevel0",
+        "IIOCLevel1",
+        "IIOCLevel2",
+        "IIOCLevel3",
+        "FirstSeenName",
+        "FirstSeenDate"
+    ]
+
+
+    def is_html_response(response):
+        if 'text\html' in response.headers.get('Content-Type', ''):
+            return True
+        # look for an html tag in the response text
+        # if re.search("<[^>]+>", response.text):
+        #     return True
+        return False
+
+
+    def get_html_from_response(response):
+        text = response.text
+        open_tag = text.find('<html')
+        close_tag = text.find('</html>')
+        return text[open_tag: close_tag + len('</html>')]
+
+
+    def html_error_entry(html):
+        return {
+            'Type': entryTypes['error'],
+            'Contents': html,
+            'ContentsFormat': formats['html']
+        }
+
+
+    def parse_error_response(error_response):
+        # NetWitness has fixed structure for
+        try:
+            error = error_response.json()
+            return 'Request failed with status code: {}\nReason: {}\n{}'.format(error_response.status_code, error.ResponseStatus.ErrorCode, error.ResponseStatus.Message)
+        except Exception as e:
+            return 'Request failed with status code: {}\n{}'.format(error_response.status_code, error_response.content)
+
+
+    def http_request(method, url, data=None, headers={'Accept': 'application/json'}, url_params=None):
+        # send http request using user settings for unsecure and proxy parameters
+        # uses basic auth
+        # returns the http response
+
+        LOG('Attempting {} request to {}'.format(method, url))
+        try:
+            response = requests.request(
+                method,
+                url,
+                headers=headers,
+                data=data,
+                auth=(USERNAME, PASSWORD),
+                params=url_params,
+                verify=USE_SSL,
+                proxies=PROXIES
+            )
+        except requests.exceptions.SSLError as e:
+            LOG(e.message)
+            raise ValueError('An SSL error occurred. Consider to set unsecure')
+
+        if is_html_response(response):
+            html_body = get_html_from_response(response)
+            demisto.results(html_error_entry(html_body))
+            raise ValueError('Caught HTML response, please verify server url.')
+
+        if response.status_code != 200:
+            msg = parse_error_response(response)
+            raise ValueError(msg)
+
+        try:
+            return response.json()
+        except Exception as e:
+            LOG(e.message)
+            return {}
+
+
+    def login():
+        url = '{}/auth'.format(BASE_PATH)
+        # this call will raise an exception on wrong credential
+        http_request('GET', url)
+
+
+    def get_machines(query, limit):
+        # GET /machines
+
+        # specify additional data to be returned
+        query['Properties'] = 'Online,OperatingSystem,LastScanUTCTime,IOCScore,MacAddress,LocalIp'
+        # add paging to query
+        query['page'] = 1
+        # set per_page parameter only if 'limit' is under 50
+        if limit < 50:
+            query['per_page'] = limit  # int
+
+        machines = []
+        # loop on page number
+        while True:
+            res = http_request(
+                'GET',
+                '{}/machines'.format(BASE_PATH),
+                url_params=query
+            )
+            items = res.get('Items')
+            if not items:
+                # no results
+                break
+            machines.extend(items)
+            if len(machines) >= limit:
+                # reached/exceeded limit
+                break
+            # get next page
+            query['page'] = query['page'] + 1
+
+        if len(machines) > limit:
+            # results exceeded limit
+            machines[limit - 1:-1] = []
+
+        return machines
+
+
+    def get_machines_command():
+
+        args = demisto.args()
+
+        # prepare query
+        query = {
+            'MachineName': args.get('machineName'),  # string
+            'iocscore_gte': int(args.get('iocScoreGreaterThan')) if args.get('iocScoreGreaterThan') else None,  # int
+            'iocscore_lte': int(args.get('iocScoreLessThan')) if args.get('iocScoreLessThan') else None,  # int
+            'IpAddress': args.get('ipAddress'),  # string
+            'macAddress': args.get('macAddress'),  # string
+        }
+        limit = int(args.get('limit')) if args.get('limit') else math.inf
+        if limit < 1:
+            raise ValueError("Please input valid limit number")
+
+        machines = get_machines(query, limit)
+
+        context = []
+        for machine in machines:
+            properties = machine['Properties']
+            context.append(
+                {
+                    'MachineGUID': machine.get('Id'),
+                    'MachineName': machine.get('Name'),
+                    'Online': properties.get('Online'),
+                    'OperatingSystem': properties.get('OperatingSystem'),
+                    'LastScan': properties.get('LastScanUTCTime'),
+                    'IOCScore': properties.get('IOCScore'),
+                    'MacAddress': properties.get('MacAddress'),
+                    'LocalIp': properties.get('LocalIp')
+                }
+            )
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': {
+                "Machines": machines,
+                "Machine": [],
+                "IOCs": [],
+                "Modules": []
+            },
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('NetWitness Endpoint - Get Machines', context, MACHINE_DATA),
+            'EntryContext': {
+                "NetWitness.Machines(obj.MachineGUID==val.MachineGUID)": context
+            }
+        }
+
+        # get additional machine data
+        for id in [machine["Id"] for machine in machines]:
+
+            if args.get('includeMachineData') == 'yes':
+
+                machine_entry = create_machine_entry(id)
+
+                entry["Contents"]["Machine"].append(machine_entry["Contents"])
+                entry["HumanReadable"] += '\n{}'.format(machine_entry["HumanReadable"])
+                entry["EntryContext"].update(machine_entry["EntryContext"])
+
+            if args.get('includeMachineIOCs') == 'yes':
+
+                iocs_entry = create_iocs_entry(id, 50)
+
+                entry["Contents"]["IOCs"].extend(iocs_entry["Contents"])
+                entry["HumanReadable"] += '\n{}'.format(iocs_entry["HumanReadable"])
+                entry["EntryContext"].update(iocs_entry["EntryContext"])
+
+            if args.get('includeMachineModules') == 'yes':
+
+                modules_entry = create_modules_entry(id, {}, 30)
+
+                entry["Contents"]["Modules"].extend(modules_entry["Contents"])
+                entry["HumanReadable"] += '\n{}'.format(modules_entry["HumanReadable"])
+                entry["EntryContext"].update(modules_entry["EntryContext"])
+
+        demisto.results(entry)
+
+
+    def get_machine(machine_id):
+        # GET /machines/{Guid}
+        response = http_request(
+            'GET',
+            '{}/machines/{}'.format(BASE_PATH, machine_id)
+        )
+        return response.get('Machine')
+
+
+    def create_machine_entry(machine_id):
+        machine = get_machine(machine_id)
+        machine_name = machine.get('MachineName')
+
+        machine_data = {k: v for k, v in machine.items() if k in MACHINE_DATA_EXTENDED}
+        machine_data["MachineGUID"] = machine_id
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': machine,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('NetWitness Endpoint - Machine {} Full Data'.format(machine_name), machine_data, MACHINE_DATA_EXTENDED),
+            'EntryContext': {
+                "NetWitness.Machines(obj.MachineGUID==val.MachineGUID)": machine_data
+            }
+        }
+        return entry
+
+
+    def get_machine_command():
+        entry = create_machine_entry(demisto.args().get('machineGUID'))
+        demisto.results(entry)
+
+
+    def list_iocs(machine_id, limit):
+        # GET /machines/{Guid}/instantiocs
+
+        paging_params = {
+            'page': 1
+        }
+        # set per_page parameter only if 'limit' is under 50
+        if limit < 50:
+            paging_params['per_page'] = limit
+
+        iocs = []
+        # loop on page number
+        while True:
+            res = http_request(
+                'GET',
+                '{}/machines/{}/instantiocs'.format(BASE_PATH, machine_id),
+                url_params=paging_params
+            )
+            items = res.get('Iocs')
+            if not items:
+                # no results
+                break
+            iocs.extend(items)
+            if len(iocs) >= limit:
+                # reached/exceeded limit
+                break
+            # get next page
+            paging_params['page'] = paging_params['page'] + 1
+
+        if len(iocs) > limit:
+            # results exceeded limit
+            iocs[limit - 1:-1] = []
+
+        return iocs
+
+
+    def create_iocs_entry(machine_id, limit):
+
+        iocs = list_iocs(machine_id, limit)
+
+        context = []
+        for ioc in iocs:
+            data = {k: v for k, v in ioc.items() if k in IOC_DATA}
+            data['MachineGUID'] = machine_id
+            context.append(data)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': iocs,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("NetWitness Endpoint - Machine IOC's", context, IOC_DATA),
+            'EntryContext': {
+                "NetWitness.IOCS(obj.Description==val.Description)": context,
+            }
+        }
+        return entry
+
+
+    def list_iocs_command():
+
+        args = demisto.args()
+        machine_id = args.get('machineGUID')
+        limit = int(args.get('limit')) if args.get('limit') else math.inf
+
+        if limit < 1:
+            raise ValueError("Please input valid limit number")
+
+        entry = create_iocs_entry(machine_id, limit)
+        demisto.results(entry)
+
+
+    def get_machine_modules(machine_id, query, limit):
+        # GET /machines/{Guid}/modules
+
+        # specify additional data to be returned
+        query['Properties'] = 'Description,IOCScore,AnalyticsScore,GlobalMachineCount,HashMD5,HashSHA256'
+        # add paging to query
+        query['page'] = 1
+        # set per_page parameter only if 'limit' is under 50
+        if limit < 50:
+            query['per_page'] = limit
+
+        modules = []
+        # loop on page number
+        while True:
+            res = http_request(
+                'GET',
+                '{}/machines/{}/modules'.format(BASE_PATH, machine_id),
+                url_params=query
+            )
+            items = res.get('Items')
+            if not items:
+                # no results
+                break
+            modules.extend(items)
+            if len(modules) >= limit:
+                # reached/exceeded limit
+                break
+            # get next page
+            query['page'] = query['page'] + 1
+
+        if len(modules) > limit:
+            # results exceeded limit
+            modules[limit - 1:-1] = []
+
+        return modules
+
+
+    def create_modules_entry(machine_id, query, limit):
+
+        modules = get_machine_modules(
+            machine_id,
+            query,
+            limit
+        )
+
+        context = []
+        files =[]
+        for module in modules:
+            properties = module['Properties']
+            context.append(
+                {
+                    'ModuleID': module.get('Id'),
+                    'ModuleName': module.get('Name'),
+                    'Description': properties.get('Description'),
+                    'IOCScore': properties.get('IOCScore'),
+                    'AnalyticsScore': properties.get('AnalyticsScore'),
+                    'GlobalMachineCount': properties.get('GlobalMachineCount'),
+                    'MD5': properties.get('HashMD5'),
+                    'SHA256': properties.get('HashSHA256'),
+                    'MachineGUID': machine_id
+                }
+            )
+            files.append(
+                {
+                    'Name': module.get('Name'),
+                    'MD5': properties.get('HashMD5'),
+                }
+            )
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': modules,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('NetWitness Endpoint - Get Modules', context, MODULE_DATA),
+            'EntryContext': {
+                "NetWitness.Modules(obj.ModuleID==val.ModuleID)": context,
+                "File(obj.MD5==val.MD5)": files
+            }
+        }
+        return entry
+
+
+    def get_machine_modules_command():
+
+        args = demisto.args()
+
+        machine_id = args.get('machineGUID')
+        limit = int(args.get('limit')) if args.get('limit') else math.inf
+        if limit < 1:
+            raise ValueError("Please input valid limit number")
+        # prepare query
+        query = {
+            'ModuleName': args.get('moduleName'),  # string
+            'iocscore_gte': int(args.get('iocScoreGreaterThan')) if args.get('iocScoreGreaterThan') else None,  # int
+            'iocscore_lte': int(args.get('iocScoreLessThan')) if args.get('iocScoreLessThan') else None  # int
+        }
+
+        entry = create_modules_entry(
+            machine_id,
+            query,
+            limit
+        )
+        demisto.results(entry)
+
+
+    def get_machine_module(machine_guid, moudule_id):
+        # GET machines/{Guid}/modules/{Id}
+        response = http_request(
+            'GET',
+            '{}/machines/{}/modules/{}'.format(BASE_PATH, machine_guid, moudule_id),
+        )
+        return response.get('MachineModulePath')
+
+
+    def get_machine_module_command():
+
+        args = demisto.args()
+        machine_id = args.get('machineGUID')
+
+        module = get_machine_module(
+            machine_id,
+            args.get('moduleID')
+        )
+
+        readable = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED}
+        context = {k: v for k, v in module.items() if k in MODULE_DATA_EXTENDED_CONTEXT}
+        context['MachineGUID'] = machine_id
+        file = {
+            'Name': module.get('Name'),
+            'MD5': module.get('HashMD5'),
+            'SHA1': module.get('SHA1'),
+            'Path': module.get('FullPath')
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': module,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('NetWitness Endpoint - Get Module', readable, MODULE_DATA_EXTENDED),
+            'EntryContext': {
+                "NetWitness.Modules(obj.ModuleID==val.ModuleID)": context,
+                "File(obj.MD5==val.MD5)": file
+            }
+        }
+        demisto.results(entry)
+
+
+    def blacklist_ips(ips):
+        # POST /blacklist/ip
+        body = {
+            'Ips': ips
+        }
+        response = http_request(
+            'POST',
+            '{}/blacklist/ip'.format(BASE_PATH),
+            data=body
+
+        )
+        return response.get('Ips')
+
+
+    def blacklist_domains(domains):
+        # POST /blacklist/domain
+        body = {
+            'Domains': domains
+        }
+        response = http_request(
+            'POST',
+            '{}/blacklist/domain'.format(BASE_PATH),
+            data=body
+
+        )
+        return response.get('Domains')
+
+
+    def blacklist_ips_command():
+
+        ips = demisto.args().get('ips').split(',')
+
+        ips_successfully_blacklisted = blacklist_ips(ips)
+
+        ips_failed = [ip for ip in ips if ip not in ips_successfully_blacklisted]
+        readable = tableToMarkdown('IPs Successfully Blacklisted', ips_successfully_blacklisted, headers=["IP"])
+        if len(ips_failed) > 0:
+            readable += tableToMarkdown('The following IPs could not be processed', ips_failed, headers=["IP"])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': ips_successfully_blacklisted,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': readable,
+            'EntryContext': {
+                "NetWitness.Blacklist.IPs": ips_successfully_blacklisted,
+            }
+        }
+        demisto.results(entry)
+
+
+    def blacklist_domains_command():
+
+        args = demisto.args()
+        domains = args.get('domains').split(',')
+
+        domains_successfully_blacklisted = blacklist_domains(domains)
+
+        domains_failed = [domain for domain in domains if domain not in domains_successfully_blacklisted]
+        readable = tableToMarkdown('Domains Successfully Blacklisted', domains_successfully_blacklisted, headers=["Domain"])
+        if len(domains_failed) > 0:
+            readable += tableToMarkdown('The following domains could not be processed', domains_failed, headers=["Domain"])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': domains_successfully_blacklisted,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': readable,
+            'EntryContext': {
+                "NetWitness.Blacklist.Domains": domains_successfully_blacklisted,
+            }
+        }
+        demisto.results(entry)
+
+
+    """
+
+    EXECUTION
+
+    """
+
+    try:
+
+        login()
+        command = demisto.command()
+
+        if command == 'test-module':
+            # validated credentials with login call
+            # test permission - call get_machines
+            get_machines({}, 1)
+            demisto.results('ok')
+        elif command == 'netwitness-get-machines':
+            machines = get_machines_command()
+        elif command == 'netwitness-get-machine':
+            get_machine_command()
+        elif command == 'netwitness-get-machine-iocs':
+            list_iocs_command()
+        elif command == 'netwitness-get-machine-modules':
+            get_machine_modules_command()
+        elif command == 'netwitness-get-machine-module':
+            get_machine_module_command()
+        elif command == 'netwitness-blacklist-ips':
+            blacklist_ips_command()
+        elif command == 'netwitness-blacklist-domains':
+            blacklist_domains_command()
+
+    except ValueError as e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+
+    sys.exit(0)
+  type: python
+  commands:
+  - name: netwitness-get-machines
+    arguments:
+    - name: machineName
+      description: Hostname to filter result. Case insensitive.
+    - name: iocScoreGreaterThan
+      description: Filter all machines whose IOC score is greater than or equal to
+        this value. Default = 0.
+    - name: iocScoreLessThan
+      description: Filter all machines whose IOC score is less than or equal to this
+        value. Default = 1024. Cant be zero.
+    - name: ipAddress
+      description: Filter all machines based on IP address.
+    - name: macAddress
+      description: Filter all machines based on MAC address.
+    - name: limit
+      description: Limit the results. Default 100.
+      defaultValue: "100"
+    - name: includeMachineData
+      auto: PREDEFINED
+      predefined:
+      - "no"
+      - "yes"
+      description: Include Full Machine Data
+      defaultValue: "no"
+    - name: includeMachineIOCs
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Include machine IOC's
+      defaultValue: "no"
+    - name: includeMachineModules
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Include machine moduls
+      defaultValue: "no"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Machines.AgentID
+      description: Agent ID
+    - contextPath: NetWitness.Machines.MachineName
+      description: Machine Name
+    - contextPath: NetWitness.Machines.LocalIP
+      description: Local IP
+    - contextPath: NetWitness.Machines.RemoteIP
+      description: Remote IP
+    - contextPath: NetWitness.Machines.MAC
+      description: MAC
+    - contextPath: NetWitness.Machines.MachineStatus
+      description: Machine Status
+    - contextPath: NetWitness.Machines.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Machines.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Machines.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Machines.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Machine.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Machines.AntiVirusDisabled
+      description: Anti Virus Disabled
+    - contextPath: NetWitness.Machines.Comment
+      description: Comment
+    - contextPath: NetWitness.Machines.ContainmentStatus
+      description: Containment Status
+    - contextPath: NetWitness.Machines.ContainmentSupported
+      description: Containment Supported
+    - contextPath: NetWitness.Machines.Country
+      description: Country
+    - contextPath: NetWitness.Machines.DNS
+      description: DNS
+    - contextPath: NetWitness.Machines.DomainName
+      description: Domain Name
+    - contextPath: NetWitness.Machines.FirewallDisabled
+      description: Firewall Disabled
+    - contextPath: NetWitness.Machines.Gateway
+      description: Gateway
+    - contextPath: NetWitness.Machines.Group
+      description: Group
+    - contextPath: NetWitness.Machines.Idle
+      description: Idle
+    - contextPath: NetWitness.Machines.InstallTime
+      description: Install Time
+    - contextPath: NetWitness.Machines.InstallationFailed
+      description: Installation Failed
+    - contextPath: NetWitness.Machines.LastScan
+      description: Last Scan
+    - contextPath: NetWitness.Machines.LastSeen
+      description: Last Seen
+    - contextPath: NetWitness.Machines.NetworkSegment
+      description: Network Segment
+    - contextPath: NetWitness.Machines.OperatingSystem
+      description: Operating System
+    - contextPath: NetWitness.Machines.OrganizationUnit
+      description: Organization Unit
+    - contextPath: NetWitness.Machines.Platform
+      description: Platform
+    - contextPath: NetWitness.Machines.Scanning
+      description: Scanning
+    - contextPath: NetWitness.Machines.UserName
+      description: User Name
+    - contextPath: NetWitness.Machine.VersionInfo
+      description: Version Info
+    - contextPath: NetWitness.IOCs.Description
+      description: Description
+    - contextPath: NetWitness.IOCs.Type
+      description: Type
+    - contextPath: NetWitness.IOCs.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.IOCs.ModuleCount
+      description: Module Count
+    - contextPath: NetWitness.IOCs.IOCLevel
+      description: IOC Level
+    - contextPath: NetWitness.IOCs.Priority
+      description: Priority
+    - contextPath: NetWitness.IOCs.Active
+      description: Active
+    - contextPath: NetWitness.IOCs.LastExecuted
+      description: Last Executed
+    - contextPath: NetWitness.IOCs.Alertable
+      description: Alertable
+    - contextPath: NetWitness.IOCs.IOCTriggeredOnMachine
+      description: IOC Triggered On Machine
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleName
+      description: Module Name
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.Description
+      description: Description
+    - contextPath: NetWitness.Modules.IOCScore
+      description: IOC Score
+    - contextPath: NetWitness.Modules.AnalyticsScore
+      description: Analytics Score
+    - contextPath: NetWitness.Modules.GlobalMachineCount
+      description: Global Machine Count
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    description: Get machine GUID. Search by machine name and more.
+  - name: netwitness-get-machine
+    arguments:
+    - name: machineGUID
+      required: true
+      default: true
+      description: The machine GUID.
+    outputs:
+    - contextPath: NetWitness.Machines.AgentID
+      description: Agent ID
+    - contextPath: NetWitness.Machines.MachineName
+      description: Machine Name
+    - contextPath: NetWitness.Machines.LocalIP
+      description: Local IP
+    - contextPath: NetWitness.Machines.RemoteIP
+      description: Remote IP
+    - contextPath: NetWitness.Machines.MAC
+      description: MAC
+    - contextPath: NetWitness.Machines.MachineStatus
+      description: Machine Status
+    - contextPath: NetWitness.Machines.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Machines.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Machines.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Machines.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Machine.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Machines.AntiVirusDisabled
+      description: Anti Virus Disabled
+    - contextPath: NetWitness.Machines.Comment
+      description: Comment
+    - contextPath: NetWitness.Machines.ContainmentStatus
+      description: Containment Status
+    - contextPath: NetWitness.Machines.ContainmentSupported
+      description: Containment Supported
+    - contextPath: NetWitness.Machines.Country
+      description: Country
+    - contextPath: NetWitness.Machines.DNS
+      description: DNS
+    - contextPath: NetWitness.Machines.DomainName
+      description: Domain Name
+    - contextPath: NetWitness.Machines.FirewallDisabled
+      description: Firewall Disabled
+    - contextPath: NetWitness.Machines.Gateway
+      description: Gateway
+    - contextPath: NetWitness.Machines.Group
+      description: Group
+    - contextPath: NetWitness.Machines.Idle
+      description: Idle
+    - contextPath: NetWitness.Machines.InstallTime
+      description: Install Time
+    - contextPath: NetWitness.Machines.InstallationFailed
+      description: Installation Failed
+    - contextPath: NetWitness.Machines.LastScan
+      description: Last Scan
+    - contextPath: NetWitness.Machines.LastSeen
+      description: Last Seen
+    - contextPath: NetWitness.Machines.NetworkSegment
+      description: Network Segment
+    - contextPath: NetWitness.Machines.OperatingSystem
+      description: Operating System
+    - contextPath: NetWitness.Machines.OrganizationUnit
+      description: Organization Unit
+    - contextPath: NetWitness.Machines.Platform
+      description: Platform
+    - contextPath: NetWitness.Machines.Scanning
+      description: Scanning
+    - contextPath: NetWitness.Machines.UserName
+      description: User Name
+    - contextPath: NetWitness.Machine.VersionInfo
+      description: Version Info
+    description: Get information on a specific machine.
+  - name: netwitness-get-machine-iocs
+    arguments:
+    - name: machineGUID
+      required: true
+      default: true
+      description: The machine GUID
+    - name: limit
+      description: Limit the results. Default 100.
+      defaultValue: "100"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.IOCs.Description
+      description: Description
+    - contextPath: NetWitness.IOCs.Type
+      description: Type
+    - contextPath: NetWitness.IOCs.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.IOCs.ModuleCount
+      description: Module Count
+    - contextPath: NetWitness.IOCs.IOCLevel
+      description: IOC Level
+    - contextPath: NetWitness.IOCs.Priority
+      description: Priority
+    - contextPath: NetWitness.IOCs.Active
+      description: Active
+    - contextPath: NetWitness.IOCs.LastExecuted
+      description: Last Executed
+    - contextPath: NetWitness.IOCs.Alertable
+      description: Alertable
+    - contextPath: NetWitness.IOCs.IOCTriggeredOnMachine
+      description: IOC Triggered On Machine
+    description: List IOC's for a specific machine.
+  - name: netwitness-get-machine-modules
+    arguments:
+    - name: machineGUID
+      required: true
+      description: The machine GUID
+    - name: moduleName
+      description: 'Module name to filter result. Case insesitive. Example: ModuleName=".exe
+        "will match all machines which have the word ".exe" in their module name.'
+    - name: iocScoreGreaterThan
+      description: "\t Filter all modules whose IOC score is greater than or equal
+        to this value. Default = 0."
+    - name: iocScoreLessThan
+      description: "\t Filter all modules whose IOC score is less than or equal to
+        this value. Default = 1024. Cant be zero."
+    - name: limit
+      description: limit the results. Default 50.
+      defaultValue: "50"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleName
+      description: Module Name
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.Description
+      description: Description
+    - contextPath: NetWitness.Modules.IOCScore
+      description: IOC Score
+    - contextPath: NetWitness.Modules.AnalyticsScore
+      description: Analytics Score
+    - contextPath: NetWitness.Modules.GlobalMachineCount
+      description: Global Machine Count
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    description: Get Names and ID's of modules of the machine. Filter by name or IOC
+      score.
+  - name: netwitness-get-machine-module
+    arguments:
+    - name: machineGUID
+      required: true
+      description: The machine GUID.
+    - name: moduleID
+      required: true
+      description: The module ID.
+    outputs:
+    - contextPath: NetWitness.Modules.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.FileName
+      description: File Name
+    - contextPath: NetWitness.Modules.FullPath
+      description: Full Path
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.RiskScore
+      description: Risk Score
+    - contextPath: NetWitness.Modules.SHA1
+      description: SHA1
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    - contextPath: NetWitness.Modules.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Modules.Blacklisted
+      description: Blacklisted
+    - contextPath: NetWitness.Modules.Graylisted
+      description: Graylisted
+    - contextPath: NetWitness.Modules.Whitelisted
+      description: Whitelisted
+    - contextPath: NetWitness.Modules.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.Modules.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Modules.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Modules.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Modules.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Modules.FirstSeenName
+      description: First Seen Name
+    - contextPath: NetWitness.Modules.FirstSeenDate
+      description: First Seen Date
+    - contextPath: File.Name
+      description: The file name
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.SHA1
+      description: File SHA1
+    - contextPath: File.Path
+      description: File full path
+    description: Get information on a specific machine module.
+  - name: netwitness-blacklist-ips
+    arguments:
+    - name: ips
+      required: true
+      default: true
+      description: 'Comma separated IP addresses '
+    outputs:
+    - contextPath: NetWitness.Blacklist.IPs
+      description: IPs blacklisted successfully
+    description: Add a list of IP addresses to blacklist
+  - name: netwitness-blacklist-domains
+    arguments:
+    - name: domains
+      required: true
+      default: true
+      description: Comma separated list of domains
+    outputs:
+    - contextPath: NetWitness.Blacklist.Domains
+      description: Domains blacklisted successfully
+    description: 'Add a list of domains to blacklist '
+tests:
+  - NetWitness Endpoint Test
+

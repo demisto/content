@@ -1,0 +1,98 @@
+commonfields:
+  id: dnstwist
+  version: -1
+name: dnstwist
+display: dnstwist
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Domain name permutation engine for detecting typo squatting, phishing
+  and corporate espionage
+configuration: []
+script:
+  script: |+
+    import subprocess, json
+
+    if demisto.command() == 'dnstwist-domain-variations':
+
+        KEYS_TO_MD = ["whois-updated", "whois-created", "dns-a", "dns-mx", "dns-ns"]
+        DOMAIN = demisto.args()['domain']
+        limit = demisto.args()['limit']
+
+        def get_dnstwist_result(domain):
+            res = subprocess.check_output(['/dnstwist/dnstwist.py', '-j', '-w', domain])
+            return json.loads(res)
+
+        def get_domain_to_info_map(dns_twist_result):
+            results = []
+            for x in dns_twist_result:
+                temp = {}
+                tempContext = {}
+                for k,v in x.items():
+                    if k in KEYS_TO_MD:
+                        if x["domain-name"] not in temp:
+                            temp["domain-name"] = x["domain-name"]
+                        if k == "dns-a":
+                            temp["IP Address"] = v
+                        else:
+                            temp[k] = v
+                if temp:
+                    results.append(temp)
+            return results
+
+        dnstwist_result = get_dnstwist_result(DOMAIN)
+        new_result = get_domain_to_info_map(dnstwist_result)
+        md = tableToMarkdown('dnstwist for domain - '  + DOMAIN, new_result, headers=["domain-name","IP Address","dns-mx","dns-ns","whois-updated", "whois-created"])
+
+        domainContext = new_result[0] # The requested domain for variations
+        domainsContextList = new_result[1:int(limit)] # The variations domains
+
+        domains =[]
+        for item in domainsContextList:
+            temp = {}
+            temp["Name"] = item["domain-name"]
+            if "IP Address" in item:
+                temp["IP"] = item["IP Address"]
+            domains.append(temp)
+
+        ec = {
+            "Name" : domainContext["domain-name"],
+            "IP" : domainContext.get("IP Address"),
+            "Domains" : domains
+        }
+
+        entry_result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': dnstwist_result,
+            'HumanReadable':md,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {'dnstwist.Domain(val.Name == obj.Name)' : ec}
+        }
+
+        demisto.results(entry_result)
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        demisto.results('ok')
+        sys.exit(0)
+
+  type: python
+  commands:
+  - name: dnstwist-domain-variations
+    arguments:
+    - name: domain
+      required: true
+      description: Domain name to check variations
+    - name: limit
+      default: true
+      description: Limits the results in the context. High value of context outputs
+        might slow your browser
+      defaultValue: "30"
+    outputs:
+    - contextPath: dnstwist.Domain.Domains.Name
+      description: Domain variations
+    - contextPath: dnstwist.Domain.Domains.IP
+      description: IPs resolved to domain variations
+    description: 'Check domain variations '
+  dockerimage: demisto/dnstwist:1.0
+  runonce: false

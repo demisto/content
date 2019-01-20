@@ -433,10 +433,7 @@ script:
         """
         LOG('Requestig to update incident ' + incident_id)
 
-        body = {
-            'assignee': assignee,
-            'status': status
-        }
+        body = "{{\"status\": \"{}\",\"asignee\": \"{}\"}}".format(status, assignee)
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         response = http_request(
             'PATCH',
@@ -1366,6 +1363,6 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-releaseNotes: "fix error parsing when encountering a bad response when trying to get token"
 tests:
   - RSA NetWitness Test
+releaseNotes: "fixed issues with netwitness-update-incident command"

@@ -1,18 +1,18 @@
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
+import re
+import os
+import sys
+import json
+import argparse
+from subprocess import Popen, PIPE
+
 try:
     import yaml
 except ImportError:
     print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
     sys.exit(1)
-
-
-import re
-import os
-import sys
-import json
-from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
@@ -25,9 +25,12 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
+BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
+BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
 
 
 # File type regex
@@ -47,7 +50,7 @@ class LOG_COLORS:
 
 # print srt in the given color
 def print_color(msg, color):
-    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
+    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
@@ -70,6 +73,15 @@ def checked_type(file_path, regex_list):
             return True
 
     return False
+
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def get_modified_files(files_string):
@@ -97,6 +109,8 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+            elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
+                all_tests.append(file_path)
 
     return modified_files_list, modified_tests_list, all_tests, is_conf_json
 
@@ -107,6 +121,27 @@ def collect_ids(file_path):
 
     if data_dictionary:
         return data_dictionary.get('id', '-')
+
+
+def get_name(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('name', '-')
+
+
+def get_from_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('fromversion', '0.0.0')
+
+
+def get_to_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('toversion', '99.99.99')
 
 
 def get_tests(file_path):
@@ -141,89 +176,110 @@ def get_json(file_path):
         return {}
 
 
-def collect_tests(script_ids, playbook_ids, intergration_ids):
-    test_names = []
-    tests = set([])
-    catched_scripts = set([])
-    catched_playbooks = set([])
+def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
     catched_intergrations = set([])
+
+    test_names = get_test_names()
+
+    with open("./Tests/id_set.json", 'r') as conf_file:
+        id_set = json.load(conf_file)
+
+    integration_set = id_set['integrations']
+    test_playbooks_set = id_set['TestPlaybooks']
+    integration_to_command = get_integration_commands(integration_ids, integration_set)
+
+    for test_playbook in test_playbooks_set:
+        test_playbook_id = test_playbook.keys()[0]
+        test_playbook_data = test_playbook.values()[0]
+        for script in test_playbook_data.get('implementing_scripts', []):
+            if script in script_ids:
+                tests_set.add(test_playbook_id)
+                catched_scripts.add(script)
+
+        for playbook in test_playbook_data.get('implementing_playbooks', []):
+            if playbook in playbook_ids:
+                tests_set.add(test_playbook_id)
+                catched_playbooks.add(playbook)
+
+        if integration_to_command:
+            for command in test_playbook_data.get('implementing_commands', []):
+                for integration_id, integration_commands in integration_to_command.items():
+                    if command in integration_commands:
+                        tests_set.add(test_playbook_id)
+                        catched_intergrations.add(integration_id)
+
+    missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
+                                      integration_ids, playbook_ids, script_ids)
+
+    return test_names, missing_ids
+
+
+def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
+                        script_ids):
+    missing_integrations = integration_ids - catched_intergrations
+    missing_playbooks = playbook_ids - catched_playbooks
+    missing_scripts = script_ids - catched_scripts
+    missing_ids = missing_integrations.union(missing_playbooks).union(missing_scripts)
+    return missing_ids
+
+
+def get_test_names():
+    test_names = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
         playbook_id = t['playbookID']
-        integrations_conf = t.get('integrations', [])
-
         test_names.append(playbook_id)
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
 
-        for integration in integrations_conf:
-            if integration in intergration_ids:
-                tests.add(playbook_id)
-                catched_intergrations.add(integration)
+    return test_names
 
-    # Searching for the appropriate test according to scriptName or playbookName
-    for filename in os.listdir('./TestPlaybooks'):
-        file_path = 'TestPlaybooks/' + filename
 
-        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            data_dict = get_json(file_path)
-            tasks = data_dict.get('tasks', [])
+def get_integration_commands(integration_ids, integration_set):
+    integration_to_command = {}
+    for integration in integration_set:
+        integration_id = integration.keys()[0]
+        integration_data = integration.values()[0]
+        if integration_id in integration_ids:
+            integration_to_command[integration_id] = integration_data.get('commands', [])
 
-            for task in tasks.values():
-                task_details = task.get('task', {})
-
-                script_name = task_details.get('scriptName', '')
-                if script_name in script_ids:
-                    tests.add(data_dict.get('id'))
-                    catched_scripts.add(script_name)
-
-                playbook_name = task_details.get('playbookName', '')
-                if playbook_name in playbook_ids:
-                    tests.add(data_dict.get('id'))
-                    catched_playbooks.add(playbook_name)
-
-    missing_integrations = intergration_ids - catched_intergrations
-    missing_playbooks = playbook_ids - catched_playbooks
-    missing_scripts = script_ids - catched_scripts
-    missing_ids = missing_integrations.union(missing_playbooks).union(missing_scripts)
-
-    return tests, test_names, missing_ids
+    return integration_to_command
 
 
 def find_tests_for_modified_files(modified_files):
-    script_ids = set([])
-    playbook_ids = set([])
-    intergration_ids = set([])
-    for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
-            id = get_script_or_integration_id(file_path)
-            script_ids.add(id)
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            id = collect_ids(file_path)
-            playbook_ids.add(id)
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            id = get_script_or_integration_id(file_path)
-            intergration_ids.add(id)
+    script_names = set([])
+    playbook_names = set([])
+    integration_ids = set([])
 
-    tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
+    tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
+                                                                        script_names, modified_files)
+    test_names, missing_ids = collect_tests(script_names, playbook_names, integration_ids,
+                                            catched_scripts, catched_playbooks, tests_set)
+    missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests_set)
 
+    if len(missing_ids) > 0:
+        test_string = '\n'.join(missing_ids)
+        message = "You've failed to provide tests for:\n{0}".format(test_string)
+        print_color(message, LOG_COLORS.RED)
+        sys.exit(1)
+
+    return tests_set
+
+
+def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
     test_names.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_names or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
-                        re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)
 
                 else:
-                    id = collect_ids(file_path)
+                    id = get_name(file_path)
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
@@ -233,19 +289,190 @@ def find_tests_for_modified_files(modified_files):
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 
-    if len(missing_ids) > 0:
-        test_string = '\n'.join(missing_ids)
-        message = "You've failed to provide tests for:\n{0}".format(test_string)
-        print_color(message, LOG_COLORS.RED)
-        sys.exit(1)
-
-    return tests
+    return missing_ids
 
 
-def get_test_from_conf():
+def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
+    script_to_version = {}
+    playbook_to_version = {}
+    integration_to_version = {}
+    for file_path in modified_files:
+        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
+            name = get_name(file_path)
+            script_names.add(name)
+            script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            name = get_name(file_path)
+            playbook_names.add(name)
+            playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            id = get_script_or_integration_id(file_path)
+            integration_ids.add(id)
+            integration_to_version[id] = (get_from_version(file_path), get_to_version(file_path))
+
+    with open("./Tests/id_set.json", 'r') as conf_file:
+        id_set = json.load(conf_file)
+
+    script_set = id_set['scripts']
+    playbook_set = id_set['playbooks']
+    integration_set = id_set['integrations']
+
+    catched_scripts, catched_playbooks = set([]), set([])
+    updated_script_names = set([])
+    updated_playbook_names = set([])
+    tests_set = set([])
+
+    for script_id in script_names:
+        enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
+                             playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
+                             catched_playbooks, tests_set)
+
+    integration_to_command = get_integration_commands(integration_ids, integration_set)
+    for integration_id, integration_commands in integration_to_command.items():
+        enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
+                                  script_set, playbook_set, playbook_names, script_names, updated_script_names,
+                                  updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
+
+    for playbook_id in playbook_names:
+        enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
+                               updated_playbook_names, catched_playbooks, tests_set)
+
+    for new_script in updated_script_names:
+        script_names.add(new_script)
+
+    for new_playbook in updated_playbook_names:
+        playbook_names.add(new_playbook)
+
+    affected_ids_string = ""
+    if script_names:
+        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n\n'
+    if playbook_names:
+        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n\n'
+    if integration_ids:
+        affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n\n'
+
+    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
+    return tests_set, catched_scripts, catched_playbooks
+
+
+def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
+                              playbook_names, script_names, updated_script_names, updated_playbook_names,
+                              catched_scripts, catched_playbooks, tests_set):
+    for playbook in playbook_set:
+        playbook_data = playbook.values()[0]
+        playbook_name = playbook_data.get('name')
+        playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
+        playbook_toversion = playbook_data.get('toversion', '99.99.99')
+        implementing_commands = playbook_data.get('implementing_commands', [])
+        for integration_command in integration_commands:
+            if integration_command in implementing_commands and playbook_toversion >= given_version[1]:
+                if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                    tests = playbook_data.get('tests', [])
+                    if tests:
+                        catched_playbooks.add(playbook_name)
+                        update_test_set(tests, tests_set)
+
+                    updated_playbook_names.add(playbook_name)
+                    new_versions = (playbook_fromversion, playbook_toversion)
+                    enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
+                                           updated_playbook_names, catched_playbooks, tests_set)
+
+    for script in script_set:
+        script_data = script.values()[0]
+        script_name = script_data.get('name')
+        script_fromversion = script_data.get('fromversion', '0.0.0')
+        script_toversion = script_data.get('toversion', '99.99.99')
+        command_to_integration = script_data.get('command_to_integration', {})
+        for integration_command in integration_commands:
+            if integration_command in script_data.get('depends_on', []) and not script_data.get('deprecated'):
+                if integration_command in command_to_integration.keys() and \
+                        command_to_integration[integration_command] == integration_id and \
+                        script_toversion >= given_version[1]:
+
+                    if script_name not in script_names and script_name not in updated_script_names:
+                        tests = script_data.get('tests', [])
+                        if tests:
+                            catched_scripts.add(script_name)
+                            update_test_set(tests, tests_set)
+
+                        updated_script_names.add(script_name)
+                        new_versions = (script_fromversion, script_toversion)
+                        enrich_for_script_id(script_name, new_versions, script_names, script_set, playbook_set,
+                                             playbook_names, updated_script_names, updated_playbook_names,
+                                             catched_scripts, catched_playbooks, tests_set)
+
+
+def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
+                           updated_playbook_names, catched_playbooks, tests_set):
+    for playbook in playbook_set:
+        playbook_data = playbook.values()[0]
+        playbook_name = playbook_data.get('name')
+        playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
+        playbook_toversion = playbook_data.get('toversion', '99.99.99')
+        if given_playbook_id in playbook_data.get('implementing_playbooks', []) and \
+                playbook_toversion >= given_version[1]:
+
+            if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                tests = playbook_data.get('tests', [])
+                if tests:
+                    catched_playbooks.add(playbook_name)
+                    update_test_set(tests, tests_set)
+
+                updated_playbook_names.add(playbook_name)
+                new_versions = (playbook_fromversion, playbook_toversion)
+                enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
+                                       updated_playbook_names, catched_playbooks, tests_set)
+
+
+def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
+                         updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
+    for script in script_set:
+        script_data = script.values()[0]
+        script_name = script_data.get('name')
+        script_fromversion = script_data.get('fromversion', '0.0.0')
+        script_toversion = script_data.get('toversion', '99.99.99')
+        if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
+                script_toversion >= given_version[1]:
+            if script_name not in script_names and script_name not in updated_script_names:
+                tests = script_data.get('tests', [])
+                if tests:
+                    catched_scripts.add(script_name)
+                    update_test_set(tests, tests_set)
+
+                updated_script_names.add(script_name)
+                new_versions = (script_fromversion, script_toversion)
+                enrich_for_script_id(script_name, new_versions, script_names, script_set, playbook_set, playbook_names,
+                                     updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks,
+                                     tests_set)
+
+    for playbook in playbook_set:
+        playbook_data = playbook.values()[0]
+        playbook_name = playbook_data.get('name')
+        playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
+        playbook_toversion = playbook_data.get('toversion', '99.99.99')
+        if given_script_id in playbook_data.get('implementing_scripts', []) and playbook_toversion >= given_version[1]:
+            if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
+                tests = playbook_data.get('tests', [])
+                if tests:
+                    catched_playbooks.add(playbook_name)
+                    update_test_set(tests, tests_set)
+
+                updated_playbook_names.add(playbook_name)
+                new_versions = (playbook_fromversion, playbook_toversion)
+                enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
+                                       updated_playbook_names, catched_playbooks, tests_set)
+
+
+def update_test_set(tests_set, tests):
+    for test in tests:
+        tests_set.add(test)
+
+
+def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master Tests/conf.json")
+    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -280,7 +507,7 @@ def get_test_from_conf():
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
+def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name):
     """Create a test list that should run"""
     tests = set([])
     if modified_files:
@@ -292,35 +519,42 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
             tests.add(test)
 
     if is_conf_json:
-        tests = tests.union(get_test_from_conf())
+        tests = tests.union(get_test_from_conf(branch_name))
 
     if all_tests:
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
-        print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
+        print_color("There are no tests that check the changes you've done, please make sure you write one",
+                    LOG_COLORS.RED)
         sys.exit(1)
 
     return tests
 
 
-def create_test_file():
+def create_test_file(is_nightly):
     """Create a file containing all the tests we need to run for the CI"""
-    branches = run_git_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
-    branch_name = branch_name_reg.group(1)
-
-    print("Getting changed files from the branch: {0}".format(branch_name))
     tests_string = ''
-    if branch_name != 'master':
-        files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+    if not is_nightly:
+        branches = run_git_command("git branch")
+        branch_name_reg = re.search("\* (.*)", branches)
+        branch_name = branch_name_reg.group(1)
+
+        print("Getting changed files from the branch: {0}".format(branch_name))
+        if branch_name != 'master':
+            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+        else:
+            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = commit_string.replace("'", "")
+            last_commit, second_last_commit = commit_string.split()
+            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json)
+        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)
 
         tests_string = '\n'.join(tests)
         if tests_string:
-            print('Collected the following tests:\n{0}'.format(tests_string))
+            print('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
 
@@ -330,10 +564,14 @@ def create_test_file():
 
 
 if __name__ == "__main__":
-   print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
+    print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
 
-   # Create test file based only on committed files
-   create_test_file()
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
+    options = parser.parse_args()
 
-   print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
-   sys.exit(0)
+    # Create test file based only on committed files
+    create_test_file(options.nightly)
+
+    print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
+    sys.exit(0)

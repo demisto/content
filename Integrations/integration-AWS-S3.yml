@@ -29,7 +29,7 @@ script:
     import math
     import datetime
 
-    AWS_DEFAULT_REGION = None
+    AWS_DEFAULT_REGION = None #demisto.params()['defaultRegion']
     AWS_roleArn = demisto.params()['roleArn']
     AWS_roleSessionName = demisto.params()['roleSessionName']
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
@@ -137,7 +137,7 @@ script:
             if args.get('acl') is not None:
                 kwargs.update({'ACL':args.get('acl')})
             if args.get('locationConstraint') is not None:
-                kwargs.update({'LocationConstraint':args.get('locationConstraint')})
+                kwargs.update({'CreateBucketConfiguration':{'LocationConstraint':args.get('locationConstraint')}})
             if args.get('grantFullControl') is not None:
                 kwargs.update({'GrantFullControl':args.get('grantFullControl')})
             if args.get('grantRead') is not None:
@@ -328,7 +328,7 @@ script:
                 return 'File %s was uploaded successfully to %s' % (args.get('key'), args.get('bucket'))
 
         except Exception as e:
-            return raise_error("Error: entry %s is not a file." % (args['entryID']))
+            return raise_error(e)
 
 
     # The command demisto.command() holds the command sent from the user.
@@ -605,5 +605,6 @@ script:
     description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
+releaseNotes: "Remove hradcoded error in aws-s3-upload-file"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

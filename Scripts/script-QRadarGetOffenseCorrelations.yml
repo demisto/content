@@ -9,14 +9,18 @@ script: |-
 
   offense_id = demisto.get(d_args, 'offenseID')
   start_time = demisto.get(d_args, 'startTime')
-
+  # Try converting from date string to timestamp
+  try:
+      start_time = date_to_timestamp(str(start_time), '%Y-%m-%dT%H:%M:%S.%f000Z')
+  except:
+      pass
   d_args["query_expression"] = QUERY.format(offense_id,start_time)
 
   resp = demisto.executeCommand('QRadarFullSearch',d_args)
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents')
+      data = demisto.get(resp[0],'Contents.events')
 
       if not data:
           resp[0]['HumanReadable'] = "No Correlations were found for offense id {0}".format(offense_id)
@@ -92,7 +96,6 @@ args:
   description: Timeout in seconds. Default is 10 minutes.
 - name: fields
   description: Property fields to include in results
-  description: Fields
 outputs:
 - contextPath: QRadar.Correlation
   description: The QRadar offense correlations
@@ -120,6 +123,5 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
-releaseNotes: "-"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test

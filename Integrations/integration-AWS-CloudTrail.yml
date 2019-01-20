@@ -126,6 +126,7 @@ script:
     def create_trail(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -187,6 +188,7 @@ script:
     def delete_trail(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -206,6 +208,7 @@ script:
     def describe_trails(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -243,6 +246,7 @@ script:
     def update_trail(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -305,6 +309,7 @@ script:
     def start_logging(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -323,6 +328,7 @@ script:
     def stop_logging(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -342,6 +348,7 @@ script:
     def lookup_events(args):
         try:
             client = aws_session(
+                    region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -363,18 +370,19 @@ script:
             response = client.lookup_events(**kwargs)
             paginator = client.get_paginator('lookup_events')
             for response in paginator.paginate(**kwargs):
-                for event in response['Events']:
+                for i, event in enumerate(response['Events']):
                     data.append({
                         'EventId': event['EventId'],
                         'EventName': event['EventName'],
                         'EventTime': datetime.datetime.strftime(event['EventTime'], '%Y-%m-%dT%H:%M:%S'),
                         'EventSource': event['EventSource'],
-                        'Username': event['Username'],
                         'ResourceName':event['Resources'][0]['ResourceName'],
                         'ResourceType':event['Resources'][0]['ResourceType'],
                         'CloudTrailEvent': event['CloudTrailEvent']
                     })
-            ec = {'AWS.CloudTrail.Trails(val.Name == obj.Name)': data}
+                    if 'Username' in event: data[i].update({'Username': image['Username']})
+
+            ec = {'AWS.CloudTrail.Events(val.EventId == obj.EventId)': data}
             return  create_entry('AWS CloudTrail Trails',data, ec)
 
         except Exception as e:
@@ -779,35 +787,35 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.CloudTrail.Trails.Events.EventId
+    - contextPath: AWS.CloudTrail.Events.EventId
       description: The CloudTrail ID of the event returned.
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.EventName
+    - contextPath: AWS.CloudTrail.Events.EventName
       description: The name of the event returned.
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.EventTime
+    - contextPath: AWS.CloudTrail.Events.EventTime
       description: The date and time of the event returned.
       type: date
-    - contextPath: AWS.CloudTrail.Trails.Events.EventSource
+    - contextPath: AWS.CloudTrail.Events.EventSource
       description: The AWS service that the request was made to.
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.Username
+    - contextPath: AWS.CloudTrail.Events.Username
       description: A user name or role name of the requester that called the API in
         the event returned.
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.ResourceName
+    - contextPath: AWS.CloudTrail.Events.ResourceName
       description: 'The type of a resource referenced by the event returned. When
         the resource type cannot be determined, null is returned. Some examples of
         resource types are: Instance for EC2, Trail for CloudTrail, DBInstance for
         RDS, and AccessKey for IAM. '
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.ResourceType
+    - contextPath: AWS.CloudTrail.Events.ResourceType
       description: The name of the resource referenced by the event returned. These
         are user-created names whose values will depend on the environment. For example,
         the resource name might be "auto-scaling-test-group" for an Auto Scaling Group
         or "i-1234567" for an EC2 Instance.
       type: string
-    - contextPath: AWS.CloudTrail.Trails.Events.CloudTrailEvent
+    - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
     description: Looks up API activity events captured by CloudTrail that create,
@@ -816,6 +824,6 @@ script:
       the last seven days.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Fix bug in aws-cloudtrail-lookup-events"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No Tests

@@ -108,6 +108,5 @@ outputs:
   description: HTML Body
 scripttarget: 0
 runonce: false
-releaseNotes: Added the ability to have custom fields in the template in both .incident.CustomFields. and incident. formats. Also, added the option to replace non-found placeholder values with empty string
 tests:
 - CreateEmailHtmlBody_test_pb
