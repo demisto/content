@@ -7742,7 +7742,8 @@
                     "fireeye-hx-data-acquisition", 
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
-                    "fireeye-hx-get-host-set-information"
+                    "fireeye-hx-get-host-set-information", 
+                    "fireeye-hx-create-indicator"
                 ], 
                 "tests": [
                     "FireEye HX Test"
