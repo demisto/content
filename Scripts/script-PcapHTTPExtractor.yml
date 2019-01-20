@@ -31,8 +31,7 @@ args:
   predefined: []
   required: false
   secret: false
-comment: An automated script that allows to parse and extract http flows from a pcap/pcapng
-  file.
+comment: Allows to parse and extract http flows from a pcap/pcapng file.
 commonfields: {id: PcapHTTPExtractor, version: -1}
 enabled: true
 name: PcapHTTPExtractor
@@ -40,6 +39,9 @@ outputs:
 - {contextPath: PcapHTTPExtractor.Flows, description: Flows extracted from the pcap
     file., type: String}
 script: |-
+  import demistomock as demisto
+  from CommonServerPython import *
+  from CommonServerUserPython import *
   import pyshark
   from datetime import datetime
 
@@ -290,7 +292,7 @@ script: |-
           return_error("Error occurred while parsing output from command. Exception info:\n" \
                        + str(ex) + "\n\nTrace:\n" + str(traceback.format_exc()))
 system: false
-tags: [pcap, http, pcapng, Utility]
+tags: [pcap, http, pcapng]
 timeout: '0'
 type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.98
