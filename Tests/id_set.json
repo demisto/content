@@ -13806,22 +13806,29 @@
                     "DeleteContext", 
                     "Sleep"
                 ], 
+                "implementing_playbooks": [
+                    "PanoramaCommitConfiguration"
+                ], 
                 "implementing_commands": [
                     "panorama-list-applications", 
                     "panorama-create-rule", 
                     "panorama-commit", 
-                    "panorama-delete-rule", 
+                    "panorama-create-service", 
                     "panorama-create-address-group", 
                     "panorama-get-address-group", 
                     "panorama-move-rule", 
+                    "panorama-delete-rule", 
                     "panorama", 
                     "panorama-edit-rule", 
+                    "panorama-get-service-group", 
                     "panorama-get-url-filter", 
+                    "panorama-get-service", 
                     "panorama-list-address-groups", 
                     "panorama-get-custom-url-category", 
                     "panorama-create-address", 
                     "panorama-delete-address-group", 
                     "panorama-list-addresses", 
+                    "panorama-delete-service", 
                     "panorama-delete-address"
                 ]
             }
