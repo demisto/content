@@ -91,6 +91,5 @@ outputs:
   description: SHA256 hash of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
-releaseNotes: "Supporting complicated JSONs (list inside a list)"
 tests:
 - JSONtoCSV-Test

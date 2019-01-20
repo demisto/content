@@ -1,0 +1,593 @@
+commonfields:
+  id: SNDBOX
+  version: -1
+name: SNDBOX
+display: SNDBOX
+category: Forensics & Malware Analysis
+image: data:image/png;base64,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
+description: SNDBOX as a service
+configuration:
+  - display: 'Use Public API Key.
+      (By approving SNDBOX public API you are accepting SNDBOX TOS @ https://app.sndbox.com/tos).
+      Public submissions are shared with the community'
+    name: public_api_key
+    defaultvalue: ''
+    type: 8
+    required: false
+  - display: 'Private API Key'
+    name: api_key
+    defaultvalue: ''
+    type: 4
+    required: true
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: "False"
+    type: 8
+    required: false
+  - display: Trust any certificate (unsecure)
+    name: insecure
+    defaultvalue: ''
+    type: 8
+    required: false
+  - display: 'Max. Polling Time (in seconds):'
+    name: maxpolls
+    defaultvalue: '300'
+    type: 0
+    required: false
+  - display: 'Verbose (show log in case of error) '
+    name: verbose
+    defaultvalue: ''
+    type: 8
+    required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import time
+    import shutil
+    import requests
+    from distutils.util import strtobool
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' GLOBAL VARS '''
+    BASE_URL = 'https://api.sndbox.com/'
+    SAMPLE_URL = 'https://app.sndbox.com/sample/'
+    USE_SSL = not demisto.params().get('insecure', False)
+
+
+    ''' HELPER FUNCTIONS '''
+    def http_cmd(url_suffix, data=None, files=None, parse_json=True):
+        data = {} if data is None else data
+
+        url_params = {}
+
+        use_public_api = demisto.params().get('public_api_key', False)
+        api_key = demisto.params().get('api_key', False)
+        if not api_key and use_public_api:
+          url_params.setdefault('apikey', demisto.params()['secret_public_api_key'])
+        elif api_key:
+          url_params.setdefault('apikey', api_key)
+
+        LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
+            data, files, ))
+
+        res = {}
+        if files:
+          res = requests.post(BASE_URL + url_suffix,
+              verify=USE_SSL,
+              params=url_params,
+              data=data,
+              files=files
+          )
+        else:
+          res = requests.get(BASE_URL + url_suffix,
+              verify=USE_SSL,
+              params=url_params
+          )
+
+        if res.status_code == 401:
+            raise Exception('API Key is incorrect')
+
+        if res.status_code >= 400:
+            LOG('result is: %s' % (res.json(), ))
+            error_msg = res.json()['errors'][0]['msg']
+            raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg, ))
+
+        if parse_json:
+            return res.json()
+        else:
+            return res.content
+
+    def extract_status(sndbox_status):
+      s = sndbox_status['dynamic']['code'] + sndbox_status['static']['code']
+      if s <= 1:
+        return 'pending'
+      elif s == 2:
+        return 'finished'
+      else:
+        return 'error'
+
+    def extract_errors(sndbox_status):
+      errors = []
+      if 'message' in sndbox_status['static']:
+        errors.append(sndbox_status['static']['message'])
+      if 'message' in sndbox_status['dynamic']:
+        errors.append(sndbox_status['dynamic']['message'])
+      return errors
+
+
+    def analysis_to_entry(title, info):
+        if not isinstance(info, list):
+            info = [info]
+
+        context = []
+        table = []
+        dbot_scores = []
+        for analysis in info:
+            malicious = analysis['score'] and analysis['score'] * 100 > 56
+            status = extract_status(analysis['status'])
+            result = ''
+            if status == 'finished':
+                result = 'malicious' if malicious else 'clean'
+
+            analysis_info = {
+                'ID' : analysis['id'], # for detonate generic polling
+                'SampleName' : analysis['name'],
+                'Status' : status,
+                'Time' : analysis['created_at'],
+                'Link' : SAMPLE_URL + analysis['id'],
+                'MD5' : analysis['md5'],
+                'SHA1' : analysis['sha1'],
+                'SHA256' : analysis['sha256'],
+                'Score': analysis['score'],
+                'Result' : result,
+                'Errors' : extract_errors(analysis['status']),
+            }
+
+            analysis_context = dict(analysis_info)
+            analysis_table = dict(analysis_info)
+            if not any(analysis_table['Errors']):
+                analysis_table['Errors'] = None
+
+            dbot_score = 0
+
+            if malicious:
+                dbot_score = 3
+                malicious = {
+                    'Vendor' : 'SNDBOX',
+                    # 'Detections' : ['TODO'],
+                    'SHA1' : analysis_info['SHA1'],
+                }
+            else:
+                dbot_score = 1
+                malicious = None
+
+            dbot_scores.append({
+                'Vendor' : 'SNDBOX',
+                'Indicator' : analysis_info['SampleName'],
+                'Type' : 'file',
+                'Score' : dbot_score,
+                'Malicious' : malicious,
+            })
+            context.append(analysis_context)
+            table.append(analysis_table)
+
+        entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, table, removeNull=True),
+            'EntryContext': {'SNDBOX.Analysis(val.ID && val.ID == obj.ID)' : createContext(context, removeNull=True),
+                'DBotScore' :
+                    createContext(dbot_scores, removeNull=True),
+            }
+        }
+
+        return entry
+
+
+    def poll_analysis_id(analysis_id):
+        result = info_request(analysis_id)
+        max_polls = MAX_POLLS / 10 if MAX_POLLS > 0 else MAX_POLLS
+
+        while (max_polls >=0) and extract_status(result['status']) != 'finished':
+            if extract_status(result['status']) != 'pending':
+                LOG('error while polling: result is %s' % (result, ))
+            result = info_request(analysis_id)
+            time.sleep(10)
+            max_polls -= 1
+
+        LOG('reached max_polls #%d' % (max_polls, ))
+        if max_polls < 0:
+            return analysis_to_entry('Polling timeout on Analysis #' + analysis_id, result)
+        else:
+            return analysis_to_entry('Analysis #' + analysis_id, result)
+
+
+    ''' FUNCTIONS '''
+    def is_online():
+        cmd_url = ''
+        res = http_cmd(cmd_url)
+        return res['status'] == 'online'
+
+
+    def analysis_info():
+        ids = demisto.args().get('analysis_id')
+        if type(ids) in STRING_TYPES:
+            ids = ids.split(',')
+        LOG('info: analysis_id = %s' % (ids, ))
+        res = [info_request(analysis_id) for analysis_id in ids]
+        return analysis_to_entry('Analyses:', res)
+
+
+    def info_request(analysis_id):
+        cmd_url = '/developers/files/' + analysis_id
+        return http_cmd(cmd_url)
+
+
+    def analyse_sample():
+        args = demisto.args()
+        file_entry = args.get('file_id', '')
+        if type(file_entry) in STRING_TYPES:
+            file_entry = [f for f in file_entry.split(',') if f != '']
+
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+
+        if len(file_entry) == 0 or not file_entry:
+            raise ValueError('You must specify: file_id.')
+
+        LOG('analysing sample')
+        return [analyse_sample_file_request(f, should_wait)
+            for f in file_entry]
+
+
+    def analyse_sample_file_request(file_entry, should_wait):
+        data = {}
+
+        shutil.copy(demisto.getFilePath(file_entry)['path'],
+            demisto.getFilePath(file_entry)['name'])
+
+        with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
+            res = http_cmd('/developers/files',
+                data=data,
+                files={'file':f})
+
+            if 'errors' in res:
+                LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+                LOG('got the following errors:\n' + '\n'.join(e['msg'] for e in res['errors']))
+                raise Exception('command failed to run.')
+
+        shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+
+        if should_wait:
+            return poll_analysis_id(res['id'])
+
+        analysis_id = res['id']
+        result = info_request(analysis_id)
+        return analysis_to_entry('Analysis #%s' % (analysis_id, ), result)
+
+
+    def download_report():
+        args = demisto.args()
+        analysis_id = args.get('analysis_id')
+        rsc_type = args.get('type')
+        return download_request(analysis_id, rsc_type)
+
+
+    def download_sample():
+        args = demisto.args()
+        analysis_id = args.get('analysis_id')
+        rsc_type = 'sample'
+        return download_request(analysis_id, rsc_type)
+
+
+    def download_request(analysis_id, rsc_type):
+        cmd_url = '/developers/files/' + analysis_id + '/' + rsc_type.lower()
+        res = http_cmd(cmd_url, parse_json=False)
+
+        info = info_request(analysis_id)
+        if rsc_type == 'sample':
+            return fileResult('%s.dontrun' % (info.get('filename', analysis_id), ), res)
+        else:
+            rsc_type = rsc_type if rsc_type != 'json' else 'json.gz'
+            return fileResult('%s_report.%s' % (info.get('filename', analysis_id), rsc_type, ), res, entryTypes['entryInfoFile'])
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() in ['test-module', 'SNDBOX-is-online']:
+            # This is the call made when pressing the integration test button.
+            if is_online():
+                demisto.results('ok')
+            else:
+                demisto.results('not online')
+        elif demisto.command() == 'sndbox-analysis-info':
+            demisto.results(analysis_info())
+        elif demisto.command() == 'sndbox-analysis-submit-sample':
+            demisto.results(analyse_sample())
+        elif demisto.command() == 'sndbox-download-report':
+            demisto.results(download_report())
+        elif demisto.command() == 'sndbox-download-sample':
+            demisto.results(download_sample())
+
+    except Exception, e:
+        if demisto.params().get('verbose'):
+            LOG(e.message)
+            if demisto.command() != 'test-module':
+                LOG.print_log()
+
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'error has occured: %s' % (e.message, ),
+        })
+  type: python
+  commands:
+    - name: sndbox-is-online
+      arguments: []
+      description: Check if SNDBOX is online or in maintenance mode.
+    - name: sndbox-analysis-info
+      arguments:
+        - name: analysis_id
+          required: true
+          default: true
+          description: Analysis IDs, supports comma-seperated arrays.
+          isArray: true
+      outputs:
+        - contextPath: SNDBOX.Analysis.ID
+          description: Analysis ID
+          type: string
+        - contextPath: SNDBOX.Analysis.SampleName
+          description: Sample Data
+          type: string
+        - contextPath: SNDBOX.Analysis.Status
+          description: Analysis Status
+          type: string
+        - contextPath: SNDBOX.Analysis.Time
+          description: Submitted Time
+          type: date
+        - contextPath: SNDBOX.Analysis.Score
+          description: Analysis Score
+          type: float
+        - contextPath: SNDBOX.Analysis.Result
+          description: Analysis Results
+          type: string
+        - contextPath: SNDBOX.Analysis.Errors
+          description: Raised errors during sampling
+        - contextPath: SNDBOX.Analysis.Link
+          description: Analysis Link
+          type: string
+        - contextPath: SNDBOX.Analysis.MD5
+          description: MD5 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA1
+          description: SHA1 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA256
+          description: SHA256 of analysis sample
+          type: string
+        - contextPath: DBotScore.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Indicator
+          description: The name of the sample file
+        - contextPath: DBotScore.Type
+          description: file
+          type: string
+        - contextPath: DBotScore.Score
+          description: The actual score
+          type: number
+        - contextPath: DBotScore.Malicious.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Malicious.Detections
+          description: The sub analysis detection statuses
+          type: string
+        - contextPath: DBotScore.Malicious.SHA1
+          description: The SHA1 of the file
+          type: string
+      description: Show information about an analysis.
+    - name: sndbox-analysis-submit-sample
+      arguments:
+        - name: file_id
+          default: true
+          description: War Room entry of a file (for example, 3245@4)
+        - name: should_wait
+          auto: PREDEFINED
+          predefined:
+            - 'True'
+            - 'False'
+          description: Should the command poll for the result of the analysis
+          defaultValue: 'False'
+      outputs:
+        - contextPath: SNDBOX.Analysis.ID
+          description: Analysis ID
+          type: string
+        - contextPath: SNDBOX.Analysis.SampleName
+          description: Sample Data, could be a file name or URL
+          type: string
+        - contextPath: SNDBOX.Analysis.Status
+          description: Analysis Status
+          type: string
+        - contextPath: SNDBOX.Analysis.Time
+          description: Submitted Time
+          type: date
+        - contextPath: SNDBOX.Analysis.Result
+          description: Analysis Results
+          type: string
+        - contextPath: SNDBOX.Analysis.Errors
+          description: Raised errors during sampling
+        - contextPath: SNDBOX.Analysis.Link
+          description: Analysis Link
+          type: string
+        - contextPath: SNDBOX.Analysis.MD5
+          description: MD5 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA1
+          description: SHA1 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA256
+          description: SHA256 of analysis sample
+          type: string
+        - contextPath: DBotScore.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Indicator
+          description: The name of the sample file or URL
+        - contextPath: DBotScore.Type
+          description: "'url' for url samples, otherwise 'file'"
+          type: string
+        - contextPath: DBotScore.Score
+          description: The actual score
+          type: number
+        - contextPath: DBotScore.Malicious.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Malicious.SHA1
+          description: The SHA1 of the file
+          type: string
+      description: Submit a sample for analysis.
+    - name: sndbox-download-report
+      arguments:
+        - name: analysis_id
+          required: true
+          default: true
+          description: Analysis ID
+        - name: type
+          auto: PREDEFINED
+          predefined:
+            - json
+            - pcap
+          description: The resource type to download. Defaults to json.
+          defaultValue: json
+      outputs:
+        - contextPath: InfoFile.Name
+          description: FileName
+          type: string
+        - contextPath: InfoFile.EntryID
+          description: The EntryID of the report
+          type: string
+        - contextPath: InfoFile.Size
+          description: File Size
+          type: number
+        - contextPath: InfoFile.Type
+          description: File type e.g. "PE"
+          type: string
+        - contextPath: InfoFile.Info
+          description: Basic information of the file
+          type: string
+        - contextPath: InfoFile.Extension
+          description: File Extension
+          type: string
+      description:
+        Download a resource belonging to a report. This can be the full report,
+        dropped binaries, etc.
+    - name: sndbox-detonate-file
+      arguments:
+        - name: file_id
+          default: true
+          description: War Room entry of a file (for example, 3245@4)
+      outputs:
+        - contextPath: SNDBOX.Analysis.ID
+          description: Analysis ID
+          type: string
+        - contextPath: SNDBOX.Analysis.SampleName
+          description: Sample Data, could be a file name or URL
+          type: string
+        - contextPath: SNDBOX.Analysis.Status
+          description: Analysis Status
+          type: string
+        - contextPath: SNDBOX.Analysis.Time
+          description: Submitted Time
+          type: date
+        - contextPath: SNDBOX.Analysis.Result
+          description: Analysis Results
+          type: string
+        - contextPath: SNDBOX.Analysis.Errors
+          description: Raised errors during sampling
+        - contextPath: SNDBOX.Analysis.Link
+          description: Analysis Link
+          type: string
+        - contextPath: SNDBOX.Analysis.MD5
+          description: MD5 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA1
+          description: SHA1 of analysis sample
+          type: string
+        - contextPath: SNDBOX.Analysis.SHA256
+          description: SHA256 of analysis sample
+          type: string
+        - contextPath: DBotScore.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Indicator
+          description: The name of the sample file or URL
+        - contextPath: DBotScore.Type
+          description: file
+          type: string
+        - contextPath: DBotScore.Score
+          description: The actual score
+          type: number
+        - contextPath: DBotScore.Malicious.Vendor
+          description: 'The name of the vendor: SNDBOX'
+          type: string
+        - contextPath: DBotScore.Malicious.Detections
+          description: The sub analysis detection statuses
+          type: string
+        - contextPath: DBotScore.Malicious.SHA1
+          description: The SHA1 of the file
+          type: string
+      description: Submit a sample for analysis.
+    - name: sndbox-download-sample
+      arguments:
+        - name: analysis_id
+          required: true
+          default: true
+          description: Analysis ID
+      outputs:
+        - contextPath: File.Size
+          description: File Size
+          type: number
+        - contextPath: File.SHA1
+          description: SHA1 hash of the file
+          type: string
+        - contextPath: File.SHA256
+          description: SHA256 hash of the file
+          type: string
+        - contextPath: File.Name
+          description: The sample name
+          type: string
+        - contextPath: File.SSDeep
+          description: SSDeep hash of the file
+          type: string
+        - contextPath: File.EntryID
+          description: War-Room Entry ID of the file
+          type: string
+        - contextPath: File.Info
+          description: Basic information of the file
+          type: string
+        - contextPath: File.Type
+          description: File type e.g. "PE"
+          type: string
+        - contextPath: File MD5
+          description: MD5 hash of the file
+          type: string
+        - contextPath: File.Extension
+          description: File Extension
+          type: string
+      description:
+        Download the sample file of an analysis. for security reasons, the
+        extension will be "dontrun"
+  runonce: false
+tests:
+  - SNDBOX_Test
+releaseNotes: "Remove DT from DBotScore update"

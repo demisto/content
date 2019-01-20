@@ -619,7 +619,11 @@ script:
                 throw 'Unknown command - ' + command;
         }
     } catch (err) {
-        return err;
+      return {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err
+      }
     }
   type: javascript
   commands:
@@ -955,7 +959,6 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
-releaseNotes: "Handle quota error gracefully"
 tests:
 - Lastline - testplaybook
 - Detonate URL - Generic Test
