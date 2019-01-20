@@ -61,17 +61,17 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 324245b8-2ba0-4ac0-8e1a-6d0678fcc040
+    taskid: c30e0f88-e32c-442a-88c1-c5225b323f3f
     type: regular
     task:
-      id: 324245b8-2ba0-4ac0-8e1a-6d0678fcc040
+      id: c30e0f88-e32c-442a-88c1-c5225b323f3f
       version: -1
       name: gmail-search for html email
       description: Search for messages in the user's mailbox.
-      script: Gmail|||gmail-search
+      script: '|||gmail-search'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -105,10 +105,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: fac13016-20f7-49ec-88e5-53bfc2c20117
+    taskid: 8dbf04c8-5154-41a7-8964-422f7c96e9ff
     type: condition
     task:
-      id: fac13016-20f7-49ec-88e5-53bfc2c20117
+      id: 8dbf04c8-5154-41a7-8964-422f7c96e9ff
       version: -1
       name: Check Body is Text
       type: condition
@@ -147,6 +147,14 @@ tasks:
           right:
             value:
               simple: <span>
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.Format
+            iscontext: true
+          right:
+            value:
+              simple: text/html
     view: |-
       {
         "position": {
