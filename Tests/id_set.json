@@ -2444,10 +2444,6 @@
                 "name": "ParseCSV", 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "tests": [
-                    "TestParseCSV", 
-                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
