@@ -82,10 +82,10 @@ script: |-
 
       if not found_entry_id:
           demisto.results({"Type": entryTypes["note"],
-                          "ContentsFormat": formats["markdown"],
-                          "Contents": "### No file found",
-                          "EntryContext": {"PcapHTTPExtractor.Flows": []}
-          })
+                           "ContentsFormat": formats["markdown"],
+                           "Contents": "### No file found",
+                           "EntryContext": {"PcapHTTPExtractor.Flows": []}
+                           })
           sys.exit(0)
 
       return found_entry_id
@@ -234,8 +234,8 @@ script: |-
       allowed_contect_types = ("text", "application/json", "multipart/form-data",
                                "application/xml", "application/xhtml+xml",
                                "application/ld+json", "application/javascript",
-                               "multipart/alternative","application/x-www-form-urlencoded",
-                               )
+                               "multipart/alternative", "application/x-www-form-urlencoded")
+
 
       context_list = []
       flow_index = 0
@@ -257,7 +257,6 @@ script: |-
           context_list.append(cd)
 
       return context_list
-
 
   if __name__ == "builtins":
       try:
