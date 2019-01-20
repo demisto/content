@@ -114,7 +114,7 @@ script:
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -140,7 +140,7 @@ script:
     - {contextPath: GRM.Project.Name, description: name, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -176,7 +176,7 @@ script:
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -249,7 +249,7 @@ script:
     - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -336,7 +336,7 @@ script:
     - {contextPath: GRM.Project.Name, description: name, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -362,7 +362,7 @@ script:
     - {contextPath: GRM.Project.Name, description: name, type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Labels, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -555,7 +555,7 @@ script:
                 'ID': response.get('parent').get('id'),
                 'Type': response.get('parent').get('type')
             },
-            'Labels': response.get('labels')
+            'Label': response.get('labels')
         }
         md = tableToMarkdown('Google Cloud Project Created', context)
         demisto.results({
@@ -604,7 +604,7 @@ script:
                     'ID': response.get('parent').get('id'),
                     'Type': response.get('parent').get('type')
                 },
-                'Labels': response.get('labels')
+                'Label': response.get('labels')
             }
             success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
             demisto.results({
@@ -653,7 +653,7 @@ script:
                     'ID': response.get('parent').get('id'),
                     'Type': response.get('parent').get('type')
                 },
-                'Labels': response.get('labels')
+                'Label': response.get('labels')
             }
             success_msg = 'The lifecycleState attribute of Project {} has been set to ACTIVE'.format(project_id)
             demisto.results({
@@ -698,7 +698,7 @@ script:
                 'ID': response.get('parent').get('id'),
                 'Type': response.get('parent').get('type')
             },
-            'Labels': response.get('labels')
+            'Label': response.get('labels')
         }
         md = tableToMarkdown('Details of Google Cloud Project', context)
         demisto.results({
@@ -746,7 +746,7 @@ script:
                     'ID': project.get('parent').get('id'),
                     'Type': project.get('parent').get('type')
                 },
-                'Labels': project.get('labels')
+                'Label': project.get('labels')
             }
             contexts.append(context)
         md = tableToMarkdown("Projects", contexts)
@@ -812,7 +812,7 @@ script:
                 'ID': response.get('parent').get('id'),
                 'Type': response.get('parent').get('type')
             },
-            'Labels': response.get('labels')
+            'Label': response.get('labels')
         }
         md = tableToMarkdown('Details of Updated Google Cloud Project', context)
         demisto.results({
@@ -858,6 +858,9 @@ script:
         contexts = []
         contents = []
         next_page = True
+        # continue calling the API with the appropriate pageToken argument while there are still results to be received
+        # from the search organizations API call - this is useful in the case that a pageSize argument was given in this
+        # command that was less than the total amount of results returned from the original call to the API
         while next_page:
             response = search_organizations(req_body)
             contents.append(response)
@@ -958,7 +961,6 @@ script:
         elif demisto.command() in commands.keys():
             commands[demisto.command()]()
 
-    # Log exceptions
     except Exception as e:
         # Output HttpError errors from googleapiclient to the warroom nicely
         if type(e) is googleapiclient.errors.HttpError:
