@@ -8591,7 +8591,8 @@
                     "microsoft-atp-get-file-related-machines", 
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
-                    "microsoft-atp-list-alerts"
+                    "microsoft-atp-list-alerts", 
+                    "microsoft-atp-update-alert"
                 ], 
                 "tests": [
                     "No test"
