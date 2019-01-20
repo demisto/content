@@ -1,0 +1,1083 @@
+id: InfoArmorVigilanteATITest
+version: -1
+name: InfoArmorVigilanteATITest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6cdfaa3b-3148-4d04-872e-5d113ee7fcb0
+    type: start
+    task:
+      id: 6cdfaa3b-3148-4d04-872e-5d113ee7fcb0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1a550ea6-cf06-4d3c-8390-309489be6e3c
+    type: regular
+    task:
+      id: 1a550ea6-cf06-4d3c-8390-309489be6e3c
+      version: -1
+      name: infoarmor-vigilante-get-watchlist
+      description: Retrieve account identifiers on your watchlist.
+      script: '|||vigilante-get-watchlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
+      token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: e8edf5b2-9d1e-4c90-8ab2-19590e16ace8
+    type: regular
+    task:
+      id: e8edf5b2-9d1e-4c90-8ab2-19590e16ace8
+      version: -1
+      name: Verify output - VigilanteATI.Watchlist.identifier
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Watchlist.identifier
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 9332577d-6c68-4885-875e-512e0a8fb3d9
+    type: regular
+    task:
+      id: 9332577d-6c68-4885-875e-512e0a8fb3d9
+      version: -1
+      name: Verify output - VigilanteATI.Watchlist.type
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Watchlist.type
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 820859f5-1cdd-4a83-8df8-f0002b4ee02e
+    type: regular
+    task:
+      id: 820859f5-1cdd-4a83-8df8-f0002b4ee02e
+      version: -1
+      name: Verify output - VigilanteATI.WatchlistQueryToken
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.WatchlistQueryToken
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 5422694b-b69e-4537-88e9-8e75e686e518
+    type: regular
+    task:
+      id: 5422694b-b69e-4537-88e9-8e75e686e518
+      version: -1
+      name: infoarmor-vigilante-watchlist-remove-accounts
+      description: Remove account identifiers from your watchlist
+      script: '|||vigilante-watchlist-remove-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      account_identifiers:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 985d95c5-91d0-444e-8f79-8e20d28d84b8
+    type: regular
+    task:
+      id: 985d95c5-91d0-444e-8f79-8e20d28d84b8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 587991fe-106e-4f11-8682-5c874a2f6531
+    type: title
+    task:
+      id: 587991fe-106e-4f11-8682-5c874a2f6531
+      version: -1
+      name: Leaks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 4713619d-f66f-4f71-86c0-35491b7ddb45
+    type: regular
+    task:
+      id: 4713619d-f66f-4f71-86c0-35491b7ddb45
+      version: -1
+      name: vigilante-search-leaks
+      description: ' Retrieves the list of leaks from database.'
+      script: '|||vigilante-search-leaks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+      - "12"
+    scriptarguments:
+      days_ago:
+        simple: "100"
+      keyword:
+        simple: netflix
+      leak_id: {}
+      limit:
+        simple: "5"
+      token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: ccbd75ab-73d7-4e7d-8389-3162da2ef518
+    type: regular
+    task:
+      id: ccbd75ab-73d7-4e7d-8389-3162da2ef518
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.title
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: a31f3ad3-580a-426a-869d-73b364271a0f
+    type: regular
+    task:
+      id: a31f3ad3-580a-426a-869d-73b364271a0f
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.leak_id
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.leak_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 48848331-35dd-47fb-89dc-dbe11477f0aa
+    type: regular
+    task:
+      id: 48848331-35dd-47fb-89dc-dbe11477f0aa
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.leak_type
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.leak_type
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: ab4a7a72-27f7-4fcd-87e8-36a6888676c0
+    type: regular
+    task:
+      id: ab4a7a72-27f7-4fcd-87e8-36a6888676c0
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.accounts.domain
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.accounts.domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: f6a76b99-a1be-4582-88ce-1b1a4d508b68
+    type: regular
+    task:
+      id: f6a76b99-a1be-4582-88ce-1b1a4d508b68
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.accounts.password
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.accounts.password
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: d15daa4a-fa92-43ca-881a-6ef427aea571
+    type: regular
+    task:
+      id: d15daa4a-fa92-43ca-881a-6ef427aea571
+      version: -1
+      name: Verify output -  VigilanteATI.Leaks.accounts.email
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Leaks.accounts.email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 43185740-6026-400d-89b1-c814e7a50e8b
+    type: title
+    task:
+      id: 43185740-6026-400d-89b1-c814e7a50e8b
+      version: -1
+      name: ECrime
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 4c7bc667-25bc-48f7-842b-4e93a9deaae9
+    type: regular
+    task:
+      id: 4c7bc667-25bc-48f7-842b-4e93a9deaae9
+      version: -1
+      name: vigilante-query-ecrime-db
+      description: Query the eCrime intelligence database. This is the API call you
+        want to use to do a full text search on eCrime intelligence data, such as
+        hacker chatter.
+      script: '|||vigilante-query-ecrime-db'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "5"
+      q_end_date: {}
+      q_forum: {}
+      q_start_date:
+        simple: 2018-05-20
+      query:
+        simple: netflix
+      re_token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: b66ca419-b28a-4147-888c-0cedf69d3637
+    type: regular
+    task:
+      id: b66ca419-b28a-4147-888c-0cedf69d3637
+      version: -1
+      name: Verify output -  VigilanteATI.ECrimePosts.title
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.ECrimePosts.title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 12312f29-6d43-40ee-896e-7b6f94d3e93f
+    type: regular
+    task:
+      id: 12312f29-6d43-40ee-896e-7b6f94d3e93f
+      version: -1
+      name: Verify output -  VigilanteATI.ECrimePosts.post
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.ECrimePosts.post
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 864a5350-109f-460a-853f-ba62a5e32a4e
+    type: title
+    task:
+      id: 864a5350-109f-460a-853f-ba62a5e32a4e
+      version: -1
+      name: Infected hosts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: f99228eb-4cd5-461b-8c03-925c7d489f04
+    type: regular
+    task:
+      id: f99228eb-4cd5-461b-8c03-925c7d489f04
+      version: -1
+      name: vigilante-query-infected-host-data
+      description: Query all infected host data. This is the API call you want to
+        use to lookup infected host data using an IP address or a network range.
+      script: '|||vigilante-query-infected-host-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "24"
+      - "25"
+      - "29"
+    scriptarguments:
+      cc_ipaddress: {}
+      days_ago:
+        simple: "10"
+      limit:
+        simple: "4"
+      q_address: {}
+      token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 2c90d969-923e-4fed-8dae-85ceb747a998
+    type: regular
+    task:
+      id: 2c90d969-923e-4fed-8dae-85ceb747a998
+      version: -1
+      name: Verify output -  VigilanteATI.InfectedHost.domain
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.InfectedHost.domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 8c0b5610-bf88-41b6-82e9-c2d9aa6429a6
+    type: regular
+    task:
+      id: 8c0b5610-bf88-41b6-82e9-c2d9aa6429a6
+      version: -1
+      name: Verify output -  VigilanteATI.InfectedHost.ip
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.InfectedHost.ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 4368ce07-3b13-4e4d-88a4-b28749efffbf
+    type: regular
+    task:
+      id: 4368ce07-3b13-4e4d-88a4-b28749efffbf
+      version: -1
+      name: Verify output -  VigilanteATI.GetInfectedHostsToken
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.GetInfectedHostsToken
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: e9391049-45e2-4d54-8c6c-627271fc18ab
+    type: regular
+    task:
+      id: e9391049-45e2-4d54-8c6c-627271fc18ab
+      version: -1
+      name: infoarmor-vigilante-watchlist-add-accounts
+      description: Add account identifiers to your watchlist.
+      script: '|||vigilante-watchlist-add-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      account_identifiers:
+        simple: demisto.com
+      tag: {}
+      type:
+        simple: domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 544dabba-3fd9-4434-8063-5334fc8c75ac
+    type: regular
+    task:
+      id: 544dabba-3fd9-4434-8063-5334fc8c75ac
+      version: -1
+      name: vigilante-get-leak
+      description: ' Retrieves the list of account credentials that belong to a particular
+        leak.'
+      script: '|||vigilante-get-leak'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+      - "14"
+    scriptarguments:
+      domains:
+        simple: gmail.com,yahoo.com
+      leak_id:
+        simple: ${VigilanteATI.Leaks.leak_id}
+      limit:
+        simple: "5"
+      token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: c40d507c-6a7c-4b67-8e70-64eab1d6239b
+    type: regular
+    task:
+      id: c40d507c-6a7c-4b67-8e70-64eab1d6239b
+      version: -1
+      name: Verify output -  VigilanteATI.InfectedHost.c&c
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.InfectedHost.c&c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 2e402c3a-d3f7-42ea-871c-c035dd81cc47
+    type: regular
+    task:
+      id: 2e402c3a-d3f7-42ea-871c-c035dd81cc47
+      version: -1
+      name: vigilante-query-accounts
+      script: '|||vigilante-query-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+      - "34"
+    scriptarguments:
+      days_ago: {}
+      emails:
+        complex:
+          root: VigilanteATI
+          accessor: Leaks.accounts.email
+          transformers:
+          - operator: uniq
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: b647de17-4326-498a-8990-cba8c6893aa4
+    type: regular
+    task:
+      id: b647de17-4326-498a-8990-cba8c6893aa4
+      version: -1
+      name: vigilante-query-domain
+      script: '|||vigilante-query-domains'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+      - "37"
+    scriptarguments:
+      days_ago: {}
+      domain:
+        complex:
+          root: VigilanteATI
+          accessor: Leaks.accounts.domain
+          transformers:
+          - operator: uniq
+      limit:
+        simple: "3"
+      token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: c779db68-fa12-4e7a-87f7-90912a903b43
+    type: regular
+    task:
+      id: c779db68-fa12-4e7a-87f7-90912a903b43
+      version: -1
+      name: Verify output -  VigilanteATI.Account.email
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Account.email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 78cc2c08-b7f4-40d2-8cab-0795ffc5d35c
+    type: regular
+    task:
+      id: 78cc2c08-b7f4-40d2-8cab-0795ffc5d35c
+      version: -1
+      name: Verify output -  VigilanteATI.Account.password
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Account.password
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: b9ccd430-fdf7-4828-8f50-eba3ee545fce
+    type: regular
+    task:
+      id: b9ccd430-fdf7-4828-8f50-eba3ee545fce
+      version: -1
+      name: Verify output -  VigilanteATI.Account.leak_id
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Account.leak_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 193e2886-583c-415d-83bd-ac45b3fc4523
+    type: regular
+    task:
+      id: 193e2886-583c-415d-83bd-ac45b3fc4523
+      version: -1
+      name: Verify output -  VigilanteATI.Domain.domain
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Domain.domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 3ae50076-e77e-467b-82b6-6485b048aa95
+    type: regular
+    task:
+      id: 3ae50076-e77e-467b-82b6-6485b048aa95
+      version: -1
+      name: Verify output -  VigilanteATI.Domain.accounts.email
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Domain.accounts.email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 4a85fcd7-0f41-4c04-8af4-a564a5acfd0c
+    type: regular
+    task:
+      id: 4a85fcd7-0f41-4c04-8af4-a564a5acfd0c
+      version: -1
+      name: Verify output -  VigilanteATI.Domain.accounts.password
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: VigilanteATI.Domain.accounts.password
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3475,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

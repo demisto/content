@@ -132,4 +132,4 @@ dependson:
   - fe-submit-status
 timeout: 960ns
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

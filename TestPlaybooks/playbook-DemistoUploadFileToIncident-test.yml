@@ -1,0 +1,119 @@
+id: DemistoUploadFileToIncident Test
+version: -1
+name: DemistoUploadFileToIncident Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: af7075b4-deb2-4683-81ab-641406f3b134
+    type: start
+    task:
+      id: af7075b4-deb2-4683-81ab-641406f3b134
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 323838d5-68ad-4e96-838b-e6a40bca5f18
+    type: regular
+    task:
+      id: 323838d5-68ad-4e96-838b-e6a40bca5f18
+      version: -1
+      name: Download Image and Add to Context
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: image.png
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Demisto_Logo.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 67ca4bee-2404-4717-8abe-8678f84ea881
+    type: regular
+    task:
+      id: 67ca4bee-2404-4717-8abe-8678f84ea881
+      version: -1
+      name: Upload Downloaded File to War Room
+      scriptName: DemistoUploadFileToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: image.png
+          accessor: EntryID
+      incident_id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

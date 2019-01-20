@@ -324,4 +324,3 @@ outputs:
   type: string
 tests:
   - Test-Detonate URL - Phish.AI
-releaseNotes: "created Detonate URL playbook for Phish.AI"

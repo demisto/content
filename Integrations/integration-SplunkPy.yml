@@ -4,7 +4,7 @@ commonfields:
 name: SplunkPy
 display: SplunkPy
 category: Analytics & SIEM
-image: data:image/png;base64,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
+image: data:image/png;base64,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 # guardrails-disable-line
 description: Run queries on Splunk servers
 detaileddescription: |
   Support fetching incidents from Splunk ES, and query of results by sid
@@ -69,8 +69,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
-  script: |+
+  script: |-
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -84,6 +89,7 @@ script:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+    VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 
     def get_current_splunk_time(splunk_service):
         t = datetime.utcnow() - timedelta(days=3)
@@ -174,7 +180,8 @@ script:
         auth_header = {'Authorization': 'Splunk %s' % sessionKey}
 
         args['output_mode'] = 'json'
-        mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header, verify=False)
+
+        mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header, verify=VERIFY_CERTIFICATE)
 
         return mod_notables.json()
 
@@ -228,14 +235,16 @@ script:
         data = message.get('body', "") if method == 'post' else None
         headers = dict(message.get('headers', []))
         req = urllib2.Request(url, data, headers)
+        context = ssl.create_default_context()
+
+        if VERIFY_CERTIFICATE:
+            context.verify_mode = ssl.CERT_REQUIRED
+        else:
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+
         try:
-            response = urllib2.urlopen(req)
-        except urllib2.URLError, response:
-            # If running Python 2.7.9+, disable SSL certificate validation and try again
-            if sys.version_info >= (2, 7, 9):
-                response = urllib2.urlopen(req, context=ssl._create_unverified_context())
-            else:
-                raise
+            response = urllib2.urlopen(req, context=context)
         except urllib2.HTTPError, response:
             pass # Propagate HTTP errors via the returned response message
         return {
@@ -254,7 +263,8 @@ script:
                 host=demisto.params()['host'],
                 port=demisto.params()['port'],
                 username=demisto.params()['authentication']['identifier'],
-                password=demisto.params()['authentication']['password'])
+                password=demisto.params()['authentication']['password'],
+                verify=VERIFY_CERTIFICATE)
         except urllib2.URLError as e:
             if e.reason.errno == 1 and sys.version_info < (2, 6, 3):
                 pass
@@ -265,7 +275,8 @@ script:
             host=demisto.params()['host'],
             port=demisto.params()['port'],
             username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
+            password=demisto.params()['authentication']['password'],
+            verify=VERIFY_CERTIFICATE)
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -401,7 +412,8 @@ script:
         baseurl = 'https://'+demisto.params()['host']+':'+demisto.params()['port']+'/'
         username=demisto.params()['authentication']['identifier']
         password=demisto.params()['authentication']['password']
-        auth_req = requests.post(baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'}, verify=False)
+        auth_req = requests.post(baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+
         sessionKey = auth_req.json()['sessionKey']
         eventIDs = None
         if demisto.get(demisto.args(), 'eventIDs'):
@@ -413,10 +425,10 @@ script:
         response_info = updateNotableEvents( sessionKey=sessionKey, baseurl=baseurl, comment=demisto.get(demisto.args(), 'comment'), status=status,
             urgency=demisto.get(demisto.args(), 'urgency'),
             owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
-        if not response_info['success']:
-                demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
-                    'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
-                sys.exit(0)
+        if 'success' not in response_info or not response_info['success']:
+            demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],
+                'Contents':"Could not update notable events: "+demisto.args()['eventIDs']+' : '+str(response_info)})
+            sys.exit(0)
         demisto.results('Splunk ES Notable events: '+response_info['message'])
         sys.exit(0)
     if demisto.command() == 'splunk-parse-raw':
@@ -527,4 +539,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "Fix Splunk issue ability to fetch more then 100 notable events per minute"
+releaseNotes: "Unsecure parameter added to inegration & bug fixed for editing notable events"

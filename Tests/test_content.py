@@ -16,6 +16,10 @@ RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
+                            "instance_name argument in conf.json the options are:\n{}"
+
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -110,7 +114,8 @@ def http_request(url, params_dict=None):
 
 
 def get_user_name_from_circle(circleci_token, build_number):
-    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
+    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number,
+                                                                                                     circleci_token)
     res = http_request(url)
 
     user_details = res.get('user', {})
@@ -122,7 +127,8 @@ def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, serve
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
 
-    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
+    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 \
+        else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
 
     if user_id:
         sc.api_call(
@@ -157,19 +163,37 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
-def set_integration_params(demisto_api_key, integrations, secret_params):
+def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
     for integration in integrations:
-        integration_params = [item for item in secret_params if
-                              item["name"] == integration['name']]
+        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+
         if integration_params:
-            integration['params'] = integration_params[0].get('params', {})
-            integration['byoi'] = integration_params[0].get('byoi', True)
+            matched_integration_params = integration_params[0]
+            if len(integration_params) != 1:
+                found_matching_instance = False
+                for item in integration_params:
+                    if item.get('instance_name', 'Not Found') in instance_names:
+                        matched_integration_params = item
+                        found_matching_instance = True
+
+                if not found_matching_instance:
+                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in
+                                               integration_params]
+                    print_error(FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
+                                                                 integration['name'],
+                                                                 '\n'.join(optional_instance_names)))
+                    return False
+
+            integration['params'] = matched_integration_params.get('params', {})
+            integration['byoi'] = matched_integration_params.get('byoi', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
                 'apikey': demisto_api_key,
                 'insecure': True,
             }
+
+    return True
 
 
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
@@ -277,6 +301,7 @@ def main():
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
         integrations_conf = t.get('integrations', [])
+        instance_names_conf = t.get('instance_names', [])
 
         test_message = 'playbook: ' + playbook_id
 
@@ -285,7 +310,10 @@ def main():
         }
 
         if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
+            integrations_conf = [integrations_conf, ]
+
+        if not isinstance(instance_names_conf, list):
+            instance_names_conf = [instance_names_conf, ]
 
         has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
             integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
@@ -314,7 +342,12 @@ def main():
         if has_skipped_integration:
             continue
 
-        set_integration_params(demisto_api_key, integrations, secret_params)
+        are_params_set = set_integration_params(demisto_api_key, integrations,
+                                                secret_params, instance_names_conf, playbook_id)
+        if not are_params_set:
+            failed_playbooks.append(playbook_id)
+            continue
+
         test_message = update_test_msg(integrations, test_message)
 
         run_test(c, failed_playbooks, integrations, playbook_id,

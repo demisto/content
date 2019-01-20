@@ -706,3 +706,6 @@ inputs:
 - key: CriticalGroups
   value: ""
   description: Critical active directory groups DN
+tests:
+  - No test - tested manually
+releaseNotes: "-"

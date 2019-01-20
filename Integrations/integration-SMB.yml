@@ -114,6 +114,5 @@ script:
     description: Download a file from the SMB server
   dockerimage: demisto/pysmb
   runonce: false
-releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

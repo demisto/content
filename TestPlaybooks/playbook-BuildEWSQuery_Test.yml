@@ -50,7 +50,7 @@ tasks:
       stripSubject:
         simple: "true"
       subject:
-        simple: 'RE: RE: FWD: hello RE: world'
+        simple: 'RE: RE: FWD: hello RE: w’orld'
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -77,7 +77,7 @@ tasks:
       - "3"
     scriptarguments:
       expectedValue:
-        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: world" AND Received:"this
+        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this
           week"'
       fields: {}
       path:

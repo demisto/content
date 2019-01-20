@@ -167,7 +167,8 @@ script:
                 Body: body
 
             },
-            params.insecure
+            params.insecure,
+            params.proxy
         );
 
         res = parseResponse(res);

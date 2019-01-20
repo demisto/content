@@ -11,6 +11,11 @@ script: |-
   start_time = demisto.get(d_args, 'startTime')
   correlation_id = demisto.get(d_args, 'qid')
   additional_query_fields = demisto.get(d_args,'additionalQueryFields')
+  # Try converting from date string to timestamp
+  try:
+      start_time = date_to_timestamp(str(start_time), '%Y-%m-%dT%H:%M:%S.%f000Z')
+  except:
+      pass
 
   d_args["query_expression"] = QUERY.format(correlation_id,additional_query_fields,offense_id,start_time)
 
@@ -18,7 +23,7 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents')
+      data = demisto.get(resp[0],'Contents.events')
 
       if not data:
           resp[0]['HumanReadable'] = "No logs were found for correlation id {0}".format(correlation_id)
@@ -139,6 +144,5 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
-releaseNotes: "-"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test

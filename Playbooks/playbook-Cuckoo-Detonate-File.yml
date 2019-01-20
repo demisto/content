@@ -353,7 +353,7 @@ inputs:
 - key: File
   value:
     simple: ${File}
-  required: true
+  required: false
   description: The file to detonate
 - key: interval
   value:
@@ -430,6 +430,5 @@ outputs:
   description: File's MD5
 - contextPath: File.Extension
   description: File's Extension
-releaseNotes: "-"
 tests:
   - CuckooTest
