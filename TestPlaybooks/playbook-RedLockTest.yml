@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5e429589-d69a-4ae6-8577-8347bb9bcfd2
+    taskid: a586909f-cbb7-4d72-860e-219b2b7a7b72
     type: start
     task:
-      id: 5e429589-d69a-4ae6-8577-8347bb9bcfd2
+      id: a586909f-cbb7-4d72-860e-219b2b7a7b72
       version: -1
       name: ""
       iscommand: false
@@ -21,16 +21,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 017f5456-c8a7-44a3-876c-286f5ea3d3db
+    taskid: 2d1678e6-819b-424f-8bb8-816a01c31d77
     type: regular
     task:
-      id: 017f5456-c8a7-44a3-876c-286f5ea3d3db
+      id: 2d1678e6-819b-424f-8bb8-816a01c31d77
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -50,16 +51,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: bd050756-d655-4bae-845e-49387668b2ac
+    taskid: 8914bb6a-d9be-43bd-85dc-130a48b3feda
     type: regular
     task:
-      id: bd050756-d655-4bae-845e-49387668b2ac
+      id: 8914bb6a-d9be-43bd-85dc-130a48b3feda
       version: -1
       name: Retrieve all open alerts between 2 given dates
       description: Check IP reputation (when information is available, returns a JSON
@@ -98,16 +100,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 9f255a7b-c1ab-4d57-894f-c95470ab405d
+    taskid: f7f00d46-71fb-4943-87bc-5471d0f10e6a
     type: regular
     task:
-      id: 9f255a7b-c1ab-4d57-894f-c95470ab405d
+      id: f7f00d46-71fb-4943-87bc-5471d0f10e6a
       version: -1
       name: get alert P-251 status
       script: '|||redlock-get-alert-details'
@@ -126,16 +129,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: 69a75a43-d270-4fc5-869a-b7d304b5e79a
+    taskid: 37488f7a-c6e0-438a-888f-d96ef00d81b7
     type: condition
     task:
-      id: 69a75a43-d270-4fc5-869a-b7d304b5e79a
+      id: 37488f7a-c6e0-438a-888f-d96ef00d81b7
       version: -1
       name: is status open?
       type: condition
@@ -161,16 +165,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: 445a0039-f9b8-4b06-8ee6-1e160f3ecdf6
+    taskid: 37a0987f-eccc-41d5-89cc-7f987917a128
     type: regular
     task:
-      id: 445a0039-f9b8-4b06-8ee6-1e160f3ecdf6
+      id: 37a0987f-eccc-41d5-89cc-7f987917a128
       version: -1
       name: dismiss the alert
       script: '|||redlock-dismiss-alerts'
@@ -179,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "24"
     scriptarguments:
       alert-id:
         simple: P-251
@@ -209,16 +214,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: a4648276-9af9-4b41-811a-da27b32729cc
+    taskid: 8481993b-5c2a-4e36-8ab5-da34951deb42
     type: regular
     task:
-      id: a4648276-9af9-4b41-811a-da27b32729cc
+      id: 8481993b-5c2a-4e36-8ab5-da34951deb42
       version: -1
       name: reopen the alert
       script: '|||redlock-reopen-alerts'
@@ -227,7 +233,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "23"
     scriptarguments:
       alert-id:
         simple: P-251
@@ -254,16 +260,17 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: cf672c28-c34e-4ccb-87bf-57e5bb5f722f
+    taskid: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
     type: regular
     task:
-      id: cf672c28-c34e-4ccb-87bf-57e5bb5f722f
+      id: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
       version: -1
       name: get alert P-251 status
       script: '|||redlock-get-alert-details'
@@ -282,16 +289,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: ac7ca920-6453-4a2e-8af9-42c9b6378802
+    taskid: 66d57546-2be4-44c2-85da-bb8d8e65479e
     type: condition
     task:
-      id: ac7ca920-6453-4a2e-8af9-42c9b6378802
+      id: 66d57546-2be4-44c2-85da-bb8d8e65479e
       version: -1
       name: verify that P-251 is dismissed
       type: condition
@@ -315,16 +323,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1830
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
-    taskid: 1033d1bc-bda6-4a03-823c-731817e7857a
+    taskid: 3c767729-75c6-4a1d-8a3a-54af50369164
     type: regular
     task:
-      id: 1033d1bc-bda6-4a03-823c-731817e7857a
+      id: 3c767729-75c6-4a1d-8a3a-54af50369164
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -344,16 +353,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
-    taskid: ed45d04a-0f18-4e7b-842a-75c85c33f71b
+    taskid: 525f5447-c57b-43b0-8372-f574e3257dde
     type: condition
     task:
-      id: ed45d04a-0f18-4e7b-842a-75c85c33f71b
+      id: 525f5447-c57b-43b0-8372-f574e3257dde
       version: -1
       name: Check for response
       type: condition
@@ -380,16 +390,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 580
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
-    taskid: c9fcc93e-da98-4e6d-8092-ed6cdfe1f907
+    taskid: 0c5ef584-57d1-45f7-858d-344ef3aab3e5
     type: title
     task:
-      id: c9fcc93e-da98-4e6d-8092-ed6cdfe1f907
+      id: 0c5ef584-57d1-45f7-858d-344ef3aab3e5
       version: -1
       name: Test Completed
       type: title
@@ -400,10 +411,69 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2010
+          "y": 2295
         }
       }
     note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: e66c985c-5291-4111-8a20-f0777ba5ac31
+    type: regular
+    task:
+      id: e66c985c-5291-4111-8a20-f0777ba5ac31
+      version: -1
+      name: wait 5 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 0d7af680-6e89-443d-8e64-246e426279e9
+    type: regular
+    task:
+      id: 0d7af680-6e89-443d-8e64-246e426279e9
+      version: -1
+      name: wait 5 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -412,12 +482,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2010,
+        "height": 2310,
         "width": 492.5,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
