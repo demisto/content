@@ -9,8 +9,6 @@ from subprocess import Popen, PIPE, call
 
 import requests
 
-#sys.path.append('/Users/benparadise/dev/demisto-py')
-
 import demisto
 from slackclient import SlackClient
 from test_integration import test_integration
@@ -146,7 +144,8 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name) # TODO: Reenable before merge
+        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+        # TODO: Reenable before merge
     stop_proxy(c, public_ip, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
