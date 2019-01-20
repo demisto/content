@@ -742,7 +742,9 @@ script:
 
     def delete_mail_command():
         args = demisto.args()
-        permanent =bool(strtobool(args.get('permanent', 'false')))
+        user_id = args['user-id']
+        _id = args['message-id']
+        permanent = bool(strtobool(args.get('permanent', 'false')))
 
         return delete_mail(user_id, _id, permanent)
 
@@ -1706,5 +1708,6 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
 - GmailTest
