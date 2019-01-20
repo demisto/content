@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "StringContainsArray_test"
+        },
+        {
             "integrations": "ThreatMiner",
             "playbookID": "ThreatMiner-Test"
         },
@@ -911,6 +914,11 @@
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
 
+        },
+        {
+            "playbookID": "MaxMind Test",
+            "integrations": "MaxMind GeoIP2"
+          
         },
         {
             "playbookID": "Test_Sagemaker",
