@@ -15155,7 +15155,7 @@
         }, 
         {
             "MaxMind Test": {
-                "name": "MaxMind Test Playbook", 
+                "name": "MaxMind Test", 
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 

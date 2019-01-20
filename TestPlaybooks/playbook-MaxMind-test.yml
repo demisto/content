@@ -1,6 +1,6 @@
 id: MaxMind Test
 version: -1
-name: MaxMind Test Playbook
+name: MaxMind Test
 starttaskid: "0"
 tasks:
   "0":
