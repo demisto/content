@@ -41,7 +41,7 @@ script:
         root, xml = awis(domain)
         dbot_ec = defaultdict()
         dom_ec = defaultdict()
-        # Wrapping in Try Except since when no results are found, endpoint returns 404
+        # Wrapping in Try Except since when no results are found, endpoint returns a 404
         try:
             domain_res = root.find("SD").attrib['HOST']
             rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
