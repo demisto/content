@@ -87,7 +87,7 @@ script:
 
 
     def calculate_freshness_time(freshness):
-        t = datetime.datetime.now() - datetime.timedelta(days=7)
+        t = datetime.datetime.now() - datetime.timedelta(days=freshness)
         return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
