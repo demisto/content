@@ -27,18 +27,25 @@ script:
     THRESHOLD = int(demisto.params().get('threshold'))
 
 
+    """HELPER FUNCTIONS"""
+    def get_xml(domain):
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%domain).read()
+        return xml
+
+
     """MAIN FUNCTIONS"""
     def awis(domain):
-        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%domain).read()
+        xml = get_xml(domain)
         root = ET.fromstring(xml)
-        return root, xml
+        return root
 
 
     """COMMAND FUNCTIONS"""
     def awis_command():
         domain = demisto.args().get('domain')
         dbot_score_text = 'unkown'
-        root, xml = awis(domain)
+        xml = get_xml(domain)
+        root = awis(domain)
         dbot_ec = defaultdict()
         dom_ec = defaultdict()
         # Wrapping in Try Except since when no results are found, endpoint returns 404
