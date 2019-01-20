@@ -43,7 +43,7 @@ script:
     """COMMAND FUNCTIONS"""
     def alexa_domain_command():
         domain = demisto.args().get('domain')
-        dbot_score_text = 'unkown'
+        dbot_score_text = 'unknown'
         xml = get_xml(domain)
         root = alexa_domain(domain)
         dbot_ec = defaultdict()
@@ -73,7 +73,7 @@ script:
             'DBotScore': dbot_ec
         }
         hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
-                     'while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
+                     ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
         demisto.results({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['markdown'],
