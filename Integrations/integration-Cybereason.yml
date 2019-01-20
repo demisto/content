@@ -216,9 +216,9 @@ script:
         data = response['data'].get('resultIdToElementDataMap')
         if not data:
             return_error('Could not find machine')
-        for guid in data:
-            simple_values = data[guid]['simpleValues']
-            pylum_id = simple_values['pylumId']['values'][0]
+        guid = data.keys()[0]
+        simple_values = data[guid]['simpleValues']
+        pylum_id = simple_values['pylumId']['values'][0]
         return pylum_id
 
     def get_machine_guid(machine_name):
