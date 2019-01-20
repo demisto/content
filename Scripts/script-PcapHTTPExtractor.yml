@@ -66,7 +66,6 @@ script: |-
 
       :param file_name: find by file name.
       :param extensions:  filter more by the file extension.
-      :param exit: should exit if there is an error.
       :return: the found entryID
       """
       entries = demisto.executeCommand('getEntries', {})
@@ -101,7 +100,7 @@ script: |-
       # Get the pcap file from arguments
       entry_id = None
       if 'pcapFileName' in demisto.args() \
-              and not 'entryID' in demisto.args():
+              and 'entryID' not in demisto.args():
 
           PCAP_FILE = demisto.args()["pcapFileName"]
           entry_id = find_entry_id_by_name(PCAP_FILE, [".pcap", ".cap", ".pcapng"])
@@ -112,7 +111,7 @@ script: |-
 
       res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
-      if len(res) > 1 and res[0]['Type'] == entryTypes['error']:
+      if len(res) > 0 and res[0]['Type'] == entryTypes['error']:
           return_error('Failed to get the file path for entry: ' + entry_id)
 
       return res, entry_id
@@ -128,7 +127,8 @@ script: |-
       try:
           http_object_tshark = capture_object.http.__dict__["_all_fields"]
       except KeyError:
-          return '{"error": "No readable result"}'
+          return_error('No readable result')
+          sys.exit(0)
 
       # Remove unecessary attributes of the object
       blacklist_keys = ["_ws", "http.content_length_header",
@@ -218,9 +218,10 @@ script: |-
       return key_name
 
 
-  def fix_http_keys(http_flows):
+  def fix_http_keys(http_flows, context_filter=False):
       """
       Fixes the http_flows's keys to abide the Demisto conventions.
+      :param context_filter: if True will strip down more keys for a slimmer context output.
       :param http_flows: a list of http packets
       :return: the object containing all of the filtered and formatted flows.
       """
@@ -229,13 +230,17 @@ script: |-
                           "http.response.version", "http.date", "http.last_modified",
                           "http.request.uri", "http.request.full_uri",
                           "http.request.method", "http.file_data", "http.accept",
-                          "http.content_type"]
+                          "http.content_type", "http.server"]
+
+      extra_keys = ["http.content_length", ]
+
+      if not context_filter:
+          relevant_context += extra_keys
 
       allowed_contect_types = ("text", "application/json", "multipart/form-data",
                                "application/xml", "application/xhtml+xml",
                                "application/ld+json", "application/javascript",
                                "multipart/alternative", "application/x-www-form-urlencoded")
-
 
       context_list = []
       flow_index = 0
@@ -252,11 +257,16 @@ script: |-
           # Allow only whitelist of content
           if "HttpContentType" in cd:
               if not cd["HttpContentType"].startswith(allowed_contect_types):
-                  cd["HttpContentType"] = "Unsupported Content Type"
+                  if "HttpFileData" in cd and len(cd["HttpFileData"]) > 0:
+                      pass
+                      # Download the file via tcp_reassembled_data.replace(":","")
+                      #con = demisto.results(
+                      #    fileResult("HTTP-{}-file.raw".format(flow_index), str.encode(cd["HttpFileData"])))
 
           context_list.append(cd)
 
       return context_list
+
 
   if __name__ == "builtins":
       try:
@@ -269,6 +279,7 @@ script: |-
           # Work on the pcap file and return a result
           http_flows = parse_pcap_http(pcap_file_path_in_container)
 
+          # Cut results according to the user args.
           if START:
               http_flows = http_flows[int(START):]
           if LIMIT:
@@ -286,10 +297,10 @@ script: |-
       except Exception as ex:
           import traceback
 
-          return_error("Error occurred while parsing output from command. Exception info:\n" \
+          return_error("Error occurred while parsing output from command. Exception info:\n"
                        + str(ex) + "\n\nTrace:\n" + str(traceback.format_exc()))
 system: false
-tags: [pcap, http, pcapng]
+tags: [pcap, http]
 timeout: '0'
 type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.98
