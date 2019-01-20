@@ -557,7 +557,7 @@ script:
             },
             'Label': response.get('labels')
         }
-        md = tableToMarkdown('Google Cloud Project Created', context)
+        md = tableToMarkdown('Google Cloud Project Successfully Created', context)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -606,17 +606,19 @@ script:
                 },
                 'Label': response.get('labels')
             }
-            success_msg = 'The lifecycleState attribute of Project {} has been set to DELETE_REQUESTED'.format(project_id)
+            md = tableToMarkdown('Project State Successfully Set To DELETE_REQUESTED', context)
             demisto.results({
                 'Type': entryTypes['note'],
-                'Contents': success_msg,
-                'ContentsFormat': formats['text'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
                 'EntryContext': {
                     'GRM.Project(val.ID && val.ID === obj.ID)': context
                 }
             })
         else:
-            demisto.results('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+            return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
     def undelete_project(project_id):
@@ -655,17 +657,19 @@ script:
                 },
                 'Label': response.get('labels')
             }
-            success_msg = 'The lifecycleState attribute of Project {} has been set to ACTIVE'.format(project_id)
+            md = tableToMarkdown('Project State Successfully Set To ACTIVE', context)
             demisto.results({
                 'Type': entryTypes['note'],
-                'Contents': success_msg,
-                'ContentsFormat': formats['text'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
                 'EntryContext': {
                     'GRM.Project(val.ID && val.ID === obj.ID)': context
                 }
             })
         else:
-            demisto.results('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+            return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
     def get_project(project_id):
@@ -708,7 +712,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'GRM.Project(val.ID && val.ID == obj.ID)': context
+                'GRM.Project(val.ID && val.ID === obj.ID)': context
             }
         })
 
@@ -731,7 +735,7 @@ script:
         returns:
             Project resource objects that are visible to the user and satisfy the specified filter
         """
-        filter_list = demisto.args()['filter'] if 'filter' in demisto.args() else None
+        filter_list = demisto.args().get('filter') if 'filter' in demisto.args() else None
         response = list_projects(filter_list)
         contexts = []
         for project in response.get('projects', []):
@@ -749,7 +753,8 @@ script:
                 'Label': project.get('labels')
             }
             contexts.append(context)
-        md = tableToMarkdown("Projects", contexts)
+        title = "Projects Filtered by '{}'".format(filter_list) if filter_list else "All Projects"
+        md = tableToMarkdown(title, contexts)
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -770,7 +775,6 @@ script:
         return operation
 
 
-    # Does not work How I would think it would ---- NEEDS ATTENTION
     def update_project_command():
         """
         Updates the attributes of the Project identified by the specified projectId.
@@ -797,7 +801,7 @@ script:
         returns:
             The updated Project resource object
         """
-        project_id = demisto.args()['projectId']
+        project_id = demisto.args().get('projectId')
         project_body = demisto.args()
         project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
