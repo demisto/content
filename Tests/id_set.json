@@ -4827,6 +4827,14 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "HighlightWords": {
+                "name": "HighlightWords", 
+                "tests": [
+                    "HighlightWords_Test"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -15490,6 +15498,16 @@
                 ], 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "HighlightWords_Test": {
+                "name": "HighlightWords - Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "Set", 
+                    "HighlightWords"
                 ]
             }
         }
