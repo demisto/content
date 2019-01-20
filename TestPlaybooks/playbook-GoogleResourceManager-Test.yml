@@ -1,5 +1,5 @@
 id: GoogleResourceManager-Test
-version: -1
+version: 48
 name: GoogleResourceManager-Test
 starttaskid: "0"
 tasks:
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 31eb5486-23da-4b5e-883d-566cc66e8673
+    taskid: 2aec034d-1527-4364-800b-9bf123d5704c
     type: regular
     task:
-      id: 31eb5486-23da-4b5e-883d-566cc66e8673
+      id: 2aec034d-1527-4364-800b-9bf123d5704c
       version: -1
       name: grm-create-project
       description: Create Project Resource
@@ -52,6 +52,10 @@ tasks:
       parent.id:
         simple: "690006273490"
       parent.type:
+        simple: organization
+      parent_id:
+        simple: "690006273490"
+      parent_type:
         simple: organization
       projectId:
         complex:
@@ -789,10 +793,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: 3a0eb8b4-9051-4096-8c55-54208692a4e2
+    taskid: dffa3e0f-8736-4b5e-809b-741024b81c55
     type: regular
     task:
-      id: 3a0eb8b4-9051-4096-8c55-54208692a4e2
+      id: dffa3e0f-8736-4b5e-809b-741024b81c55
       version: -1
       name: grm-update-project
       description: Updates the attributes of the Project identified by the specified
@@ -812,6 +816,10 @@ tasks:
       parent.id:
         simple: "690006273490"
       parent.type:
+        simple: organization
+      parent_id:
+        simple: "690006273490"
+      parent_type:
         simple: organization
       projectId:
         simple: ${ProjectId.NeedsProcessing}
