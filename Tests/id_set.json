@@ -4836,7 +4836,7 @@
                     "getFilePath"
                 ], 
                 "tests": [
-                    "blockip_test_playbook"
+                    "Test-PcapHTTPExtractor"
                 ]
             }
         }
@@ -15502,6 +15502,16 @@
                 ], 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Test-PcapHTTPExtractor": {
+                "name": "Test-PcapHTTPExtractor", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http"
                 ]
             }
         }
