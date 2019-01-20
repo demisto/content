@@ -11057,7 +11057,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
