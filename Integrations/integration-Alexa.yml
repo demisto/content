@@ -29,23 +29,23 @@ script:
 
     """HELPER FUNCTIONS"""
     def get_xml(domain):
-        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%domain).read()
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
         return xml
 
 
     """MAIN FUNCTIONS"""
-    def awis(domain):
+    def alexa_domain(domain):
         xml = get_xml(domain)
         root = ET.fromstring(xml)
         return root
 
 
     """COMMAND FUNCTIONS"""
-    def awis_command():
+    def alexa_domain_command():
         domain = demisto.args().get('domain')
         dbot_score_text = 'unkown'
         xml = get_xml(domain)
-        root = awis(domain)
+        root = alexa_domain(domain)
         dbot_ec = defaultdict()
         dom_ec = defaultdict()
         # Wrapping in Try Except since when no results are found, endpoint returns 404
@@ -85,7 +85,7 @@ script:
 
     def test_module_command():
         domain = 'google.com'
-        root = awis(domain)
+        root = alexa_domain(domain)
         domain_res = root.find("SD").attrib['HOST']
         rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
         if rank == '1':
@@ -101,7 +101,7 @@ script:
             test_result = test_module_command()
             demisto.results(test_result)
         if demisto.command() == 'domain':
-            awis_command()
+            alexa_domain_command()
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
