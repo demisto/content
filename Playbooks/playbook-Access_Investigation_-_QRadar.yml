@@ -338,6 +338,6 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "configure 'no test' for the playbook"
 tests:
   - No test
+releaseNotes: Add 'No test' to playbook
