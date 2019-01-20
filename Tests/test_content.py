@@ -9,6 +9,8 @@ from subprocess import Popen, PIPE, call
 
 import requests
 
+#sys.path.append('/Users/benparadise/dev/demisto-py')
+
 import demisto
 from slackclient import SlackClient
 from test_integration import test_integration
@@ -113,6 +115,13 @@ def stop_proxy(c, public_ip, p):
 def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
+
+    # Configure integrations to work with mock
+    for elem in integrations:
+        for param in ('proxy', 'insecure', 'unsecure'):
+            if param in elem['params']:
+                elem['params'][param] = True
+
     if not os.path.isfile("{}.mock".format(playbook_id)):
         print "Mock file does not exist, running without mock."
     else:
@@ -137,7 +146,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name) # TODO: Reenable before merge
     stop_proxy(c, public_ip, proxy_proc)
     print '------ Test %s end ------' % (test_message,)
 
