@@ -73,7 +73,8 @@ def get_entry_from_args():
         return_error('You must set pcapFileName or entryID when executing PcapHTTPExtract script')
 
     res = demisto.executeCommand('getFilePath', {'id': entry_id})
-    if res[0]['Type'] == entryTypes['error']:
+
+    if len(res) > 1 and res[0]['Type'] == entryTypes['error']:
         return_error('Failed to get the file path for entry: ' + entry_id)
 
     return res, entry_id
