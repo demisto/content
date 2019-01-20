@@ -1,4 +1,4 @@
-FROM demisto/python3
+FROM python:3-alpine3.8
 
 COPY requirements.txt .
 
