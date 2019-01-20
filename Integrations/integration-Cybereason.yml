@@ -217,6 +217,7 @@ script:
 
         if not data:
             return_error('Could not find machine')
+
         for guid in data:
             simple_values = data[guid]['simpleValues']
             pylum_id = simple_values['pylumId']['values'][0]
