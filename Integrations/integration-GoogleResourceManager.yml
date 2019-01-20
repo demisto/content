@@ -222,7 +222,8 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: 'Field representing the resource type the parent.id is for. At present, the valid types are: "organization" and "folder".'
+      description: 'Field representing the resource type the parent.id is for. At
+        present, the valid types are: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -291,10 +292,10 @@ script:
     - default: false
       defaultValue: ''
       description: "Used to filter the Organizations to return in the response. Filter\
-         \ rules are case-insensitive.\n\nOrganizations may be filtered by `owner.directoryCustomerId`\
-         \ or by `domain`, where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
-         Organizations with\nowner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
-         Organizations corresponding to the domain google.com."
+        \ rules are case-insensitive.\n\nOrganizations may be filtered by `owner.directoryCustomerId`\
+        \ or by `domain`, where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
+        Organizations with\nowner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
+        Organizations corresponding to the domain google.com."
       isArray: false
       name: filter
       predefined: []
