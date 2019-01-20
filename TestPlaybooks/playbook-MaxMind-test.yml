@@ -84,8 +84,6 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
-      using:
-        simple: MaxMind GeoIP2_instance_1
       wait: {}
     separatecontext: false
     view: |-
