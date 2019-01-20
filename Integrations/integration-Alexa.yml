@@ -31,14 +31,14 @@ script:
     def awis(domain):
         xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url=%s'%domain).read()
         root = ET.fromstring(xml)
-        return root
+        return root, xml
 
 
     """COMMAND FUNCTIONS"""
     def awis_command():
         domain = demisto.args().get('domain')
         dbot_score_text = 'unkown'
-        root = awis(domain)
+        root, xml = awis(domain)
         dbot_ec = defaultdict()
         dom_ec = defaultdict()
         # Wrapping in Try Except since when no results are found, endpoint returns 404
@@ -65,12 +65,12 @@ script:
             'Domain(val.Name && val.Name == obj.Name)': dom_ec,
             'DBotScore': dbot_ec
         }
-        hr_string = ('The Alexa rank of {} is {} and has been marked as {} '
+        hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
                      'while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
         demisto.results({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['markdown'],
-                    'Contents': ec,
+                    'Contents': xml2json(xml),
                     'HumanReadable': hr_string,
                     'EntryContext': ec
         })
