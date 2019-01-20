@@ -120,7 +120,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
             if param in elem['params']:
                 elem['params'][param] = True
 
-    if not os.path.isfile("{}.mock".format(playbook_id)):
+    if not os.path.isfile("Mocks/{}.mock".format(playbook_id)):
         print "Mock file does not exist, running without mock."
     else:
         proxy_proc = start_proxy(c, public_ip, playbook_id)
