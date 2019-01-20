@@ -11058,7 +11058,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
@@ -11576,6 +11575,17 @@
                 ], 
                 "tests": [
                     "MISP V2 Test"
+                ]
+            }
+        }, 
+        {
+            "MaxMind GeoIP2": {
+                "name": "MaxMind GeoIP2", 
+                "commands": [
+                    "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
                 ]
             }
         }
@@ -15300,6 +15310,18 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "MaxMind Test": {
+                "name": "MaxMind Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "ip"
                 ]
             }
         }, 
