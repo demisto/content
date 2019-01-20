@@ -340,6 +340,10 @@
             "integrations": "Gmail"
         },
         {
+            "playbookID": "Gmail Convert Html Test",
+            "integrations": "Gmail"
+        },
+        {
             "playbookID": "TestParseCSV"
         },
         {
