@@ -11577,6 +11577,17 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "MaxMind GeoIP2": {
+                "name": "MaxMind GeoIP2", 
+                "commands": [
+                    "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15299,6 +15310,18 @@
                     "symantec-mss-incidents-list", 
                     "symantec-mss-update-incident", 
                     "symantec-mss-get-incident"
+                ]
+            }
+        }, 
+        {
+            "MaxMind Test": {
+                "name": "MaxMind Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "ip"
                 ]
             }
         }, 
