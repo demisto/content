@@ -214,8 +214,10 @@ script:
         cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
         data = response['data'].get('resultIdToElementDataMap')
+
         if not data:
             return_error('Could not find machine')
+
         guid = data.keys()[0]
         simple_values = data[guid]['simpleValues']
         pylum_id = simple_values['pylumId']['values'][0]
