@@ -1,0 +1,171 @@
+id: Get File Sample By Hash - Generic - Test
+version: -1
+name: Get File Sample By Hash - Generic - Test
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d944cbef-0303-4b35-8a09-dc512c06246d
+    type: start
+    task:
+      id: d944cbef-0303-4b35-8a09-dc512c06246d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 36989941-e92b-453d-8d78-b7a24d7de5b9
+    type: regular
+    task:
+      id: 36989941-e92b-453d-8d78-b7a24d7de5b9
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: d3f6549d-5871-4da4-8ad4-71f1eaa63f46
+    type: regular
+    task:
+      id: d3f6549d-5871-4da4-8ad4-71f1eaa63f46
+      version: -1
+      name: Add hash to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File.SHA256
+      value:
+        simple: 5da547e87d6ef12349fb4dbba9cf3146a358e284f72361dd07bbabfc95b0bac3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: cacb53f4-6aec-44d7-80d0-1a4baa875c57
+    type: regular
+    task:
+      id: cacb53f4-6aec-44d7-80d0-1a4baa875c57
+      version: -1
+      name: Verify output
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: a44f4c3a-e5b2-41c1-8a88-d620170da175
+    type: playbook
+    task:
+      id: a44f4c3a-e5b2-41c1-8a88-d620170da175
+      version: -1
+      name: Get File Sample By Hash - Generic
+      playbookName: Get File Sample By Hash - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      MD5: {}
+      SHA256:
+        simple: ${inputs.SHA256}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    simple: ${File.SHA256}
+  required: false
+  description: ""
+outputs: []
