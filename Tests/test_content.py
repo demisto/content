@@ -104,7 +104,7 @@ def start_proxy(c, public_ip, playbook_id, record=False):
 def stop_proxy(c, public_ip, p):
     configure_proxy(c, '')
     p.send_signal(signal.SIGINT)
-    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "rm", "-rf" "/tmp/_MEI*"])
+    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "rm", "-rf", "/tmp/_MEI*"])
     print "proxy outputs:"  # DEBUG
     print p.stdout.read()   # DEBUG
     print p.stderr.read()   # DEBUG
@@ -347,6 +347,8 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
+
+    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "mkdir", "Mocks"])
 
     # TODO: download mock files from repo (only for tests to run)
     # TODO: send files to remote machine
