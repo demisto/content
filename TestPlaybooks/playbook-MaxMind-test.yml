@@ -1,6 +1,6 @@
 id: MaxMind Test
-version: 6
-name: MaxMind Test
+version: -1
+name: MaxMind Test Playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -61,10 +61,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 6ac59040-2f3f-459c-89d9-5f156bd9c5ef
+    taskid: 8784789e-0686-4d2d-8a42-c0970a8aad6c
     type: regular
     task:
-      id: 6ac59040-2f3f-459c-89d9-5f156bd9c5ef
+      id: 8784789e-0686-4d2d-8a42-c0970a8aad6c
       version: -1
       name: ip
       description: Check IP reputation (when information is available, returns a JSON
@@ -77,10 +77,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
       using:
         simple: MaxMind GeoIP2_instance_1
+      wait: {}
     separatecontext: false
     view: |-
       {
