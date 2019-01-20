@@ -1,8 +1,45 @@
-commonfields:
-  id: PcapHTTPExtractor
-  version: -1
+args:
+- default: false
+  defaultValue: ''
+  description: get file entry from file name
+  isArray: false
+  name: pcapFileName
+  predefined: []
+  required: false
+  secret: false
+- default: true
+  defaultValue: ''
+  description: file entry from warroom
+  isArray: false
+  name: entryID
+  predefined: []
+  required: false
+  secret: false
+- default: false
+  defaultValue: '50'
+  description: limit the output of the pcap output flows.
+  isArray: false
+  name: limit
+  predefined: []
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0'
+  description: index of where to output flows.
+  isArray: false
+  name: start
+  predefined: []
+  required: false
+  secret: false
+comment: An automated script that allows to parse and extract http flows from a pcap/pcapng
+  file.
+commonfields: {id: PcapHTTPExtractor, version: -1}
+enabled: true
 name: PcapHTTPExtractor
-script: |
+outputs:
+- {contextPath: PcapHTTPExtractor.Flows, description: Flows extracted from the pcap
+    file., type: String}
+script: |-
   import pyshark
   from datetime import datetime
 
@@ -45,7 +82,12 @@ script: |
               break
 
       if not found_entry_id:
-          return_error(demisto.args()['pcapFileName'] + ' no such file in war room')
+          demisto.results({"Type": entryTypes["note"],
+                          "ContentsFormat": formats["markdown"],
+                          "Contents": "### No file found",
+                          "EntryContext": {"PcapHTTPExtractor.Flows": []}
+          })
+          sys.exit(0)
 
       return found_entry_id
 
@@ -139,7 +181,7 @@ script: |
       markdown_result = ""
 
       for i, packet in enumerate(http_flows):
-          has_body = "http.file_data" in packet
+          has_body = "HttpFileData" in packet
           if not has_body:
               row = result_nobody_template.format(
                   res=tableToMarkdown("HTTP #{}".format(i + 1),
@@ -153,7 +195,7 @@ script: |
                                       packet,
                                       packet.keys()
                                       ),
-                  body=packet["http.file_data"]
+                  body=packet["HttpFileData"]
               )
 
           markdown_result += row
@@ -176,30 +218,42 @@ script: |
       return key_name
 
 
-  def get_context_entries(http_flows):
+  def fix_http_keys(http_flows):
       """
-      Returns a context object for Demisto playbooks
-       w/ all relevant data.
+      Fixes the http_flows's keys to abide the Demisto conventions.
       :param http_flows: a list of http packets
-      :return: a string of markdown
+      :return: the object containing all of the filtered and formatted flows.
       """
 
       relevant_context = ["http.host", "http.user_agent", "http.response.code",
                           "http.response.version", "http.date", "http.last_modified",
                           "http.request.uri", "http.request.full_uri",
-                          "http.request.method", "http.file_data"]
+                          "http.request.method", "http.file_data", "http.accept",
+                          "http.content_type"]
+
+      allowed_contect_types = ("text", "application/json", "multipart/form-data",
+                               "application/xml", "application/xhtml+xml",
+                               "application/ld+json", "application/javascript",
+                               "multipart/alternative","application/x-www-form-urlencoded",
+                               )
 
       context_list = []
       flow_index = 0
       for flow in http_flows:
           flow_index += 1
-          cd = {"http_index": flow_index}
+          cd = {"ResultIndex": flow_index}
 
           cd.update({_fix_key(k.split(".")): v for k, v in flow.items() if k in relevant_context})
 
           # Convert to ISO time
-          if "http.date" in cd:
-              cd['http.date'] = datetime.strptime(cd['http.date'], '%a, %d %b %Y %H:%M:%S %Z').isoformat()
+          if "HttpDate" in cd:
+              cd['HttpDate'] = datetime.strptime(cd['HttpDate'], '%a, %d %b %Y %H:%M:%S %Z').isoformat()
+
+          # Allow only whitelist of content
+          if "HttpContentType" in cd:
+              if not cd["HttpContentType"].startswith(allowed_contect_types):
+                  cd["HttpContentType"] = "Unsupported Content Type"
+
           context_list.append(cd)
 
       return context_list
@@ -217,17 +271,17 @@ script: |
           http_flows = parse_pcap_http(pcap_file_path_in_container)
 
           if START:
-              http_flows = http_flows[int(LIMIT):]
+              http_flows = http_flows[int(START):]
           if LIMIT:
               http_flows = http_flows[:int(LIMIT)]
 
+          http_flows = fix_http_keys(http_flows)
           markdown_results = markdown_packets(http_flows)
-
 
           demisto.results({"Type": entryTypes["note"],
                            "ContentsFormat": formats["markdown"],
                            "Contents": markdown_results,
-                           "EntryContext": {"PcapHTTPExtractor.Flows": get_context_entries(http_flows)}
+                           "EntryContext": {"PcapHTTPExtractor.Flows": http_flows}
                            })
 
       except Exception as ex:
@@ -235,32 +289,11 @@ script: |
 
           return_error("Error occurred while parsing output from command. Exception info:\n" \
                        + str(ex) + "\n\nTrace:\n" + str(traceback.format_exc()))
+system: false
+tags: [pcap, http, pcapng, Utility]
+timeout: '0'
 type: python
-tags:
-  - pcap
-  - http
-  - pcapng
-  - Utility
-comment: An automated script that allows to parse and extract http flows from a pcap/pcapng file.
-enabled: true
-args:
-- name: pcapFileName
-  description: get file entry from file name
-- name: entryID
-  default: true
-  description: file entry from warroom
-- name: limit
-  description: limit the output of the pcap output flows.
-  defaultValue: "50"
-- name: start
-  description: index of where to output flows.
-  defaultValue: "0"
-outputs:
-- contextPath: PcapHTTPExtractor.Flows
-  description: Flows extracted from the pcap file.
-  type: string
-scripttarget: 0
 dockerimage: demisto/pcap-http-extractor:1.0.0.98
-releaseNotes: "Adding a new script that allows to extract http flows from pcap/pcapng files."
-tests:
-- Test-PcapHTTPExtractor
+releaseNotes: Adding a new script that allows to extract http flows from pcap/pcapng
+  files.
+tests: [Test-PcapHTTPExtractor]
