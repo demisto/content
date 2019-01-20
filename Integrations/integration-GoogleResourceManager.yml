@@ -261,7 +261,7 @@ script:
         number
         The maximum number of Organizations to return in the response.
       isArray: false
-      name: pageSize
+      name: page_size
       predefined: []
       required: false
     - default: false
@@ -270,16 +270,13 @@ script:
         string
         A pagination token returned from a previous call to `organizations.search` that indicates from where listing should continue.
       isArray: false
-      name: pageToken
+      name: page_token
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: "Used to filter the Organizations to return in the response. Filter\
-        \ rules are case-insensitive.\n\nOrganizations may be filtered by `owner.directoryCustomerId`\
-        \ or by `domain`, where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
-        Organizations with\nowner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
-        Organizations corresponding to the domain google.com."
+      description: Used to filter the Organizations to return in the response. Filter
+        rules are case-insensitive.
       isArray: false
       name: filter
       predefined: []
@@ -290,12 +287,21 @@ script:
     execution: false
     name: grm-search-organizations
     outputs:
-    - {contextPath: GRM.Organization.Name, description: name of the organization in
-        format <type/number> e.g. 'organizations/1245345444', type: String}
-    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
-    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.Name, description: 'The resource name of the
+        organization. This is the organization''s relative path in the API. Its format
+        is "organizations/[organization_id]". For example, `organizations/1234`.',
+      type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: 'A human-readable string
+        that refers to the Organization in the GCP Console UI. This string is set
+        by the server and cannot be changed. The string will be set to the primary
+        domain (for example, "google.com") of the G Suite customer that owns the organization.',
+      type: String}
+    - {contextPath: GRM.Organization.State, description: The organization's current
+        lifecycle state., type: String}
     - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
         the organization resource was created, type: Date}
+    - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
+        id used in the Directory API., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -309,12 +315,21 @@ script:
     execution: false
     name: grm-get-organization
     outputs:
-    - {contextPath: GRM.Organization.Name, description: name of the organization in
-        format <type/number> e.g. 'organizations/1245345444', type: String}
-    - {contextPath: GRM.Organization.DisplayName, description: displayName, type: String}
-    - {contextPath: GRM.Organization.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Organization.Name, description: 'The resource name of the
+        organization. This is the organization''s relative path in the API. Its format
+        is "organizations/[organization_id]". For example, `organizations/1234`.',
+      type: String}
+    - {contextPath: GRM.Organization.DisplayName, description: 'A human-readable string
+        that refers to the Organization in the GCP Console UI. This string is set
+        by the server and cannot be changed. The string will be set to the primary
+        domain (for example, "google.com") of the G Suite customer that owns the organization.',
+      type: String}
+    - {contextPath: GRM.Organization.State, description: The organization's current
+        lifecycle state., type: String}
     - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
         the organization resource was created, type: Date}
+    - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
+        id used in the Directory API., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -390,16 +405,16 @@ script:
     CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
 
     AUTH_JSON = {
-        "type": "service_account",
-        "project_id": SERVICE_ACT_PROJECT_ID,
-        "private_key_id": PRIVATE_KEY_ID,
-        "private_key": PRIVATE_KEY,
-        "client_email": CLIENT_EMAIL,
-        "client_id": CLIENT_ID,
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": CLIENT_X509_CERT_URL
+        'type': 'service_account',
+        'project_id': SERVICE_ACT_PROJECT_ID,
+        'private_key_id': PRIVATE_KEY_ID,
+        'private_key': PRIVATE_KEY,
+        'client_email': CLIENT_EMAIL,
+        'client_id': CLIENT_ID,
+        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+        'token_uri': 'https://oauth2.googleapis.com/token',
+        'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
+        'client_x509_cert_url': CLIENT_X509_CERT_URL
     }
 
     # Params for constructing googleapiclient service object
@@ -852,7 +867,14 @@ script:
         returns:
             List of Organization resource objects that are visible to the user and satisfy the specified filter
         """
-        req_body = demisto.args()
+        args = demisto.args()
+        # make request body
+        req_body = {
+            'pageSize': args.get('page_size') if 'page_size' in args else None,
+            'pageToken': args.get('page_token') if 'page_token' in args else None,
+            'filter': args.get('filter') if 'filter' in args else None
+        }
+
         contexts = []
         contents = []
         next_page = True
@@ -868,7 +890,8 @@ script:
                     'Name': organization.get('name'),
                     'DisplayName': organization.get('displayName'),
                     'State': organization.get('lifecycleState'),
-                    'CreateTime': organization.get('creationTime')
+                    'CreateTime': organization.get('creationTime'),
+                    'CustomerID': organization.get('owner').get('directoryCustomerId')
                 }
                 contexts.append(context)
             if 'nextPageToken' not in response:
@@ -920,7 +943,8 @@ script:
             'Name': response.get('name'),
             'DisplayName': response.get('displayName'),
             'State': response.get('lifecycleState'),
-            'CreateTime': response.get('creationTime')
+            'CreateTime': response.get('creationTime'),
+            'CustomerID': organization.get('owner').get('directoryCustomerId')
         }
         md = tableToMarkdown("Details of Fetched Organization", context)
         demisto.results({
