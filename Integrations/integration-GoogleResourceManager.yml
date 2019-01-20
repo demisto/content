@@ -367,7 +367,7 @@ script:
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
-  dockerimage: grm-integration
+  dockerimage: demisto/gvault
   isfetch: false
   runonce: false
   script: |-
@@ -382,12 +382,12 @@ script:
     ''' GLOBALS/PARAMS '''
 
     # Params for assembling object of the Service Account Credentials File Contents
-    SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id')
-    PRIVATE_KEY_ID = demisto.params().get('private_key_id')
-    PRIVATE_KEY = demisto.params().get('private_key')
-    CLIENT_EMAIL = demisto.params().get('client_email')
-    CLIENT_ID = demisto.params().get('client_id')
-    CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url')
+    SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id').encode('utf-8')
+    PRIVATE_KEY_ID = demisto.params().get('private_key_id').encode('utf-8')
+    PRIVATE_KEY = demisto.params().get('private_key').encode('utf-8')
+    CLIENT_EMAIL = demisto.params().get('client_email').encode('utf-8')
+    CLIENT_ID = demisto.params().get('client_id').encode('utf-8')
+    CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
 
     AUTH_JSON = {
         "type": "service_account",
@@ -502,7 +502,7 @@ script:
 
     def test_module():
         """If the list_projects_command executes successfully then the test completed and returns 'ok'"""
-        commands['grm-list-projects']()
+        build_and_authorize()
         demisto.results('ok')
 
 
@@ -990,28 +990,31 @@ script:
     # Log exceptions
     except Exception as e:
         # Output HttpError errors from googleapiclient to the warroom nicely
-        if type(e) is googleapiclient.errors.HttpError:
-            if e.resp.get('content-type').startswith('application/json'):
-                err_json = json.loads((e.content).decode('utf-8'))
-                error_code = (err_json.get('error').get('code'))
-                error_msg = (err_json.get('error').get('message'))
-                error_reason = (err_json.get('error').get('errors')[0].get('reason'))
-                error_status = (err_json.get('error').get('status'))
-                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
-                                                                                   error_reason, error_status)
-                LOG(full_err_msg)
-                LOG.print_log()
-                return_error(full_err_msg)
-        # If there is an Exception message return it to the warroom
-        elif hasattr(e, 'message'):
-            LOG(e.message)
-            LOG.print_log()
-            return_error(e.message)
-        # Otherwise output the exception itself to the warroom
-        else:
-            LOG(str(e))
-            LOG.print_log()
-            return_error(str(e))
+        # if type(e) is googleapiclient.errors.HttpError:
+        #     if e.resp.get('content-type').startswith('application/json'):
+        #         err_json = json.loads((e.content).decode('utf-8'))
+        #         error_code = (err_json.get('error').get('code'))
+        #         error_msg = (err_json.get('error').get('message'))
+        #         error_reason = (err_json.get('error').get('errors')[0].get('reason'))
+        #         error_status = (err_json.get('error').get('status'))
+        #         full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
+        #                                                                            error_reason, error_status)
+        #         LOG(full_err_msg)
+        #         LOG.print_log()
+        #         return_error(full_err_msg)
+        # # If there is an Exception message return it to the warroom
+        # elif hasattr(e, 'message'):
+        #     LOG(e.message)
+        #     LOG.print_log()
+        #     return_error(e.message)
+        # # Otherwise output the exception itself to the warroom
+        # else:
+        #     LOG(str(e))
+        #     LOG.print_log()
+        #     return_error(str(e))
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
   type: python
 releaseNotes: New integration
 tests: [GoogleResourceManager-Test]
