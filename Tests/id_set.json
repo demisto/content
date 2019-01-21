@@ -7739,7 +7739,8 @@
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
                     "fireeye-hx-get-host-set-information", 
-                    "fireeye-hx-create-indicator"
+                    "fireeye-hx-create-indicator", 
+                    "fireeye-hx-append-conditions"
                 ], 
                 "tests": [
                     "FireEye HX Test"
@@ -13408,13 +13409,14 @@
                 ], 
                 "implementing_commands": [
                     "fireeye-hx-get-indicators", 
+                    "fireeye-hx-create-indicator", 
                     "fireeye-hx-get-alert", 
-                    "fireeye-hx-file-acquisition", 
                     "fireeye-hx-delete-file-acquisition", 
                     "fireeye-hx-get-alerts", 
-                    "fireeye-hx-create-indicator", 
                     "fireeye-hx-get-host-information", 
-                    "fireeye-hx-get-indicator"
+                    "fireeye-hx-append-conditions", 
+                    "fireeye-hx-get-indicator", 
+                    "fireeye-hx-file-acquisition"
                 ]
             }
         }, 
