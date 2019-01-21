@@ -1406,8 +1406,8 @@ script:
         url = '{}/indicators/{}'.format(BASE_PATH, category)
 
         body = {
-            'indicator_name':indicator_name,
-            'description':description
+            'indicator_name': indicator_name,
+            'description': description
         }
 
         response = http_request(
@@ -3154,7 +3154,7 @@ script:
     - contextPath: FireEyeHX.Indicators._id
       description: FireEye unique indicator ID.
       type: string
-    - contextPath: FireEyeHX.Indicator.description
+    - contextPath: FireEyeHX.Indicators.description
       description: Indicator description
       type: string
     - contextPath: FireEyeHX.Indicators.category._id
