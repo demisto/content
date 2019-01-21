@@ -37,6 +37,12 @@ configuration:
   options: []
   required: true
   type: 0
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  options: []
+  required: false
+  type: 8
 description: Google Cloud Platform Resource Manager
 detaileddescription: |-
   1. Create a Service Account
@@ -453,6 +459,13 @@ script:
     GRM = 'cloudresourcemanager'
     SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
     SERVICE = None      # variable set by build_and_authenticate() function
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
 
     ''' HELPER FUNCTIONS '''
