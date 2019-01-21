@@ -457,7 +457,7 @@ script:
     CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
 
     AUTH_JSON = {
-        'type': 'service_account',
+        'type': 'service_account',  # guardrails-disable-line
         'project_id': SERVICE_ACT_PROJECT_ID,
         'private_key_id': PRIVATE_KEY_ID,
         'private_key': PRIVATE_KEY,
