@@ -17,7 +17,7 @@ configuration:
   type: 0
   required: true
 script:
-  script: |
+  script: |-
     import urllib, sys, re
     import xml.etree.ElementTree as ET
     from collections import defaultdict
@@ -65,12 +65,17 @@ script:
         dbot_ec = {
             'Score': dbot_score,
             'Vendor': 'Alexa',
-            'Rank': rank,
             'Domain': domain,
         }
         ec = {
-            'Domain(val.Name && val.Name == obj.Name)': dom_ec,
-            'DBotScore': dbot_ec
+                'Domain(val.Name && val.Name == obj.Name)': dom_ec,
+                'DBotScore': dbot_ec,
+                'Alexa': {
+                    'Domain': {
+                        'Data': domain,
+                        'Rank': rank
+                    }
+                }
         }
         hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
                      ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
@@ -123,15 +128,18 @@ script:
     - contextPath: DBotScore.Vendor
       description: Vendor reporting the score
       type: string
-    - contextPath: DBotScore.Rank
-      description: Alexa rank as determined by Amazon
-      type: number
     - contextPath: DBotScore.Domain
       description: Domain being reported
       type: string
+    - contextPath: Alexa.Domain.Data
+      description: The Domain being checked
+      type: string
+    - contextPath: Alexa.Domain.Rank
+      description: Alexa rank as determined by Amazon
+      type: string
     description: Provides an Alexa ranking of the Domain in question.
   runonce: false
-releaseNotes: Alexa integration checks site rankings
+releaseNotes: Alexa integration checks domain rankings
 fromversion: 3.5.0
 tests:
   - Alexa Test Playbook
