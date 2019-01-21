@@ -84,6 +84,16 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
+def run_remote_command(public_ip, command, options=""):
+    if options and not isinstance(options, str):
+        raise TypeError("options must be string")
+    if not isinstance(command, list):
+        raise TypeError("command must be list")
+    full_command = "ssh {} -o StrictHostKeyChecking=no ec2-user@{}".format(options, public_ip).split()
+    full_command.extend(command)
+    return call(full_command)
+
+
 def has_mock_file(public_ip, playbook_id):
     command = ["ssh", '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip)]
     command.extend("[ -f Mocks/{}.mock ]".format(playbook_id).split())
