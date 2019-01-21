@@ -84,6 +84,12 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
+def has_mock_file(public_ip, playbook_id):
+    command = ["ssh", '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip)]
+    command.extend("[ -f Mocks/{}.mock ]".format(playbook_id).split())
+    return call(command) == 0
+
+
 def configure_proxy(c, proxy=""):
     http_proxy = https_proxy = proxy
     if proxy:
@@ -112,7 +118,7 @@ def stop_proxy(c, public_ip, p):
 
 def demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc):  # TODO: Remove after demo
     print "FOR DEMO: Verifying test passes with playback."
-    if not os.path.isfile("Mocks/{}.mock".format(playbook_id)):
+    if not has_mock_file(public_ip, playbook_id):
         print "ERROR: Mocks/{}.mock - file does not exist".format(playbook_id)
         return False, proxy_proc
     stop_proxy(c, public_ip, proxy_proc)
@@ -132,7 +138,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
             if param in elem['params']:
                 elem['params'][param] = True
 
-    if not os.path.isfile("Mocks/{}.mock".format(playbook_id)):
+    if not has_mock_file(public_ip, playbook_id):
         print "Mock file does not exist, running without mock."
     else:
         proxy_proc = start_proxy(c, public_ip, playbook_id)
