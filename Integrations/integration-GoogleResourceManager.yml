@@ -71,7 +71,10 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: The ID of the parent resource.
+      description: The ID of the parent resource. Organizations' Name output is in
+        the format `organizations/12345` where the numbers after the forward slash
+        are the ID of the organization. To find Organization IDs available to assign
+        as a parent resource try running the grm-search-organization command.
       isArray: false
       name: parent_id
       predefined: []
@@ -227,7 +230,10 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: The ID of the parent resource.
+      description: The ID of the parent resource. Organizations' Name output is in
+        the format `organizations/12345` where the numbers after the forward slash
+        are the ID of the organization. To find Organization IDs available to assign
+        as a parent resource try running the grm-search-organization command.
       isArray: false
       name: parent_id
       predefined: []
