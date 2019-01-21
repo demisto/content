@@ -146,7 +146,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 700
+          "timeout": 900
         },
         {
             "integrations": "Tenable.sc",
@@ -337,6 +337,10 @@
         },
         {
             "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
         },
         {
