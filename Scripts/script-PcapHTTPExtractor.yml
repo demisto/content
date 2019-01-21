@@ -156,25 +156,34 @@ script: |-
   def parse_capture_dict(capture_object):
       """
           Parse a capture object into a readable http dict
-
+              Added tcp information
           :param capture_object: the pyshark capture object from file
           :return: a pythonic dict of result
       """
       try:
           http_object_tshark = capture_object.http.__dict__["_all_fields"]
+          tcp_object_tshark = capture_object.tcp.__dict__["_all_fields"]
+          ip_object_tshark = capture_object.ip.__dict__["_all_fields"]
       except KeyError:
           return_error('No readable result')
           sys.exit(0)
 
       # Remove unecessary attributes of the object
       blacklist_keys = ["_ws", "http.content_length_header",
-
                         "http.cookie_pair", "http.response.phrase"]
+
       for bk in blacklist_keys:
           http_object_tshark = {k: v for k, v in http_object_tshark.items() if not k.startswith(bk)}
 
       if "" in http_object_tshark:
           del http_object_tshark[""]  # Some empty key that is a duplicate
+
+      # Concatenate the tcp & ip information
+      http_object_tshark.update({"tcp.src_port": tcp_object_tshark["tcp.srcport"]})
+      http_object_tshark.update({"tcp.dst_port": tcp_object_tshark["tcp.dstport"]})
+      http_object_tshark.update({"ip.src": ip_object_tshark["ip.src"]})
+      http_object_tshark.update({"ip.dst": ip_object_tshark["ip.dst"]})
+
 
       return http_object_tshark
 
@@ -254,7 +263,7 @@ script: |-
       return key_name
 
 
-  def fix_output(http_flows, context_filter=False):
+  def fix_output(http_flows, context_filter=False, allowed_content_types=[]):
       """
       Fixes the http_flows's keys to abide the Demisto conventions.
       :param context_filter: if True will strip down more keys for a slimmer context output.
@@ -262,21 +271,33 @@ script: |-
       :return: the object containing all of the filtered and formatted flows.
       """
 
-      relevant_context = ["http.host", "http.user_agent", "http.response.code",
+      relevant_context = [
+                          # HTTP
+                          "http.host", "http.user_agent", "http.response.code",
                           "http.response.version", "http.date", "http.last_modified",
                           "http.request.uri", "http.request.full_uri",
                           "http.request.method", "http.file_data", "http.accept",
-                          "http.content_type", "http.server"]
+                          "http.content_type", "http.server",
+                          # IP
+                          "ip.src",
+                          "ip.dst",
+                          # TCP
+                          "tcp.src_port",
+                          "tcp.dst_port",
+                          ]
 
-      extra_keys = ["http.content_length", ]
+      extra_keys = ["http.content_length", "http.request", "http.response.phrase", "http.chat"]
 
       if not context_filter:
           relevant_context += extra_keys
 
-      allowed_contect_types = ("text", "application/json", "multipart/form-data",
+      if len(allowed_content_types) == 0:
+          allowed_content_types = ("text", "application/json", "multipart/form-data",
                                "application/xml", "application/xhtml+xml",
                                "application/ld+json", "application/javascript",
                                "multipart/alternative", "application/x-www-form-urlencoded")
+      else:
+          allowed_content_types = tuple(allowed_content_types.split(","))
 
       context_list = []
       flow_index = 0
@@ -286,18 +307,19 @@ script: |-
 
           cd.update({_fix_key(k.split(".")): v for k, v in flow.items() if k in relevant_context})
 
+          # Fix the chat file newline
+          if "HttpChat" in cd:
+              cd["HttpChat"] = cd["HttpChat"].replace("\\r\\n", "")
+
           # Convert to ISO time
           if "HttpDate" in cd:
               cd['HttpDate'] = datetime.strptime(cd['HttpDate'], '%a, %d %b %Y %H:%M:%S %Z').isoformat()
 
           # Allow only whitelist of content
           if "HttpContentType" in cd:
-              if not cd["HttpContentType"].startswith(allowed_contect_types):
+              if not cd["HttpContentType"].startswith(allowed_content_types):
                   if "HttpFileData" in cd and len(cd["HttpFileData"]) > 0:
-                      pass
-                      # Download the file via tcp_reassembled_data.replace(":","")
-                      #con = demisto.results(
-                      #    fileResult("HTTP-{}-file.raw".format(flow_index), str.encode(cd["HttpFileData"])))
+                      cd["HttpFileData"] = "Unsupported content type."
 
           context_list.append(cd)
 
@@ -313,6 +335,11 @@ script: |-
           START = demisto.args()["start"]
           LIMIT_DATA = int(demisto.args()["limitData"])
 
+          if "allowedContentTypes" not in demisto.args():
+              ALLOWED_CONTENT_TYPES = ()
+          else:
+              ALLOWED_CONTENT_TYPES = demisto.args()["allowedContentTypes"]
+
           # Work on the pcap file and return a result
           http_flows = get_pcap_dict(pcap_file_path_in_container)
 
@@ -324,13 +351,14 @@ script: |-
           if LIMIT_DATA:
               http_flows = trim_limit_data(http_flows, LIMIT_DATA)
 
-          http_flows_fixed = fix_output(http_flows)
+          http_flows_fixed = fix_output(http_flows, allowed_content_types=ALLOWED_CONTENT_TYPES)
           markdown_results = markdown_packets(http_flows_fixed)
 
           demisto.results({"Type": entryTypes["note"],
                            "ContentsFormat": formats["markdown"],
                            "Contents": markdown_results,
-                           "EntryContext": {"PcapHTTPFlows": fix_output(http_flows, context_filter=True)}
+                           "EntryContext": {"PcapHTTPFlows": fix_output(http_flows, context_filter=True,
+                                                                        allowed_content_types=ALLOWED_CONTENT_TYPES)}
                            })
 
       except Exception as ex:
