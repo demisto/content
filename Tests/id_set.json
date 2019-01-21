@@ -11316,6 +11316,9 @@
                     "sandblast-download", 
                     "sb-quota", 
                     "sandblast-quota"
+                ], 
+                "tests": [
+                    "Sandblast malicious test"
                 ]
             }
         }, 
