@@ -1,5 +1,5 @@
 id: Sandblast malicious test
-version: 7
+version: -1
 name: Sandblast malicious test
 starttaskid: "0"
 tasks:
