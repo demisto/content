@@ -561,4 +561,4 @@ hidden: false
 fromversion: 3.5.0
 releaseNotes: Improvements to Context and DBot score
 tests:
-  - Sandblast malicious test
+  - Sandblast_malicious_test

@@ -11318,7 +11318,7 @@
                     "sandblast-quota"
                 ], 
                 "tests": [
-                    "Sandblast malicious test"
+                    "Sandblast_malicious_test"
                 ]
             }
         }, 

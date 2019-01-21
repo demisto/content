@@ -1,6 +1,6 @@
-id: Sandblast malicious test
+id: Sandblast_malicious_test
 version: -1
-name: Sandblast malicious test
+name: Sandblast_malicious_test
 starttaskid: "0"
 tasks:
   "0":

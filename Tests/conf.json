@@ -834,7 +834,7 @@
         },
         {
             "integrations": "Check Point Sandblast",
-            "playbookID": "Sandblast malicious test"
+            "playbookID": "Sandblast_malicious_test"
         },
         {
             "playbookID": "TestMatchRegex"
