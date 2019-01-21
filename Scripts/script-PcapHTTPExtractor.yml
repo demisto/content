@@ -46,9 +46,6 @@ name: PcapHTTPExtractor
 outputs:
 - {contextPath: PcapHTTPFlows, description: Flows extracted from the pcap file., type: String}
 script: |-
-  import demistomock as demisto
-  from CommonServerPython import *
-  from CommonServerUserPython import *
   import pyshark
   from datetime import datetime
 
@@ -127,7 +124,7 @@ script: |-
       return res, entry_id
 
 
-  def parse_capture(capture_object):
+  def parse_capture_dict(capture_object):
       """
           Parse a capture object into a readable http dict
 
@@ -142,8 +139,8 @@ script: |-
 
       # Remove unecessary attributes of the object
       blacklist_keys = ["_ws", "http.content_length_header",
-                        "http.request", "http.response.phrase", "http.chat",
-                        "http.cookie_pair", ]
+
+                        "http.cookie_pair", "http.response.phrase"]
       for bk in blacklist_keys:
           http_object_tshark = {k: v for k, v in http_object_tshark.items() if not k.startswith(bk)}
 
@@ -153,9 +150,8 @@ script: |-
       return http_object_tshark
 
 
-  def parse_pcap_http(pcap_file_path):
+  def get_pcap_dict(pcap_file_path):
       """
-          Prints the headers and body of the http response.
           By deafult returns a dict of the results.
           Will return and exit if no http flows found
 
@@ -170,13 +166,25 @@ script: |-
 
           # Check if this is an HTTP Packet
           if 'http' in packet:
-              packet = parse_capture(packet)
+              packet = parse_capture_dict(packet)
               http_packets.append(packet)
 
       if len(http_packets) == 0:
           return_error('No HTTP flows found in specified file.')
+          sys.exit(0)
 
       return http_packets
+
+
+  def trim_limit_data(http_flows, limit_data_size):
+      for flow in http_flows:
+          if "http.file_data" in flow and \
+                  len(flow["http.file_data"]) > limit_data_size:
+              flow["http.file_data"] = "[TRIMMED] - {}...".format(
+                  flow["http.file_data"][:limit_data_size])
+
+
+      return http_flows
 
 
   def markdown_packets(http_flows):
@@ -187,28 +195,17 @@ script: |-
           :return: a string of markdown
       """
       result_nobody_template = "---\n{res}\n---"
-      result_template = "---\n{res}\n```html\n{body}\n```\n---"
       markdown_result = ""
 
       for i, packet in enumerate(http_flows):
-          has_body = "HttpFileData" in packet
-          if not has_body:
-              row = result_nobody_template.format(
-                  res=tableToMarkdown("HTTP #{}".format(i + 1),
-                                      packet,
-                                      packet.keys()
-                                      )
-              )
-          else:
-              row = result_template.format(
-                  res=tableToMarkdown("HTTP #{}".format(i),
-                                      packet,
-                                      packet.keys()
-                                      ),
-                  body=packet["HttpFileData"]
-              )
-
+          row = result_nobody_template.format(
+              res=tableToMarkdown("HTTP #{}".format(i + 1),
+                                  packet,
+                                  packet.keys()
+                                  )
+          )
           markdown_result += row
+
       return markdown_result
 
 
@@ -228,7 +225,7 @@ script: |-
       return key_name
 
 
-  def fix_http_keys(http_flows, context_filter=False):
+  def fix_output(http_flows, context_filter=False):
       """
       Fixes the http_flows's keys to abide the Demisto conventions.
       :param context_filter: if True will strip down more keys for a slimmer context output.
@@ -285,23 +282,26 @@ script: |-
           pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
           LIMIT = demisto.args()["limit"]
           START = demisto.args()["start"]
+          LIMIT_DATA = int(demisto.args()["limitData"])
 
           # Work on the pcap file and return a result
-          http_flows = parse_pcap_http(pcap_file_path_in_container)
+          http_flows = get_pcap_dict(pcap_file_path_in_container)
 
           # Cut results according to the user args.
           if START:
               http_flows = http_flows[int(START):]
           if LIMIT:
               http_flows = http_flows[:int(LIMIT)]
+          if LIMIT_DATA:
+              http_flows = trim_limit_data(http_flows, LIMIT_DATA)
 
-          http_flows = fix_http_keys(http_flows)
-          markdown_results = markdown_packets(http_flows)
+          http_flows_fixed = fix_output(http_flows)
+          markdown_results = markdown_packets(http_flows_fixed)
 
           demisto.results({"Type": entryTypes["note"],
                            "ContentsFormat": formats["markdown"],
                            "Contents": markdown_results,
-                           "EntryContext": {"PcapHTTPExtractor.Flows": http_flows}
+                           "EntryContext": {"PcapHTTPFlows": fix_output(http_flows, context_filter=True)}
                            })
 
       except Exception as ex:
