@@ -204,8 +204,8 @@ tasks:
           left:
             value:
               complex:
-                root: PcapHTTPExtractor
-                accessor: Flows.[3].HttpDate
+                root: PcapHTTPFlows
+                accessor: [3].HttpDate
                 transformers:
                 - operator: trim
             iscontext: true
