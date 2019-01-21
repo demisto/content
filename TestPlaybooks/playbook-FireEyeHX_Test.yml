@@ -265,6 +265,7 @@ tasks:
       - "4"
       - "1"
       - "13"
+      - "15"
     scriptarguments:
       all:
         simple: "yes"
@@ -368,19 +369,22 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: e90e20eb-4573-42e5-80c8-d975a729d331
+    taskid: f3ca253c-6cb8-4d5c-84f7-735736973656
     type: regular
     task:
-      id: e90e20eb-4573-42e5-80c8-d975a729d331
+      id: f3ca253c-6cb8-4d5c-84f7-735736973656
       version: -1
-      name: 'Cerate Indicator '
-      script: FireEye HX_copy|||fireeye-hx-create-indicator
+      name: 'Create Indicator '
+      script: FireEye HX|||fireeye-hx-create-indicator
       type: regular
       iscommand: true
-      brand: FireEye HX_copy
+      brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       category:
-        simple: custom
+        simple: Custom
       description:
         simple: just a test
       indicator_name:
@@ -395,6 +399,98 @@ tasks:
       }
     note: false
     timertriggers: []
+  "14":
+    id: "14"
+    taskid: b44738f4-7179-4567-8427-07e06c328237
+    type: condition
+    task:
+      id: b44738f4-7179-4567-8427-07e06c328237
+      version: -1
+      name: Verify indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: FireEyeHX.Indicators.category.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: FireEyeHX.Indicators.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: FireEyeHX.Indicators._id
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: e7acfe49-5254-4040-853d-86d7fb3d821e
+    type: regular
+    task:
+      id: e7acfe49-5254-4040-853d-86d7fb3d821e
+      version: -1
+      name: Append conditions
+      script: '|||fireeye-hx-append-conditions'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      category:
+        simple: custom
+      condition:
+        simple: example.abc,example.lol
+      name:
+        simple: 50ed0f52-f111-4ebf-b53c-2c54db3c8d7e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: acd556c3-b01d-492b-8f2c-381941b67015
+    type: title
+    task:
+      id: acd556c3-b01d-492b-8f2c-381941b67015
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -403,8 +499,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1085,
-        "width": 1925,
-        "x": -420,
+        "width": 2345,
+        "x": -840,
         "y": 50
       }
     }
