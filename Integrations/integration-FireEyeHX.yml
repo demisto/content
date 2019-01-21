@@ -1434,10 +1434,10 @@ script:
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FireEye HX New Indicator created successfuly', md_table),
+            'HumanReadable': tableToMarkdown('FireEye HX New Indicator created successfully', md_table),
             'EntryContext': {
                 "FireEyeHX.Indicators(obj._id===val._id)": response
-                }
+            }
         }
         demisto.results(entry)
 
@@ -1460,7 +1460,7 @@ script:
     def append_conditions():
         """
         Append conditions to indicator
-        no return value on successful request
+        no return value on successfull request
         """
         name = demisto.args().get('name')
         category = demisto.args().get('category')
@@ -1470,7 +1470,23 @@ script:
 
         response = append_conditions_request(name, category, body)
 
-        demisto.results('The conditions added successfuly')
+        md_table =  {
+            'Name': name,
+            'Category': category,
+            'Conditions': body
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The conditions were added successfully ', md_table),
+            'EntryContext': {
+                "FireEyeHX.Indicators(obj._id===val._id)": response
+            }
+        }
+        demisto.results(entry)
 
     def get_indicator_request(category, name):
         """
@@ -3227,10 +3243,19 @@ script:
       required: true
       description: 'A list of conditions to add. The list can include a list of IPv4
         addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
+    outputs:
+    - contextPath: FireEyeHX.Indicators.message
+      description: Appending conditions message
+      type: string
+    - contextPath: FireEyeHX.Indicators.route
+      description: Appending conditions route
+      type: string
+    - contextPath: FireEyeHX.Indicators.details
+      description: Appending conditions details
     description: 'Add conditions to an indicator. Conditions can be MD5, hash values,
       domain names and IP addresses. '
   isfetch: true
   runonce: false
-releaseNotes: "added functions - create new indicator and append conditions"
+releaseNotes: "added function - create new indicator"
 tests:
   - FireEye HX Test
