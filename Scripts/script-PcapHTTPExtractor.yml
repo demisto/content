@@ -17,7 +17,7 @@ args:
   secret: false
 - default: false
   defaultValue: '50'
-  description: Limit the output of the pcap output flows.
+  description: Limit the output of the capture file output's flows.
   isArray: false
   name: limit
   predefined: []
@@ -39,12 +39,41 @@ args:
   predefined: []
   required: false
   secret: false
+- default: false
+  defaultValue: ''
+  description: The allowed content types to output from the capture file.
+  isArray: false
+  name: allowedContentTypes
+  predefined: []
+  required: false
+  secret: false
 comment: Allows to parse and extract http flows from a pcap/pcapng file.
 commonfields: {id: PcapHTTPExtractor, version: -1}
 enabled: true
 name: PcapHTTPExtractor
 outputs:
 - {contextPath: PcapHTTPFlows, description: Flows extracted from the pcap file., type: String}
+- {contextPath: PcapHttpFlows.ResultIndex, description: The index of the http packet
+    in the pcap file., type: String}
+- {contextPath: PcapHttpFlows.HttpContentType, description: Http content type of the
+    response., type: String}
+- {contextPath: PcapHttpFlows.HttpResponseVersion, description: Http version used
+    in the response., type: String}
+- {contextPath: PcapHttpFlows.HttpResponseCode, description: Http response code from
+    the server, type: String}
+- {contextPath: PcapHttpFlows.HttpDate, description: Http date returned from the sever,
+  type: String}
+- {contextPath: PcapHttpFlows.HttpRequestMethod, description: Http request method
+    used., type: String}
+- {contextPath: PcapHttpFlows.HttpRequestUri, description: Http request URI (path),
+  type: String}
+- {contextPath: PcapHttpFlows.HttpFileData, description: Http content of the response,
+  type: String}
+- {contextPath: PcapHttpFlows.HttpServer, description: The server signature in the
+    response, type: String}
+- {contextPath: PcapHttpFlows.HttpUserAgent, description: Http user agent sent in
+    the request, type: String}
+- {contextPath: PcapHttpFlows.HttpAccept, description: Http request accept type, type: String}
 script: |-
   import pyshark
   from datetime import datetime
