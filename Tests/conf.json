@@ -15,6 +15,10 @@
             "nightly": true
         },
         {
+            "integrations": "Alexa Rank Indicator",
+            "playbookID": "Alexa Test Playbook"
+        },
+        {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
