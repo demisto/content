@@ -11599,6 +11599,24 @@
                     "Alexa Test Playbook"
                 ]
             }
+        },
+        {
+            "Google Resource Manager": {
+                "name": "Google Resource Manager", 
+                "commands": [
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-list-projects", 
+                    "grm-update-project", 
+                    "grm-search-organizations", 
+                    "grm-get-organization", 
+                    "grm-delete-project", 
+                    "grm-undelete-project"
+                ], 
+                "tests": [
+                    "GoogleResourceManager-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15527,6 +15545,26 @@
                 ], 
                 "implementing_commands": [
                     "domain"
+                ]
+            }
+        },
+        {
+            "GoogleResourceManager-Test": {
+                "name": "GoogleResourceManager-Test", 
+                "implementing_scripts": [
+                    "GenerateUUID", 
+                    "Print", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "grm-search-organizations", 
+                    "grm-update-project", 
+                    "grm-undelete-project", 
+                    "grm-list-projects", 
+                    "grm-delete-project", 
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-get-organization"
                 ]
             }
         }
