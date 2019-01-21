@@ -38,7 +38,7 @@ tasks:
       id: a127bd66-2910-4a57-86b2-e0c36065263c
       version: -1
       name: Get  Host Agent info
-      script: sentinelOne|||so-agents-query
+      script: SentinelOne|||so-agents-query
       type: regular
       iscommand: true
       brand: sentinelOne
@@ -192,7 +192,7 @@ tasks:
       version: -1
       name: Get Processes
       description: Get agent proccesses
-      script: sentinelOne|||so-get-agent-processes
+      script: SentinelOne|||so-get-agent-processes
       type: regular
       iscommand: true
       brand: sentinelOne
