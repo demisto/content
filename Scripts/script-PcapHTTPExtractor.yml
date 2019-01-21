@@ -9,7 +9,7 @@ args:
   secret: false
 - default: true
   defaultValue: ''
-  description: file entry from warroom
+  description: File entry from the WarRoom
   isArray: false
   name: entryID
   predefined: []
@@ -17,7 +17,7 @@ args:
   secret: false
 - default: false
   defaultValue: '50'
-  description: limit the output of the pcap output flows.
+  description: Limit the output of the pcap output flows.
   isArray: false
   name: limit
   predefined: []
@@ -25,9 +25,17 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: index of where to output flows.
+  description: Index of where to output flows.
   isArray: false
   name: start
+  predefined: []
+  required: false
+  secret: false
+- default: false
+  defaultValue: '512'
+  description: "Limit the HttpFileData field (in bytes)\t\t"
+  isArray: false
+  name: limitData
   predefined: []
   required: false
   secret: false
@@ -36,9 +44,11 @@ commonfields: {id: PcapHTTPExtractor, version: -1}
 enabled: true
 name: PcapHTTPExtractor
 outputs:
-- {contextPath: PcapHTTPExtractor.Flows, description: Flows extracted from the pcap
-    file., type: String}
+- {contextPath: PcapHTTPFlows, description: Flows extracted from the pcap file., type: String}
 script: |-
+  import demistomock as demisto
+  from CommonServerPython import *
+  from CommonServerUserPython import *
   import pyshark
   from datetime import datetime
 
