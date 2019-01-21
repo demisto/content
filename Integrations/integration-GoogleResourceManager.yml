@@ -71,7 +71,7 @@ script:
         Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
         No more than 256 labels can be associated with a given resource.
       isArray: true
-      name: labels.attrs
+      name: label_keys
       predefined: []
       required: false
     - default: false
@@ -98,7 +98,7 @@ script:
         Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
         No more than 256 labels can be associated with a given resource.
       isArray: true
-      name: labels.values
+      name: label_values
       predefined: []
       required: false
     description: Create Project Resource
@@ -234,7 +234,7 @@ script:
         Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
         No more than 256 labels can be associated with a given resource.
       isArray: true
-      name: labels.attrs
+      name: label_keys
       predefined: []
       required: false
     - default: false
@@ -244,7 +244,7 @@ script:
         Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
         No more than 256 labels can be associated with a given resource.
       isArray: true
-      name: labels.values
+      name: label_values
       predefined: []
       required: false
     description: Updates the attributes of the Project identified by the specified
@@ -488,19 +488,19 @@ script:
             }
         if 'name' in keys:
             body['name'] = project_body['name']
-        if 'labels.attrs' in keys and 'labels.values' in keys:
-            labels_attrs = argToList(project_body['labels.attrs'])
-            labels_values = argToList(project_body['labels.values'])
-            if len(labels_attrs) != len(labels_values):
+        if 'label_keys' in keys and 'label_values' in keys:
+            label_keys = argToList(project_body['label_keys'])
+            label_values = argToList(project_body['label_values'])
+            if len(label_keys) != len(label_values):
                 err_msg = 'Label attrs array and Label values array do not match'\
                     ' in length.\nThese arrays need to match in length because '\
-                    'each string in labels.attrs is assigned the value of the '\
-                    'string in the corresponding index in the labels.values array.'
+                    'each string in label_keys is assigned the value of the '\
+                    'string in the corresponding index in the label_values array.'
                 return_error(err_msg)
             else:
                 body['labels'] = {}
-                for lbl_tag, lbl_val in zip(labels_attrs, labels_values):
-                    body['labels'][lbl_tag] = lbl_val
+                for lbl_key, lbl_val in zip(label_keys, label_values):
+                    body['labels'][lbl_key] = lbl_val
         return body
 
 
@@ -571,12 +571,12 @@ script:
         demisto parameter: (string) parent_type
             The resource type the parent_id is for
 
-        demisto parameter: (list) labels.attrs
+        demisto parameter: (list) label_keys
             The label keys to associate with the new Project
 
-        demisto parameter: (list) labels.values
+        demisto parameter: (list) label_values
             The label values to associate with the new Project. The values are
-            assigned to their corresponding indexed key in labels.attrs
+            assigned to their corresponding indexed key in label_keys
 
         returns:
             The new Project resource object
@@ -825,12 +825,12 @@ script:
         demisto parameter: (string) parent_type
             The resource type the parent_id is for
 
-        demisto parameter: (list) labels.attrs
+        demisto parameter: (list) label_keys
             The label keys to associate with this Project
 
-        demisto parameter: (list) labels.values
+        demisto parameter: (list) label_values
             The label values to associate with this Project. The values are
-            assigned to their corresponding indexed key in labels.attrs
+            assigned to their corresponding indexed key in label_keys
 
         returns:
             The updated Project resource object
