@@ -75,7 +75,8 @@ script:
 
     def test_module_command():
         domain = 'google.com'
-        root = alexa_domain(domain)
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
+        root = ET.fromstring(xml)
         domain_res = root.find("SD").attrib['HOST']
         rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
         if rank == '1':
