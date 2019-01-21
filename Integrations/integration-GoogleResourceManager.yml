@@ -107,7 +107,8 @@ script:
       name: label_values
       predefined: []
       required: false
-    description: Create Project Resource
+    description: Request that new Project resource be created with the user-specified
+      values of the command's arguments.
     execution: false
     name: grm-create-project
     outputs:
@@ -137,7 +138,7 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Retrieves the Project identified by the specified projectId (for
+    description: Retrieves the Project identified by the specified project_id (for
       example, my-project-123).
     execution: false
     name: grm-get-project
@@ -254,7 +255,7 @@ script:
       predefined: []
       required: false
     description: Updates the attributes of the Project identified by the specified
-      projectId. Currently the only fields that can be updated are the project name
+      project_id. Currently the only fields that can be updated are the project name
       and labels.
     execution: false
     name: grm-update-project
@@ -391,8 +392,8 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Restores the Project identified by the specified projectId (for example,
-      my-project-123).
+    description: Restores the Project identified by the specified project_id (for
+      example, my-project-123).
     execution: false
     name: grm-undelete-project
     outputs:
