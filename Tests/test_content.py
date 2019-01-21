@@ -113,7 +113,7 @@ def stop_proxy(c, public_ip, p):
 def demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc):  # TODO: Remove after demo
     print "FOR DEMO: Verifying test passes with playback."
     if not os.path.isfile("Mocks/{}.mock".format(playbook_id)):
-        print "ERROR: mock file does not exist"
+        print "ERROR: Mocks/{}.mock - file does not exist".format(playbook_id)
         return False, proxy_proc
     stop_proxy(c, public_ip, proxy_proc)
     proxy_proc = start_proxy(c, public_ip, playbook_id)
