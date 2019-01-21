@@ -3045,5 +3045,6 @@ script:
       type: string
   isfetch: true
   runonce: false
+releaseNotes: No change
 tests:
   - FireEye HX Test
