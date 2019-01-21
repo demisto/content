@@ -1004,7 +1004,7 @@ script:
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('creationTime'),
             'Owner': {
-                'CustomerID': organization.get('owner').get('directoryCustomerId')
+                'CustomerID': response.get('owner').get('directoryCustomerId')
             },
         }
         md = tableToMarkdown("Details of Fetched Organization", context)
