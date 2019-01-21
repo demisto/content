@@ -67,7 +67,7 @@ script:
         demisto.results({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['markdown'],
-                    'Contents': xml,
+                    'Contents': xml2json(xml),
                     'HumanReadable': hr_string,
                     'EntryContext': ec
         })
