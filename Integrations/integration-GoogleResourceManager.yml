@@ -59,8 +59,7 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: |-
-        The id of the parent resource.
+      description: The id of the parent resource.
       isArray: false
       name: parent_id
       predefined: []
@@ -86,8 +85,8 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: |-
-        Required field representing the resource type the parent.id is for. At present, the valid types are: "organization" and "folder".
+      description: 'Required field representing the resource type the parent.id is
+        for. At present, the valid types are: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -106,13 +105,18 @@ script:
     execution: false
     name: grm-create-project
     outputs:
-    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -132,13 +136,18 @@ script:
     execution: false
     name: grm-get-project
     outputs:
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
-    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -168,13 +177,18 @@ script:
     execution: false
     name: grm-list-projects
     outputs:
-    - {contextPath: GRM.Project.Name, description: name, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -200,8 +214,7 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: |-
-        The id of the parent resource.
+      description: The id of the parent resource.
       isArray: false
       name: parent_id
       predefined: []
@@ -240,13 +253,18 @@ script:
     execution: false
     name: grm-update-project
     outputs:
-    - {contextPath: GRM.Project.Name, description: name of the project, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -263,8 +281,8 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: |-
-        A pagination token returned from a previous call to `organizations.search` that indicates from where listing should continue.
+      description: A pagination token returned from a previous call to `organizations.search`
+        that indicates from where listing should continue.
       isArray: false
       name: page_token
       predefined: []
@@ -341,13 +359,18 @@ script:
     execution: true
     name: grm-delete-project
     outputs:
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
@@ -367,13 +390,18 @@ script:
     execution: false
     name: grm-undelete-project
     outputs:
-    - {contextPath: GRM.Project.State, description: lifecycleState, type: String}
-    - {contextPath: GRM.Project.Number, description: projectNumber, type: String}
-    - {contextPath: GRM.Project.ID, description: projectId, type: String}
-    - {contextPath: GRM.Project.Name, description: name, type: String}
+    - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
+      type: String}
+    - {contextPath: GRM.Project.Number, description: The number uniquely identifying
+        the project., type: String}
+    - {contextPath: GRM.Project.ID, description: 'The unique, user-assigned ID of
+        the Project.', type: String}
+    - {contextPath: GRM.Project.Name, description: The user-assigned display name
+        of the Project., type: String}
     - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
         resource was created, type: Date}
-    - {contextPath: GRM.Project.Label, description: Labels of the project, type: Unknown}
+    - {contextPath: GRM.Project.Label, description: The labels associated with this
+        Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
