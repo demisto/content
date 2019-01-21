@@ -3215,7 +3215,7 @@ script:
       description: Update actor name
       type: string
     description: Create new indicator
-    - name: fireeye-hx-append-conditions
+  - name: fireeye-hx-append-conditions
     arguments:
     - name: category
       required: true
