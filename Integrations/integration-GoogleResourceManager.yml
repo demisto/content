@@ -2,40 +2,37 @@ category: IT Services
 commonfields: {id: Google Resource Manager, version: -1}
 configuration:
 - defaultvalue: ''
-  display: The Project ID of the project resource in which you created the Service
-    Account. The value can be found in the Service Account Key File which should have
-    downloaded when creating the Service Account in the Google Cloud Platform.
+  display: Project ID
   name: project_id
   options: []
   required: true
   type: 0
 - defaultvalue: ''
-  display: Value of the 'private_key_id' field in your JSON Service Account Key File.
+  display: Private Key ID
   name: private_key_id
   options: []
   required: true
   type: 4
 - defaultvalue: ''
-  display: Value of the 'private_key' field in your JSON Service Account Key File.
+  display: Private Key
   name: private_key
   options: []
   required: true
   type: 4
 - defaultvalue: ''
-  display: Value of the 'client_email' field in your JSON Service Account Key File.
+  display: Client Email
   name: client_email
   options: []
   required: true
   type: 0
 - defaultvalue: ''
-  display: Value of the 'client_id' field in your JSON Service Account Key File.
+  display: Client ID
   name: client_id
   options: []
   required: true
   type: 4
 - defaultvalue: ''
-  display: Value of the 'client_x509_cert_url' field in your JSON Service Account
-    Key File.
+  display: Client X509 Cert URL
   name: client_x509_cert_url
   options: []
   required: true
@@ -59,7 +56,7 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: The id of the parent resource.
+      description: The ID of the parent resource.
       isArray: false
       name: parent_id
       predefined: []
@@ -117,7 +114,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
@@ -148,7 +145,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
@@ -189,7 +186,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
@@ -214,7 +211,7 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: The id of the parent resource.
+      description: The ID of the parent resource.
       isArray: false
       name: parent_id
       predefined: []
@@ -265,7 +262,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
@@ -343,7 +340,7 @@ script:
     - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
         the organization resource was created, type: Date}
     - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
-        id used in the Directory API., type: String}
+        ID used in the Directory API., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -371,7 +368,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
@@ -402,7 +399,7 @@ script:
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
-    - {contextPath: GRM.Project.Parent.ID, description: id of the parent resource,
+    - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
     - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
       type: String}
