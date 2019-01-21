@@ -949,7 +949,9 @@ script:
                     'Name': organization.get('name'),
                     'State': organization.get('lifecycleState'),
                     'CreateTime': organization.get('creationTime'),
-                    'CustomerID': organization.get('owner').get('directoryCustomerId')
+                    'Owner': {
+                        'CustomerID': organization.get('owner').get('directoryCustomerId')
+                    },
                 }
                 contexts.append(context)
             if 'nextPageToken' not in response:
@@ -1001,7 +1003,9 @@ script:
             'Name': response.get('name'),
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('creationTime'),
-            'CustomerID': response.get('owner').get('directoryCustomerId')
+            'Owner': {
+                'CustomerID': organization.get('owner').get('directoryCustomerId')
+            },
         }
         md = tableToMarkdown("Details of Fetched Organization", context)
         demisto.results({
