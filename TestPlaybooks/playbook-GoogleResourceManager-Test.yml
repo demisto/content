@@ -1,5 +1,5 @@
 id: GoogleResourceManager-Test
-version: 48
+version: 54
 name: GoogleResourceManager-Test
 starttaskid: "0"
 tasks:
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 2aec034d-1527-4364-800b-9bf123d5704c
+    taskid: 46a037e4-27b3-4c45-89bd-a445893fc452
     type: regular
     task:
-      id: 2aec034d-1527-4364-800b-9bf123d5704c
+      id: 46a037e4-27b3-4c45-89bd-a445893fc452
       version: -1
       name: grm-create-project
       description: Create Project Resource
@@ -43,6 +43,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      label_keys: {}
+      label_values: {}
       labels.attrs:
         simple: test,playbook
       labels.values:
@@ -57,6 +59,8 @@ tasks:
         simple: "690006273490"
       parent_type:
         simple: organization
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         complex:
           root: ${ProjectId
@@ -106,10 +110,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: ff8914f5-496c-4ce3-8ba4-8d2228a909fb
+    taskid: f64a91d0-3f2e-4362-8b61-b926354938ca
     type: condition
     task:
-      id: ff8914f5-496c-4ce3-8ba4-8d2228a909fb
+      id: f64a91d0-3f2e-4362-8b61-b926354938ca
       version: -1
       name: Verify Project Creation
       type: condition
@@ -158,10 +162,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 46cfa3ce-6a9c-46ff-8f12-c9cb218c60de
+    taskid: 44a6f9b6-ac29-47b5-8d31-7306c3aa9388
     type: regular
     task:
-      id: 46cfa3ce-6a9c-46ff-8f12-c9cb218c60de
+      id: 44a6f9b6-ac29-47b5-8d31-7306c3aa9388
       version: -1
       name: grm-delete-project
       description: Marks the Project identified by the specified project_id (for example,
@@ -174,6 +178,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         simple: ${GRM.Project.ID}
     separatecontext: false
@@ -188,10 +194,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: d159735d-bbd9-4650-8b11-19f39869dea8
+    taskid: f3191c57-77c2-4ef0-81be-d2cde07e60e2
     type: condition
     task:
-      id: d159735d-bbd9-4650-8b11-19f39869dea8
+      id: f3191c57-77c2-4ef0-81be-d2cde07e60e2
       version: -1
       name: Verify Project Deletion
       type: condition
@@ -223,10 +229,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: ce773d2f-5e10-4cb1-8027-af8823a1cc40
+    taskid: dde12b6d-ed25-4485-88cf-cd43f9543b4d
     type: regular
     task:
-      id: ce773d2f-5e10-4cb1-8027-af8823a1cc40
+      id: dde12b6d-ed25-4485-88cf-cd43f9543b4d
       version: -1
       name: grm-undelete-project
       description: Restores the Project identified by the specified project_id (for
@@ -239,6 +245,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         simple: ${GRM.Project.ID}
     separatecontext: false
@@ -253,10 +261,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 18bad98a-f538-4d31-877a-6d702bba25dc
+    taskid: 66247d03-4fad-4e08-8007-8ca5e944d3bd
     type: condition
     task:
-      id: 18bad98a-f538-4d31-877a-6d702bba25dc
+      id: 66247d03-4fad-4e08-8007-8ca5e944d3bd
       version: -1
       name: Verify Project Undeletion
       type: condition
@@ -288,10 +296,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: eff898c9-f517-43a4-8108-4465316fc714
+    taskid: de425f91-785e-4481-8435-5f001acbe7e0
     type: regular
     task:
-      id: eff898c9-f517-43a4-8108-4465316fc714
+      id: de425f91-785e-4481-8435-5f001acbe7e0
       version: -1
       name: grm-get-project
       description: Get Project Resource
@@ -303,6 +311,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         simple: ${ProjectId.NeedsProcessing}
     separatecontext: false
@@ -317,10 +327,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: f89b9946-b99e-45de-8c79-7be2a3a66571
+    taskid: eee44a5c-592b-4740-8b54-488e7a671a84
     type: condition
     task:
-      id: f89b9946-b99e-45de-8c79-7be2a3a66571
+      id: eee44a5c-592b-4740-8b54-488e7a671a84
       version: -1
       name: Verify Get Project
       type: condition
@@ -353,10 +363,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 866cb06c-fdc9-4479-8efa-136a3136368f
+    taskid: 235de76c-5f6b-44ef-89f7-0c44df0ff9d3
     type: regular
     task:
-      id: 866cb06c-fdc9-4479-8efa-136a3136368f
+      id: 235de76c-5f6b-44ef-89f7-0c44df0ff9d3
       version: -1
       name: grm-search-organizations
       description: Searches Organization resources that are visible to the user and
@@ -371,6 +381,8 @@ tasks:
       - "11"
     scriptarguments:
       filter: {}
+      page_size: {}
+      page_token: {}
       pageSize: {}
       pageToken: {}
     separatecontext: false
@@ -385,10 +397,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 1add4a9b-b1f4-4e8e-8ddb-78b91c0193c4
+    taskid: 0673512c-5d2f-4c27-852a-7f71266bc4e7
     type: condition
     task:
-      id: 1add4a9b-b1f4-4e8e-8ddb-78b91c0193c4
+      id: 0673512c-5d2f-4c27-852a-7f71266bc4e7
       version: -1
       name: Verify Search Organizations
       type: condition
@@ -404,11 +416,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: GRM.Organization.DisplayName
+              simple: GRM.Organization.Name
             iscontext: true
           right:
             value:
-              simple: demistodev.com
+              simple: organizations/690006273490
     view: |-
       {
         "position": {
@@ -450,10 +462,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: 306efe7c-3b55-4dc0-81e1-7eb6f78a862b
+    taskid: 81a976df-9933-495e-8df7-74241e5ec411
     type: condition
     task:
-      id: 306efe7c-3b55-4dc0-81e1-7eb6f78a862b
+      id: 81a976df-9933-495e-8df7-74241e5ec411
       version: -1
       name: Verify Get Organization
       type: condition
@@ -469,11 +481,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: GRM.Organization.DisplayName
+              simple: GRM.Organization.Owner.CustomerID
             iscontext: true
           right:
             value:
-              simple: demistodev.com
+              simple: C02f0zfqw
     view: |-
       {
         "position": {
@@ -585,10 +597,10 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 6690c8d7-4c83-4002-8246-183af97fdabc
+    taskid: 3a55d56d-b6ae-497d-8e53-892caaefb430
     type: regular
     task:
-      id: 6690c8d7-4c83-4002-8246-183af97fdabc
+      id: 3a55d56d-b6ae-497d-8e53-892caaefb430
       version: -1
       name: grm-delete-project (Cleanup Project Created for Test)
       description: Marks the Project identified by the specified project_id (for example,
@@ -597,10 +609,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Google Resource Manager
-    nexttasks:
-      '#none#':
-      - "19"
     scriptarguments:
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         simple: ${ProjectId.NeedsProcessing}
     separatecontext: false
@@ -609,35 +620,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: 1a4f0bff-b8d8-437f-83e4-4a605468b487
-    type: regular
-    task:
-      id: 1a4f0bff-b8d8-437f-83e4-4a605468b487
-      version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id:
-        simple: ${incident.id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
         }
       }
     note: false
@@ -793,10 +775,10 @@ tasks:
     timertriggers: []
   "24":
     id: "24"
-    taskid: dffa3e0f-8736-4b5e-809b-741024b81c55
+    taskid: d51a2ec9-80f5-412f-8c34-6bcd59c72eb4
     type: regular
     task:
-      id: dffa3e0f-8736-4b5e-809b-741024b81c55
+      id: d51a2ec9-80f5-412f-8c34-6bcd59c72eb4
       version: -1
       name: grm-update-project
       description: Updates the attributes of the Project identified by the specified
@@ -809,6 +791,8 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
+      label_keys: {}
+      label_values: {}
       labels.attrs: {}
       labels.values: {}
       name:
@@ -821,6 +805,8 @@ tasks:
         simple: "690006273490"
       parent_type:
         simple: organization
+      project_id:
+        simple: ${ProjectId.NeedsProcessing}
       projectId:
         simple: ${ProjectId.NeedsProcessing}
     separatecontext: false
@@ -835,10 +821,10 @@ tasks:
     timertriggers: []
   "25":
     id: "25"
-    taskid: 51989d6f-f37b-40cb-85ff-77c3147b75de
+    taskid: b0feeef5-c0f5-4c5d-8f6d-4d87108fd51d
     type: condition
     task:
-      id: 51989d6f-f37b-40cb-85ff-77c3147b75de
+      id: b0feeef5-c0f5-4c5d-8f6d-4d87108fd51d
       version: -1
       name: Verify Update Project Command Changed the Project's name
       type: condition
@@ -873,7 +859,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4265,
+        "height": 4090,
         "width": 380,
         "x": 50,
         "y": 50

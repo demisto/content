@@ -15561,7 +15561,6 @@
                     "grm-update-project", 
                     "grm-undelete-project", 
                     "grm-list-projects", 
-                    "closeInvestigation", 
                     "grm-delete-project", 
                     "grm-create-project", 
                     "grm-get-project", 
