@@ -13412,6 +13412,7 @@
                     "fireeye-hx-file-acquisition", 
                     "fireeye-hx-delete-file-acquisition", 
                     "fireeye-hx-get-alerts", 
+                    "fireeye-hx-create-indicator", 
                     "fireeye-hx-get-host-information", 
                     "fireeye-hx-get-indicator"
                 ]
