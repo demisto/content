@@ -994,14 +994,14 @@ script:
         returns:
             The organization object with its associated fields
         """
-        name = demisto.args()['name']
+        name = demisto.args().get('name')
         response = get_organization(name)
         # Parse response into context
         context = {
             'Name': response.get('name'),
             'State': response.get('lifecycleState'),
             'CreateTime': response.get('creationTime'),
-            'CustomerID': organization.get('owner').get('directoryCustomerId')
+            'CustomerID': response.get('owner').get('directoryCustomerId')
         }
         md = tableToMarkdown("Details of Fetched Organization", context)
         demisto.results({
