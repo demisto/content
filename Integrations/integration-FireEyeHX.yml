@@ -1481,10 +1481,7 @@ script:
             'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('The conditions were added successfully ', md_table),
-            'EntryContext': {
-                "FireEyeHX.Indicators(obj._id===val._id)": response
-            }
+            'HumanReadable': tableToMarkdown('The conditions were added successfully', md_table)
         }
         demisto.results(entry)
 
@@ -3243,15 +3240,6 @@ script:
       required: true
       description: 'A list of conditions to add. The list can include a list of IPv4
         addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
-    outputs:
-    - contextPath: FireEyeHX.Indicators.message
-      description: Appending conditions message
-      type: string
-    - contextPath: FireEyeHX.Indicators.route
-      description: Appending conditions route
-      type: string
-    - contextPath: FireEyeHX.Indicators.details
-      description: Appending conditions details
     description: 'Add conditions to an indicator. Conditions can be MD5, hash values,
       domain names and IP addresses. '
   isfetch: true
