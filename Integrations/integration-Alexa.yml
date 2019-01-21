@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence.
 detaileddescription: To use this integration, simply call ```!domain```. !domain
-  accepts "domain" as a parameter to query.
+  accepts "domain" as a parameter to query. Threshold is the point where a domain will be considered unknown versus suspicious.
 configuration:
 - display: Sensitivity threshold for configuring which domains are suspicious versus
     trusted.
