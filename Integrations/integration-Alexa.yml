@@ -27,25 +27,11 @@ script:
     THRESHOLD = int(demisto.params().get('threshold'))
 
 
-    """HELPER FUNCTIONS"""
-    def get_xml(domain):
-        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
-        return xml
-
-
-    """MAIN FUNCTIONS"""
-    def alexa_domain(domain):
-        xml = get_xml(domain)
-        root = ET.fromstring(xml)
-        return root
-
-
     """COMMAND FUNCTIONS"""
     def alexa_domain_command():
         domain = demisto.args().get('domain')
-        dbot_score_text = 'unknown'
-        xml = get_xml(domain)
-        root = alexa_domain(domain)
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
+        root = ET.fromstring(xml)
         dbot_ec = defaultdict()
         dom_ec = defaultdict()
         # Wrapping in Try Except since when no results are found, endpoint returns 404
@@ -57,6 +43,7 @@ script:
                 dbot_score_text = 'suspicious'
             else:
                 dbot_score = 0
+                dbot_score_text = 'unknown'
         except:
             rank = 'Unknown'
             dbot_score = 2
@@ -68,14 +55,14 @@ script:
             'Domain': domain,
         }
         ec = {
-                'Domain(val.Name && val.Name == obj.Name)': dom_ec,
-                'DBotScore': dbot_ec,
-                'Alexa': {
-                    'Domain': {
-                        'Data': domain,
-                        'Rank': rank
-                    }
+            'Domain(val.Name && val.Name == obj.Name)': dom_ec,
+            'DBotScore': dbot_ec,
+            'Alexa(val.Domain.Name && val.Domain.Name == obj.Domain.Name)': {
+                'Domain': {
+                    'Name': domain,
+                    'Rank': rank
                 }
+            }
         }
         hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
                      ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
