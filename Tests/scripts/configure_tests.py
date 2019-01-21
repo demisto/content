@@ -20,9 +20,11 @@ NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
+SCRIPT_YML_REGEX = "scripts.*.yml"
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
+INTEGRATION_YML_REGEX = "integrations.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
 BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
@@ -30,8 +32,8 @@ BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
-
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
+                         INTEGRATION_YML_REGEX]
 
 # File type regex
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
@@ -84,6 +86,16 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
+def is_unchecked_file_type(file_path):
+    for folder in ['Integrations', 'Scripts']:
+        if file_path.startswith(folder):
+            for suff in ['.png', '.py', '.js']:
+                if file_path.endswith(suff):
+                    return True
+
+    return False
+
+
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
@@ -101,6 +113,8 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if is_unchecked_file_type(file_path):
+                continue
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
