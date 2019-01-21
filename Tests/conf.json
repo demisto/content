@@ -960,6 +960,10 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "mysql",
+            "playbookID": "MySQL Testx"
         }
     ],
     "skipped_tests": {

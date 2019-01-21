@@ -15505,6 +15505,20 @@
                     "Get File Sample From Hash - Generic"
                 ]
             }
+        }, 
+        {
+            "MySQL Test": {
+                "name": "MySQL Test", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "TestMysqlQuery", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "query"
+                ]
+            }
         }
     ]
 }
