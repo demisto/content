@@ -51,7 +51,7 @@ script:
         The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
         Example: tokyo-rain-123
       isArray: false
-      name: projectId
+      name: project_id
       predefined: ['']
       required: true
     - default: false
@@ -125,7 +125,7 @@ script:
         The unique ID of the Project to fetch.
         Example: tokyo-rain-123
       isArray: false
-      name: projectId
+      name: project_id
       predefined: []
       required: true
     description: Retrieves the Project identified by the specified projectId (for
@@ -197,7 +197,7 @@ script:
         The unique ID of the Project to update.
         Example: tokyo-rain-123
       isArray: false
-      name: projectId
+      name: project_id
       predefined: []
       required: true
     - default: false
@@ -348,7 +348,7 @@ script:
         The unique ID of the Project to delete.
         Example: tokyo-rain-123
       isArray: false
-      name: projectId
+      name: project_id
       predefined: []
       required: true
     description: Marks the Project identified by the specified project_id (for example,
@@ -379,7 +379,7 @@ script:
         The unique ID of the Project to restore.
         Example: tokyo-rain-123
       isArray: false
-      name: projectId
+      name: project_id
       predefined: []
       required: true
     description: Restores the Project identified by the specified projectId (for example,
@@ -476,8 +476,8 @@ script:
         """
         keys = project_body.keys()
         body = {}
-        if 'projectId' in keys:
-            body['projectId'] = project_body['projectId']
+        if 'project_id' in keys:
+            body['projectId'] = project_body['project_id']
         if 'parent_type' in keys and 'parent_id' in keys:
             body['parent'] = {
                 'type': project_body['parent_type'],
@@ -556,7 +556,7 @@ script:
         """
         Create a project in the Google Cloud Platform.
 
-        demisto parameter: (string) projectId
+        demisto parameter: (string) project_id
             The unique ID of the Project to create
 
         demisto parameter: (string) name
@@ -618,13 +618,13 @@ script:
 
         Set the lifcycleState attribute of a specified project to DELETE_REQUESTED.
 
-        demisto parameter: (string) projectId
+        demisto parameter: (string) project_id
             The unique ID of the Project to restore
 
         returns:
             Deleted project resource object
         """
-        project_id = demisto.args()['projectId']
+        project_id = demisto.args()['project_id']
         response = delete_project(project_id)
         if json.dumps(response) == '{}':
             response = get_project(project_id)
@@ -668,13 +668,13 @@ script:
 
         Sets the lifcycleState attribute of a specified project back to ACTIVE.
 
-        demisto parameter: (string) projectId
+        demisto parameter: (string) project_id
             The unique ID of the Project to restore
 
         returns:
             Restored project resource object
         """
-        project_id = demisto.args()['projectId']
+        project_id = demisto.args()['project_id']
         response = undelete_project(project_id)
         if json.dumps(response) == '{}':
             response = get_project(project_id)
@@ -714,15 +714,15 @@ script:
 
     def get_project_command():
         """
-        Retrieves the Project identified by the specified projectId.
+        Retrieves the Project identified by the specified project_id.
 
-        demisto parameter: (string) projectId
+        demisto parameter: (string) project_id
             The unique ID of the Project to fetch
 
         returns:
-            The project resource object specified by the projectId
+            The project resource object specified by the project_id
         """
-        project_id = demisto.args()['projectId']
+        project_id = demisto.args().get('project_id')
         response = get_project(project_id)
         # Parse response into context
         context = {
@@ -808,9 +808,9 @@ script:
 
     def update_project_command():
         """
-        Updates the attributes of the Project identified by the specified projectId.
+        Updates the attributes of the Project identified by the specified project_id.
 
-        demisto parameter: (string) projectId
+        demisto parameter: (string) project_id
             The unique ID of the Project to update
 
         demisto parameter: (string) name
@@ -832,7 +832,7 @@ script:
         returns:
             The updated Project resource object
         """
-        project_id = demisto.args().get('projectId')
+        project_id = demisto.args().get('project_id')
         project_body = demisto.args()
         project_body = make_project_body(project_body)
         response = update_project(project_id, project_body)
