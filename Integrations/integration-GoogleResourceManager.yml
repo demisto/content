@@ -91,7 +91,7 @@ script:
     - default: false
       defaultValue: ''
       description: The ID of the parent resource. Organizations' Name output is in
-        the format `organizations/12345` where the numbers after the forward slash
+        the format "organizations/12345" where the numbers after the forward slash
         are the ID of the organization. To find Organization IDs available to assign
         as a parent resource try running the grm-search-organization command.
       isArray: false
@@ -102,8 +102,8 @@ script:
       defaultValue: ''
       description: |-
         The label keys associated with this Project.
-        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
-        No more than 256 labels can be associated with a given resource.
+        Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+        You can associate a maximum of 256 labels with a given resource.
       isArray: true
       name: label_keys
       predefined: []
@@ -111,7 +111,7 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        The user-assigned display name of the Project. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
+        The user-assigned display name of the Project. It must be 4 to 30 characters. Supported characters: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
         Example: My Project
       isArray: false
       name: name
@@ -119,8 +119,8 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: 'Required field representing the resource type the parent.id is
-        for. At present, the valid types are: "organization" and "folder".'
+      description: 'Represents the resource type the parent_id is
+        for. Valid resource types: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -129,14 +129,14 @@ script:
       defaultValue: ''
       description: |-
         The label values associated with this Project.
-        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
-        No more than 256 labels can be associated with a given resource.
+        Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+        You can associate a maximum of 256 labels with a given resource.
       isArray: true
       name: label_values
       predefined: []
       required: false
     description: Request that new Project resource be created with the user-specified
-      values of the command's arguments.
+      values passed as command arguments.
     execution: false
     name: grm-create-project
     outputs:
@@ -154,20 +154,18 @@ script:
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   - arguments:
     - default: false
       defaultValue: ''
       description: |-
-        The unique ID of the Project to fetch.
-        Example: tokyo-rain-123
+        The unique ID of the Project to fetch, e.g., tokyo-rain-123.
       isArray: false
       name: project_id
       predefined: []
       required: true
-    description: Retrieves the Project identified by the specified project_id (for
-      example, my-project-123).
+    description: Retrieves the Project by the specified project_id, e.g., my-project-123.
     execution: false
     name: grm-get-project
     outputs:
@@ -185,7 +183,7 @@ script:
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   - arguments:
     - default: false
@@ -207,8 +205,8 @@ script:
       name: filter
       predefined: []
       required: false
-    description: Lists projects that are visible to the user and satisfy  the specified
-      filter. This method returns the projects in an unspecified order.
+    description: Lists projects that are visible to the user and satisfies the specified
+      filter. Projects are returned in an unspecified order.
     execution: false
     name: grm-list-projects
     outputs:
@@ -220,13 +218,13 @@ script:
         the project., type: String}
     - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
       type: String}
-    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+    - {contextPath: GRM.Project.CreateTime, description: The time the
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   - arguments:
     - default: false
@@ -241,7 +239,7 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        The string to update the Project name with. It must be 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point.
+        The string to update the Project name with. It must be 4 to 30 characters. Supported characters are: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
         Example: My Project
       isArray: false
       name: name
@@ -259,8 +257,7 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: 'Field representing the resource type the parent.id is for. At
-        present, the valid types are: "organization" and "folder".'
+      description: 'The resource type the parent_id is for. Valid resource types: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -269,8 +266,8 @@ script:
       defaultValue: ''
       description: |-
         The label keys to associate with this Project.
-        Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
-        No more than 256 labels can be associated with a given resource.
+        Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
+        You can associate a maximum of 256 labels with a given resource.
       isArray: true
       name: label_keys
       predefined: []
@@ -279,8 +276,8 @@ script:
       defaultValue: ''
       description: |-
         The label values to associate with this Project.
-        Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
-        No more than 256 labels can be associated with a given resource.
+        Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
+        You can associate a maximum of 256 labels with a given resource.
       isArray: true
       name: label_values
       predefined: []
@@ -299,13 +296,13 @@ script:
         the project., type: String}
     - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
       type: String}
-    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+    - {contextPath: GRM.Project.CreateTime, description: The time the
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   - arguments:
     - default: false
@@ -319,7 +316,7 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: A pagination token returned from a previous call to `organizations.search`
+      description: A pagination token returned from a previous call to "organizations.search"
         that indicates from where listing should continue.
       isArray: false
       name: page_token
@@ -327,32 +324,35 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: Used to filter the Organizations to return in the response. Filter
-        rules are case-insensitive.
+      description: "An expression for filtering the Organizations returned in the results. Filter\
+        \ rules are case-insensitive.\n\nOrganizations may be filtered by 'owner.directoryCustomerId'\
+        \ or by 'domain', where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
+        Organizations with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
+        Organizations corresponding to the domain google.com."
       isArray: false
       name: filter
       predefined: []
       required: false
     description: Searches Organization resources that are visible to the user and
-      satisfy the specified filter. This method returns Organizations in an unspecified
+      satisfies the specified filter. Organizations are returned in an unspecified
       order. New Organizations do not necessarily appear at the end of the results.
     execution: false
     name: grm-search-organizations
     outputs:
     - {contextPath: GRM.Organization.Name, description: 'The resource name of the
         organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]". For example, `organizations/1234`.',
+        is "organizations/[organization_id]" e.g. "organizations/1234".',
       type: String}
     - {contextPath: GRM.Organization.State, description: The organization's current
         lifecycle state., type: String}
-    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+    - {contextPath: GRM.Organization.CreateTime, description: The time
         the organization resource was created, type: Date}
     - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
-        id used in the Directory API., type: String}
+        ID used in the Directory API., type: String}
   - arguments:
     - default: false
       defaultValue: ''
-      description: The resource name of the Organization to fetch, e.g. "organizations/1234".
+      description: The resource name of the Organization to fetch, e.g., "organizations/1234".
       isArray: false
       name: name
       predefined: []
@@ -364,11 +364,11 @@ script:
     outputs:
     - {contextPath: GRM.Organization.Name, description: 'The resource name of the
         organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]". For example, `organizations/1234`.',
+        is "organizations/[organization_id]" e.g. "organizations/1234".',
       type: String}
     - {contextPath: GRM.Organization.State, description: The organization's current
         lifecycle state., type: String}
-    - {contextPath: GRM.Organization.CreateTime, description: creationTime - the time
+    - {contextPath: GRM.Organization.CreateTime, description: The time
         the organization resource was created, type: Date}
     - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
         ID used in the Directory API., type: String}
@@ -382,8 +382,7 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Marks the Project identified by the specified project_id (for example,
-      my-project-123) for deletion.
+    description: Marks the Project identified by the specified project_id to be deleted, e.g., my-project-123.
     execution: true
     name: grm-delete-project
     outputs:
@@ -401,7 +400,7 @@ script:
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   - arguments:
     - default: false
@@ -413,8 +412,7 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Restores the Project identified by the specified project_id (for
-      example, my-project-123).
+    description: Restores the Project identified by the specified project_id, e.g., my-project-123.
     execution: false
     name: grm-undelete-project
     outputs:
@@ -426,13 +424,13 @@ script:
         the Project.', type: String}
     - {contextPath: GRM.Project.Name, description: The user-assigned display name
         of the Project., type: String}
-    - {contextPath: GRM.Project.CreateTime, description: createTime - The time the
+    - {contextPath: GRM.Project.CreateTime, description: The time the
         resource was created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
       type: String}
-    - {contextPath: GRM.Project.Parent.Type, description: type of the parent resource,
+    - {contextPath: GRM.Project.Parent.Type, description: Type of the parent resource,
       type: String}
   dockerimage: demisto/gvault
   isfetch: false
