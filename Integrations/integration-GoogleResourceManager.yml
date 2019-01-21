@@ -119,8 +119,8 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: 'Represents the resource type the parent_id is
-        for. Valid resource types: "organization" and "folder".'
+      description: 'Represents the resource type the parent_id is for. Valid resource
+        types: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -159,8 +159,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: |-
-        The unique ID of the Project to fetch, e.g., tokyo-rain-123.
+      description: The unique ID of the Project to fetch, e.g., tokyo-rain-123.
       isArray: false
       name: project_id
       predefined: []
@@ -218,8 +217,8 @@ script:
         the project., type: String}
     - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
       type: String}
-    - {contextPath: GRM.Project.CreateTime, description: The time the
-        resource was created, type: Date}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
@@ -257,7 +256,8 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: 'The resource type the parent_id is for. Valid resource types: "organization" and "folder".'
+      description: 'The resource type the parent_id is for. Valid resource types:
+        "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -296,8 +296,8 @@ script:
         the project., type: String}
     - {contextPath: GRM.Project.State, description: The Project lifecycle state.,
       type: String}
-    - {contextPath: GRM.Project.CreateTime, description: The time the
-        resource was created, type: Date}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
@@ -324,10 +324,11 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: "An expression for filtering the Organizations returned in the results. Filter\
-        \ rules are case-insensitive.\n\nOrganizations may be filtered by 'owner.directoryCustomerId'\
-        \ or by 'domain', where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\t\
-        Organizations with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
+      description: "An expression for filtering the Organizations returned in the\
+        \ results. Filter rules are case-insensitive.\n\nOrganizations may be filtered\
+        \ by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite\
+        \ domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations\
+        \ with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
         Organizations corresponding to the domain google.com."
       isArray: false
       name: filter
@@ -341,12 +342,11 @@ script:
     outputs:
     - {contextPath: GRM.Organization.Name, description: 'The resource name of the
         organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".',
-      type: String}
+        is "organizations/[organization_id]" e.g. "organizations/1234".', type: String}
     - {contextPath: GRM.Organization.State, description: The organization's current
         lifecycle state., type: String}
-    - {contextPath: GRM.Organization.CreateTime, description: The time
-        the organization resource was created, type: Date}
+    - {contextPath: GRM.Organization.CreateTime, description: The time the organization
+        resource was created, type: Date}
     - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
         ID used in the Directory API., type: String}
   - arguments:
@@ -364,12 +364,11 @@ script:
     outputs:
     - {contextPath: GRM.Organization.Name, description: 'The resource name of the
         organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".',
-      type: String}
+        is "organizations/[organization_id]" e.g. "organizations/1234".', type: String}
     - {contextPath: GRM.Organization.State, description: The organization's current
         lifecycle state., type: String}
-    - {contextPath: GRM.Organization.CreateTime, description: The time
-        the organization resource was created, type: Date}
+    - {contextPath: GRM.Organization.CreateTime, description: The time the organization
+        resource was created, type: Date}
     - {contextPath: GRM.Organization.Owner.CustomerID, description: The G Suite customer
         ID used in the Directory API., type: String}
   - arguments:
@@ -382,7 +381,8 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Marks the Project identified by the specified project_id to be deleted, e.g., my-project-123.
+    description: Marks the Project identified by the specified project_id to be deleted,
+      e.g., my-project-123.
     execution: true
     name: grm-delete-project
     outputs:
@@ -412,7 +412,8 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Restores the Project identified by the specified project_id, e.g., my-project-123.
+    description: Restores the Project identified by the specified project_id, e.g.,
+      my-project-123.
     execution: false
     name: grm-undelete-project
     outputs:
@@ -424,8 +425,8 @@ script:
         the Project.', type: String}
     - {contextPath: GRM.Project.Name, description: The user-assigned display name
         of the Project., type: String}
-    - {contextPath: GRM.Project.CreateTime, description: The time the
-        resource was created, type: Date}
+    - {contextPath: GRM.Project.CreateTime, description: The time the resource was
+        created, type: Date}
     - {contextPath: GRM.Project.Label, description: The labels associated with this
         Project., type: Unknown}
     - {contextPath: GRM.Project.Parent.ID, description: ID of the parent resource,
@@ -565,8 +566,7 @@ script:
             ex = operation.get('error')
             err_code = ex.get('code')
             err_msg = ex.get('message')
-            err_details = "".join(ex.get('details'))
-            full_err_msg = "error code: {}\nerror message: {}\nerror details: {}".format(err_code, err_msg, err_details)
+            full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
             return_error(full_err_msg)
 
 
