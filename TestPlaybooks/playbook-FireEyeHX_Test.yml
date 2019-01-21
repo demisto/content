@@ -1,14 +1,14 @@
 id: FireEye HX Test
-version: 9
+version: -1
 name: FireEye HX Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 33073e43-8e63-4e77-8657-e046083ad65f
+    taskid: 1995ba27-58f8-40dd-8156-b2eb2d0de3f3
     type: start
     task:
-      id: 33073e43-8e63-4e77-8657-e046083ad65f
+      id: 1995ba27-58f8-40dd-8156-b2eb2d0de3f3
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 025c55bc-1ba3-43dc-895b-ee5b7e8f2037
+    taskid: b6466924-661a-47f7-86ab-e219003de9f3
     type: regular
     task:
-      id: 025c55bc-1ba3-43dc-895b-ee5b7e8f2037
+      id: b6466924-661a-47f7-86ab-e219003de9f3
       version: -1
       name: List the last alert
       script: FireEye HX|||fireeye-hx-get-alerts
@@ -68,12 +69,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: cb53f1e4-d36d-4c1f-817f-66289c065485
+    taskid: f3159081-09d5-428b-84e5-455d125af4bb
     type: regular
     task:
-      id: cb53f1e4-d36d-4c1f-817f-66289c065485
+      id: f3159081-09d5-428b-84e5-455d125af4bb
       version: -1
       name: Get alert information
       script: FireEye HX|||fireeye-hx-get-alert
@@ -95,12 +97,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 193600eb-2c37-40f8-8586-cbd5d45745a8
+    taskid: 82d96882-15d0-4093-8af6-fd340c94feae
     type: regular
     task:
-      id: 193600eb-2c37-40f8-8586-cbd5d45745a8
+      id: 82d96882-15d0-4093-8af6-fd340c94feae
       version: -1
       name: Get information on the host associated with the alert
       script: FireEye HX|||fireeye-hx-get-host-information
@@ -120,12 +123,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: c7f15d77-f24d-4bd2-8f2a-5a83d340a73c
+    taskid: 84633535-5c00-4c72-88cb-153a08ffddf7
     type: regular
     task:
-      id: c7f15d77-f24d-4bd2-8f2a-5a83d340a73c
+      id: 84633535-5c00-4c72-88cb-153a08ffddf7
       version: -1
       name: Get alerted indicators
       script: FireEye HX|||fireeye-hx-get-indicators
@@ -156,12 +160,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: cc624265-8459-48f8-8e04-dc254fa66b01
+    taskid: cd0174bc-cd41-4d7a-883b-70c0ca67d99e
     type: regular
     task:
-      id: cc624265-8459-48f8-8e04-dc254fa66b01
+      id: cd0174bc-cd41-4d7a-883b-70c0ca67d99e
       version: -1
       name: 'Get information on a specific indicator '
       script: FireEye HX|||fireeye-hx-get-indicator
@@ -182,12 +187,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 9fb468fd-2552-4e70-8806-aa81da8a0383
+    taskid: 6296b79e-b6a5-4b62-80a3-719cc8348caa
     type: regular
     task:
-      id: 9fb468fd-2552-4e70-8806-aa81da8a0383
+      id: 6296b79e-b6a5-4b62-80a3-719cc8348caa
       version: -1
       name: File acquisition - get blob.txt
       script: FireEye HX|||fireeye-hx-file-acquisition
@@ -215,12 +221,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: c2c1f775-5d93-42b3-8ef6-23eb24e14fe8
+    taskid: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
     type: regular
     task:
-      id: c2c1f775-5d93-42b3-8ef6-23eb24e14fe8
+      id: fb4b85e8-83b7-4cf0-89ba-e01ff0eb03ab
       version: -1
       name: Delete the acquisition
       script: FireEye HX|||fireeye-hx-delete-file-acquisition
@@ -239,12 +246,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: b237a531-c9d6-40a4-817c-96f219a061bd
+    taskid: eb0581cb-71b3-4680-88db-b9788cdfe122
     type: regular
     task:
-      id: b237a531-c9d6-40a4-817c-96f219a061bd
+      id: eb0581cb-71b3-4680-88db-b9788cdfe122
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -256,6 +264,7 @@ tasks:
       - "7"
       - "4"
       - "1"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -272,12 +281,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: 84d3a2bc-91ca-46e6-8832-462cc3e6c815
+    taskid: 4224e3be-0d05-407a-84ae-f96b407ae43f
     type: condition
     task:
-      id: 84d3a2bc-91ca-46e6-8832-462cc3e6c815
+      id: 4224e3be-0d05-407a-84ae-f96b407ae43f
       version: -1
       name: Alert exists
       type: condition
@@ -310,12 +320,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
-    taskid: a4074bf7-bec8-4880-80c1-44b68d526047
+    taskid: d00452ed-248d-4ae0-8e39-ac964243b24c
     type: title
     task:
-      id: a4074bf7-bec8-4880-80c1-44b68d526047
+      id: d00452ed-248d-4ae0-8e39-ac964243b24c
       version: -1
       name: 'No alerts found '
       type: title
@@ -330,12 +341,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: fbb630fa-23d7-478a-8483-2fbf5152b683
+    taskid: 4c569bc8-8118-4237-84cb-a1392309f1ef
     type: title
     task:
-      id: fbb630fa-23d7-478a-8483-2fbf5152b683
+      id: 4c569bc8-8118-4237-84cb-a1392309f1ef
       version: -1
       name: Alert detected - get more information
       type: title
@@ -353,6 +365,36 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: e90e20eb-4573-42e5-80c8-d975a729d331
+    type: regular
+    task:
+      id: e90e20eb-4573-42e5-80c8-d975a729d331
+      version: -1
+      name: 'Cerate Indicator '
+      script: FireEye HX_copy|||fireeye-hx-create-indicator
+      type: regular
+      iscommand: true
+      brand: FireEye HX_copy
+    scriptarguments:
+      category:
+        simple: custom
+      description:
+        simple: just a test
+      indicator_name:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -361,8 +403,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1085,
-        "width": 1455,
-        "x": 50,
+        "width": 1925,
+        "x": -420,
         "y": 50
       }
     }
