@@ -11,7 +11,8 @@
         },
         {
             "integrations": "Pwned",
-            "playbookID": "Pwned test"
+            "playbookID": "Pwned test",
+            "nightly": true
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
