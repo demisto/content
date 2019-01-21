@@ -60,7 +60,6 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        string
         The id of the parent resource.
       isArray: false
       name: parent_id
@@ -88,7 +87,6 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        string
         Required field representing the resource type the parent.id is for. At present, the valid types are: "organization" and "folder".
       isArray: false
       name: parent_type
@@ -203,7 +201,6 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        string
         The id of the parent resource.
       isArray: false
       name: parent_id
@@ -267,7 +264,6 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        string
         A pagination token returned from a previous call to `organizations.search` that indicates from where listing should continue.
       isArray: false
       name: page_token
