@@ -639,7 +639,7 @@ script:
         """
         project_id = demisto.args()['project_id']
         response = delete_project(project_id)
-        if json.dumps(response) == '{}':
+        if not response:
             response = get_project(project_id)
             # Parse response into context
             context = {
@@ -689,7 +689,7 @@ script:
         """
         project_id = demisto.args()['project_id']
         response = undelete_project(project_id)
-        if json.dumps(response) == '{}':
+        if not response:
             response = get_project(project_id)
             # Parse response into context
             context = {
