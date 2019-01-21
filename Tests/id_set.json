@@ -2444,10 +2444,6 @@
                 "name": "ParseCSV", 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "tests": [
-                    "TestParseCSV", 
-                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
@@ -8592,7 +8588,8 @@
                     "microsoft-atp-get-file-related-machines", 
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
-                    "microsoft-atp-list-alerts"
+                    "microsoft-atp-list-alerts", 
+                    "microsoft-atp-update-alert"
                 ], 
                 "tests": [
                     "No test"
@@ -9618,6 +9615,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -11058,7 +11056,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
@@ -15463,6 +15460,19 @@
                     "Ping", 
                     "isError", 
                     "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "gmail-search"
                 ]
             }
         }, 
