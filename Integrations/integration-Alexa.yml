@@ -57,11 +57,9 @@ script:
         ec = {
             'Domain(val.Name && val.Name == obj.Name)': dom_ec,
             'DBotScore': dbot_ec,
-            'Alexa(val.Domain.Name && val.Domain.Name == obj.Domain.Name)': {
-                'Domain': {
-                    'Name': domain,
-                    'Rank': rank
-                }
+            'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
+                'Name': domain,
+                'Rank': rank
             }
         }
         hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
