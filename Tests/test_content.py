@@ -110,6 +110,18 @@ def stop_proxy(c, public_ip, p):
     print p.stderr.read()   # DEBUG
 
 
+def demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc):  # TODO: Remove after demo
+    print "FOR DEMO: Verifying test passes with playback."
+    if not os.path.isfile("Mocks/{}.mock".format(playbook_id)):
+        print "ERROR: mock file does not exist"
+        return False, proxy_proc
+    stop_proxy(c, public_ip, proxy_proc)
+    proxy_proc = start_proxy(c, public_ip, playbook_id)
+    succeed, _ = test_integration(c, integrations, playbook_id, test_options)
+    print "DEMO: Test {} with playback".format("succeeded" if succeed else "failed")
+    return succeed, proxy_proc
+
+
 def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
@@ -141,6 +153,7 @@ def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
         # TODO: upload mock file to repo
+        succeed, proxy_proc = demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc)
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
