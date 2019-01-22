@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "19.1.1"
+      CONTENT_VERSION: "19.1.2"
       GIT_SHA1: "329dcfcd840694a6ac8538b08ba760a2cc4f4d16" # guardrails-disable-line
     steps:
       - checkout
@@ -42,80 +42,3 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - run:
-          name: Download Artifacts
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo "Using AMI - Not downloading artifacts"
-
-              else
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-            fi
-      - run:
-          name: Download Configuration
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/download_demisto_conf.sh
-
-              else
-                ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
-            fi
-      - run:
-          name: Create Instance
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/create_instance.sh instance.json
-
-              else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
-            fi
-      - run:
-          name: Setup Instance
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_installer_on_instance.sh
-
-              else
-                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-            fi
-
-            ./Tests/scripts/wait_until_server_ready.sh
-      - run:
-          name: Run Tests
-          shell: /bin/bash
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh
-
-              else
-                ./Tests/lastest_server_build_scripts/run_tests.sh
-            fi
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: ./Tests/scripts/slack_notifier.sh
-          when: always
-      - run:
-          name: Instance Test
-          command: ./Tests/scripts/instance_test.sh
-          when: always
-      - run:
-          name: Destroy Instances
-          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
-          when: always
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
-          when: always
-
-
-workflows:
-  version: 2
-  commit:
-    jobs:
-      - build
