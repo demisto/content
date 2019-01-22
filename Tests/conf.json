@@ -3,8 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "ThreatMiner",
+            "playbookID": "ThreatMiner-Test"
+        },
+        {
             "integrations": "Pwned",
-            "playbookID": "Pwned test"
+            "playbookID": "Pwned test",
+            "nightly": true
+        },
+        {
+            "integrations": "Alexa Rank Indicator",
+            "playbookID": "Alexa Test Playbook"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -139,7 +151,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 500
+          "timeout": 900
         },
         {
             "integrations": "Tenable.sc",
@@ -330,6 +342,10 @@
         },
         {
             "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
         },
         {
@@ -794,7 +810,7 @@
         {
             "integrations": "Threat Grid",
             "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 500
+            "timeout": 1000
         },
         {
             "integrations": "Centreon",
@@ -909,6 +925,11 @@
 
         },
         {
+            "playbookID": "MaxMind Test",
+            "integrations": "MaxMind GeoIP2"
+
+        },
+        {
             "playbookID": "Test_Sagemaker",
             "integrations": "AWS Sagemaker"
 
@@ -936,15 +957,24 @@
             ]
         },
         {
-            "playbookID": "Pwned test",
-            "integrations": "Pwned"
-        },
-        {
             "integrations": "duo",
             "playbookID": "DUO Test Playbook"
         },
         {
           "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "Phishme Intelligence",
+            "playbookID": "Test - PhishMe Intelligence"
+        },
+        {
+            "integrations": "Google Resource Manager",
+            "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -960,7 +990,8 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac"
+        "FireEye HX Test": "Test unstable - to be fixed by @noac",
+        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -987,7 +1018,9 @@
         "Attivo Botsink": "no instance, @Arian will update",
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
-        "Netskope": "instance is down"
+        "Netskope": "instance is down",
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
     },
     "nigthly_integrations": [
         "Lastline",

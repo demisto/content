@@ -4,6 +4,13 @@ The purpose of standardising our code conventions is to ensure uniformity among 
 ## Dates
 We do not use epoch time for customer facing results (Context, Human Readable, etc.). If the API you are working with requires the time format to be in epoch, then convert the date string into epoch as needed. Where possible, use the human readable format of date ```%Y-%m-%dT%H:%M:%S```
 
+```python
+time_epoch = '499137720'
+formatted_time = formatEpochDate(time_epoch)
+print(formatted_time)
+>>> '1985-10-26T01:22:00'
+```
+
 **Please note:** If the response returned is in epoch, it is best practices to convert it to ```%Y-%m-%dT%H:%M:%S```
 
 ## JSON, Dictionaries, and Object Formatting
@@ -21,8 +28,8 @@ Do not list multiple items on one line as demonstrated below:
 demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : content })
 ```
 
-## Global Variables
-When using a global variable, the variable name must be in all caps. This makes it easier to quickly find inputs in your code. For example:
+## Global Variables / Integration Constants
+When using a global variable or Integration Constant, the variable name must be in all caps. This makes it easier to quickly find inputs in your code. For example:
 ```python
 API_VERSION = "v1"
 USERNAME = demisto.params().get("url")
@@ -31,7 +38,42 @@ USERNAME = demisto.params().get("url")
 **Please restrain from naming variables as shown below**
 ```python
 apiVersion = "v1"
-username = demisto.params().get("url")
+url = demisto.params().get("url")
+```
+
+## Arguments
+When naming an argument, the name should be all lowercase with spaces replaced by underscores. See the example below:
+
+### Do this:
+```
+!cylance-get-incident incident_id
+```
+ ### Not this:
+ ```python
+!cylance-get-incident incidentId
+```
+
+Additionally, arguments are to be passed through the ```sample_function_command``` function and must not reside in the primary ```sample_function``` function. Observe the following:
+
+**Do This**
+
+```python
+def sample_function(arg1):
+    response = arg1 + 'is the argument'
+    return response
+
+def sample_function_command():
+    arg1 = demisto.args().get('arg1')
+    response = sample_function(arg1)
+    demisto.results('This is the response - {}'.format(response))
+```
+
+**Not This**
+```python
+def sample_function():
+    arg1 = demisto.args().get('arg1')
+    response = arg1 + 'is the argument'
+    demisto.results('This is the response - {}'.format(response))
 ```
 
 ## Command Functions
@@ -44,6 +86,7 @@ def sample_function():
     r = http_request()
     res = filter_results(r)
     results = magic_box(res)
+    return results
 ```
 
 ### sample_function_command
@@ -68,7 +111,7 @@ Functions that are minor and serve the purpose of supporting a main function are
 ```python
 ''' HELPER FUNCTIONS '''
 # Returns an item in a list at a given index
-def list_tool(item, list, number):
+def list_tool(item, number):
     if isinstance(item, list):
         return str(item[number])
     else:
@@ -120,7 +163,7 @@ In this instance, the ```val.URL && val.URL == obj.URL``` links together the res
 ## Logging
 In some cases, it may be necessary to pass some information to the logs in order to better assist ourselves with debugging in the future. 
 
-First, we need to ensure ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
+First, we need to ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
  
 To post to the logs, we use the following:
 ```
@@ -151,14 +194,12 @@ try:
         get_session_command()
 
 except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
     return_error(e.message)
 ```
 
 
 ## Common Server Functions
-If the function you just wrote seems like a workaround for something that should already exist, it probably does. Always check the script helper to see if a function already exists. Examples of Common Server Functions are as noted below:
+Before writing a function that seems like a workaround for something that should already exist, check the script helper to see if a function already exists. Examples of Common Server Functions are as noted below:
 
 ### fileResult
 This will return a file in the War Room by using the syntax below:
@@ -176,10 +217,10 @@ File type can be specified, but defaults to "None" when not provided.
 Formats an epoch date to human readable
 
 ```python
-t = '1546330085'
+t = '499137720'
 human_readable = formatEpochDate(t)
 print human_readable
---> 'Tue, 01 Jan 2019 08:08:05 GMT'
+--> '1985-10-26T01:22:00'
 
 ```
 
@@ -226,7 +267,7 @@ You may also use ```headerTransform``` to convert the existing keys into formatt
 ```demisto.args()``` returns a dict of arguments for a given command. We use this to get non-global variables. See below:
 
 ```python
-    query = demisto.args().get('url')
+    url = demisto.args().get('url')
 ```
  The argument above can be seen in the integration settings as shown below:
  
@@ -301,6 +342,23 @@ demisto.results({
 Will produce a note in the war room as seen below:
 
 <img width="743" src="https://user-images.githubusercontent.com/42912128/50571514-4cc91900-0db5-11e9-9f89-ae4a607ff2ba.png">
+
+### AutoExtract
+As part of ```demisto.results()``` there is a field called ```IgnoreAutoExtract``` which prevents the built-in autoextract tool from enriching IPs, URLs, Files, and other indicators from the result. To use this, see the example below:
+
+```python
+demisto.results({
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['text'],
+    'Contents': command_id,
+    'HumanReadable': message,
+    'IgnoreAutoExtract': True,
+    'EntryContext': {
+        'SEPM.Quarantine': context
+    }
+})
+```
+**Please Note:** By default, IgnoreAutoExtract is set to ```False```.
 
 ## Quality Examples of Integrations
 * [McAfee Advanced Threat Defence](https://github.com/demisto/content/blob/master/Integrations/integration-McAfee-ATD.yml)
