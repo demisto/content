@@ -3,7 +3,7 @@ version: -1
 name: Detonate File - HybridAnalysis
 fromversion: 4.0.0
 description: |-
-  Detonates one or more files using the Joe Security - Joe Sandbox integration.
+  Detonates one or more files using the Hybrid Analysis integration.
   Returns relevant reports to the War Room and file reputations to the context data.
   All file types are supported.
 starttaskid: "0"
