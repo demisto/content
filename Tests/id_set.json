@@ -8445,6 +8445,9 @@
                     "jask-search-insights", 
                     "jask-search-signals", 
                     "jask-search-entities"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
