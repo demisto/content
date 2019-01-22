@@ -43,3 +43,6 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: added overwrite support to CopyFileD2
+tests:
+  - No test
