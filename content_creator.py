@@ -44,7 +44,7 @@ def merge_script_package_to_yml(package_path, dir_name):
     if dir_name == 'Scripts':
         yml_data['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
         script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    else:
+    elif dir_name == 'Integrations':
         yml_data['script']['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
 
@@ -56,9 +56,9 @@ def merge_script_package_to_yml(package_path, dir_name):
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data):
-    script_path = glob.glob(package_path + '*png')
-    if dir_name == 'Integrations' and script_path:
-        with open(script_path[0], 'rb') as image_file:
+    image_path = glob.glob(package_path + '*png')
+    if dir_name == 'Integrations' and image_path:
+        with open(image_path[0], 'rb') as image_file:
             image_data = image_file.read()
 
         yml_data['image'] = IMAGE_PREFIX + base64.b64encode(image_data)

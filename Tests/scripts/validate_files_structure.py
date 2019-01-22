@@ -9,6 +9,7 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
 for that task.
 """
+import glob
 import sys
 try:
     import yaml
@@ -300,6 +301,26 @@ def oversize_image(file_path):
     return False
 
 
+def is_existing_image(file_path):
+    is_image_in_yml = False
+    is_image_in_package = False
+    if get_json(file_path).get('image'):
+        is_image_in_yml = True
+
+    if not re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        package_path = os.path.dirname(file_path)
+        image_path = glob.glob(package_path + '*.png')
+        if image_path:
+            if is_image_in_yml:
+                print_error("You have added an image both in the package and in the yml "
+                            "file, please update the package {}".format(package_path))
+                return False
+
+            is_image_in_package = True
+
+    return is_image_in_package or is_image_in_yml
+
+
 def get_modified_and_added_files(branch_name, is_circle):
     all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
 
@@ -510,7 +531,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
 
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            if oversize_image(file_path):
+            if oversize_image(file_path) or not is_existing_image(file_path):
                 has_schema_problem = True
 
             if is_circle and not integration_valid_in_id_set(file_path, integration_set):
@@ -579,7 +600,7 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
-                    changed_docker_image(file_path):
+                    changed_docker_image(file_path) or not is_existing_image(file_path):
                 has_schema_problem = True
 
         elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
