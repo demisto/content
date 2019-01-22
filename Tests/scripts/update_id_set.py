@@ -42,11 +42,11 @@ def print_error(error_str):
 
 def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
+    output, err = p.communicate()
+    if err and 'CRLF will be replaced by LF' not in err:
         print_error("Failed to run git command " + command)
         sys.exit(1)
-    return p.stdout.read()
+    return output
 
 
 def checked_type(file_path):
@@ -236,7 +236,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*\)", script_code))))
+    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -285,6 +285,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
                     instance[obj_id] = obj_data[obj_id]
+                    break
 
 
 def add_new_object_to_id_set(obj_id, obj_data, instances_set):
@@ -364,7 +365,7 @@ def update_id_set():
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status")
+    files_string = run_git_command("git diff --name-status HEAD")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files, added_scripts, modified_scripts = get_changed_files(files_string + '\n' +
                                                                                      second_files_string)
