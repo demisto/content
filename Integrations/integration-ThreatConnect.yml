@@ -53,7 +53,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     ''' IMPORTS '''
     import urllib
     import datetime
@@ -70,6 +70,8 @@ script:
     MAX_CONTEXT = 100
 
     ''' HELPER FUNCTIONS '''
+
+
     def get_client():
         params = demisto.params()
         access = params['accessId']
@@ -87,34 +89,34 @@ script:
 
 
     def calculate_freshness_time(freshness):
-        t = datetime.datetime.now() - datetime.timedelta(days=7)
+        t = datetime.datetime.now() - datetime.timedelta(days=freshness)
         return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
     def create_context(indicators, include_dbot_score=False):
         context = {
-            'DBotScore' : [],
-            outputPaths['ip'] : [],
-            outputPaths['url'] : [],
-            outputPaths['domain'] : [],
-            outputPaths['file'] : [],
-            'TC.Indicator(val.ID && val.ID === obj.ID)' : [],
+            'DBotScore': [],
+            outputPaths['ip']: [],
+            outputPaths['url']: [],
+            outputPaths['domain']: [],
+            outputPaths['file']: [],
+            'TC.Indicator(val.ID && val.ID === obj.ID)': [],
         }
         tc_type_to_demisto_type = {
-            'Address' : 'ip',
-            'URL' : 'url',
-            'Host' : 'domain',
-            'File' : 'file'
+            'Address': 'ip',
+            'URL': 'url',
+            'Host': 'domain',
+            'File': 'file'
         }
         type_to_value_field = {
-            'Address' : 'ip',
-            'URL' : 'text',
-            'Host' : 'hostName',
-            'File' : 'md5',
+            'Address': 'ip',
+            'URL': 'text',
+            'Host': 'hostName',
+            'File': 'md5',
         }
 
         for ind in indicators:
-            dbotScore = 0
+            dbot_score = 0
             indicator_type = tc_type_to_demisto_type.get(ind['type'], ind['type'])
             value_field = type_to_value_field.get(ind['type'], 'summary')
             value = ind.get(value_field, ind.get('summary', ''))
@@ -134,7 +136,7 @@ script:
                 rating = int(ind.get('threatAssessRating', 0))
 
             if confidence >= demisto.params()['rating'] and rating >= demisto.params()['confidence']:
-                dbotScore = 3
+                dbot_score = 3
                 desc = ''
                 if hasattr(ind, 'description'):
                     desc = ind.description
@@ -158,44 +160,44 @@ script:
                 elif indicator_type == 'domain':
                     mal['Name'] = value
 
-                contextPath = outputPaths.get(indicator_type)
-                if contextPath is not None:
-                    context[contextPath].append(mal)
+                context_path = outputPaths.get(indicator_type)
+                if context_path is not None:
+                    context[context_path].append(mal)
 
             elif rating >= 1:
-                dbotScore = 2
+                dbot_score = 2
             else:
-                dbotScore = 1
+                dbot_score = 1
 
             if include_dbot_score:
                 context['DBotScore'].append({
                     'Indicator': value,
-                    'Score': dbotScore,
+                    'Score': dbot_score,
                     'Type': indicator_type,
                     'Vendor': 'ThreatConnect',
                 })
 
             context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
-                'ID' : ind['id'],
-                'Name' : value,
-                'Type' : ind['type'],
-                'Owner' : ind['ownerName'],
-                'Description' : ind.get('description'),
-                'CreateDate' : ind['dateAdded'],
-                'LastModified' : ind['lastModified'],
-                'Rating' : rating,
-                'Confidence' : confidence,
+                'ID': ind['id'],
+                'Name': value,
+                'Type': ind['type'],
+                'Owner': ind['ownerName'],
+                'Description': ind.get('description'),
+                'CreateDate': ind['dateAdded'],
+                'LastModified': ind['lastModified'],
+                'Rating': rating,
+                'Confidence': confidence,
 
                 # relevant for domain
-                'Active' : ind.get('whoisActive'),
+                'Active': ind.get('whoisActive'),
 
                 # relevant for file
-                'File.MD5' : ind.get('md5'),
-                'File.SHA1' : ind.get('sha1'),
-                'File.SHA256' : ind.get('sha256'),
+                'File.MD5': ind.get('md5'),
+                'File.SHA1': ind.get('sha1'),
+                'File.SHA256': ind.get('sha256'),
             })
 
-        context = {k : createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if len(v) > 0}
+        context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if len(v) > 0}
         return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
 
@@ -228,6 +230,8 @@ script:
 
 
     ''' FUNCTIONS '''
+
+
     def ip_command():
         args = demisto.args()
         owners = args.get('owners')
@@ -750,8 +754,15 @@ script:
         size = args.get('size')
         dns_active = args.get('dnsActive')
         whois_active = args.get('whoisActive')
+        false_positive = args.get('falsePositive', 'False') == 'True'
+        observations = int(args.get('observations', 0))
+        security_label = args.get('securityLabel')
+        threat_assess_confidence = int(args.get('threatAssessConfidence', -1))
+        threat_assess_rating = int(args.get('threatAssessRating', -1))
 
-        raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size, dns_active=dns_active, whois_active=whois_active)
+        raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size, dns_active=dns_active,
+            whois_active=whois_active, false_positive=false_positive, observations=observations, security_label=security_label,
+            threat_assess_confidence=threat_assess_confidence, threat_assess_rating=threat_assess_rating)
         ec, indicators = create_context(raw_indicators)
 
         demisto.results({
@@ -765,7 +776,8 @@ script:
 
 
     @logger
-    def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None):
+    def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None,
+            false_positive=False, observations=0, security_label=None, threat_assess_confidence=-1, threat_assess_rating=-1):
         tc = get_client()
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
@@ -777,6 +789,17 @@ script:
                 ind.set_rating(rating)
             if confidence is not None:
                 ind.set_confidence(int(confidence))
+            if false_positive:
+                ind.add_false_positive()
+            if observations != 0:
+                ind.add_observation(observations)
+            if security_label is not None:
+                ind.add_security_label(security_label)
+            if threat_assess_confidence != -1:
+                ind.set_threat_assess_confidence(threat_assess_confidence)
+            if threat_assess_rating != -1:
+                ind.set_threat_assess_rating(threat_assess_rating)
+
             if ind.type == 'File' and size is not None:
                 ind.add_size(size)
             if ind.type == 'Host' and dns_active is not None:
@@ -871,12 +894,12 @@ script:
 
         raw_campaign = tc_create_campaign(name, owner, first_seen, tag, security_label, description)
         ec = {
-            'ID' : raw_campaign['id'],
-            'Name' : raw_campaign['name'],
-            'Owner' : raw_campaign['owner']['name'],
-            'FisrtSeen' : raw_campaign['firstSeen'],
-            'Tag' : tag,
-            'SecurityLabel' : security_label,
+            'ID': raw_campaign['id'],
+            'Name': raw_campaign['name'],
+            'Owner': raw_campaign['owner']['name'],
+            'FirstSeen': raw_campaign['firstSeen'],
+            'Tag': tag,
+            'SecurityLabel': security_label,
         }
 
         demisto.results({
@@ -908,13 +931,13 @@ script:
             output = response.get('data', {}).get('campaign', {})
             event_id = output['id']
             if description is not None:
-                #Associate Attribute description
+                # Associate Attribute description
                 ro = RequestObject()
                 ro.set_http_method('POST')
                 ro.set_request_uri('/v2/groups/events/{}/attributes'.format(event_id))
                 body = {
-                    'type' : 'Description',
-                    'value' : description,
+                    'type': 'Description',
+                    'value': description,
                     'displayed': 'true'
                 }
                 ro.set_body(json.dumps(body))
@@ -939,12 +962,12 @@ script:
 
         raw_event = tc_create_event(name, owner, event_date, tag, status, description)
         ec = {
-            'ID' : raw_event['id'],
-            'Name' : raw_event['name'],
-            'Owner' : raw_event['owner']['name'],
-            'Date' : raw_event['eventDate'],
-            'Tag' : tag,
-            'Status' : status,
+            'ID': raw_event['id'],
+            'Name': raw_event['name'],
+            'Owner': raw_event['owner']['name'],
+            'Date': raw_event['eventDate'],
+            'Tag': tag,
+            'Status': status,
         }
 
         demisto.results({
@@ -954,7 +977,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'Incident {} Created Successfully'.format(name),
             'EntryContext': {
-                'TC.Event(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+                'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
             },
         })
 
@@ -976,7 +999,7 @@ script:
             output = response.get('data', {}).get('event', {})
             event_id = output['id']
             if description is not None:
-                #Associate Attribute description
+                # Associate Attribute description
                 ro = RequestObject()
                 ro.set_http_method('POST')
                 ro.set_request_uri('/v2/groups/events/{}/attributes'.format(event_id))
@@ -1063,31 +1086,31 @@ script:
 
     ''' EXECUTION CODE '''
     COMMANDS = {
-        'test-module' : test_integration,
-        'ip' : ip_command,
-        'url' : url_command,
-        'file' : file_command,
-        'domain' : domain_command,
+        'test-module': test_integration,
+        'ip': ip_command,
+        'url': url_command,
+        'file': file_command,
+        'domain': domain_command,
 
-        'tc-owners' : tc_owners_command,
-        'tc-indicators' : tc_indicators_command,
-        'tc-get-tags' : tc_get_tags_command,
-        'tc-tag-indicator' : tc_tag_indicator_command,
-        'tc-get-indicator' : tc_get_indicator_command,
-        'tc-get-indicators-by-tag' : tc_get_indicators_by_tag_command,
-        'tc-add-indicator' : tc_add_indicator_command,
+        'tc-owners': tc_owners_command,
+        'tc-indicators': tc_indicators_command,
+        'tc-get-tags': tc_get_tags_command,
+        'tc-tag-indicator': tc_tag_indicator_command,
+        'tc-get-indicator': tc_get_indicator_command,
+        'tc-get-indicators-by-tag': tc_get_indicators_by_tag_command,
+        'tc-add-indicator': tc_add_indicator_command,
 
-        'tc-create-incident' : tc_create_incident_command,
-        'tc-fetch-incidents' : tc_fetch_incidents_command,
-        'tc-get-incident-associate-indicators' : tc_get_incident_associate_indicators_command,
-        'tc-incident-associate-indicator' : tc_incident_associate_indicator_command,
-        'tc-update-indicator' : tc_update_indicator_command,
-        'tc-delete-indicator' : tc_delete_indicator_command,
-        'tc-delete-indicator-tag' : tc_delete_indicator_tag_command,
-        'tc-create-campaign' : tc_create_campaign_command,
-        'tc-create-event' : tc_create_event_command,
-        'tc-create-threat' : tc_create_threat_command,
-        'tc-delete-group' : tc_delete_group_command,
+        'tc-create-incident': tc_create_incident_command,
+        'tc-fetch-incidents': tc_fetch_incidents_command,
+        'tc-get-incident-associate-indicators': tc_get_incident_associate_indicators_command,
+        'tc-incident-associate-indicator': tc_incident_associate_indicator_command,
+        'tc-update-indicator': tc_update_indicator_command,
+        'tc-delete-indicator': tc_delete_indicator_command,
+        'tc-delete-indicator-tag': tc_delete_indicator_tag_command,
+        'tc-create-campaign': tc_create_campaign_command,
+        'tc-create-event': tc_create_event_command,
+        'tc-create-threat': tc_create_threat_command,
+        'tc-delete-group': tc_delete_group_command,
     }
 
     try:
@@ -1100,7 +1123,6 @@ script:
         LOG(e.message)
         LOG.print_log()
         return_error('error has occurred: {}'.format(e.message, ))
-
   type: python
   commands:
   - name: ip
@@ -1432,6 +1454,7 @@ script:
     outputs:
     - contextPath: TC.Tags
       description: A list of tag names
+      type: Unknown
     description: Get a list of all ThreatConnect Tags
   - name: tc-tag-indicator
     arguments:
@@ -1791,6 +1814,7 @@ script:
       type: string
     - contextPath: TC.Incident.ID
       description: Incident's ID
+      type: Unknown
     description: Create a new incident group
   - name: tc-fetch-incidents
     arguments:
@@ -1923,6 +1947,15 @@ script:
     - name: domain
       required: true
       description: Domain name
+    - name: owners
+      description: 'client’s Organization or any Sources or Communities to which a
+        client’s API User has been granted permission, comma separated: owner1,owner2,owner3'
+    - name: ratingThreshold
+      description: filter on indicators rating greater then given value(value between
+        0 to 5)
+    - name: confidenceThreshold
+      description: filter on indicators confidence greater then given value(value
+        between 0 to 100)
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
@@ -2097,6 +2130,26 @@ script:
     - name: updatedValues
       description: 'A comma separated pair of field and value to be updated. For example:
         "rating=3,confidence=42,description=helloWorld"'
+    - name: falsePositive
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: mark indicator as false positive
+    - name: observations
+      description: Number observations on this Indicator
+    - name: securityLabel
+      auto: PREDEFINED
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+      description: security label like 'TLP Green'
+    - name: threatAssessConfidence
+      description: Assess confidence
+    - name: threatAssessRating
+      description: Assess rating
     outputs:
     - contextPath: TC.Indicator.Name
       description: Indicator's name
@@ -2385,3 +2438,4 @@ script:
   runonce: false
 tests:
   - test-ThreatConnect
+releaseNotes: "added new command tc-update-indicator, added confidenceThreshold, ratingThreshold, owners to domain command"
