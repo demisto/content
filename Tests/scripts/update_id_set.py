@@ -139,7 +139,6 @@ def get_task_ids_from_playbook(param_to_enrich_by, data_dict):
 
 
 def get_commmands_from_playbook(data_dict):
-    commands = set([])
     command_to_integration = {}
     tasks = data_dict.get('tasks', [])
 
@@ -149,12 +148,11 @@ def get_commmands_from_playbook(data_dict):
         command = task_details.get('script')
         if command:
             splitted_cmd = command.split('|')
-            commands.add(splitted_cmd[-1])
 
-            if splitted_cmd[0] and '|' in command:
+            if splitted_cmd[0] and '|' in command and 'Builtin' not in command:
                 command_to_integration[splitted_cmd[-1]] = splitted_cmd[0]
 
-    return list(commands), command_to_integration
+    return command_to_integration
 
 
 def get_integration_data(file_path):
@@ -193,7 +191,7 @@ def get_playbook_data(file_path):
     fromversion = data_dictionary.get('fromversion')
     implementing_scripts = get_task_ids_from_playbook('scriptName', data_dictionary)
     implementing_playbooks = get_task_ids_from_playbook('playbookName', data_dictionary)
-    implementing_commands, command_to_integration = get_commmands_from_playbook(data_dictionary)
+    command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
     if toversion:
@@ -204,8 +202,6 @@ def get_playbook_data(file_path):
         playbook_data['implementing_scripts'] = implementing_scripts
     if implementing_playbooks:
         playbook_data['implementing_playbooks'] = implementing_playbooks
-    if implementing_commands:
-        playbook_data['implementing_commands'] = implementing_commands
     if command_to_integration:
         playbook_data['command_to_integration'] = command_to_integration
     if tests:
