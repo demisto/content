@@ -818,16 +818,22 @@ script:
         # epoch_time = '1546185294597'
         # last_update_date = time.localtime(int(epoch_time) /1000)
         last_update_date = timestamp_to_datestring(epoch_time, '%a %b %d %y %H:%M:%S %z')
-
+        client_version = client_content_json.get('clientDefStatusList')
         md = '## Client Content, last updated on {0}\n'.format(last_update_date)
-        md += tableToMarkdown('Client Content Versions', client_content_json.get('clientDefStatusList'))
+        md += tableToMarkdown('Client Content Versions', client_version)
+
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': client_content_json,
             'HumanReadable': md,
-            'EntryContext': createContext({'SEPM.ClientContentVersions': client_content_json.get('clientDefStatusList'), 'SEPM.LastUpdated': last_update_date}, removeNull=True)
+            # 'EntryContext': createContext({'SEPM': sepm_context}, removeNull=True)
+            'EntryContext': {
+                'SEPM.ClientContentVersions': client_version,
+                'SEPM.LastUpdated': last_update_date
+
+            }
         })
 
 
@@ -879,17 +885,15 @@ script:
     def groups_info_command(token):
         columns = demisto.getArg('columns')
         json_res = do_get(token, False, 'sepm/api/v1/groups' + build_query_params(demisto.args()))
-        entry_context = {}
-        entry_context['SEPM.Groups'] = []
+        sepm_groups = []
         filtered_json_response = json_res.get('content')
         for entry in filtered_json_response:
             group = {}
             for header in GROUPS_INFO_DEFAULT_COLUMNS:
                 group[header] = entry[header]
-            entry_context['SEPM.Groups'].append(group)
-        deafult_headers = GROUPS_INFO_DEFAULT_COLUMNS
-        # deafult_headers.remove('id')
-        columns_list = choose_columns(columns, deafult_headers)
+                sepm_groups.append(group)
+        default_headers = GROUPS_INFO_DEFAULT_COLUMNS
+        columns_list = choose_columns(columns, default_headers)
 
         md = tableToMarkdown('Groups Information', filtered_json_response, columns_list)
         demisto.results({
@@ -898,8 +902,10 @@ script:
             'Contents': json_res,
             'HumanReadable': md,
             'IgnoreAutoExtract': True,
-            'EntryContext': createContext(entry_context, removeNull=True)
-
+            'EntryContext':
+                {
+                    'SEPM.Groups': sepm_groups
+                }
         })
 
 
