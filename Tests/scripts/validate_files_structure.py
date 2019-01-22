@@ -318,6 +318,9 @@ def is_existing_image(file_path):
 
             is_image_in_package = True
 
+    if not(is_image_in_package or is_image_in_yml):
+        print_error("You have added an image in the yml/package for {}".format(file_path))
+
     return is_image_in_package or is_image_in_yml
 
 
