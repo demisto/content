@@ -9982,8 +9982,8 @@
             }
         }, 
         {
-            "Symantec Endpoint Protection": {
-                "name": "Symantec Endpoint Protection", 
+            "Symantec Endpoint Protection V2": {
+                "name": "Symantec Endpoint Protection V2", 
                 "commands": [
                     "sep-endpoints-info", 
                     "sep-update-content", 
@@ -9999,6 +9999,24 @@
                     "sep-endpoint-quarantine", 
                     "sep-scan-endpoint", 
                     "sep-update-endpoint-content"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
+            "Symantec Endpoint Protection": {
+                "name": "Symantec Endpoint Protection", 
+                "commands": [
+                    "sep-endpoints-info", 
+                    "sep-update-content", 
+                    "sep-scan", 
+                    "sep-groups-info", 
+                    "sep-system-info", 
+                    "sep-command-status", 
+                    "sep-quarantine", 
+                    "sep-client-content"
                 ], 
                 "tests": [
                     "No test"
