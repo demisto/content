@@ -1,5 +1,5 @@
 category: Endpoint
-commonfields: {id: Symantec Endpoint Protection 2, version: -1}
+commonfields: {id: Symantec Endpoint Protection V2, version: -1}
 configuration:
 - defaultvalue: ''
   display: Server (e.g. https://1.2.3.4:8446)
@@ -41,8 +41,8 @@ description: Query the Symantec Endpoint Protection Manager using the official R
   API.
 detaileddescription: Integration with Symantec Endpoint Protection Manager using the
   sepm REST API.
-display: Symantec Endpoint Protection 2
-name: Symantec Endpoint Protection 2
+display: Symantec Endpoint Protection V2
+name: Symantec Endpoint Protection V2
 script:
   commands:
   - arguments:
@@ -821,7 +821,6 @@ script:
         client_version = client_content_json.get('clientDefStatusList')
         md = '## Client Content, last updated on {0}\n'.format(last_update_date)
         md += tableToMarkdown('Client Content Versions', client_version)
-
 
         demisto.results({
             'Type': entryTypes['note'],
