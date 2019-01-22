@@ -8442,6 +8442,9 @@
                     "jask-search-insights", 
                     "jask-search-signals", 
                     "jask-search-entities"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -11599,7 +11602,7 @@
                     "Alexa Test Playbook"
                 ]
             }
-        },
+        }, 
         {
             "Google Resource Manager": {
                 "name": "Google Resource Manager", 
@@ -15547,7 +15550,7 @@
                     "domain"
                 ]
             }
-        },
+        }, 
         {
             "GoogleResourceManager-Test": {
                 "name": "GoogleResourceManager-Test", 
