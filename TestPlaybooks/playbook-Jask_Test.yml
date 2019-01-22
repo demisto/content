@@ -97,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 550
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -121,6 +121,7 @@ tasks:
       - "1"
       - "11"
       - "13"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
@@ -129,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 195
         }
       }
@@ -162,7 +163,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 265,
           "y": 720
         }
       }
@@ -536,13 +537,41 @@ tasks:
       }
     note: false
     timertriggers: []
+  "21":
+    id: "21"
+    taskid: 106d1f90-6828-4d80-8755-44f1a2a251d0
+    type: regular
+    task:
+      id: 106d1f90-6828-4d80-8755-44f1a2a251d0
+      version: -1
+      name: Test Fetch Incidents
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Jask
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1465,
-        "width": 2100,
+        "width": 2325,
         "x": 50,
         "y": 50
       }
