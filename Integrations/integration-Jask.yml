@@ -499,7 +499,7 @@ script:
             last_run = last_run_object.get('time')
         else:
             last_run = now - 24 * 60 * 60 * 1000
-        last_fetch = last_run
+        next_fetch = last_run
         q = '* AND timestamp:[%d TO *]' % last_run
         if demisto.getParam('fetchQuery'):
             q += ' AND ' + demisto.getParam('fetchQuery')
@@ -517,8 +517,7 @@ script:
             if current_fetch:
                 current_fetch = datetime.strptime(current_fetch, "%Y-%m-%dT%H:%M:%S")
                 current_fetch = convert_date_to_unix(current_fetch)
-                if current_fetch > last_fetch:
-                    last_fetch = current_fetch
+                if current_fetch > last_run:
                     incidents.append({
                         'name': a.get('name', 'No name') + ' - ' + a.get('id'),
                         'occurred': a.get('timestamp') + 'Z',
@@ -526,9 +525,11 @@ script:
                         'severity': translate_severity(a.get('severity')),
                         'rawJSON': json.dumps(a)
                     })
+                if current_fetch > next_fetch:
+                    next_fetch = current_fetch
 
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': last_fetch})
+        demisto.setLastRun({'time': next_fetch})
 
     if demisto.command() == 'test-module':
         req('GET', 'asset/whitelisted', QUERY)
