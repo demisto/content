@@ -28,7 +28,7 @@ import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
-from update_id_set import get_script_data, get_playbook_data, get_integration_data
+from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -50,6 +50,8 @@ CONNECTIONS_DIR = "Connections"
 # file types regexes
 IMAGE_REGEX = ".*.png"
 SCRIPT_YML_REGEX = "{}.*.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = "{}.*.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = "{}.*.js".format(SCRIPTS_DIR)
 INTEGRATION_YML_REGEX = "{}.*.yml".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
@@ -67,7 +69,7 @@ MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
-                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
+                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
@@ -142,9 +144,9 @@ def get_modified_files(files_string):
             continue
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
-        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+        elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
-        if file_status.lower() not in KNOWN_FILE_STATUSES:
+        elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
 
@@ -386,8 +388,10 @@ def playbook_valid_in_id_set(file_path, playbook_set):
     return is_valid_in_id_set(file_path, playbook_data, playbook_set)
 
 
-def script_valid_in_id_set(file_path, script_set):
-    script_data = get_script_data(file_path)
+def script_valid_in_id_set(file_path, script_set, script_data=None):
+    if script_data is None:
+        script_data = get_script_data(file_path)
+
     return is_valid_in_id_set(file_path, script_data, script_set)
 
 
@@ -416,8 +420,13 @@ def validate_committed_files(branch_name, is_circle):
         sys.exit(1)
 
 
-def is_valid_id(objects_set, compared_id, file_path):
-    from_version = get_from_version(file_path)
+def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
+    if compared_obj_data is None:
+        from_version = get_from_version(file_path)
+
+    else:
+        value = compared_obj_data.values()[0]
+        from_version = value.get('fromversion', '0.0.0')
 
     for obj in objects_set:
         obj_id = obj.keys()[0]
@@ -476,6 +485,19 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
             if oversize_image(file_path):
                 has_schema_problem = True
 
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
+                                                 yml_path, script_data):
+                has_schema_problem = True
+
     return has_schema_problem
 
 
@@ -492,28 +514,38 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
             if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
             if is_circle and not script_valid_in_id_set(file_path, script_set):
                 has_schema_problem = True
 
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not script_valid_in_id_set(file_path, script_set)):
                 has_schema_problem = True
 
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)):
                 has_schema_problem = True
 
-        if re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if changed_command_name_or_arg(yml_path) or changed_context(yml_path) or \
+                    (is_circle and not script_valid_in_id_set(yml_path, script_set, script_data)):
                 has_schema_problem = True
 
     return has_schema_problem
