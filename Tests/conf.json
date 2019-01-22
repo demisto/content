@@ -11,7 +11,12 @@
         },
         {
             "integrations": "Pwned",
-            "playbookID": "Pwned test"
+            "playbookID": "Pwned test",
+            "nightly": true
+        },
+        {
+            "integrations": "Alexa Rank Indicator",
+            "playbookID": "Alexa Test Playbook"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -146,7 +151,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 700
+          "timeout": 900
         },
         {
             "integrations": "Tenable.sc",
@@ -337,6 +342,10 @@
         },
         {
             "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
         },
         {
@@ -960,6 +969,12 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "Google Resource Manager",
+            "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -1004,7 +1019,8 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19"
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
     },
     "nigthly_integrations": [
         "Lastline",
