@@ -141,7 +141,6 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var countThreats = 0;
-        var acThreats = [];
         var md = "## PhishMe Search Reputation for: "+str+"\n";
         var ec = {};
 
@@ -150,19 +149,15 @@ script:
                 limit = 10;
             }
 
-            for(var i = 0; i < threats.length; i++){
-                if (threats[i].hasReport === true){
-                    countThreats += 1;
-                    if (countThreats<limit+1){
-                        acThreats.push(threats[i].threatDetailURL);
-                    }
-                }
-            }
-
             md += "There are " + countThreats + " threats regarding your string search.\n";
             md += "### Details from the last campaign\n";
 
-            md += addMD(threats);
+            for(var i = 0; i < threats.length && (countThreats<limit); i++){
+                if (threats[i].hasReport === true){
+                    countThreats += 1;
+                    md += addMD(threats, i);
+                }
+            }
 
             ec = {"PhishMe" : {}};
             ec.PhishMe = {"String": str, "NumOfThreats": countThreats};
