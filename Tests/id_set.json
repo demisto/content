@@ -11602,7 +11602,7 @@
                     "Alexa Test Playbook"
                 ]
             }
-        },
+        }, 
         {
             "Google Resource Manager": {
                 "name": "Google Resource Manager", 
@@ -15550,7 +15550,7 @@
                     "domain"
                 ]
             }
-        },
+        }, 
         {
             "GoogleResourceManager-Test": {
                 "name": "GoogleResourceManager-Test", 
