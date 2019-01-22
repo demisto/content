@@ -45,6 +45,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Limit the maximum incidents amount per fetch
+  name: fetchLimit
+  defaultvalue: "100"
+  type: 0
+  required: false
 script:
   script: |
     import requests
@@ -61,7 +66,7 @@ script:
     if URL[-1] != '/':
         URL += '/'
     QUERY = {'username': demisto.getParam('Username'), 'api_key': demisto.getParam('APIKey')}
-
+    FETCH_LIMIT = int(demisto.params().get('fetchLimit', 100))
 
     def return_error(data):
         """
@@ -494,6 +499,7 @@ script:
             last_run = last_run_object.get('time')
         else:
             last_run = now - 24 * 60 * 60 * 1000
+        next_fetch = last_run
         q = '* AND timestamp:[%d TO *]' % last_run
         if demisto.getParam('fetchQuery'):
             q += ' AND ' + demisto.getParam('fetchQuery')
@@ -502,20 +508,28 @@ script:
         query = QUERY.copy()
         query['q'] = q
         query['offset'] = 0
-        query['limit'] = 100
-        query['sort_by'] = 'timestamp:desc'
+        query['limit'] = FETCH_LIMIT
+        query['sort_by'] = 'timestamp:asc'
         resp_json = req('GET', 'search/alerts', query)
         incidents = []
         for a in resp_json['objects']:
-            incidents.append({
-                'name': a.get('name', 'No name') + ' - ' + a.get('id'),
-                'occurred': a.get('timestamp') + 'Z',
-                'details': a.get('description'),
-                'severity': translate_severity(a.get('severity')),
-                'rawJSON': json.dumps(a)
-            })
+            current_fetch = a.get('timestamp')
+            if current_fetch:
+                current_fetch = datetime.strptime(current_fetch, "%Y-%m-%dT%H:%M:%S")
+                current_fetch = convert_date_to_unix(current_fetch)
+                if current_fetch > last_run:
+                    incidents.append({
+                        'name': a.get('name', 'No name') + ' - ' + a.get('id'),
+                        'occurred': a.get('timestamp') + 'Z',
+                        'details': a.get('description'),
+                        'severity': translate_severity(a.get('severity')),
+                        'rawJSON': json.dumps(a)
+                    })
+                if current_fetch > next_fetch:
+                    next_fetch = current_fetch
+
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': now})
+        demisto.setLastRun({'time': next_fetch})
 
     if demisto.command() == 'test-module':
         req('GET', 'asset/whitelisted', QUERY)
@@ -1017,3 +1031,6 @@ script:
     description: Search entities using the given filters.
   isfetch: true
   runonce: false
+releaseNotes: "Fixed fetch incidents bug"
+tests:
+  - No test
