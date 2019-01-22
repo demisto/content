@@ -1,16 +1,17 @@
 import os
-import signal
 import sys
 import json
 import string
 import random
 import argparse
-from subprocess import Popen, PIPE, call
+from subprocess import check_output
 
 import requests
 
 import demisto
 from slackclient import SlackClient
+
+from Tests.mock_server import MITMProxy, remote_call
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -18,6 +19,8 @@ from test_utils import print_color, print_error, print_warning, LOG_COLORS
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
+LOCAL_MOCKS_DIR = "../Mocks/"
+REMOTE_MOCKS_DIR = "Mocks/"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
                             "instance_name argument in conf.json the options are:\n{}"
@@ -84,99 +87,121 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def run_remote_command(public_ip, command, options=""):
-    if options and not isinstance(options, str):
-        raise TypeError("options must be string")
-    if not isinstance(command, list):
-        raise TypeError("command must be list")
-    full_command = "ssh {} -o StrictHostKeyChecking=no ec2-user@{}".format(options, public_ip).split()
-    full_command.extend(command)
-    return call(full_command)
-
-
 def has_mock_file(public_ip, playbook_id):
-    command = ["ssh", '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip)]
-    command.extend("[ -f Mocks/{}.mock ]".format(playbook_id).split())
-    return call(command) == 0
+    command = ("[ -f {}{}.mock ]".format(REMOTE_MOCKS_DIR, playbook_id).split())
+    file_exists = remote_call(public_ip, command) == 0
+    if not file_exists:
+        print "Mock file does not exist, running without mock."
+
+    return file_exists
 
 
-def configure_proxy(c, proxy=""):
-    http_proxy = https_proxy = proxy
-    if proxy:
-        http_proxy = "http://" + proxy
-        https_proxy = "https://" + proxy
-    data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
-    return c.req('POST', '/system/config', data)
+# def configure_proxy(c, proxy=""):
+#     http_proxy = https_proxy = proxy
+#     if proxy:
+#         http_proxy = "http://" + proxy
+#         https_proxy = "https://" + proxy
+#     data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
+#     return c.req('POST', '/system/config', data)
+#
+#
+# def start_proxy(c, public_ip, playbook_id, record=False):
+#     action = '--server-replay' if not record else '--save-stream-file'
+#     command = "mitmdump -p 9997 {}".format(action).split()
+#     command.extend("{}{}.mock".format(REMOTE_MOCKS_DIR, playbook_id))
+#     p = Popen(add_ssh_prefix(public_ip, command, "-t"), stdout=PIPE, stderr=PIPE)
+#     configure_proxy(c, 'localhost:9997')
+#     return p
+#
+#
+# def stop_proxy(c, public_ip, p):
+#     configure_proxy(c, '')
+#     p.send_signal(signal.SIGINT)
+#     call(add_ssh_prefix(public_ip, ["rm", "-rf", "/tmp/_MEI*"]))
+#     print "proxy outputs:"  # DEBUG
+#     print p.stdout.read()   # DEBUG
+#     print p.stderr.read()   # DEBUG
+#
+# TODO: Remove before merge
+# def demo_playback_test(c, proxy, public_ip, integrations, playbook_id, test_options, proxy_proc):
+#     print "FOR DEMO: Verifying test passes with playback."
+#     if not has_mock_file(public_ip, playbook_id):
+#         print "ERROR: Mocks/{}.mock - file does not exist".format(playbook_id)
+#         return False, proxy_proc
+#     proxy.stop()
+#     proxy.start(playbook_id)
+#     succeed, _ = test_integration(c, integrations, playbook_id, test_options)
+#     print "DEMO: Test {} with playback".format("succeeded" if succeed else "failed")
+#     return succeed, proxy_proc
 
 
-def start_proxy(c, public_ip, playbook_id, record=False):
-    action = '--server-replay' if not record else '--save-stream-file'
-    p = Popen(["ssh", '-o', 'StrictHostKeyChecking=no', '-t', "ec2-user@{}".format(public_ip), "mitmdump", "-p",
-               "9997", action, "Mocks/{}.mock".format(playbook_id)], stdout=PIPE, stderr=PIPE)
-    configure_proxy(c, 'localhost:9997')
-    return p
+def has_unmockable_integration(integrations, unmockable_integrations):
+    return list(set(x['name'] for x in integrations).intersection(set(unmockable_integrations)))
 
 
-def stop_proxy(c, public_ip, p):
-    configure_proxy(c, '')
-    p.send_signal(signal.SIGINT)
-    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "rm", "-rf", "/tmp/_MEI*"])
-    print "proxy outputs:"  # DEBUG
-    print p.stdout.read()   # DEBUG
-    print p.stderr.read()   # DEBUG
-
-
-def demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc):  # TODO: Remove after demo
-    print "FOR DEMO: Verifying test passes with playback."
-    if not has_mock_file(public_ip, playbook_id):
-        print "ERROR: Mocks/{}.mock - file does not exist".format(playbook_id)
-        return False, proxy_proc
-    stop_proxy(c, public_ip, proxy_proc)
-    proxy_proc = start_proxy(c, public_ip, playbook_id)
-    succeed, _ = test_integration(c, integrations, playbook_id, test_options)
-    print "DEMO: Test {} with playback".format("succeeded" if succeed else "failed")
-    return succeed, proxy_proc
-
-
-def run_test(c, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    print '------ Test %s start ------' % (test_message,)
-
-    # Configure integrations to work with mock
+# Configure integrations to work with mock
+def set_mock_params(integrations):
     for elem in integrations:
         for param in ('proxy', 'insecure', 'unsecure'):
             if param in elem['params']:
                 elem['params'][param] = True
 
-    if not has_mock_file(public_ip, playbook_id):
-        print "Mock file does not exist, running without mock."
+
+# run the test without mocking mechanism.
+def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                 test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+    if succeed:
+        print 'PASS: %s succeed' % (test_message,)
+        succeed_playbooks.append(playbook_id)
+        # succeed = demo_playback_test(c, proxy, public_ip, integrations, playbook_id, test_options)
     else:
-        proxy_proc = start_proxy(c, public_ip, playbook_id)
+        print 'Failed: %s failed' % (test_message,)
+        failed_playbooks.append(playbook_id)
+        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+        # TODO: Reenable before merge
+
+
+# run the test using a real instance, record traffic.
+def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    proxy.start(playbook_id, record=True)
+    mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                 test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+    proxy.stop()
+    print '------ Test %s end ------' % (test_message,)
+
+
+def run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    print '------ Test %s start ------' % (test_message,)
+
+    unmockables = has_unmockable_integration(integrations, None)  # TODO: replace with unmockable_integrations
+    if unmockables:
+        print "Test has unmockable integrations, bypassing mock mechanism."
+        mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                     test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+        print '------ Test %s end ------' % (test_message,)
+        return
+
+    set_mock_params(integrations)
+    if has_mock_file(public_ip, playbook_id):
+        print "Running with playback"
+        proxy.start(playbook_id)
         # run test
         succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
         # use results
-        stop_proxy(c, public_ip, proxy_proc)
+        proxy.stop()
         if succeed:
             print 'PASS: %s succeed' % (test_message,)
             succeed_playbooks.append(playbook_id)
             print '------ Test %s end ------' % (test_message,)
             return
         print "Test failed with mock, rerunning without mock."
-    # mock file not found or test failed:
-    proxy_proc = start_proxy(c, public_ip, playbook_id, record=True)
-    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
-    if succeed:
-        print 'PASS: %s succeed' % (test_message,)
-        succeed_playbooks.append(playbook_id)
-        # TODO: upload mock file to repo
-        succeed, proxy_proc = demo_playback_test(c, public_ip, integrations, playbook_id, test_options, proxy_proc)
-    else:
-        print 'Failed: %s failed' % (test_message,)
-        failed_playbooks.append(playbook_id)
-        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-        # TODO: Reenable before merge
-    stop_proxy(c, public_ip, proxy_proc)
-    print '------ Test %s end ------' % (test_message,)
+
+    # mock file not found or test failed
+    run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
 
 
 def http_request(url, params_dict=None):
@@ -330,6 +355,15 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
+def get_content_branch():
+    git_branch = check_output(["git", "branch"])
+    branches = [x.strip() for x in git_branch.split('\n')]
+    active_branch_candidates = filter(lambda x: x.find('* ') != -1, branches)
+    if len(active_branch_candidates) != 1:
+        raise Exception("Could not find active branch in branch list:\n{}".format(git_branch))
+    return active_branch_candidates[0][1:].strip()
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -376,10 +410,10 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
+    remote_call(public_ip, ["mkdir", REMOTE_MOCKS_DIR])
+    proxy = MITMProxy(c, public_ip, REMOTE_MOCKS_DIR, debug=True)
 
-    call(['ssh', '-o', 'StrictHostKeyChecking=no', "ec2-user@{}".format(public_ip), "mkdir", "Mocks"])
-
-    # TODO: download mock files from repo (only for tests to run)
+    # TODO: git clone/fetch
     # TODO: send files to remote machine
 
     failed_playbooks = []
@@ -439,7 +473,7 @@ def main():
 
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, public_ip, failed_playbooks, integrations, playbook_id,
+        run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
@@ -447,7 +481,11 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    # TODO: upload new/updated files to repo
+    if get_content_branch() == 'master':
+        # TODO: get new/updated mock files from remote machine
+        print "New/Updated mock files: {}".format("PLACEHOLDER")  # TODO: remove placeholder
+        print "Pushing new/updated mock files to mock git repo."
+        # TODO: git commit + push mock files
 
     os.remove(FILTER_CONF)
 
