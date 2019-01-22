@@ -428,7 +428,7 @@ tasks:
       key: ""
       left: ${DBotScore.Score}
       right: "0"
-      second: "18"
+      second: "9"
     view: |-
       {
         "position": {

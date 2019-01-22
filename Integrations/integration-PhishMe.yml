@@ -142,6 +142,7 @@ script:
         var threats = res.data.threats;
         var countThreats = 0;
         var md = "## PhishMe Search Reputation for: "+str+"\n";
+        var mdBody = "";
         var ec = {};
 
         if (threats.length !== 0) {
@@ -149,15 +150,16 @@ script:
                 limit = 10;
             }
 
-            md += "There are " + countThreats + " threats regarding your string search.\n";
-            md += "### Details from the last campaign\n";
-
             for(var i = 0; i < threats.length && (countThreats<limit); i++){
                 if (threats[i].hasReport === true){
                     countThreats += 1;
-                    md += addMD(threats, i);
+                    mdBody += addMD(threats, i);
                 }
             }
+
+            md += "There are {0} threats regarding your string search.\n";
+            md += "### Details from the last campaign\n";
+            md += mdBody;
 
             ec = {"PhishMe" : {}};
             ec.PhishMe = {"String": str, "NumOfThreats": countThreats};
