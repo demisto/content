@@ -2444,10 +2444,6 @@
                 "name": "ParseCSV", 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "tests": [
-                    "TestParseCSV", 
-                    "ParseCSVnullbytesTest"
                 ]
             }
         }, 
@@ -7742,7 +7738,9 @@
                     "fireeye-hx-data-acquisition", 
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
-                    "fireeye-hx-get-host-set-information"
+                    "fireeye-hx-get-host-set-information", 
+                    "fireeye-hx-create-indicator", 
+                    "fireeye-hx-append-conditions"
                 ], 
                 "tests": [
                     "FireEye HX Test"
@@ -8591,7 +8589,8 @@
                     "microsoft-atp-get-file-related-machines", 
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
-                    "microsoft-atp-list-alerts"
+                    "microsoft-atp-list-alerts", 
+                    "microsoft-atp-update-alert"
                 ], 
                 "tests": [
                     "No test"
@@ -9617,6 +9616,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -11057,7 +11057,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
@@ -11589,6 +11588,36 @@
                 ], 
                 "tests": [
                     "MaxMind Test"
+                ]
+            }
+        }, 
+        {
+            "Alexa Rank Indicator": {
+                "name": "Alexa Rank Indicator", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "domain"
+                ], 
+                "tests": [
+                    "Alexa Test Playbook"
+                ]
+            }
+        },
+        {
+            "Google Resource Manager": {
+                "name": "Google Resource Manager", 
+                "commands": [
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-list-projects", 
+                    "grm-update-project", 
+                    "grm-search-organizations", 
+                    "grm-get-organization", 
+                    "grm-delete-project", 
+                    "grm-undelete-project"
+                ], 
+                "tests": [
+                    "GoogleResourceManager-Test"
                 ]
             }
         }
@@ -13413,12 +13442,14 @@
                 ], 
                 "implementing_commands": [
                     "fireeye-hx-get-indicators", 
+                    "fireeye-hx-create-indicator", 
                     "fireeye-hx-get-alert", 
-                    "fireeye-hx-file-acquisition", 
                     "fireeye-hx-delete-file-acquisition", 
                     "fireeye-hx-get-alerts", 
                     "fireeye-hx-get-host-information", 
-                    "fireeye-hx-get-indicator"
+                    "fireeye-hx-append-conditions", 
+                    "fireeye-hx-get-indicator", 
+                    "fireeye-hx-file-acquisition"
                 ]
             }
         }, 
@@ -15469,6 +15500,19 @@
             }
         }, 
         {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "gmail-search"
+                ]
+            }
+        }, 
+        {
             "Get File Sample By Hash - Generic - Test": {
                 "name": "Get File Sample By Hash - Generic - Test", 
                 "fromversion": "3.5.0", 
@@ -15493,6 +15537,37 @@
                 ], 
                 "implementing_playbooks": [
                     "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain"
+                ]
+            }
+        },
+        {
+            "GoogleResourceManager-Test": {
+                "name": "GoogleResourceManager-Test", 
+                "implementing_scripts": [
+                    "GenerateUUID", 
+                    "Print", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "grm-search-organizations", 
+                    "grm-update-project", 
+                    "grm-undelete-project", 
+                    "grm-list-projects", 
+                    "grm-delete-project", 
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-get-organization"
                 ]
             }
         }

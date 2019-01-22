@@ -37,7 +37,6 @@ script:
                 Method: 'GET',
                 Headers: {
                     'Accept': ['application/json'],
-                    'User-Agent': ['Pwned']
                 }
             },
             false,
@@ -333,6 +332,6 @@ script:
       related: ""
     description: Check if domain has been compromised
   runonce: false
-releaseNotes: "Fixed typo"
+releaseNotes: "Fixed url"
 tests:
   - Pwned test
