@@ -4848,6 +4848,9 @@
                     "Email Address Enrichment - Generic", 
                     "Calculate Severity - Generic"
                 ], 
+                "command_to_integration": {
+                    "send-mail": ""
+                }, 
                 "tests": [
                     "Phishing test - attachment", 
                     "Phishing test - Inline"
@@ -4940,6 +4943,10 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "phish-ai-check-status": "", 
+                    "phish-ai-scan-url": ""
+                }, 
                 "tests": [
                     "Test-Detonate URL - Phish.AI"
                 ]
@@ -4955,6 +4962,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "cuckoo-view-task": "", 
+                    "cuckoo-get-task-report": "", 
+                    "cuckoo-create-task-from-url": ""
+                }, 
                 "tests": [
                     "CuckooTest"
                 ]
@@ -5016,6 +5028,7 @@
                     "GenericPolling"
                 ], 
                 "command_to_integration": {
+                    "lastline-upload-file": "", 
                     "lastline-get-report": "Lastline"
                 }, 
                 "tests": [
@@ -5176,6 +5189,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "tenable-io-launch-scan": "", 
+                    "tenable-io-get-scan-report": "", 
+                    "tenable-io-get-scan-status": ""
+                }, 
                 "tests": [
                     "Tenable.io Scan Test"
                 ]
@@ -5235,6 +5253,13 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "gvault-get-drive-results": "", 
+                    "gvault-get-groups-results": "", 
+                    "gvault-download-results": "", 
+                    "gvault-export-status": "", 
+                    "gvault-get-mail-results": ""
+                }, 
                 "tests": [
                     "Google_Vault-Search_And_Display_Results_test"
                 ]
@@ -5311,6 +5336,10 @@
             "crowdstrike_endpoint_enrichment": {
                 "name": "CrowdStrike Endpoint Enrichment", 
                 "fromversion": "3.5.0", 
+                "command_to_integration": {
+                    "cs-device-search": "", 
+                    "cs-device-details": ""
+                }, 
                 "tests": [
                     "No test"
                 ]
@@ -5434,6 +5463,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "atd-get-report": "", 
+                    "atd-check-status": "", 
+                    "atd-file-upload": ""
+                }, 
                 "tests": [
                     "Test Playbook McAfee ATD", 
                     "Detonate URL - Generic Test"
@@ -5491,7 +5525,8 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "slack-send": "slack"
+                    "slack-send": "slack", 
+                    "ExposeModules": "ExposeModules"
                 }
             }
         }, 
@@ -5604,6 +5639,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "gvault-export-status": "", 
+                    "gvault-download-results": "", 
+                    "gvault-create-export-groups": "", 
+                    "gvault-get-groups-results": ""
+                }, 
                 "tests": [
                     "Google_Vault-Search_And_Display_Results_test"
                 ]
@@ -5770,6 +5811,10 @@
             "block_file_-_carbon_black_response": {
                 "name": "Block File - Carbon Black Response", 
                 "fromversion": "4.0.0", 
+                "command_to_integration": {
+                    "cb-get-hash-blacklist": "", 
+                    "cb-block-hash": ""
+                }, 
                 "tests": [
                     "block_indicators_-_generic_-_test"
                 ]
@@ -5801,6 +5846,10 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "bitdam-upload-file": "", 
+                    "bitdam-get-verdict": ""
+                }, 
                 "tests": [
                     "Detonate File - BitDam Test"
                 ]
@@ -5828,6 +5877,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "gvault-create-export-drive": "", 
+                    "gvault-get-drive-results": "", 
+                    "gvault-export-status": "", 
+                    "gvault-download-results": ""
+                }, 
                 "tests": [
                     "Google_Vault-Search_And_Display_Results_test"
                 ]
@@ -5889,6 +5944,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "qradar-get-search": "", 
+                    "qradar-get-search-results": "", 
+                    "qradar-searches": ""
+                }, 
                 "tests": [
                     "test_Qradar"
                 ]
@@ -5974,7 +6034,8 @@
                     "Add Indicator to Miner - Palo Alto MineMeld"
                 ], 
                 "command_to_integration": {
-                    "zscaler-blacklist-ip": "Zscaler"
+                    "zscaler-blacklist-ip": "Zscaler", 
+                    "checkpoint-block-ip": ""
                 }, 
                 "tests": [
                     "block_indicators_-_generic_-_test"
@@ -6021,6 +6082,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "sndbox-analysis-info": "", 
+                    "sndbox-analysis-submit-sample": "", 
+                    "sndbox-download-report": ""
+                }, 
                 "tests": [
                     "Detonate File - SNDBOX - Test"
                 ]
@@ -6046,6 +6112,9 @@
                     "Email Address Enrichment - Generic", 
                     "Calculate Severity - Generic"
                 ], 
+                "command_to_integration": {
+                    "send-mail": ""
+                }, 
                 "tests": [
                     "Phishing test - attachment", 
                     "Phishing test - Inline"
@@ -6244,6 +6313,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "panorama-push-to-device-group": "", 
+                    "panorama-push-status": "", 
+                    "panorama-commit": "", 
+                    "panorama-commit-status": ""
+                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -6459,6 +6534,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "cuckoo-task-screenshot": "", 
+                    "cuckoo-get-task-report": "", 
+                    "cuckoo-view-task": "", 
+                    "cuckoo-create-task-from-file": ""
+                }, 
                 "tests": [
                     "CuckooTest"
                 ]
@@ -6583,6 +6664,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "gvault-get-mail-results": "", 
+                    "gvault-create-export-mail": "", 
+                    "gvault-export-status": "", 
+                    "gvault-download-results": ""
+                }, 
                 "tests": [
                     "Google_Vault-Search_And_Display_Results_test"
                 ]
@@ -6638,6 +6725,9 @@
                 "implementing_playbooks": [
                     "Add Indicator to Miner - Palo Alto MineMeld"
                 ], 
+                "command_to_integration": {
+                    "zscaler-blacklist-url": ""
+                }, 
                 "tests": [
                     "block_indicators_-_generic_-_test"
                 ]
@@ -6802,6 +6892,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "ews-o365-remove-compliance-search": "", 
+                    "ews-o365-purge-compliance-search-results": "", 
+                    "ews-o365-get-compliance-search": "", 
+                    "ews-o365-start-compliance-search": ""
+                }, 
                 "tests": [
                     "No test"
                 ]
@@ -6853,6 +6949,11 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "atd-get-report": "", 
+                    "atd-file-upload": "", 
+                    "atd-check-status": ""
+                }, 
                 "tests": [
                     "Test Playbook McAfee ATD", 
                     "Detonate File - Generic Test"
@@ -6981,7 +7082,8 @@
                     "GenericPolling"
                 ], 
                 "command_to_integration": {
-                    "wildfire-upload": "WildFire"
+                    "wildfire-upload": "WildFire", 
+                    "wildfire-report": ""
                 }, 
                 "tests": [
                     "Wildfire Test"
@@ -6998,6 +7100,10 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "threat-grid-upload-sample": "", 
+                    "threat-grid-get-samples-state": ""
+                }, 
                 "tests": [
                     "Detonate File - Generic Test"
                 ]
@@ -7025,6 +7131,10 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
+                "command_to_integration": {
+                    "hybrid-analysis-submit-sample": "", 
+                    "hybrid-analysis-scan": ""
+                }, 
                 "tests": [
                     "Detonate File - HybridAnalysis - Test"
                 ]
@@ -11851,7 +11961,22 @@
                     "GeneratePassword", 
                     "DeleteContext", 
                     "Sleep"
-                ]
+                ], 
+                "command_to_integration": {
+                    "gvault-add-heldAccount": "", 
+                    "gvault-get-matter": "", 
+                    "gvault-create-hold": "", 
+                    "gvault-export-status": "", 
+                    "gvault-get-mail-results": "", 
+                    "gvault-remove-heldAccount": "", 
+                    "gvault-get-groups-results": "", 
+                    "gvault-delete-hold": "", 
+                    "gvault-create-export-mail": "", 
+                    "gvault-create-matter": "", 
+                    "gvault-create-export-drive": "", 
+                    "gvault-get-drive-results": "", 
+                    "gvault-create-export-groups": ""
+                }
             }
         }, 
         {
@@ -12056,7 +12181,11 @@
                 "name": "Netskope Test", 
                 "implementing_scripts": [
                     "VerifyContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "netskope-events": "", 
+                    "netskope-alerts": ""
+                }
             }
         }, 
         {
@@ -12222,11 +12351,14 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "bigfix-get-patches": "BigFix", 
+                    "bigfix-action-delete": "", 
+                    "bigfix-action-stop": "", 
                     "bigfix-get-site": "BigFix", 
+                    "bigfix-get-sites": "BigFix", 
+                    "bigfix-action-status": "", 
+                    "bigfix-get-patches": "BigFix", 
                     "bigfix-get-endpoints": "BigFix", 
-                    "bigfix-deploy-patch": "BigFix", 
-                    "bigfix-get-sites": "BigFix"
+                    "bigfix-deploy-patch": "BigFix"
                 }
             }
         }, 
@@ -12236,7 +12368,14 @@
                 "implementing_scripts": [
                     "VerifyContext", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "meraki-get-organization-license-state": "", 
+                    "meraki-fetch-networks": "", 
+                    "meraki-fetch-organizations": "", 
+                    "meraki-fetch-devices": "", 
+                    "meraki-fetch-organization-inventory": ""
+                }
             }
         }, 
         {
@@ -12287,7 +12426,12 @@
                 "implementing_playbooks": [
                     "Detonate URL - McAfee ATD", 
                     "ATD - Detonate File"
-                ]
+                ], 
+                "command_to_integration": {
+                    "atd-list-analyzer-profiles": "", 
+                    "atd-login": "", 
+                    "atd-list-user": ""
+                }
             }
         }, 
         {
@@ -12381,7 +12525,13 @@
         }, 
         {
             "EWS Public Folders Test": {
-                "name": "EWS Public Folders Test"
+                "name": "EWS Public Folders Test", 
+                "command_to_integration": {
+                    "ews-search-mailbox": "", 
+                    "ews-get-items-from-folder": "", 
+                    "ews-find-folders": "", 
+                    "ews-get-folder": ""
+                }
             }
         }, 
         {
@@ -12475,7 +12625,18 @@
                     "VerifyContext", 
                     "DeleteContext", 
                     "FileCreateAndUpload"
-                ]
+                ], 
+                "command_to_integration": {
+                    "jira-create-issue": "", 
+                    "jira-issue-upload-file": "", 
+                    "jira-get-comments": "", 
+                    "jira-issue-add-comment": "", 
+                    "jira-edit-issue": "", 
+                    "jira-issue-query": "", 
+                    "jira-delete-issue": "", 
+                    "jira-issue-add-link": "", 
+                    "jira-get-issue": ""
+                }
             }
         }, 
         {
@@ -12508,7 +12669,26 @@
                 ], 
                 "implementing_playbooks": [
                     "PanoramaCommitConfiguration"
-                ]
+                ], 
+                "command_to_integration": {
+                    "panorama-list-applications": "", 
+                    "panorama-create-rule": "", 
+                    "panorama-delete-rule": "", 
+                    "panorama-create-address-group": "", 
+                    "panorama-list-addresses": "", 
+                    "panorama-get-address-group": "", 
+                    "panorama-get-url-category": "", 
+                    "panorama": "", 
+                    "panorama-edit-rule": "", 
+                    "panorama-get-url-filter": "", 
+                    "panorama-list-address-groups": "", 
+                    "panorama-get-custom-url-category": "", 
+                    "panorama-edit-address-group": "", 
+                    "panorama-create-address": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-move-rule": "", 
+                    "panorama-delete-address": ""
+                }
             }
         }, 
         {
@@ -12528,7 +12708,14 @@
                 "name": "Tenable.io test", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "tenable-io-get-vulnerabilities-by-asset": "", 
+                    "tenable-io-get-scan-report": "", 
+                    "tenable-io-list-scans": "", 
+                    "tenable-io-get-vulnerability-details": "", 
+                    "tenable-io-get-scan-status": ""
+                }
             }
         }, 
         {
@@ -12567,7 +12754,14 @@
                 "name": "OTRS Test", 
                 "implementing_scripts": [
                     "FetchFromInstance"
-                ]
+                ], 
+                "command_to_integration": {
+                    "otrs-update-ticket": "", 
+                    "otrs-search-ticket": "", 
+                    "otrs-create-ticket": "", 
+                    "otrs-close-ticket": "", 
+                    "otrs-get-ticket": ""
+                }
             }
         }, 
         {
@@ -12604,7 +12798,10 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "ip": "AbuseIPDB"
+                    "abuseipdb-check-cidr-block": "", 
+                    "ip": "AbuseIPDB", 
+                    "abuseipdb-get-blacklist": "", 
+                    "abuseipdb-report-ip": ""
                 }
             }
         }, 
@@ -12727,7 +12924,13 @@
                 "implementing_scripts": [
                     "GenerateUUID", 
                     "isError"
-                ]
+                ], 
+                "command_to_integration": {
+                    "zscaler-blacklist-url": "", 
+                    "zscaler-get-blacklist": "", 
+                    "zscaler-get-categories": "", 
+                    "zscaler-category-add-url": ""
+                }
             }
         }, 
         {
@@ -12735,7 +12938,10 @@
                 "name": "urlscan_malicious_Test", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "urlscan-search": ""
+                }
             }
         }, 
         {
@@ -12829,7 +13035,17 @@
                 "implementing_scripts": [
                     "VerifyContext", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "Exception": "Exception", 
+                    "ews-get-out-of-office": "", 
+                    "ews-get-searchable-mailboxes": "", 
+                    "ews-find-folders": "", 
+                    "ews-get-items": "", 
+                    "ews-get-contacts": "", 
+                    "ews-get-attachment": "", 
+                    "ews-search-mailboxes": ""
+                }
             }
         }, 
         {
@@ -13004,7 +13220,11 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "ip": "Palo Alto Minemeld"
+                    "minemeld-remove-from-miner": "", 
+                    "ip": "Palo Alto Minemeld", 
+                    "minemeld-add-to-miner": "", 
+                    "minemeld-retrieve-miner": "", 
+                    "minemeld-get-indicator-from-miner": ""
                 }
             }
         }, 
@@ -13075,7 +13295,27 @@
                 "name": "test-ThreatConnect", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "tc-delete-indicator-tag": "", 
+                    "tc-create-incident": "", 
+                    "tc-create-event": "", 
+                    "tc-owners": "", 
+                    "tc-create-campaign": "", 
+                    "tc-tag-indicator": "", 
+                    "tc-create-threat": "", 
+                    "tc-incident-associate-indicator": "", 
+                    "tc-get-tags": "", 
+                    "tc-get-indicators-by-tag": "", 
+                    "tc-delete-indicator": "", 
+                    "tc-indicators": "", 
+                    "tc-delete-group": "", 
+                    "tc-fetch-incidents": "", 
+                    "tc-add-indicator": "", 
+                    "tc-get-indicator": "", 
+                    "tc-update-indicator": "", 
+                    "tc-get-incident-associate-indicators": ""
+                }
             }
         }, 
         {
@@ -13137,8 +13377,8 @@
                     "isError"
                 ], 
                 "command_to_integration": {
-                    "circl-ssl-get-certificate": "CIRCL", 
-                    "circl-ssl-list-certificates": "CIRCL", 
+                    "circl-ssl-get-certificate": "", 
+                    "circl-ssl-list-certificates": "", 
                     "circl-ssl-query-certificate": "CIRCL", 
                     "circl-dns-get": "CIRCL"
                 }
@@ -13163,13 +13403,14 @@
                 ], 
                 "command_to_integration": {
                     "fireeye-hx-get-indicators": "FireEye HX", 
+                    "fireeye-hx-create-indicator": "FireEye HX", 
                     "fireeye-hx-get-alert": "FireEye HX", 
-                    "fireeye-hx-file-acquisition": "FireEye HX", 
                     "fireeye-hx-delete-file-acquisition": "FireEye HX", 
                     "fireeye-hx-get-alerts": "FireEye HX", 
-                    "fireeye-hx-create-indicator": "FireEye HX", 
                     "fireeye-hx-get-host-information": "FireEye HX", 
-                    "fireeye-hx-get-indicator": "FireEye HX"
+                    "fireeye-hx-append-conditions": "", 
+                    "fireeye-hx-get-indicator": "FireEye HX", 
+                    "fireeye-hx-file-acquisition": "FireEye HX"
                 }
             }
         }, 
@@ -13189,6 +13430,7 @@
                     "hashicorp-configure-engine": "HashiCorp Vault", 
                     "hashicorp-undelete-secret": "HashiCorp Vault", 
                     "hashicorp-destroy-secret": "HashiCorp Vault", 
+                    "hashicorp-get-policy": "", 
                     "hashicorp-enable-engine": "HashiCorp Vault", 
                     "hashicorp-list-secrets-engines": "HashiCorp Vault", 
                     "hashicorp-delete-secret": "HashiCorp Vault", 
@@ -13244,11 +13486,13 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
+                    "cybereason-query-user": "", 
                     "cybereason-malop-processes": "Cybereason", 
                     "cybereason-query-file": "Cybereason", 
                     "cybereason-query-connections": "Cybereason", 
                     "cybereason-is-probe-connected": "Cybereason", 
                     "cybereason-query-malops": "Cybereason", 
+                    "cybereason-query-domain": "", 
                     "cybereason-query-processes": "Cybereason"
                 }
             }
@@ -13285,7 +13529,14 @@
                 "implementing_scripts": [
                     "DeleteContext", 
                     "http"
-                ]
+                ], 
+                "command_to_integration": {
+                    "sndbox-analysis-info": "", 
+                    "sndbox-analysis-submit-sample": "", 
+                    "sndbox-download-sample": "", 
+                    "sndbox-download-report": "", 
+                    "sndbox-is-online": ""
+                }
             }
         }, 
         {
@@ -13293,7 +13544,23 @@
                 "name": "Fortigate Test", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "fortigate-move-policy": "", 
+                    "fortigate-create-firewall-service": "", 
+                    "fortigate-get-service-groups": "", 
+                    "fortigate-get-policy": "", 
+                    "fortigate-get-address-groups": "", 
+                    "fortigate-get-firewall-service": "", 
+                    "fortigate-delete-policy": "", 
+                    "fortigate-get-addresses": "", 
+                    "fortigate-update-service-group": "", 
+                    "fortigate-update-address-group": "", 
+                    "fortigate-delete-address-group": "", 
+                    "fortigate-create-address-group": "", 
+                    "fortigate-create-policy": "", 
+                    "fortigate-update-policy": ""
+                }
             }
         }, 
         {
@@ -13316,9 +13583,13 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "device": "Awake Security", 
-                    "ip": "Awake Security", 
                     "domain": "Awake Security", 
+                    "ip": "Awake Security", 
+                    "awake-query-activities": "", 
+                    "awake-pcap-download": "", 
+                    "awake-query-domains": "", 
+                    "awake-query-devices": "", 
+                    "device": "Awake Security", 
                     "email": "Awake Security"
                 }
             }
@@ -13511,7 +13782,25 @@
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Sleep"
-                ]
+                ], 
+                "command_to_integration": {
+                    "panorama-list-applications": "", 
+                    "panorama-create-rule": "", 
+                    "panorama-commit": "", 
+                    "panorama-delete-rule": "", 
+                    "panorama-create-address-group": "", 
+                    "panorama-get-address-group": "", 
+                    "panorama-move-rule": "", 
+                    "panorama": "", 
+                    "panorama-edit-rule": "", 
+                    "panorama-get-url-filter": "", 
+                    "panorama-list-address-groups": "", 
+                    "panorama-get-custom-url-category": "", 
+                    "panorama-create-address": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-list-addresses": "", 
+                    "panorama-delete-address": ""
+                }
             }
         }, 
         {
@@ -13555,7 +13844,10 @@
                 "implementing_scripts": [
                     "JiraCreateIssue-example", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "jira-delete-issue": ""
+                }
             }
         }, 
         {
@@ -13563,7 +13855,17 @@
                 "name": "AttivoBotsinkTest", 
                 "implementing_scripts": [
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "attivo-list-hosts": "", 
+                    "attivo-list-users": "", 
+                    "attivo-check-user": "", 
+                    "attivo-run-playbook": "", 
+                    "attivo-check-host": "", 
+                    "attivo-get-events": "", 
+                    "attivo-deploy-decoy": "", 
+                    "attivo-list-playbooks": ""
+                }
             }
         }, 
         {
@@ -13586,7 +13888,27 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "domain": "Cisco Umbrella Investigate"
+                    "umbrella-ip-dns-history": "", 
+                    "domain": "Cisco Umbrella Investigate", 
+                    "umbrella-domain-related": "", 
+                    "umbrella-get-domains-using-regex": "", 
+                    "umbrella-domain-dns-history": "", 
+                    "umbrella-get-url-timeline": "", 
+                    "umbrella-get-domain-classifiers": "", 
+                    "umbrella-get-malicious-domains-for-ip": "", 
+                    "umbrella-get-domains-for-email-registrar": "", 
+                    "umbrella-get-domains-for-nameserver": "", 
+                    "umbrella-domain-categorization": "", 
+                    "umbrella-domain-security": "", 
+                    "umbrella-get-domain-timeline": "", 
+                    "umbrella-get-domain-details": "", 
+                    "umbrella-ip-malicious-domains": "", 
+                    "umbrella-get-related-domains": "", 
+                    "umbrella-get-whois-for-domain": "", 
+                    "umbrella-domain-search": "", 
+                    "umbrella-domain-co-occurrences": "", 
+                    "umbrella-get-ip-timeline": "", 
+                    "umbrella-get-domain-queryvolume": ""
                 }
             }
         }, 
@@ -13768,7 +14090,27 @@
                 "implementing_scripts": [
                     "FetchFromInstance", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "mimecast-get-impersonation-logs": "", 
+                    "mimecast-query": "", 
+                    "mimecast-download-attachments": "", 
+                    "mimecast-url-decode": "", 
+                    "mimecast-refresh-token": "", 
+                    "mimecast-create-policy": "", 
+                    "mimecast-manage-sender": "", 
+                    "mimecast-get-message": "", 
+                    "mimecast-discover": "", 
+                    "mimecast-list-messages": "", 
+                    "mimecast-create-managed-url": "", 
+                    "mimecast-list-managed-url": "", 
+                    "mimecast-get-attachment-logs": "", 
+                    "mimecast-list-blocked-sender-policies": "", 
+                    "mimecast-login": "", 
+                    "mimecast-delete-policy": "", 
+                    "mimecast-get-policy": "", 
+                    "mimecast-get-url-logs": ""
+                }
             }
         }, 
         {
@@ -13806,7 +14148,19 @@
                 "implementing_scripts": [
                     "VerifyContext", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "cylance-protect-delete-hash-from-lists": "", 
+                    "cylance-protect-download-threat": "", 
+                    "cylance-protect-get-zones": "", 
+                    "cylance-protect-get-devices": "", 
+                    "cylance-protect-get-policies": "", 
+                    "cylance-protect-get-list": "", 
+                    "cylance-protect-get-threat": "", 
+                    "cylance-protect-get-device-threats": "", 
+                    "cylance-protect-get-policy-details": "", 
+                    "cylance-protect-add-hash-to-list": ""
+                }
             }
         }, 
         {
@@ -13880,7 +14234,10 @@
                 "name": "Test Sagemaker", 
                 "implementing_scripts": [
                     "VerifyContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "predict-phishing": ""
+                }
             }
         }, 
         {
@@ -13988,7 +14345,10 @@
                 "implementing_scripts": [
                     "GenerateImageFileEntry", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "rasterize-image": ""
+                }
             }
         }, 
         {
@@ -13997,7 +14357,18 @@
                 "implementing_scripts": [
                     "VerifyContext", 
                     "DeleteContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "vigilante-get-leak": "", 
+                    "vigilante-query-infected-host-data": "", 
+                    "vigilante-query-domains": "", 
+                    "vigilante-query-accounts": "", 
+                    "vigilante-watchlist-add-accounts": "", 
+                    "vigilante-watchlist-remove-accounts": "", 
+                    "vigilante-get-watchlist": "", 
+                    "vigilante-query-ecrime-db": "", 
+                    "vigilante-search-leaks": ""
+                }
             }
         }, 
         {
@@ -14136,7 +14507,12 @@
                     "VerifyContext", 
                     "DeleteContext", 
                     "Sleep"
-                ]
+                ], 
+                "command_to_integration": {
+                    "ews-search-mailbox": "", 
+                    "ews-move-item": "", 
+                    "send-mail": ""
+                }
             }
         }, 
         {
@@ -14148,7 +14524,15 @@
                     "DeleteContext", 
                     "Exists", 
                     "IsValueInArray"
-                ]
+                ], 
+                "command_to_integration": {
+                    "intsights-get-alerts": "", 
+                    "intsights-get-iocs": "", 
+                    "intsights-add-comment-to-alert": "", 
+                    "intsights-add-tag-to-alert": "", 
+                    "intsights-update-alert-severity": "", 
+                    "intsights-get-alert-activities": ""
+                }
             }
         }, 
         {
@@ -14228,7 +14612,10 @@
                 "name": "PhishAi-Test", 
                 "implementing_scripts": [
                     "VerifyContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "phish-ai-scan-url": ""
+                }
             }
         }, 
         {
@@ -14317,7 +14704,10 @@
                     "PrintErrorEntry", 
                     "AreValuesEqual", 
                     "PrintContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "duo-preauth": ""
+                }
             }
         }, 
         {
@@ -14515,8 +14905,13 @@
                     "Sleep"
                 ], 
                 "command_to_integration": {
+                    "cb-get-file-from-endpoint": "", 
                     "cb-command-create-and-wait": "carbonblackliveresponse", 
+                    "cb-session-create-and-wait": "", 
                     "cb-keepalive": "carbonblackliveresponse", 
+                    "cb-file-delete-from-endpoint": "", 
+                    "cb-push-file-to-endpoint": "", 
+                    "cb-list-sessions": "", 
                     "cb-session-close": "carbonblackliveresponse"
                 }
             }
@@ -14543,6 +14938,7 @@
                 ], 
                 "command_to_integration": {
                     "netwitness-get-machines": "RSA NetWitness Endpoint", 
+                    "netwitness-blacklist-domains": "", 
                     "netwitness-blacklist-ips": "RSA NetWitness Endpoint", 
                     "netwitness-get-machine-module": "RSA NetWitness Endpoint"
                 }
@@ -14656,7 +15052,10 @@
                     "Sleep"
                 ], 
                 "command_to_integration": {
-                    "redlock-search-alerts": "RedLock"
+                    "redlock-search-alerts": "RedLock", 
+                    "redlock-reopen-alerts": "", 
+                    "redlock-get-alert-details": "", 
+                    "redlock-dismiss-alerts": ""
                 }
             }
         }, 
@@ -14823,7 +15222,12 @@
                 "name": "PagerDuty Test", 
                 "implementing_scripts": [
                     "VerifyContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "PagerDuty-incidents": "", 
+                    "PagerDuty-get-all-schedules": "", 
+                    "PagerDuty-get-users-on-call-now": ""
+                }
             }
         }, 
         {
@@ -15038,7 +15442,10 @@
                     "DeleteContext", 
                     "PrintErrorEntry", 
                     "PrintContext"
-                ]
+                ], 
+                "command_to_integration": {
+                    "gmail-search": ""
+                }
             }
         }, 
         {

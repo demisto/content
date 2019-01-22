@@ -149,7 +149,7 @@ def get_commmands_from_playbook(data_dict):
         if command:
             splitted_cmd = command.split('|')
 
-            if splitted_cmd[0] and '|' in command and 'Builtin' not in command:
+            if 'Builtin' not in command:
                 command_to_integration[splitted_cmd[-1]] = splitted_cmd[0]
 
     return command_to_integration
