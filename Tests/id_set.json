@@ -9262,6 +9262,9 @@
                     "packetsled-get-files", 
                     "packetsled-get-pcaps", 
                     "packetsled-get-events"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
