@@ -309,7 +309,7 @@ def is_existing_image(file_path):
 
     if not re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
         package_path = os.path.dirname(file_path)
-        image_path = glob.glob(package_path + '*.png')
+        image_path = glob.glob(package_path + '/*.png')
         if image_path:
             if is_image_in_yml:
                 print_error("You have added an image both in the package and in the yml "
@@ -319,7 +319,7 @@ def is_existing_image(file_path):
             is_image_in_package = True
 
     if not(is_image_in_package or is_image_in_yml):
-        print_error("You have added an image in the yml/package for {}".format(file_path))
+        print_error("You have failed to add an image in the yml/package for {}".format(file_path))
 
     return is_image_in_package or is_image_in_yml
 
