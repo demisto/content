@@ -11647,7 +11647,7 @@
                     "sep-client-content"
                 ], 
                 "tests": [
-                    "sep_-_test_endpoint_search"
+                    "No test - deprecated integration"
                 ]
             }
         }
