@@ -25,6 +25,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
     taskid: ca722df1-ae4c-4833-82b4-612a31a83782
@@ -34,10 +35,10 @@ tasks:
       version: -1
       name: Get insights for a given date
       description: 'Search insights using the given filters. '
-      script: Jask|||jask-search-insights
+      script: '|||jask-search-insights'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -51,9 +52,9 @@ tasks:
       sort: {}
       status: {}
       time-from:
-        simple: 07/16/2018
+        simple: 12/1/2018
       time-to:
-        simple: 07/17/2018
+        simple: 12/29/2018
     separatecontext: false
     view: |-
       {
@@ -63,6 +64,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 1ec3d686-e17f-4fe0-882e-0d757e18a625
@@ -90,16 +92,17 @@ tasks:
         simple: "true"
       fields: {}
       path:
-        simple: Jask.Insight=>val.length == 4
+        simple: Jask.Insight=>val.length >= 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 470,
+          "y": 550
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: 7ddcfa71-18d1-4d9d-8f29-d301b6c15c4b
@@ -131,6 +134,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: 635180e0-8791-410b-85d5-34ac802968ca
@@ -143,10 +147,10 @@ tasks:
         command references SmartAlerts, which are the highest level abstractions in
         JASK SIEM consisting of multiple signals, and records and relating to one
         or more assets.
-      script: Jask|||jask-get-insight-details
+      script: '|||jask-get-insight-details'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -158,11 +162,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 270,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: dad73ec9-8ce3-4495-8481-5b515caa03b4
@@ -172,10 +177,10 @@ tasks:
       version: -1
       name: Get entity details for first related entity
       description: Get entity details for a specific entity ID
-      script: Jask|||jask-get-entity-details
+      script: '|||jask-get-entity-details'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -191,6 +196,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: b4aee240-34bd-4f39-8089-38b1f80b3cea
@@ -202,10 +208,10 @@ tasks:
       description: Get Signal details for a specific Signal ID. Signal details command
         references signals in JASK which are created when records exhibit suspicious
         properties and mate with patterns or other detection logic.
-      script: Jask|||jask-get-signal-details
+      script: '|||jask-get-signal-details'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -221,6 +227,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: ea8ac176-6bb8-438c-8cff-e7be8730bac7
@@ -256,6 +263,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: f42ee86f-ae12-4353-88b3-42a191e2d6fb
@@ -291,6 +299,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: 1d238657-12b3-4e75-8705-1de07404f1f3
@@ -300,10 +309,10 @@ tasks:
       version: -1
       name: Get entities related to the given entity
       description: Get entities related to a specific entity ID.
-      script: Jask|||jask-get-related-entities
+      script: '|||jask-get-related-entities'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
@@ -319,6 +328,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: 8def6ad7-7830-4e4a-87b0-3640f55cfdee
@@ -328,10 +338,10 @@ tasks:
       version: -1
       name: Get signals for a given date
       description: 'Search signals using the given filters. '
-      script: Jask|||jask-search-signals
+      script: '|||jask-search-signals'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -344,9 +354,9 @@ tasks:
       sort: {}
       source: {}
       time-from:
-        simple: 07/16/2018
+        simple: 12/20/2018
       time-to:
-        simple: 07/17/2018
+        simple: 12/29/2018
     separatecontext: false
     view: |-
       {
@@ -356,6 +366,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 080435e0-c995-461b-853b-e192f8bff262
@@ -392,6 +403,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 6277ceda-4a62-460f-8b2d-0b50e9e473c0
@@ -401,10 +413,10 @@ tasks:
       version: -1
       name: Get entities for a given date
       description: Search entities using the given filters.
-      script: Jask|||jask-search-entities
+      script: '|||jask-search-entities'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -416,9 +428,9 @@ tasks:
       offset: {}
       sort: {}
       time-from:
-        simple: 07/16/2018
+        simple: 12/20/2018
       time-to:
-        simple: 07/17/2018
+        simple: 12/29/2018
     separatecontext: false
     view: |-
       {
@@ -428,6 +440,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: 4363c2f7-8591-464f-83d2-6ee65a901afb
@@ -464,6 +477,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "19":
     id: "19"
     taskid: 8d0d3eff-6517-484f-88a8-5b20ed6f38d6
@@ -474,10 +488,10 @@ tasks:
       name: jask-get-insight-comments
       description: Get comments for a specific Insight ID. (Users can post and update
         comments on the JASK SIEM portal for any Insight ID.)
-      script: Jask|||jask-get-insight-comments
+      script: '|||jask-get-insight-comments'
       type: regular
       iscommand: true
-      brand: Jask
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
@@ -493,6 +507,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "20":
     id: "20"
     taskid: a925e98a-4535-4d4b-840a-f72fd4863f81
@@ -520,6 +535,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
