@@ -318,7 +318,7 @@ script:
 
     def encode_sample_file_name(filename):
         """
-        Encodes sampel file name
+        Encodes sample file name
         """
         return filename.encode('ascii', 'ignore').replace('"', '').replace('\\n', '')
 
