@@ -415,4 +415,4 @@ def update_id_set():
 
 
 if __name__ == '__main__':
-    re_create_id_set()
+    update_id_set()
