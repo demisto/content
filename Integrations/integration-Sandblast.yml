@@ -220,7 +220,7 @@ script:
     }
 
     if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
-        var uniqueKeys = ['md5', 'sha1', 'sha256'];
+        var hashTypes = ['md5', 'sha1', 'sha256'];
         var ec = {};
         if (contents.response &&
             contents.response.av &&
@@ -237,9 +237,9 @@ script:
                     SignatureName: contents.response.av.malware_info.signature_name,
                 }
             };
-            for (var key in uniqueKeys) {
-                if (contents.response[uniqueKeys[key]]) {
-                    maliciousData[uniqueKeys[key].toUpperCase()] = contents.response[uniqueKeys[key]];
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
+                    maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
                 }
             }
             var dbot_con = {'Indicator': raw.Contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'av'};
@@ -255,9 +255,9 @@ script:
                     Severity: contents.response.te.severity
                 }
             };
-            for (var key in uniqueKeys) {
-                if (contents.response[uniqueKeys[key]]) {
-                    maliciousData[uniqueKeys[key].toUpperCase()] = contents.response[uniqueKeys[key]];
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
+                    maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
                 }
             }
             var dbot_con = {'Indicator': contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'Subtype':'te'};
@@ -265,11 +265,11 @@ script:
             addMalicious(ec, outputPaths.file, maliciousData);
 
         } else {
-            for (var key in uniqueKeys) {
-                if (contents.response[uniqueKeys[key]]) {
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
                     var val = {};
-                    val[uniqueKeys[key].toUpperCase()] = contents.response[uniqueKeys[key]];
-                    ec['File(val.' + uniqueKeys[key].toUpperCase() + ' == obj.' + uniqueKeys[key].toUpperCase() + ')'] = val;
+                    val[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    ec['File(val.' + hashTypes[key].toUpperCase() + ' == obj.' + hashTypes[key].toUpperCase() + ')'] = val;
                 }
             }
             var dbot_con = {'Indicator': contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType':'--'};
