@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE
 import demisto
 from slackclient import SlackClient
 
-from test_integration import __create_integration_instance
+from test_integration import __create_integration_instance, __delete_integrations_instances
 
 
 class LOG_COLORS:

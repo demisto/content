@@ -443,7 +443,10 @@
         }, 
         {
             "Ping": {
-                "name": "Ping"
+                "name": "Ping", 
+                "tests": [
+                    "Ping Test Playbook"
+                ]
             }
         }, 
         {
@@ -647,7 +650,10 @@
         }, 
         {
             "ResolveShortenedURL": {
-                "name": "ResolveShortenedURL"
+                "name": "ResolveShortenedURL", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -841,7 +847,11 @@
         }, 
         {
             "SetIncidentCustomFields": {
-                "name": "SetIncidentCustomFields"
+                "name": "SetIncidentCustomFields", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - script should be phased out of use"
+                ]
             }
         }, 
         {
@@ -1421,7 +1431,10 @@
         }, 
         {
             "IsMaliciousIndicatorFound": {
-                "name": "IsMaliciousIndicatorFound"
+                "name": "IsMaliciousIndicatorFound", 
+                "tests": [
+                    "Test-IsMaliciousIndicatorFound"
+                ]
             }
         }, 
         {
@@ -1709,17 +1722,6 @@
             }
         }, 
         {
-            "ReadPDFFile": {
-                "name": "ReadPDFFile", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "ReadPDFFile-Test"
-                ]
-            }
-        }, 
-        {
             "ContextContains": {
                 "name": "ContextContains"
             }
@@ -1795,7 +1797,15 @@
         }, 
         {
             "ExtractIndicatorsFromTextFile": {
-                "name": "ExtractIndicatorsFromTextFile"
+                "name": "ExtractIndicatorsFromTextFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
             }
         }, 
         {
@@ -2434,9 +2444,6 @@
                 "name": "ParseCSV", 
                 "script_executions": [
                     "getEntries"
-                ], 
-                "tests": [
-                    "TestParseCSV"
                 ]
             }
         }, 
@@ -4746,6 +4753,76 @@
             "GetFirstObject": {
                 "name": "GetFirstObject"
             }
+        }, 
+        {
+            "StringContainsArray": {
+                "name": "StringContainsArray", 
+                "tests": [
+                    "StringContainsArray_test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "ReadPDFFile-Test"
+                ]
+            }
+        }, 
+        {
+            "ReadPDFFile": {
+                "name": "ReadPDFFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromWordFile": {
+                "name": "ExtractIndicatorsFromWordFile", 
+                "fromversion": "4.1.0", 
+                "script_executions": [
+                    "extractIndicators", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ExtractIndicatorsFromTextFile": {
+                "name": "ExtractIndicatorsFromTextFile", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "script_executions": [
+                    "ExtractDomain", 
+                    "ExtractEmail", 
+                    "ExtractHash", 
+                    "ExtractIP", 
+                    "ExtractURL", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat": {
+                "name": "ConvertKeysToTableFieldFormat"
+            }
         }
     ], 
     "playbooks": [
@@ -4784,6 +4861,9 @@
                 "fromversion": "3.6.0", 
                 "implementing_playbooks": [
                     "Search And Delete Emails - EWS"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -4989,6 +5069,9 @@
                     "ExposeModules", 
                     "Autoruns", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No Tests"
                 ]
             }
         }, 
@@ -5433,6 +5516,9 @@
                 ], 
                 "implementing_commands": [
                     "ews-get-attachment"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5546,6 +5632,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5721,6 +5810,9 @@
                     "Get File Sample From Path - Generic", 
                     "Get File Sample By Hash - Generic", 
                     "Search Endpoints By Hash - Generic"
+                ], 
+                "tests": [
+                    "No test - Deprecated playbook"
                 ]
             }
         }, 
@@ -5747,6 +5839,9 @@
                 "implementing_commands": [
                     "ews-search-mailboxes", 
                     "ews-delete-items"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6057,10 +6152,11 @@
         {
             "extract_indicators_from_file_-_generic": {
                 "name": "Extract Indicators From File - Generic", 
-                "fromversion": "3.6.0", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
-                    "ReadPDFFile", 
+                    "ExtractIndicatorsFromWordFile", 
                     "Set", 
+                    "ReadPDFFile", 
                     "ExtractIndicatorsFromTextFile"
                 ], 
                 "tests": [
@@ -6151,6 +6247,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test - tested manually"
                 ]
             }
         }, 
@@ -6323,8 +6422,10 @@
                 "name": "Calculate Severity - Critical assets", 
                 "fromversion": "4.0.0", 
                 "implementing_scripts": [
-                    "StringContains", 
                     "Set"
+                ], 
+                "tests": [
+                    "calculate_severity_-_critical_assets_-_test"
                 ]
             }
         }, 
@@ -6721,6 +6822,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6766,12 +6870,13 @@
                 "fromversion": "4.0.0", 
                 "implementing_playbooks": [
                     "CrowdStrike Falcon Sandbox - Detonate file", 
+                    "Detonate File - HybridAnalysis", 
                     "ATD - Detonate File", 
-                    "Detonate File - SNDBOX", 
-                    "Detonate File - JoeSecurity", 
+                    "WildFire - Detonate file", 
                     "Detonate File - Cuckoo", 
                     "Detonate File - Lastline", 
-                    "WildFire - Detonate file", 
+                    "Detonate File - JoeSecurity", 
+                    "Detonate File - SNDBOX", 
                     "Detonate File - ThreatGrid"
                 ], 
                 "tests": [
@@ -7029,6 +7134,37 @@
                 ], 
                 "tests": [
                     "Detonate File - Generic Test"
+                ]
+            }
+        }, 
+        {
+            "extract_indicators_from_file_-_generic": {
+                "name": "Extract Indicators From File - Generic", 
+                "toversion": "4.0.9", 
+                "fromversion": "3.6.0", 
+                "implementing_scripts": [
+                    "ReadPDFFile", 
+                    "Set", 
+                    "ExtractIndicatorsFromTextFile"
+                ], 
+                "tests": [
+                    "Extract Indicators From File - test"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis": {
+                "name": "Detonate File - HybridAnalysis", 
+                "fromversion": "4.0.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "implementing_commands": [
+                    "hybrid-analysis-submit-sample", 
+                    "hybrid-analysis-scan"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }
@@ -7602,7 +7738,9 @@
                     "fireeye-hx-data-acquisition", 
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
-                    "fireeye-hx-get-host-set-information"
+                    "fireeye-hx-get-host-set-information", 
+                    "fireeye-hx-create-indicator", 
+                    "fireeye-hx-append-conditions"
                 ], 
                 "tests": [
                     "FireEye HX Test"
@@ -8451,7 +8589,8 @@
                     "microsoft-atp-get-file-related-machines", 
                     "microsoft-atp-get-machine-details", 
                     "microsoft-atp-run-antivirus-scan", 
-                    "microsoft-atp-list-alerts"
+                    "microsoft-atp-list-alerts", 
+                    "microsoft-atp-update-alert"
                 ], 
                 "tests": [
                     "No test"
@@ -8497,7 +8636,11 @@
                     "hybrid-analysis-scan", 
                     "hybrid-analysis-submit-sample", 
                     "hybrid-analysis-search", 
-                    "hybrid-analysis-detonate-file"
+                    "hybrid-analysis-detonate-file", 
+                    "hybrid-analysis-get-report-status"
+                ], 
+                "tests": [
+                    "Detonate File - HybridAnalysis - Test"
                 ]
             }
         }, 
@@ -9473,6 +9616,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -9867,7 +10011,7 @@
                     "domain"
                 ], 
                 "tests": [
-                    "No test"
+                    "Pwned test"
                 ]
             }
         }, 
@@ -10263,6 +10407,9 @@
                 "commands": [
                     "search", 
                     "ip"
+                ], 
+                "tests": [
+                    "ShodanTest"
                 ]
             }
         }, 
@@ -10640,7 +10787,8 @@
                     "ews-o365-get-compliance-search", 
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
-                    "ews-o365-get-compliance-search-purge-status"
+                    "ews-o365-get-compliance-search-purge-status", 
+                    "ews-get-autodiscovery-config"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -10850,6 +10998,19 @@
             }
         }, 
         {
+            "ThreatMiner": {
+                "name": "ThreatMiner", 
+                "commands": [
+                    "domain", 
+                    "ip", 
+                    "file"
+                ], 
+                "tests": [
+                    "ThreatMiner-Test"
+                ]
+            }
+        }, 
+        {
             "McAfee Advanced Threat Defense": {
                 "name": "McAfee Advanced Threat Defense", 
                 "fromversion": "3.5.0", 
@@ -10896,7 +11057,6 @@
             "Microsoft Graph": {
                 "name": "Microsoft Graph", 
                 "commands": [
-                    "msg-graph-admin-url", 
                     "msg-search-alerts", 
                     "msg-get-alert-details", 
                     "msg-update-alert", 
@@ -11416,6 +11576,47 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "MaxMind GeoIP2": {
+                "name": "MaxMind GeoIP2", 
+                "commands": [
+                    "ip"
+                ], 
+                "tests": [
+                    "MaxMind Test"
+                ]
+            }
+        }, 
+        {
+            "Alexa Rank Indicator": {
+                "name": "Alexa Rank Indicator", 
+                "fromversion": "3.5.0", 
+                "commands": [
+                    "domain"
+                ], 
+                "tests": [
+                    "Alexa Test Playbook"
+                ]
+            }
+        },
+        {
+            "Google Resource Manager": {
+                "name": "Google Resource Manager", 
+                "commands": [
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-list-projects", 
+                    "grm-update-project", 
+                    "grm-search-organizations", 
+                    "grm-get-organization", 
+                    "grm-delete-project", 
+                    "grm-undelete-project"
+                ], 
+                "tests": [
+                    "GoogleResourceManager-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -11450,9 +11651,10 @@
                 "name": "Email Sender Python", 
                 "implementing_scripts": [
                     "Set", 
-                    "FileCreateAndUpload", 
+                    "RaiseError", 
                     "DeleteContext", 
-                    "Sleep"
+                    "Sleep", 
+                    "FileCreateAndUpload"
                 ], 
                 "implementing_commands": [
                     "googleapps-gmail-get-mail", 
@@ -11867,7 +12069,8 @@
             "Extract Indicators From File - test": {
                 "name": "Extract Indicators From File - test", 
                 "implementing_scripts": [
-                    "RaiseError", 
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
                     "http"
                 ], 
                 "implementing_playbooks": [
@@ -12032,8 +12235,8 @@
             "CrowdStrike Falcon Intel v2": {
                 "name": "CrowdStrike Falcon Intel v2", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "ThrowException"
+                    "RaiseError", 
+                    "DeleteContext"
                 ], 
                 "implementing_commands": [
                     "domain", 
@@ -13236,12 +13439,14 @@
                 ], 
                 "implementing_commands": [
                     "fireeye-hx-get-indicators", 
+                    "fireeye-hx-create-indicator", 
                     "fireeye-hx-get-alert", 
-                    "fireeye-hx-file-acquisition", 
                     "fireeye-hx-delete-file-acquisition", 
                     "fireeye-hx-get-alerts", 
                     "fireeye-hx-get-host-information", 
-                    "fireeye-hx-get-indicator"
+                    "fireeye-hx-append-conditions", 
+                    "fireeye-hx-get-indicator", 
+                    "fireeye-hx-file-acquisition"
                 ]
             }
         }, 
@@ -13917,7 +14122,8 @@
             "Test-IsMaliciousIndicatorFound": {
                 "name": "Test-IsMaliciousIndicatorFound", 
                 "implementing_scripts": [
-                    "VerifyContext", 
+                    "DeleteContext", 
+                    "Set", 
                     "Sleep", 
                     "IsMaliciousIndicatorFound"
                 ], 
@@ -15139,6 +15345,18 @@
             }
         }, 
         {
+            "MaxMind Test": {
+                "name": "MaxMind Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "closeInvestigation", 
+                    "ip"
+                ]
+            }
+        }, 
+        {
             "SLA Scripts - Test": {
                 "name": "SLA Scripts - Test", 
                 "implementing_scripts": [
@@ -15191,6 +15409,162 @@
                 "name": "Test-Detonate URL - ThreatGrid", 
                 "implementing_playbooks": [
                     "Detonate URL - ThreatGrid"
+                ]
+            }
+        }, 
+        {
+            "ParseCSVnullbytesTest": {
+                "name": "ParseCSVnullbytesTest", 
+                "implementing_scripts": [
+                    "ParseCSV", 
+                    "FileCreateAndUpload", 
+                    "PrintErrorEntry", 
+                    "Print", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
+            "Detonate File - HybridAnalysis - Test": {
+                "name": "Detonate File - HybridAnalysis - Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "http"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate File - HybridAnalysis"
+                ]
+            }
+        }, 
+        {
+            "StringContainsArray_test": {
+                "name": "StringContainsArray_test", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
+            }
+        }, 
+        {
+            "ConvertKeysToTableFieldFormat_Test": {
+                "name": "ConvertKeysToTableFieldFormat Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "ConvertKeysToTableFieldFormat", 
+                    "ParseJSON", 
+                    "isError"
+                ]
+            }
+        }, 
+        {
+            "Pwned test": {
+                "name": "Pwned test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain", 
+                    "email"
+                ]
+            }
+        }, 
+        {
+            "ThreatMiner-Test": {
+                "name": "ThreatMiner - Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "ip", 
+                    "domain", 
+                    "file"
+                ]
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "implementing_commands": [
+                    "gmail-search"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "domain"
+                ]
+            }
+        },
+        {
+            "GoogleResourceManager-Test": {
+                "name": "GoogleResourceManager-Test", 
+                "implementing_scripts": [
+                    "GenerateUUID", 
+                    "Print", 
+                    "DeleteContext"
+                ], 
+                "implementing_commands": [
+                    "grm-search-organizations", 
+                    "grm-update-project", 
+                    "grm-undelete-project", 
+                    "grm-list-projects", 
+                    "grm-delete-project", 
+                    "grm-create-project", 
+                    "grm-get-project", 
+                    "grm-get-organization"
                 ]
             }
         }
