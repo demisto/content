@@ -25,12 +25,9 @@ tags:
 - Condition
 - Utility
 comment: |
-  Checks whether substring is within string. Returns: 
-  yes - string contains substring. 
-  no - string does not contain substring. 
-  If stringSeperator is provided, the substring will be split using the separator, and each item will be checked.
-  If one of the items will be found in the string, the srcipt will return yes.
+  This script is deprecated. Use string filters instead.
 enabled: true
+deprecated: true
 args:
 - name: string
   required: true
@@ -47,3 +44,4 @@ outputs:
 - contextPath: no
   description: if string does not contain substring
 scripttarget: 0
+releaseNotes: "Deprecated"
