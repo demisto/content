@@ -2574,6 +2574,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-device-ran-on"
+                ], 
+                "tests": [
+                    "No Test"
                 ]
             }
         }, 
@@ -14216,18 +14219,19 @@
             "Jask_Test": {
                 "name": "Jask Test", 
                 "implementing_scripts": [
+                    "FetchFromInstance", 
                     "VerifyContext", 
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "jask-get-related-entities": "Jask", 
-                    "jask-search-signals": "Jask", 
-                    "jask-search-entities": "Jask", 
-                    "jask-get-insight-details": "Jask", 
-                    "jask-search-insights": "Jask", 
-                    "jask-get-signal-details": "Jask", 
-                    "jask-get-insight-comments": "Jask", 
-                    "jask-get-entity-details": "Jask"
+                    "jask-get-related-entities": "", 
+                    "jask-search-signals": "", 
+                    "jask-search-entities": "", 
+                    "jask-get-insight-details": "", 
+                    "jask-search-insights": "", 
+                    "jask-get-signal-details": "", 
+                    "jask-get-insight-comments": "", 
+                    "jask-get-entity-details": ""
                 }
             }
         }, 
