@@ -3,6 +3,28 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "ThreatMiner",
+            "playbookID": "ThreatMiner-Test"
+        },
+        {
+            "integrations": "Pwned",
+            "playbookID": "Pwned test",
+            "nightly": true
+        },
+        {
+            "integrations": "Alexa Rank Indicator",
+            "playbookID": "Alexa Test Playbook"
+        },
+        {
+            "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
+            "playbookID": "ParseCSVnullbytesTest"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
@@ -55,7 +77,8 @@
             "integrations": [
                 "Lastline",
                 "WildFire",
-                "SNDBOX"
+                "SNDBOX",
+                "VxStream"
             ],
             "playbookID" : "Detonate File - Generic Test",
             "timeout" : 2400,
@@ -70,6 +93,11 @@
             "playbookID": "Detonate File - SNDBOX - Test",
             "timeout": 2400,
             "nightly": true
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "Detonate File - HybridAnalysis - Test",
+            "timeout": 2400
         },
         {
             "playbookID": "WordTokenizeTest"
@@ -123,7 +151,7 @@
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
-          "timeout": 500
+          "timeout": 900
         },
         {
             "integrations": "Tenable.sc",
@@ -314,6 +342,10 @@
         },
         {
             "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
         },
         {
@@ -776,6 +808,11 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "Test-Detonate URL - ThreatGrid",
+            "timeout": 1000
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -888,6 +925,11 @@
 
         },
         {
+            "playbookID": "MaxMind Test",
+            "integrations": "MaxMind GeoIP2"
+
+        },
+        {
             "playbookID": "Test_Sagemaker",
             "integrations": "AWS Sagemaker"
 
@@ -920,6 +962,19 @@
         },
         {
           "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "Phishme Intelligence",
+            "playbookID": "Test - PhishMe Intelligence"
+        },
+        {
+            "integrations": "Google Resource Manager",
+            "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -936,7 +991,7 @@
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
         "FireEye HX Test": "Test unstable - to be fixed by @noac",
-        "CreatePhishingClassifierMLTest": "Test unstable - to be fixed by @Erez"
+        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -964,8 +1019,8 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "IntSights": "Issues with API",
-        "Cuckoo Sandbox": "instance is down"
+        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
     },
     "nigthly_integrations": [
         "Lastline",

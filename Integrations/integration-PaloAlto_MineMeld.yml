@@ -263,7 +263,7 @@ script:
         indicator_type = ''
 
         if not indicator_type:
-            url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', indicator)
+            url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', indicator) # guardrails-disable-line
             if url:
                 indicator_type = 'URL'
 
@@ -341,7 +341,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['domain']:  indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -350,7 +350,7 @@ script:
         else:
             result_text = 'MineMeld Domain severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -419,7 +419,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['url']:  indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -428,7 +428,7 @@ script:
         else:
             result_text = 'MineMeld URL severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -497,7 +497,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['file']:  indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -506,7 +506,7 @@ script:
         else:
             result_text = 'MineMeld File severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -575,7 +575,7 @@ script:
                 }
 
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 outputPaths['ip']: indicator_context_data,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
@@ -584,7 +584,7 @@ script:
         else:
             result_text = 'MineMeld IP severity - unknown'
             entry_context = {
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbotscore_list,
+                'DBotScore': dbotscore_list,
                 'MineMeld.Indicators(val.indicator == obj.indicator)': result_indicator,
                 'MineMeld.Miner(val.name == obj.name)': { 'name': miner_name },
             }
@@ -1119,3 +1119,4 @@ script:
   runonce: false
 tests:
   - minemeld_test
+releaseNotes: "Remove DT from DBotScore update"
