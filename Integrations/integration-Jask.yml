@@ -121,11 +121,12 @@ script:
         Convert signal response JSON to nicely formatted object
         """
         signal = to_readable(signalJSON, ['id', 'name', 'category', 'description', 'score', 'source_type', 'timestamp'], {})
-        if demisto.get(signalJSON, 'threat_indicators'):
-            signal['ThreatIndicators'] = [{
+        threat_indicators = demisto.get(signalJSON, 'threat_indicators')
+        if threat_indicators and isinstance(threat_indicators, dict):
+             signal['ThreatIndicators'] = [{
                 'IndicatorType': ti.get('indicator_type'),
                 'Value': ti.get('value')
-            } for ti in signalJSON.get('threat_indicators')]
+            } for ti in threat_indicators]
         return signal
 
 
