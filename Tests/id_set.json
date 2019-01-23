@@ -843,7 +843,10 @@
         }, 
         {
             "SendMessageToOnlineUsers": {
-                "name": "SendMessageToOnlineUsers"
+                "name": "SendMessageToOnlineUsers", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
