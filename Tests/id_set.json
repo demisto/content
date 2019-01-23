@@ -4332,7 +4332,10 @@
         {
             "StringContains": {
                 "name": "StringContains - Deprecated", 
-                "deprecated": true
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {

@@ -1,5 +1,5 @@
 commonfields:
-  id: StringContains - Deprecated
+  id: StringContains
   version: -1
 name: StringContains - Deprecated
 script: |
@@ -50,3 +50,5 @@ outputs:
   description: if string does not contain substring
 scripttarget: 0
 releaseNotes: "Deprecated"
+tests:
+  - No test - deprecated, didn't have a test prior
