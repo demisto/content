@@ -9,6 +9,8 @@ from collections import OrderedDict
 
 
 SCRIPT_YML_REGEX = "scripts.*.yml"
+SCRIPT_PY_REGEX = "scripts.*.py"
+SCRIPT_JS_REGEX = "scripts.*.js"
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 INTEGRATION_YML_REGEX = "integrations.(?!integration)*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
@@ -18,6 +20,8 @@ TEST_SCRIPT_REGEX = "TestPlaybooks.*script-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX]
+
+SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
@@ -49,8 +53,8 @@ def run_git_command(command):
     return output
 
 
-def checked_type(file_path):
-    for regex in CHECKED_TYPES_REGEXES:
+def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
+    for regex in regex_list:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
@@ -74,9 +78,9 @@ def get_changed_files(files_string):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
-        elif file_status.lower() == 'a' and re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
+        elif file_status.lower() == 'a' and checked_type(file_path, SCRIPTS_REGEX_LIST):
             added_script_list.add(os.path.dirname(file_path))
-        elif file_status.lower() == 'm' and re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
+        elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
             modified_script_list.add(os.path.dirname(file_path))
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
