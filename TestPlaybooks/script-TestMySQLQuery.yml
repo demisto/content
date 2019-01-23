@@ -1,0 +1,57 @@
+args: []
+comment: Test script to test mysql query integration
+commonfields: {id: TestMysqlQuery, version: -1}
+enabled: true
+name: TestMysqlQuery
+outputs: []
+script: |-
+  # Script to testout various mysql queries
+  def main():
+      res = demisto.executeCommand("query", {'query': 'select user()', 'using-brand': 'mysql'})
+      if not res[0]['Contents'][0].get('user()'):
+          raise Exception('user response not found: {}'.format(res[0]))
+      res = demisto.executeCommand("query", {'query': 'select * from city', 'using-brand': 'mysql'})
+      size = len(res[0]['Contents'])
+      if size != 100:
+          raise Exception('Response size of {} is not 100: {}'.format(size, res[0]))
+      #check large limnit (city table has over 4000 rows
+      res = demisto.executeCommand("query", {'query': 'select * from city', 'limit': 4000, 'using-brand': 'mysql'})
+      size = len(res[0]['Contents'])
+      if size != 4000:
+          raise Exception('Response size of {} is not 4000: {}'.format(size, res[0]))
+      res = demisto.executeCommand("query", {'query': "select * from city where Name like 'Albany'", 'using-brand': 'mysql'})
+      size = len(res[0]['Contents'])
+      if size != 1 or res[0]['Contents'][0]['Name'] != 'Albany':
+          raise Exception('Search for Albany failed. Size: {} res: {}'.format(size, res[0]))
+      res = demisto.executeCommand("query", {'query': "select * from city where Name like 'Tel Aviv'", 'using-brand': 'mysql'})
+      #Tel Aviv is not in the DB should return 0 results
+      size = len(res[0]['Contents'])
+      if size != 0 or res[0]['Type'] != entryTypes['note']:
+          raise Exception('Search for Tel Aviv returned invalid result. Size: {} res: {}'.format(size, res[0]))
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'All is good'
+      })
+
+
+  try:
+      main()
+  except Exception as e:
+      import traceback
+      LOG('{}: {}'.format(type(e), str(e)))
+      LOG.print_log()
+
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'error has ocurred: {}'.format(str(e)) + "\n\nTrace:\n" + str(traceback.format_exc()),
+          })
+system: false
+tags: []
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+dependson:
+  must: [mysql|||query]
