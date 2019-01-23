@@ -927,7 +927,7 @@
         {
             "playbookID": "MaxMind Test",
             "integrations": "MaxMind GeoIP2"
-          
+
         },
         {
             "playbookID": "Test_Sagemaker",
@@ -969,6 +969,10 @@
         {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
+        },
+        {
+            "integrations": "Phishme Intelligence",
+            "playbookID": "Test - PhishMe Intelligence"
         },
         {
             "integrations": "Google Resource Manager",
