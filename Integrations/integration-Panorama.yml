@@ -32,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Port
+- display: Port (e.g 443)
   name: port
   defaultvalue: ""
   type: 0
@@ -57,7 +57,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Vsys - Only for Firewall instance (default is 'vsys1')
+- display: Vsys - Only for Firewall instance
   name: vsys
   defaultvalue: ""
   type: 0
@@ -82,6 +82,8 @@ script:
         del os.environ["http_proxy"]
         del os.environ["https_proxy"]
 
+    if not demisto.params().get('port'):
+        return_error('Set a port for the instance')
 
     ''' GLOBALS '''
     URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
@@ -91,9 +93,11 @@ script:
     # determine a vsys or a device-group
     VSYS = demisto.params().get('vsys')
     DEVICE_GROUP = demisto.params().get('device_group')
+    # configuration check
     if DEVICE_GROUP and VSYS:
-        return_error('Can not configure both vsys and Device Group. Set vsys for Firewall, set Device Group for Panorama')
-
+        return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama')
+    if not DEVICE_GROUP and not VSYS:
+        return_error('Set vsys for firewall or Device group for Panorama')
     # setting security xpath relevant to FW or panorama managment
     XPATH_SECURITY_RULES = None
     if DEVICE_GROUP:
@@ -212,7 +216,7 @@ script:
                     fromm = None, to = None, disable_server_response_inspection = None,
                     description = None, target = None):
 
-        rulename = rulename if rulename else ('demisto-' + uuid.uuid4()[:8])
+        rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
         params = {
             'type': 'config',
             'action': api_action,
@@ -1511,7 +1515,7 @@ script:
     @logger
     def panorama_create_rule_command():
         ''' Create a security rule '''
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
         source =  demisto.args().get('source')
         destination =  demisto.args().get('destination')
         negate_source = demisto.args().get('negate_source')
@@ -1539,6 +1543,7 @@ script:
         )
 
         rule_output = {SECURITY_RULE_ARGS[key] : value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
+        rule_output['Name'] = rulename
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1647,11 +1652,11 @@ script:
         object_type = demisto.args()['object_type']
         object_value = demisto.args()['object_value']
         direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
         block_destination = False if direction == 'from' else True
         block_source =  False if direction == 'to' else True
         target = demisto.args().get('target')
-        if not DEVICE_GROUP:
+        if target and not DEVICE_GROUP:
             return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
 
         custom_block_output = {
@@ -2051,7 +2056,7 @@ script:
     - name: ip_range
       description: IP range of the new address, e.g., 10.10.10.0-10.10.10.255
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Address name
       type: string
     - contextPath: Panorama.Addresses.Description
@@ -2073,7 +2078,7 @@ script:
       required: true
       description: Name of the address to delete
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Name of the address that was deleted
       type: string
     description: Delete an address object
@@ -2726,6 +2731,7 @@ script:
       type: string
     description: Get push status for a configuration
   runonce: false
+releaseNotes: "Handle port configuration for the instance errors gracefully, panorama-custom-block fix"
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

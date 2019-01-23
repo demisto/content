@@ -1,0 +1,381 @@
+id: Alexa Test Playbook
+version: -1
+name: Alexa Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 36466ef7-384f-482d-8aab-535eb005c14f
+    type: start
+    task:
+      id: 36466ef7-384f-482d-8aab-535eb005c14f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 43f4e032-2b93-4dad-884b-834d43d8cc6b
+    type: regular
+    task:
+      id: 43f4e032-2b93-4dad-884b-834d43d8cc6b
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: a952067f-a3cd-4c17-8228-c3ba62c2c935
+    type: regular
+    task:
+      id: a952067f-a3cd-4c17-8228-c3ba62c2c935
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: dbab2c6e-bd05-462d-856b-1dd7bf6e40ae
+    type: condition
+    task:
+      id: dbab2c6e-bd05-462d-856b-1dd7bf6e40ae
+      version: -1
+      name: Check Trusted Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 236de8a2-4405-4d95-8ea9-a92dbdcf37e0
+    type: regular
+    task:
+      id: 236de8a2-4405-4d95-8ea9-a92dbdcf37e0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 8f855554-53b3-41fb-820b-25df970c5c6a
+    type: regular
+    task:
+      id: 8f855554-53b3-41fb-820b-25df970c5c6a
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain:
+        simple: altcom.com.pl
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 78745e1a-fe71-44f3-8f3f-c597308d25df
+    type: condition
+    task:
+      id: 78745e1a-fe71-44f3-8f3f-c597308d25df
+      version: -1
+      name: Check Low Ranking Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: a6ba542e-31c2-464c-819e-d6d748fb1fac
+    type: regular
+    task:
+      id: a6ba542e-31c2-464c-819e-d6d748fb1fac
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 30db0c16-d93e-48b2-8d45-8e1ce98daf2e
+    type: regular
+    task:
+      id: 30db0c16-d93e-48b2-8d45-8e1ce98daf2e
+      version: -1
+      name: Alexa Domain
+      description: Provides an Alexa ranking of the URL in question.
+      script: Alexa Rank Indicator|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      domain:
+        simple: shlepme.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 21944a2f-81f0-41da-813a-f8a26fecdd36
+    type: condition
+    task:
+      id: 21944a2f-81f0-41da-813a-f8a26fecdd36
+      version: -1
+      name: Check Unlisted Site
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 3c73cf1d-f49a-4505-843d-a2bd668950f8
+    type: regular
+    task:
+      id: 3c73cf1d-f49a-4505-843d-a2bd668950f8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 1260,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
