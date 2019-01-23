@@ -22,8 +22,8 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 LOCAL_MOCKS_DIR = "../Mocks/"
 REMOTE_MOCKS_DIR = "Mocks/"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
-                            "instance_name argument in conf.json the options are:\n{}"
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+                            "instance_name argument in conf.json. The options are:\n{}"
 
 
 def str2bool(v):
@@ -88,7 +88,7 @@ def update_test_msg(integrations, test_message):
 
 
 def has_mock_file(public_ip, playbook_id):
-    command = ("[ -f {}{}.mock ]".format(REMOTE_MOCKS_DIR, playbook_id).split())
+    command = ["[", "-f", os.path.join(REMOTE_MOCKS_DIR, playbook_id + ".mock"), "]"]
     file_exists = remote_call(public_ip, command) == 0
     if not file_exists:
         print "Mock file does not exist, running without mock."
@@ -159,7 +159,7 @@ def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playboo
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
         # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-        # TODO: Reenable before merge
+        # TODO: Enable before merge
 
 
 # run the test using a real instance, record traffic.
@@ -176,7 +176,7 @@ def run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id, s
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
 
-    unmockables = has_unmockable_integration(integrations, [])  # TODO: replace with unmockable_integrations
+    unmockables = has_unmockable_integration(integrations, [])  # TODO: Replace with unmockable_integrations
     if unmockables:
         print "Test has unmockable integrations, bypassing mock mechanism."
         mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
@@ -414,7 +414,7 @@ def main():
     proxy = MITMProxy(c, public_ip, REMOTE_MOCKS_DIR, debug=True)
 
     # TODO: git clone/fetch
-    # TODO: send files to remote machine
+    # TODO: Send files to remote machine
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -482,8 +482,8 @@ def main():
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
     if get_content_branch() == 'master':
-        # TODO: get new/updated mock files from remote machine
-        print "New/Updated mock files: {}".format("PLACEHOLDER")  # TODO: remove placeholder
+        # TODO: Get new/updated mock files from remote machine
+        print "New/Updated mock files: {}".format("PLACEHOLDER")  # TODO: Remove placeholder
         print "Pushing new/updated mock files to mock git repo."
         # TODO: git commit + push mock files
 
