@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "19.1.0"
+      CONTENT_VERSION: "19.1.2"
       GIT_SHA1: "329dcfcd840694a6ac8538b08ba760a2cc4f4d16" # guardrails-disable-line
     steps:
       - checkout
@@ -16,12 +16,14 @@ jobs:
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
+              sudo pip install flake8
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
       - run:
           name: Validate Files and Yaml
           command: |
+              ./Tests/scripts/pyflake.sh
               python ./Tests/scripts/validate_files_structure.py -c true
       - run:
           name: Configure Test Filter
