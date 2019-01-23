@@ -1,7 +1,7 @@
 commonfields:
   id: StringContains
   version: -1
-name: StringContains
+name: StringContains - Deprecated
 script: |
   var str = args.string;
   var substring = args.substring;
@@ -25,7 +25,12 @@ tags:
 - Condition
 - Utility
 comment: |
-  This script is deprecated. Use string filters instead.
+  Checks whether substring is within string. Returns:
+  yes - string contains substring.
+  no - string does not contain substring.
+  If stringSeperator is provided, the substring will be split using the separator, and each item will be checked.
+  If one of the items will be found in the string, the srcipt will return yes.
+  This script is deprecated. The StringContainsArray filter implements the exact functionality.
 enabled: true
 deprecated: true
 args:

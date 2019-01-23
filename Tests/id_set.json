@@ -4331,7 +4331,7 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains", 
+                "name": "StringContains - Deprecated", 
                 "deprecated": true
             }
         }, 
