@@ -1,6 +1,6 @@
 commonfields:
-  id: cae96081-c034-46c1-81f6-b4d0a52dc51c
-  version: 38
+  id: Cut
+  version: -1
 name: Cut
 script: |-
   args = demisto.args()
@@ -28,7 +28,7 @@ args:
   description: Delimiter to cut the string by
 - name: fields
   required: true
-  description: 'Field numbers (e.g.: 1,5,7)'
+  description: 'Comma seperated field numbers (e.g.: 1,5,7)'
   isArray: true
 scripttarget: 0
 runonce: false
