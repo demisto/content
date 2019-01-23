@@ -42,29 +42,36 @@ def merge_script_package_to_yml(package_path, dir_name):
         yml_data = yaml.safe_load(yml_file)
 
     if dir_name == 'Scripts':
-        yml_data['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
         script_type = TYPE_TO_EXTENSION[yml_data['type']]
     elif dir_name == 'Integrations':
-        yml_data['script']['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
 
-    insert_image_to_yml(dir_name, package_path, yml_data)
-    yml = insert_script_to_yml(package_path, script_type, yml_data)
+    with open(yml_path, 'r') as yml_file:
+        yml_text = yml_file.read()
+
+    yml_text = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
+    yml_text = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
 
     with open(output_path, 'w') as f:
-        f.write(yml)
+        f.write(yml_text)
 
 
-def insert_image_to_yml(dir_name, package_path, yml_data):
+def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_path = glob.glob(package_path + '*png')
     if dir_name == 'Integrations' and image_path:
         with open(image_path[0], 'rb') as image_file:
             image_data = image_file.read()
 
-        yml_data['image'] = IMAGE_PREFIX + base64.b64encode(image_data)
+        if yml_data.get('image'):
+            yml_text = yml_text.replace(yml_data['image'], IMAGE_PREFIX + base64.b64encode(image_data))
+
+        else:
+            yml_text = 'image: ' + IMAGE_PREFIX + base64.b64encode(image_data) + '\n' + yml_text
+
+    return yml_text
 
 
-def insert_script_to_yml(package_path, script_type, yml_data):
+def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data):
     script_path = glob.glob(package_path + '*' + script_type)[0]
     with open(script_path, 'r') as script_file:
         script_code = script_file.read()
@@ -75,9 +82,19 @@ def insert_script_to_yml(package_path, script_type, yml_data):
     lines.extend('    {}'.format(line) for line in script_code.split('\n'))
     script_code = '\n'.join(lines)
 
-    yml = yaml.dump(yml_data, default_flow_style=False)
-    yml = yml.replace('~~~REPLACE_SCRIPT_HERE~~~', script_code)
-    return yml
+    if dir_name == 'Scripts':
+        if yml_data.get('script'):
+            yml_text = yml_text.replace(yml_data.get('script'), script_code)
+        else:
+            yml_text = yml_text.replace("script: ''", "script: " + script_code)
+
+    elif dir_name == 'Integrations':
+        if yml_data.get('script', {}).get('script'):
+            yml_text = yml_text.replace(yml_data.get('script', {}).get('script'), script_code)
+        else:
+            yml_text = yml_text.replace("script: ''", "script: " + script_code)
+
+    return yml_text
 
 
 def clean_python_code(script_code):
