@@ -297,7 +297,7 @@ script:
         args['api_key'] = API_KEY
         fileData = demisto.getFilePath(demisto.getArg('file-id'))
         with open(fileData['path'], 'rb') as f:
-            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (demisto.getArg('filename').encode('ascii', 'ignore').replace('"', ''), f)}, data=args)
+            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (encode_sample_file_name(demisto.getArg('filename')), f)}, data=args)
             if r.status_code != requests.codes.ok:
                 if r.status_code == 503:
                     return_error('Sample upload failed. File was already uploaded.')
@@ -314,6 +314,13 @@ script:
                 'Contents': r.json()
             })
             return sample.get('ID')
+
+
+    def encode_sample_file_name(filename):
+        """
+        Encodes sample file name
+        """
+        return filename.encode('ascii', 'ignore').replace('"', '').replace('\\n', '')
 
 
     def get_html_report_by_id():
@@ -2259,7 +2266,7 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-releaseNotes: "Bug fix - submit a file with unicode chars in its name
+releaseNotes: "Bug fix - submit a file with unicode chars in its name or newline character
               New feature - feeds commands now have raw-response"
 tests:
   - ThreatGridTest
