@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import json
+import glob
 import argparse
 from subprocess import Popen, PIPE
 
@@ -20,7 +21,13 @@ NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
+SCRIPT_PY_REGEX = "scripts.*.py"
+SCRIPT_JS_REGEX = "scripts.*.js"
+SCRIPT_YML_REGEX = "scripts.*.yml"
 SCRIPT_REGEX = "scripts.*script-.*.yml"
+INTEGRATION_PY_REGEX = "integrations.*.py"
+INTEGRATION_JS_REGEX = "integrations.*.js"
+INTEGRATION_YML_REGEX = "integrations.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
@@ -30,8 +37,10 @@ BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
+                         INTEGRATION_YML_REGEX]
 
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 # File type regex
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
@@ -101,6 +110,10 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path, CODE_FILES_REGEX):
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):

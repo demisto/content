@@ -13,6 +13,12 @@ limitedVersion = False
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
 
+SKIPPED_FILES_SUFFIX = [
+    "py",
+    "js",
+    "png"
+]
+
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
     "edit": "New/Edit",
@@ -517,9 +523,9 @@ def create_file_release_notes(file_name, delete_file_path):
         if "/" not in full_file_name:
             return
 
-        file_type = full_file_name.split("/")[0]
+        file_type, file_suffix = full_file_name.split("/")[0], full_file_name.split(".")[-1]
         file_type_mapping = release_note_generator.get(file_type)
-        if file_type_mapping is None:
+        if file_type_mapping is None or file_suffix in SKIPPED_FILES_SUFFIX:
             print "Unsupported file type " + file_type
             return
 
