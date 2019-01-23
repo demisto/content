@@ -1,0 +1,35 @@
+commonfields:
+  id: cae96081-c034-46c1-81f6-b4d0a52dc51c
+  version: 38
+name: Cut
+script: |-
+  args = demisto.args()
+
+  value = args.get('value')
+  fields = args.get('fields')
+  delim = args.get('delimiter')
+
+  data = value.split(delim)
+  fields = [int(_) for _ in fields.split(',')]
+
+  demisto.results(delim.join([str(data[i-1]) for i in fields]))
+type: python
+tags:
+- transformer
+- string
+comment: Cut a string by delimiter and return specific fields
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value to split
+- name: delimiter
+  required: true
+  description: Delimiter to cut the string by
+- name: fields
+  required: true
+  description: 'Field numbers (e.g.: 1,5,7)'
+  isArray: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
