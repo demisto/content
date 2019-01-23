@@ -11762,7 +11762,7 @@
                 ], 
                 "command_to_integration": {
                     "url": "Phishme Intelligence", 
-                    "phishme-search": "Phishme Intelligence_copy", 
+                    "phishme-search": "Phishme Intelligence", 
                     "email": "Phishme Intelligence", 
                     "file": "Phishme Intelligence", 
                     "ip": "Phishme Intelligence"
@@ -15533,6 +15533,20 @@
                     "email": "Phishme Intelligence", 
                     "file": "Phishme Intelligence", 
                     "ip": "Phishme Intelligence"
+                }
+            }
+        }, 
+        {
+            "MySQL Test": {
+                "name": "MySQL Test", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "TestMysqlQuery", 
+                    "PrintContext"
+                ], 
+                "command_to_integration": {
+                    "query": "mysql"
                 }
             }
         }

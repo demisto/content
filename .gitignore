@@ -9,3 +9,4 @@ TestData/EmailWithNonUnicodeSubject.eml
 CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
+Tests/filter_file.txt
