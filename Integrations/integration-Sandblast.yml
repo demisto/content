@@ -220,6 +220,7 @@ script:
     }
 
     if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
+        var dbot_con = [];
         var hashTypes = ['md5', 'sha1', 'sha256'];
         var ec = {};
         if (contents.response &&
@@ -240,9 +241,9 @@ script:
             for (var key in hashTypes) {
                 if (contents.response[hashTypes[key]]) {
                     maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'av'});
                 }
             }
-            var dbot_con = {'Indicator': raw.Contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'av'};
             ec.DBotScore = dbot_con;
             addMalicious(ec, outputPaths.file, maliciousData);
 
@@ -258,9 +259,9 @@ script:
             for (var key in hashTypes) {
                 if (contents.response[hashTypes[key]]) {
                     maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'te'});
                 }
             }
-            var dbot_con = {'Indicator': contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'Subtype':'te'};
             ec.DBotScore = dbot_con;
             addMalicious(ec, outputPaths.file, maliciousData);
 
@@ -270,9 +271,9 @@ script:
                     var val = {};
                     val[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
                     ec['File(val.' + hashTypes[key].toUpperCase() + ' == obj.' + hashTypes[key].toUpperCase() + ')'] = val;
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': '--'});
                 }
             }
-            var dbot_con = {'Indicator': contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType':'--'};
             ec.DBotScore = dbot_con;
         }
 
