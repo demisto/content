@@ -649,4 +649,3 @@ outputs:
 - contextPath: File
   description: The sample file
   type: unknown
-releaseNotes: Update playbook to support Cylance Protect v2 and Cylance Protect v1 integrations

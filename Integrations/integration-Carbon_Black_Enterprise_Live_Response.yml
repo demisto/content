@@ -2665,6 +2665,5 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
-releaseNotes: "update the unique identifier for the context key"
 tests:
   - CarbonBlackLiveResponseTest
