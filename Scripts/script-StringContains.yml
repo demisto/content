@@ -1,5 +1,5 @@
 commonfields:
-  id: StringContains
+  id: StringContains - Deprecated
   version: -1
 name: StringContains - Deprecated
 script: |
