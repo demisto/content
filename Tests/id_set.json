@@ -4598,7 +4598,10 @@
         }, 
         {
             "DemistoGetIncidentTasksByState": {
-                "name": "DemistoGetIncidentTasksByState"
+                "name": "DemistoGetIncidentTasksByState", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
