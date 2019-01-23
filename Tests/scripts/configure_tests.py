@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import argparse
-from subprocess import Popen, PIPE
+from ..test_utils import print_error, print_color, run_bash_command, LOG_COLORS
 
 try:
     import yaml
@@ -40,30 +40,6 @@ SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
              "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
              "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
-
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return p.stdout.read()
 
 
 def checked_type(file_path, regex_list):
@@ -506,7 +482,7 @@ def update_test_set(tests_set, tests):
 def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = run_bash_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -570,18 +546,18 @@ def create_test_file(is_nightly):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_git_command("git branch")
+        branches = run_bash_command("git branch")
         branch_name_reg = re.search("\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = run_bash_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = run_bash_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = run_bash_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
         tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)

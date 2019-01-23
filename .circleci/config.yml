@@ -67,7 +67,8 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/create_instance.sh instance.json
+                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+                ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
 
               else
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
@@ -77,13 +78,13 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_installer_on_instance.sh
+                ./Tests/scripts/run_content_installation.py
+                ./Tests/scripts/wait_until_server_ready.py
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
             fi
-
-            ./Tests/scripts/wait_until_server_ready.sh
       - run:
           name: Run Tests
           shell: /bin/bash

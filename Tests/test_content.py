@@ -9,9 +9,10 @@ import requests
 import demisto
 from slackclient import SlackClient
 from test_integration import test_integration
-from test_utils import print_color, print_error, print_warning, LOG_COLORS
+from test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 
 
+SERVER_URL = "https://{}"
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
@@ -20,20 +21,11 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, p
                             "instance_name argument in conf.json the options are:\n{}"
 
 
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
+    parser.add_argument('-s', '--server', help='The server URL to connect to')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
@@ -41,6 +33,7 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
+    parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     options = parser.parse_args()
 
     return options
@@ -249,11 +242,10 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def main():
+def execute_testing(server):
     options = options_handler()
     username = options.user
     password = options.password
-    server = options.server
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
@@ -364,6 +356,25 @@ def main():
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
+
+
+def main():
+    options = options_handler()
+    server = options.server
+    is_ami = options.isAMI
+
+    if is_ami:  # Run tests in AMI configuration
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            print "Running tests on {}".format(ami_instance_name)
+            server = SERVER_URL.format(ami_instance_ip)
+            execute_testing(server)
+
+    else:  # Run tests in Server build configuration
+        execute_testing(server)
 
 
 if __name__ == '__main__':

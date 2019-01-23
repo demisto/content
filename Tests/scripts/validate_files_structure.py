@@ -25,9 +25,9 @@ import re
 import os
 import json
 import argparse
-from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
+from ..test_utils import print_error, print_color, run_bash_command, LOG_COLORS
 from update_id_set import get_script_data, get_playbook_data, get_integration_data
 
 # Magic Numbers
@@ -89,30 +89,6 @@ SCHEMAS_PATH = "Tests/schemas/"
 
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
-
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    output, err = p.communicate()
-    if err:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return output
 
 
 def checked_type(file_path):
@@ -198,7 +174,7 @@ def validate_schema(file_path, matching_regex=None):
 
 
 def is_release_branch():
-    diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
+    diff_string_config_yml = run_bash_command("git diff origin/master .circleci/config.yml")
     if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
         return True
 
@@ -206,7 +182,7 @@ def is_release_branch():
 
 
 def changed_id(file_path):
-    change_string = run_git_command("git diff HEAD {}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {}".format(file_path))
     if re.search("[+-](  )?id: .*", change_string):
         print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
@@ -215,7 +191,7 @@ def changed_id(file_path):
 
 
 def is_added_required_fields(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
     if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or \
             re.search("\+[ ]+required: true", change_string):
         print_error("You've added required fields in the integration file {}".format(file_path))
@@ -286,13 +262,13 @@ def oversize_image(file_path):
 
 
 def get_modified_and_added_files(branch_name, is_circle):
-    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    all_changed_files_string = run_bash_command("git diff --name-status origin/master...{}".format(branch_name))
 
     if is_circle:
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
-        files_string = run_git_command("git diff --name-status --no-merges")
+        files_string = run_bash_command("git diff --name-status --no-merges")
 
         modified_files, added_files = get_modified_files(files_string)
         _, added_files_from_branch = get_modified_files(all_changed_files_string)
@@ -319,7 +295,7 @@ def get_to_version(file_path):
 
 
 def changed_command_name_or_arg(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
     deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
     added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
     if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
@@ -331,7 +307,7 @@ def changed_command_name_or_arg(file_path):
 
 
 def changed_docker_image(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
     is_docker_added = re.search("\+([ ]+)?dockerimage: .*", change_string)
     is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", change_string)
     if is_docker_added or is_docker_deleted:
@@ -343,7 +319,7 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
     is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
     is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
 
@@ -355,7 +331,7 @@ def validate_version(file_path):
 
 
 def validate_fromversion_on_modified(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
     is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
     is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
 
@@ -623,7 +599,7 @@ def main():
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
     '''
-    branches = run_git_command("git branch")
+    branches = run_bash_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 

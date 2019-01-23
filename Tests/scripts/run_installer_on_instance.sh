@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-INSTANCE_ID=$(cat instance_ids)
+INSTANCE_ID=$1
 
 echo "Making sure instance started"
 aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
