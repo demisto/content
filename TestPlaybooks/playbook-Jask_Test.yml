@@ -590,12 +590,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FetchedIncidents.[0].id
+              simple: FetchedIncidents.id
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: FetchedIncidents.[0].severity
+              simple: FetchedIncidents.severity
             iscontext: true
     view: |-
       {
