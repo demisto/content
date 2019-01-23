@@ -54,7 +54,6 @@ script:
   script: |
     import requests
     import json
-    import ast
     from datetime import datetime
 
     if not demisto.getParam('proxy'):
