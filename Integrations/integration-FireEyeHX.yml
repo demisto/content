@@ -3244,6 +3244,5 @@ script:
       domain names and IP addresses. '
   isfetch: true
   runonce: false
-releaseNotes: "added function - create new indicator"
 tests:
   - FireEye HX Test

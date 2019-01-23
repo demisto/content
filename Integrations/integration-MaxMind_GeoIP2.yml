@@ -288,6 +288,5 @@ script:
     description: Check IP reputation (when information is available, returns a JSON
       with details). Uses all configured Threat Intelligence feeds
   runonce: false
-releaseNotes: "Newly released"
 tests:
   - MaxMind Test
