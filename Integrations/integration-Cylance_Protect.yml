@@ -1110,4 +1110,3 @@ script:
       is retrieved
   isfetch: true
 hidden: false
-releaseNotes: Update 'cp-download-threat' and 'cylance-protect-download-threat' commands - add url to context data
