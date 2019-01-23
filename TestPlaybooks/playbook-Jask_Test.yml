@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 50
         }
       }
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 370
         }
       }
@@ -97,7 +97,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 545
         }
       }
@@ -130,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1125,
           "y": 195
         }
       }
@@ -163,7 +163,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 720
         }
       }
@@ -192,7 +192,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
@@ -223,7 +223,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1070
         }
       }
@@ -259,7 +259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1070
         }
       }
@@ -295,7 +295,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1245
         }
       }
@@ -324,7 +324,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1245
         }
       }
@@ -362,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1770,
           "y": 1070
         }
       }
@@ -399,7 +399,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1770,
           "y": 1245
         }
       }
@@ -436,7 +436,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 1070
         }
       }
@@ -473,7 +473,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 1245
         }
       }
@@ -503,7 +503,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1340,
           "y": 1245
         }
       }
@@ -531,7 +531,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 1420
         }
       }
@@ -549,8 +549,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
-      add_to_context: {}
+      add_to_context:
+        simple: "true"
       brand_name:
         simple: Jask
       expect_data: {}
@@ -559,8 +563,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1995,
-          "y": 370
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 5fd796c9-aa02-449a-8aac-f29baae8a9f4
+    type: condition
+    task:
+      id: 5fd796c9-aa02-449a-8aac-f29baae8a9f4
+      version: -1
+      name: VerifyContext
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FetchedIncidents.[0].id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FetchedIncidents.[0].severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -571,7 +612,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1465,
-        "width": 2325,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
