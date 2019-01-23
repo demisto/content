@@ -967,6 +967,10 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "integrations": "mysql",
+            "playbookID": "MySQL Test"
+        },
+        {
             "integrations": "Phishme Intelligence",
             "playbookID": "Test - PhishMe Intelligence"
         },
