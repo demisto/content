@@ -27,7 +27,7 @@ import json
 import argparse
 from distutils.version import LooseVersion
 
-from ..test_utils import print_error, print_color, run_bash_command, LOG_COLORS
+from Tests.test_utils import print_error, print_color, run_bash_command, LOG_COLORS
 from update_id_set import get_script_data, get_playbook_data, get_integration_data
 
 # Magic Numbers

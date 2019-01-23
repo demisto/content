@@ -369,7 +369,7 @@ def main():
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            print "Running tests on {}".format(ami_instance_name)
+            print_color("Running tests on {}".format(ami_instance_name), LOG_COLORS.GREEN)
             server = SERVER_URL.format(ami_instance_ip)
             execute_testing(server)
 
