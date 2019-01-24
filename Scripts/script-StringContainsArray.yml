@@ -38,6 +38,5 @@ args:
   description: The array of substrings to search in the string, e.g., ["string1","string2"]
 scripttarget: 0
 runonce: false
-releaseNotes: 'New filter to check if a string contains a substring from an array'
 tests:
   - StringContainsArray_test

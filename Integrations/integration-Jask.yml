@@ -1032,6 +1032,5 @@ script:
     description: Search entities using the given filters.
   isfetch: true
   runonce: false
-releaseNotes: "Fixed fetch incidents bug"
 tests:
   - No test
