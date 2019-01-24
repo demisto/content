@@ -11759,8 +11759,9 @@
                 "commands": [
                     "fd-create-ticket", 
                     "fd-view-ticket", 
-                    "fd-set-ticket-status", 
-                    "fd-update-ticket"
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-view-contact"
                 ]
             }
         }
