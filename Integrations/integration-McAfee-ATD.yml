@@ -404,9 +404,9 @@ script:
         # Add missing prefix to url
             if submitType != 0:
                 if sample.startswith('www.'):
-                    sample = "https://" + sample
+                    sample = "http://" + sample
                 elif not sample.startswith('http://www.') and not sample.startswith('https://www.'):
-                    sample = "https://www." + sample
+                    sample = "http://www." + sample
 
         data['data']['vmProfileList'] = vmProfileList
         data['data']['submitType'] = submitType
