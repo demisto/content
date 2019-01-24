@@ -13,18 +13,18 @@ configuration:
   options: []
   required: false
   type: 13
-- defaultvalue: https://example.net
+- defaultvalue: https://falconapi.crowdstrike.com
   display: Server URL (e.g. https://example.net)
   name: url
   options: []
   required: true
   type: 0
 - defaultvalue: ''
-  display: API Token
-  name: token
+  display: Username
+  name: credentials
   options: []
   required: true
-  type: 4
+  type: 9
 - defaultvalue: 'true'
   display: Trust any certificate (unsecure)
   name: insecure
@@ -54,9 +54,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     import json
@@ -92,8 +89,8 @@ script:
     ''' KEY DICTIONARY '''
 
     DETECTIONS_BASE_KEY_MAP = {
-        'Detections.device.hostname': 'ScanResults.System',
-        'Detections.device.cid': 'customerIDString',
+        'Detections.device.hostname': 'System',
+        'Detections.device.cid': 'CustomerIDString',
         'Detections.hostinfo.domain': 'MachineDomain',
     }
 
@@ -141,8 +138,10 @@ script:
 
     def http_request(method, url_suffix, params=None, data=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
+        demisto.info('#### url: {}'.format(SERVER + url_suffix))
         res = requests.request(
             method,
+            # 'https://httpbin.org/post',
             SERVER + url_suffix,
             verify=USE_SSL,
             params=params,
@@ -150,24 +149,30 @@ script:
             headers=HEADERS,
             auth=(USERNAME, PASSWORD)
         )
+        demisto.info('#### AFTER REQUEST')
+        demisto.info('#### STATUS CODE: {}'.format(res.status_code))
         # Handle error responses gracefully
         if res.status_code not in {200}:
             return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
-
+        demisto.info("\n\n{0}\n\n".format(str(res.json())))
         return res.json()
 
 
     def behavior_to_incident(behavior, raw_response):
-        labels = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-        labels.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+        demisto.info("\n\n #### IN behavior_to_incident")
+        raw_labels = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
+        raw_labels.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
         for path, new_key in DETECTIONS_BASE_KEY_MAP.iteritems():
-            labels[new_key] = demisto.get(raw_response, path)
+            raw_labels[new_key] = demisto.get(raw_response, path)
+        labels = [{'Type': k, 'Value': v} for k, v in raw_labels.iteritems()]
+        demisto.info("\n\n #### labels value: {}".format(json.dumps(labels, indent=4, sort_keys=True)))
         incident = {
-            'name': 'Example Incident: ' + behavior.get('name'),
+            'name': 'Behavior id: ' + str(behavior.get('behavior_id')),
             'occurred': behavior.get('timestamp'),
             'rawJSON': json.dumps(behavior),
             'labels': labels
         }
+        # demisto.info("\n\n #### Incident value: {}".format(json.dumps(incident, indent=4, sort_keys=True)))
         return incident
 
 
@@ -211,7 +216,7 @@ script:
 
     def get_detections_request(last_behavior_time):
         # The service endpoint to request from
-        endpoint_url = "detects/queries/detects/v1"
+        endpoint_url = '/detects/queries/detects/v1'
         # Dictionary of params for the request
         params = {
             'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior_time),
@@ -229,6 +234,15 @@ script:
         return {}
 
 
+    def get_detections_entities_request(detections_ids):
+        ids_json = {'ids': detections_ids}
+        response = http_request('POST', '/detects/entities/summaries/GET/v1', data=json.dumps(ids_json))
+        # Check if response contains errors
+        if response.get('errors'):
+            return_error(response.get('errors'))
+        return response
+
+
     def fetch_incidents():
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
@@ -239,14 +253,20 @@ script:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
         incidents = []
-        items = get_detections_request(last_fetch)
-        for item in demisto.get(items, 'Detections.behaviors'):
-            incident = behavior_to_incident(item, items)
-            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_date > last_fetch:
-                last_fetch = incident_date
-                incidents.append(incident)
+        # TODO: Connect get_detections_request function
+        # detections_ids = get_detections_request(last_fetch)
+        detections_ids = ["ldt:07893fedd2604bc66c3f7de8d1f537e3:1752347439806"]
+        raw_res = get_detections_entities_request(detections_ids)
+        demisto.info('\n#### Items: {}\n'.format(raw_res))
+        demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
+        for resource in demisto.get(raw_res, "resources"):
+            for behavior in demisto.get(resource, 'behaviors'):
+                incident = behavior_to_incident(behavior, resource)
+                incident_date = incident['occurred']
+                # Update last run and add incident if the incident is newer than last fetch
+                if incident_date > last_fetch:
+                    last_fetch = incident_date
+                    incidents.append(incident)
 
         demisto.setLastRun({'time': last_fetch})
         demisto.incidents(incidents)
@@ -256,18 +276,17 @@ script:
 
     LOG('Command being called is %s' % (demisto.command()))
 
-    try:
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
-            demisto.results('ok')
-        elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            fetch_incidents()
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_module()
+        demisto.results('ok')
+    elif demisto.command() == 'fetch-incidents':
+        # Set and define the fetch incidents command to run after activated via integration settings.
+        fetch_incidents()
 
-    # Log exceptions
-    except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
-        raise e
+    # # Log exceptions
+    # except Exception, e:
+    #     LOG(e.message)
+    #     LOG.print_log()
+    #     raise e
   type: python
