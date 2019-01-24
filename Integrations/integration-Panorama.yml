@@ -89,7 +89,6 @@ script:
     URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
     API_KEY = str(demisto.params()['key']);
     USE_SSL = not demisto.params()['insecure']
-    COMMAND_SUCCEDED_CODE = '20'
 
     # determine a vsys or a device-group
     VSYS = demisto.params().get('vsys')
@@ -149,11 +148,15 @@ script:
             return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
         jresult = json.loads(xml2json(result.text))
+
+        #panorama_check_response(jresult)
+
         if jresult['response']['@status'] != 'success':
+            if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
+                if jresult['response']['msg']['line'] == 'No such node':
+                    return_error('Object was not found, verify that the name is correct and that the instnace was committed.')
             if '@code' in jresult['response']:
                 return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
-            elif '@status' in jresult['response']:
-                return_error('Request Failed.\nStatus: ' + jresult['response']['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
             else:
                 return_error('Request Failed.\n' + jresult['response'])
 
@@ -217,7 +220,6 @@ script:
                     disable = None, application = None, source_user = None, category = None,
                     fromm = None, to = None, disable_server_response_inspection = None,
                     description = None, target = None):
-
         rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
         params = {
             'type': 'config',
@@ -248,13 +250,6 @@ script:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
         return params
-
-
-    def panorama_check_response(result):
-        if 'response' in result:
-            if '@code' in result['response']:
-                if result['response']['@code'] != COMMAND_SUCCEDED_CODE:
-                    return_error(result['response']['msg'])
 
 
     ''' FUNCTIONS'''
@@ -369,8 +364,9 @@ script:
                 commit_status_output['Status'] = 'Failed'
             commit_status_output['Details'] = result['response']['result']['job']['details']['line']
 
-        if (result['response']['result']['job']['status'] == 'PEND'):
-            commit_status_output['Status'] = 'Pending'
+        if (result['response']['result']['job']['status'] == 'ACT'):
+            if (result['response']['result']['job']['result'] == 'PEND'):
+                commit_status_output['Status'] = 'Pending'
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -655,8 +651,6 @@ script:
             params = params,
         )
 
-        panorama_check_response(result)
-
         return result
 
 
@@ -879,8 +873,6 @@ script:
             'POST',
             params = params,
         )
-
-        panorama_check_response(result)
 
         return result
 
@@ -1131,7 +1123,7 @@ script:
         service_output = {
             'Name': service_name,
             'Protocol': protocol,
-            'DestionationPort': destination_port
+            'DestinationPort': destination_port
         }
         if source_port:
             service_output['SourcePort'] = source_port
@@ -1164,8 +1156,6 @@ script:
             'POST',
             params = params,
         )
-
-        panorama_check_response(result)
 
         return result
 
@@ -1334,8 +1324,6 @@ script:
             'POST',
             params = params,
         )
-
-        panorama_check_response(result)
 
         return result
 
@@ -1524,8 +1512,6 @@ script:
             'POST',
             params = params,
         )
-
-        panorama_check_response(result)
 
         return result
 
@@ -1911,8 +1897,6 @@ script:
             'POST',
             params = params,
         )
-
-        panorama_check_response(result)
 
         return result
 
@@ -3376,7 +3360,6 @@ script:
       type: string
     description: Get push status for a configuration
   runonce: false
-releaseNotes: "Handle faulty deletion of objects gracefully, add support for Service and Service groups objects"
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
