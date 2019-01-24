@@ -9986,12 +9986,9 @@
                 "name": "Symantec Endpoint Protection V2", 
                 "commands": [
                     "sep-endpoints-info", 
-                    "sep-update-content", 
-                    "sep-scan", 
                     "sep-groups-info", 
                     "sep-system-info", 
                     "sep-command-status", 
-                    "sep-quarantine", 
                     "sep-client-content", 
                     "sep-list-policies", 
                     "sep-assign-policy", 
