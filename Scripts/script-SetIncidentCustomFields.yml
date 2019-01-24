@@ -30,6 +30,5 @@ args:
   description: The list of values to match the fields - can be either array or comma
     separated
 scripttarget: 0
-releaseNotes: "-"
 tests:
   - No test - script should be phased out of use

@@ -375,4 +375,3 @@ outputs:
   description: The sample ID
 tests:
   - Test-Detonate URL - ThreatGrid
-releaseNotes: "-"

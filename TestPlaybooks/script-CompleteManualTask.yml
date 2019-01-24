@@ -26,3 +26,5 @@ args:
   description: The id of the incident
 scripttarget: 0
 runonce: false
+tests:
+  - No test

@@ -605,6 +605,5 @@ script:
     description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Remove hradcoded error in aws-s3-upload-file"
 tests:
   - No test
