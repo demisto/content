@@ -42,8 +42,8 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def run_bash_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+def run_bash_command(command, is_shell=False):
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, shell=is_shell)
     output, err = p.communicate()
     if err:
         print_error("Failed to run git command " + command)
@@ -61,9 +61,9 @@ def is_nightly_build():
 
 def create_instance(ami_name):
     print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
-    _ = run_bash_command("AMI_NAME='{}'".format(ami_name))  # noqa
-    _ = run_bash_command("./Tests/scripts/create_instance.sh instance.json")  # noqa
-    instance_id = run_bash_command("echo ${INSTANCE_ID}")
+    _ = run_bash_command("ami_name=\"{}\"".format(ami_name), is_shell=True)  # noqa
+    _ = run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
+    # instance_id = run_bash_command("echo ${ami_name}")
     return instance_id
 
 
