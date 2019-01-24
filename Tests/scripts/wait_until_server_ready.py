@@ -1,13 +1,39 @@
 """Wait for server to be ready for tests"""
 import sys
 from time import sleep
-from ..test_utils import run_bash_command, print_error
+from subprocess import Popen, PIPE
 
 HTTP_CODE = "{http_code}"
 HTTP_CODE_REQUEST = "curl --write-out %{} --silent --output /dev/null {}/user -k"
 
 MAX_TRIES = 20
 SLEEP_TIME = 45
+
+
+class LOG_COLORS:
+    NATIVE = '\033[m'
+    RED = '\033[01;31m'
+    GREEN = '\033[01;32m'
+    YELLOW = '\033[0;33m'
+
+
+# print srt in the given color
+def print_color(str, color):
+    print(color + str + LOG_COLORS.NATIVE)
+
+
+def print_error(error_str):
+    print_color(error_str, LOG_COLORS.RED)
+
+
+def run_bash_command(command):
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    output, err = p.communicate()
+    if err:
+        print_error("Failed to run git command " + command)
+        sys.exit(1)
+
+    return output
 
 
 def main():
