@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "19.1.1"
-      GIT_SHA1: "329dcfcd840694a6ac8538b08ba760a2cc4f4d16" # guardrails-disable-line
+      CONTENT_VERSION: "19.1.2"
+      GIT_SHA1: "28aea3ba3b158369c28a8c99dfe493239a110ed7" # guardrails-disable-line
     steps:
       - checkout
       - run:
