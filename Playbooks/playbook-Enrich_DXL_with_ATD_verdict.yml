@@ -144,4 +144,4 @@ view: |-
 inputs: []
 releaseNotes: "added test section, nothing for release."
 tests:
-- Test Playbook McAfee ATD
+- No test
