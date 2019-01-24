@@ -11761,7 +11761,10 @@
                     "fd-view-ticket", 
                     "fd-update-ticket", 
                     "fd-list-contacts", 
-                    "fd-view-contact"
+                    "fd-view-contact", 
+                    "fd-list-cr-folders", 
+                    "fd-list-crs-in-folder", 
+                    "fd-detail-crs"
                 ]
             }
         }
