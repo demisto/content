@@ -11,7 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, remote_call
+from mock_server import MITMProxy, remote_call, add_ssh_prefix
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -89,7 +89,7 @@ def update_test_msg(integrations, test_message):
 
 def has_mock_file(public_ip, playbook_id):
     command = ["[", "-f", os.path.join(REMOTE_MOCKS_DIR, playbook_id + ".mock"), "]"]
-    print "running command {}".format(command)  # DEBUG
+    print "running command {}".format(add_ssh_prefix(public_ip, command))  # DEBUG
     file_exists = remote_call(public_ip, command) == 0
     if not file_exists:
         print "Mock file does not exist, running without mock."
