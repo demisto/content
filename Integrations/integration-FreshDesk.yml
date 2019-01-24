@@ -53,7 +53,6 @@ script:
       name: email
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Name of the requester
@@ -61,7 +60,6 @@ script:
       name: name
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -69,7 +67,6 @@ script:
       name: subject
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Details of the issue for which you are creating a ticket.
@@ -77,26 +74,23 @@ script:
       name: description
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
-        1 is Low, 2 is Medium, 3 is High, 4 is Urgent. The default value is 1.
+        1 is Low, 2 is Medium, 3 is High, 4 is Urgent.
       isArray: false
       name: priority
       predefined: ['1', '2', '3', '4']
       required: false
-      secret: false
     - default: false
       defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
         is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
-        7 is Waiting on Third Party. The default value is 2.
+        7 is Waiting on Third Party.
       isArray: false
       name: status
       predefined: ['2', '3', '4', '5', '6', '7']
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: User ID of the requester.
@@ -104,7 +98,6 @@ script:
       name: requester_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent to whom you wish to assign this ticket
@@ -112,7 +105,6 @@ script:
       name: responder_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the group to which you wish to assign this ticket
@@ -120,7 +112,6 @@ script:
       name: group_id
       predefined: []
       required: false
-      secret: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -186,10 +177,200 @@ script:
       name: id
       predefined: []
       required: true
-      secret: false
     description: View a Ticket.
     execution: false
     name: fd-view-ticket
+    outputs:
+    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
+        replying to a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
+    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
+        has been escalated as the result of first response time being breached, type: Boolean}
+    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
+        has been escalated for any reason, type: Boolean}
+    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
+        in plain text, type: String}
+    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
+        marked as spam, type: Boolean}
+    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
+        the names and values of custom fields., type: Unknown}
+    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
+        ticket is associated, type: Number}
+    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
+        forwarding a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
+        ticket is due to be resolved, type: Date}
+    - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
+    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
+    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+        size of these attachments cannot exceed 15MB., type: Unknown}
+    - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
+        ticket was originally sent, type: Unknown}
+    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
+        field of the incoming ticket email, type: Unknown}
+    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+      type: Number}
+    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
+        ticket belongs, type: Number}
+    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+        the ticket, type: Unknown}
+    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
+        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
+      type: Number}
+    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
+        to the different kinds of issues your support team deals with., type: String}
+    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+        has been assigned, type: Number}
+    - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
+        was created, type: Number}
+    - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
+    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
+    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
+      type: String}
+    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+        ticket has been assigned, type: Number}
+    - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
+        first response is due, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID number of the ticket for which you wish to set the status
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: '2'
+      description: Status of the ticket. Each number has a corresponding value. 2
+        is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
+        7 is Waiting on Third Party.
+      isArray: false
+      name: status
+      predefined: ['2', Open, '3', Pending, '4', Resolved, '5', Closed, '6', Waiting
+          on Customer, '7', Waiting on Third Party]
+      required: true
+    description: Set the status of the specified ticket.
+    execution: false
+    name: fd-set-ticket-status
+    outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: Name of the requester
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: User ID of the requester.
+      isArray: false
+      name: requester_id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Email address of the requester.
+      isArray: false
+      name: email
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Subject of the ticket. The default Value is null.
+      isArray: false
+      name: subject
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Helps categorize the ticket according to the different kinds of
+        issues your support team deals with. The default Value is null.
+      isArray: false
+      name: type
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Status of the ticket. Each number has a corresponding value. 2
+        is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
+        7 is Waiting on Third Party.
+      isArray: false
+      name: status
+      predefined: ['2', '''Open''', '3', '''Pending''', '4', '''Resolved''', '5',
+        '''Closed''', '6', '''Waiting on Customer''', '7', '''Waiting on Third Party''']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Priority of the ticket. Each number has a corresponding value.
+        1 is Low, 2 is Medium, 3 is High, 4 is Urgent.
+      isArray: false
+      name: priority
+      predefined: ['1', '''Low''', '2', '''Medium''', '3', '''High''', '4', '''Urgent''']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: HTML content of the ticket.
+      isArray: false
+      name: description
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ID of the agent to whom you wish to assign the ticket
+      isArray: false
+      name: responder_id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ID of the group to which you wish to assign the ticket
+      isArray: false
+      name: group_id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Timestamp that denotes when the first response is due
+      isArray: false
+      name: fr_due_by
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Timestamp that denotes when the ticket is due to be resolved
+      isArray: false
+      name: due_by
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Tags that have been associated with the ticket
+      isArray: true
+      name: tags
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Ticket attachments. The total size of these attachments cannot
+        exceed 15MB.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ID number of the ticket to update
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+    description: Update the ticket specified by the ID
+    execution: false
+    name: fd-update-ticket
     outputs:
     - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
         replying to a ticket, type: Unknown}
@@ -276,13 +457,10 @@ script:
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     # Should we use SSL
     USE_SSL = not demisto.params().get('unsecure', False)
-    # How many time before the first fetch to retrieve incidents
-    # FETCH_TIME = demisto.params().get('fetch_time', '3 days')
     # Service base URL
     BASE_URL = SERVER + '/api/v2/'
     # Headers to be sent in requests
     HEADERS = {
-        # 'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
@@ -293,16 +471,95 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
+    # Global var used when update_ticket_command is called from another command
+    ARGS = None
+
 
     ''' HELPER FUNCTIONS '''
 
 
-    # def provide_creds():
-    #     if not (USERNAME and PASSWORD) and not TOKEN:
-    #         err_msg = "You must provide either your freshdesk account API key or the " \
-    #                   "username and password you use to sign into your freshdesk account " \
-    #                     "when instantiating an instance of the freshdesk integration."
-    #         return_error(err_msg)
+    def handle_array_input(args):
+        array_inputs = ['tags', 'attachments']
+
+        for arr_input in array_inputs:
+            if arr_input in args.keys():
+                args[arr_input] = argToList(args.get(arr_input))
+
+        return args
+
+
+    def validate_priority_input(args):
+        # Parse and ensure valid command argument
+        priority = args.get('priority', None)
+
+        # If priority wasn't given by the user as a cmd arg
+        # then no need to alter it to API expectations
+        if not priority:
+            return args
+
+        priorities = ['low', 'medium', 'high', 'urgent']
+
+        # Check if the user entered status as words - aka the
+        # options listed above in 'statuses'
+        err_msg = "priority should be one of these values: 1, 2, 3, 4, {}".format(', '.join(priorities))
+        if len(priority) > 1:
+            if priority.lower() in priorities:
+                # Add 1 since API status numbers for tickets start at 1
+                # Cast to string so clean_arguments helper function doesn't throw any errors
+                args['priority'] = str(priorities.index(priority.lower()) + 2)
+            else:
+                return_error(err_msg)
+        # Otherwise make sure the user entered valid status number
+        elif not (0 < int(priority) < 5):
+            return_error(err_msg)
+        return args
+
+
+    def validate_status_input(args):
+        # Parse and ensure valid command argument
+        status = args.get('status', None)
+
+        # If status wasn't given by the user as a cmd arg
+        # then no need to alter it to API expectations
+        if not status:
+            return args
+
+        statuses = [
+            'open', 'pending', 'resolved', 'closed',
+            'waiting on customer', 'waiting on third party'
+        ]
+
+        # Check if the user entered status as words - aka the
+        # options listed above in 'statuses'
+        err_msg = "status should be one of these values: 2, 3, 4, 5, 6, 7, {}".format(', '.join(statuses))
+        if len(status) > 1:
+            if status.lower() in statuses:
+                # Add 2 since API status numbers for tickets start at 2
+                # Cast to string so clean_arguments helper function doesn't throw any errors
+                args['status'] = str(statuses.index(status.lower()) + 2)
+            else:
+                return_error(err_msg)
+        # Otherwise make sure the user entered valid status number
+        elif not (1 < int(status) < 8):
+            return_error(err_msg)
+        return args
+
+
+    def clean_arguments(args):
+        args = validate_status_input(args)
+        args = validate_priority_input(args)
+        args = handle_array_input(args)
+
+        # Command args that should be numbers
+        number_args = [
+            'requester_id', 'status', 'priority', 'responder_id',
+            'email_config_id', 'group_id', 'product_id', 'source', 'company_id'
+        ]
+        # Convert cmd args that are expected to be numbers from strings to numbers
+        for num_arg in number_args:
+            if num_arg in args.keys():
+                args[num_arg] = int(args.get(num_arg))
+        return args
 
 
     def http_request(method, url_suffix, params=None, data=None):
@@ -318,9 +575,9 @@ script:
         )
         # Handle error responses gracefully
         if res.status_code not in [200, 201]:
-            # LOG(res.json())
-            # LOG(res.text)
-            # LOG.print_log()
+            LOG(res.json())
+            LOG(res.text)
+            LOG.print_log()
             err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
             err = json.loads(res.content)
             if err.get('errors'):
@@ -344,25 +601,14 @@ script:
         # provide_creds()
         ticket_id = '1'
         response = http_request('GET', 'tickets/{}'.format(ticket_id))
-        # demisto.results(response)
 
 
     def create_ticket(args):
-        # Command args that should be numbers
-        number_args = [
-            'requester_id', 'status', 'priority', 'responder_id',
-            'email_config_id', 'group_id', 'product_id', 'source', 'company_id'
-        ]
-        # Convert cmd args that are expected to be numbers from strings to numbers
-        for num_arg in number_args:
-            if num_arg in args.keys():
-                args[num_arg] = int(args.get(num_arg))
+        args = clean_arguments(args)
 
         # The service endpoint to request from
         endpoint_url = 'tickets'
         # Send a request using our http_request wrapper
-        LOG(args)
-        LOG.print_log()
         response = http_request('POST', endpoint_url, data=json.dumps(args))
         return response
 
@@ -479,12 +725,51 @@ script:
         })
 
 
-    def update_ticket():
-        pass
+    def update_ticket(args):
+        # Get ticket number
+        ticket_number = args.get('id')
+        # Remove ticket number from args
+        del args['id']
+        # Adjust the necessary arguments from strings to numbers to match
+        # the API's expected input, additional alterations to API expectations
+        args = clean_arguments(args)
+
+        # The service endpoint to request from
+        endpoint_url = 'tickets/{}'.format(ticket_number)
+        demisto.results('endpoint_url {}'.format(endpoint_url))
+        # Send a request using our http_request wrapper
+        response = http_request('PUT', endpoint_url, data=json.dumps(args))
+        return response
 
 
     def update_ticket_command():
-        pass
+        # args = None
+        # # Check if command was called via other command
+        # global ARGS
+        # if ARGS:
+        #     args = ARGS
+        #     ARGS = None
+        # else:
+        #     # Get command arguments from user
+        #     args = demisto.args()
+
+        args = demisto.args()
+        # Make request and get raw response
+        ticket = update_ticket(args)
+        # Parse response into context
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        title = "Ticket #{} Updated".format(args.get('id'))
+        md = tableToMarkdown(title, context, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': ticket,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Ticket(val.Id && val.Id === obj.Id)': context
+            }
+        })
 
 
     def view_ticket(ticket_number):
@@ -519,6 +804,39 @@ script:
         pass
 
 
+    # # more specific use-case of update_ticket_command
+    # def set_ticket_status_command():
+    #     args = demisto.args()
+    #     statuses = [
+    #         'open', 'pending', 'resolved', 'closed',
+    #         'waiting on customer', 'waiting on third party'
+    #     ]
+    #     # Parse and ensure valid command argument
+    #     status = demisto.args().get('status')
+    #
+    #     # Check if the user entered status as words - aka the
+    #     # options listed above in 'statuses'
+    #     if len(status) > 1:
+    #         if status.lower() in statuses:
+    #             demisto.results('status.lower() {}'.format(status.lower()))
+    #             # Add 2 since API status numbers for tickets start at 2
+    #             # Cast to string so clean_arguments helper function doesn't throw any errors
+    #             args['status'] = str(statuses.index(status.lower()) + 2)
+    #             demisto.results("args['status'] {}".format(args['status']))
+    #         else:
+    #             err_msg = 'status should be one of the following values: {}'.format(', '.join(statuses))
+    #             return_error(err_msg)
+    #     elif not (1 < int(status) < 8):
+    #         return_error("Status should be one of these values: '2,3,4,5,6,7'")
+    #
+    #     # Call update_ticket_command with the arguments
+    #     global ARGS
+    #     ARGS = args
+    #     demisto.results('ARGS {}'.format(ARGS))
+    #     update_ticket_command()
+
+
+
     def list_contacts():
         pass
 
@@ -545,6 +863,7 @@ script:
         "fd-view-ticket": view_ticket_command,
         "fd-close-ticket": close_ticket_command,
         "fd-view-contact": view_contact_command,
+        "fd-list-contacts": list_contacts_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))
