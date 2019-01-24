@@ -89,6 +89,5 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: "Adjusted versioning"
 tests:
   - Extract Indicators From File - test

@@ -1365,4 +1365,3 @@ script:
   isfetch: true
 tests:
   - RSA NetWitness Test
-releaseNotes: "fixed issues with netwitness-update-incident command"

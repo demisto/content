@@ -560,6 +560,56 @@ script:
         response = http_request('GET', cmd_url)
         return response
 
+    def update_alert_command():
+
+        alert_id = demisto.args()['alert_id']
+        assigned_to = demisto.args().get('assigned_to')
+        status = demisto.args().get('status')
+        classification = demisto.args().get('classification')
+        determination = demisto.args().get('determination')
+
+        if all(v is None for v in [assigned_to, status, classification, determination]):
+            return_error('No arguments were given to update the alert')
+
+        json = {}
+        context = {
+            'ID': alert_id
+        }
+        if assigned_to:
+            json['assignedTo'] = assigned_to
+            context['AssignedTo'] = assigned_to
+        if status:
+            json['status'] = status
+            context['Status'] = status
+        if classification:
+            json['classification'] = classification
+            context['Classification'] = classification
+        if determination:
+            json['determination'] = determination
+            context['Determination'] = determination
+
+        response = update_alert(alert_id, json)
+
+        ec = {
+            'MicrosoftATP.Alert(val.ID && val.ID === obj.ID)': context
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': '',
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Alert {0} was updated successfully'.format(alert_id),
+            'EntryContext': ec
+        }
+
+        demisto.results(entry)
+
+    def update_alert(alert_id, json):
+        cmd_url = '/alerts/' + alert_id
+        response = http_request('PATCH', cmd_url, json=json)
+        return response
+
     def get_alert_related_domains(alert_id):
         cmd_url = '/alerts/{}/domains'.format(alert_id)
         response = http_request('GET', cmd_url)
@@ -595,7 +645,7 @@ script:
             alert_severity = alert['severity']
             if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and alert_severity in FETCH_SEVERITY:
                 alert_id = alert['id']
-                alert['RelatedFiles'] = get_alert_related_files(alert_id)
+                #alert['RelatedFiles'] = get_alert_related_files(alert_id)
                 #alert['RelatedDomains'] = get_alert_related_domains(alert_id)
                 #alert['RelatedIPs'] = get_alert_related_ips(alert_id)
                 incident = alert_to_incident(alert)
@@ -623,7 +673,7 @@ script:
         if demisto.command() == 'test-module':
             test_function()
 
-        elif demisto.command() == 'fetch-incidents': # 404
+        elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
 
         elif demisto.command() == 'microsoft-atp-isolate-machine':
@@ -641,20 +691,23 @@ script:
         elif demisto.command() == 'microsoft-atp-get-machine-details':
             get_machine_details_command()
 
-        elif demisto.command() == 'microsoft-atp-block-file': # 404 - new file
+        elif demisto.command() == 'microsoft-atp-block-file':
             block_file_command()
 
-        elif demisto.command() == 'microsoft-atp-get-user-related-machines': # 404 - checking
+        elif demisto.command() == 'microsoft-atp-get-user-related-machines':
             get_user_related_machines_command()
 
-        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file': # 500 - does not exist yet - 2 weeks
+        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
             stop_and_quarantine_file_command()
 
-        elif demisto.command() == 'microsoft-atp-run-antivirus-scan': # 400
+        elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
             run_antivirus_scan_command()
 
         elif demisto.command() == 'microsoft-atp-list-alerts':
             list_alerts_command()
+
+        elif demisto.command() == 'microsoft-atp-update-alert':
+            update_alert_command()
 
     except Exception, e:
         LOG(e.message)
@@ -992,7 +1045,7 @@ script:
     - contextPath: MicrosoftATP.Alert.LastEventTime
       description: Alert last event time
       type: date
-    - contextPath: MicrosoftATP.Alert.New
+    - contextPath: MicrosoftATP.Alert.Status
       description: Alert status
       type: string
     - contextPath: MicrosoftATP.Alert.FirstEventTime
@@ -1014,6 +1067,52 @@ script:
       description: Alert category
       type: string
     description: Get a list of alerts present on the system.
+  - name: microsoft-atp-update-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID to update
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+      description: Alert status to update
+    - name: assigned_to
+      description: Owner of the alert
+    - name: classification
+      auto: PREDEFINED
+      predefined:
+      - Unknown
+      - FalsePositive
+      - TruePositive
+      description: Specifies the specification of the alert
+    - name: determination
+      auto: PREDEFINED
+      predefined:
+      - NotAvailable
+      - Apt
+      - Malware
+      - SecurityPersonnel
+      - SecurityTesting
+      - UnwantedSoftware
+      - Other
+      description: Specifies the determination of the alert
+    outputs:
+    - contextPath: MicrosoftATP.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: MicrosoftATP.Alert.Status
+      description: Alert status
+      type: string
+    - contextPath: MicrosoftATP.Alert.Classification
+      description: Alert classification
+      type: string
+    - contextPath: MicrosoftATP.Alert.Determination
+      description: Alert determination
+      type: string
+    description: Update the properties of an alert entity
   isfetch: true
   runonce: false
 tests:
