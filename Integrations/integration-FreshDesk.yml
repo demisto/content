@@ -1,0 +1,564 @@
+category: Ticketing
+commonfields: {id: Freshdesk, version: -1}
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  options: []
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Token
+  name: token
+  options: []
+  required: false
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  options: []
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy
+  name: proxy
+  options: []
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  options: []
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Username
+  name: credentials
+  options: []
+  required: false
+  type: 9
+description: Freshdesk Integration
+detaileddescription: Use these detailed instructions in order to retrieve the API
+  key
+display: Freshdesk
+name: Freshdesk
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: Email address of the requester. If no contact exists with this
+        email address in Freshdesk, it will be added as a new contact.
+      isArray: false
+      name: email
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Name of the requester
+      isArray: false
+      name: name
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Subject of the ticket. The default Value is null.
+      isArray: false
+      name: subject
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Details of the issue for which you are creating a ticket.
+      isArray: false
+      name: description
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Priority of the ticket. Each number has a corresponding value.
+        1 is Low, 2 is Medium, 3 is High, 4 is Urgent. The default value is 1.
+      isArray: false
+      name: priority
+      predefined: ['1', '2', '3', '4']
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '2'
+      description: Status of the ticket. Each number has a corresponding value. 2
+        is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
+        7 is Waiting on Third Party. The default value is 2.
+      isArray: false
+      name: status
+      predefined: ['2', '3', '4', '5', '6', '7']
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: User ID of the requester.
+      isArray: false
+      name: requester_id
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ID of the agent to whom you wish to assign this ticket
+      isArray: false
+      name: responder_id
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ID of the group to which you wish to assign this ticket
+      isArray: false
+      name: group_id
+      predefined: []
+      required: false
+      secret: false
+    description: Create a new Freshdesk ticket.
+    execution: false
+    name: fd-create-ticket
+    outputs:
+    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
+        replying to a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
+    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
+        has been escalated as the result of first response time being breached, type: Boolean}
+    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
+        has been escalated for any reason, type: Boolean}
+    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
+        in plain text, type: String}
+    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
+        marked as spam, type: Boolean}
+    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
+        the names and values of custom fields., type: Unknown}
+    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
+        ticket is associated, type: Number}
+    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
+        forwarding a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
+        ticket is due to be resolved, type: Date}
+    - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
+    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
+    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+        size of these attachments cannot exceed 15MB., type: Unknown}
+    - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
+        ticket was originally sent, type: Unknown}
+    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
+        field of the incoming ticket email, type: Unknown}
+    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+      type: Number}
+    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
+        ticket belongs, type: Number}
+    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+        the ticket, type: Unknown}
+    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
+        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
+      type: Number}
+    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
+        to the different kinds of issues your support team deals with., type: String}
+    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+        has been assigned, type: Number}
+    - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
+        was created, type: Number}
+    - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
+    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
+    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
+      type: String}
+    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+        ticket has been assigned, type: Number}
+    - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
+        first response is due, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID number of the ticket to fetch
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+      secret: false
+    description: View a Ticket.
+    execution: false
+    name: fd-view-ticket
+    outputs:
+    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
+        replying to a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
+    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
+        has been escalated as the result of first response time being breached, type: Boolean}
+    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
+        has been escalated for any reason, type: Boolean}
+    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
+        in plain text, type: String}
+    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
+        marked as spam, type: Boolean}
+    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
+        the names and values of custom fields., type: Unknown}
+    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
+        ticket is associated, type: Number}
+    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
+        forwarding a ticket, type: Unknown}
+    - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
+        ticket is due to be resolved, type: Date}
+    - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
+    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
+    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+        size of these attachments cannot exceed 15MB., type: Unknown}
+    - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
+        ticket was originally sent, type: Unknown}
+    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
+        field of the incoming ticket email, type: Unknown}
+    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+      type: Number}
+    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
+        ticket belongs, type: Number}
+    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+        the ticket, type: Unknown}
+    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
+        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
+      type: Number}
+    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
+        to the different kinds of issues your support team deals with., type: String}
+    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+        has been assigned, type: Number}
+    - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
+        was created, type: Number}
+    - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
+    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
+    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
+    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
+      type: String}
+    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+        ticket has been assigned, type: Number}
+    - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
+        first response is due, type: Date}
+  dockerimage: ''
+  isfetch: false
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from distutils.util import strtobool
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    CREDS = demisto.params().get('credentials')
+    USERNAME = CREDS.get('identifier') if CREDS else None
+    PASSWORD = CREDS.get('password') if CREDS else None
+    TOKEN = demisto.params().get('token')
+
+    if not (USERNAME and PASSWORD) and not TOKEN:
+        err_msg = "You must provide either your freshdesk account API key or the " \
+                  "username and password you use to sign into your freshdesk account " \
+                  "when instantiating an instance of the freshdesk integration."
+        return_error(err_msg)
+
+    AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
+
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    # How many time before the first fetch to retrieve incidents
+    # FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    # Service base URL
+    BASE_URL = SERVER + '/api/v2/'
+    # Headers to be sent in requests
+    HEADERS = {
+        # 'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    # def provide_creds():
+    #     if not (USERNAME and PASSWORD) and not TOKEN:
+    #         err_msg = "You must provide either your freshdesk account API key or the " \
+    #                   "username and password you use to sign into your freshdesk account " \
+    #                     "when instantiating an instance of the freshdesk integration."
+    #         return_error(err_msg)
+
+
+    def http_request(method, url_suffix, params=None, data=None):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS,
+            auth=AUTH
+        )
+        # Handle error responses gracefully
+        if res.status_code not in [200, 201]:
+            # LOG(res.json())
+            # LOG(res.text)
+            # LOG.print_log()
+            err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
+            err = json.loads(res.content)
+            if err.get('errors'):
+                for error in err.get('errors'):
+                    err_msg += '\n' + json.dumps(error, indent=2)
+            else:
+                for key, value in res.json().iteritems():
+                    err_msg += '\n{}: {}'.format(key, value)
+            return_error(err_msg)
+
+        return res.json()
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        # provide_creds()
+        ticket_id = '1'
+        response = http_request('GET', 'tickets/{}'.format(ticket_id))
+        # demisto.results(response)
+
+
+    def create_ticket(args):
+        # Command args that should be numbers
+        number_args = [
+            'requester_id', 'status', 'priority', 'responder_id',
+            'email_config_id', 'group_id', 'product_id', 'source', 'company_id'
+        ]
+        # Convert cmd args that are expected to be numbers from strings to numbers
+        for num_arg in number_args:
+            if num_arg in args.keys():
+                args[num_arg] = int(args.get(num_arg))
+
+        # The service endpoint to request from
+        endpoint_url = 'tickets'
+        # Send a request using our http_request wrapper
+        LOG(args)
+        LOG.print_log()
+        response = http_request('POST', endpoint_url, data=json.dumps(args))
+        return response
+
+
+    def create_ticket_command():
+        """
+        One line summary.
+
+        demisto parameter: (string) name
+            Name of the requester
+
+        demisto parameter: (number) requester_id
+            User ID of the requester. For existing contacts, the
+            requester_id can be passed instead of the requester's email.
+
+        demisto parameter: (string) email
+            Email address of the requester. If no contact exists with
+            this email address in Freshdesk, it will be added as a new contact.
+
+        demisto parameter: (string) facebook_id
+            Facebook ID of the requester. If no contact exists with this
+            facebook_id, then a new contact will be created.
+
+        demisto parameter: (string) phone
+            Phone number of the requester. If no contact exists with this
+            phone number in Freshdesk, it will be added as a new contact.
+            If the phone number is set and the email address is not, then
+            the name attribute is mandatory.
+
+        demisto parameter: (string) twitter_id
+            Twitter handle of the requester. If no contact exists with this
+            handle in Freshdesk, it will be added as a new contact.
+
+        demisto parameter: (string) unique_external_id
+            External ID of the requester. If no contact exists with this
+            external ID in Freshdesk, they will be added as a new contact.
+
+        demisto parameter: (string) subject
+            Subject of the ticket. The default Value is null.
+
+        demisto parameter: (string) type
+            Helps categorize the ticket according to the different kinds of
+            issues your support team deals with. The default Value is null.
+
+        demisto parameter: (number) status
+            Status of the ticket. The default Value is 2.
+
+        demisto parameter: (number) priority
+            Priority of the ticket. The default value is 1.
+
+        demisto parameter: (string) description
+            HTML content of the ticket.
+
+        demisto parameter: (number) responder_id
+            ID of the agent to whom the ticket has been assigned
+
+        demisto parameter: (array) attachments
+            Ticket attachments. The total size of these attachments cannot exceed 15MB.
+
+        demisto parameter: (array) cc_emails
+            Email address added in the 'cc' field of the incoming ticket email
+
+        demisto parameter: (dict) custom_fields
+            Key value pairs containing the names and values of custom fields.
+
+        demisto parameter: (datetime) due_by
+            Timestamp that denotes when the ticket is due to be resolved
+
+        demisto parameter: (number) email_config_id
+            ID of email config which is used for this ticket. (i.e.,
+            support@yourcompany.com/sales@yourcompany.com) If product_id
+            is given and email_config_id is not given, product's primary
+            email_config_id will be set
+
+        demisto parameter: (datetime) fr_due_by
+            Timestamp that denotes when the first response is due
+
+        demisto parameter: (number) group_id
+            ID of the group to which the ticket has been assigned. The default
+            value is the ID of the group that is associated with the given email_config_id
+
+        demisto parameter: (number) product_id
+            ID of the product to which the ticket is associated. It will be
+            ignored if the email_config_id attribute is set in the request.
+
+        demisto parameter: (number) source
+            The channel through which the ticket was created. The default value is 2.
+
+        demisto parameter: (array) tags
+            Tags that have been associated with the ticket
+
+        demisto parameter: (number) company_id
+            Company ID of the requester. This attribute can only be set if the
+            Multiple Companies feature is enabled
+
+        returns:
+            Ticket (JSON) object
+        """
+        # Get command arguments from user
+        args = demisto.args()
+        # Make request and get raw response
+        ticket = create_ticket(args)
+        # Parse response into context
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        title = "Newly Created Ticket"
+        md = tableToMarkdown(title, context, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': ticket,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': context
+        })
+
+
+    def update_ticket():
+        pass
+
+
+    def update_ticket_command():
+        pass
+
+
+    def view_ticket(ticket_number):
+        endpoint_url = 'tickets/{}'.format(ticket_number)
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def view_ticket_command():
+        # Get command arguments from user
+        ticket_number = demisto.args().get('id')
+        # Make request and get raw response
+        ticket = view_ticket(ticket_number)
+        # Parse response into context
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        title = "Viewing Ticket #{}".format(ticket_number)
+        md = tableToMarkdown(title, context, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': ticket,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Ticket(val.Id && val.Id === obj.Id)': context
+            }
+        })
+
+
+    # more specific use-case of update_ticket_command
+    def close_ticket_command():
+        pass
+
+
+    def list_contacts():
+        pass
+
+
+    def list_contacts_command():
+        pass
+
+
+    def view_contact():
+        pass
+
+
+    def view_contact_command():
+        pass
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    # Commands Switch Panel
+    commands = {
+        "fd-create-ticket": create_ticket_command,
+        "fd-update-ticket": update_ticket_command,
+        "fd-view-ticket": view_ticket_command,
+        "fd-close-ticket": close_ticket_command,
+        "fd-view-contact": view_contact_command,
+    }
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() in commands.keys():
+            # Execute that command
+            commands[demisto.command()]()
+
+    # Log exceptions
+    except Exception as e:
+        return_error(e.message)
+  type: python
