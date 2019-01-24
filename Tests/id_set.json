@@ -11764,7 +11764,10 @@
                     "fd-view-contact", 
                     "fd-list-cr-folders", 
                     "fd-list-crs-in-folder", 
-                    "fd-detail-crs"
+                    "fd-detail-crs", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-conversations"
                 ]
             }
         }

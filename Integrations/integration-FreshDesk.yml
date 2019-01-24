@@ -618,6 +618,123 @@ script:
         response content, type: String}
     - {contextPath: FD.CRFolder.CR.Attachments, description: Array of attachments
         associated with the canned response, type: Unknown}
+  - arguments: []
+    description: List all groups
+    execution: false
+    name: fd-list-groups
+    outputs:
+    - {contextPath: FD.Group.AgentIds, description: Array of agent user IDs separated
+        by commas., type: Unknown}
+    - {contextPath: FD.Group.AutoTicketAssign, description: Set to true if automatic
+        ticket assignment has been enabled. Automatic ticket assignment is only available
+        on certain plans., type: Boolean}
+    - {contextPath: FD.Group.BusinessHourId, description: Unique ID of the business
+        hour associated with the group, type: Number}
+    - {contextPath: FD.Group.Description, description: Description of the group, type: String}
+    - {contextPath: FD.Group.EscalateTo, description: The ID of the user to whom an
+        escalation email is sent if a ticket is unassigned., type: Number}
+    - {contextPath: FD.Group.Id, description: Unique ID of the group, type: Number}
+    - {contextPath: FD.Group.Name, description: Name of the group, type: String}
+    - {contextPath: FD.Group.UnassignedFor, description: 'The time after which an
+        escalation email is sent if a ticket remains unassigned. The accepted values
+        are "30m" for 30 minutes, "1h" for 1 hour, "2h" for 2 hours, "4h" for 4 hours,
+        "8h" for 8 hours, "12h" for 12 hours, "1d" for 1 day, "2d" for 2 days, and
+        "3d" for 3 days', type: String}
+    - {contextPath: FD.Group.CreatedAt, description: Group creation timestamp, type: Date}
+    - {contextPath: FD.Group.UpdatedAt, description: Grup updated timestamp, type: Date}
+    - {contextPath: FD.Group.GroupType, description: Group Type of the group, type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the ticket you wish to respond to
+      isArray: false
+      name: ticket_id
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: Content of the reply in HTML format
+      isArray: false
+      name: body
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: Array of attachment objects. The total size of all of the ticket's
+        attachments cannot exceed 15MB.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: The email address from which the reply is sent. By default the
+        global support email will be used.
+      isArray: false
+      name: from_email
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: ID of the agent who is adding the note
+      isArray: false
+      name: user_id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Array of email address strings added in the 'cc' field of the outgoing
+        ticket email.
+      isArray: true
+      name: cc_emails
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Array of email address strings added in the 'bcc' field of the
+        outgoing ticket email.
+      isArray: true
+      name: bcc_emails
+      predefined: []
+      required: false
+    description: Reply to a specified ticket
+    execution: false
+    name: fd-ticket-reply
+    outputs:
+    - {contextPath: FD.Conversation.Attachments, description: Array of attachments
+        associated with the conversation., type: Unknown}
+    - {contextPath: FD.Conversation.Body, description: Content of the conversation
+        in HTML, type: String}
+    - {contextPath: FD.Conversation.BodyText, description: Content of the conversation
+        in plain text, type: String}
+    - {contextPath: FD.Conversation.Id, description: ID of the conversation, type: Number}
+    - {contextPath: FD.Conversation.Incoming, description: 'Set to true if a particular
+        conversation should appear as being created from outside (i.e., not through
+        web portal)', type: Boolean}
+    - {contextPath: FD.Conversation.ToEmails, description: Array of email addresses
+        of agents/users who need to be notified about this conversation, type: Unknown}
+    - {contextPath: FD.Conversation.Private, description: Set to true if the note
+        is private, type: Boolean}
+    - {contextPath: FD.Conversation.Source, description: Denotes the type of conversation,
+      type: Number}
+    - {contextPath: FD.Conversation.SupportEmail, description: 'Email address from
+        which the reply is sent. For notes, this value will be null.', type: String}
+    - {contextPath: FD.Conversation.TicketId, description: ID of the ticket to which
+        this conversation is being added, type: Number}
+    - {contextPath: FD.Conversation.UserId, description: ID of the agent/user who
+        is adding the conversation, type: Number}
+    - {contextPath: FD.Conversation.CreatedAt, description: Conversation creation
+        timestamp, type: Date}
+    - {contextPath: FD.Conversation.UpdatedAt, description: Conversation updated timestamp,
+      type: Date}
+    - {contextPath: FD.Conversation.FromEmail, description: The email address from
+        which the reply is sent. By default the global support email will be used.,
+      type: String}
+  - arguments: []
+    description: ''
+    execution: false
+    name: fd-get-conversations
+    outputs: []
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -669,7 +786,7 @@ script:
 
 
     def handle_array_input(args):
-        array_inputs = ['tags', 'attachments']
+        array_inputs = ['tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails']
 
         for arr_input in array_inputs:
             if arr_input in args.keys():
@@ -790,6 +907,9 @@ script:
         """
         ticket_id = '1'
         response = http_request('GET', 'tickets/{}'.format(ticket_id))
+
+
+    '''<------ TICKETS ------>'''
 
 
     def create_ticket(args):
@@ -978,6 +1098,63 @@ script:
         })
 
 
+    '''<------ CONVERSATIONS ------>'''
+
+
+    def ticket_reply(args):
+        ticket_id = args.get('ticket_id')
+        del args['ticket_id']
+        args = handle_array_input(args)
+        endpoint_url = 'tickets/{}/reply'.format(ticket_id)
+        response = http_request('POST', endpoint_url, data=json.dumps(args))
+        return response
+
+
+    def ticket_reply_command():
+        args = demisto.args()
+        # Make request and get raw response
+        reply = ticket_reply(args)
+        # Parse response into context
+        context = {string_to_context_key(key): val for key, val in reply.iteritems()}
+        title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
+        md = tableToMarkdown(title, context, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': reply,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Conversation(val.Id && val.Id === obj.Id)': context
+            }
+        })
+
+
+
+    def ticket_note():
+        pass
+
+
+    def ticket_note_command():
+        pass
+
+
+    def get_conversations():
+        endpoint_url = 'conversations'
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def get_conversations_command():
+        conversations = get_conversations()
+        demisto.results(conversations)
+
+
+
+
+    '''<------ CONTACTS ------>'''
+
+
     def list_contacts(filters):
         # Alter to match API expected inputs
         updated_since = filters.get('updated_since', None)
@@ -1078,6 +1255,9 @@ script:
         })
 
 
+    '''<------ CANNED RESPONSES ------>'''
+
+
     def list_cr_folders():
         endpoint_url = 'canned_response_folders'
         response = http_request('GET', endpoint_url)
@@ -1137,7 +1317,6 @@ script:
         })
 
 
-
     def detail_crs(id):
         endpoint_url = 'canned_response_folders/{}/responses'.format(id)
         response = http_request('GET', endpoint_url)
@@ -1168,6 +1347,37 @@ script:
         })
 
 
+    '''<------ GROUPS ------>'''
+
+
+    def list_groups():
+        endpoint_url = 'groups'
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def list_groups_command():
+        # Make request and get raw response
+        groups = list_groups()
+        # Parse response into context
+        contexts = []
+        for group in groups:
+            # Parse individual contact response in context
+            context = {string_to_context_key(key): val for key, val in group.iteritems()}
+            contexts.append(context)
+        title = "All Groups"
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': groups,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Group(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
+
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -1182,6 +1392,10 @@ script:
         "fd-list-cr-folders": list_cr_folders_command,
         "fd-list-crs-in-folder": list_crs_in_folder_command,
         "fd-detail-crs": detail_crs_command,
+        "fd-list-groups": list_groups_command,
+        "fd-ticket-reply": ticket_reply_command,
+        "fd-ticket-note": ticket_note_command,
+        "fd-get-conversations": get_conversations_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))
