@@ -3360,6 +3360,7 @@ script:
       type: string
     description: Get push status for a configuration
   runonce: false
+releaseNotes: "Handle faulty deletion of objects gracefully, add support for Service and Service groups objects"
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
