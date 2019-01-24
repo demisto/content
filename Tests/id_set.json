@@ -9994,11 +9994,12 @@
                     "sep-quarantine", 
                     "sep-client-content", 
                     "sep-list-policies", 
-                    "sep-assign-policie", 
+                    "sep-assign-policy", 
                     "sep-list-locations", 
                     "sep-endpoint-quarantine", 
                     "sep-scan-endpoint", 
-                    "sep-update-endpoint-content"
+                    "sep-update-endpoint-content", 
+                    "sep-move-client-to-group"
                 ], 
                 "tests": [
                     "No test"
@@ -15305,18 +15306,23 @@
             "SymantecEndpointProtection Test": {
                 "name": "SymantecEndpointProtection Test", 
                 "implementing_scripts": [
-                    "SEPScan", 
                     "VerifyContext", 
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "PrintErrorEntry"
                 ], 
                 "implementing_commands": [
-                    "sep-quarantine", 
-                    "sep-command-status", 
-                    "sep-update-content", 
+                    "sep-endpoint-quarantine", 
+                    "sep-list-locations", 
+                    "sep-list-policies", 
+                    "sep-update-endpoint-content", 
                     "sep-endpoints-info", 
                     "sep-groups-info", 
                     "sep-client-content", 
-                    "sep-system-info"
+                    "sep-system-info", 
+                    "sep-scan-endpoint"
+                ], 
+                "tests": [
+                    "No test - test playbook"
                 ]
             }
         }, 
