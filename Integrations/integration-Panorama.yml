@@ -2688,8 +2688,8 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: Service protocol
       type: string
-    - contextPath: Panorama.Services.Descritpion
-      description: Service descritpion
+    - contextPath: Panorama.Services.Description
+      description: Service description
       type: string
     - contextPath: Panorama.Services.DestinationPort
       description: Service destination port
@@ -2709,8 +2709,8 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: Service protocol
       type: string
-    - contextPath: Panorama.Services.Descritpion
-      description: Service descritpion
+    - contextPath: Panorama.Services.Description
+      description: Service description
       type: string
     - contextPath: Panorama.Services.DestinationPort
       description: Service destination port
