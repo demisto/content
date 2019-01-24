@@ -11752,6 +11752,15 @@
                     "GoogleResourceManager-Test"
                 ]
             }
+        }, 
+        {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-view-ticket"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
