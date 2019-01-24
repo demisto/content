@@ -12702,47 +12702,28 @@
                 "implementing_playbooks": [
                     "PanoramaCommitConfiguration"
                 ], 
-                "implementing_commands": [
-                    "panorama-list-applications", 
-                    "panorama-create-rule", 
-                    "panorama-list-address-groups", 
-                    "panorama-create-address-group", 
-                    "panorama-list-addresses", 
-                    "panorama-get-address-group", 
-                    "panorama-get-url-category", 
-                    "panorama-delete-rule", 
-                    "panorama", 
-                    "panorama-edit-rule", 
-                    "panorama-get-service-group", 
-                    "panorama-get-url-filter", 
-                    "panorama-delete-address", 
-                    "panorama-get-custom-url-category", 
-                    "panorama-edit-address-group", 
-                    "panorama-move-rule", 
-                    "panorama-delete-service-group", 
-                    "panorama-delete-address-group", 
-                    "panorama-create-address", 
-                    "panorama-list-services", 
-                    "panorama-create-service-group"
-                ]
                 "command_to_integration": {
                     "panorama-list-applications": "", 
                     "panorama-create-rule": "", 
-                    "panorama-delete-rule": "", 
+                    "panorama-list-address-groups": "", 
                     "panorama-create-address-group": "", 
                     "panorama-list-addresses": "", 
                     "panorama-get-address-group": "", 
                     "panorama-get-url-category": "", 
+                    "panorama-delete-rule": "", 
                     "panorama": "", 
                     "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
                     "panorama-get-url-filter": "", 
-                    "panorama-list-address-groups": "", 
+                    "panorama-delete-address": "", 
                     "panorama-get-custom-url-category": "", 
                     "panorama-edit-address-group": "", 
-                    "panorama-create-address": "", 
-                    "panorama-delete-address-group": "", 
                     "panorama-move-rule": "", 
-                    "panorama-delete-address": ""
+                    "panorama-delete-service-group": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-create-address": "", 
+                    "panorama-list-services": "", 
+                    "panorama-create-service-group": ""
                 }
             }
         }, 
@@ -13841,44 +13822,26 @@
                 "implementing_playbooks": [
                     "PanoramaCommitConfiguration"
                 ], 
-                "implementing_commands": [
-                    "panorama-list-applications", 
-                    "panorama-create-rule", 
-                    "panorama-commit", 
-                    "panorama-create-service", 
-                    "panorama-create-address-group", 
-                    "panorama-get-address-group", 
-                    "panorama-move-rule", 
-                    "panorama-delete-rule", 
-                    "panorama", 
-                    "panorama-edit-rule", 
-                    "panorama-get-service-group", 
-                    "panorama-get-url-filter", 
-                    "panorama-get-service", 
-                    "panorama-list-address-groups", 
-                    "panorama-get-custom-url-category", 
-                    "panorama-create-address", 
-                    "panorama-delete-address-group", 
-                    "panorama-list-addresses", 
-                    "panorama-delete-service", 
-                    "panorama-delete-address"
-                ]
                 "command_to_integration": {
                     "panorama-list-applications": "", 
                     "panorama-create-rule": "", 
                     "panorama-commit": "", 
-                    "panorama-delete-rule": "", 
+                    "panorama-create-service": "", 
                     "panorama-create-address-group": "", 
                     "panorama-get-address-group": "", 
                     "panorama-move-rule": "", 
+                    "panorama-delete-rule": "", 
                     "panorama": "", 
                     "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
                     "panorama-get-url-filter": "", 
+                    "panorama-get-service": "", 
                     "panorama-list-address-groups": "", 
                     "panorama-get-custom-url-category": "", 
                     "panorama-create-address": "", 
                     "panorama-delete-address-group": "", 
                     "panorama-list-addresses": "", 
+                    "panorama-delete-service": "", 
                     "panorama-delete-address": ""
                 }
             }
