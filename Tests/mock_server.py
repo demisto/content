@@ -1,9 +1,25 @@
 import os
 import signal
+import string
+import unicodedata
 from subprocess import call, Popen, PIPE
 
 
 REMOTE_MACHINE_USER = "ec2-user"
+valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+
+
+def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
+    # replace spaces
+    for r in replace:
+        filename = filename.replace(r, '_')
+
+    # keep only valid ascii chars
+    cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
+
+    # keep only whitelisted chars
+    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+    return cleaned_filename
 
 
 def add_ssh_prefix(public_ip, command, ssh_options=""):
@@ -42,7 +58,7 @@ class MITMProxy:
             raise Exception("Cannot start proxy - already running.")
         action = '--server-replay' if not record else '--save-stream-file'
         command = "mitmdump -p 9997 {}".format(action).split()
-        command.extend(os.path.join(self.mocks_folder, playbook_id + ".mock"))
+        command.extend(os.path.join(self.mocks_folder, clean_filename(playbook_id) + ".mock"))
         self.process = Popen(add_ssh_prefix(self.ip, command, "-t"), stdout=PIPE, stderr=PIPE)
         junk = self.process.stdout.read()
         if self.debug:
