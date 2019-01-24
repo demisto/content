@@ -88,7 +88,7 @@ def update_test_msg(integrations, test_message):
 
 
 def has_mock_file(public_ip, playbook_id):
-    command = ["[", "-f", '"' + os.path.join(REMOTE_MOCKS_DIR, playbook_id + ".mock") + '"', "]"]
+    command = ["[", "-f", os.path.join(REMOTE_MOCKS_DIR, playbook_id + ".mock"), "]"]
     print "running command {}".format(command)  # DEBUG
     file_exists = remote_call(public_ip, command) == 0
     if not file_exists:
