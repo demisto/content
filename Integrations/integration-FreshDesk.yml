@@ -53,7 +53,6 @@ script:
       name: email
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Name of the requester
@@ -61,7 +60,6 @@ script:
       name: name
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -69,7 +67,6 @@ script:
       name: subject
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Details of the issue for which you are creating a ticket.
@@ -77,7 +74,6 @@ script:
       name: description
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
@@ -86,7 +82,6 @@ script:
       name: priority
       predefined: ['1', '2', '3', '4']
       required: false
-      secret: false
     - default: false
       defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
@@ -96,7 +91,6 @@ script:
       name: status
       predefined: ['2', '3', '4', '5', '6', '7']
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: User ID of the requester.
@@ -104,7 +98,6 @@ script:
       name: requester_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent to whom you wish to assign this ticket
@@ -112,7 +105,6 @@ script:
       name: responder_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the group to which you wish to assign this ticket
@@ -120,7 +112,6 @@ script:
       name: group_id
       predefined: []
       required: false
-      secret: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -186,7 +177,6 @@ script:
       name: id
       predefined: []
       required: true
-      secret: false
     description: View a Ticket.
     execution: false
     name: fd-view-ticket
@@ -252,7 +242,6 @@ script:
       name: name
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: User ID of the requester.
@@ -260,7 +249,6 @@ script:
       name: requester_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Email address of the requester.
@@ -268,7 +256,6 @@ script:
       name: email
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -276,7 +263,6 @@ script:
       name: subject
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Helps categorize the ticket according to the different kinds of
@@ -285,7 +271,6 @@ script:
       name: type
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Status of the ticket. Each number has a corresponding value. 2
@@ -296,7 +281,6 @@ script:
       predefined: ['2', Open, '3', Pending, '4', Resolved, '5', Closed, '6', Waiting
           on Customer, '7', Waiting on Third Party]
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Priority of the ticket. Each number has a corresponding value.
@@ -305,7 +289,6 @@ script:
       name: priority
       predefined: ['1', Low, '2', Medium, '3', High, '4', Urgent]
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: HTML content of the ticket.
@@ -313,7 +296,6 @@ script:
       name: description
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent to whom you wish to assign the ticket
@@ -321,7 +303,6 @@ script:
       name: responder_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID of the group to which you wish to assign the ticket
@@ -329,7 +310,6 @@ script:
       name: group_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Timestamp that denotes when the first response is due
@@ -337,7 +317,6 @@ script:
       name: fr_due_by
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Timestamp that denotes when the ticket is due to be resolved
@@ -345,7 +324,6 @@ script:
       name: due_by
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Tags that have been associated with the ticket
@@ -353,7 +331,6 @@ script:
       name: tags
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Ticket attachments. The total size of these attachments cannot
@@ -362,7 +339,6 @@ script:
       name: attachments
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: ID number of the ticket to update
@@ -370,7 +346,6 @@ script:
       name: id
       predefined: []
       required: true
-      secret: false
     description: Update the ticket specified by the ID
     execution: false
     name: fd-update-ticket
@@ -436,7 +411,6 @@ script:
       name: email
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: mobile number to filter the contacts by
@@ -444,7 +418,6 @@ script:
       name: mobile
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: phone number to filter contacts by
@@ -452,7 +425,6 @@ script:
       name: phone
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Company ID by which to filter the contacts
@@ -460,7 +432,6 @@ script:
       name: company_id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: The state of contacts by which you want to filter the contacts
@@ -468,7 +439,6 @@ script:
       name: state
       predefined: [blocked, deleted, unverified, verified]
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: return contacts that have been updated after the timestamp given
@@ -477,7 +447,6 @@ script:
       name: updated_since
       predefined: []
       required: false
-      secret: false
     description: List all contacts matching the specified filters. If no filters are
       provided then all unblocked and undeleted contacts will be returned.
     execution: false
@@ -531,7 +500,6 @@ script:
       name: id
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Email of the contact you wish to view the details of
@@ -539,7 +507,6 @@ script:
       name: email
       predefined: []
       required: false
-      secret: false
     - default: false
       defaultValue: ''
       description: Mobile number of the contact you wish to view the details of
@@ -547,7 +514,6 @@ script:
       name: mobile
       predefined: []
       required: false
-      secret: false
     description: View the details of the contact specified by the ID number
     execution: false
     name: fd-view-contact
@@ -592,6 +558,66 @@ script:
     - {contextPath: FD.Contact.CreatedAt, description: Contact creation stamp, type: Date}
     - {contextPath: FD.Contact.UpdatedAt, description: Contact updated timestamp,
       type: Date}
+  - arguments: []
+    description: List all Canned Response Folders (Only users with Admin Privileges)
+    execution: false
+    name: fd-list-cr-folders
+    outputs:
+    - {contextPath: FD.CRFolder.Id, description: Unique ID of the canned response
+        folder, type: Number}
+    - {contextPath: FD.CRFolder.Name, description: Name of the canned response folder,
+      type: String}
+    - {contextPath: FD.CRFolder.Personal, description: Set true if the folder can
+        only be accessed by you, type: Boolean}
+    - {contextPath: FD.CRFolder.ResponsesCount, description: Number of canned responses
+        in the folder, type: Number}
+    - {contextPath: FD.CRFolder.CreatedAt, description: Canned Response Folder's creation
+        timestamp, type: Date}
+    - {contextPath: FD.CRFolder.UpdatedAt, description: Canned Response Folder's updated
+        timestamp, type: Date}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the Canned Response folder for which you want to list the
+        canned responses inside of it. To find the ID of a Canned Response folder,
+        execute the `fd-list-cr-folders` command to see the Canned Response folders
+        accessible to you.
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+    description: List all Canned Responses in a Folder
+    execution: false
+    name: fd-list-crs-in-folder
+    outputs:
+    - {contextPath: FD.CRFolder.CR.Id, description: ID of the Canned Response, type: Number}
+    - {contextPath: FD.CRFolder.CR.Title, description: Title of the Canned Response,
+      type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the Folder containing the Canned Responses you wish to view
+        the details of
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+    description: View the details of all the Canned Responses in a Folder.
+    execution: false
+    name: fd-detail-crs
+    outputs:
+    - {contextPath: FD.CRFolder.CR.Id, description: Unique ID of the canned response,
+      type: Number}
+    - {contextPath: FD.CRFolder.CR.Title, description: Title of the canned response,
+      type: String}
+    - {contextPath: FD.CRFolder.CR.FolderId, description: ID of the containing folder,
+      type: Number}
+    - {contextPath: FD.CRFolder.CR.Content, description: Plaintext version of the
+        canned response content, type: String}
+    - {contextPath: FD.CRFolder.CR.ContentHtml, description: HTML version of the canned
+        response content, type: String}
+    - {contextPath: FD.CRFolder.CR.Attachments, description: Array of attachments
+        associated with the canned response, type: Unknown}
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -1014,7 +1040,7 @@ script:
         else:
             try:
                 filters = {'mobile': args.get('mobile')}
-                # Get id field of first result of contacts with that name
+                # Get id field of first result of contacts with that mobile number
                 contact_id = list_contacts(filters)[0].get('id')
             # If there is an IndexError, it means no results were returned for the given filter
             except IndexError as e:
@@ -1052,6 +1078,97 @@ script:
         })
 
 
+    def list_cr_folders():
+        endpoint_url = 'canned_response_folders'
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def list_cr_folders_command():
+        # Make request and get raw response
+        cr_folders = list_cr_folders()
+        # Parse response into context
+        contexts = []
+        for folder in cr_folders:
+            # Parse individual contact response in context
+            context = {string_to_context_key(key): val for key, val in folder.iteritems()}
+            contexts.append(context)
+        title = "All Canned Response Folders"
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': cr_folders,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.CRFolder(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
+
+
+    def list_crs_in_folder(id):
+        endpoint_url = 'canned_response_folders/{}'.format(id)
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def list_crs_in_folder_command():
+        # Get id of the containing canned response folder as cmd argument
+        cr_folder_id = demisto.args().get('id')
+        # Make request and get raw response
+        canned_responses = list_crs_in_folder(cr_folder_id)
+        # Parse response into context
+        contexts = []
+        for cr in canned_responses.get('canned_responses'):
+            context = {string_to_context_key(key): val for key, val in cr.iteritems()}
+            contexts.append(context)
+        title = "Canned Responses in Folder #{}".format(canned_responses.get('id'))
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': canned_responses,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.CRFolder(val.Id && val.Id === obj.Id).CR(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
+
+
+
+    def detail_crs(id):
+        endpoint_url = 'canned_response_folders/{}/responses'.format(id)
+        response = http_request('GET', endpoint_url)
+        return response
+
+
+    def detail_crs_command():
+        # Get id of the containing canned response folder as cmd argument
+        cr_folder_id = demisto.args().get('id')
+        # Make request and get raw response
+        canned_responses = detail_crs(cr_folder_id)
+        # Parse the responses into context
+        contexts = []
+        for cr in canned_responses:
+            context = {string_to_context_key(key): val for key, val in cr.iteritems()}
+            contexts.append(context)
+        title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': canned_responses,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.CRFolder(val.Id && val.Id === obj.Id).CR(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
+
+
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1062,6 +1179,9 @@ script:
         "fd-view-ticket": view_ticket_command,
         "fd-view-contact": view_contact_command,
         "fd-list-contacts": list_contacts_command,
+        "fd-list-cr-folders": list_cr_folders_command,
+        "fd-list-crs-in-folder": list_crs_in_folder_command,
+        "fd-detail-crs": detail_crs_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))
