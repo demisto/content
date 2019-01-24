@@ -117,96 +117,96 @@ script:
         address., type: string}
     - {contextPath: SEPM.Endpoint.HardwareKey, description: ' Hardware-Key of the
         client to be moved', type: String}
-  - arguments:
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: ip
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: hostname
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: timeout
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: interval
-      predefined: []
-      required: false
-      secret: false
-    description: Updates the content of the given client.
-    execution: false
-    name: sep-update-content
-    outputs:
-    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-        command., type: Unknown}
-    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-      type: Unknown}
-  - arguments:
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: ip
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: scanType
-      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
-      required: true
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: hostname
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: timeout
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: interval
-      predefined: []
-      required: false
-      secret: false
-    description: Scans an endpoint.
-    execution: false
-    name: sep-scan
-    outputs:
-    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-        command., type: string}
-    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-      type: string}
+#  - arguments:
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: ip
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: hostname
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: timeout
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: interval
+#      predefined: []
+#      required: false
+#      secret: false
+#    description: Updates the content of the given client.
+#    execution: false
+#    name: sep-update-content
+#    outputs:
+#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+#        command., type: Unknown}
+#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+#      type: Unknown}
+#  - arguments:
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: ip
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: scanType
+#      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
+#      required: true
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: hostname
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: timeout
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: interval
+#      predefined: []
+#      required: false
+#      secret: false
+#    description: Scans an endpoint.
+#    execution: false
+#    name: sep-scan
+#    outputs:
+#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+#        command., type: string}
+#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+#      type: string}
   - arguments:
     - default: false
       defaultValue: ''
@@ -255,55 +255,55 @@ script:
         command., type: string}
     - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
       type: string}
-  - arguments:
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: ip
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: hostname
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: timeout
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: interval
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: actionType
-      predefined: [Quarantine, Undo]
-      required: true
-      secret: false
-    description: Quarantines the endpoint according to its policy.
-    execution: false
-    name: sep-quarantine
-    outputs:
-    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-        command., type: string}
-    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-      type: string}
+#  - arguments:
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: ip
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: hostname
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: timeout
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: interval
+#      predefined: []
+#      required: false
+#      secret: false
+#    - default: false
+#      defaultValue: ''
+#      description: ''
+#      isArray: false
+#      name: actionType
+#      predefined: [Quarantine, Undo]
+#      required: true
+#      secret: false
+#    description: Quarantines the endpoint according to its policy.
+#    execution: false
+#    name: sep-quarantine
+#    outputs:
+#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
+#        command., type: string}
+#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
+#      type: string}
   - arguments: []
     description: Retrieves the client content.
     execution: false
@@ -1183,13 +1183,13 @@ script:
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS SWITCH    @@@@@@@@@@@@@@@@@@@@@@@@@@
-    '''
-    Before EVERY command the follwing tow lines are performed (do_auth and get_token_from_response)
-    '''
+    current_command = demisto.command()
     try:
+        '''
+        Before EVERY command the follwing tow lines are performed (do_auth and get_token_from_response)
+        '''
         resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam('authentication'), insecure=demisto.getParam('insecure'))
         token = get_token_from_response(resp)
-        current_command = demisto.command()
         if current_command == 'test-module':
             # This is the call made when pressing the integration test button.
             if token:
