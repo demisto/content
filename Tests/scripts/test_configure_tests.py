@@ -2,6 +2,8 @@ import os
 import re
 import unittest
 
+# flake8: noqa
+
 from configure_tests import get_modified_files, get_test_list
 
 FILTER_CONF = "filter_file.txt"

@@ -6,6 +6,8 @@ import json
 import requests
 from datetime import datetime, timedelta
 
+# flake8: noqa
+
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
 USE_SSL = True
