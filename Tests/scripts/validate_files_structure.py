@@ -11,6 +11,9 @@ for that task.
 """
 import glob
 import sys
+
+# flake8: noqa
+
 try:
     import yaml
 except ImportError:
