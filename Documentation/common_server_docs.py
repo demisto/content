@@ -4,19 +4,53 @@ import sys
 import yaml
 from parinx import parser
 
-jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
-                  "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
-                  "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
+jsPrivateFuncs = ["dqQueryBuilder",
+                  "toArray",
+                  "indent",
+                  "formatTableValuesRecursive",
+                  "string_to_array",
+                  "array_to_hex_string",
+                  "SHA256_init",
+                  "SHA256_write",
+                  "SHA256_finalize",
+                  "SHA256_hash",
+                  "HMAC_SHA256_init",
+                  "HMAC_SHA256_write",
+                  "HMAC_SHA256_finalize",
+                  "HMAC_SHA256_MAC"]
 
-pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
-                  "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                  "createContextSingle", "IntegrationLogger", "tblToMd"]
+pyPrivateFuncs = ["raiseTable",
+                  "zoomField",
+                  "epochToTimestamp",
+                  "formatTimeColumns",
+                  "strip_tag",
+                  "elem_to_internal",
+                  "internal_to_elem",
+                  "json2elem",
+                  "elem2json",
+                  "json2xml",
+                  "OrderedDict",
+                  "datetime",
+                  "timedelta",
+                  "createContextSingle",
+                  "IntegrationLogger",
+                  "tblToMd"]
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
-jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
-                    "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
-                    "getCSVListAsArray", "getJSONListAsObject"]
+jsAutomationOnly = ["fileNameFromEntry",
+                    "closeInvestigation",
+                    "setSeverity",
+                    "setIncident",
+                    "createNewIncident",
+                    "setPlaybookAccordingToType",
+                    "setOwner",
+                    "taskAssign",
+                    "setTaskDueDate",
+                    "setPlaybook",
+                    "addTask",
+                    "getCSVListAsArray",
+                    "getJSONListAsObject"]
 
 markdownDescFuncs = ["createEntry"]
 
