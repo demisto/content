@@ -4,6 +4,8 @@ import uuid
 import urllib
 from test_utils import print_error
 
+# flake8: noqa
+
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20

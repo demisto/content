@@ -5,6 +5,8 @@
 import os
 import glob
 
+# flake8: noqa
+
 
 def yml_remove_releaseNote_record(file_path):
     '''

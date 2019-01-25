@@ -7,6 +7,8 @@ import shutil
 import base64
 import zipfile
 
+# flake8: noqa
+
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 

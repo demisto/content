@@ -1,6 +1,8 @@
 import json
 import argparse
 
+# flake8: noqa
+
 
 def main(image_id, confile):
     print("Extracting instance conf file")

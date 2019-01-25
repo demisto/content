@@ -9,6 +9,8 @@ import glob
 import argparse
 from subprocess import Popen, PIPE
 
+# flake8: noqa
+
 try:
     import yaml
 except ImportError:

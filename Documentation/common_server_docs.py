@@ -4,6 +4,8 @@ import sys
 import yaml
 from parinx import parser
 
+# flake8: noqa
+
 jsPrivateFuncs = ["dqQueryBuilder",
                   "toArray",
                   "indent",

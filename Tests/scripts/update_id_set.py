@@ -7,6 +7,8 @@ import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 
+# flake8: noqa
+
 
 SCRIPT_YML_REGEX = "scripts.*.yml"
 SCRIPT_PY_REGEX = "scripts.*.py"

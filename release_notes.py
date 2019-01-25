@@ -6,6 +6,8 @@ import yaml
 
 from Tests.test_utils import print_error
 
+# flake8: noqa
+
 contentLibPath = "./"
 limitedVersion = False
 

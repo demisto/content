@@ -1,5 +1,6 @@
 import sys
 
+# flake8: noqa
 
 def add_descriptions(file_path, output_path):
     with open(file_path, 'r') as f:

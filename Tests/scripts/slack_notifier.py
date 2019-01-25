@@ -7,6 +7,8 @@ from subprocess import Popen, PIPE
 
 from slackclient import SlackClient
 
+# flake8: noqa
+
 
 class LOG_COLORS:
     NATIVE = '\033[m'

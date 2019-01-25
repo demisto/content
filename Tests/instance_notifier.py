@@ -9,6 +9,7 @@ from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
 
+# flake8: noqa
 
 class LOG_COLORS:
     NATIVE = '\033[m'

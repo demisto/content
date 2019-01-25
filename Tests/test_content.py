@@ -11,6 +11,7 @@ from slackclient import SlackClient
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
+# flake8: noqa
 
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
