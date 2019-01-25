@@ -4,6 +4,8 @@ import sys
 import json
 import traceback
 
+# flake8: noqa
+
 if sys.version_info[0] < 3:
     import Queue as queue
 else:
