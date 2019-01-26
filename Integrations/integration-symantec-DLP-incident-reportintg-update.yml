@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: 'Server URL'
+- display: 'Server Host (ip or hostname)'
   name: server-ip
   defaultvalue: ""
   type: 0
@@ -47,6 +47,7 @@ script:
     from zeep.transports import Transport
     from requests.auth import AuthBase, HTTPBasicAuth
     from zeep import helpers
+    from zeep.cache import SqliteCache
     import random
     import datetime
     import json
@@ -58,8 +59,8 @@ script:
     # hexdump:732073756468656572206b756d6172
 
     class SymantecAuth(AuthBase):
-        def __init__(self, USERNAME, PASSWORD, host):
-            self.basic = HTTPBasicAuth(USERNAME, PASSWORD)
+        def __init__(self, user, password, host):
+            self.basic = HTTPBasicAuth(user, password)
             self.host = host
 
         def __call__(self, r):
@@ -80,7 +81,8 @@ script:
     session = Session()
     session.auth = SymantecAuth(USERNAME,PASSWORD, "https://{}".format(SERVER_IP))
     session.verify = False
-    transport = Transport(session=session)
+    cache = SqliteCache(timeout=None)
+    transport = Transport(session=session, cache=cache)
 
     client = Client(wsdl=wsdl, transport=transport)
 
@@ -121,7 +123,7 @@ script:
                 rawjson = json.dumps(serialized_obj,default = myconverter)
                 incidents.append({
                     'name':"DLP Incident #"+str(incident1),
-                    'details':  inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated"
+                    'details':  inc[0]['incident']['violatedPolicyRule'][0]['ruleName']+ "RULE has been violated",
                     'rawJSON': rawjson,
                     'severity' : SEVERITY[inc[0]['incident']['severity']]
                 })
@@ -150,7 +152,7 @@ script:
         except:
             return_error("Invalid instance details")
             
-    elif demisto.command() == 'dlp-incident-details':
+    elif demisto.command() == 'sdlp-incident-details':
         inc_details = incidentDetail( demisto.args()['incidentId'])
         res = helpers.serialize_object(inc_details[0])
         json_res = json.loads(json.dumps(res,default = myconverter))
@@ -160,12 +162,12 @@ script:
         'EntryContext':{'SymantecDLP':{'Incident':json_res[0]['incident']}}}
         })
         
-    elif demisto.command() == 'dlp-update-incident':
+    elif demisto.command() == 'sdlp-update-incident':
         demisto.results(updateIncidents())
 
   type: python
   commands:
-  - name: dlp-incident-details
+  - name: sdlp-incident-details
     arguments:
     - name: incidentId
       required: true
@@ -191,7 +193,7 @@ script:
     - contextPath: SymantecDLP.Incident.machineName.machineIP
       description: target machine Ip
     description: fetches DLP incident details
-  - name: dlp-update-incident
+  - name: sdlp-update-incident
     arguments:
     - name: incidentId
       required: true
@@ -214,7 +216,7 @@ script:
       - Dissmissed
       description: 'changes the status of the incident in DLP console NOTE:  status
         attributes are defined in the DLP console. '
-    description: updates Symantec DLP incidents
-  dockerimage: demisto/zeep
+    description: Updates Symantec DLP incidents
+  dockerimage: demisto/zeep:1.0.0.122
   isfetch: true
   runonce: false
