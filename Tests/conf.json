@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RandomStringGenerateTest"
+        },
+        {
             "playbookID": "StringContainsArray_test"
         },
         {
