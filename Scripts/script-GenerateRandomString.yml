@@ -68,6 +68,7 @@ script: |
 type: python
 tags: []
 enabled: true
+description: Generates a random string.
 args:
 - name: Length
   required: true
