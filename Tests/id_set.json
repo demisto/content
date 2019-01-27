@@ -10780,7 +10780,8 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
                     "ews-o365-get-compliance-search-purge-status", 
-                    "ews-get-autodiscovery-config"
+                    "ews-get-autodiscovery-config", 
+                    "ews-expand-group"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -13062,11 +13063,12 @@
                 "command_to_integration": {
                     "Exception": "Exception", 
                     "ews-get-out-of-office": "", 
-                    "ews-get-searchable-mailboxes": "", 
+                    "ews-expand-group": "", 
                     "ews-find-folders": "", 
                     "ews-get-items": "", 
                     "ews-get-contacts": "", 
                     "ews-get-attachment": "", 
+                    "ews-get-searchable-mailboxes": "", 
                     "ews-search-mailboxes": ""
                 }
             }
