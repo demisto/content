@@ -1431,4 +1431,3 @@ releaseNotes: "Improved error handling of crowdstrike-submit-sample command"
 tests:
 - VxStream Test
 - detonate_file_-_generic_test
-- detonate_url_-_generic_test
