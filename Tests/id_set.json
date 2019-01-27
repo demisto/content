@@ -4826,6 +4826,11 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "Cut": {
+                "name": "Cut"
+            }
         }
     ], 
     "playbooks": [
@@ -15531,6 +15536,15 @@
                     "email", 
                     "file", 
                     "ip"
+                ]
+            }
+        }, 
+        {
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
                 ]
             }
         }
