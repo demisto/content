@@ -58,7 +58,7 @@ class MITMProxy:
             raise Exception("Cannot start proxy - already running.")
         action = '--server-replay' if not record else '--save-stream-file'
         command = "mitmdump -p 9997 {}".format(action).split()
-        command.extend(os.path.join(self.mocks_folder, clean_filename(playbook_id) + ".mock"))
+        command.append(os.path.join(self.mocks_folder, clean_filename(playbook_id) + ".mock"))
         self.process = Popen(add_ssh_prefix(self.ip, command, "-t"), stdout=PIPE, stderr=PIPE)
         junk = self.process.stdout.read()
         if self.debug:
