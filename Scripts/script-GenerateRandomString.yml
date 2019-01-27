@@ -1,5 +1,5 @@
 commonfields:
-  id: d5366185-3273-4739-820d-5eea3b892662
+  id: GenerateRandomString
   version: 23
 name: GenerateRandomString
 script: |
@@ -102,3 +102,5 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+tests: - RandomStringGenerateTest
+releaseNotes: "-"
