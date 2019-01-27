@@ -11767,7 +11767,8 @@
                     "fd-detail-crs", 
                     "fd-list-groups", 
                     "fd-ticket-reply", 
-                    "fd-get-conversations"
+                    "fd-get-conversations", 
+                    "fd-list-agents"
                 ]
             }
         }
