@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import json
+import glob
 import argparse
 from subprocess import Popen, PIPE
 
@@ -20,7 +21,13 @@ NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
+SCRIPT_PY_REGEX = "scripts.*.py"
+SCRIPT_JS_REGEX = "scripts.*.js"
+SCRIPT_YML_REGEX = "scripts.*.yml"
 SCRIPT_REGEX = "scripts.*script-.*.yml"
+INTEGRATION_PY_REGEX = "integrations.*.py"
+INTEGRATION_JS_REGEX = "integrations.*.js"
+INTEGRATION_YML_REGEX = "integrations.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
@@ -30,8 +37,10 @@ BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
 BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
+                         INTEGRATION_YML_REGEX]
 
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 # File type regex
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
@@ -101,6 +110,10 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path, CODE_FILES_REGEX):
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -177,6 +190,17 @@ def get_json(file_path):
 
 
 def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
+    """Collect tests for the affected script_ids,playbook_ids,integration_ids.
+
+    :param script_ids: The ids of the affected scripts in your change set.
+    :param playbook_ids: The ids of the affected playbooks in your change set.
+    :param integration_ids: The ids of the affected integrations in your change set.
+    :param catched_scripts: The names of the scripts we already identified a test for.
+    :param catched_playbooks: The names of the scripts we already v a test for.
+    :param tests_set: The names of the tests we alredy identified.
+
+    :return: (test_names, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
+    """
     catched_intergrations = set([])
 
     test_names = get_test_names()
@@ -202,11 +226,15 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
-            for command in test_playbook_data.get('implementing_commands', []):
+            command_to_integration = test_playbook_data.get('command_to_integration', {})
+            for command in test_playbook_data.get('command_to_integration', {}).keys():
                 for integration_id, integration_commands in integration_to_command.items():
                     if command in integration_commands:
-                        tests_set.add(test_playbook_id)
-                        catched_intergrations.add(integration_id)
+                        if not command_to_integration.get(command) or \
+                                command_to_integration.get(command) == integration_id:
+
+                            tests_set.add(test_playbook_id)
+                            catched_intergrations.add(integration_id)
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
@@ -359,24 +387,43 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
                               playbook_names, script_names, updated_script_names, updated_playbook_names,
                               catched_scripts, catched_playbooks, tests_set):
+    """Enrich the list of affected scripts/playbooks by your change set.
+
+    :param integration_id: The name of the integration we changed.
+    :param given_version: the version of the integration we changed.
+    :param integration_commands: The commands of the changed integation
+    :param script_set: The set of existing scripts within Content repo.
+    :param playbook_set: The set of existing playbooks within Content repo.
+    :param playbook_names: The names of the playbooks affected by your changes.
+    :param script_names: The names of the scripts affected by your changes.
+    :param updated_script_names: The names of scripts we identify as affected to your change set.
+    :param updated_playbook_names: The names of playbooks we identify as affected to your change set.
+    :param catched_scripts: The names of scripts we found tests for.
+    :param catched_playbooks: The names of playbooks we found tests for.
+    :param tests_set: The names of the caught tests.
+    """
     for playbook in playbook_set:
         playbook_data = playbook.values()[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
-        implementing_commands = playbook_data.get('implementing_commands', [])
+        command_to_integration = playbook_data.get('command_to_integration', {})
+        implementing_commands = command_to_integration.keys()
         for integration_command in integration_commands:
             if integration_command in implementing_commands and playbook_toversion >= given_version[1]:
                 if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                    tests = playbook_data.get('tests', [])
-                    if tests:
-                        catched_playbooks.add(playbook_name)
-                        update_test_set(tests, tests_set)
+                    if not command_to_integration.get(integration_command) or \
+                            command_to_integration.get(integration_command) == integration_id:
 
-                    updated_playbook_names.add(playbook_name)
-                    new_versions = (playbook_fromversion, playbook_toversion)
-                    enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
-                                           updated_playbook_names, catched_playbooks, tests_set)
+                        tests = playbook_data.get('tests', [])
+                        if tests:
+                            catched_playbooks.add(playbook_name)
+                            update_test_set(tests, tests_set)
+
+                        updated_playbook_names.add(playbook_name)
+                        new_versions = (playbook_fromversion, playbook_toversion)
+                        enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
+                                               updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
         script_data = script.values()[0]
