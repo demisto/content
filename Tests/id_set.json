@@ -5918,7 +5918,10 @@
                 "command_to_integration": {
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
