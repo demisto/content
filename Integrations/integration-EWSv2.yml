@@ -2383,6 +2383,7 @@ script:
     arguments:
     - name: email-address
       required: true
+      description: Email address of the group to expand
     description: Expands a distribution list to display all members
   dockerimage: demisto/py-ews:2.0
   isfetch: true
