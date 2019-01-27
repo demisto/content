@@ -219,7 +219,7 @@ script:
         endpoint_url = '/detects/queries/detects/v1'
         # Dictionary of params for the request
         params = {
-            'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior_time),
+            'filter': "first_behavior:>'{0}'".format(last_behavior_time),
             'sort': 'first_behavior.asc'
         }
         # Send a request using our http_request wrapper
