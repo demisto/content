@@ -735,6 +735,83 @@ script:
     execution: false
     name: fd-get-conversations
     outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: email to filter agents by
+      isArray: false
+      name: email
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: mobile phone number to filter agents by
+      isArray: false
+      name: mobile
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: telephone number to filter agents by
+      isArray: false
+      name: phone
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: list all agents who are either 'fulltime' or 'occasional'
+      isArray: false
+      name: state
+      predefined: [fulltime, occasional]
+      required: false
+    description: List agents that match the criteria of the filters entered as command
+      arguments.
+    execution: false
+    name: fd-list-agents
+    outputs:
+    - {contextPath: FD.Agent.Available, description: 'If the agent is in a group that
+        has enabled "Automatic Ticket Assignment", this attribute will be set to true
+        if the agent is accepting new tickets', type: Boolean}
+    - {contextPath: FD.Agent.AvailableSince, description: Timestamp that denotes when
+        the agent became available/unavailable (depending on the value of the 'available'
+        attribute), type: Date}
+    - {contextPath: FD.Agent.Id, description: User ID of the agent, type: Number}
+    - {contextPath: FD.Agent.Occasional, description: 'Set to true if this is an occasional
+        agent (true => occasional, false => full-time)', type: Boolean}
+    - {contextPath: FD.Agent.Signature, description: Signature of the agent in HTML
+        format, type: String}
+    - contextPath: FD.Agent.TicketScope
+      description: |-
+        Ticket permission of the agent
+        (1 -> Global Access, 2 -> Group Access, 3 -> Restricted Access)
+      type: Number
+    - {contextPath: FD.Agent.GroupIds, description: Group IDs associated with the
+        agent, type: Unknown}
+    - {contextPath: FD.Agent.RoleIds, description: Role IDs associated with the agent,
+      type: Unknown}
+    - {contextPath: FD.Agent.CreatedAt, description: Agent creation timestamp, type: Date}
+    - {contextPath: FD.Agent.UpdatedAt, description: Agent updated timestamp, type: Date}
+    - {contextPath: FD.Agent.Contact.Active, description: Set to true if the agent
+        is verified, type: Boolean}
+    - {contextPath: FD.Agent.Contact.Email, description: Email Address of the agent,
+      type: String}
+    - {contextPath: FD.Agent.Contact.JobTitle, description: Job title of the agent,
+      type: String}
+    - {contextPath: FD.Agent.Contact.Language, description: Language of the agent.
+        Default language is "en", type: String}
+    - {contextPath: FD.Agent.Contact.LastLoginAt, description: Timestamp of the agent's
+        last successful login, type: Date}
+    - {contextPath: FD.Agent.Contact.Mobile, description: Mobile number of the agent,
+      type: Number}
+    - {contextPath: FD.Agent.Contact.Name, description: Name of the agent, type: String}
+    - {contextPath: FD.Agent.Contact.Phone, description: Telephone number of the agent,
+      type: Number}
+    - {contextPath: FD.Agent.Contact.TimeZone, description: Time zone of the agent,
+      type: String}
+    - {contextPath: FD.Agent.Contact.CreatedAt, description: Creation timestamp, type: Date}
+    - {contextPath: FD.Agent.Contact.UpdatedAt, description: Timestamp of the last
+        update, type: Date}
+    - {contextPath: FD.Agent.Type, description: Type of agent, type: String}
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -1362,7 +1439,7 @@ script:
         # Parse response into context
         contexts = []
         for group in groups:
-            # Parse individual contact response in context
+            # Parse individual group response in context
             context = {string_to_context_key(key): val for key, val in group.iteritems()}
             contexts.append(context)
         title = "All Groups"
@@ -1375,6 +1452,41 @@ script:
             'HumanReadable': md,
             'EntryContext': {
                 'FD.Group(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
+
+
+    '''<------ AGENTS ------>'''
+
+
+    def list_agents(filters):
+        endpoint_url = 'agents'
+        response = http_request('GET', endpoint_url, params=filters)
+        return response
+
+
+    def list_agents_command():
+        # Get filter as cmd arg
+        args = demisto.args()
+        # Make request and get raw response
+        agents = list_agents(args)
+        # Parse response into context
+        contexts = []
+        for agent in agents:
+            # Parse the individual agent into context
+            context = {string_to_context_key(key): val for key, val in agent.iteritems()}
+            context['Contact'] = {string_to_context_key(key): val for key, val in context.get('Contact').iteritems()}
+            contexts.append(context)
+        title = "All Agents"
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': agents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Agent(val.Id && val.Id === obj.Id)': contexts
             }
         })
 
@@ -1396,6 +1508,7 @@ script:
         "fd-ticket-reply": ticket_reply_command,
         "fd-ticket-note": ticket_note_command,
         "fd-get-conversations": get_conversations_command,
+        "fd-list-agents": list_agents_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))
