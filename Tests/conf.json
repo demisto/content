@@ -85,6 +85,15 @@
             "nightly" : true
         },
         {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream"
+            ],
+            "playbookID" : "detonate_file_-_generic_test"
+        },
+        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
