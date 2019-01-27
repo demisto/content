@@ -60,9 +60,6 @@ class MITMProxy:
         command = "mitmdump -p 9997 {}".format(action).split()
         command.append(os.path.join(self.mocks_folder, clean_filename(playbook_id) + ".mock"))
         self.process = Popen(add_ssh_prefix(self.ip, command, "-t"), stdout=PIPE, stderr=PIPE)
-        junk = self.process.stdout.read()
-        if self.debug:
-            print junk
         self.__configure_proxy('localhost:9997')
 
     def stop(self):
