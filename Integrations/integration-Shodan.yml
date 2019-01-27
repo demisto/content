@@ -140,6 +140,5 @@ script:
       description: Hostname
     description: Returns all services that have been found on the given host IP.
   runonce: false
-releaseNotes: "Added page argument to search command - allows to choose page of result"
 tests:
   - ShodanTest

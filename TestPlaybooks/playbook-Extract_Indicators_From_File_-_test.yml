@@ -421,4 +421,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Changed test to look for email addresses instead of domains, due to a change in ExtractIndicatorsFromFile"

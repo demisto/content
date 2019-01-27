@@ -590,4 +590,3 @@ script:
   runonce: false
 tests:
   - SNDBOX_Test
-releaseNotes: "Remove DT from DBotScore update"

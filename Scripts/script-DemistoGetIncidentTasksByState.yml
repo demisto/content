@@ -160,3 +160,5 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
+tests:
+  - No test

@@ -206,7 +206,7 @@ script:
                 throw 'Failed to sb-upload , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
             }
             saveCookies(res, requestCookies);
-            raw = {Type: entryTypes.note, ContentsFormat: formats.json, Contents: JSON.parse(res.Body)};
+            var contents = JSON.parse(res.Body);
             break;
         default:
             var contents = sendRequest(
@@ -220,65 +220,99 @@ script:
     }
 
     if (command === 'sandblast-upload' || command === 'sandblast-query' || command === 'sb-upload' || command === 'sb-query') {
-        var uniqueKeys = ['md5', 'sha1', 'sha256'];
+        var dbot_con = [];
+        var hashTypes = ['md5', 'sha1', 'sha256'];
         var ec = {};
-        if (raw.Contents.response &&
-            raw.Contents.response.av &&
-            raw.Contents.response.av.malware_info &&
-            raw.Contents.response.av.malware_info.malware_type) {
+        if (contents.response &&
+            contents.response.av &&
+            contents.response.av.malware_info &&
+            contents.response.av.malware_info.malware_type) {
             var maliciousData = {
                 Malicious: {
                     Vendor: 'Sandblast',
                     Description: 'Sandblast found this file malicious',
-                    Confidence: raw.Contents.response.av.malware_info.confidence,
-                    MalwareFamily: raw.Contents.response.av.malware_info.malware_family,
-                    MalwareType: raw.Contents.response.av.malware_info.malware_type,
-                    Severity: raw.Contents.response.av.malware_info.severity,
-                    SignatureName: raw.Contents.response.av.malware_info.signature_name,
+                    Confidence: contents.response.av.malware_info.confidence,
+                    MalwareFamily: contents.response.av.malware_info.malware_family,
+                    MalwareType: contents.response.av.malware_info.malware_type,
+                    Severity: contents.response.av.malware_info.severity,
+                    SignatureName: contents.response.av.malware_info.signature_name,
                 }
             };
-            for (var key in uniqueKeys) {
-                if (raw.Contents.response[uniqueKeys[key]]) {
-                    maliciousData[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
+                    maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'av'});
                 }
             }
+            ec.DBotScore = dbot_con;
             addMalicious(ec, outputPaths.file, maliciousData);
-        } else {
-            for (var key in uniqueKeys) {
-                if (raw.Contents.response[uniqueKeys[key]]) {
-                    var val = {};
-                    val[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
-                    ec['File(val.' + uniqueKeys[key].toUpperCase() + ' == obj.' + uniqueKeys[key].toUpperCase() + ')'] = val;
+
+        } else if (contents.response.te && contents.response.te.combined_verdict && contents.response.te.combined_verdict == "malicious") {
+            var maliciousData = {
+                Malicious: {
+                    Vendor: 'Sandblast',
+                    Description: 'Sandblast found this file malicious',
+                    Confidence: contents.response.te.confidence,
+                    Severity: contents.response.te.severity
+                }
+            };
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
+                    maliciousData[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'te'});
                 }
             }
+            ec.DBotScore = dbot_con;
+            addMalicious(ec, outputPaths.file, maliciousData);
+
+        } else {
+            for (var key in hashTypes) {
+                if (contents.response[hashTypes[key]]) {
+                    var val = {};
+                    val[hashTypes[key].toUpperCase()] = contents.response[hashTypes[key]];
+                    ec['File(val.' + hashTypes[key].toUpperCase() + ' == obj.' + hashTypes[key].toUpperCase() + ')'] = val;
+                    dbot_con.push({'Indicator': contents.response[hashTypes[key]], 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': '--'});
+                }
+            }
+            ec.DBotScore = dbot_con;
         }
-        raw.EntryContext = ec;
+
+
         var prefix = command === 'sandblast-upload' ? 'Upload' : 'Query';
-        raw.HumanReadable = tableToMarkdown(
+        HumanReadable = tableToMarkdown(
             prefix + ' status for file ' +
-            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
-            ', md5 ' + raw.Contents.response.md5,
-            raw.Contents.response.status
+            contents.response.file_name + (contents.response.file_type ? (' file type ' + contents.response.file_type) : '') +
+            ', md5 ' + contents.response.md5,
+            contents.response.status
         ) + '\n' +
         tableToMarkdown(
             prefix + ' av for file ' +
-            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
-            ', md5 ' + raw.Contents.response.md5,
-            raw.Contents.response.av)+ '\n' +
+            contents.response.file_name + (contents.response.file_type ? (' file type ' + contents.response.file_type) : '') +
+            ', md5 ' + contents.response.md5,
+            contents.response.av)+ '\n' +
         tableToMarkdown(
             prefix + ' extraction for file ' +
-            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
-            ', md5 ' + raw.Contents.response.md5,
-            raw.Contents.response.extraction)+ '\n' +
+            contents.response.file_name + (contents.response.file_type ? (' file type ' + contents.response.file_type) : '') +
+            ', md5 ' + contents.response.md5,
+            contents.response.extraction)+ '\n' +
         tableToMarkdown(prefix + ' TE for file ' +
-            raw.Contents.response.file_name + (raw.Contents.response.file_type ? (' file type ' + raw.Contents.response.file_type) : '') +
-            ', md5 ' + raw.Contents.response.md5,
-            raw.Contents.response.te);
+            contents.response.file_name + (contents.response.file_type ? (' file type ' + contents.response.file_type) : '') +
+            ', md5 ' + contents.response.md5,
+            contents.response.te);
     } else if (command === 'sandblast-quota' || command === 'sb-quota') {
-        raw.ReadableContentsFormat = formats.markdown;
-        raw.HumanReadable = tableToMarkdown('Sandblast Quota Status', raw.Contents.response);
+        ReadableContentsFormat = formats.markdown;
+        HumanReadable = tableToMarkdown('Sandblast Quota Status', Contents.response);
     }
-    return raw;
+
+    return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: contents,
+            EntryContext: ec,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: HumanReadable
+        };
+
   type: javascript
   commands:
   - name: sb-query
@@ -526,3 +560,6 @@ script:
       and quota status of the API Key that you use
 hidden: false
 fromversion: 3.5.0
+releaseNotes: Improvements to Context and DBot score
+tests:
+  - Sandblast_malicious_test

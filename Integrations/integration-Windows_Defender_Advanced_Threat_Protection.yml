@@ -1117,4 +1117,3 @@ script:
   runonce: false
 tests:
 - No test
-releaseNotes: "Added update-alert command"
