@@ -17,12 +17,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Server port. If this is not specified, the port will be configured by the
-    connection type default port.
-  name: port
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Credentials
   name: credentials
   defaultvalue: ""
@@ -46,11 +40,6 @@ configuration:
   options:
   - None
   - SSL
-- display: verify server certificate (with SSL connection)
-  name: tls
-  defaultvalue: ""
-  type: 8
-  required: false
 - display: NTLM authentication
   name: ntlm
   defaultvalue: ""
@@ -67,17 +56,13 @@ script:
 
     ''' INSTANCE CONFIGURATION '''
     SERVER_IP = demisto.params().get('server_ip')
-    PORT = demisto.params().get('port')
     USERNAME = demisto.params().get('credentials')['identifier']
     PASSWORD = demisto.params().get('credentials')['password']
     DEFAULT_BASE_DN = demisto.params().get('base_dn')
     SECURE_CONNECTION = demisto.params().get('secure_connection')
     DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
-    TLS_VERIFY_CERTIFICATE =  demisto.params().get('tls')
     NTLM_AUTH = demisto.params().get('ntlm')
 
-    if PORT:
-        PORT = int(PORT)
 
     ''' GLOBAL VARS '''
 
@@ -118,25 +103,10 @@ script:
         """
         uses the instance configuration to initialize the LDAP server
         """
-        if SECURE_CONNECTION == "SSL" and not TLS_VERIFY_CERTIFICATE:
+        if SECURE_CONNECTION == "SSL":
             # intialize server with ssl
-            # uses the ssl.PROTOCOL_SSLv23 and performs no validation of the server certificate
-            demisto.debug("Initializing server with SSL")
-            if PORT:
-                return Server(SERVER_IP, port=PORT, use_ssl=True)
+            # port is configured by default as 389 or as 636 for LDAPS
             return Server(SERVER_IP, use_ssl=True)
-        if SECURE_CONNECTION == 'SSL' and TLS_VERIFY_CERTIFICATE:
-            # initialize with tls
-            # uses sl.PROTOCOL_TLSv1 and validates server certificate
-            demisto.debug("Initializing server with tls")
-            tls_configuration = Tls(validate=ssl.CERT_REQUIRED, version=ssl.PROTOCOL_TLSv1)
-            if PORT:
-                return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls_configuration)
-            return Server(SERVER_IP, use_ssl=True, tls=tls_configuration)
-        # default cleartext
-        demisto.debug("Initializing server without secure connection")
-        if PORT:
-            return Server(SERVER_IP, port=PORT)
         return Server(SERVER_IP)
 
     def account_entry(person_object, custome_attributes):
