@@ -3,6 +3,7 @@ commonfields:
   version: 23
 name: GenerateRandomString
 description: Generates a random string.
+comment: "-"
 script: |
   import json
   import string
@@ -86,6 +87,7 @@ args:
   - "False"
   description: If the string will include letters.
 - name: Uppercase
+  description: if uppercase should be included
   required: true
   auto: PREDEFINED
   predefined:
@@ -93,6 +95,7 @@ args:
   - "False"
 - name: Digits
   required: true
+  description: If digits should be included
   auto: PREDEFINED
   predefined:
   - "True"
