@@ -15500,17 +15500,17 @@
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "ad-update-contact", 
-                    "ad-remove-from-group", 
-                    "ad-add-to-group", 
-                    "ad-delete-user", 
-                    "ad-get-user", 
-                    "ad-disable-account", 
-                    "ad-enable-account", 
-                    "ad-get-group-members", 
-                    "ad-create-user"
-                ]
+                "command_to_integration": {
+                    "ad-update-contact": "", 
+                    "ad-remove-from-group": "", 
+                    "ad-add-to-group": "", 
+                    "ad-delete-user": "", 
+                    "ad-get-user": "", 
+                    "ad-disable-account": "", 
+                    "ad-enable-account": "", 
+                    "ad-get-group-members": "", 
+                    "ad-create-user": ""
+                }
             }
         }, 
         {

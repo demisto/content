@@ -975,6 +975,7 @@
             "integrations": "Active Directory Query"
 
         },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
