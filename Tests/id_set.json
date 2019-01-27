@@ -11565,7 +11565,8 @@
                     "misp-add-attribute", 
                     "misp-upload-sample", 
                     "misp-delete-event", 
-                    "misp-add-tag"
+                    "misp-add-tag", 
+                    "misp-add-sighting"
                 ], 
                 "tests": [
                     "MISP V2 Test"
@@ -15357,6 +15358,7 @@
                 "command_to_integration": {
                     "misp-search": "MISP V2", 
                     "misp-add-attribute": "MISP V2", 
+                    "misp-add-sighting": "", 
                     "misp-create-event": "MISP V2", 
                     "url": "MISP V2", 
                     "ip": "MISP V2", 

@@ -736,6 +736,7 @@ script:
         MISP.set_sightings(kargs)
         demisto.results(f'Sighting \'{demisto.args().get("type")}\' added to attribute {att_id}')
 
+
     def test():
         if not MISP.test_connection():
             demisto.error('MISP has not connected.')
