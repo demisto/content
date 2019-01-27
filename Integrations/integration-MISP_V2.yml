@@ -456,6 +456,11 @@ script:
 
         event = MISP.new_event(**event_dic)
         event_id = event.get('id')
+        try:
+            if isinstance(event_id, str):
+                event_id = int(event_id)
+        except ValueError:
+            return_error('EventID must be a number')
 
         if ret_only_event_id:
             return event_id
@@ -499,6 +504,12 @@ script:
         if eventid:
             args['id'] = eventid
 
+        try:
+            if isinstance(args.get('id'), str):
+                args['id'] = int(args['id'])
+        except ValueError:
+            return_error('EventID must be a number')
+
         event = MISP.get_event(args.get('id'))
 
         # add attributes
@@ -507,7 +518,6 @@ script:
         if internal:
             return
         event = MISP.search(eventid=args.get('id'))
-        demisto.info(f"\n\n{json.dumps(event, indent=4)}\n\n")
         md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
         ec = {
             MISP_PATH: build_context(event)
@@ -710,6 +720,29 @@ script:
             'EntryContext': ec
         })
 
+
+    def add_sighting():
+        sighting = {
+            'sighting': 0,
+            'false-positive': 1,
+            'expiration': 2
+        }
+        kargs = {
+            'id': demisto.args().get('id'),
+            'uuid': demisto.args().get('uuid'),
+            'type': sighting.get(demisto.args().get('type'))
+        }
+        att_id = demisto.args().get('id', demisto.args().get('uuid'))
+        MISP.set_sightings(kargs)
+        demisto.results(f'Sighting \'{demisto.args().get("type")}\' added to attribute {att_id}')
+
+    def test():
+        if not MISP.test_connection():
+            demisto.error('MISP has not connected.')
+        else:
+            return True
+
+
     command = demisto.command()
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -719,7 +752,7 @@ script:
         MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)
         if command == 'test-module':
             #  This is the call made when pressing the integration test button.
-            # if MISP havn't encountered an error, will return ok
+            test()
             demisto.results('ok')
         elif command == 'misp-upload-sample':
             upload_sample()
@@ -733,6 +766,8 @@ script:
             search()
         elif command == 'misp-delete-event':
             delete_event()
+        elif command == 'misp-add-sighting':
+            add_sighting()
         elif command == 'misp-add-tag':
             add_tag()
         elif command == 'file':
@@ -1642,7 +1677,23 @@ script:
       description: All tag names in the event
       type: string
     description: Adds a tag to the given UUID event or attribute.
+  - name: misp-add-sighting
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sighting
+      - false-positive
+      - expiration
+      description: Type of sighting to add
+    - name: id
+      description: ID of attribute to add sighting to
+    - name: uuid
+      description: UUID of attribute to add sighting to
+    description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
 tests:
 - MISP V2 Test
+releaseNotes: add_sighting command and test connection
