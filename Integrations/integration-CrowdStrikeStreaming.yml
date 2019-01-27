@@ -220,18 +220,14 @@ script:
         # Dictionary of params for the request
         params = {
             'filter': "status:'new'+first_behavior:>'{0}'".format(last_behavior_time),
-            'sort': 'first_behavior.desc'
+            'sort': 'first_behavior.asc'
         }
         # Send a request using our http_request wrapper
         response = http_request('GET', endpoint_url, params)
         # Check if response contains errors
         if response.get('errors'):
             return_error(response.get('errors'))
-        # Check if response contains any data to parse
-        if 'data' in response:
-            return response.get('data')
-        # If neither was found, return back empty results
-        return {}
+        return response
 
 
     def get_detections_entities_request(detections_ids):
@@ -246,16 +242,15 @@ script:
     def fetch_incidents():
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
-        last_fetch = last_run.get('time')
+        last_fetch = last_run.get('first_behavior_time')
 
         # Handle first time fetch, fetch incidents retroactively
         if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
 
         incidents = []
-        # TODO: Connect get_detections_request function
-        # detections_ids = get_detections_request(last_fetch)
-        detections_ids = ["ldt:07893fedd2604bc66c3f7de8d1f537e3:1752347439806"]
+        detections_ids = demisto.get(get_detections_request(last_fetch), 'resources')
         raw_res = get_detections_entities_request(detections_ids)
         demisto.info('\n#### Items: {}\n'.format(raw_res))
         demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
@@ -263,12 +258,13 @@ script:
             for behavior in demisto.get(resource, 'behaviors'):
                 incident = behavior_to_incident(behavior, resource)
                 incident_date = incident['occurred']
+                incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
                 # Update last run and add incident if the incident is newer than last fetch
-                if incident_date > last_fetch:
+                if incident_date_timestamp > last_fetch_timestamp:
                     last_fetch = incident_date
-                    incidents.append(incident)
+                incidents.append(incident)
 
-        demisto.setLastRun({'time': last_fetch})
+        demisto.setLastRun({'first_behavior_time': last_fetch})
         demisto.incidents(incidents)
 
 
@@ -283,10 +279,4 @@ script:
     elif demisto.command() == 'fetch-incidents':
         # Set and define the fetch incidents command to run after activated via integration settings.
         fetch_incidents()
-
-    # # Log exceptions
-    # except Exception, e:
-    #     LOG(e.message)
-    #     LOG.print_log()
-    #     raise e
   type: python
