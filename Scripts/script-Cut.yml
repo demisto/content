@@ -50,3 +50,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 releaseNotes: "Added Cut transformer"
+tests:
+  - TransformersTestPlaybook

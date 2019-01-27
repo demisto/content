@@ -4829,7 +4829,10 @@
         }, 
         {
             "Cut": {
-                "name": "Cut"
+                "name": "Cut", 
+                "tests": [
+                    "TransformersTestPlaybook"
+                ]
             }
         }
     ], 
