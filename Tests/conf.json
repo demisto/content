@@ -922,7 +922,7 @@
         {
             "playbookID": "MaxMind Test",
             "integrations": "MaxMind GeoIP2"
-          
+
         },
         {
             "playbookID": "Test_Sagemaker",
