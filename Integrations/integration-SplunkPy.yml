@@ -322,9 +322,15 @@ script:
             if not isinstance(res[0], dict):
                 headers = "results"
 
-        humanReadable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
+        human_readable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
 
-        demisto.results({"Type": 1, "Contents": res, "ContentsFormat": "json", "EntryContext": ec, "HumanReadable": humanReadable})
+        demisto.results({
+          "Type": 1,
+          "Contents": res,
+          "ContentsFormat": "json",
+          "EntryContext": ec,
+          "HumanReadable": human_readable
+        })
 
         sys.exit(0)
     if demisto.command() == 'splunk-job-create':
