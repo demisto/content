@@ -2,6 +2,7 @@ commonfields:
   id: GenerateRandomString
   version: 23
 name: GenerateRandomString
+description: Generates a random string.
 script: |
   import json
   import string
@@ -102,5 +103,6 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-tests: - RandomStringGenerateTest
+tests:
+  - RandomStringGenerateTest
 releaseNotes: "-"
