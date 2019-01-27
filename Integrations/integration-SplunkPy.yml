@@ -306,7 +306,10 @@ script:
         dbot_scores = []
         for item in reader:
             if isinstance(item, results.Message):
-                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(item.message)})
+                if "Error in" in item.message:
+                    raise ValueError(item.message)
+                res.append(item.message)
+
             elif isinstance(item, dict):
                 if demisto.get(item, 'host'):
                     dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
