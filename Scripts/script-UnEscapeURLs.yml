@@ -20,7 +20,9 @@ script: |-
       return url;
   }
   // If from Proofpoint then no need to un-escape or normalize
-  var clean = args.input.substr(PROOFPOINT_PREFIXES[v-1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://');
+  var re = /&.*$/;
+  var reg = /%\d{2}/g;
+  var clean = args.input.substr(PROOFPOINT_PREFIXES[v-1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re,'').replace('%3F','?').replace('%3D','=').replace(reg,'@');
   try {
       clean = decodeURI(clean);
   } catch (e) {
@@ -42,3 +44,4 @@ args:
   description: The URL to process
 scripttarget: 0
 runonce: false
+releaseNotes: "Fixing the script for proofpoint urls"
