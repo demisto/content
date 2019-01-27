@@ -808,11 +808,6 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 1000
-        },
-        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
