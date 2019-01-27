@@ -4837,6 +4837,14 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "GenerateRandomString": {
+                "name": "GenerateRandomString", 
+                "tests": [
+                    "RandomStringGenerateTest"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -15561,6 +15569,15 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "RandomStringGenerateTest": {
+                "name": "RandomStringGenerateTest", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "GenerateRandomString"
+                ]
             }
         }
     ]
