@@ -89,7 +89,7 @@ def update_test_msg(integrations, test_message):
 
 def has_mock_file(public_ip, playbook_id):
     command = ["[", "-f", os.path.join(REMOTE_MOCKS_DIR, clean_filename(playbook_id) + ".mock"), "]"]
-    print "running command {}".format(add_ssh_prefix(public_ip, command))  # DEBUG
+    # print "running command {}".format(add_ssh_prefix(public_ip, command))  # DEBUG
     file_exists = remote_call(public_ip, command) == 0
     if not file_exists:
         print "Mock file does not exist, running without mock."
@@ -166,9 +166,12 @@ def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playboo
 # run the test using a real instance, record traffic.
 def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    print "Starting proxy"  # DEBUG
     proxy.start(playbook_id, record=True)
+    print "Running test"  # DEBUG
     mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                  test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+    print "Stopping proxy"  # DEBUG
     proxy.stop()
     print '------ Test %s end ------' % (test_message,)
 
