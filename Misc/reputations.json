@@ -110,19 +110,6 @@
       "id": "hashRepSHA256",
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{64}\\b",
-      "reputationScriptName": "DataHashReputation",
-      "details": "File SHA256",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkSearch",
-        "WildfireReport"
-      ],
-      "toVersion": "3.0.1"
-    },
-    {
-      "id": "hashRepSHA256",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationCommand": "file",
       "details": "File SHA256",
       "contextValue": "SHA256",
