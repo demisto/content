@@ -121,6 +121,15 @@ script:
       predefined: []
       required: false
       secret: false
+    - default: false
+      defaultValue: ''
+      description: Files to attach to the ticket. Attach the desired files that have
+        been uploaded to Demisto IDE by listing their entryIDs separated by commas.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
+      secret: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -1042,6 +1051,20 @@ script:
     ''' HELPER FUNCTIONS '''
 
 
+    def entries_to_files(entry_ids):
+        attachments = []
+        demisto.results('entry_ids: {}'.format(entry_ids))
+        for entry_id in entry_ids:
+            execute_results = demisto.getFilePath(entry_id)
+            demisto.results('execute_results: {}'.format(execute_results))
+            file_path = execute_results["path"]
+            file_name = execute_results["name"]
+            demisto.results('file_path: {}'.format(file_path))
+            attachments.append((file_name, open(file_path, 'rb')))
+
+        return attachments
+
+
     def handle_array_input(args):
         array_inputs = ['tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails']
 
@@ -1139,7 +1162,7 @@ script:
         return args
 
 
-    def http_request(method, url_suffix, params=None, data=None):
+    def http_request(method, url_suffix, params=None, data=None, files=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         res = requests.request(
             method,
@@ -1148,7 +1171,8 @@ script:
             params=params,
             data=data,
             headers=HEADERS,
-            auth=AUTH
+            auth=AUTH,
+            files=files
         )
         # Handle error responses gracefully
         if res.status_code not in [200, 201]:
@@ -1184,11 +1208,31 @@ script:
 
     def create_ticket(args):
         args = clean_arguments(args)
-
-        # The service endpoint to request from
         endpoint_url = 'tickets'
-        # Send a request using our http_request wrapper
-        response = http_request('POST', endpoint_url, data=json.dumps(args))
+
+        response = None
+        if not args.get('attachments'):
+            # The service endpoint to request from
+            # Send a request using our http_request wrapper
+            response = http_request('POST', endpoint_url, data=json.dumps(args))
+        else:
+            # Set global HEADERS to the correct content type
+            global HEADERS
+            del HEADERS['Content-Type']
+            # HEADERS['Content-Type'] = 'multipart/form-data'
+            demisto.results('Updated Headers: {}'.format(HEADERS))
+            # Get the files from their entry IDs
+            attachments = entries_to_files(args.get('attachments'))
+            files = {'attachments[]': attachments}
+            demisto.results('attachment entries: {}'.format(attachments))
+            # Format to API expectations
+            # args['attachments[]'] = attachments
+            del args['attachments']
+            demisto.results('Updated args: {}'.format(args))
+            # Send a request
+            response = http_request('POST', endpoint_url, data=args, files=files)
+            # Update HEADERS back to their norm
+            HEADERS['Content-Type'] = 'application/json'
         return response
 
 
@@ -1315,7 +1359,6 @@ script:
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
-        demisto.results('endpoint_url {}'.format(endpoint_url))
         # Send a request using our http_request wrapper
         response = http_request('PUT', endpoint_url, data=json.dumps(args))
         return response
