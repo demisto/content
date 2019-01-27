@@ -74,6 +74,7 @@ script:
     BLACKLIST_TITLE = "AbuseIPDB Blacklist"
     REPORT_SUCCESS = "IP address reported successfully."
 
+
     HEADERS = {
         'Key': API_KEY,
         'Accept':'application/json'
