@@ -11,7 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, remote_call, add_ssh_prefix, clean_filename
+from mock_server import MITMProxy, remote_call, clean_filename
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
