@@ -11768,7 +11768,8 @@
                     "fd-list-groups", 
                     "fd-ticket-reply", 
                     "fd-get-conversations", 
-                    "fd-list-agents"
+                    "fd-list-agents", 
+                    "fd-ticket-note"
                 ]
             }
         }

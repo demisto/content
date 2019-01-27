@@ -53,6 +53,7 @@ script:
       name: email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Name of the requester
@@ -60,6 +61,7 @@ script:
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -67,6 +69,7 @@ script:
       name: subject
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Details of the issue for which you are creating a ticket.
@@ -74,6 +77,7 @@ script:
       name: description
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
@@ -82,6 +86,7 @@ script:
       name: priority
       predefined: ['1', '2', '3', '4']
       required: false
+      secret: false
     - default: false
       defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
@@ -91,6 +96,7 @@ script:
       name: status
       predefined: ['2', '3', '4', '5', '6', '7']
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: User ID of the requester.
@@ -98,6 +104,7 @@ script:
       name: requester_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent to whom you wish to assign this ticket
@@ -105,6 +112,7 @@ script:
       name: responder_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID of the group to which you wish to assign this ticket
@@ -112,6 +120,7 @@ script:
       name: group_id
       predefined: []
       required: false
+      secret: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -161,7 +170,6 @@ script:
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
     - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
       type: String}
@@ -177,6 +185,7 @@ script:
       name: id
       predefined: []
       required: true
+      secret: false
     description: View a Ticket.
     execution: false
     name: fd-view-ticket
@@ -226,7 +235,6 @@ script:
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
     - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
       type: String}
@@ -234,6 +242,8 @@ script:
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
+    - {contextPath: FD.Ticket.Conversation, description: Conversations associated
+        with this ticket, type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
@@ -242,6 +252,7 @@ script:
       name: name
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: User ID of the requester.
@@ -249,6 +260,7 @@ script:
       name: requester_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Email address of the requester.
@@ -256,6 +268,7 @@ script:
       name: email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -263,6 +276,7 @@ script:
       name: subject
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Helps categorize the ticket according to the different kinds of
@@ -271,6 +285,7 @@ script:
       name: type
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Status of the ticket. Each number has a corresponding value. 2
@@ -281,6 +296,7 @@ script:
       predefined: ['2', Open, '3', Pending, '4', Resolved, '5', Closed, '6', Waiting
           on Customer, '7', Waiting on Third Party]
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Priority of the ticket. Each number has a corresponding value.
@@ -289,6 +305,7 @@ script:
       name: priority
       predefined: ['1', Low, '2', Medium, '3', High, '4', Urgent]
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: HTML content of the ticket.
@@ -296,6 +313,7 @@ script:
       name: description
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent to whom you wish to assign the ticket
@@ -303,6 +321,7 @@ script:
       name: responder_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID of the group to which you wish to assign the ticket
@@ -310,6 +329,7 @@ script:
       name: group_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Timestamp that denotes when the first response is due
@@ -317,6 +337,7 @@ script:
       name: fr_due_by
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Timestamp that denotes when the ticket is due to be resolved
@@ -324,6 +345,7 @@ script:
       name: due_by
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Tags that have been associated with the ticket
@@ -331,6 +353,7 @@ script:
       name: tags
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Ticket attachments. The total size of these attachments cannot
@@ -339,6 +362,7 @@ script:
       name: attachments
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID number of the ticket to update
@@ -346,6 +370,7 @@ script:
       name: id
       predefined: []
       required: true
+      secret: false
     description: Update the ticket specified by the ID
     execution: false
     name: fd-update-ticket
@@ -395,7 +420,6 @@ script:
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.Id, description: Unique ID of the ticket, type: Number}
     - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
       type: String}
@@ -411,6 +435,7 @@ script:
       name: email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: mobile number to filter the contacts by
@@ -418,6 +443,7 @@ script:
       name: mobile
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: phone number to filter contacts by
@@ -425,6 +451,7 @@ script:
       name: phone
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Company ID by which to filter the contacts
@@ -432,6 +459,7 @@ script:
       name: company_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: The state of contacts by which you want to filter the contacts
@@ -439,6 +467,7 @@ script:
       name: state
       predefined: [blocked, deleted, unverified, verified]
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: return contacts that have been updated after the timestamp given
@@ -447,6 +476,7 @@ script:
       name: updated_since
       predefined: []
       required: false
+      secret: false
     description: List all contacts matching the specified filters. If no filters are
       provided then all unblocked and undeleted contacts will be returned.
     execution: false
@@ -500,6 +530,7 @@ script:
       name: id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Email of the contact you wish to view the details of
@@ -507,6 +538,7 @@ script:
       name: email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Mobile number of the contact you wish to view the details of
@@ -514,6 +546,7 @@ script:
       name: mobile
       predefined: []
       required: false
+      secret: false
     description: View the details of the contact specified by the ID number
     execution: false
     name: fd-view-contact
@@ -586,6 +619,7 @@ script:
       name: id
       predefined: []
       required: true
+      secret: false
     description: List all Canned Responses in a Folder
     execution: false
     name: fd-list-crs-in-folder
@@ -602,6 +636,7 @@ script:
       name: id
       predefined: []
       required: true
+      secret: false
     description: View the details of all the Canned Responses in a Folder.
     execution: false
     name: fd-detail-crs
@@ -651,6 +686,7 @@ script:
       name: ticket_id
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
       description: Content of the reply in HTML format
@@ -658,6 +694,7 @@ script:
       name: body
       predefined: []
       required: true
+      secret: false
     - default: false
       defaultValue: ''
       description: Array of attachment objects. The total size of all of the ticket's
@@ -666,6 +703,7 @@ script:
       name: attachments
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: The email address from which the reply is sent. By default the
@@ -674,6 +712,7 @@ script:
       name: from_email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: ID of the agent who is adding the note
@@ -681,6 +720,7 @@ script:
       name: user_id
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Array of email address strings added in the 'cc' field of the outgoing
@@ -689,6 +729,7 @@ script:
       name: cc_emails
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: Array of email address strings added in the 'bcc' field of the
@@ -697,6 +738,7 @@ script:
       name: bcc_emails
       predefined: []
       required: false
+      secret: false
     description: Reply to a specified ticket
     execution: false
     name: fd-ticket-reply
@@ -739,6 +781,7 @@ script:
       name: id
       predefined: []
       required: true
+      secret: false
     description: ''
     execution: false
     name: fd-get-conversations
@@ -763,7 +806,7 @@ script:
     - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
         from which the reply is sent. For notes, this value will be null.', type: String}
     - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
-        to which this conversation is being added, type: Number}
+        to which this note or reply belongs, type: Number}
     - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
         who is adding the conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
@@ -781,6 +824,7 @@ script:
       name: email
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: mobile phone number to filter agents by
@@ -788,6 +832,7 @@ script:
       name: mobile
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: telephone number to filter agents by
@@ -795,6 +840,7 @@ script:
       name: phone
       predefined: []
       required: false
+      secret: false
     - default: false
       defaultValue: ''
       description: list all agents who are either 'fulltime' or 'occasional'
@@ -802,6 +848,7 @@ script:
       name: state
       predefined: [fulltime, occasional]
       required: false
+      secret: false
     description: List agents that match the criteria of the filters entered as command
       arguments.
     execution: false
@@ -850,6 +897,101 @@ script:
     - {contextPath: FD.Agent.Contact.UpdatedAt, description: Timestamp of the last
         update, type: Date}
     - {contextPath: FD.Agent.Type, description: Type of agent, type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the ticket you wish to make a note for
+      isArray: false
+      name: ticket_id
+      predefined: []
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Content of the note in HTML format
+      isArray: false
+      name: body
+      predefined: []
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Array of attachment objects. The total size of all of the ticket's
+        attachments cannot exceed 15MB.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 'True'
+      description: Set to false if the note is not private
+      isArray: false
+      name: private
+      predefined: ['True', 'False']
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: ID of the agent who is adding the note
+      isArray: false
+      name: user_id
+      predefined: []
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Array of email addresses of agents/users who need to be notified
+        about this note
+      isArray: true
+      name: notify_emails
+      predefined: []
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 'False'
+      description: Set to true if a particular note should appear as being created
+        from outside (i.e., not through web portal).
+      isArray: false
+      name: incoming
+      predefined: ['True', 'False']
+      required: false
+      secret: false
+    description: Create a note for a specified ticket. By default any note you add
+      will be private unless you set the 'private' command argument to False.
+    execution: false
+    name: fd-ticket-note
+    outputs:
+    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
+        associated with the conversation., type: Unknown}
+    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
+        in HTML, type: String}
+    - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
+        in plain text, type: String}
+    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
+      type: Number}
+    - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
+        a particular conversation should appear as being created from outside (i.e.,
+        not through web portal)', type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+        of agents/users who need to be notified about this conversation, type: Unknown}
+    - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
+        note is private, type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.Source, description: Denotes the type of
+        conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
+        from which the reply is sent. For notes, this value will be null.', type: String}
+    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+        to which this conversation is being added, type: Number}
+    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+        who is adding the conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
+        timestamp, type: Date}
+    - {contextPath: FD.Ticket.Conversation.UpdatedAt, description: Conversation updated
+        timestamp, type: Date}
+    - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
+        from which the reply/note is sent. By default the global support email will
+        be used., type: String}
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -906,6 +1048,19 @@ script:
         for arr_input in array_inputs:
             if arr_input in args.keys():
                 args[arr_input] = argToList(args.get(arr_input))
+
+        return args
+
+
+    def handle_bool_input(args):
+        bool_inputs = ['private', 'incoming']
+
+        try:
+            for bool_input in bool_inputs:
+                if bool_input in args.keys():
+                    args[bool_input] = bool(strtobool(args.get(bool_input)))
+        except ValueError as e:
+            return_error('The only valid inputs for this field are either "True" or "False"')
 
         return args
 
@@ -1199,6 +1354,11 @@ script:
         ticket = view_ticket(ticket_number)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        attachments_context = []
+        for attachment in context['Attachments']:
+            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+            attachments_context.append(attachment_context)
+        context['Attachments'] = attachments_context
         title = "Viewing Ticket #{}".format(ticket_number)
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1240,18 +1400,40 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
+                'FD.Ticket(val.Id && val.Id === obj.Id)': context
             }
         })
 
 
-
-    def ticket_note():
-        pass
+    def ticket_note(args):
+        ticket_id = args.get('ticket_id')
+        del args['ticket_id']
+        args = handle_array_input(args)
+        args = handle_bool_input(args)
+        endpoint_url = 'tickets/{}/notes'.format(ticket_id)
+        response = http_request('POST', endpoint_url, data=json.dumps(args))
+        return response
 
 
     def ticket_note_command():
-        pass
+        # Get command arguments
+        args = demisto.args()
+        # Make request and get raw response
+        note = ticket_note(args)
+        # Parse response into context
+        context = {string_to_context_key(key): val for key, val in note.iteritems()}
+        title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
+        md = tableToMarkdown(title, context, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': note,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': context
+            }
+        })
 
 
     def get_conversations(ticket_id):
@@ -1269,6 +1451,11 @@ script:
         contexts = []
         for conversation in conversations:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems()}
+            # context = {'Conversation': context}
+            # context = {
+            #     'Id': conversation_context.get('TicketId'),
+            #     'Conversation': conversation_context
+            # }
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -1282,7 +1469,6 @@ script:
                 'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': contexts
             }
         })
-
 
 
     '''<------ CONTACTS ------>'''
