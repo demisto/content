@@ -701,40 +701,78 @@ script:
     execution: false
     name: fd-ticket-reply
     outputs:
-    - {contextPath: FD.Conversation.Attachments, description: Array of attachments
+    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
         associated with the conversation., type: Unknown}
-    - {contextPath: FD.Conversation.Body, description: Content of the conversation
+    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
-    - {contextPath: FD.Conversation.BodyText, description: Content of the conversation
+    - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
-    - {contextPath: FD.Conversation.Id, description: ID of the conversation, type: Number}
-    - {contextPath: FD.Conversation.Incoming, description: 'Set to true if a particular
-        conversation should appear as being created from outside (i.e., not through
-        web portal)', type: Boolean}
-    - {contextPath: FD.Conversation.ToEmails, description: Array of email addresses
-        of agents/users who need to be notified about this conversation, type: Unknown}
-    - {contextPath: FD.Conversation.Private, description: Set to true if the note
-        is private, type: Boolean}
-    - {contextPath: FD.Conversation.Source, description: Denotes the type of conversation,
+    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
       type: Number}
-    - {contextPath: FD.Conversation.SupportEmail, description: 'Email address from
-        which the reply is sent. For notes, this value will be null.', type: String}
-    - {contextPath: FD.Conversation.TicketId, description: ID of the ticket to which
-        this conversation is being added, type: Number}
-    - {contextPath: FD.Conversation.UserId, description: ID of the agent/user who
-        is adding the conversation, type: Number}
-    - {contextPath: FD.Conversation.CreatedAt, description: Conversation creation
+    - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
+        a particular conversation should appear as being created from outside (i.e.,
+        not through web portal)', type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+        of agents/users who need to be notified about this conversation, type: Unknown}
+    - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
+        note is private, type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.Source, description: Denotes the type of
+        conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
+        from which the reply is sent. For notes, this value will be null.', type: String}
+    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+        to which this conversation is being added, type: Number}
+    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+        who is adding the conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
         timestamp, type: Date}
-    - {contextPath: FD.Conversation.UpdatedAt, description: Conversation updated timestamp,
-      type: Date}
-    - {contextPath: FD.Conversation.FromEmail, description: The email address from
-        which the reply is sent. By default the global support email will be used.,
-      type: String}
-  - arguments: []
+    - {contextPath: FD.Ticket.Conversation.UpdatedAt, description: Conversation updated
+        timestamp, type: Date}
+    - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
+        from which the reply is sent. By default the global support email will be
+        used., type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the ticket for which you would like to list all of its conversations
+      isArray: false
+      name: id
+      predefined: []
+      required: true
     description: ''
     execution: false
     name: fd-get-conversations
-    outputs: []
+    outputs:
+    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
+        associated with the conversation., type: Unknown}
+    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
+        in HTML, type: String}
+    - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
+        in plain text, type: String}
+    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
+      type: Number}
+    - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
+        a particular conversation should appear as being created from outside (i.e.,
+        not through web portal)', type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+        of agents/users who need to be notified about this conversation, type: Unknown}
+    - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
+        note is private, type: Boolean}
+    - {contextPath: FD.Ticket.Conversation.Source, description: Denotes the type of
+        conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
+        from which the reply is sent. For notes, this value will be null.', type: String}
+    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+        to which this conversation is being added, type: Number}
+    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+        who is adding the conversation, type: Number}
+    - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
+        timestamp, type: Date}
+    - {contextPath: FD.Ticket.Conversation.UpdatedAt, description: Conversation updated
+        timestamp, type: Date}
+    - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
+        from which the reply/note is sent. By default the global support email will
+        be used., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -1202,7 +1240,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Conversation(val.Id && val.Id === obj.Id)': context
+                'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
             }
         })
 
@@ -1216,16 +1254,34 @@ script:
         pass
 
 
-    def get_conversations():
-        endpoint_url = 'conversations'
+    def get_conversations(ticket_id):
+        endpoint_url = 'tickets/{}/conversations'.format(ticket_id)
         response = http_request('GET', endpoint_url)
         return response
 
 
     def get_conversations_command():
-        conversations = get_conversations()
-        demisto.results(conversations)
-
+        # Get id number of ticket as cmd arg for which you want to see all the conversations
+        ticket_id = demisto.args().get('id')
+        # Make request and get raw response
+        conversations = get_conversations(ticket_id)
+        # Parse response into context
+        contexts = []
+        for conversation in conversations:
+            context = {string_to_context_key(key): val for key, val in conversation.iteritems()}
+            contexts.append(context)
+        title = 'Conversations of Ticket #{}'.format(ticket_id)
+        md = tableToMarkdown(title, contexts, removeNull=True)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': conversations,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
 
 
 
