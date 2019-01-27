@@ -2,8 +2,8 @@ commonfields:
   id: GenerateRandomString
   version: 23
 name: GenerateRandomString
-description: Generates a random string.
-comment: "-"
+comment: |-
+  Generates random string
 script: |
   import json
   import string
@@ -19,14 +19,13 @@ script: |
           'EntryContext': ec
       }
 
+
   def raise_error(error):
       return {
           'Type' : entryTypes['error'],
           'ContentsFormat' : formats['text'],
           'Contents' : str(error)
       }
-
-
 
 
   length = int(demisto.args()["Length"])
@@ -60,7 +59,6 @@ script: |
 
   password =  "".join(choice(characters) for x in range(0,length))
 
-
   raw = {"RandomString": password}
   raw = json.loads(json.dumps(raw))
   ec = {'RandomString': password }
@@ -68,7 +66,6 @@ script: |
 type: python
 tags: []
 enabled: true
-description: Generates a random string.
 args:
 - name: Length
   required: true
