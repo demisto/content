@@ -277,7 +277,7 @@ script:
             throw 'Error parsing response - ' + res.Body + ' - ' + ex;
         }
         if (version === 'v1' && body.response_code !== 0) {
-            return entryError(res.response_code, res.response.error);
+            return entryError(body.response_code, body.response.error);
         }
         var response = version === 'v1' ? body.response: body;
 
@@ -772,6 +772,9 @@ script:
         case 'vx-submit-sample': // Deprecated
         case 'crowdstrike-submit-sample':
             var file = submitFile(args.entryId, args.environmentID);
+            if ('Type' in file && file['Type'] === entryTypes.error) {
+                return file;
+            }
             return submitFileEntry(file);
         case 'vx-search': // Deprecated
         case 'crowdstrike-search':
@@ -1424,6 +1427,7 @@ script:
       type: string
     description: Submit a file by URL for analysis (Supported only in v2).
   runonce: false
+releaseNotes: "Improved error handling of crowdstrike-submit-sample command"
 tests:
 - VxStream Test
 - detonate_file_-_generic_test
