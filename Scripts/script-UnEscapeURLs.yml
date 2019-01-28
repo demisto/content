@@ -46,4 +46,4 @@ scripttarget: 0
 runonce: false
 releaseNotes: "Fixing the script for proofpoint urls"
 tests:
-  - TestUnEscapeUrl
+  - script-TestUnEscapeUrls
