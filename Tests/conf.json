@@ -14,6 +14,10 @@
             "playbookID": "Pwned test"
         },
         {
+            "integrations": "UnEscapeURLs",
+            "playbookID": "TestUnEscapeUrl"
+        },
+        {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
