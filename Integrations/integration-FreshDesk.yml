@@ -925,6 +925,7 @@ script:
         return args
 
 
+    # Adjust this function to use determine_agent and determine_group functions
     def determine_responder(args):
         responder = args.get('responder', None)
         if responder:
@@ -960,6 +961,49 @@ script:
         return args
 
 
+    def determine_agent(args, key_name):
+        assigned_agent = args.get(key_name, None)
+        if assigned_agent:
+            agent_emails, agent_names, agent_ids = [], [], []
+            # Get names, emails and ids of agents
+            agents = list_agents({})
+            for agent in agents:
+                agent_ids.append(agent.get('id'))
+                agent_names.append(agent.get('contact').get('name').lower())
+                agent_emails.append(agent.get('contact').get('email').lower())
+            # Check if responder value is a contact ID
+            if assigned_agent in agent_ids:
+                args['responder_id'] = assigned_agent
+                # Delete assigned_agent field from args since it doesn't match API expected inputs
+                del args[key_name]
+            elif assigned_agent.lower() in agent_names:
+                args['responder_id'] = agent_ids[agent_names.index(assigned_agent.lower())]
+                del args[key_name]
+            elif assigned_agent.lower() in agent_emails:
+                args['responder_id'] = agent_ids[agent_emails.index(assigned_agent.lower())]
+                del args[key_name]
+
+        return args
+
+
+    def determine_group(args, key_name):
+        assigned_group = args.get(key_name, None)
+        if assigned_group:
+            group_names, group_ids = [], []
+            # Get names and ids of groups
+            groups = list_groups()
+            for group in groups:
+                group_ids.append(group.get('id'))
+                group_names.append(group.get('name').lower())
+            # Check if responder value is a group ID
+            if assigned_group in group_ids:
+                args['group_id'] = assigned_group
+                del args[key_name]
+            # Or the name of a group
+            elif assigned_group.lower() in group_names:
+                args['group_id'] = group_ids[group_names.index(assigned_group.lower())]
+                del args[key_name]
+        return args
 
 
     def http_request(method, url_suffix, params=None, data=None, files=None):
@@ -1162,6 +1206,9 @@ script:
         ticket_number = args.get('id')
         # Remove ticket number from args
         del args['id']
+
+        args = determine_agent(args, 'assigned_agent')
+        args = determine_group(args, 'assigned_group')
 
         # Format args according to API expecations
         additional_update_fields = args.get('update_fields')
