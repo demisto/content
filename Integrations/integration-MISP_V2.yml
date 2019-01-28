@@ -722,9 +722,13 @@ script:
 
 
     def add_sighting():
+    """
+    Add sighting to MISP attribute
+
+    """
         sighting = {
             'sighting': 0,
-            'false-positive': 1,
+            'false_positive': 1,
             'expiration': 2
         }
         kargs = {
@@ -734,14 +738,17 @@ script:
         }
         att_id = demisto.args().get('id', demisto.args().get('uuid'))
         MISP.set_sightings(kargs)
-        demisto.results(f'Sighting \'{demisto.args().get("type")}\' added to attribute {att_id}')
+        demisto.results(f'Sighting \'{demisto.args().get("type")}\' has been successfully added to attribute {att_id}')
 
 
     def test():
+    """
+    Test module.
+    """
         if not MISP.test_connection():
-            demisto.error('MISP has not connected.')
+            return_error('MISP has not connected.')
         else:
-            return True
+            demisto.results('ok')
 
 
     command = demisto.command()
@@ -754,7 +761,6 @@ script:
         if command == 'test-module':
             #  This is the call made when pressing the integration test button.
             test()
-            demisto.results('ok')
         elif command == 'misp-upload-sample':
             upload_sample()
         elif command == 'misp-download-sample':
@@ -1685,13 +1691,13 @@ script:
       auto: PREDEFINED
       predefined:
       - sighting
-      - false-positive
+      - false_positive
       - expiration
       description: Type of sighting to add
     - name: id
-      description: ID of attribute to add sighting to
+      description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retreived from MISP.Event.Attribute.ID
     - name: uuid
-      description: UUID of attribute to add sighting to
+      description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retreived from MISP.Event.Attribute.UUID
     description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
