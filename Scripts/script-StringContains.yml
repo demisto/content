@@ -1,7 +1,7 @@
 commonfields:
   id: StringContains
   version: -1
-name: StringContains(Deprecated)
+name: StringContains
 script: |
   var str = args.string;
   var substring = args.substring;
