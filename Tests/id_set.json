@@ -1717,7 +1717,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -15566,6 +15569,19 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
             }
         }
     ]
