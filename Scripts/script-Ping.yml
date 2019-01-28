@@ -55,5 +55,4 @@ tags: [Utility]
 timeout: '0'
 type: python
 runonce: false
-releaseNotes: Updated to use native ping utility
 tests: [Ping Test Playbook]
