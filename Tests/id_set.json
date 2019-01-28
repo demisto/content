@@ -4845,6 +4845,17 @@
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
             }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
+            }
         }
     ], 
     "playbooks": [
