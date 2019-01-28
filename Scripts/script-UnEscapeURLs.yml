@@ -23,7 +23,11 @@ script: |-
   var re = /&.*$/;
   var reg = /%\d{2}/g;
   var clean = args.input.substr(PROOFPOINT_PREFIXES[v-1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re,'').replace('%3F','?').replace('%3D','=').replace(reg,'@');
-  clean = decodeURI(clean);
+  try {
+      clean = decodeURI(clean);
+  } catch (e) {
+      // Ignore if can't decodeURI
+  }
 
   return clean;
 type: javascript
