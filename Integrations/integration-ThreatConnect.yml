@@ -2438,4 +2438,3 @@ script:
   runonce: false
 tests:
   - test-ThreatConnect
-releaseNotes: "added new command tc-update-indicator, added confidenceThreshold, ratingThreshold, owners to domain command"

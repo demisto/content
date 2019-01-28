@@ -440,4 +440,3 @@ script:
   runonce: false
 tests:
 - No test
-releaseNotes: "Remove DT from DBotScore update"

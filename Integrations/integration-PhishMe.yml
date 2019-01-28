@@ -364,47 +364,45 @@ script:
     - name: url
       required: true
       default: true
-      description: Url to check
+      description: URL to get the reputation for
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check URL Reputation
+    description: Checks the reputation of a URL.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice
-        that you can pass comma-separated multiple values to efficiently retrieve
-        multiple responses.
+      description: Hash of the file to get the reputation of (MD5, SHA-1, or SHA-256). You can pass CSV list to efficiently retrieve multiple responses.
     outputs:
     - contextPath: File.MD5
       description: File MD5
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if file MD5 is malicious
+    description: Checks if a file hash is malicious
   - name: ip
     arguments:
     - name: ip
@@ -417,16 +415,16 @@ script:
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IPs, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check IP Reputation
+    description: Check the reputation of an IP address.
   - name: phishme-search
     arguments:
     - name: str
@@ -441,32 +439,32 @@ script:
       description: Number of threats
     - contextPath: PhishMe.String
       description: String to search
-    description: 'Search for extracted strings discovered within malware campaigns.'
+    description: Search for extracted strings identified within malware campaigns.
   - name: email
     arguments:
     - name: email
       required: true
       default: true
-      description: Sender address
+      description: Sender email address to get the reputation of
     outputs:
     - contextPath: Email.Data
       description: Sender address to check.
     - contextPath: Account.Email.Address
-      description: Sender address to check.
+      description: Sender email address to check
     - contextPath: Account.Email.Malicious.Vendor
-      description: For malicious emails, the vendor that made the decision.
+      description: For malicious emails, the vendor that made the decision
     - contextPath: Account.Email.Malicious.Description
-      description: For malicious emails, the reason for the vendor to make the decision.
+      description: For malicious emails, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if sender address is malicious
+    description: Checks if a sender email address is malicious.
 hidden: false
-releaseNotes: "Added new outputs !email commands"
+releaseNotes: "Updated descriptions of arguments and commands to make them clearer"
 tests:
   - No tests
