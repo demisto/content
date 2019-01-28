@@ -1302,8 +1302,24 @@ script:
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
-        # Send a request using our http_request wrapper
-        response = http_request('PUT', endpoint_url, data=json.dumps(args))
+
+        response = None
+        if not args.get('attachments'):
+            # The service endpoint to request from
+            # Send a request using our http_request wrapper
+            response = http_request('PUT', endpoint_url, data=json.dumps(args))
+        else:
+            # Set global HEADERS to the correct content type
+            global HEADERS
+            del HEADERS['Content-Type']
+            # Get the files from their entry IDs
+            attachments = entries_to_files(args.get('attachments'))
+            # Format to API expectations
+            del args['attachments']
+            # Send a request and get raw response
+            response = http_request('PUT', endpoint_url, data=args, files=attachments)
+            # Update HEADERS back to their norm
+            HEADERS['Content-Type'] = 'application/json'
         return response
 
 
@@ -1313,7 +1329,13 @@ script:
         ticket = update_ticket(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
-        title = "Ticket #{} Updated".format(args.get('id'))
+        # Parse attachments into context
+        attachments_context = []
+        for attachment in context['Attachments']:
+            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+            attachments_context.append(attachment_context)
+        context['Attachments'] = attachments_context
+        title = "Ticket #{} Updated".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
