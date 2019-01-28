@@ -427,6 +427,5 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
-releaseNotes: "Adjusted versioning"
 tests:
   - Extract Indicators From File - test

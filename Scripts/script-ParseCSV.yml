@@ -287,4 +287,3 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Supports UTF8 BOM format"
