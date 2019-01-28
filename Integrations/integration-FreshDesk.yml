@@ -78,14 +78,6 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: Files to attach to the ticket. Attach the desired files that have
-        been uploaded to Demisto IDE by listing their entryIDs separated by commas.
-      isArray: true
-      name: attachments
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: This can be an email address or a twitter handle
       isArray: false
       name: identifier
@@ -98,34 +90,6 @@ script:
         commands.
       isArray: false
       name: responder
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: The date by which the ticket should be resolved or closed. Date
-        format can be either like YYYY-MM-DD e.g., "2018-02-21", or like YYYY-MM-DDTHH:MM:SS
-        e.g., "2018-11-06T08:56:41" if you would also like to specify the hours, minutes,
-        and seconds.
-      isArray: false
-      name: due_by
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: The date by which a first response to the ticket is due. Date format
-        can be either like YYYY-MM-DD e.g., "2018-02-21", or like YYYY-MM-DDTHH:MM:SS
-        e.g., "2018-11-06T08:56:41" if you would also like to specify the hours, minutes,
-        and seconds.
-      isArray: false
-      name: fr_due_by
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Tags to associate with the ticket. The list of tags is delimited
-        by commas.
-      isArray: true
-      name: tags
       predefined: []
       required: false
     description: Create a new Freshdesk ticket.
@@ -152,6 +116,7 @@ script:
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
+    - {contextPath: FD.Ticket.Id, description: ID number of the ticket, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -186,20 +151,13 @@ script:
         first response is due, type: Date}
     - {contextPath: FD.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
+    - {contextPath: FD.Ticket.Id, description: ID of the fetched ticket, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
       isArray: false
       name: subject
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Helps categorize the ticket according to the different kinds of
-        issues your support team deals with. The default Value is null.
-      isArray: false
-      name: type
       predefined: []
       required: false
     - default: false
@@ -229,40 +187,44 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: Timestamp that denotes when the first response is due
-      isArray: false
-      name: fr_due_by
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Timestamp that denotes when the ticket is due to be resolved
-      isArray: false
-      name: due_by
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Tags that have been associated with the ticket
-      isArray: true
-      name: tags
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Ticket attachments. The total size of these attachments cannot
-        exceed 15MB.
-      isArray: true
-      name: attachments
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: ID number of the ticket to update
       isArray: false
       name: id
       predefined: []
       required: true
+    - default: false
+      defaultValue: ''
+      description: Update which agent is assigned to respond to this ticket by entering
+        either their unique agent ID, name, or email.
+      isArray: false
+      name: assigned_agent
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Update the group assigned to respond to this ticket by entering
+        the group's unique ID or the name of the group.
+      isArray: false
+      name: assigned_group
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: List of ticket fields you wish to update the values of.
+      isArray: true
+      name: update_fields
+      predefined: [name, requester_id, email, facebook_id, phone, twitter_id, unique_external_id,
+        type, attachments, custom_fields, email_config_id, product_id, source, tags,
+        company_id, due_by, fr_due_by]
+      required: false
+    - default: false
+      defaultValue: ''
+      description: List of values that are assigned to the field at the same list
+        index in the update_fields argument.
+      isArray: true
+      name: update_values
+      predefined: []
+      required: false
     description: Update the ticket specified by the ID
     execution: false
     name: fd-update-ticket
@@ -287,6 +249,10 @@ script:
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
+    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
+    - {contextPath: FD.Ticket.UpdatedField, description: Additional fields that were
+        updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
+    - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -530,14 +496,6 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: Array of attachment objects. The total size of all of the ticket's
-        attachments cannot exceed 15MB.
-      isArray: true
-      name: attachments
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: The email address from which the reply is sent. By default the
         global support email will be used.
       isArray: false
@@ -730,14 +688,6 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: Array of attachment objects. The total size of all of the ticket's
-        attachments cannot exceed 15MB.
-      isArray: true
-      name: attachments
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: Set to false if the note is not private
       isArray: false
       name: private
@@ -863,7 +813,7 @@ script:
 
 
     def handle_array_input(args):
-        array_inputs = ['tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails']
+        array_inputs = ['tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails', 'update_fields', 'update_values']
 
         for arr_input in array_inputs:
             if arr_input in args.keys():
@@ -1184,7 +1134,7 @@ script:
         include_in_context = [
             'priority', 'due_by', 'subject', 'attachments', 'status',
             'requester_id', 'tags', 'group_id', 'source', 'created_at',
-            'responder_id', 'fr_due_by'
+            'responder_id', 'fr_due_by', 'id'
         ]
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         # Parse attachments into context
@@ -1212,16 +1162,27 @@ script:
         ticket_number = args.get('id')
         # Remove ticket number from args
         del args['id']
-        # Adjust the necessary arguments from strings to numbers to match
-        # the API's expected input, additional alterations to API expectations
+
+        # Format args according to API expecations
+        additional_update_fields = args.get('update_fields')
+        additional_field_values = args.get('update_values')
+        for field, value in zip(additional_update_fields, additional_field_values):
+            # if field == 'tags':
+            #     demisto.results('The type of the tags value is: {}'.format(type(value)))
+            args[field] = value
+        del args['update_fields']
+        del args['update_values']
+
+        # demisto.results('args preclean: {}'.format(args))
+
         args = clean_arguments(args)
+        # demisto.results('args postclean: {}'.format(args))
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
 
         response = None
         if not args.get('attachments'):
-            # The service endpoint to request from
             # Send a request using our http_request wrapper
             response = http_request('PUT', endpoint_url, data=json.dumps(args))
         else:
@@ -1241,10 +1202,59 @@ script:
 
     def update_ticket_command():
         args = demisto.args()
+        additional_update_fields = argToList(args.get('update_fields'))
+        additional_field_values = argToList(args.get('update_values'))
+
+        # Handle sublists in command line arg of 'update_fields'
+        in_sublist = False
+        tmp_list = []
+        sublist = []
+        for i, val in enumerate(additional_field_values):
+            if val.startswith('['):
+                in_sublist = True
+                sublist.append(val[1:])
+            elif val.endswith(']'):
+                sublist.append(val[:-1])
+                tmp_list.append(sublist[:])
+                del sublist[:]
+                in_sublist = False
+            elif in_sublist:
+                sublist.append(val)
+            else:
+                tmp_list.append(val)
+        additional_field_values = tmp_list
+        args['update_values'] = additional_field_values
+        args['update_fields'] = additional_update_fields
+
+        if len(additional_update_fields) != len(additional_field_values):
+            err_msg = "The 'update_fields' list and 'update_values' list command arguments"
+            err_msg += " must contain the same number of items."
+            err_msg += "\nlength of 'update_fields' list: {}".format(len(additional_update_fields))
+            err_msg += "\nlength of 'update_values' list: {}".format(len(additional_field_values))
+            return_error(err_msg)
         # Make request and get raw response
         ticket = update_ticket(args)
         # Parse response into context
-        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        include_in_context = [
+            'priority', 'due_by', 'subject', 'attachments', 'status',
+            'requester_id', 'tags', 'group_id', 'source', 'created_at',
+            'responder_id', 'fr_due_by', 'updated_at', 'id'
+        ]
+        # Make sure not to double add certain fields to context, aka the fields that
+        # have been relegated to the update_fields argument but have their own context output
+        intersection = list(set(additional_update_fields) & set(include_in_context))
+        for field in intersection:
+            idx = additional_update_fields.index(field)
+            additional_update_fields.pop(idx)
+            additional_field_values.pop(idx)
+
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
+        # Parse additional fields into context
+        additional_field_contexts = []
+        for field, value in zip(additional_update_fields, additional_field_values):
+            field_context = {string_to_context_key(field): value}
+            additional_field_contexts.append(field_context)
+        context['UpdatedField'] = additional_field_contexts
         # Parse attachments into context
         attachments_context = []
         for attachment in context['Attachments']:
