@@ -829,7 +829,6 @@
             "nightly": true
         },
         {
-            "integrations": "whois",
             "playbookID": "whois_test"
         },
         {
@@ -981,7 +980,6 @@
         }
     ],
     "skipped_tests": {
-        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
@@ -998,7 +996,6 @@
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
-        "Whois": "Server currently has Whois by default, need to deprecate",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
