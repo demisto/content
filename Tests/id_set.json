@@ -11613,6 +11613,17 @@
                     "GoogleResourceManager-Test"
                 ]
             }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-message", 
+                    "kafka-fetch-partitions"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [

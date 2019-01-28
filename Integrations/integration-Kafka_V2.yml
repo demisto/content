@@ -1,0 +1,309 @@
+commonfields:
+  id: Kafka V2
+  version: -1
+name: Kafka V2
+display: Kafka V2
+category: Messaging
+image: data:image/png;base64,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
+description: The Open source distributed streaming platform
+detaileddescription: |-
+  By default, the Kafka instance uses a non SSL connection. Turnning on the insecure flag, or providing any certificate will switch to SSL connection.
+  To generate the files needed for SSL, you will need to create a Kafka client keystore. You can use the script at:
+  https://github.com/confluentinc/confluent-platform-security-tools/blob/master/kafka-generate-ssl.sh
+  Then run the command “keytool -list -rfc -keystore kafka.client.keystore.jks” to verify that there are 3 entries in that keystore.
+  run “keytool -exportcert -alias localhost -keystore kafka.client.keystore.jks -rfc -file certificate.pem” to export the certificate.pem, this is the Client cartificate.
+  Next, you need to extract the private.key. You can do this using the following commands:
+  keytool -v -importkeystore -srckeystore kafka.client.keystore.jks -srcalias localhost -destkeystore cert_and_key.p12 -deststoretype PKCS12 openssl pkcs12 -in cert_and_key.p12 -nocerts -nodes
+  This wil print the stdout the content of the private key, copy the lines (inclusive) between —–BEGIN PRIVATE KEY—– and —–END PRIVATE KEY—– to a new key.pem file. This is the Client cartificate key nano key.pem.
+  Finally, you need to extract the CA cartificate:
+  keytool -exportcert -alias CARoot -keystore kafka.client.keystore.jks -rfc -file CARoot.pem
+configuration:
+- display: 'The Kafka brokers to connect to, as a comma separated list, in the form:
+    ip:port,ip2:port2'
+  name: brokers
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Zookeeper url
+  name: zookeeper
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Client ID
+  name: client_id
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: CA cartificate of Kafka server (type pem)
+  name: ca_cert
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Client cartificate (type pem)
+  name: client_cert
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Client cartificate key (type pem)
+  name: client_cert_key
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: 3 days
+  type: 8
+  required: false
+- display: Fetches incidents
+  name: fetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: ""
+  name: incident_type
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Import from offset
+  name: offset
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Import from topic
+  name: topic
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Import from partition
+  name: partition
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Do not use be default
+  name: default
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Additonal password (if required)
+  name: password
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import os
+    import requests
+    from distutils.util import strtobool
+    from pykafka import KafkaClient, SslConfig, producer
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    # Remove trailing slash to prevent wrong URL path to service
+    BROKERS = demisto.params().get('brokers')
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+    ZOOKEEPER = demisto.params().get('zookeeper', None)
+
+    # Broker configuration
+    OFFSET = demisto.params().get('offset')
+    TOPIC = demisto.params().get('topic')
+    PARTITION = demisto.params().get('partition')
+
+    # Certificates
+    CA_CERT = demisto.params().get('ca_cert', None)
+    CLIENT_CERT = demisto.params().get('client_cert', None)
+    CLIENT_CERT_KEY = demisto.params().get('client_cert_key', None)
+    PASSWORD = demisto.params().get('additional_password', None)
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def create_certificate():
+        """
+        Creating certificate
+        """
+        ca_path = 'ca.pem'
+        client_path = 'client.pem'
+        client_key_path = 'client_key.pem'
+        if CA_CERT:
+            with open(ca_path, 'wb') as file:
+                file.write(CA_CERT)
+                ca_path = os.path.abspath(ca_path)
+            if CLIENT_CERT:
+                with open(client_path, 'wb') as file:
+                    file.write(CLIENT_CERT)
+                    client_path = os.path.abspath(client_path)
+            else:
+                client_path = None
+            if CLIENT_CERT_KEY:
+                with open(client_key_path, 'wb') as file:
+                    file.write(CLIENT_CERT_KEY)
+            else:
+                client_key_path = None
+        else:
+            ca_path = None
+
+        return SslConfig(
+            cafile=ca_path,
+            certfile=client_path,
+            keyfile=client_key_path,
+            password=PASSWORD
+        )
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+    def test_module():
+        """
+        If we got here, the instance is working without any error
+        """
+        demisto.results('ok')
+
+
+    def print_topics():
+        """
+        Prints available topics in Broker
+        """
+        data = KAFKA_CLIENT.topics
+        topics = [k for k in KAFKA_CLIENT.topics.keys()]
+        ec = {
+            'Kafka(val.Topic === obj.Topic)': topics
+        }
+        md = ''
+        for topic in topics:
+            md += topic + ', '
+        md = md[:-2]
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents': data,
+            'ContentsFormat' : formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : ec
+        })
+
+
+    def produce_message():
+        """
+        Producing message to kafka topic
+        """
+        topic = demisto.args().get('topic')
+        value = demisto.args().get('value')
+        partitioning_key = demisto.args().get('partitioning-key')
+        kafka_topic = KAFKA_CLIENT.topics[topic]
+        with topic.get_sync_producer() as producer:
+            producer.produce(value)
+        demisto.results('Message has succefully produced to topic \'{}\''.format(topic))
+
+
+    def consume_message():
+        """
+        Consuming one message from topic
+        """
+        topic = demisto.args().get('topic')
+        offset = demisto.args().get('offset')
+        partition = demisto.args().get('partition')
+
+        kafka_topic = KAFKA_CLIENT.topics[topic]
+        consumer = kafka_topic.get_simple_consumer()
+        message = consumer.consume()
+        demisto.results('Message consumed from topic {}: {}'.format(topic, message))
+
+
+    def fetch_partitions():
+        """
+        Fetching available partitions in given topic
+        """
+        topic = demisto.args().get('topic')
+        if topic in KAFKA_CLIENT.topics
+            kafka_topic = KAFKA_CLIENT.topics[topic]
+            partitions = kafka_topic.partitions
+            demisto.results('Available partitions for topic {}: {}'.format(topic, partitions))
+        else:
+            return_error('Topic is not in Kafka broker')
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if USE_SSL:
+            ssl_config = create_certificate()
+            KAFKA_CLIENT = KafkaClient(hosts=BROKERS, zookeeper_hosts=ZOOKEEPER, ssl_config=ssl_config)
+        else:
+            KAFKA_CLIENT = KafkaClient(hosts=BROKERS, zookeeper_hosts=ZOOKEEPER)
+
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'kafka-print-topics':
+            print_topics()
+        elif demisto.command() == 'kafka-publish-msg':
+            produce_message()
+        elif demisto.command() == 'kafka-consume-msg':
+            consume_message()
+        elif demisto.command() == 'kafka-fetch-partitions':
+            fetch_partitions()
+    # Log exceptions
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+    finally:
+        try:
+            os.remove(os.path.abspath('ca.pem'))
+            os.remove(os.path.abspath('client.pem')
+            os.remove(os.path.abspath('client_key.pem'))
+        except:
+            pass
+  type: python
+  commands:
+  - name: kafka-print-topics
+    arguments: []
+    outputs:
+    - contextPath: Kafka.Topic
+      description: List of topics in Kafka
+    description: Print all partitions for a topic
+  - name: kafka-publish-msg
+    arguments:
+    - name: topic
+      required: true
+      description: A Topic to filter by
+    - name: value
+      required: true
+      description: Message value in string format
+    - name: partitioning-key
+      description: Message Partition key
+    description: Publish a message to Kafka
+  - name: kafka-consume-message
+    arguments:
+    - name: topic
+      required: true
+      description: A Topic to filter by
+    - name: offset
+      description: 'Message offset (number) '
+    - name: partition
+      description: Partition (number)
+    description: Consume a single kafka message
+  - name: kafka-fetch-partitions
+    arguments:
+    - name: topic
+      description: A Topic to filter by
+    description: Print all partitions for a topic
+  dockerimage: devtesting/pykafka:testing
+  runonce: false
