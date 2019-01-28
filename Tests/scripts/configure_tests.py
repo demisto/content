@@ -313,7 +313,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist, please re-check your code".format(test)
+                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 
