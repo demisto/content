@@ -139,8 +139,6 @@ script:
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
-        ticket was originally sent, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
@@ -173,8 +171,6 @@ script:
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
-        ticket was originally sent, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
@@ -278,8 +274,6 @@ script:
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
-        ticket was originally sent, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
@@ -1187,7 +1181,12 @@ script:
         # Make request and get raw response
         ticket = create_ticket(args)
         # Parse response into context
-        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        include_in_context = [
+            'priority', 'due_by', 'subject', 'attachments', 'status',
+            'requester_id', 'tags', 'group_id', 'source', 'created_at',
+            'responder_id', 'fr_due_by'
+        ]
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         # Parse attachments into context
         attachments_context = []
         for attachment in context['Attachments']:
