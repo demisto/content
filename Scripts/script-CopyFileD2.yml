@@ -11,7 +11,7 @@ script: |-
   e = e[0];
   if ( e.File ) {
       var fileName = fileNameFromEntry( args.entryid );
-      var rep = executeCommand( 'D2Drop_copy', { destpath : args.destpath , files : fileName, using : args.system, force: args.force } );
+      var rep = executeCommand( 'D2Drop', { destpath : args.destpath , files : fileName, using : args.system, force: args.force } );
       return rep;
   } else
       return "Entry " + args.entryid + " does not include a file.";
