@@ -47,21 +47,6 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: Email address of the requester. If no contact exists with this
-        email address in Freshdesk, it will be added as a new contact.
-      isArray: false
-      name: email
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Name of the requester
-      isArray: false
-      name: name
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: Subject of the ticket. The default Value is null.
       isArray: false
       name: subject
@@ -73,7 +58,7 @@ script:
       isArray: false
       name: description
       predefined: []
-      required: false
+      required: true
     - default: false
       defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
@@ -93,85 +78,78 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: User ID of the requester.
-      isArray: false
-      name: requester_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: ID of the agent to whom you wish to assign this ticket
-      isArray: false
-      name: responder_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: ID of the group to which you wish to assign this ticket
-      isArray: false
-      name: group_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: Files to attach to the ticket. Attach the desired files that have
         been uploaded to Demisto IDE by listing their entryIDs separated by commas.
       isArray: true
       name: attachments
       predefined: []
       required: false
+    - default: false
+      defaultValue: ''
+      description: This can be an email address or a twitter handle
+      isArray: false
+      name: identifier
+      predefined: []
+      required: true
+    - default: false
+      defaultValue: ''
+      description: ID or name of the group or agent to whom you wish to assign this
+        ticket. To find potential assignees, try executing the fd-list-groups or fd-list-contacts
+        commands.
+      isArray: false
+      name: responder
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: The date by which the ticket should be resolved or closed. Date
+        format can be either like YYYY-MM-DD e.g., "2018-02-21", or like YYYY-MM-DDTHH:MM:SS
+        e.g., "2018-11-06T08:56:41" if you would also like to specify the hours, minutes,
+        and seconds.
+      isArray: false
+      name: due_by
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: The date by which a first response to the ticket is due. Date format
+        can be either like YYYY-MM-DD e.g., "2018-02-21", or like YYYY-MM-DDTHH:MM:SS
+        e.g., "2018-11-06T08:56:41" if you would also like to specify the hours, minutes,
+        and seconds.
+      isArray: false
+      name: fr_due_by
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Tags to associate with the ticket. The list of tags is delimited
+        by commas.
+      isArray: true
+      name: tags
+      predefined: []
+      required: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
     outputs:
-    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
-        replying to a ticket, type: Unknown}
     - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
-    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
-        has been escalated as the result of first response time being breached, type: Boolean}
-    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
-        has been escalated for any reason, type: Boolean}
-    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
-        in plain text, type: String}
-    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
-        marked as spam, type: Boolean}
-    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
-        the names and values of custom fields., type: Unknown}
-    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
-        ticket is associated, type: Number}
-    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
-        forwarding a ticket, type: Unknown}
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
-    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
         ticket was originally sent, type: Unknown}
-    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
-        field of the incoming ticket email, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
-        ticket belongs, type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
-        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
-      type: Number}
-    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
-        to the different kinds of issues your support team deals with., type: String}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
-    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
-      type: String}
     - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
@@ -188,54 +166,24 @@ script:
     execution: false
     name: fd-view-ticket
     outputs:
-    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
-        replying to a ticket, type: Unknown}
     - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
-    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
-        has been escalated as the result of first response time being breached, type: Boolean}
-    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
-        has been escalated for any reason, type: Boolean}
-    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
-        in plain text, type: String}
-    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
-        marked as spam, type: Boolean}
-    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
-        the names and values of custom fields., type: Unknown}
-    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
-        ticket is associated, type: Number}
-    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
-        forwarding a ticket, type: Unknown}
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
-    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
         ticket was originally sent, type: Unknown}
-    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
-        field of the incoming ticket email, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
-        ticket belongs, type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
-        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
-      type: Number}
-    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
-        to the different kinds of issues your support team deals with., type: String}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
-    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
-      type: String}
     - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
@@ -243,27 +191,6 @@ script:
     - {contextPath: FD.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
   - arguments:
-    - default: false
-      defaultValue: ''
-      description: Name of the requester
-      isArray: false
-      name: name
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: User ID of the requester.
-      isArray: false
-      name: requester_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Email address of the requester.
-      isArray: false
-      name: email
-      predefined: []
-      required: false
     - default: false
       defaultValue: ''
       description: Subject of the ticket. The default Value is null.
@@ -306,20 +233,6 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: ID of the agent to whom you wish to assign the ticket
-      isArray: false
-      name: responder_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: ID of the group to which you wish to assign the ticket
-      isArray: false
-      name: group_id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: Timestamp that denotes when the first response is due
       isArray: false
       name: fr_due_by
@@ -358,66 +271,29 @@ script:
     execution: false
     name: fd-update-ticket
     outputs:
-    - {contextPath: FD.Ticket.ReplyCcEmails, description: Email address added while
-        replying to a ticket, type: Unknown}
     - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
-    - {contextPath: FD.Ticket.FrEscalated, description: Set to true if the ticket
-        has been escalated as the result of first response time being breached, type: Boolean}
-    - {contextPath: FD.Ticket.IsEscalated, description: Set to true if the ticket
-        has been escalated for any reason, type: Boolean}
-    - {contextPath: FD.Ticket.DescriptionText, description: Content of the ticket
-        in plain text, type: String}
-    - {contextPath: FD.Ticket.Spam, description: Set to true if the ticket has been
-        marked as spam, type: Boolean}
-    - {contextPath: FD.Ticket.CustomFields, description: Key value pairs containing
-        the names and values of custom fields., type: Unknown}
-    - {contextPath: FD.Ticket.ProductId, description: ID of the product to which the
-        ticket is associated, type: Number}
-    - {contextPath: FD.Ticket.FwdEmails, description: Email address(es) added while
-        forwarding a ticket, type: Unknown}
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket updated timestamp, type: Date}
-    - {contextPath: FD.Ticket.SourceAdditionalInfo, description: '', type: Unknown}
     - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.ToEmails, description: Email addresses to which the
         ticket was originally sent, type: Unknown}
-    - {contextPath: FD.Ticket.CcEmails, description: Email address added in the 'cc'
-        field of the incoming ticket email, type: Unknown}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.CompanyId, description: ID of the company to which this
-        ticket belongs, type: Number}
     - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.EmailConfigId, description: 'ID of email config which
-        is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)',
-      type: Number}
-    - {contextPath: FD.Ticket.Type, description: Helps categorize the ticket according
-        to the different kinds of issues your support team deals with., type: String}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.AssociationType, description: '', type: Unknown}
-    - {contextPath: FD.Ticket.Description, description: HTML content of the ticket,
-      type: String}
     - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
   - arguments:
-    - default: false
-      defaultValue: ''
-      description: email to filter contacts by
-      isArray: false
-      name: email
-      predefined: []
-      required: false
     - default: false
       defaultValue: ''
       description: mobile number to filter the contacts by
@@ -505,13 +381,6 @@ script:
       description: ID of the contact you wish to view the details of
       isArray: false
       name: id
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: Email of the contact you wish to view the details of
-      isArray: false
-      name: email
       predefined: []
       required: false
     - default: false
@@ -783,13 +652,6 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: email to filter agents by
-      isArray: false
-      name: email
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: mobile phone number to filter agents by
       isArray: false
       name: mobile
@@ -880,8 +742,8 @@ script:
       name: attachments
       predefined: []
       required: false
-    - default: true
-      defaultValue: 'True'
+    - default: false
+      defaultValue: ''
       description: Set to false if the note is not private
       isArray: false
       name: private
@@ -902,8 +764,8 @@ script:
       name: notify_emails
       predefined: []
       required: false
-    - default: true
-      defaultValue: 'False'
+    - default: false
+      defaultValue: ''
       description: Set to true if a particular note should appear as being created
         from outside (i.e., not through web portal).
       isArray: false
@@ -1018,13 +880,16 @@ script:
 
     def handle_bool_input(args):
         bool_inputs = ['private', 'incoming']
+        acceptable_vals = ['true', 'false']
 
         try:
             for bool_input in bool_inputs:
                 if bool_input in args.keys():
-                    args[bool_input] = bool(strtobool(args.get(bool_input)))
+                    args[bool_input] = args.get(bool_input).lower()
+                    if args[bool_input] not in acceptable_vals:
+                        raise ValueError('field: "{}"\n'.format(bool_input))
         except ValueError as e:
-            return_error('The only valid inputs for this field are either "True" or "False"')
+            return_error(e.message + 'The only valid inputs for this field are either "True" or "False"')
 
         return args
 
@@ -1103,6 +968,56 @@ script:
         return args
 
 
+    def determine_identifier(args):
+        identifier = args.get('identifier')
+        if identifier.startswith('@'):
+            # Then it's a twitter handle
+            args['twitter_id'] = identifier
+        else:
+            # Otherwise assume it's an email address
+            args['email'] = identifier
+        # Delete identifier field from args since it doesn't match API expected inputs
+        del args['identifier']
+        return args
+
+
+    def determine_responder(args):
+        responder = args.get('responder', None)
+        if responder:
+            group_names = []
+            group_ids = []
+            groups = list_groups()
+            # Get names and ids of groups
+            for group in groups:
+                group_ids.append(group.get('id'))
+                group_names.append(group.get('name').lower())
+            # Check if responder value is a group ID
+            if responder in group_ids:
+                args['group_id'] = responder
+            # Or the name of a group
+            elif responder.lower() in group_names:
+                args['group_id'] = group_ids[group_names.index(responder.lower())]
+
+            agent_names = []
+            agent_ids = []
+            # Get names and ids of agents
+            agents = list_agents({})
+            for agent in agents:
+                agent_ids.append(agent.get('id'))
+                agent_names.append(agent.get('contact').get('name').lower())
+            # Check if responder value is a contact ID
+            if responder in agent_ids:
+                args['responder_id'] = responder
+            elif responder.lower() in agent_names:
+                args['responder_id'] = agent_ids[agent_names.index(responder.lower())]
+
+            # Delete responder field from args since it doesn't match API expected inputs
+            del args['responder']
+        return args
+
+
+
+
     def http_request(method, url_suffix, params=None, data=None, files=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         res = requests.request(
@@ -1149,6 +1064,8 @@ script:
 
     def create_ticket(args):
         args = clean_arguments(args)
+        args = determine_identifier(args)
+        args = determine_responder(args)
         endpoint_url = 'tickets'
 
         response = None
@@ -1390,7 +1307,25 @@ script:
         del args['ticket_id']
         args = handle_array_input(args)
         endpoint_url = 'tickets/{}/reply'.format(ticket_id)
-        response = http_request('POST', endpoint_url, data=json.dumps(args))
+
+        # Handle potential attachments
+        response = None
+        if not args.get('attachments'):
+            # The service endpoint to request from
+            # Send a request using our http_request wrapper
+            response = http_request('POST', endpoint_url, data=json.dumps(args))
+        else:
+            # Set global HEADERS to the correct content type
+            global HEADERS
+            del HEADERS['Content-Type']
+            # Get the files from their entry IDs
+            attachments = entries_to_files(args.get('attachments'))
+            # Format to API expectations
+            del args['attachments']
+            # Send a request and get raw response
+            response = http_request('POST', endpoint_url, data=args, files=attachments)
+            # Update HEADERS back to their norm
+            HEADERS['Content-Type'] = 'application/json'
         return response
 
 
@@ -1400,6 +1335,12 @@ script:
         reply = ticket_reply(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in reply.iteritems()}
+        # Parse attachments into context
+        attachments_context = []
+        for attachment in context['Attachments']:
+            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+            attachments_context.append(attachment_context)
+        context['Attachments'] = attachments_context
         title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1409,7 +1350,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Ticket(val.Id && val.Id === obj.Id)': context
+                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': context
             }
         })
 
@@ -1418,9 +1359,33 @@ script:
         ticket_id = args.get('ticket_id')
         del args['ticket_id']
         args = handle_array_input(args)
+        # Set defaults for 'private' and 'incoming' fields if not set by user
+        args['private'] = args.get('private', 'True')
+        args['incoming'] = args.get('incoming', 'False')
         args = handle_bool_input(args)
         endpoint_url = 'tickets/{}/notes'.format(ticket_id)
-        response = http_request('POST', endpoint_url, data=json.dumps(args))
+
+        demisto.results('args jsondumped: {}'.format(json.dumps(args)))
+        demisto.results('args not dumped: {}'.format(args))
+        demisto.results('load of jsondumped args: {}'.format(json.loads(json.dumps(args))))
+
+        response = None
+        if not args.get('attachments'):
+            # The service endpoint to request from
+            # Send a request using our http_request wrapper
+            response = http_request('POST', endpoint_url, data=json.dumps(args))
+        else:
+            # Set global HEADERS to the correct content type
+            global HEADERS
+            del HEADERS['Content-Type']
+            # Get the files from their entry IDs
+            attachments = entries_to_files(args.get('attachments'))
+            # Format to API expectations
+            del args['attachments']
+            # Send a request and get raw response
+            response = http_request('POST', endpoint_url, data=args, files=attachments)
+            # Update HEADERS back to their norm
+            HEADERS['Content-Type'] = 'application/json'
         return response
 
 
@@ -1431,6 +1396,12 @@ script:
         note = ticket_note(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in note.iteritems()}
+        # Parse attachments into context
+        attachments_context = []
+        for attachment in context['Attachments']:
+            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+            attachments_context.append(attachment_context)
+        context['Attachments'] = attachments_context
         title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1460,11 +1431,12 @@ script:
         contexts = []
         for conversation in conversations:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems()}
-            # context = {'Conversation': context}
-            # context = {
-            #     'Id': conversation_context.get('TicketId'),
-            #     'Conversation': conversation_context
-            # }
+            # Parse attachments into context
+            attachments_context = []
+            for attachment in context['Attachments']:
+                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+                attachments_context.append(attachment_context)
+            context['Attachments'] = attachments_context
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
         md = tableToMarkdown(title, contexts, removeNull=True)
