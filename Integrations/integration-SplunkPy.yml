@@ -319,7 +319,22 @@ script:
         ec['Splunk.Result'] = res
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
+
+        headers=""
+        if (res and len(res)>0):
+            if not isinstance(res[0], dict):
+                headers = "results"
+
+        human_readable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
+
+        demisto.results({
+          "Type": 1,
+          "Contents": res,
+          "ContentsFormat": "json",
+          "EntryContext": ec,
+          "HumanReadable": human_readable
+        })
+
         sys.exit(0)
     if demisto.command() == 'splunk-job-create':
         searchquery_normal = demisto.args()['query']
@@ -542,4 +557,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "fix issue when you get error on bad eval search"
+releaseNotes: "Prettify splunk-search command output - Add results to Markdown table"
