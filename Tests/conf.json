@@ -829,7 +829,6 @@
             "nightly": true
         },
         {
-            "integrations": "Whois",
             "playbookID": "whois_test"
         },
         {
