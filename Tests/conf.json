@@ -885,6 +885,11 @@
           "timeout": 600
         },
         {
+            "integrations" : "VxStream",
+            "playbookID" : "Test-Detonate URL - Crowdstrike",
+            "timeout" : 1200
+        },
+        {
            "playbookID": "Detonate File - Generic Test",
            "timeout": 2000,
            "nightly": true,

@@ -5920,7 +5920,7 @@
                     "crowdstrike-scan": "VxStream"
                 }, 
                 "tests": [
-                    "No test"
+                    "Test-Detonate URL - Crowdstrike"
                 ]
             }
         }, 
@@ -15563,6 +15563,18 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "Test-Detonate URL - Crowdstrike": {
+                "name": "Test-Detonate URL - Crowdstrike", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike"
+                ]
             }
         }
     ]
