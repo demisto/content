@@ -738,7 +738,8 @@
                 "name": "SSDeepReputation", 
                 "script_executions": [
                     "findIndicators", 
-                    "getContext"
+                    "getContext", 
+                    "similarSsdeep"
                 ]
             }
         }, 
@@ -842,7 +843,10 @@
         }, 
         {
             "SendMessageToOnlineUsers": {
-                "name": "SendMessageToOnlineUsers"
+                "name": "SendMessageToOnlineUsers", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -1904,6 +1908,7 @@
                 "name": "DBotPredictTextLabel", 
                 "fromversion": "4.1.0", 
                 "script_executions": [
+                    "WordTokenizer", 
                     "getList"
                 ], 
                 "tests": [
@@ -2572,6 +2577,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "cs-device-ran-on"
+                ], 
+                "tests": [
+                    "No Test"
                 ]
             }
         }, 
@@ -3841,6 +3849,7 @@
         {
             "SplunkPySearch": {
                 "name": "SplunkPySearch", 
+                "deprecated": true, 
                 "depends_on": [
                     "splunk-search"
                 ]
@@ -4594,7 +4603,10 @@
         }, 
         {
             "DemistoGetIncidentTasksByState": {
-                "name": "DemistoGetIncidentTasksByState"
+                "name": "DemistoGetIncidentTasksByState", 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -9112,7 +9124,7 @@
                     "aws-cloudtrail-lookup-events"
                 ], 
                 "tests": [
-                    "No test"
+                    "No Tests"
                 ]
             }
         }, 
@@ -10333,7 +10345,7 @@
                     "aws-s3-upload-file"
                 ], 
                 "tests": [
-                    "No Tests"
+                    "No test"
                 ]
             }
         }, 
@@ -11034,7 +11046,7 @@
                     "aws-logs-describe-metric-filters"
                 ], 
                 "tests": [
-                    "No test"
+                    "No Tests"
                 ]
             }
         }, 
@@ -11300,6 +11312,9 @@
                     "sandblast-download", 
                     "sb-quota", 
                     "sandblast-quota"
+                ], 
+                "tests": [
+                    "Sandblast_malicious_test"
                 ]
             }
         }, 
@@ -11764,7 +11779,7 @@
                 ], 
                 "command_to_integration": {
                     "url": "Phishme Intelligence", 
-                    "phishme-search": "Phishme Intelligence_copy", 
+                    "phishme-search": "Phishme Intelligence", 
                     "email": "Phishme Intelligence", 
                     "file": "Phishme Intelligence", 
                     "ip": "Phishme Intelligence"
@@ -14218,18 +14233,19 @@
             "Jask_Test": {
                 "name": "Jask Test", 
                 "implementing_scripts": [
+                    "FetchFromInstance", 
                     "VerifyContext", 
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "jask-get-related-entities": "Jask", 
-                    "jask-search-signals": "Jask", 
-                    "jask-search-entities": "Jask", 
-                    "jask-get-insight-details": "Jask", 
-                    "jask-search-insights": "Jask", 
-                    "jask-get-signal-details": "Jask", 
-                    "jask-get-insight-comments": "Jask", 
-                    "jask-get-entity-details": "Jask"
+                    "jask-get-related-entities": "", 
+                    "jask-search-signals": "", 
+                    "jask-search-entities": "", 
+                    "jask-get-insight-details": "", 
+                    "jask-search-insights": "", 
+                    "jask-get-signal-details": "", 
+                    "jask-get-insight-comments": "", 
+                    "jask-get-entity-details": ""
                 }
             }
         }, 
@@ -15529,13 +15545,27 @@
                     "DeleteContext", 
                     "AreValuesEqual"
                 ], 
-                "implementing_commands": [
-                    "url", 
-                    "phishme-search", 
-                    "email", 
-                    "file", 
-                    "ip"
-                ]
+                "command_to_integration": {
+                    "url": "Phishme Intelligence", 
+                    "phishme-search": "Phishme Intelligence", 
+                    "email": "Phishme Intelligence", 
+                    "file": "Phishme Intelligence", 
+                    "ip": "Phishme Intelligence"
+                }
+            }
+        }, 
+        {
+            "MySQL Test": {
+                "name": "MySQL Test", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "TestMysqlQuery", 
+                    "PrintContext"
+                ], 
+                "command_to_integration": {
+                    "query": "mysql"
+                }
             }
         }
     ]
