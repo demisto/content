@@ -336,4 +336,4 @@ outputs:
   type: number
 releaseNotes: "-"
 tests:
-  - No test
+  - Test-Detonate URL - Crowdstrike
