@@ -14,7 +14,6 @@
             "playbookID": "Pwned test"
         },
         {
-            "integrations": "UnEscapeURLs",
             "playbookID": "TestUnEscapeUrl"
         },
         {
