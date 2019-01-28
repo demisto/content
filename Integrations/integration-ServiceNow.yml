@@ -3423,6 +3423,5 @@ script:
     description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - No test - Hibernating instance

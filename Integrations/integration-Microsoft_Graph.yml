@@ -732,4 +732,3 @@ script:
       type: string
     description: Retrieve the properties and relationships of user object.
   runonce: false
-releaseNotes: "Improved authentication flow"

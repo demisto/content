@@ -1817,8 +1817,6 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - Gmail Convert Html Test
   - GmailTest
-releaseNotes: Improved text conversion for html only emails
