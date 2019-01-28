@@ -1715,7 +1715,7 @@
             "UnEscapeURLs": {
                 "name": "UnEscapeURLs", 
                 "tests": [
-                    "script-TestUnEscapeUrls"
+                    "TestUnEscapeUrl"
                 ]
             }
         }, 
