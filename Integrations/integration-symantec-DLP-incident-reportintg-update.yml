@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: 'Server Host (ip or hostname)'
+- display: 'Server Host (ip or hostname. Specify port followed by ":". ie: dlp-host:8443)'
   name: server-ip
   defaultvalue: ""
   type: 0
@@ -102,8 +102,6 @@ script:
     def myconverter(o):
         if isinstance(o, datetime.datetime):
             return o.__str__()        
-    
-
 
 
     def fetchincidents():
@@ -157,10 +155,10 @@ script:
         res = helpers.serialize_object(inc_details[0])
         json_res = json.loads(json.dumps(res,default = myconverter))
         demisto.results({'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents':json_res,
-        'EntryContext':{'SymantecDLP':{'Incident':json_res[0]['incident']}}}
-        })
+            'Type': entryTypes['note'],
+            'Contents':json_res,
+            'EntryContext':{'SymantecDLP':{'Incident':json_res[0]['incident']}}}
+        )
         
     elif demisto.command() == 'sdlp-update-incident':
         demisto.results(updateIncidents())
