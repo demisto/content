@@ -1,6 +1,6 @@
 commonfields:
   id: CopyFileD2
-  version: 1
+  version: -1
 name: CopyFileD2
 script: |-
   var e = executeCommand( 'getEntry', { 'id' : args.entryid } );
@@ -45,4 +45,4 @@ runonce: false
 runas: DBotWeakRole
 releaseNotes: added overwrite support to CopyFileD2
 tests:
-  - No test
+  - No test - D2 test are not supported yet in content tests
