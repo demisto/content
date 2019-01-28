@@ -11,7 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, remote_call, clean_filename
+from mock_server import MITMProxy, remote_call, clean_filename, clone_content_test_data, upload_mock_files
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -19,8 +19,7 @@ from test_utils import print_color, print_error, print_warning, LOG_COLORS
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
-LOCAL_MOCKS_DIR = "../Mocks/"
-REMOTE_MOCKS_DIR = "Mocks/"
+REMOTE_MOCKS_DIR = "content-test-data/Mocks/"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
                             "instance_name argument in conf.json. The options are:\n{}"
@@ -414,11 +413,8 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
-    remote_call(public_ip, ["mkdir", REMOTE_MOCKS_DIR])
+    clone_content_test_data(public_ip)  # FUTURE: pull instead of clone
     proxy = MITMProxy(c, public_ip, REMOTE_MOCKS_DIR, debug=True)
-
-    # TODO: git clone/fetch
-    # TODO: Send files to remote machine
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -484,6 +480,8 @@ def main():
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
+
+    upload_mock_files(public_ip, build_name, buildNumber)
 
     if get_content_branch() == 'master':
         # TODO: Get new/updated mock files from remote machine

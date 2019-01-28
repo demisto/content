@@ -4,12 +4,31 @@ import string
 import unicodedata
 from subprocess import call, Popen, PIPE
 
-
+MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
 REMOTE_MACHINE_USER = "ec2-user"
-valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 
 
-def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
+def clone_content_test_data(public_ip):
+    remote_home = "/home/{}/".format(REMOTE_MACHINE_USER)
+    remote_key_filepath = os.path.join(remote_home, MOCK_KEY_FILE)
+    call(['scp',
+          os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE),
+          "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_key_filepath)
+          ])
+    remote_call(public_ip, ['ssh-agent', '-s'])
+    remote_call(public_ip, ['ssh-add', remote_key_filepath])
+    remote_call(public_ip, ['git', 'clone', 'git@github.com:demisto/content-test-data.git'])
+
+
+def upload_mock_files(public_ip, build_name, build_number):
+    remote_call(public_ip, ['git', 'add', 'Mocks/*.mock'])
+    commit_message = "Updated mock files from content build {} - {}".format(build_name, build_number)
+    remote_call(public_ip, ['git', 'commit', '-m', commit_message])
+    remote_call(public_ip, ['git', 'push'])
+
+
+def clean_filename(filename, whitelist=VALID_FILENAME_CHARS, replace=' '):
     # replace spaces
     for r in replace:
         filename = filename.replace(r, '_')
