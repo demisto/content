@@ -808,11 +808,6 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 1000
-        },
-        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -997,7 +992,6 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "Tenable.io test": "Error 409 ISSUE OPENED",
         "Tenable.io Scan Test": "Error 409 ISSUE OPENED"
@@ -1029,7 +1023,8 @@
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild"
     },
     "nigthly_integrations": [
         "Lastline",
