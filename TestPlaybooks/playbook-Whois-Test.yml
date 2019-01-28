@@ -59,10 +59,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 8fc445ff-0616-4f4d-8d26-3d641d0f2e12
+    taskid: a6467015-ee1b-4583-82f5-5d9e2924843b
     type: condition
     task:
-      id: 8fc445ff-0616-4f4d-8d26-3d641d0f2e12
+      id: a6467015-ee1b-4583-82f5-5d9e2924843b
       version: -1
       name: Check results
       type: condition
@@ -78,7 +78,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Whois.Domain
+              simple: ${Domain.Name}
             iscontext: true
           right:
             value:
