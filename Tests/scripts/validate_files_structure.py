@@ -9,6 +9,7 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
 for that task.
 """
+import glob
 import sys
 try:
     import yaml
@@ -28,7 +29,7 @@ import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
-from update_id_set import get_script_data, get_playbook_data, get_integration_data
+from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -48,6 +49,11 @@ MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
 
 # file types regexes
+IMAGE_REGEX = ".*.png"
+SCRIPT_YML_REGEX = "{}.*.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = "{}.*.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = "{}.*.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = "{}.*.yml".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
 TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
@@ -63,8 +69,8 @@ INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
+                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
@@ -73,6 +79,7 @@ KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
+    INTEGRATION_YML_REGEX: "integration",
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "test-playbook",
     SCRIPT_REGEX: "script",
@@ -134,11 +141,13 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
+        if file_path.endswith('.js') or file_path.endswith('.py'):
+            continue
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
-        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+        elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
-        if file_status.lower() not in KNOWN_FILE_STATUSES:
+        elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
 
@@ -273,6 +282,13 @@ def is_test_in_conf_json(file_path):
 
 
 def oversize_image(file_path):
+    if re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+        if os.path.getsize(file_path) > IMAGE_MAX_SIZE:
+            print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
+            return True
+
+        return False
+
     data_dictionary = get_json(file_path)
     image = data_dictionary.get('image', '')
     if image == '':
@@ -285,6 +301,29 @@ def oversize_image(file_path):
     return False
 
 
+def is_existing_image(file_path):
+    is_image_in_yml = False
+    is_image_in_package = False
+    if get_json(file_path).get('image'):
+        is_image_in_yml = True
+
+    if not re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        package_path = os.path.dirname(file_path)
+        image_path = glob.glob(package_path + '/*.png')
+        if image_path:
+            if is_image_in_yml:
+                print_error("You have added an image both in the package and in the yml "
+                            "file, please update the package {}".format(package_path))
+                return False
+
+            is_image_in_package = True
+
+    if not(is_image_in_package or is_image_in_yml):
+        print_error("You have failed to add an image in the yml/package for {}".format(file_path))
+
+    return is_image_in_package or is_image_in_yml
+
+
 def get_modified_and_added_files(branch_name, is_circle):
     all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
 
@@ -292,7 +331,7 @@ def get_modified_and_added_files(branch_name, is_circle):
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
-        files_string = run_git_command("git diff --name-status --no-merges")
+        files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
         modified_files, added_files = get_modified_files(files_string)
         _, added_files_from_branch = get_modified_files(all_changed_files_string)
@@ -412,8 +451,10 @@ def playbook_valid_in_id_set(file_path, playbook_set):
     return is_valid_in_id_set(file_path, playbook_data, playbook_set)
 
 
-def script_valid_in_id_set(file_path, script_set):
-    script_data = get_script_data(file_path)
+def script_valid_in_id_set(file_path, script_set, script_data=None):
+    if script_data is None:
+        script_data = get_script_data(file_path)
+
     return is_valid_in_id_set(file_path, script_data, script_set)
 
 
@@ -424,7 +465,6 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
-
     with open('./Tests/id_set.json', 'r') as id_set_file:
         id_set = json.load(id_set_file)
 
@@ -443,8 +483,13 @@ def validate_committed_files(branch_name, is_circle):
         sys.exit(1)
 
 
-def is_valid_id(objects_set, compared_id, file_path):
-    from_version = get_from_version(file_path)
+def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
+    if compared_obj_data is None:
+        from_version = get_from_version(file_path)
+
+    else:
+        value = compared_obj_data.values()[0]
+        from_version = value.get('fromversion', '0.0.0')
 
     data_dict = get_json(file_path)
     if data_dict.get('name') != compared_id:
@@ -487,7 +532,11 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
             if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
                 has_schema_problem = True
 
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path) or not is_existing_image(file_path):
+                has_schema_problem = True
+
             if is_circle and not integration_valid_in_id_set(file_path, integration_set):
                 has_schema_problem = True
 
@@ -499,6 +548,23 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
                 has_schema_problem = True
 
             if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
+                has_schema_problem = True
+
+        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
+                                                 yml_path, script_data):
                 has_schema_problem = True
 
     return has_schema_problem
@@ -518,34 +584,46 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
             if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
             if is_circle and not script_valid_in_id_set(file_path, script_set):
                 has_schema_problem = True
 
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not script_valid_in_id_set(file_path, script_set)) or \
                     changed_docker_image(file_path):
                 has_schema_problem = True
 
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
-                    changed_docker_image(file_path):
+                    changed_docker_image(file_path) or not is_existing_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if changed_command_name_or_arg(yml_path) or changed_context(yml_path) or \
+                    (is_circle and not script_valid_in_id_set(yml_path, script_set, script_data)):
                 has_schema_problem = True
 
     return has_schema_problem
 
 
 def validate_all_files():
-    id_list = []
-    found_wrong_name = False
-    duplicated_id = False
     wrong_schema = False
 
     for regex in CHECKED_TYPES_REGEXES:
@@ -562,20 +640,8 @@ def validate_all_files():
                 if not validate_schema(file_path):
                     print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
-                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX,
-                                                                                file_path, re.IGNORECASE):
-                    _id = get_script_or_integration_id(file_path)
-                    if _id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
-                        duplicated_id = True
-                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX,
-                                                                                  file_path, re.IGNORECASE):
-                    _id = collect_ids(file_path)
-                    if _id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
-                        duplicated_id = True
 
-    if wrong_schema or found_wrong_name or duplicated_id:
+    if wrong_schema:
         sys.exit(1)
 
 
