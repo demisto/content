@@ -751,10 +751,25 @@ script:
     - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
         from which the reply/note is sent. By default the global support email will
         be used., type: String}
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: ID of the ticket to delete
+      isArray: false
+      name: id
+      predefined: []
+      required: true
+    description: Delete the ticket specified by the 'id' command argument
+    execution: false
+    name: fd-delete-ticket
+    outputs: []
   dockerimage: ''
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     import json
@@ -1019,7 +1034,7 @@ script:
             files=files
         )
         # Handle error responses gracefully
-        if res.status_code not in [200, 201]:
+        if res.status_code not in [200, 201, 202, 204]:
             LOG(res.json())
             LOG(res.text)
             LOG.print_log()
@@ -1353,6 +1368,31 @@ script:
                 'FD.Ticket(val.Id && val.Id === obj.Id)': context
             }
         })
+
+
+    def delete_ticket(ticket_id):
+        global HEADERS
+        HEADERS['USER-AGENT'] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36"
+        endpoint_url = 'tickets/{}'.format(ticket_id)
+        demisto.results('working after making endpoint_url')
+        response = http_request('DELETE', endpoint_url)
+        demisto.results('working after making delete request')
+        del HEADERS['USER-AGENT']
+        return response
+
+
+    def delete_ticket_command():
+        ticket_id = demisto.args().get('id')
+        delete_forever = demisto.args().get('delete_forever')
+        demisto.results('working after getting args')
+        # Make request
+        response = delete_ticket(ticket_id)
+        if delete_forever.lower() == 'true':
+            response = delete_ticket_forever(ticket_id)
+            message = "Deleted Ticket #{} Forever".format(ticket_id)
+        else:
+            message = "Soft-Deleted Ticket #{}".format(ticket_id)
+        demisto.results(message)
 
 
     '''<------ CONVERSATIONS ------>'''
@@ -1788,6 +1828,7 @@ script:
         "fd-ticket-note": ticket_note_command,
         "fd-get-conversations": get_conversations_command,
         "fd-list-agents": list_agents_command,
+        "fd-delete-ticket": delete_ticket_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))

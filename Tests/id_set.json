@@ -11769,7 +11769,8 @@
                     "fd-ticket-reply", 
                     "fd-get-conversations", 
                     "fd-list-agents", 
-                    "fd-ticket-note"
+                    "fd-ticket-note", 
+                    "fd-delete-ticket"
                 ]
             }
         }
