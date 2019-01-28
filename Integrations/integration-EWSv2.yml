@@ -109,7 +109,7 @@ script:
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest, \
-        AutoDiscoverFailed
+        AutoDiscoverFailed, ErrorNameResolutionNoResults
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -626,8 +626,12 @@ script:
         def call(self, email_address):
             if self.protocol.version.build < EXCHANGE_2010:
                 raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
-            elements = self._get_elements(payload=self.get_payload(email_address))
-            return map(lambda x: self.parse_element(x), elements)
+            try:
+                elements = self._get_elements(payload=self.get_payload(email_address))
+                return map(lambda x: self.parse_element(x), elements)
+            except ErrorNameResolutionNoResults:
+                demisto.results("No results were found.")
+                sys.exit()
 
         def get_payload(self, email_address):
             element = create_element('m:%s' % self.SERVICE_NAME,)
