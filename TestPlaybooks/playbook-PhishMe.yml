@@ -381,10 +381,10 @@ tasks:
       id: e1af3c19-b4a0-45fd-89b8-40a920d2e75c
       version: -1
       name: Check PhishMe string
-      script: Phishme Intelligence_copy|||phishme-search
+      script: Phishme Intelligence|||phishme-search
       type: regular
       iscommand: true
-      brand: Phishme Intelligence_copy
+      brand: Phishme Intelligence
     nexttasks:
       '#none#':
       - "15"

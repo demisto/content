@@ -94,3 +94,5 @@ args:
   description: Message to send
 scripttarget: 0
 runonce: false
+tests:
+  - No test
