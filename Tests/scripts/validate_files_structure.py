@@ -723,7 +723,8 @@ def get_diff_text_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
-        if file_status.upper() in accepted_file_statuses and is_text_file(file_path) and SECRETS_WHITE_LIST_FILE not in file_path:
+        if file_status.upper() in accepted_file_statuses and is_text_file(file_path) \
+                and SECRETS_WHITE_LIST_FILE not in file_path:
             text_files_list.add(file_path)
 
     return text_files_list
@@ -740,43 +741,6 @@ def get_all_diff_text_files(branch_name, is_circle):
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list
-
-
-def validate_committed_files(branch_name, is_circle):
-
-    # secrets validation starts
-    # Get all files that have been modified & added to repo
-    secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
-    secrets_found = search_potential_secrets(secrets_file_paths)
-
-    if secrets_found:
-        print_error('Secrets were found in the following files:\n')
-        for file in secrets_found:
-            print_error('\nFile Name: ' + file)
-            print_error(json.dumps(secrets_found[file], indent=4))
-        print_error('Remove or whitelist secrets in order to proceed, then re-commit\n')
-
-        sys.exit(1)
-    # secrets validation ends
-
-    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
-
-    with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
-
-    script_set = id_set['scripts']
-    playbook_set = id_set['playbooks']
-    integration_set = id_set['integrations']
-    test_playbook_set = id_set['TestPlaybooks']
-
-    has_schema_problem = validate_modified_files(integration_set, modified_files,
-                                                 playbook_set, script_set, test_playbook_set, is_circle)
-
-    has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
-                                              script_set, test_playbook_set, is_circle) or has_schema_problem
-
-    if has_schema_problem:
-        sys.exit(1)
 
 
 def search_potential_secrets(secrets_file_paths):
@@ -799,14 +763,14 @@ def search_potential_secrets(secrets_file_paths):
         # if py file, search for yml in order to retrieve temp white list
         file_path_temp, file_extension = os.path.splitext(file_path)
         if file_extension == '.py':
-            matching_yml_file_contents = retrieve_related_yml(file_path_temp)
+            yml_file_contents = retrieve_related_yml(file_path_temp)
 
         # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
         with io.open('./' + file_path, mode="r", encoding="utf-8") as file:
             file_contents = file.read()
 
             # Add all context output paths keywords to whitelist temporary
-            temp_white_list = create_temp_white_list(matching_yml_file_contents if matching_yml_file_contents else file_contents)
+            temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
 
             # Search by lines after strings with high entropy as possibly suspicious
@@ -826,14 +790,14 @@ def search_potential_secrets(secrets_file_paths):
                 secrets_white_list = secrets_white_list.union(false_positives)
 
                 # calculate entropy for each string in the file
-                for string in line.split():
-                    string = string.strip("\"()[],'><:;\\")
-                    string_lower = string.lower()
+                for string_ in line.split():
+                    string_ = string_.strip("\"()[],'><:;\\")
+                    string_lower = string_.lower()
                     # compare the lower case of the string against both generic whitelist & temp white list
                     if not any(white_list_string in string_lower for white_list_string in secrets_white_list):
-                        entropy = calculate_shannon_entropy(string)
+                        entropy = calculate_shannon_entropy(string_)
                         if entropy >= ENTROPY_THRESHOLD:
-                            high_entropy_strings.append(string)
+                            high_entropy_strings.append(string_)
 
         if high_entropy_strings or regex_secrets:
             # uniquify identical matches between lists
@@ -881,22 +845,39 @@ def regex_for_secrets(file_contents):
     if emails:
         potential_secrets += emails
     # IPV6 REGEX
-    ipv6_list = re.findall(r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)', file_contents)
+    ipv6_list = re.findall(r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1'
+                           r'[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::'
+                           r'(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]'
+                           r'{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
+                           r'(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
+                           r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'
+                           r'|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}'
+                           r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+                           r'\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}'
+                           r'[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
+                           r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'
+                           r'|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:'
+                           r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4]'
+                           r'[0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]'
+                           r'{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]'
+                           r'|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
+                           r'(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|'
+                           r'(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)', file_contents)
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::':
                 potential_secrets.append(ipv6)
     # IPV4 REGEX
-    ipv4_list = re.findall(r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)', file_contents)
+    ipv4_list = re.findall(r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
+                           file_contents)
     if ipv4_list:
         potential_secrets += ipv4_list
     # Dates REGEX for false positive preventing since they have high entropy
-    dates = re.findall(r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)', file_contents)
+    dates = re.findall(r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)',
+                       file_contents)
     if dates:
         false_positives += [date[0] for date in dates]
 
-    if potential_secrets and potential_secrets[0] == '::':
-        raise Exception(file_contents, potential_secrets)
     return potential_secrets, false_positives
 
 
@@ -912,7 +893,7 @@ def calculate_shannon_entropy(data):
     # each unicode code representation of all characters which are considered printable
     for x in (ord(c) for c in string.printable):
         # probability of event X
-        px = float(data.count(chr(x)))/len(data)
+        px = float(data.count(chr(x))) / len(data)
         if px > 0:
             # the information in every possible news, in bits
             entropy += - px * math.log(px, 2)
