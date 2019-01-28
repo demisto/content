@@ -19,6 +19,9 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
+            "playbookID": "TestUnEscapeUrl"
+        },
+        {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
