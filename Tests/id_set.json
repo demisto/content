@@ -3853,6 +3853,7 @@
         {
             "SplunkPySearch": {
                 "name": "SplunkPySearch", 
+                "deprecated": true, 
                 "depends_on": [
                     "splunk-search"
                 ]

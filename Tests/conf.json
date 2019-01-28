@@ -808,11 +808,6 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 1000
-        },
-        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -1034,7 +1029,8 @@
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild"
     },
     "nigthly_integrations": [
         "Lastline",
