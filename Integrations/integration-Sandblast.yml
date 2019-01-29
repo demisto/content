@@ -1,6 +1,6 @@
 commonfields:
   id: Check Point Sandblast
-  version: 8
+  version: -1
 name: Check Point Sandblast
 display: Check Point Sandblast Cloud Services
 category: Forensics & Malware Analysis
