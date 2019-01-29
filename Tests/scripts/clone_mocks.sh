@@ -1,2 +1,10 @@
 #!/usr/bin/env bash
-eval `ssh-agent -s` & ssh-add $1 & git clone git@github.com:demisto/content-test-data.git
+
+cat >> ~/.ssh/config << EOF
+host github.com
+ HostName github.com
+ IdentityFile $1
+ User git
+EOF
+
+git clone git@github.com:demisto/content-test-data.git
