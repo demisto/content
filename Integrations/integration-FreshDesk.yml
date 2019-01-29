@@ -37,12 +37,6 @@ configuration:
   options: []
   required: false
   type: 9
-- defaultvalue: ''
-  display: Fetch incidents
-  name: isFetch
-  options: []
-  required: false
-  type: 8
 description: Freshdesk Integration
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
@@ -840,22 +834,6 @@ script:
       name: include_description
       predefined: ['yes', 'no']
       required: false
-    - default: false
-      defaultValue: ''
-      description: |-
-        filter through the tickets and get a list of tickets matching the specified ticket fields.
-
-        Format -    "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
-        Example -    "priority:>3 AND created_at:'2017-01-01' AND (type:'Question' OR type:'Problem')"
-
-        Supported ticket fields:
-        agent_id, group_id, priority, status, tag, type, due_by, fr_due_by, created_at, updated_at
-
-        *Note: the custom_query argument cannot be used in conjunction with the other command arguments.
-      isArray: false
-      name: custom_query
-      predefined: []
-      required: false
     description: List all tickets that match the filter criteria you specify.
     execution: false
     name: fd-list-tickets
@@ -892,6 +870,7 @@ script:
 
     import json
     import requests
+    from datetime import datetime
     from distutils.util import strtobool
 
     # Disable insecure warnings
@@ -947,7 +926,7 @@ script:
     def ticket_to_incident(ticket):
         incident = {}
         # Incident Title
-        incident['name'] = 'Ticket Incident: ' + ticket.get('subject')
+        incident['name'] = 'Ticket Incident: "{}"'.format(ticket.get('subject'))
         # Incident occurrence time, usually item creation date in service
         incident['occurred'] = ticket.get('created_at')
         # The raw response from the service, providing full info regarding the item
@@ -1233,15 +1212,16 @@ script:
         # Handle first time fetch, fetch incidents retroactively
         if not last_fetch:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        query_string = 'created_at:>\'' + timestamp_to_datestring(last_fetch, date_format="%Y-%m-%d") + '\''
+        args = {'custom_query': query_string}
 
-        args = {'updated_since': last_fetch}
-
-        tickets = list_tickets(args)
+        response = list_tickets(args)
+        tickets = response.get('results')
         # convert the ticket/events to demisto incidents
         incidents = []
         for ticket in tickets:
             incident = ticket_to_incident(ticket)
-            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_date > last_fetch:
                 last_fetch = incident_date
