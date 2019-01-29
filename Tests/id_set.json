@@ -5937,7 +5937,10 @@
                 "command_to_integration": {
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream"
-                }
+                }, 
+                "tests": [
+                    "Test-Detonate URL - Crowdstrike"
+                ]
             }
         }, 
         {
@@ -8413,8 +8416,7 @@
                 ], 
                 "tests": [
                     "VxStream Test", 
-                    "detonate_file_-_generic_test", 
-                    "detonate_url_-_generic_test"
+                    "detonate_file_-_generic_test"
                 ]
             }
         }, 
@@ -15596,6 +15598,18 @@
                 ], 
                 "tests": [
                     "no tests"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - Crowdstrike": {
+                "name": "Test-Detonate URL - Crowdstrike", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike"
                 ]
             }
         }
