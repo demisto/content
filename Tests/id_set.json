@@ -15626,7 +15626,6 @@
                 "name": "HighlightWords - Test", 
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
-                    "Set", 
                     "HighlightWords"
                 ]
             }
