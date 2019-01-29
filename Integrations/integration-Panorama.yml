@@ -149,8 +149,6 @@ script:
 
         jresult = json.loads(xml2json(result.text))
 
-        #panorama_check_response(jresult)
-
         if jresult['response']['@status'] != 'success':
             if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
                 if jresult['response']['msg']['line'] == 'No such node':
