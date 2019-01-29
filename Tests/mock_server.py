@@ -63,7 +63,8 @@ def remote_call(public_ip, command):
 
 
 class MITMProxy:
-    def __init__(self, demisto_client, public_ip, primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
+    def __init__(self, demisto_client, public_ip,
+                 primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
         self.demisto_client = demisto_client
         self.ip = public_ip
         self.process = None
