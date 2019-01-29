@@ -2,6 +2,7 @@ commonfields:
   id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
   version: 3
 name: SEPScan
+description: Automation to scan an endpoint. DEPRECATED - this automation is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint Protection V2' integration.
 deprecated: true
 script: |-
   SCAN_DEFAULT_TIMEOUT = 600;
@@ -62,6 +63,8 @@ args:
   description: The polling interval of the command.
 scripttarget: 0
 timeout: 600ns
+test:
+  -No test - deprecated
 dependson:
   must:
   - sep-command-status
