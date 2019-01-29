@@ -4535,7 +4535,8 @@
                 "deprecated": true, 
                 "depends_on": [
                     "sep-command-status"
-                ]
+                ], 
+                "tests": "-No test - deprecated"
             }
         }, 
         {
