@@ -1717,7 +1717,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -3849,6 +3852,7 @@
         {
             "SplunkPySearch": {
                 "name": "SplunkPySearch", 
+                "deprecated": true, 
                 "depends_on": [
                     "splunk-search"
                 ]
@@ -4339,7 +4343,11 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains"
+                "name": "StringContains", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {
@@ -4836,6 +4844,17 @@
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
+            }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
             }
         }
     ], 
@@ -5918,7 +5937,10 @@
                 "command_to_integration": {
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream"
-                }
+                }, 
+                "tests": [
+                    "Test-Detonate URL - Crowdstrike"
+                ]
             }
         }, 
         {
@@ -8397,8 +8419,7 @@
                 ], 
                 "tests": [
                     "VxStream Test", 
-                    "detonate_file_-_generic_test", 
-                    "detonate_url_-_generic_test"
+                    "detonate_file_-_generic_test"
                 ]
             }
         }, 
@@ -10783,7 +10804,8 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
                     "ews-o365-get-compliance-search-purge-status", 
-                    "ews-get-autodiscovery-config"
+                    "ews-get-autodiscovery-config", 
+                    "ews-expand-group"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -11973,6 +11995,8 @@
             "CopyContextToFieldTest": {
                 "name": "CopyContextToFieldTest", 
                 "implementing_scripts": [
+                    "DeleteContext", 
+                    "Sleep", 
                     "Set", 
                     "PrintErrorEntry", 
                     "CopyContextToField"
@@ -13065,11 +13089,12 @@
                 "command_to_integration": {
                     "Exception": "Exception", 
                     "ews-get-out-of-office": "", 
-                    "ews-get-searchable-mailboxes": "", 
+                    "ews-expand-group": "", 
                     "ews-find-folders": "", 
                     "ews-get-items": "", 
                     "ews-get-contacts": "", 
                     "ews-get-attachment": "", 
+                    "ews-get-searchable-mailboxes": "", 
                     "ews-search-mailboxes": ""
                 }
             }
@@ -15564,6 +15589,31 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - Crowdstrike": {
+                "name": "Test-Detonate URL - Crowdstrike", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike"
+                ]
             }
         }
     ]
