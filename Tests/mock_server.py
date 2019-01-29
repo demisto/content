@@ -21,7 +21,7 @@ def clone_content_test_data(public_ip):
           "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_key_filepath)
           ])
     call(['scp', '-o', ' StrictHostKeyChecking=no',
-          os.path.join('Tests/scripts/', remote_script_path),
+          os.path.join('/home/circleci/project/Tests/scripts/', remote_script_path),
           "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_home)
           ])
 
