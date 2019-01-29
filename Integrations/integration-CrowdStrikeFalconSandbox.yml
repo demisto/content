@@ -771,11 +771,12 @@ script:
             return tableFromEnvironments(response);
         case 'vx-submit-sample': // Deprecated
         case 'crowdstrike-submit-sample':
-            var fileEntry = submitFile(args.entryId, args.environmentID);
-            if ('Type' in fileEntry && fileEntry['Type'] === entryTypes.error) {
-                return fileEntry;
+            var entry = submitFile(args.entryId, args.environmentID);
+            // return entry if type is error
+            if ('Type' in entry && entry['Type'] === entryTypes.error) {
+                return entry;
             }
-            return submitFileEntry(fileEntry);
+            return submitFileEntry(entry);
         case 'vx-search': // Deprecated
         case 'crowdstrike-search':
             return searchQuery();
