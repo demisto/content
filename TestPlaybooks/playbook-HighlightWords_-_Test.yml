@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -26,43 +26,12 @@ tasks:
       }
     note: false
     timertriggers: []
-  "1":
-    id: "1"
-    taskid: 6a4018bc-158e-4adc-85a0-7a4bb0daa535
-    type: regular
-    task:
-      id: 6a4018bc-158e-4adc-85a0-7a4bb0daa535
-      version: -1
-      name: Set text
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      append: {}
-      key:
-        simple: textKey
-      value:
-        simple: This is an example
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
   "2":
     id: "2"
-    taskid: 3c7a9fc9-f29e-4a7b-8ee5-6a856719512d
+    taskid: fe682f19-2158-4d36-8b65-0b1d0cae2265
     type: regular
     task:
-      id: 3c7a9fc9-f29e-4a7b-8ee5-6a856719512d
+      id: fe682f19-2158-4d36-8b65-0b1d0cae2265
       version: -1
       name: Highlight words
       scriptName: HighlightWords
@@ -73,6 +42,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      terms:
+        simple: example1,example2
+      text:
+        simple: This is example1 and example2 that should be highlighted
       textFields:
         simple: textKey,textKey2
       words:
@@ -82,48 +55,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 1cb37155-b5cf-4b44-8229-fabe7abd9bb5
-    type: regular
-    task:
-      id: 1cb37155-b5cf-4b44-8229-fabe7abd9bb5
-      version: -1
-      name: Set text
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      append: {}
-      key:
-        simple: textKey2
-      value:
-        simple: This is an example2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "y": 195
         }
       }
     note: false
     timertriggers: []
   "5":
     id: "5"
-    taskid: da0c0d36-74fd-4817-8f22-4cb8831b860f
+    taskid: d18fdcf6-5701-477f-851e-c02906439623
     type: regular
     task:
-      id: da0c0d36-74fd-4817-8f22-4cb8831b860f
+      id: d18fdcf6-5701-477f-851e-c02906439623
       version: -1
       name: Check if highlighted
       scriptName: VerifyHumanReadableContains
@@ -140,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 380
         }
       }
     note: false
@@ -150,7 +92,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 425,
         "width": 380,
         "x": 50,
         "y": 50
