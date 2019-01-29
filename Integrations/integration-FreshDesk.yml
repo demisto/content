@@ -796,20 +796,6 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: |-
-        Filter through the tickets and get a list of tickets matching the specified ticket fields.
-
-        Format - "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
-        Example - "priority:>3 AND group_id:11 AND status:2"
-
-        Supported Ticket Fields:
-        agent_id, group_id, priority, status, tag, type, due_by, fr_due_by, created_at, updated_at
-      isArray: false
-      name: custom_query
-      predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
       description: Reference field for ordering the list of tickets. The default sort
         order is created_at.
       isArray: false
@@ -935,6 +921,12 @@ script:
 
     def get_additional_fields(args):
         additional_fields = []  # fields that should be added to output context
+        filter = args.get('filter')
+        if filter:
+            if filter == 'deleted':
+                additional_fields.append('deleted')
+            elif filter == 'spam':
+                additional_fields.append('spam')
         requester = args.get('requester')
         if requester:
             if '@' in requester:
@@ -942,14 +934,6 @@ script:
         company_id = args.get('company_id')
         if company_id:
             additional_fields.append('company_id')
-        custom_query = args.get('custom_query')
-        if custom_query:
-            query_fields = re.findall(r'\b\w+:', custom_query)
-            additional_fields.extend(query_fields)
-        if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
-            additional_fields.extend(['closed_at', 'resolved_at', 'first_responded_at'])
-        if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
-            additional_fields.extend(['name', 'email', 'mobile', 'phone'])
         if args.get('include_description') and args.get('include_description').lower() == 'yes':
             additional_fields.extend(['description', 'description_text'])
         return additional_fields
@@ -1546,11 +1530,6 @@ script:
         updated_since = args.get('updated_since')
         if updated_since:
             url_params['updated_since'] = updated_since
-        custom_query = args.get('custom_query')
-        if custom_query:
-            url_params['query'] = custom_query
-
-        # demisto.results("filter section executed")
 
         ## Sort By ##
         order_by = args.get('order_by')
@@ -1560,20 +1539,16 @@ script:
         if order_type:
             url_params['order_type'] = order_type
 
-        # demisto.results("sort by section executed")
-
         ## Embeddings (include additional information) ##
-        include = []
+        include = ''
         if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
-            include.append('stats')
+            include += 'stats'
         if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
-            include.append('requester')
+            include += 'requester' if include == '' else ', requester'
         if args.get('include_description') and args.get('include_description').lower() == 'yes':
-            include.append('description')
+            include += 'description' if include == '' else ', description'
         if include:
             url_params['include'] = include
-
-        # demisto.results("embeddings section executed")
 
         # Make request and get raw response
         response = http_request('GET', endpoint_url, params=url_params)
@@ -1585,29 +1560,29 @@ script:
         additional_fields = get_additional_fields(args)
         tickets = list_tickets(args)
 
-        # demisto.results("called 'list_tickets() successfully")
         global DEFAULT_TICKET_CONTEXT_FIELDS
         ctx_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
         ctx_outputs.append('updated_at')
 
-        # demisto.results("ctx_outputs: {}".format(ctx_outputs))
-
-        # Parse response into the standard outputs
+        # Parse response into context
         contexts = []
         for ticket in tickets:
-
-            # demisto.results('entered for loop')
-
+            # Parse ticket into the standard outputs
             context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in ctx_outputs}
 
-            # demisto.results('basic context created')
-
-            # Parse the response for the additionally requested fields
+            # Parse ticket for the additionally requested fields
             context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
+            requester = ticket.get('requester')
+            if requester:
+                requester_context = {string_to_context_key(key): val for key, val in requester.iteritems() if val}
+                context['AdditionalFields']['Requestor'] = requester_context
+            stats = ticket.get('stats')
+            if stats:
+                stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
+                context['AdditionalFields']['Stats'] = stats_context
 
-            # demisto.results('additional_fields context created')
 
-            # Parse attachments into context
+            # Parse ticket attachments into context
             attachments = context.get('Attachments')
             if attachments:
                 attachments_context = []
@@ -1616,17 +1591,10 @@ script:
                     attachments_context.append(attachment_context)
                 context['Attachments'] = attachments_context
 
-            # demisto.results('attachments context created')
-
             contexts.append(context)
-
-            # demisto.results('context appended')
 
         title = "Viewing All Requested Tickets"
         md = tableToMarkdown(title, contexts, removeNull=True)
-
-        # demisto.results("title and md assignments executed")
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
