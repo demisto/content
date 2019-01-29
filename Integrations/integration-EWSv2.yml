@@ -402,7 +402,7 @@ script:
                        repr((self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
 
             exchangelib.Folder.__repr__ = repr1
-            exchangelib.folders.Inbox.__repr__ = repr2
+            exchangelib.folders.Inbox.__repr__ = exchangelib.folders.JunkEmail.__repr__ = repr2
             exchangelib.folders.Root.__repr__ = repr3
 
         start_logging()
@@ -2391,7 +2391,7 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added command ews-expand-group"
+releaseNotes: "Added command ews-expand-group. Fixed issue with 2016-2010 mixed environments."
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
