@@ -585,7 +585,6 @@ script:
             return result
 
         def call(self, query, mailboxes):
-            query = query.replace(".", "\\.")
             if self.protocol.version.build < EXCHANGE_2013:
                 raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
             elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
