@@ -2678,7 +2678,6 @@ class Message(object):
         if self.cc is not None:
             cc = join([extract_address(cc) for cc in self.cc])
 
-        bcc = None
         if self.bcc is not None:
             bcc = join([extract_address(bcc) for bcc in self.bcc])
 
@@ -2686,7 +2685,6 @@ class Message(object):
         if self.to is not None:
             recipients = join([extract_address(recipient.EmailAddress) for recipient in self.recipients])
 
-        sender = None
         if self.sender is not None:
             sender = join([extract_address(sender) for sender in self.sender])
 
@@ -3213,7 +3211,7 @@ def convert_to_unicode(s):
             try:
                 s = s.decode(encoding).encode('utf-8').strip()
                 break
-            except:     # nopep8
+            except:     # noqa: E722
                 pass
 
     return s
