@@ -63,7 +63,7 @@ args:
 scripttarget: 0
 timeout: 600ns
 tests:
-  -No test - deprecated
+  - No test - deprecated
 dependson:
   must:
   - sep-command-status

@@ -4536,7 +4536,9 @@
                 "depends_on": [
                     "sep-command-status"
                 ], 
-                "tests": "-No test - deprecated"
+                "tests": [
+                    "No test - deprecated"
+                ]
             }
         }, 
         {
