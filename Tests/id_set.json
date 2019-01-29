@@ -1721,7 +1721,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -4348,7 +4351,11 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains"
+                "name": "StringContains", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {
@@ -4845,6 +4852,17 @@
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
+            }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
             }
         }
     ], 
@@ -15616,6 +15634,19 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
             }
         }
     ]
