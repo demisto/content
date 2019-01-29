@@ -767,9 +767,6 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     import json
@@ -1047,6 +1044,9 @@ script:
                 for key, value in res.json().iteritems():
                     err_msg += '\n{}: {}'.format(key, value)
             return_error(err_msg)
+        # Handle response with no content
+        elif res.status_code == 204:
+            return res
 
         return res.json()
 
@@ -1371,28 +1371,71 @@ script:
 
 
     def delete_ticket(ticket_id):
-        global HEADERS
-        HEADERS['USER-AGENT'] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36"
         endpoint_url = 'tickets/{}'.format(ticket_id)
-        demisto.results('working after making endpoint_url')
         response = http_request('DELETE', endpoint_url)
-        demisto.results('working after making delete request')
-        del HEADERS['USER-AGENT']
         return response
 
 
     def delete_ticket_command():
         ticket_id = demisto.args().get('id')
-        delete_forever = demisto.args().get('delete_forever')
-        demisto.results('working after getting args')
         # Make request
         response = delete_ticket(ticket_id)
-        if delete_forever.lower() == 'true':
-            response = delete_ticket_forever(ticket_id)
-            message = "Deleted Ticket #{} Forever".format(ticket_id)
-        else:
-            message = "Soft-Deleted Ticket #{}".format(ticket_id)
+        message = "Soft-Deleted Ticket #{}".format(ticket_id)
         demisto.results(message)
+
+
+    def list_tickets(args):
+        endpoint_url = 'tickets'
+        url_params = {}
+
+        ## Filter By ##
+        filter = args.get('filter')
+        if filter:
+            url_params['filter'] = filter
+        requester = args.get('requester')
+        if requester:
+            if '@' in requester:
+                url_params['email'] = requester
+            else:
+                url_params['requester_id'] = requester
+        company_id = args.get('company_id')
+        if company_id:
+            url_params['company_id'] = company_id
+        updated_since = args.get('updated_since')
+        if updated_since:
+            url_params['updated_since'] = updated_since
+        custom_query = args.get('custom_query')
+        if custom_query:
+            url_params['query'] = custom_query
+
+        ## Sort By ##
+        order_by = args.get('order_by')
+        if order_by:
+            url_params['order_by'] = order_by
+        order_type = args.get('order_type')
+        if order_type:
+            url_params['order_type'] = order_type
+
+        ## Embeddings (include additional information) ##
+        include = []
+        if args.get('stats') and args.get('stats').lower() == 'yes':
+            include.append('stats')
+        if args.get('requester') and args.get('requester').lower() == 'yes':
+            include.append('requester')
+        if args.get('description') and args.get('description').lower() == 'yes':
+            include.append('description')
+        if include:
+            url_params['include'] = include
+
+        # Make request and get raw response
+        response = http_request('GET', endpoint_url, params=url_params)
+        return response
+
+
+    def list_tickets_command():
+        args = demisto.args()
+        tickets = list_tickets(args)
+
 
 
     '''<------ CONVERSATIONS ------>'''
