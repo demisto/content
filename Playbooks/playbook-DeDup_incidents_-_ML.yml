@@ -38,7 +38,7 @@ tasks:
       version: -1
       name: Find duplicate incidents
       description: Find duplicate incidents using machine-learning.
-      scriptName: GetDuplicatesMl
+      scriptName: GetDuplicatesMlv2
       type: regular
       iscommand: false
       brand: ""
@@ -250,3 +250,4 @@ outputs:
 - contextPath: duplicateCandidate
   description: the duplicate top candidate
   type: unknown
+releaseNotes: "-"

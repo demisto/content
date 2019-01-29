@@ -5408,7 +5408,7 @@
                 "implementing_scripts": [
                     "Print", 
                     "CloseInvestigationAsDuplicate", 
-                    "GetDuplicatesMl"
+                    "GetDuplicatesMlv2"
                 ]
             }
         }, 
