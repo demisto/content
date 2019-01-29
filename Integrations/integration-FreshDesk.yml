@@ -37,6 +37,12 @@ configuration:
   options: []
   required: false
   type: 9
+- defaultvalue: ''
+  display: Fetch incidents
+  name: isFetch
+  options: []
+  required: false
+  type: 8
 description: Freshdesk Integration
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
@@ -834,6 +840,22 @@ script:
       name: include_description
       predefined: ['yes', 'no']
       required: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        filter through the tickets and get a list of tickets matching the specified ticket fields.
+
+        Format -    "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
+        Example -    "priority:>3 AND created_at:'2017-01-01' AND (type:'Question' OR type:'Problem')"
+
+        Supported ticket fields:
+        agent_id, group_id, priority, status, tag, type, due_by, fr_due_by, created_at, updated_at
+
+        *Note: the custom_query argument cannot be used in conjunction with the other command arguments.
+      isArray: false
+      name: custom_query
+      predefined: []
+      required: false
     description: List all tickets that match the filter criteria you specify.
     execution: false
     name: fd-list-tickets
@@ -863,7 +885,7 @@ script:
         were specified in the command's filter-type or include-type arguments., type: Unknown}
     - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
   dockerimage: ''
-  isfetch: false
+  isfetch: true
   runonce: false
   script: |-
     ''' IMPORTS '''
@@ -889,6 +911,9 @@ script:
         return_error(err_msg)
 
     AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
+
+    # How many time before the first fetch to retrieve incidents
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
@@ -917,6 +942,17 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
+    def ticket_to_incident(ticket):
+        incident = {}
+        # Incident Title
+        incident['name'] = 'Ticket Incident: ' + ticket.get('subject')
+        # Incident occurrence time, usually item creation date in service
+        incident['occurred'] = ticket.get('created_at')
+        # The raw response from the service, providing full info regarding the item
+        incident['rawJSON'] = json.dumps(ticket)
+        return incident
 
 
     def get_additional_fields(args):
@@ -1186,6 +1222,33 @@ script:
         """
         ticket_id = '1'
         response = http_request('GET', 'tickets/{}'.format(ticket_id))
+
+
+    def fetch_incidents():
+        # demisto.getLastRun() will returns an obj with the previous run in it.
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if not last_fetch:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+
+        args = {'updated_since': last_fetch}
+
+        tickets = list_tickets(args)
+        # convert the ticket/events to demisto incidents
+        incidents = []
+        for ticket in tickets:
+            incident = ticket_to_incident(ticket)
+            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_date > last_fetch:
+                last_fetch = incident_date
+                incidents.append(incident)
+
+        demisto.setLastRun({'time': last_fetch})
+        demisto.incidents(incidents)
 
 
     '''<------ TICKETS ------>'''
@@ -1547,8 +1610,20 @@ script:
             include += 'requester' if include == '' else ', requester'
         if args.get('include_description') and args.get('include_description').lower() == 'yes':
             include += 'description' if include == '' else ', description'
-        if include:
+        if include != '':
             url_params['include'] = include
+
+        ## Custom Query ##
+        custom_query = args.get('custom_query')
+        if custom_query and url_params:
+            err_msg = "You cannot use the custom_query argument in conjunction with the other command arguments. You can " \
+                      "either use the other arguments that allow you to choose options for filtering, sorting, " \
+                      "and including information for tickets, or to use the custom_query alone to create a custom filter " \
+                      "that determines which tickets are listed."
+            return_error(err_msg)
+        elif custom_query:
+            endpoint_url = 'search/tickets'
+            url_params['query'] = "\"" + custom_query + "\""
 
         # Make request and get raw response
         response = http_request('GET', endpoint_url, params=url_params)
@@ -1558,7 +1633,13 @@ script:
     def list_tickets_command():
         args = demisto.args()
         additional_fields = get_additional_fields(args)
-        tickets = list_tickets(args)
+        response = list_tickets(args)
+
+        # If user entered custom_query arg, the resulting tickets are in the 'results' attribute of the response
+        if args.get('custom_query'):
+            tickets = response.get('results')
+        else:
+            tickets = response
 
         global DEFAULT_TICKET_CONTEXT_FIELDS
         ctx_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
@@ -2052,6 +2133,8 @@ script:
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
         elif demisto.command() in commands.keys():
             # Execute that command
             commands[demisto.command()]()
