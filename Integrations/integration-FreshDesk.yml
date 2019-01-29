@@ -250,8 +250,8 @@ script:
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
     - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
-    - {contextPath: FD.Ticket.UpdatedField, description: Additional fields that were
-        updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
+    - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
+        were updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
     - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
   - arguments:
     - default: false
@@ -868,6 +868,9 @@ script:
   script: |-
     ''' IMPORTS '''
 
+    # For debugging
+    import sys, traceback
+
     import json
     import requests
     from datetime import datetime
@@ -1172,24 +1175,27 @@ script:
             files=files
         )
         # Handle error responses gracefully
-        if res.status_code not in [200, 201, 202, 204]:
-            LOG(res.json())
-            LOG(res.text)
-            LOG.print_log()
-            err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
-            err = json.loads(res.content)
-            if err.get('errors'):
-                for error in err.get('errors'):
-                    err_msg += '\n' + json.dumps(error, indent=2)
-            else:
-                for key, value in res.json().iteritems():
-                    err_msg += '\n{}: {}'.format(key, value)
-            return_error(err_msg)
-        # Handle response with no content
-        elif res.status_code == 204:
-            return res
+        try:
+            if res.status_code not in [200, 201, 202, 204]:
+                LOG(res.json())
+                LOG(res.text)
+                LOG.print_log()
+                err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
+                err = json.loads(res.content)
+                if err.get('errors'):
+                    for error in err.get('errors'):
+                        err_msg += '\n' + json.dumps(error, indent=2)
+                else:
+                    for key, value in res.json().iteritems():
+                        err_msg += '\n{}: {}'.format(key, value)
+                return_error(err_msg)
+            # Handle response with no content
+            elif res.status_code == 204:
+                return res
 
-        return res.json()
+            return res.json()
+        except Exception as e:
+            return_error('error occurred in the http_request method')
 
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1398,16 +1404,16 @@ script:
         additional_update_fields = args.get('update_fields')
         additional_field_values = args.get('update_values')
         for field, value in zip(additional_update_fields, additional_field_values):
-            # if field == 'tags':
-            #     demisto.results('The type of the tags value is: {}'.format(type(value)))
+            if field == 'tags':
+                demisto.log('The type of the tags value is: {}'.format(type(value)))
             args[field] = value
         del args['update_fields']
         del args['update_values']
 
-        # demisto.results('args preclean: {}'.format(args))
+        demisto.log('args preclean: {}'.format(args))
 
         args = clean_arguments(args)
-        # demisto.results('args postclean: {}'.format(args))
+        demisto.log('args postclean: {}'.format(args))
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
@@ -1415,7 +1421,9 @@ script:
         response = None
         if not args.get('attachments'):
             # Send a request using our http_request wrapper
+            demisto.log('args: {}'.format(args))
             response = http_request('PUT', endpoint_url, data=json.dumps(args))
+            # response = http_request('PUT', endpoint_url, data=args)
         else:
             # Set global HEADERS to the correct content type
             global HEADERS
@@ -1434,28 +1442,38 @@ script:
     def update_ticket_command():
         args = demisto.args()
         additional_update_fields = argToList(args.get('update_fields'))
-        additional_field_values = argToList(args.get('update_values'))
+        additional_field_values = args.get('update_values').split(',')
 
-        # Handle sublists in command line arg of 'update_fields'
+        demisto.log('args: {}'.format(args))
+
+        # Handle sublists in command line arg of 'update_values'
         in_sublist = False
         tmp_list = []
         sublist = []
         for i, val in enumerate(additional_field_values):
-            if val.startswith('['):
+            if val.find('[') != -1:
                 in_sublist = True
-                sublist.append(val[1:])
-            elif val.endswith(']'):
-                sublist.append(val[:-1])
+                sublist.append(val[val.find('[') + 1:])
+                demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+            elif val.find(']') != -1:
+                sublist.append(val[:val.find(']') - len(val)])
                 tmp_list.append(sublist[:])
+                demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
                 del sublist[:]
                 in_sublist = False
             elif in_sublist:
                 sublist.append(val)
+                demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
             else:
                 tmp_list.append(val)
+                demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+            # demisto.log('sublist: {}'.format(sublist))
+            # demisto.log('tmp_list: {}'.format(tmp_list))
         additional_field_values = tmp_list
         args['update_values'] = additional_field_values
         args['update_fields'] = additional_update_fields
+
+        demisto.log('args: {}'.format(args))
 
         if len(additional_update_fields) != len(additional_field_values):
             err_msg = "The 'update_fields' list and 'update_values' list command arguments"
@@ -1485,7 +1503,7 @@ script:
         for field, value in zip(additional_update_fields, additional_field_values):
             field_context = {string_to_context_key(field): value}
             additional_field_contexts.append(field_context)
-        context['UpdatedField'] = additional_field_contexts
+        context['AdditionalFields'] = additional_field_contexts
         # Parse attachments into context
         attachments_context = []
         for attachment in context['Attachments']:
@@ -2122,5 +2140,8 @@ script:
     # Log exceptions
     except Exception as e:
         LOG(e)
+
+        ex_type, ex, tb = sys.exc_info()
+        traceback.print_tb(tb)
         return_error(e.message)
   type: python
