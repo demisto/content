@@ -5,6 +5,38 @@ from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
 
+import sys
+import email.utils
+from email.parser import HeaderParser
+
+# -*- coding: utf-8 -*-
+# !/usr/bin/env python
+# Based on MS-OXMSG protocol specification
+# ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
+# ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
+import email
+import json
+import re
+# -*- coding: utf-8 -*-
+import codecs
+import os
+import unicodedata
+from email import encoders
+from email.header import Header
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+from olefile import OleFileIO, isOleFile
+
+# coding=utf-8
+from datetime import datetime, timedelta
+from struct import unpack
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 """
 https://github.com/vikramarsid/msg_parser
@@ -32,38 +64,6 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-
-import sys
-import email.utils
-from email.parser import HeaderParser
-
-reload(sys)
-sys.setdefaultencoding('utf8')
-# -*- coding: utf-8 -*-
-# !/usr/bin/env python
-# Based on MS-OXMSG protocol specification
-# ref: https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
-# ref: https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
-import email
-import json
-import re
-# -*- coding: utf-8 -*-
-import codecs
-import os
-import unicodedata
-from email import encoders
-from email.header import Header
-from email.mime.audio import MIMEAudio
-from email.mime.base import MIMEBase
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
-from olefile import OleFileIO, isOleFile
-
-# coding=utf-8
-from datetime import datetime, timedelta
-from struct import unpack
 
 DATA_TYPE_MAP = {
     "0x0000": "PtypUnspecified",
@@ -2844,14 +2844,17 @@ class Message(object):
 
                     kids = property_entry.kids
                     if kids:
-                        embedded_message = Message(property_entry.kids_dict, self._parent_directory_path + [directory_name, property_entry.name])
+                        embedded_message = Message(
+                            property_entry.kids_dict,
+                            self._parent_directory_path + [directory_name, property_entry.name]
+                        )
+
                         directory_values["EmbeddedMessage"] = {
                             "properties": embedded_message.properties,
                             "recipients": embedded_message.recipients,
                             "attachments": embedded_message.attachments
                         }
                         self.embedded_messages.append(embedded_message)
-
 
                     property_data = self._get_property_data(directory_name, property_entry, is_list=True)
                     if property_data:
@@ -3059,6 +3062,7 @@ class MsOxMessage(object):
         if not self.is_valid_msg_file():
             raise Exception("Invalid file provided, please provide valid Microsoft Outlook MSG file.")
 
+        ole_file = None
         try:
             ole_file = OleFileIO(msg_file_path)
 
@@ -3371,8 +3375,5 @@ def main():
         return_error(ex.message)
 
 
-# if __name__ == "__builtin__":
-#     main()
-
-main()
-
+if __name__ == "__builtin__":
+    main()
