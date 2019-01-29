@@ -11770,7 +11770,8 @@
                     "fd-get-conversations", 
                     "fd-list-agents", 
                     "fd-ticket-note", 
-                    "fd-delete-ticket"
+                    "fd-delete-ticket", 
+                    "fd-list-tickets"
                 ]
             }
         }
