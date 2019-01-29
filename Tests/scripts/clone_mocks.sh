@@ -7,4 +7,6 @@ host github.com
  User git
 EOF
 
+chmod 600 ~/.ssh/config
+
 git clone git@github.com:demisto/content-test-data.git
