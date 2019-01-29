@@ -5409,6 +5409,9 @@
                     "Print", 
                     "CloseInvestigationAsDuplicate", 
                     "GetDuplicatesMlv2"
+                ], 
+                "tests": [
+                    "No Test"
                 ]
             }
         }, 
