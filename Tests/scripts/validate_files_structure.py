@@ -331,7 +331,7 @@ def get_modified_and_added_files(branch_name, is_circle):
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
-        files_string = run_git_command("git diff --name-status --no-merges HEAD")
+        files_string = run_git_command("git diff --name-status --no-merges --staged HEAD")
 
         modified_files, added_files = get_modified_files(files_string)
         _, added_files_from_branch = get_modified_files(all_changed_files_string)
