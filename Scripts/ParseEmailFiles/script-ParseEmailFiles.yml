@@ -2,6 +2,7 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
+script: ""
 type: python
 tags:
 - email
@@ -82,3 +83,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 releaseNotes: fix - parsing recursively msg in msg file
+tests:
+  - "ParseEmailFiles-test"
