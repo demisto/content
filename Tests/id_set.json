@@ -4856,6 +4856,14 @@
                     "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
                 ]
             }
+        }, 
+        {
+            "HighlightWords": {
+                "name": "HighlightWords", 
+                "tests": [
+                    "HighlightWords_Test"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -15610,6 +15618,16 @@
                 ], 
                 "implementing_playbooks": [
                     "Detonate URL - CrowdStrike"
+                ]
+            }
+        }, 
+        {
+            "HighlightWords_Test": {
+                "name": "HighlightWords - Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "Set", 
+                    "HighlightWords"
                 ]
             }
         }

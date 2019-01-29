@@ -1,0 +1,161 @@
+id: HighlightWords_Test
+version: -1
+name: HighlightWords - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
+    type: start
+    task:
+      id: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 6a4018bc-158e-4adc-85a0-7a4bb0daa535
+    type: regular
+    task:
+      id: 6a4018bc-158e-4adc-85a0-7a4bb0daa535
+      version: -1
+      name: Set text
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: textKey
+      value:
+        simple: This is an example
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 3c7a9fc9-f29e-4a7b-8ee5-6a856719512d
+    type: regular
+    task:
+      id: 3c7a9fc9-f29e-4a7b-8ee5-6a856719512d
+      version: -1
+      name: Highlight words
+      scriptName: HighlightWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      textFields:
+        simple: textKey,textKey2
+      words:
+        simple: example,example2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 1cb37155-b5cf-4b44-8229-fabe7abd9bb5
+    type: regular
+    task:
+      id: 1cb37155-b5cf-4b44-8229-fabe7abd9bb5
+      version: -1
+      name: Set text
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: textKey2
+      value:
+        simple: This is an example2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: da0c0d36-74fd-4817-8f22-4cb8831b860f
+    type: regular
+    task:
+      id: da0c0d36-74fd-4817-8f22-4cb8831b860f
+      version: -1
+      name: Check if highlighted
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: '**example2**'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

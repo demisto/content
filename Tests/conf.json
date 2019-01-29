@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "HighlightWords_Test"
+        },
+        {
             "playbookID": "StringContainsArray_test"
         },
         {
