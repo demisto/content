@@ -51,7 +51,7 @@ script:
       isArray: false
       name: subject
       predefined: []
-      required: false
+      required: true
     - default: false
       defaultValue: ''
       description: Details of the issue for which you are creating a ticket.
