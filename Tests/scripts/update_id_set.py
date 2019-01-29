@@ -79,9 +79,9 @@ def get_changed_files(files_string):
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         elif file_status.lower() == 'a' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            added_script_list.add(os.path.dirname(file_path))
+            added_script_list.add(os.path.join(os.path.dirname(file_path), ''))
         elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            modified_script_list.add(os.path.dirname(file_path))
+            modified_script_list.add(os.path.join(os.path.dirname(file_path), ''))
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 
@@ -376,7 +376,7 @@ def update_id_set():
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
-    if added_files or modified_files:
+    if added_files or modified_files or added_scripts or modified_scripts:
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
