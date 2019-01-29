@@ -27,19 +27,20 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: f2dd9724-004c-4f3e-8a28-32aea6aaa74e
+    taskid: 00f7bf76-951a-4954-8691-03c2e4974785
     type: regular
     task:
-      id: f2dd9724-004c-4f3e-8a28-32aea6aaa74e
+      id: 00f7bf76-951a-4954-8691-03c2e4974785
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
-      script: whois|||whois
+      script: Whois|||whois
       type: regular
       iscommand: true
-      brand: whois
+      brand: Whois
     nexttasks:
       '#none#':
       - "2"
@@ -55,12 +56,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 8fc445ff-0616-4f4d-8d26-3d641d0f2e12
+    taskid: a6467015-ee1b-4583-82f5-5d9e2924843b
     type: condition
     task:
-      id: 8fc445ff-0616-4f4d-8d26-3d641d0f2e12
+      id: a6467015-ee1b-4583-82f5-5d9e2924843b
       version: -1
       name: Check results
       type: condition
@@ -76,7 +78,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Whois.Domain
+              simple: ${Domain.Name}
             iscontext: true
           right:
             value:
@@ -89,6 +91,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: 28422780-0ffe-4ee0-845f-b3536796f83f
@@ -121,6 +124,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: c850a5e7-d79d-41be-8340-a8877910cc02
@@ -149,6 +153,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
