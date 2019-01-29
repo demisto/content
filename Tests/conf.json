@@ -942,7 +942,6 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
                 "Demisto REST API"
             ]
         },
@@ -953,7 +952,6 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
                 "Demisto REST API"
             ]
         },
