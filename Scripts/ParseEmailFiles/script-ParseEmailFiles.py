@@ -15,7 +15,6 @@ from email.parser import HeaderParser
 # ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
 # ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
 import email
-import json
 import re
 # -*- coding: utf-8 -*-
 import codecs
@@ -2676,7 +2675,6 @@ class Message(object):
 
             return ""
 
-        cc = None
         if self.cc is not None:
             cc = join([extract_address(cc) for cc in self.cc])
 
@@ -3215,7 +3213,7 @@ def convert_to_unicode(s):
             try:
                 s = s.decode(encoding).encode('utf-8').strip()
                 break
-            except:
+            except:     # nopep8
                 pass
 
     return s
