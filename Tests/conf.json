@@ -942,7 +942,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -952,7 +953,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
