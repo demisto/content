@@ -92,6 +92,14 @@ script:
       name: responder
       predefined: []
       required: false
+    - default: false
+      defaultValue: ''
+      description: Entry IDs of files to attach to the ticket. The total size of these
+        attachments cannot exceed 15MB.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -1365,18 +1373,18 @@ script:
         # Make request and get raw response
         ticket = create_ticket(args)
         # Parse response into context
-        include_in_context = [
-            'priority', 'due_by', 'subject', 'attachments', 'status',
-            'requester_id', 'tags', 'group_id', 'source', 'created_at',
-            'responder_id', 'fr_due_by', 'id'
-        ]
+        global DEFAULT_TICKET_CONTEXT_FIELDS
+        include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS
+
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         # Parse attachments into context
-        attachments_context = []
-        for attachment in context['Attachments']:
-            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-            attachments_context.append(attachment_context)
-        context['Attachments'] = attachments_context
+        attachments = ticket.get('attachments')
+        if attachments:
+            attachments_context = []
+            for attachment in attachments:
+                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+                attachments_context.append(attachment_context)
+            context['Attachments'] = attachments_context
         title = "Newly Created Ticket #{}".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
