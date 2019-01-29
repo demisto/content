@@ -4,6 +4,9 @@ import string
 import unicodedata
 from subprocess import call, Popen, PIPE
 
+CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
+MOCKS_TMP_PATH = "/tmp/Mocks/"
+MOCKS_GIT_PATH = "content-test-data/Mocks/"
 MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
 REMOTE_MACHINE_USER = "ec2-user"
 VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -16,9 +19,12 @@ def clone_content_test_data(public_ip):
           os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE),
           "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_key_filepath)
           ])
-    remote_call(public_ip, ['ssh-agent', '-s'])
-    remote_call(public_ip, ['ssh-add', remote_key_filepath])
-    remote_call(public_ip, ['git', 'clone', 'git@github.com:demisto/content-test-data.git'])
+    call(['scp', '-o', ' StrictHostKeyChecking=no', CLONE_MOCKS_SCRIPT,
+          "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_home)
+          ])
+
+    remote_call(public_ip, ['chmod', '+x', CLONE_MOCKS_SCRIPT])
+    remote_call(public_ip, ['./' + CLONE_MOCKS_SCRIPT, remote_key_filepath])
 
 
 def upload_mock_files(public_ip, build_name, build_number):
@@ -57,11 +63,12 @@ def remote_call(public_ip, command):
 
 
 class MITMProxy:
-    def __init__(self, demisto_client, public_ip, mocks_folder, debug=False):
+    def __init__(self, demisto_client, public_ip, primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
         self.demisto_client = demisto_client
         self.ip = public_ip
         self.process = None
-        self.mocks_folder = mocks_folder
+        self.active_folder = self.primary_folder = primary_folder
+        self.tmp_folder = tmp_folder
         self.debug = debug
 
     def __configure_proxy(self, proxy=""):
@@ -72,18 +79,31 @@ class MITMProxy:
         data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
         return self.demisto_client.req('POST', '/system/config', data)
 
-    def start(self, playbook_id, record=False):
+    def set_folder_primary(self):
+        self.active_folder = self.primary_folder
+
+    def set_folder_tmp(self):
+        self.active_folder = self.tmp_folder
+
+    def move_to_primary(self, playbook_id):
+        remote_call(self.ip, ['mv', os.path.join(self.tmp_folder, playbook_id + '.mock'), self.primary_folder])
+
+    def start(self, playbook_id, path=None, record=False):
         if self.process:
             raise Exception("Cannot start proxy - already running.")
+
+        path = path or self.active_folder
         action = '--server-replay' if not record else '--save-stream-file'
         command = "mitmdump -p 9997 {}".format(action).split()
-        command.append(os.path.join(self.mocks_folder, clean_filename(playbook_id) + ".mock"))
+        command.append(os.path.join(path, clean_filename(playbook_id) + ".mock"))
+
         self.process = Popen(add_ssh_prefix(self.ip, command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy('localhost:9997')
 
     def stop(self):
         if not self.process:
             raise Exception("Cannot start proxy - already running.")
+
         self.__configure_proxy('')
         self.process.send_signal(signal.SIGINT)
         call(add_ssh_prefix(self.ip, ["rm", "-rf", "/tmp/_MEI*"]))
