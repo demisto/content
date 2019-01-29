@@ -763,6 +763,119 @@ script:
     execution: false
     name: fd-delete-ticket
     outputs: []
+  - arguments:
+    - default: false
+      defaultValue: ''
+      description: Predefined filters
+      isArray: false
+      name: filter
+      predefined: [new_and_my_open, watching, spam, deleted]
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Filter by either the ticket requester's email or ID
+      isArray: false
+      name: requester
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Filter by tickets associated with the specified company ID
+      isArray: false
+      name: company_id
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: By default, only tickets that have been created within the past
+        30 days will be returned. For older tickets, use this filter. Example value
+        for this field would be "2015-01-19T02:00:00Z"
+      isArray: false
+      name: updated_since
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        Filter through the tickets and get a list of tickets matching the specified ticket fields.
+
+        Format - "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
+        Example - "priority:>3 AND group_id:11 AND status:2"
+
+        Supported Ticket Fields:
+        agent_id, group_id, priority, status, tag, type, due_by, fr_due_by, created_at, updated_at
+      isArray: false
+      name: custom_query
+      predefined: []
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Reference field for ordering the list of tickets. The default sort
+        order is created_at.
+      isArray: false
+      name: order_by
+      predefined: [created_at, due_by, updated_at, status]
+      required: false
+    - default: false
+      defaultValue: ''
+      description: Whether to order the resulting tickets in ascending or descending
+        order. The default is descending.
+      isArray: false
+      name: order_type
+      predefined: [asc, desc]
+      required: false
+    - default: false
+      defaultValue: ''
+      description: If set to 'yes' then ticket’s closed_at, resolved_at and first_responded_at
+        time will be included.
+      isArray: false
+      name: include_stats
+      predefined: ['yes', 'no']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: If set to 'yes' then the ticket requester's id, email, mobile,
+        name, and phone will be included in the ticket's output for each ticket.
+      isArray: false
+      name: include_requester
+      predefined: ['yes', 'no']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: If set to 'yes' then the ticket's description and description_text
+        will be included the tickets' outputs.
+      isArray: false
+      name: include_description
+      predefined: ['yes', 'no']
+      required: false
+    description: List all tickets that match the filter criteria you specify.
+    execution: false
+    name: fd-list-tickets
+    outputs:
+    - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
+    - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
+        ticket is due to be resolved, type: Date}
+    - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
+    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+        size of these attachments cannot exceed 15MB., type: Unknown}
+    - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+      type: Number}
+    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+        the ticket, type: Unknown}
+    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+        has been assigned, type: Number}
+    - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
+        was created, type: Number}
+    - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
+    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+        ticket has been assigned, type: Number}
+    - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
+        first response is due, type: Date}
+    - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
+    - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
+        were specified in the command's filter-type or include-type arguments., type: Unknown}
+    - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -802,6 +915,13 @@ script:
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
+
+    DEFAULT_TICKET_CONTEXT_FIELDS = [
+        'priority', 'due_by', 'subject', 'attachments', 'status',
+        'requester_id', 'tags', 'group_id', 'source', 'created_at',
+        'responder_id', 'fr_due_by', 'id'
+    ]
+
     # Remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -811,6 +931,28 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
+    def get_additional_fields(args):
+        additional_fields = []  # fields that should be added to output context
+        requester = args.get('requester')
+        if requester:
+            if '@' in requester:
+                additional_fields.append('email')
+        company_id = args.get('company_id')
+        if company_id:
+            additional_fields.append('company_id')
+        custom_query = args.get('custom_query')
+        if custom_query:
+            query_fields = re.findall(r'\b\w+:', custom_query)
+            additional_fields.extend(query_fields)
+        if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
+            additional_fields.extend(['closed_at', 'resolved_at', 'first_responded_at'])
+        if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
+            additional_fields.extend(['name', 'email', 'mobile', 'phone'])
+        if args.get('include_description') and args.get('include_description').lower() == 'yes':
+            additional_fields.extend(['description', 'description_text'])
+        return additional_fields
 
 
     def entries_to_files(entry_ids):
@@ -1408,6 +1550,8 @@ script:
         if custom_query:
             url_params['query'] = custom_query
 
+        # demisto.results("filter section executed")
+
         ## Sort By ##
         order_by = args.get('order_by')
         if order_by:
@@ -1416,16 +1560,20 @@ script:
         if order_type:
             url_params['order_type'] = order_type
 
+        # demisto.results("sort by section executed")
+
         ## Embeddings (include additional information) ##
         include = []
-        if args.get('stats') and args.get('stats').lower() == 'yes':
+        if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
             include.append('stats')
-        if args.get('requester') and args.get('requester').lower() == 'yes':
+        if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
             include.append('requester')
-        if args.get('description') and args.get('description').lower() == 'yes':
+        if args.get('include_description') and args.get('include_description').lower() == 'yes':
             include.append('description')
         if include:
             url_params['include'] = include
+
+        # demisto.results("embeddings section executed")
 
         # Make request and get raw response
         response = http_request('GET', endpoint_url, params=url_params)
@@ -1434,7 +1582,61 @@ script:
 
     def list_tickets_command():
         args = demisto.args()
+        additional_fields = get_additional_fields(args)
         tickets = list_tickets(args)
+
+        # demisto.results("called 'list_tickets() successfully")
+        global DEFAULT_TICKET_CONTEXT_FIELDS
+        ctx_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
+        ctx_outputs.append('updated_at')
+
+        # demisto.results("ctx_outputs: {}".format(ctx_outputs))
+
+        # Parse response into the standard outputs
+        contexts = []
+        for ticket in tickets:
+
+            # demisto.results('entered for loop')
+
+            context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in ctx_outputs}
+
+            # demisto.results('basic context created')
+
+            # Parse the response for the additionally requested fields
+            context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
+
+            # demisto.results('additional_fields context created')
+
+            # Parse attachments into context
+            attachments = context.get('Attachments')
+            if attachments:
+                attachments_context = []
+                for attachment in attachments:
+                    attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+                    attachments_context.append(attachment_context)
+                context['Attachments'] = attachments_context
+
+            # demisto.results('attachments context created')
+
+            contexts.append(context)
+
+            # demisto.results('context appended')
+
+        title = "Viewing All Requested Tickets"
+        md = tableToMarkdown(title, contexts, removeNull=True)
+
+        # demisto.results("title and md assignments executed")
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': tickets,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'FD.Ticket(val.Id && val.Id === obj.Id)': contexts
+            }
+        })
 
 
 
@@ -1872,6 +2074,7 @@ script:
         "fd-get-conversations": get_conversations_command,
         "fd-list-agents": list_agents_command,
         "fd-delete-ticket": delete_ticket_command,
+        "fd-list-tickets": list_tickets_command,
     }
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -1887,5 +2090,6 @@ script:
 
     # Log exceptions
     except Exception as e:
+        LOG(e)
         return_error(e.message)
   type: python
