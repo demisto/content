@@ -15,17 +15,18 @@ VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 def clone_content_test_data(public_ip):
     remote_home = "/home/{}/".format(REMOTE_MACHINE_USER)
     remote_key_filepath = os.path.join(remote_home + '.ssh/', MOCK_KEY_FILE)
+    remote_script_path = os.path.join(remote_home, CLONE_MOCKS_SCRIPT)
     call(['scp', '-o', ' StrictHostKeyChecking=no',
           os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE),
           "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_key_filepath)
           ])
     call(['scp', '-o', ' StrictHostKeyChecking=no',
-          os.path.join('Tests/scripts/', CLONE_MOCKS_SCRIPT),
+          os.path.join('Tests/scripts/', remote_script_path),
           "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_home)
           ])
 
-    remote_call(public_ip, ['chmod', '+x', CLONE_MOCKS_SCRIPT])
-    remote_call(public_ip, ['./' + CLONE_MOCKS_SCRIPT, remote_key_filepath])
+    remote_call(public_ip, ['chmod', '+x', remote_script_path])
+    remote_call(public_ip, [remote_script_path, remote_key_filepath])
 
 
 def upload_mock_files(public_ip, build_name, build_number):

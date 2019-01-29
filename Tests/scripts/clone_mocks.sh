@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat >> ~/.ssh/config << EOF
+cat > ~/.ssh/config << EOF
 host github.com
  HostName github.com
  IdentityFile $1
