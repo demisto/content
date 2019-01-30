@@ -268,7 +268,7 @@ def main():
 
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
@@ -289,7 +289,7 @@ def main():
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
-    if not tests or len(tests) is 0:
+    if not tests or (len(tests) == 0):
         print('no integrations are configured for test')
         return
 
