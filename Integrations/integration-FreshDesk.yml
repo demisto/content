@@ -1006,12 +1006,13 @@ script:
 
     def additional_fields_to_context(context, already_in_context, additional_fields, additional_values):
         # Parse additional fields into context
-        additional_field_contexts = []
-        for field, value in zip(additional_fields, additional_values):
-            if field not in already_in_context:
-                field_context = {string_to_context_key(field): value}
-                additional_field_contexts.append(field_context)
-        context['AdditionalFields'] = additional_field_contexts
+        if additional_fields and additional_values:
+            additional_field_contexts = []
+            for field, value in zip(additional_fields, additional_values):
+                if field not in already_in_context:
+                    field_context = {string_to_context_key(field): value}
+                    additional_field_contexts.append(field_context)
+            context['AdditionalFields'] = additional_field_contexts
         return context
 
 
@@ -1019,52 +1020,58 @@ script:
         # Format args according to API expecations
         additional_update_fields = args.get(fields_arg_name)
         additional_field_values = args.get(values_arg_name)
-        for field, value in zip(additional_update_fields, additional_field_values):
-            args[field] = value
-        del args[fields_arg_name]
-        del args[values_arg_name]
+        if additional_update_fields and additional_field_values:
+            for field, value in zip(additional_update_fields, additional_field_values):
+                args[field] = value
+            del args[fields_arg_name]
+            del args[values_arg_name]
         return args
 
 
     def addional_fields_to_args(args, fields_arg_name, values_arg_name):
-        additional_fields = argToList(args.get(fields_arg_name))
-        # Doesn't use argToList because does not split properly for our purposes
-        additional_fields_values = args.get(values_arg_name).split(',')
+        fields_arg = args.get(fields_arg_name)
+        values_arg = args.get(values_arg_name)
+        if fields_arg and values_arg:
+            additional_fields = argToList(fields_arg)
+            # Doesn't use argToList because does not split properly for our purposes
+            additional_fields_values = values_arg.split(',')
 
-        demisto.log('args: {}'.format(args))
+            demisto.log('args: {}'.format(args))
 
-        # Handle sublists in command line arg of 'update_values'
-        in_sublist = False
-        tmp_list = []
-        sublist = []
-        for i, val in enumerate(additional_fields_values):
-            if val.find('[') != -1:
-                in_sublist = True
-                sublist.append(val[val.find('[') + 1:])
-                demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-            elif val.find(']') != -1:
-                sublist.append(val[:val.find(']') - len(val)])
-                tmp_list.append(sublist[:])
-                demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-                del sublist[:]
-                in_sublist = False
-            elif in_sublist:
-                sublist.append(val)
-                demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-            else:
-                tmp_list.append(val)
-                demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-        additional_fields_values = tmp_list
-        args[values_arg_name] = additional_fields_values
-        args[fields_arg_name] = additional_fields
+            # Handle sublists in command line arg of 'update_values'
+            in_sublist = False
+            tmp_list = []
+            sublist = []
+            for i, val in enumerate(additional_fields_values):
+                if val.find('[') != -1:
+                    in_sublist = True
+                    sublist.append(val[val.find('[') + 1:])
+                    demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+                elif val.find(']') != -1:
+                    sublist.append(val[:val.find(']') - len(val)])
+                    tmp_list.append(sublist[:])
+                    demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+                    del sublist[:]
+                    in_sublist = False
+                elif in_sublist:
+                    sublist.append(val)
+                    demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+                else:
+                    tmp_list.append(val)
+                    demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+            additional_fields_values = tmp_list
+            args[values_arg_name] = additional_fields_values
+            args[fields_arg_name] = additional_fields
 
-        if len(additional_fields) != len(additional_fields_values):
-            err_msg = "The '{}' list and '{}' list command arguments".format(fields_arg_name, values_arg_name)
-            err_msg += " must contain the same number of items."
-            err_msg += "\nlength of '{}' list: {}".format(fields_arg_name, len(additional_fields))
-            err_msg += "\nlength of '{}' list: {}".format(values_arg_name, len(additional_fields_values))
-            return_error(err_msg)
-        return args, additional_fields, additional_fields_values
+            if len(additional_fields) != len(additional_fields_values):
+                err_msg = "The '{}' list and '{}' list command arguments".format(fields_arg_name, values_arg_name)
+                err_msg += " must contain the same number of items."
+                err_msg += "\nlength of '{}' list: {}".format(fields_arg_name, len(additional_fields))
+                err_msg += "\nlength of '{}' list: {}".format(values_arg_name, len(additional_fields_values))
+                return_error(err_msg)
+            return args, additional_fields, additional_fields_values
+        else:
+            return args, None, None
 
 
     def ticket_to_incident(ticket):
