@@ -1134,7 +1134,7 @@ script:
             if priority.lower() in priorities:
                 # Add 1 since API status numbers for tickets start at 1
                 # Cast to string so clean_arguments helper function doesn't throw any errors
-                args['priority'] = str(priorities.index(priority.lower()) + 2)
+                args['priority'] = str(priorities.index(priority.lower()) + 1)
             else:
                 return_error(err_msg)
         # Otherwise make sure the user entered valid status number
@@ -1527,12 +1527,7 @@ script:
         # Format args according to API expecations
         additional_update_fields = args.get('update_fields')
         additional_field_values = args.get('update_values')
-        for field, value in zip(additional_update_fields, additional_field_values):
-            if field == 'tags':
-                demisto.log('The type of the tags value is: {}'.format(type(value)))
-            args[field] = value
-        del args['update_fields']
-        del args['update_values']
+        args = reformat_args(args, 'update_fields', 'update_values')
 
         demisto.log('args preclean: {}'.format(args))
 
@@ -1565,75 +1560,22 @@ script:
 
     def update_ticket_command():
         args = demisto.args()
-        additional_update_fields = argToList(args.get('update_fields'))
-        additional_field_values = args.get('update_values').split(',')
+        args, additional_fields, additional_fields_values = addional_fields_to_args(args, 'update_fields', 'update_values')
 
         demisto.log('args: {}'.format(args))
-
-        # Handle sublists in command line arg of 'update_values'
-        in_sublist = False
-        tmp_list = []
-        sublist = []
-        for i, val in enumerate(additional_field_values):
-            if val.find('[') != -1:
-                in_sublist = True
-                sublist.append(val[val.find('[') + 1:])
-                demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-            elif val.find(']') != -1:
-                sublist.append(val[:val.find(']') - len(val)])
-                tmp_list.append(sublist[:])
-                demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-                del sublist[:]
-                in_sublist = False
-            elif in_sublist:
-                sublist.append(val)
-                demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-            else:
-                tmp_list.append(val)
-                demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
-            # demisto.log('sublist: {}'.format(sublist))
-            # demisto.log('tmp_list: {}'.format(tmp_list))
-        additional_field_values = tmp_list
-        args['update_values'] = additional_field_values
-        args['update_fields'] = additional_update_fields
-
-        demisto.log('args: {}'.format(args))
-
-        if len(additional_update_fields) != len(additional_field_values):
-            err_msg = "The 'update_fields' list and 'update_values' list command arguments"
-            err_msg += " must contain the same number of items."
-            err_msg += "\nlength of 'update_fields' list: {}".format(len(additional_update_fields))
-            err_msg += "\nlength of 'update_values' list: {}".format(len(additional_field_values))
-            return_error(err_msg)
         # Make request and get raw response
         ticket = update_ticket(args)
-        # Parse response into context
-        include_in_context = [
-            'priority', 'due_by', 'subject', 'attachments', 'status',
-            'requester_id', 'tags', 'group_id', 'source', 'created_at',
-            'responder_id', 'fr_due_by', 'updated_at', 'id'
-        ]
-        # Make sure not to double add certain fields to context, aka the fields that
-        # have been relegated to the update_fields argument but have their own context output
-        intersection = list(set(additional_update_fields) & set(include_in_context))
-        for field in intersection:
-            idx = additional_update_fields.index(field)
-            additional_update_fields.pop(idx)
-            additional_field_values.pop(idx)
 
+        # Parse response into context
+        global DEFAULT_TICKET_CONTEXT_FIELDS
+        include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
+        include_in_context.append('updated_at')
+        # Parse default context fields
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         # Parse additional fields into context
-        additional_field_contexts = []
-        for field, value in zip(additional_update_fields, additional_field_values):
-            field_context = {string_to_context_key(field): value}
-            additional_field_contexts.append(field_context)
-        context['AdditionalFields'] = additional_field_contexts
+        context = additional_fields_to_context(context, include_in_context, additional_fields, additional_fields_values)
         # Parse attachments into context
-        attachments_context = []
-        for attachment in context['Attachments']:
-            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-            attachments_context.append(attachment_context)
-        context['Attachments'] = attachments_context
+        context = attachments_into_context(ticket, context)
         title = "Ticket #{} Updated".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
