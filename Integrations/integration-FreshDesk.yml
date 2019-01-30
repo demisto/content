@@ -1079,8 +1079,6 @@ script:
             # Doesn't use argToList because does not split properly for our purposes
             additional_fields_values = values_arg.split(',')
 
-            demisto.log('args: {}'.format(args))
-
             # Handle sublists in command line arg of 'update_values'
             in_sublist = False
             tmp_list = []
@@ -1089,19 +1087,19 @@ script:
                 if val.find('[') != -1:
                     in_sublist = True
                     sublist.append(val[val.find('[') + 1:])
-                    demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+
                 elif val.find(']') != -1:
                     sublist.append(val[:val.find(']') - len(val)])
                     tmp_list.append(sublist[:])
-                    demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+
                     del sublist[:]
                     in_sublist = False
                 elif in_sublist:
                     sublist.append(val)
-                    demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+
                 else:
                     tmp_list.append(val)
-                    demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+
             additional_fields_values = tmp_list
             args[values_arg_name] = additional_fields_values
             args[fields_arg_name] = additional_fields
@@ -1165,18 +1163,13 @@ script:
             'update_fields', 'update_values', 'notify_emails'
         ]
 
-        # demisto.log('args prehandle arrays: {}'.format(args))
         for arr_input in array_inputs:
             if arr_input in args.keys():
-                # demisto.log('making arg {} to list\narg {} preadjustment: {}'.format(arr_input, arr_input, args.get(arr_input)))
                 if arr_input != 'attachments':
                     args[arr_input + '[]'] = argToList(args.get(arr_input))
                     del args[arr_input]
                 else:
                     args[arr_input] = argToList(args.get(arr_input))
-                # args[arr_input] = args.get(arr_input).split(',')
-                # demisto.log('arg {} postadjustment: {}'.format(arr_input, args.get(arr_input)))
-        # demisto.log('args posthandle arrays: {}'.format(args))
         return args
 
 
@@ -1395,13 +1388,10 @@ script:
         # Handle first time fetch, fetch incidents retroactively
         if not last_fetch:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-        # query_string = 'created_at:>\'' + timestamp_to_datestring(last_fetch, date_format="%Y-%m-%d") + '\''
-        # args = {'custom_query': query_string}
         updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
         args = {'updated_since': updated_since, 'order_type': 'asc'}
 
         tickets = list_tickets(args)
-        # tickets = response.get('results')
         # convert the ticket/events to demisto incidents
         incidents = []
         for ticket in tickets:
@@ -1579,14 +1569,9 @@ script:
         args = determine_group(args, 'assigned_group')
 
         # Format args according to API expecations
-        additional_update_fields = args.get('update_fields')
-        additional_field_values = args.get('update_values')
         args = reformat_args(args, 'update_fields', 'update_values')
 
-        demisto.log('args preclean: {}'.format(args))
-
         args = clean_arguments(args)
-        demisto.log('args postclean: {}'.format(args))
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
@@ -1594,7 +1579,7 @@ script:
         response = None
         if not args.get('attachments'):
             # Send a request using our http_request wrapper
-            demisto.log('args: {}'.format(args))
+
             response = http_request('PUT', endpoint_url, data=json.dumps(args))
             # response = http_request('PUT', endpoint_url, data=args)
         else:
@@ -1616,7 +1601,6 @@ script:
         args = demisto.args()
         args, additional_fields, additional_fields_values = addional_fields_to_args(args, 'update_fields', 'update_values')
 
-        demisto.log('args: {}'.format(args))
         # Make request and get raw response
         ticket = update_ticket(args)
 
@@ -2049,7 +2033,6 @@ script:
 
     def view_contact_command():
         # Get command arguments from user
-        # contact_id = demisto.args().get('id')
         args = demisto.args()
         # Make request and get raw response
         contact = view_contact(args)
