@@ -901,9 +901,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     # For debugging
@@ -1576,13 +1573,9 @@ script:
         # Make request and get raw response
         ticket = view_ticket(ticket_number)
         # Parse response into context
-        context = {string_to_context_key(key): val for key, val in ticket.iteritems()}
+        context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val is not None}
         # Parse attachments into context
-        attachments_context = []
-        for attachment in context['Attachments']:
-            attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-            attachments_context.append(attachment_context)
-        context['Attachments'] = attachments_context
+        context = attachments_into_context(ticket, context)
         title = "Viewing Ticket #{}".format(ticket_number)
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
