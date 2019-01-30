@@ -1395,11 +1395,13 @@ script:
         # Handle first time fetch, fetch incidents retroactively
         if not last_fetch:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-        query_string = 'created_at:>\'' + timestamp_to_datestring(last_fetch, date_format="%Y-%m-%d") + '\''
-        args = {'custom_query': query_string}
+        # query_string = 'created_at:>\'' + timestamp_to_datestring(last_fetch, date_format="%Y-%m-%d") + '\''
+        # args = {'custom_query': query_string}
+        updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
+        args = {'updated_since': updated_since, 'order_type': 'asc'}
 
-        response = list_tickets(args)
-        tickets = response.get('results')
+        tickets = list_tickets(args)
+        # tickets = response.get('results')
         # convert the ticket/events to demisto incidents
         incidents = []
         for ticket in tickets:
