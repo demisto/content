@@ -152,6 +152,22 @@ script:
       name: id
       predefined: []
       required: true
+    - default: false
+      defaultValue: ''
+      description: If set to 'yes' then the ticket requester's id, email, mobile,
+        name, and phone will be included in the ticket's output.
+      isArray: false
+      name: include_requester
+      predefined: ['yes', 'no']
+      required: false
+    - default: false
+      defaultValue: ''
+      description: If set to 'yes' then ticket’s closed_at, resolved_at and first_responded_at
+        time will be included in the response.
+      isArray: false
+      name: include_stats
+      predefined: ['yes', 'no']
+      required: false
     description: View a Ticket.
     execution: false
     name: fd-view-ticket
@@ -1561,22 +1577,52 @@ script:
         })
 
 
-    def view_ticket(ticket_number):
+    def view_ticket(args):
+        ticket_number = args.get('id')
         endpoint_url = 'tickets/{}'.format(ticket_number)
-        response = http_request('GET', endpoint_url)
+        url_params = {}
+
+        # Check if embedding additional info in API response was specified in cmd args
+        include = ''
+        if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
+            include += 'stats'
+        if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
+            include += 'requester' if include == '' else ', requester'
+        if include != '':
+            url_params['include'] = include
+
+        response = http_request('GET', endpoint_url, params=url_params)
         return response
 
 
     def view_ticket_command():
         # Get command arguments from user
-        ticket_number = demisto.args().get('id')
+        args = demisto.args()
         # Make request and get raw response
-        ticket = view_ticket(ticket_number)
+        ticket = view_ticket(args)
+
+        nonstd_ctx_fields = ['requester', 'stats']
+
         # Parse response into context
-        context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val is not None}
+        context = {
+            string_to_context_key(key): val
+            for key, val in ticket.iteritems()
+            if key not in nonstd_ctx_fields and val is not None
+        }
         # Parse attachments into context
         context = attachments_into_context(ticket, context)
-        title = "Viewing Ticket #{}".format(ticket_number)
+
+        context['AdditionalFields'] = {}
+        requester = ticket.get('requester')
+        if requester:
+            requester_context = {string_to_context_key(key): val for key, val in requester.iteritems() if val}
+            context['AdditionalFields']['Requestor'] = requester_context
+        stats = ticket.get('stats')
+        if stats:
+            stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
+            context['AdditionalFields']['Stats'] = stats_context
+
+        title = "Viewing Ticket #{}".format(ticket.get('id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
@@ -1695,13 +1741,7 @@ script:
 
 
             # Parse ticket attachments into context
-            attachments = context.get('Attachments')
-            if attachments:
-                attachments_context = []
-                for attachment in attachments:
-                    attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-                    attachments_context.append(attachment_context)
-                context['Attachments'] = attachments_context
+            context = attachments_into_context(ticket, context)
 
             contexts.append(context)
 
