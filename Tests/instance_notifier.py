@@ -59,7 +59,7 @@ def options_handler():
 def get_demisto_instance_and_login(server, username, password):
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
