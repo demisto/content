@@ -64,7 +64,7 @@ args:
 - name: terms
   required: true
   description: Terms to hightlight in the text. Can be words or sentances (that does
-    not includes comma). Notice taht if you used a sentances and word, the word should
+    not includes comma). Notice that if you used a sentances and word, the word shouldn't
     be as part of a sentance, for example "thank,thank you" is invalid input. Comma-separated
     value.
 scripttarget: 0
