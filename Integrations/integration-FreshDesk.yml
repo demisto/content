@@ -100,6 +100,23 @@ script:
       name: attachments
       predefined: []
       required: false
+    - default: false
+      defaultValue: ''
+      description: List of ticket fields you wish to enter the value for.
+      isArray: true
+      name: additional_fields
+      predefined: [name, requester_id, facebook_id, phone, unique_external_id, type,
+        cc_emails, custom_fields, due_by, email_config_id, fr_due_by, product_id,
+        source, tags, company_id, email, twitter_id, responder_id, group_id]
+      required: false
+    - default: false
+      defaultValue: ''
+      description: List of values that are assigned to the field at the same list
+        index in the additional_fields argument.
+      isArray: true
+      name: additional_values
+      predefined: []
+      required: false
     description: Create a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
@@ -125,6 +142,9 @@ script:
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
     - {contextPath: FD.Ticket.Id, description: ID number of the ticket, type: Number}
+    - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
+        were entered using the 'additional_fields' and 'additional_values' arguments.,
+      type: Unknown}
   - arguments:
     - default: false
       defaultValue: ''
@@ -942,6 +962,81 @@ script:
     ''' HELPER FUNCTIONS '''
 
 
+    def attachments_into_context(api_response, context):
+        # Parse attachments into context
+        attachments = api_response.get('attachments')
+        if attachments:
+            attachments_context = []
+            for attachment in attachments:
+                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+                attachments_context.append(attachment_context)
+            context['Attachments'] = attachments_context
+        return context
+
+
+    def additional_fields_to_context(context, already_in_context, additional_fields, additional_values):
+        # Parse additional fields into context
+        additional_field_contexts = []
+        for field, value in zip(additional_fields, additional_values):
+            if field not in already_in_context:
+                field_context = {string_to_context_key(field): value}
+                additional_field_contexts.append(field_context)
+        context['AdditionalFields'] = additional_field_contexts
+        return context
+
+
+    def reformat_args(args, fields_arg_name, values_arg_name):
+        # Format args according to API expecations
+        additional_update_fields = args.get(fields_arg_name)
+        additional_field_values = args.get(values_arg_name)
+        for field, value in zip(additional_update_fields, additional_field_values):
+            args[field] = value
+        del args[fields_arg_name]
+        del args[values_arg_name]
+        return args
+
+
+    def addional_fields_to_args(args, fields_arg_name, values_arg_name):
+        additional_fields = argToList(args.get(fields_arg_name))
+        # Doesn't use argToList because does not split properly for our purposes
+        additional_fields_values = args.get(values_arg_name).split(',')
+
+        demisto.log('args: {}'.format(args))
+
+        # Handle sublists in command line arg of 'update_values'
+        in_sublist = False
+        tmp_list = []
+        sublist = []
+        for i, val in enumerate(additional_fields_values):
+            if val.find('[') != -1:
+                in_sublist = True
+                sublist.append(val[val.find('[') + 1:])
+                demisto.log('inloop, opening bracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+            elif val.find(']') != -1:
+                sublist.append(val[:val.find(']') - len(val)])
+                tmp_list.append(sublist[:])
+                demisto.log('inloop, endbracket found\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+                del sublist[:]
+                in_sublist = False
+            elif in_sublist:
+                sublist.append(val)
+                demisto.log('inloop, in_sublist is true\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+            else:
+                tmp_list.append(val)
+                demisto.log('inloop, not in_sublist\ninloop sublist: {}'.format(sublist) + '\ninloop tmp_list: {}'.format(tmp_list))
+        additional_fields_values = tmp_list
+        args[values_arg_name] = additional_fields_values
+        args[fields_arg_name] = additional_fields
+
+        if len(additional_fields) != len(additional_fields_values):
+            err_msg = "The '{}' list and '{}' list command arguments".format(fields_arg_name, values_arg_name)
+            err_msg += " must contain the same number of items."
+            err_msg += "\nlength of '{}' list: {}".format(fields_arg_name, len(additional_fields))
+            err_msg += "\nlength of '{}' list: {}".format(values_arg_name, len(additional_fields_values))
+            return_error(err_msg)
+        return args, additional_fields, additional_fields_values
+
+
     def ticket_to_incident(ticket):
         incident = {}
         # Incident Title
@@ -1271,9 +1366,10 @@ script:
 
 
     def create_ticket(args):
-        args = clean_arguments(args)
         args = determine_identifier(args)
         args = determine_responder(args)
+        args = reformat_args(args, 'additional_fields', 'additional_values')
+        args = clean_arguments(args)
         endpoint_url = 'tickets'
 
         response = None
@@ -1392,6 +1488,10 @@ script:
         """
         # Get command arguments from user
         args = demisto.args()
+
+        # Handle additional_fields and additional_values command arguments
+        args, additional_fields, additional_values = addional_fields_to_args(args, 'additional_fields', 'additional_values')
+
         # Make request and get raw response
         ticket = create_ticket(args)
         # Parse response into context
@@ -1399,14 +1499,8 @@ script:
         include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS
 
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
-        # Parse attachments into context
-        attachments = ticket.get('attachments')
-        if attachments:
-            attachments_context = []
-            for attachment in attachments:
-                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-                attachments_context.append(attachment_context)
-            context['Attachments'] = attachments_context
+        context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
+        context = attachments_into_context(ticket, context)
         title = "Newly Created Ticket #{}".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
