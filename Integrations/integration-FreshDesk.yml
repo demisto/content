@@ -393,6 +393,13 @@ script:
       name: mobile
       predefined: []
       required: false
+    - default: false
+      defaultValue: ''
+      description: Email address of the contact you wish to view the details of
+      isArray: false
+      name: email
+      predefined: []
+      required: false
     description: View the details of the contact specified by the ID number
     execution: false
     name: fd-view-contact
@@ -615,7 +622,7 @@ script:
       defaultValue: ''
       description: ID of the ticket for which you would like to list all of its conversations
       isArray: false
-      name: id
+      name: ticket_id
       predefined: []
       required: true
     description: ''
@@ -1881,19 +1888,15 @@ script:
 
     def get_conversations_command():
         # Get id number of ticket as cmd arg for which you want to see all the conversations
-        ticket_id = demisto.args().get('id')
+        ticket_id = demisto.args().get('ticket_id')
         # Make request and get raw response
         conversations = get_conversations(ticket_id)
         # Parse response into context
         contexts = []
         for conversation in conversations:
-            context = {string_to_context_key(key): val for key, val in conversation.iteritems()}
+            context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
             # Parse attachments into context
-            attachments_context = []
-            for attachment in context['Attachments']:
-                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
-                attachments_context.append(attachment_context)
-            context['Attachments'] = attachments_context
+            context = attachments_into_context(conversation, context)
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -1933,11 +1936,11 @@ script:
         contexts = []
         for contact in contacts:
             # Parse individual contact response in context
-            context = {string_to_context_key(key): val for key, val in contact.iteritems()}
+            context = {string_to_context_key(key): val for key, val in contact.iteritems() if val}
             contexts.append(context)
         filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
         title = "Contacts Filtered by {}".format(filters_as_strings) if filters else "All Contacts"
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        md = tableToMarkdown(title, contexts, removeNull=False)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -1997,7 +2000,7 @@ script:
         # Make request and get raw response
         contact = view_contact(args)
         # Parse response into context
-        context = {string_to_context_key(key): val for key, val in contact.iteritems()}
+        context = {string_to_context_key(key): val for key, val in contact.iteritems() if val}
         title = "Viewing Contact #{}".format(contact.get('id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2028,7 +2031,7 @@ script:
         contexts = []
         for folder in cr_folders:
             # Parse individual contact response in context
-            context = {string_to_context_key(key): val for key, val in folder.iteritems()}
+            context = {string_to_context_key(key): val for key, val in folder.iteritems() if val}
             contexts.append(context)
         title = "All Canned Response Folders"
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -2058,7 +2061,7 @@ script:
         # Parse response into context
         contexts = []
         for cr in canned_responses.get('canned_responses'):
-            context = {string_to_context_key(key): val for key, val in cr.iteritems()}
+            context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
             contexts.append(context)
         title = "Canned Responses in Folder #{}".format(canned_responses.get('id'))
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -2088,7 +2091,7 @@ script:
         # Parse the responses into context
         contexts = []
         for cr in canned_responses:
-            context = {string_to_context_key(key): val for key, val in cr.iteritems()}
+            context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
             contexts.append(context)
         title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -2120,7 +2123,7 @@ script:
         contexts = []
         for group in groups:
             # Parse individual group response in context
-            context = {string_to_context_key(key): val for key, val in group.iteritems()}
+            context = {string_to_context_key(key): val for key, val in group.iteritems() if val}
             contexts.append(context)
         title = "All Groups"
         md = tableToMarkdown(title, contexts, removeNull=True)
@@ -2154,8 +2157,8 @@ script:
         contexts = []
         for agent in agents:
             # Parse the individual agent into context
-            context = {string_to_context_key(key): val for key, val in agent.iteritems()}
-            context['Contact'] = {string_to_context_key(key): val for key, val in context.get('Contact').iteritems()}
+            context = {string_to_context_key(key): val for key, val in agent.iteritems() if val}
+            context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').iteritems() if val}
             contexts.append(context)
         title = "All Agents"
         md = tableToMarkdown(title, contexts, removeNull=True)
