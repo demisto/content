@@ -1007,7 +1007,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "31"
+      - "32"
+      - "33"
+      - "34"
+      - "35"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -1019,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2315
+          "y": 2235
         }
       }
     note: false
@@ -1076,8 +1080,172 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 695,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: aa42b77c-983c-4602-8c1d-bb4e0b23bbe3
+    type: regular
+    task:
+      id: aa42b77c-983c-4602-8c1d-bb4e0b23bbe3
+      version: -1
+      name: recorded-future-get-domain-riskrules
+      description: Get the risk rules for domain data
+      script: Recorded Future|||recorded-future-get-domain-riskrules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: 185e123c-3c32-44eb-8094-d11ddb585705
+    type: regular
+    task:
+      id: 185e123c-3c32-44eb-8094-d11ddb585705
+      version: -1
+      name: recorded-future-get-hash-riskrules
+      description: Get the risk rules for hash data
+      script: Recorded Future|||recorded-future-get-hash-riskrules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 910,
-          "y": 2500
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 0dfc678c-90d1-487b-8780-09b345be4d4b
+    type: regular
+    task:
+      id: 0dfc678c-90d1-487b-8780-09b345be4d4b
+      version: -1
+      name: recorded-future-get-ip-riskrules
+      description: Get the risk rules for ip data
+      script: Recorded Future|||recorded-future-get-ip-riskrules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: c4c7d5c1-e51c-47c0-8653-a84c2c94b2ad
+    type: regular
+    task:
+      id: c4c7d5c1-e51c-47c0-8653-a84c2c94b2ad
+      version: -1
+      name: recorded-future-get-url-riskrules
+      description: Get the risk rules for url data
+      script: Recorded Future|||recorded-future-get-url-riskrules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 622efccf-1b49-4823-8375-519fd182c69a
+    type: regular
+    task:
+      id: 622efccf-1b49-4823-8375-519fd182c69a
+      version: -1
+      name: recorded-future-get-vulnerability-riskrules
+      description: Get the risk rules for vulnerability data
+      script: Recorded Future|||recorded-future-get-vulnerability-riskrules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 76a49a79-6352-49a4-817a-94f3f038464f
+    type: regular
+    task:
+      id: 76a49a79-6352-49a4-817a-94f3f038464f
+      version: -1
+      name: VerifyContext - Risk Rules
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Domain,IP,URL,Vulnerability,Hash
+      path:
+        simple: RecordedFuture.RiskRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2585
         }
       }
     note: false
@@ -1087,7 +1255,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2515,
+        "height": 2775,
         "width": 2100,
         "x": 50,
         "y": 50

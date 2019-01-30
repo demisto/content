@@ -13,7 +13,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: 'API Token '
+- display: 'API Token'
   name: token
   defaultvalue: ""
   type: 4
@@ -665,12 +665,19 @@ script:
     def hashlist_command():
         detailed = False if demisto.args().get('detailed') == 'false' else True
         limit = demisto.args().get('limit')
-        riskLower = demisto.args().get('riskLower')
-        riskHigher = demisto.args().get('riskHigher')
+        risk_lower = demisto.args().get('risk_lower')
+        risk_higher = demisto.args().get('risk_higher')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(hashlist_lookup(limit, riskLower, riskHigher, orderby, direction))
+        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        if not response or 'data' not in response:
+            return 'No results found'
+
+        resultlist = response['data'].get('results', [])
+        if len(resultlist) == 0:
+            return 'No results found'
+
         resultlist = response['data']['results']
         for result in resultlist:
             intelcard = result['intelCard']
@@ -742,7 +749,7 @@ script:
             'EntryContext': ec
         })
 
-    def hashlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+    def hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
         cmd_url = 'hash/search'
 
         params = {
@@ -755,8 +762,8 @@ script:
             params['orderby'] = orderby
         if direction:
             params['direction'] = direction
-        if riskLower and riskHigher:
-            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+        if risk_lower and risk_higher:
+            params['riskScore'] = '[{},{}]'.format(risk_lower, risk_higher)
 
         response = http_request('get', cmd_url, params=params)
         return response
@@ -764,13 +771,19 @@ script:
     def iplist_command():
         detailed = False if demisto.args().get('detailed') == 'false' else True
         limit = demisto.args().get('limit')
-        riskLower = demisto.args().get('riskLower')
-        riskHigher = demisto.args().get('riskHigher')
+        risk_lower = demisto.args().get('risk_lower')
+        risk_higher = demisto.args().get('risk_higher')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(iplist_lookup(limit, riskLower, riskHigher, orderby, direction))
-        resultlist = response['data']['results']
+        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        if not response or 'data' not in response:
+            return 'No results found'
+
+        resultlist = response['data'].get('results', [])
+        if len(resultlist) == 0:
+            return 'No results found'
+
         for result in resultlist:
             intelcard = result['intelCard']
             timestamps = result['timestamps']
@@ -822,7 +835,7 @@ script:
             dbot_score = translate_score(rf_score, IP_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': ip,
-                'Type': 'IP',
+                'Type': 'ip',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -841,7 +854,7 @@ script:
             'EntryContext': ec
         })
 
-    def iplist_lookup(limit, riskLower, riskHigher, orderby, direction):
+    def iplist_lookup(limit, risk_lower, risk_higher, orderby, direction):
         cmd_url = 'ip/search'
 
         params = {
@@ -854,8 +867,8 @@ script:
             params['orderby'] = orderby
         if direction:
             params['direction'] = direction
-        if riskLower and riskHigher:
-            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+        if risk_lower and risk_higher:
+            params['riskScore'] = '[{},{}]'.format(risk_lower, risk_higher)
 
         response = http_request('get', cmd_url, params=params)
         return response
@@ -863,13 +876,19 @@ script:
     def domainlist_command():
         detailed = False if demisto.args().get('detailed') == 'false' else True
         limit = demisto.args().get('limit')
-        riskLower = demisto.args().get('riskLower')
-        riskHigher = demisto.args().get('riskHigher')
+        risk_lower = demisto.args().get('risk_lower')
+        risk_higher = demisto.args().get('risk_higher')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(domainlist_lookup(limit, riskLower, riskHigher, orderby, direction))
-        resultlist = response['data']['results']
+        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        if not response or 'data' not in response:
+            return 'No results found'
+
+        resultlist = response['data'].get('results', [])
+        if len(resultlist) == 0:
+            return 'No results found'
+
         for result in resultlist:
             timestamps = result['timestamps']
             domain = result['entity']['name']
@@ -938,7 +957,7 @@ script:
             'EntryContext': ec
         })
 
-    def domainlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+    def domainlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
         cmd_url = 'domain/search'
 
         params = {
@@ -951,8 +970,8 @@ script:
             params['orderby'] = orderby
         if direction:
             params['direction'] = direction
-        if riskLower and riskHigher:
-            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+        if risk_lower and risk_higher:
+            params['riskScore'] = '[{},{}]'.format(risk_lower, risk_higher)
 
         response = http_request('get', cmd_url, params=params)
         return response
@@ -960,13 +979,19 @@ script:
     def urllist_command():
         detailed = False if demisto.args().get('detailed') == 'false' else True
         limit = demisto.args().get('limit')
-        riskLower = demisto.args().get('riskLower')
-        riskHigher = demisto.args().get('riskHigher')
+        risk_lower = demisto.args().get('risk_lower')
+        risk_higher = demisto.args().get('risk_higher')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(urllist_lookup(limit, riskLower, riskHigher, orderby, direction))
-        resultlist = response['data']['results']
+        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        if not response or 'data' not in response:
+            return 'No results found'
+
+        resultlist = response['data'].get('results', [])
+        if len(resultlist) == 0:
+            return 'No results found'
+
         for result in resultlist:
             timestamps = result['timestamps']
             url = result['entity']['name']
@@ -1017,7 +1042,7 @@ script:
             dbot_score = translate_score(rf_score, IP_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': url,
-                'Type': 'URL',
+                'Type': 'url',
                 'Vendor': 'Recorded Future',
                 'Score': dbot_score
             }
@@ -1036,7 +1061,7 @@ script:
             'EntryContext': ec
         })
 
-    def urllist_lookup(limit, riskLower, riskHigher, orderby, direction):
+    def urllist_lookup(limit, risk_lower, risk_higher, orderby, direction):
         cmd_url = 'url/search'
 
         params = {
@@ -1049,8 +1074,8 @@ script:
             params['orderby'] = orderby
         if direction:
             params['direction'] = direction
-        if riskLower and riskHigher:
-            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+        if risk_lower and risk_higher:
+            params['riskScore'] = '[{},{}]'.format(risk_lower, risk_higher)
 
         response = http_request('get', cmd_url, params=params)
         return response
@@ -1058,13 +1083,19 @@ script:
     def vulnlist_command():
         detailed = False if demisto.args().get('detailed') == 'false' else True
         limit = demisto.args().get('limit')
-        riskLower = demisto.args().get('riskLower')
-        riskHigher = demisto.args().get('riskHigher')
+        risk_lower = demisto.args().get('risk_lower')
+        risk_higher = demisto.args().get('risk_higher')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(vulnlist_lookup(limit, riskLower, riskHigher, orderby, direction))
-        resultlist = response['data']['results']
+        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        if not response or 'data' not in response:
+            return 'No results found'
+
+        resultlist = response['data'].get('results', [])
+        if len(resultlist) == 0:
+            return 'No results found'
+
         for result in resultlist:
             timestamps = result['timestamps']
             vuln = result['entity']['name']
@@ -1114,14 +1145,6 @@ script:
                 }
             }
 
-            #dbot_score = translate_score(rf_score, CVE_THRESHOLD)
-            #ec['DBotScore'] = {
-            #    'Indicator': vuln,
-            #    'Type': vtype,
-            #    'Vendor': 'Recorded Future',
-            #    'Score': dbot_score
-            #}
-
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -1131,7 +1154,7 @@ script:
             'EntryContext': ec
         })
 
-    def vulnlist_lookup(limit, riskLower, riskHigher, orderby, direction):
+    def vulnlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
         cmd_url = 'vulnerability/search'
 
         params = {
@@ -1144,8 +1167,8 @@ script:
             params['orderby'] = orderby
         if direction:
             params['direction'] = direction
-        if riskLower and riskHigher:
-            params['riskScore'] = '[{},{}]'.format(riskLower, riskHigher)
+        if risk_lower and risk_higher:
+            params['riskScore'] = '[{},{}]'.format(risk_lower, risk_higher)
 
         response = http_request('get', cmd_url, params=params)
         return response
@@ -1153,19 +1176,22 @@ script:
     def get_url_risklist_command():
         specific_list = demisto.args().get('specific_list')
 
-        res = get_url_risklist(specific_list)
+        file_path = demisto.getFilePath('64985@cc00e449-9e7b-4609-8a68-1c8c01114562')
+        with open(file_path['path'], 'r') as file:
+            res = file.read()
+        #res = get_url_risklist(specific_list) .encode('utf-8')
 
         if not res:
             return_error('Received empty response')
 
-        demisto.results(fileResult(filename='url_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+        demisto.results(fileResult(filename='url_risk_list.csv', data=res, file_type=entryTypes['entryInfoFile']))
 
 
     def get_url_risklist(specific_list):
-        cmd_url = 'url/risklist'
+        cmd_url = 'fusion/files'
 
         params = {
-            'format': 'csv/splunk'
+            'path': '/public/risklists/default_url_risklist.csv'
         }
 
         if specific_list:
@@ -1176,7 +1202,7 @@ script:
     def get_domain_risklist_command():
         specific_list = demisto.args().get('specific_list')
 
-        res = get_domain_risklist(specific_list)
+        res = get_domain_risklist(specific_list) .encode('utf-8')
 
         if not res:
             return_error('Received empty response')
@@ -1185,10 +1211,10 @@ script:
 
 
     def get_domain_risklist(specific_list):
-        cmd_url = 'domain/risklist'
+        cmd_url = 'fusion/files'
 
         params = {
-            'format': 'csv/splunk'
+            'path': '/public/risklists/default_domain_risklist.csv'
         }
 
         if specific_list:
@@ -1208,16 +1234,41 @@ script:
 
 
     def get_ip_risklist(specific_list):
-        cmd_url = 'ip/risklist'
+        cmd_url = 'fusion/files'
 
         params = {
-            'format': 'csv/splunk'
+            'path': '/public/risklists/default_ip_risklist.csv'
         }
 
         if specific_list:
             params['list'] = specific_list
 
         return http_request('get', cmd_url, params=params)
+
+
+    def get_hash_risklist_command():
+        specific_list = demisto.args().get('list')
+
+        res = get_hash_risklist(specific_list)
+
+        if not res:
+            return_error('Received empty response')
+
+        demisto.results(fileResult(filename='hash_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+
+
+    def get_hash_risklist(specific_list):
+        cmd_url = 'fusion/files'
+
+        params = {
+            'path': '/public/risklists/default_hash_risklist.csv'
+        }
+
+        if specific_list:
+            params['list'] = specific_list
+
+        return http_request('get', cmd_url, params=params)
+
 
     def get_vulnerability_risklist_command():
         specific_list = demisto.args().get('list')
@@ -1231,16 +1282,183 @@ script:
 
 
     def get_vulnerability_risklist(specific_list):
-        cmd_url = 'vulnerability/risklist'
+        cmd_url = 'fusion/files'
 
         params = {
-            'format': 'csv/splunk'
+            'path': '/public/risklists/default_vulnerability_risklist.csv'
         }
 
         if specific_list:
             params['list'] = specific_list
 
         return http_request('get', cmd_url, params=params)
+
+    def get_domain_riskrules_command():
+        response = json.loads(get_hash_riskrules())
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        headers = ['Name', 'Description', 'Count', 'Criticality']
+
+        mapped_rules = [{
+            'Name': r.get('name'),
+            'Description': r.get('description'),
+            'Count': r.get('count'),
+            'Criticality': r.get('criticalityLabel')
+        } for r in response['data'].get('results', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future Domain risk rules', mapped_rules, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.RiskRule.Domain(val.Name === obj.Name)': createContext(mapped_rules)
+            }
+        })
+
+    def get_domain_riskrules():
+        cmd_url = 'domain/riskrules'
+
+        res = http_request('get', cmd_url)
+
+        return res
+
+
+    def get_hash_riskrules_command():
+        response = json.loads(get_hash_riskrules())
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        headers = ['Name', 'Description', 'Count', 'Criticality']
+
+        mapped_rules = [{
+            'Name': r.get('name'),
+            'Description': r.get('description'),
+            'Count': r.get('count'),
+            'Criticality': r.get('criticalityLabel')
+        } for r in response['data'].get('results', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future Hash risk rules', mapped_rules, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.RiskRule.Hash(val.Name === obj.Name)': createContext(mapped_rules)
+            }
+        })
+
+    def get_hash_riskrules():
+        cmd_url = 'hash/riskrules'
+
+        res = http_request('get', cmd_url)
+
+        return res
+
+
+    def get_ip_riskrules_command():
+        response = json.loads(get_ip_riskrules())
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        headers = ['Name', 'Description', 'Count', 'Criticality']
+
+        mapped_rules = [{
+            'Name': r.get('name'),
+            'Description': r.get('description'),
+            'Count': r.get('count'),
+            'Criticality': r.get('criticalityLabel')
+        } for r in response['data'].get('results', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future IP risk rules', mapped_rules, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.RiskRule.IP(val.Name === obj.Name)': createContext(mapped_rules)
+            }
+        })
+
+    def get_ip_riskrules():
+        cmd_url = 'ip/riskrules'
+
+        res = http_request('get', cmd_url)
+
+        return res
+
+    def get_url_riskrules_command():
+        response = json.loads(get_url_riskrules())
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        headers = ['Name', 'Description', 'Count', 'Criticality']
+
+        mapped_rules = [{
+            'Name': r.get('name'),
+            'Description': r.get('description'),
+            'Count': r.get('count'),
+            'Criticality': r.get('criticalityLabel')
+        } for r in response['data'].get('results', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future URL risk rules', mapped_rules, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.RiskRule.URL(val.Name === obj.Name)': createContext(mapped_rules)
+            }
+        })
+
+    def get_url_riskrules():
+        cmd_url = 'url/riskrules'
+
+        res = http_request('get', cmd_url)
+
+        return res
+
+    def get_vulnerability_riskrules_command():
+        response = json.loads(get_vulnerability_riskrules())
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        headers = ['Name', 'Description', 'Count', 'Criticality']
+
+        mapped_rules = [{
+            'Name': r.get('name'),
+            'Description': r.get('description'),
+            'Count': r.get('count'),
+            'Criticality': r.get('criticalityLabel')
+        } for r in response['data'].get('results', [])]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future Vulnerability risk rules', mapped_rules, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.RiskRule.Vulnerability(val.Name === obj.Name)': createContext(mapped_rules)
+            }
+        })
+
+    def get_vulnerability_riskrules():
+        cmd_url = 'vulnerability/riskrules'
+
+        res = http_request('get', cmd_url)
+
+        return res
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -1291,6 +1509,24 @@ script:
 
         elif demisto.command() == 'recorded-future-get-vulnerability-risklist':
             get_vulnerability_risklist_command()
+
+        elif demisto.command() == 'recorded-future-get-hash-risklist':
+            get_hash_risklist_command()
+
+        elif demisto.command() == 'recorded-future-get-domain-riskrules':
+            get_domain_riskrules_command()
+
+        elif demisto.command() == 'recorded-future-get-hash-riskrules':
+            get_hash_riskrules_command()
+
+        elif demisto.command() == 'recorded-future-get-ip-riskrules':
+            get_ip_riskrules_command()
+
+        elif demisto.command() == 'recorded-future-get-url-riskrules':
+            get_url_riskrules_command()
+
+        elif demisto.command() == 'recorded-future-get-vulnerability-riskrules':
+            get_vulnerability_riskrules_command()
 
     except Exception, e:
         LOG(e.message)
@@ -1731,6 +1967,10 @@ script:
       default: true
       description: URL to get reputation of
     - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Fetching evidence details if true. Evidence is a record that gets
         generated if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
@@ -1771,19 +2011,13 @@ script:
         generated if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "10"
-      - "50"
-      - "100"
       description: Limit number of results returned
       defaultValue: "1"
-    - name: riskLower
-      description: Lower Threshold score to return results for, default is 65
+    - name: risk_lower
+      description: Lower Threshold score to return results for.
       defaultValue: "65"
-    - name: riskHigher
-      description: Maximum threshold score to return results for, default is 99
+    - name: risk_higher
+      description: Maximum threshold score to return results for.
       defaultValue: "99"
     - name: orderby
       auto: PREDEFINED
@@ -1856,23 +2090,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets generated
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "10"
-      - "50"
-      - "100"
       description: Limit number of results returned
       defaultValue: "1"
-    - name: riskLower
-      description: Lower Threshold score to return results for, default is 65
+    - name: risk_lower
+      description: Lower Threshold score to return results for.
       defaultValue: "65"
-    - name: riskHigher
-      description: Maximum threshold score to return results for, default is 99
+    - name: risk_higher
+      description: Maximum threshold score to return results for.
       defaultValue: "99"
     - name: orderby
       auto: PREDEFINED
@@ -1935,23 +2163,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets generated
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "10"
-      - "50"
-      - "100"
       description: Limit number of results returned
       defaultValue: "1"
-    - name: riskLower
-      description: Lower Threshold score to return results for, default is 65
+    - name: risk_lower
+      description: Lower Threshold score to return results for.
       defaultValue: "65"
-    - name: riskHigher
-      description: Maximum threshold score to return results for, default is 99
+    - name: risk_higher
+      description: Maximum threshold score to return results for.
       defaultValue: "99"
     - name: orderby
       auto: PREDEFINED
@@ -2007,23 +2229,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets generated
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "10"
-      - "50"
-      - "100"
       description: Limit number of results returned
       defaultValue: "1"
-    - name: riskLower
-      description: Lower Threshold score to return results for, default is 65
+    - name: risk_lower
+      description: Lower threshold score to return results for.
       defaultValue: "65"
-    - name: riskHigher
-      description: Maximum threshold score to return results for, default is 99
+    - name: risk_higher
+      description: Maximum threshold score to return results for.
       defaultValue: "99"
     - name: orderby
       auto: PREDEFINED
@@ -2071,30 +2287,24 @@ script:
     - contextPath: Domain.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns domain threats Recorded Future
+    description: Returns domain threats from Recorded Future
   - name: recorded-future-get-threats-vulnerabilities
     arguments:
     - name: limit
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "10"
-      - "50"
-      - "100"
       description: Limit number of results returned
       defaultValue: "1"
-    - name: riskLower
-      description: Lower Threshold score to return results for, default is 65
+    - name: risk_lower
+      description: Lower Threshold score to return results for.
       defaultValue: "65"
-    - name: riskHigher
-      description: Maximum threshold score to return results for, default is 99
+    - name: risk_higher
+      description: Maximum threshold score to return results for.
       defaultValue: "99"
     - name: detailed
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets generated
+      description: Fetching evidence details if true. Evidence is a record that gets         generated
         if any of the risk rules on Recorded Future is triggered.
       defaultValue: "false"
     - name: orderby
@@ -2135,7 +2345,8 @@ script:
   - name: recorded-future-get-domain-risklist
     arguments:
     - name: list
-      description: Specify a URL list, see the documentation for the available lists.
+      description: Specify a domain list by a risk rule name, which can be retrieved
+        by the get-domain-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File Name
@@ -2159,8 +2370,8 @@ script:
   - name: recorded-future-get-url-risklist
     arguments:
     - name: list
-      description: Specify a domain list, see the documentation for the available
-        lists.
+      description: Specify a URL list by a risk rule name, which can be retrieved
+        from the get-url-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File Name
@@ -2184,7 +2395,8 @@ script:
   - name: recorded-future-get-ip-risklist
     arguments:
     - name: list
-      description: Specify an IP list, see the documentation for the available lists.
+      description: Specify an IP list by a risk rule name, which can be retrieved
+        from the get-ip-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File Name
@@ -2208,8 +2420,8 @@ script:
   - name: recorded-future-get-vulnerability-risklist
     arguments:
     - name: list
-      description: Specify a vulnerability list, see the documentation for the available
-        lists.
+      description: Specify a vulnerability list by a risk rule name, which can be
+        retrieved from the get-vulnerability-riskrules command.
     outputs:
     - contextPath: InfoFile.Name
       description: File Name
@@ -2228,6 +2440,112 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: File extension
+      type: string
     description: Gets the vulnerability (CVE) risk list from Recorded Future
+  - name: recorded-future-get-hash-risklist
+    arguments:
+    - name: list
+      description: Specify a hash list by a riskrule name, which can be retrieved
+        from the get-hash-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File Name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the hash risk list from Recorded Future
+  - name: recorded-future-get-domain-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Domain.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Domain.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Domain.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Domain.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Get the risk rules for domain data
+  - name: recorded-future-get-hash-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Hash.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Hash.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Hash.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Hash.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Get the risk rules for hash data
+  - name: recorded-future-get-ip-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.IP.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.IP.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.IP.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.IP.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Get the risk rules for ip data
+  - name: recorded-future-get-url-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.URL.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.URL.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.URL.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.URL.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Get the risk rules for url data
+  - name: recorded-future-get-vulnerability-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Get the risk rules for vulnerability data
   runonce: false
 releaseNotes: "Added commands for retrieving threats by a specified order, also for retrieving risk lists as csv files (with additional scripts to create indicators using them)."
