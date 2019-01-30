@@ -86,8 +86,7 @@ script:
     - default: false
       defaultValue: ''
       description: ID or name of the group or agent to whom you wish to assign this
-        ticket. To find potential assignees, try executing the fd-list-groups or fd-list-contacts
-        commands.
+        ticket. To find potential assignees, try executing the fd-list-groups command.
       isArray: false
       name: responder
       predefined: []
@@ -902,6 +901,9 @@ script:
   isfetch: true
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     # For debugging
@@ -1203,39 +1205,11 @@ script:
         return args
 
 
-    # Adjust this function to use determine_agent and determine_group functions
     def determine_responder(args):
         responder = args.get('responder', None)
         if responder:
-            group_names = []
-            group_ids = []
-            groups = list_groups()
-            # Get names and ids of groups
-            for group in groups:
-                group_ids.append(group.get('id'))
-                group_names.append(group.get('name').lower())
-            # Check if responder value is a group ID
-            if responder in group_ids:
-                args['group_id'] = responder
-            # Or the name of a group
-            elif responder.lower() in group_names:
-                args['group_id'] = group_ids[group_names.index(responder.lower())]
-
-            agent_names = []
-            agent_ids = []
-            # Get names and ids of agents
-            agents = list_agents({})
-            for agent in agents:
-                agent_ids.append(agent.get('id'))
-                agent_names.append(agent.get('contact').get('name').lower())
-            # Check if responder value is a contact ID
-            if responder in agent_ids:
-                args['responder_id'] = responder
-            elif responder.lower() in agent_names:
-                args['responder_id'] = agent_ids[agent_names.index(responder.lower())]
-
-            # Delete responder field from args since it doesn't match API expected inputs
-            del args['responder']
+            args = determine_group(args, 'responder')
+            args = determine_agent(args, 'responder')
         return args
 
 
