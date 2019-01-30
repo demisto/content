@@ -1889,9 +1889,11 @@ script:
 
         response = None
         if not args.get('attachments'):
+            # Format boolean args to API expectations
+            dumped_args = json.dumps(args).replace("\"false\"", "false").replace("\"true\"", "true")
             # The service endpoint to request from
             # Send a request using our http_request wrapper
-            response = http_request('POST', endpoint_url, data=json.dumps(args))
+            response = http_request('POST', endpoint_url, data=dumped_args)
         else:
             # Set global HEADERS to the correct content type
             global HEADERS
