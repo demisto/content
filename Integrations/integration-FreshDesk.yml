@@ -533,6 +533,14 @@ script:
       name: bcc_emails
       predefined: []
       required: false
+    - default: false
+      defaultValue: ''
+      description: Entry IDs of files to attach to the reply. The total size of these
+        attachments cannot exceed 15MB.
+      isArray: true
+      name: attachments
+      predefined: []
+      required: false
     description: Reply to a specified ticket
     execution: false
     name: fd-ticket-reply
@@ -977,12 +985,23 @@ script:
 
 
     def handle_array_input(args):
-        array_inputs = ['tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails', 'update_fields', 'update_values']
+        array_inputs = [
+            'tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails',
+            'update_fields', 'update_values', 'notify_emails'
+        ]
 
+        # demisto.log('args prehandle arrays: {}'.format(args))
         for arr_input in array_inputs:
             if arr_input in args.keys():
-                args[arr_input] = argToList(args.get(arr_input))
-
+                # demisto.log('making arg {} to list\narg {} preadjustment: {}'.format(arr_input, arr_input, args.get(arr_input)))
+                if arr_input != 'attachments':
+                    args[arr_input + '[]'] = argToList(args.get(arr_input))
+                    del args[arr_input]
+                else:
+                    args[arr_input] = argToList(args.get(arr_input))
+                # args[arr_input] = args.get(arr_input).split(',')
+                # demisto.log('arg {} postadjustment: {}'.format(arr_input, args.get(arr_input)))
+        # demisto.log('args posthandle arrays: {}'.format(args))
         return args
 
 
@@ -1170,7 +1189,7 @@ script:
         return args
 
 
-    def http_request(method, url_suffix, params=None, data=None, files=None):
+    def http_request(method, url_suffix, params=None, data=None, files=None,):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         res = requests.request(
             method,
@@ -1180,7 +1199,7 @@ script:
             data=data,
             headers=HEADERS,
             auth=AUTH,
-            files=files
+            files=files,
         )
         # Handle error responses gracefully
         try:
@@ -1203,6 +1222,9 @@ script:
 
             return res.json()
         except Exception as e:
+            LOG(e)
+            ex_type, ex, tb = sys.exc_info()
+            traceback.print_tb(tb)
             return_error('error occurred in the http_request method')
 
 
