@@ -900,6 +900,19 @@ script:
       name: include_description
       predefined: ['yes', 'no']
       required: false
+    - default: false
+      defaultValue: ''
+      description: |-
+        Filter tickets using a custom query.
+
+        Format -    "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
+        Example -  "(type:'Question' OR type:'Problem') AND (due_by:>'2017-10-01' AND due_by:<'2017-10-07')"
+
+        Note that the custom_query argument cannot be used in conjunction with this command's other arguments.
+      isArray: false
+      name: custom_query
+      predefined: []
+      required: false
     description: List all tickets that match the filter criteria you specify.
     execution: false
     name: fd-list-tickets
@@ -975,6 +988,8 @@ script:
         'Accept': 'application/json'
     }
 
+    PER_PAGE = 30
+
     DEFAULT_TICKET_CONTEXT_FIELDS = [
         'priority', 'due_by', 'subject', 'attachments', 'status',
         'requester_id', 'tags', 'group_id', 'source', 'created_at',
@@ -990,6 +1005,34 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
+    def handle_list_tickets_pagination(args, response):
+        # If user entered custom_query arg, the resulting tickets are in the 'results' attribute of the response
+        max_pages = 10
+        if args.get('custom_query'):
+            # Deal with pagination if necessary
+            tickets = response.get('results')
+            total_tickets = response.get('total')
+            total_tickets -= PER_PAGE
+            page = 1
+            while total_tickets > 0 and page <= max_pages:
+                page += 1
+                args['page'] = page
+                tickets_page = list_tickets(args)
+                tickets.extend(tickets_page.get('results'))
+                total_tickets -= PER_PAGE
+        else:
+            tickets = response
+            page = 1
+            next_page = tickets
+            while next_page and page <= max_pages:
+                page += 1
+                args['page'] = page
+                next_page = list_tickets(args)
+                if next_page:
+                    tickets.extend(next_page)
+        return tickets
 
 
     def attachments_into_context(api_response, context):
@@ -1724,6 +1767,10 @@ script:
             endpoint_url = 'search/tickets'
             url_params['query'] = "\"" + custom_query + "\""
 
+        page = args.get('page')
+        if page:
+            url_params['page'] = page
+
         # Make request and get raw response
         response = http_request('GET', endpoint_url, params=url_params)
         return response
@@ -1732,13 +1779,9 @@ script:
     def list_tickets_command():
         args = demisto.args()
         additional_fields = get_additional_fields(args)
-        response = list_tickets(args)
+        response = list_tickets(args)   # page 1
 
-        # If user entered custom_query arg, the resulting tickets are in the 'results' attribute of the response
-        if args.get('custom_query'):
-            tickets = response.get('results')
-        else:
-            tickets = response
+        tickets = handle_list_tickets_pagination(args, response)
 
         global DEFAULT_TICKET_CONTEXT_FIELDS
         ctx_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
