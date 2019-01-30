@@ -1,7 +1,7 @@
 commonfields:
-  id: RecordedFutureDomainRiskList
-  version: -1
-name: RecordedFutureDomainRiskList
+  id: e7e700eb-0d46-4175-828b-1161f9295164
+  version: 9
+name: RecordedFutureHashRiskList
 script: |-
   specific_list = demisto.args().get('list')
   delete_existing = demisto.args().get('delete_existing', 'false').lower()
@@ -11,7 +11,7 @@ script: |-
   if specific_list:
       command_args['list'] = specific_list
 
-  res = demisto.executeCommand('recorded-future-get-domain-risklist', command_args)
+  res = demisto.executeCommand('recorded-future-get-hash-risklist', command_args)
 
   file_entry = None
   for entry in res:
@@ -29,18 +29,13 @@ script: |-
       # remove null bytes
       data = file.read().replace('\0', '')
 
-  if delete_existing == 'true':
-      delete_res = demisto.executeCommand('deleteIndicators', {'query': 'source:"Recorded Future" and type:Domain and reputation:Bad', 'doNotWhitelist': 'true'})
-      if isError(delete_res[0]):
-          return_error('Error deleting Recorded Future indicators - {}'.format(delete_res[0]['Contents']))
-
   rows = data.split('\n')
   if not rows or len(rows) == 0:
       return_error('No data found')
   for row in rows[1:]:
       # Skip headers line
       columns = row.split(',')
-      domain = columns[0]
+      hash_indicator = columns[0].strip('\"')
       score = None
       try:
           score = int(columns[1].strip('\"'))
@@ -50,10 +45,11 @@ script: |-
       if score and score < threshold:
           continue
 
-      if domain:
+      if hash_indicator:
+          hash_type = get_hash_type(hash_indicator)
           indicator_res = demisto.executeCommand('createNewIndicator', {
-              'type': 'Domain',
-              'value': domain.strip('\"'),
+              'type': 'File {}'.format(hash_type),
+              'value': hash_indicator,
               'source': 'Recorded Future',
               'reputation': 'Bad',
               'seenNow': 'true',
@@ -67,31 +63,24 @@ script: |-
 type: python
 tags:
 - RecordedFuture
-comment: Extracts the domain risk list from Recorded Future, and creates indicators
+comment: Extracts the Hash risk list from Recorded Future, and creates indicators
   accordingly.
 enabled: true
 args:
 - name: list
-  description: Specify a domain list by a risk rule name, which can be retrieved by
-    the get-domain-riskrules command.
+  description: Specify a Hash list by a risk rule name, which can be retrieved by
+    the get-hash-riskrules command.
 - name: threshold
   description: Specify a threshold to consider indicators as malicious.
   defaultValue: "65"
-- name: delete_existing
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Specify in order to delete the existing Recorded Future malicious domain
-    indicators.
-  defaultValue: "false"
 scripttarget: 0
 dependson:
   must: []
   should:
-  - Recorded Future|||recorded-future-get-domain-risklist
+  - Recorded Future|||recorded-future-get-hash-risklist
 timeout: 3.6µs
 runonce: false
 releaseNotes: "-"
 tests:
   - No test - fetches indicators
+
