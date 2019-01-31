@@ -1,4 +1,4 @@
-id: SymantecEndpointProtection Test
+id: sep_-_test_endpoint_search
 version: -1
 name: SymantecEndpointProtection Test
 description: This playbook tests the SEPM integration commands.
