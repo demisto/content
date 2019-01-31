@@ -289,7 +289,7 @@ def main():
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
-    if not tests or (len(tests) == 0):
+    if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
 
