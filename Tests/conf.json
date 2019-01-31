@@ -1004,7 +1004,6 @@
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
