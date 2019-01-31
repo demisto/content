@@ -73,6 +73,5 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "Updated script to use the enhanced extractIndicators command"
 tests:
   - Extract Indicators From File - test

@@ -332,6 +332,5 @@ script:
       related: ""
     description: Check if domain has been compromised
   runonce: false
-releaseNotes: "Fixed url"
 tests:
   - Pwned test

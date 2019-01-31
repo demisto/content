@@ -1935,4 +1935,3 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "Added involved hashes and affected machines outputs to query-malops command"

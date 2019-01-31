@@ -257,6 +257,5 @@ args:
   defaultValue: "True"
 scripttarget: 0
 runonce: false
-releaseNotes: Changed to use default docker image
 tests:
   - No test - Test not needed
