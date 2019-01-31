@@ -1130,4 +1130,4 @@ releaseNotes: Enhancments for the integration. New commands sep-list-policies - 
   - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given
   client.
 tests:
-- No test
+- sep_-_test_endpoint_search
