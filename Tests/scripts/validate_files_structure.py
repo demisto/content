@@ -487,7 +487,6 @@ def validate_committed_files(branch_name, is_circle):
         else:
             print_error('The secrets were exposed in public repository, remove the files asap and report it.\n')
 
-
         sys.exit(1)
 
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
@@ -712,7 +711,7 @@ def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
     text_file_types = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv'}
     if file_extension in text_file_types:
-            return True
+        return True
     return False
 
 
