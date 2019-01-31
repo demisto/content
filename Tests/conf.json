@@ -141,13 +141,15 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
           "integrations": "Tenable.io",
@@ -956,8 +958,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -967,8 +969,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -1038,7 +1040,9 @@
         "Netskope": "instance is down",
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
-        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild"
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
+        "WildFire": "Quota is temporarily over due to circle ci issues",
+        "Recorded Future": "Quota issues"
     },
     "nigthly_integrations": [
         "Lastline",
