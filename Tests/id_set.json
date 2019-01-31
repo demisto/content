@@ -15300,25 +15300,6 @@
             }
         }, 
         {
-            "c19e328d-0cf3-4a94-88b3-df670d984602": {
-                "name": "SymantecEndpointProtection Test", 
-                "implementing_scripts": [
-                    "SEPScan", 
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-quarantine": "Symantec Endpoint Protection", 
-                    "sep-command-status": "Symantec Endpoint Protection", 
-                    "sep-update-content": "Symantec Endpoint Protection", 
-                    "sep-endpoints-info": "Symantec Endpoint Protection", 
-                    "sep-groups-info": "Symantec Endpoint Protection", 
-                    "sep-client-content": "Symantec Endpoint Protection", 
-                    "sep-system-info": "Symantec Endpoint Protection"
-                }
-            }
-        }, 
-        {
             "PagerDuty Test": {
                 "name": "PagerDuty Test", 
                 "implementing_scripts": [

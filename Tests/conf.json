@@ -458,7 +458,7 @@
         },
         {
             "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
+            "playbookID": "SymantecEndpointProtection Test"
         },
         {
             "integrations": "carbonblackprotection",
