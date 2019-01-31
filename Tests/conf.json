@@ -457,7 +457,7 @@
             "timeout": 300
         },
         {
-            "integrations": "Symantec Endpoint Protection",
+            "integrations": "Symantec Endpoint Protection V2",
             "playbookID": "SymantecEndpointProtection Test"
         },
         {
