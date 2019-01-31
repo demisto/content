@@ -65,7 +65,8 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: The host name of computer. Wild card is supported as '*'.
+      description: Filter by the host name of a computer. Wild card is supported as
+        '*'.
       isArray: false
       name: computerName
       predefined: [
@@ -437,6 +438,9 @@ script:
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     import requests
     import json
     import re
