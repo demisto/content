@@ -208,7 +208,7 @@ def calculate_shannon_entropy(data):
     """Algorithm to determine the randomness of a given data.
     Higher is more random/complex, most English words will yield result of around 3+-
     :param data: could be either a list/dict or a string.
-    :return: entopry: entropy score.
+    :return: entropy: entropy score.
     """
     if not data:
         return 0
