@@ -10557,7 +10557,8 @@
                     "servicenow-query-computers", 
                     "servicenow-query-groups", 
                     "servicenow-query-users", 
-                    "servicenow-get-table-name"
+                    "servicenow-get-table-name", 
+                    "servicenow-get-ticket-notes"
                 ], 
                 "tests": [
                     "No test - Hibernating instance"
