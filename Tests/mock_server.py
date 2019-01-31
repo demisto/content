@@ -2,7 +2,7 @@ import os
 import signal
 import string
 import unicodedata
-from subprocess import call, Popen, PIPE
+from subprocess import call, Popen, PIPE, check_call
 
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
@@ -45,25 +45,25 @@ class AMIConnection:
     def call(self, command):
         return call(self.add_ssh_prefix(command))
 
+    def check_call(self, command):
+        return check_call(self.add_ssh_prefix(command))
+
     def copy_file(self, src, dst=REMOTE_HOME):
-        call(['scp', '-o', ' StrictHostKeyChecking=no', src,
-              "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)])
+        check_call(['scp', '-o', ' StrictHostKeyChecking=no', src,
+                    "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)])
+        return os.path.join(dst, os.path.basename(src))
 
     def run_script(self, script, *args):
-        remote_script_path = os.path.join(REMOTE_HOME, UPLOAD_MOCKS_SCRIPT)
-        self.copy_file(os.path.join(LOCAL_SCRIPTS_DIR, script))
-        self.call(['chmod', '+x', remote_script_path])
-        self.call([remote_script_path] + list(args))
+        remote_script_path = self.copy_file(os.path.join(LOCAL_SCRIPTS_DIR, script))
+        self.check_call(['chmod', '+x', remote_script_path])
+        self.check_call([remote_script_path] + list(args))
 
     def upload_mock_files(self, build_name, build_number):
-        remote_script_path = os.path.join(REMOTE_HOME, UPLOAD_MOCKS_SCRIPT)
-        self.run_script(remote_script_path, build_name, build_number)
+        self.run_script(UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = os.path.join(REMOTE_HOME + '.ssh/', MOCK_KEY_FILE)
-        remote_script_path = os.path.join(REMOTE_HOME, CLONE_MOCKS_SCRIPT)
-        self.copy_file(os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE))
-        self.run_script(CLONE_MOCKS_SCRIPT, remote_script_path, remote_key_filepath)
+        remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE))
+        self.run_script(CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
 
 class MITMProxy:
