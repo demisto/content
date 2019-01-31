@@ -757,8 +757,7 @@ def get_all_diff_text_files(branch_name, is_circle):
 
 
 def search_potential_secrets(secrets_file_paths):
-    """
-
+    """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
     :return: dictionary of strings sorted by file name for secrets found in files
     """
@@ -841,8 +840,7 @@ def retrieve_related_yml(file_path_temp):
 
 
 def regex_for_secrets(file_contents):
-    """
-    Scans for IOCs with potentially low entropy score
+    """Scans for IOCs with potentially low entropy score
     :param file_contents: file to test as string representation (string)
     :return  potential_secrets (list) IOCs found via regex, false_positives (list) Non secrets with high entropy
     """
@@ -895,10 +893,10 @@ def regex_for_secrets(file_contents):
 
 
 def calculate_shannon_entropy(data):
-    """
-    Algorithm to determine the randomness of a given data.
+    """Algorithm to determine the randomness of a given data.
+    Higher is more random/complex, most English words will yield result of around 3+-
     :param data: could be either a list/dict or a string.
-    :return: entropy score, higher is more random/complex, most English words will yield result of around 3+-
+    :return: entopry: entropy score.
     """
     if not data:
         return 0
