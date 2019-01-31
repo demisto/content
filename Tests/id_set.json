@@ -15797,6 +15797,31 @@
                     "DeleteContext"
                 ]
             }
+        },
+        {
+            "Freshdesk-Test": {
+                "name": "Freshdesk-Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "fd-list-contacts": "Freshdesk", 
+                    "fd-view-contact": "Freshdesk", 
+                    "fd-list-agents": "Freshdesk", 
+                    "fd-update-ticket": "Freshdesk", 
+                    "fd-delete-ticket": "Freshdesk", 
+                    "fd-list-groups": "Freshdesk", 
+                    "fd-ticket-reply": "Freshdesk", 
+                    "fd-create-ticket": "Freshdesk", 
+                    "fd-view-ticket": "Freshdesk", 
+                    "fd-list-crs-in-folder": "Freshdesk", 
+                    "fd-detail-crs": "Freshdesk", 
+                    "fd-list-tickets": "Freshdesk", 
+                    "fd-ticket-note": "Freshdesk", 
+                    "fd-get-conversations": "Freshdesk", 
+                    "fd-list-cr-folders": "Freshdesk"
+                }
+            }
         }
     ]
 }
