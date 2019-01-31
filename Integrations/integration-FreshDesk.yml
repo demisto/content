@@ -625,7 +625,7 @@ script:
       name: ticket_id
       predefined: []
       required: true
-    description: ''
+    description: Lists all replies and notes for a specified ticket
     execution: false
     name: fd-get-conversations
     outputs:
@@ -948,7 +948,8 @@ script:
     ''' IMPORTS '''
 
     # For debugging
-    import sys, traceback
+    import sys
+    import traceback
 
     import json
     import requests
@@ -957,6 +958,12 @@ script:
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     ''' GLOBALS/PARAMS '''
 
@@ -995,13 +1002,6 @@ script:
         'requester_id', 'tags', 'group_id', 'source', 'created_at',
         'responder_id', 'fr_due_by', 'id'
     ]
-
-    # Remove proxy if not set to true in params
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
 
 
     ''' HELPER FUNCTIONS '''
@@ -1373,10 +1373,9 @@ script:
 
     def test_module():
         """
-        Performs basic get request to get item samples
+        Will try to make a request to the API endpoint for listing all tickets.
         """
-        ticket_id = '1'
-        response = http_request('GET', 'tickets/{}'.format(ticket_id))
+        response = http_request('GET', 'tickets')
 
 
     def fetch_incidents():
@@ -1438,97 +1437,43 @@ script:
 
     def create_ticket_command():
         """
-        One line summary.
-
-        demisto parameter: (string) name
-            Name of the requester
-
-        demisto parameter: (number) requester_id
-            User ID of the requester. For existing contacts, the
-            requester_id can be passed instead of the requester's email.
-
-        demisto parameter: (string) email
-            Email address of the requester. If no contact exists with
-            this email address in Freshdesk, it will be added as a new contact.
-
-        demisto parameter: (string) facebook_id
-            Facebook ID of the requester. If no contact exists with this
-            facebook_id, then a new contact will be created.
-
-        demisto parameter: (string) phone
-            Phone number of the requester. If no contact exists with this
-            phone number in Freshdesk, it will be added as a new contact.
-            If the phone number is set and the email address is not, then
-            the name attribute is mandatory.
-
-        demisto parameter: (string) twitter_id
-            Twitter handle of the requester. If no contact exists with this
-            handle in Freshdesk, it will be added as a new contact.
-
-        demisto parameter: (string) unique_external_id
-            External ID of the requester. If no contact exists with this
-            external ID in Freshdesk, they will be added as a new contact.
+        Create a new Freshdesk ticket.
 
         demisto parameter: (string) subject
             Subject of the ticket. The default Value is null.
 
-        demisto parameter: (string) type
-            Helps categorize the ticket according to the different kinds of
-            issues your support team deals with. The default Value is null.
-
-        demisto parameter: (number) status
-            Status of the ticket. The default Value is 2.
+        demisto parameter: (string) description
+            Details of the issue for which you are creating a ticket.
 
         demisto parameter: (number) priority
-            Priority of the ticket. The default value is 1.
+            Priority of the ticket. Each number has a corresponding value.
+            1 is Low, 2 is Medium, 3 is High, 4 is Urgent.
 
-        demisto parameter: (string) description
-            HTML content of the ticket.
+        demisto parameter: (number) status
+            Status of the ticket. Each number has a corresponding value.
+            2 is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting
+            on Customer, 7 is Waiting on Third Party.
 
-        demisto parameter: (number) responder_id
-            ID of the agent to whom the ticket has been assigned
+        demisto parameter: (string) identifier
+            This can be an email address or a twitter handle
 
-        demisto parameter: (array) attachments
-            Ticket attachments. The total size of these attachments cannot exceed 15MB.
+        demisto parameter: (list) responder
+            ID or name of the group or agent to whom you wish to assign this ticket.
+            To find potential assignees, try executing the fd-list-groups command.
 
-        demisto parameter: (array) cc_emails
-            Email address added in the 'cc' field of the incoming ticket email
+        demisto parameter: (list) attachments
+            Entry IDs of files to attach to the ticket.
+            The total size of these attachments cannot exceed 15MB.
 
-        demisto parameter: (dict) custom_fields
-            Key value pairs containing the names and values of custom fields.
+        demisto parameter: (list) additional_fields
+            List of ticket fields you wish to enter the value for.
 
-        demisto parameter: (datetime) due_by
-            Timestamp that denotes when the ticket is due to be resolved
-
-        demisto parameter: (number) email_config_id
-            ID of email config which is used for this ticket. (i.e.,
-            support@yourcompany.com/sales@yourcompany.com) If product_id
-            is given and email_config_id is not given, product's primary
-            email_config_id will be set
-
-        demisto parameter: (datetime) fr_due_by
-            Timestamp that denotes when the first response is due
-
-        demisto parameter: (number) group_id
-            ID of the group to which the ticket has been assigned. The default
-            value is the ID of the group that is associated with the given email_config_id
-
-        demisto parameter: (number) product_id
-            ID of the product to which the ticket is associated. It will be
-            ignored if the email_config_id attribute is set in the request.
-
-        demisto parameter: (number) source
-            The channel through which the ticket was created. The default value is 2.
-
-        demisto parameter: (array) tags
-            Tags that have been associated with the ticket
-
-        demisto parameter: (number) company_id
-            Company ID of the requester. This attribute can only be set if the
-            Multiple Companies feature is enabled
+        demisto parameter: (list) additional_values
+            List of values that are assigned to the field at the same
+            list index in the additional_fields argument.
 
         returns:
-            Ticket (JSON) object
+            Ticket Object
         """
         # Get command arguments from user
         args = demisto.args()
@@ -1598,6 +1543,42 @@ script:
 
 
     def update_ticket_command():
+        """
+        Update the ticket specified by a ticket ID number
+
+        demisto parameter: (string) subject
+            Update the ticket's subject field
+
+        demisto parameter: (number) status
+            Update the ticket's status. Possible values are 2,3,4,5,6,7
+
+        demisto parameter: (number) priority
+            Update the ticket's priority. Possible values are 1,2,3,4
+
+        demisto parameter: (string) description
+            The HTML content of the ticket
+
+        demisto parameter: (number) id
+            ID number of the ticket to update
+
+        demisto parameter: assigned_agent
+            Update which agent is assigned to respond to this ticket.
+            Values can be either the agent's ID number, name, or email.
+
+        demisto parameter: assigned_group
+            Update which group is assigned to respond to this ticket.
+            Values can be either the group's ID number or name.
+
+        demisto parameter: (list) update_fields
+            List of additional ticket fields whose values you wish to update
+
+        demisto parameter: (list) update_values
+            List of values that are assigned to the ticket field at the
+            corresponding list index in the update_fields argument
+
+        returns:
+            Ticket specified by the ticket ID number with its updated values
+        """
         args = demisto.args()
         args, additional_fields, additional_fields_values = addional_fields_to_args(args, 'update_fields', 'update_values')
 
@@ -1647,6 +1628,22 @@ script:
 
 
     def view_ticket_command():
+        """
+        View a Ticket.
+
+        demisto parameter: (number) id
+            ID number of the ticket to fetch
+
+        demisto parameter: (string) include_requester
+            If set to 'yes' then the ticket requester's id, email, mobile, name, and phone
+            will be included in the ticket's output.
+
+        demisto parameter: (string) include_stats
+            If set to 'yes' then the ticket's closed_at, resolved_at and first_responded_at times will be included.
+
+        returns:
+            Ticket Object
+        """
         # Get command arguments from user
         args = demisto.args()
         # Make request and get raw response
@@ -1694,6 +1691,15 @@ script:
 
 
     def delete_ticket_command():
+        """
+        Soft-Delete the ticket specified by the 'id' command argument
+
+        demisto parameter: (number) id
+            ID of the ticket to delete
+
+        returns:
+            Success Message
+        """
         ticket_id = demisto.args().get('id')
         # Make request
         response = delete_ticket(ticket_id)
@@ -1763,6 +1769,48 @@ script:
 
 
     def list_tickets_command():
+        """
+        List all tickets that match the filter criteria you specify.
+
+        demisto parameter: (string) filter
+            Predefined filters
+
+        demisto parameter: requester
+            Filter by either the ticket requester's email or ID
+
+        demisto parameter: (number) company_id
+            Filter by tickets associated with the specified company ID
+
+        demisto parameter: (datetime) updated_since
+            By default, only tickets that have been created within the past 30 days will be returned.
+            For older tickets, use this filter. Example value for this field would be "2015-01-19T02:00:00Z"
+
+        demisto parameter: (string) order_by
+            Reference field for ordering the list of tickets. The default sort order is created_at.
+
+        demisto parameter: (string) order_type
+            Whether to order the resulting tickets in ascending or descending order.
+            The default is descending. Value can be either 'asc' or 'desc'.
+
+        demisto parameter: (string) include_stats
+            If set to 'yes' then the ticket's closed_at, resolved_at and first_responded_at times will be included.
+
+        demisto parameter: (string) include_requester
+            If set to 'yes' then the ticket requester's id, email, mobile, name, and phone
+            will be included in the ticket's output for each ticket.
+
+        demisto parameter: (string) include_description
+            If set to 'yes' then the ticket's description and description_text will be included the tickets' outputs.
+
+        demisto parameter: (string) custom_query
+            Filter tickets using a custom query.
+            Format  -  "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
+            Example -  "(type:'Question' OR type:'Problem') AND (due_by:>'2017-10-01' AND due_by:<'2017-10-07')"
+            Note that the custom_query argument cannot be used in conjunction with this command's other arguments.
+
+        returns:
+            Ticket Objects
+        """
         args = demisto.args()
         additional_fields = get_additional_fields(args)
         response = list_tickets(args)   # page 1
@@ -1842,6 +1890,33 @@ script:
 
 
     def ticket_reply_command():
+        """
+        Reply to a specified ticket
+
+        demisto parameter: (number) ticket_id
+            ID of the ticket you wish to respond to
+
+        demisto parameter: (string) body
+            Content of the reply in HTML format
+
+        demisto parameter: (string) from_email
+            The email address from which the reply is sent. By default the global support email will be used.
+
+        demisto parameter: (number) user_id
+            ID of the agent who is adding the note
+
+        demisto parameter: (list) cc_emails
+            Array of email address strings added in the 'cc' field of the outgoing ticket email.
+
+        demisto parameter: (list) bcc_emails
+            Array of email address strings added in the 'bcc' field of the outgoing ticket email.
+
+        demisto parameter: (list) attachments
+            Entry IDs of files to attach to the reply. The total size of these attachments cannot exceed 15MB.
+
+        returns:
+            Ticket Reply Object
+        """
         args = demisto.args()
         # Make request and get raw response
         reply = ticket_reply(args)
@@ -1864,6 +1939,36 @@ script:
 
 
     def ticket_note(args):
+        """
+        Create a note for a specified ticket.
+
+        Notes by default are private (AKA not visible to non-agents) unless you
+        set the 'private' command argument to False.
+
+        demisto parameter: (number) ticket_id
+            ID of the ticket you wish to make a note for
+
+        demisto parameter: (string) body
+            Content of the note in HTML format
+
+        demisto parameter: (boolean) private
+            Set to false if the note is not private
+
+        demisto parameter: (number) user_id
+            ID of the agent who is adding the note
+
+        demisto parameter: (list) notify_emails
+            Array of email addresses of agents/users who need to be notified about this note
+
+        demisto parameter: (boolean) incoming
+            Set to true if a particular note should appear as being created from outside (i.e., not through web portal).
+
+        demisto parameter: (list) attachments
+            Entry IDs of files to attach to the note. The total size of these attachments cannot exceed 15MB.
+
+        returns:
+            Note Object
+        """
         ticket_id = args.get('ticket_id')
         del args['ticket_id']
         args = handle_array_input(args)
@@ -1925,6 +2030,15 @@ script:
 
 
     def get_conversations_command():
+        """
+        Lists all replies and notes for a specified ticket
+
+        demisto parameter: (number) ticket_id
+            ID of the ticket for which you would like to list all of its conversations
+
+        returns:
+            Conversation Objects
+        """
         # Get id number of ticket as cmd arg for which you want to see all the conversations
         ticket_id = demisto.args().get('ticket_id')
         # Make request and get raw response
@@ -1966,6 +2080,31 @@ script:
 
 
     def list_contacts_command():
+        """
+        List all contacts.
+
+        Lists all contacts matching the specified filters. If no filters are provided
+        then all unblocked and undeleted contacts will be returned.
+
+        demisto parameter: (number) mobile
+            mobile number to filter the contacts by
+
+        demisto parameter: (number) phone
+            phone number to filter contacts by
+
+        demisto parameter: (number) company_id
+            Company ID by which to filter the contacts
+
+        demisto parameter: (string) state
+            The state of contacts by which you want to filter the contacts. Values
+            are 'verified', 'unverified', 'blocked', or 'deleted'.
+
+        demisto parameter: (datetime) updated_since
+            return contacts that have been updated after the timestamp given as this argument value
+
+        returns:
+            Contact Objects
+        """
         # Get command arguments from user
         filters = demisto.args()
         # Make request and get raw response
@@ -2032,6 +2171,21 @@ script:
 
 
     def view_contact_command():
+        """
+        View the details of the contact specified by the ID number.
+
+        demisto parameter: (number) id
+            ID of the contact you wish to view the details of
+
+        demisto parameter: (number) mobile
+            Mobile number of the contact you wish to view the details of
+
+        demisto parameter: (string) email
+            Email address of the contact you wish to view the details of
+
+        returns:
+            Contact Object
+        """
         # Get command arguments from user
         args = demisto.args()
         # Make request and get raw response
@@ -2062,6 +2216,12 @@ script:
 
 
     def list_cr_folders_command():
+        """
+        List all Canned Response Folders (Only users with Admin Privileges)
+
+        returns:
+            Folder Objects
+        """
         # Make request and get raw response
         cr_folders = list_cr_folders()
         # Parse response into context
@@ -2091,6 +2251,17 @@ script:
 
 
     def list_crs_in_folder_command():
+        """
+        List all Canned Responses in a Folder
+
+        demisto parameter: (number) id
+            ID of the Canned Response folder for which you want to list the canned responses inside of it.
+            To find the ID of a Canned Response folder, execute the `fd-list-cr-folders` command to see
+            the Canned Response folders accessible to you.
+
+        returns:
+            Canned Response Objects
+        """
         # Get id of the containing canned response folder as cmd argument
         cr_folder_id = demisto.args().get('id')
         # Make request and get raw response
@@ -2121,6 +2292,15 @@ script:
 
 
     def detail_crs_command():
+        """
+        View the details of all the Canned Responses in a Folder.
+
+        demisto parameter: (number) id
+            ID of the Folder containing the Canned Responses you wish to view the details of
+
+        returns:
+            Canned Response Objects with more details, aka all of a Canned Response Object's attributes
+        """
         # Get id of the containing canned response folder as cmd argument
         cr_folder_id = demisto.args().get('id')
         # Make request and get raw response
@@ -2154,6 +2334,12 @@ script:
 
 
     def list_groups_command():
+        """
+        List all groups
+
+        returns:
+            Group Objects
+        """
         # Make request and get raw response
         groups = list_groups()
         # Parse response into context
@@ -2186,6 +2372,21 @@ script:
 
 
     def list_agents_command():
+        """
+        List agents that match the criteria of the filters entered as command arguments.
+
+        demisto parameter: (number) mobile
+            Mobile phone number to filter agents by
+
+        demisto parameter: (number) phone
+            Telephone number to filter agents by
+
+        demisto parameter: (string) state
+            Filter agents by whether they are 'fulltime' or 'occasional'
+
+        returns:
+            Agent Objects
+        """
         # Get filter as cmd arg
         args = demisto.args()
         # Make request and get raw response
