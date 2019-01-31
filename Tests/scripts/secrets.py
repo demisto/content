@@ -101,7 +101,7 @@ def search_potential_secrets(secrets_file_paths):
                     skip_secrets = True
                 if bool(re.findall(r'(disable-secrets-detection-end)', line)):
                     skip_secrets = False
-                if bool(re.findall(r'(disable-secrets-detection)', line)) or skip_secrets:
+                if skip_secrets or bool(re.findall(r'(disable-secrets-detection)', line)):
                     continue
 
                 # REGEX scanning for IOCs and false positive groups
