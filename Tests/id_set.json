@@ -2717,6 +2717,9 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - postepone for later"
                 ]
             }
         }, 
@@ -4545,8 +4548,12 @@
         {
             "2aa9f737-8c7c-42f5-815f-4d104bb3af06": {
                 "name": "SEPScan", 
+                "deprecated": true, 
                 "depends_on": [
                     "sep-command-status"
+                ], 
+                "tests": [
+                    "No test - deprecated"
                 ]
             }
         }, 
@@ -11644,6 +11651,24 @@
                 ], 
                 "tests": [
                     "GoogleResourceManager-Test"
+                ]
+            }
+        }, 
+        {
+            "Symantec Endpoint Protection old": {
+                "name": "Symantec Endpoint Protection old", 
+                "commands": [
+                    "sep-endpoints-info", 
+                    "sep-update-content", 
+                    "sep-scan", 
+                    "sep-groups-info", 
+                    "sep-system-info", 
+                    "sep-command-status", 
+                    "sep-quarantine", 
+                    "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - deprecated integration"
                 ]
             }
         }
