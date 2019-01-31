@@ -1236,13 +1236,18 @@ script:
             'tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails',
             'update_fields', 'update_values', 'notify_emails'
         ]
-
-        for arr_input in array_inputs:
-            if arr_input in args.keys():
-                if arr_input != 'attachments':
-                    args[arr_input + '[]'] = argToList(args.get(arr_input))
-                    del args[arr_input]
-                else:
+        attchs_present = args.get('attachments')
+        if attchs_present:
+            for arr_input in array_inputs:
+                if arr_input in args.keys():
+                    if arr_input != 'attachments':
+                        args[arr_input + '[]'] = argToList(args.get(arr_input))
+                        del args[arr_input]
+                    else:
+                        args[arr_input] = argToList(args.get(arr_input))
+        else:
+            for arr_input in array_inputs:
+                if arr_input in args.keys():
                     args[arr_input] = argToList(args.get(arr_input))
         return args
 
@@ -2043,7 +2048,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': context
+                'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
             }
         })
 
@@ -2128,7 +2133,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': context
+                'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
             }
         })
 
@@ -2169,7 +2174,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'FD.Ticket(val.Id && val.Id === obj.Id).Conversation(val.Id && val.Id === obj.Id)': contexts
+                'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': contexts
             }
         })
 
