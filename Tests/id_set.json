@@ -10013,7 +10013,7 @@
                     "sep-move-client-to-group"
                 ], 
                 "tests": [
-                    "sep_-_test_endpoint_search"
+                    "SymantecEndpointProtection Test"
                 ]
             }
         }, 
