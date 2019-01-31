@@ -100,8 +100,9 @@ SCHEMAS_PATH = "Tests/schemas/"
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
-# secrets white list
-ENTROPY_THRESHOLD = 3.4
+# secrets settings
+# Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
+ENTROPY_THRESHOLD = 3.8
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
 
 
@@ -481,7 +482,11 @@ def validate_committed_files(branch_name, is_circle):
         for file_name in secrets_found:
             print_error('\nFile Name: ' + file_name)
             print_error(json.dumps(secrets_found[file_name], indent=4))
-        print_error('Remove or whitelist secrets in order to proceed, then re-commit\n')
+        if not is_circle:
+            print_error('Remove or whitelist secrets in order to proceed, then re-commit\n')
+        else:
+            print_error('The secrets were exposed in public repository, remove the files asap and report it.\n')
+
 
         sys.exit(1)
 
@@ -705,16 +710,21 @@ def str2bool(v):
 
 def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
-    text_file_types = set(['.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv'])
+    text_file_types = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv'}
     if file_extension in text_file_types:
             return True
     return False
 
 
 def get_diff_text_files(files_string):
+    """Filter out only added/modified text files from git diff
+    :param files_string: string representing the git diff files
+    :return: text_files_list: string of full path to text files
+    """
+    # file statuses to filter from the diff, no need to test deleted files.
     accepted_file_statuses = ['M', 'A']
     all_files = files_string.split('\n')
-    text_files_list = set([])
+    text_files_list = set()
     for file_name in all_files:
         file_data = file_name.split()
         if not file_data:
@@ -722,7 +732,7 @@ def get_diff_text_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
+        # only modified/added file, text readable, exclude white_list file
         if file_status.upper() in accepted_file_statuses and is_text_file(file_path) \
                 and SECRETS_WHITE_LIST_FILE not in file_path:
             text_files_list.add(file_path)
@@ -731,7 +741,11 @@ def get_diff_text_files(files_string):
 
 
 def get_all_diff_text_files(branch_name, is_circle):
-
+    """
+    :param branch_name: current branch being worked on
+    :param is_circle: boolean to check if being ran from circle
+    :return:
+    """
     if is_circle:
         branch_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
