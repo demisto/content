@@ -1,40 +1,48 @@
 category: Endpoint
-commonfields: {id: Symantec Endpoint Protection V2, version: -1}
+commonfields:
+  id: Symantec Endpoint Protection V2
+  version: -1
 configuration:
 - defaultvalue: ''
   display: Server (e.g. https://1.2.3.4:8446)
   name: server
-  options: []
+  options: [
+    ]
   required: true
   type: 0
 - defaultvalue: ''
   display: Authentication
   name: authentication
-  options: []
+  options: [
+    ]
   required: true
   type: 9
 - defaultvalue: ''
   display: SEPM domain for the user
   name: domain
-  options: []
+  options: [
+    ]
   required: false
   type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (unsecure)
   name: insecure
-  options: []
+  options: [
+    ]
   required: false
   type: 8
 - defaultvalue: 'true'
   display: Use proxy system settings
   name: proxy
-  options: []
+  options: [
+    ]
   required: false
   type: 8
 - defaultvalue: ''
   display: 'Local time zone (for example: +02:30,-06:00)'
   name: timeZone
-  options: []
+  options: [
+    ]
   required: false
   type: 0
 description: Query the Symantec Endpoint Protection Manager using the official REST
@@ -48,297 +56,226 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: The columns to show.
       isArray: false
       name: columns
-      predefined: []
+      predefined: [
+        ]
       required: false
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: The host name of computer. Wild card is supported as '*'.
       isArray: false
       name: computerName
-      predefined: []
+      predefined: [
+        ]
       required: false
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Indicates when a computer last updated its status. The default
+        value of 0 gets all the results.
       isArray: false
       name: lastUpdate
-      predefined: []
+      predefined: [
+        ]
       required: false
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Operating system to filter.
       isArray: false
       name: os
-      predefined: [CentOs, Debian, Fedora, MacOSX, Oracle, OSX, RedHat, SUSE, Ubuntu,
-        Win10, Win2K, Win7, Win8, WinEmb7, WinEmb8, WinEmb81, WinFundamental, WinNT,
-        Win2K3, Win2K8, Win2K8R2, WinVista, WinXP, WinXPEmb, WinXPProf64]
+      predefined:
+      - CentOs
+      - Debian
+      - Fedora
+      - MacOSX
+      - Oracle
+      - OSX
+      - RedHat
+      - SUSE
+      - Ubuntu
+      - Win10
+      - Win2K
+      - Win7
+      - Win8
+      - WinEmb7
+      - WinEmb8
+      - WinEmb81
+      - WinFundamental
+      - WinNT
+      - Win2K3
+      - Win2K8
+      - Win2K8R2
+      - WinVista
+      - WinXP
+      - WinXPEmb
+      - WinXPProf64
       required: false
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: The number of results to include on each page. The default is 20.
       isArray: false
       name: pageSize
-      predefined: []
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ''
-      description: ''
-      isArray: false
-      name: computerNamed
-      predefined: []
+      predefined: [
+        ]
       required: false
       secret: false
     description: Get information about endpoints.
     execution: false
     name: sep-endpoints-info
     outputs:
-    - {contextPath: SEPM.Endpoint.Hostname, description: The endpoint's hostname.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.Domain, description: The endpoint's domain., type: string}
-    - {contextPath: SEPM.Endpoint.IPAddresses, description: The endpoint's IP addresses.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.OS, description: The endpoint's OS information.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.Description, description: The endpoint's description.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.MACAddresses, description: The endpoint's MAC address.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.BIOSVersion, description: The endpoint's BIOS version.,
-      type: string}
-    - {contextPath: SEPM.Endpoint.DHCPServer, description: The endpoint's DHCP server
-        address., type: string}
-    - {contextPath: SEPM.Endpoint.HardwareKey, description: ' Hardware-Key of the
-        client to be moved', type: String}
-#  - arguments:
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: ip
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: hostname
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: timeout
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: interval
-#      predefined: []
-#      required: false
-#      secret: false
-#    description: Updates the content of the given client.
-#    execution: false
-#    name: sep-update-content
-#    outputs:
-#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-#        command., type: Unknown}
-#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-#      type: Unknown}
-#  - arguments:
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: ip
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: scanType
-#      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
-#      required: true
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: hostname
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: timeout
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: interval
-#      predefined: []
-#      required: false
-#      secret: false
-#    description: Scans an endpoint.
-#    execution: false
-#    name: sep-scan
-#    outputs:
-#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-#        command., type: string}
-#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-#      type: string}
+    - contextPath: SEPM.Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: string
+    - contextPath: SEPM.Endpoint.Domain
+      description: The endpoint's domain.
+      type: string
+    - contextPath: SEPM.Endpoint.IPAddresses
+      description: The endpoint's IP addresses.
+      type: string
+    - contextPath: SEPM.Endpoint.OS
+      description: The endpoint's OS information.
+      type: string
+    - contextPath: SEPM.Endpoint.Description
+      description: The endpoint's description.
+      type: string
+    - contextPath: SEPM.Endpoint.MACAddresses
+      description: The endpoint's MAC address.
+      type: string
+    - contextPath: SEPM.Endpoint.BIOSVersion
+      description: The endpoint's BIOS version.
+      type: string
+    - contextPath: SEPM.Endpoint.DHCPServer
+      description: The endpoint's DHCP server address.
+      type: string
+    - contextPath: SEPM.Endpoint.HardwareKey
+      description: ' Hardware-Key of the client to be moved'
+      type: String
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: The columns to show.
       isArray: false
       name: columns
-      predefined: []
+      predefined: [
+        ]
       required: false
       secret: false
     description: Get information about groups.
     execution: false
     name: sep-groups-info
     outputs:
-    - {contextPath: SEPM.Groups, description: The list of groups., type: Unknown}
-    - {contextPath: SEPM.Groups.created, description: Creation time in Epoch, type: number}
-    - {contextPath: SEPM.Groups.fullPathName, description: Name of the group, type: string}
-    - {contextPath: SEPM.Groups.id, description: ID of the group, type: string}
-    - {contextPath: SEPM.Groups.numberOfPhysicalComputers, description: Number of
-        physical computers in the group, type: number}
-    - {contextPath: SEPM.Groups.numberOfRegisteredUsers, description: Number of registered
-        users in the group, type: number}
-    - {contextPath: SEPM.Groups.policyDate, description: Policy date in Epoch, type: number}
-    - {contextPath: SEPM.Groups.policySerialNumber, description: Policy serial number,
-      type: number}
-  - arguments: []
+    - contextPath: SEPM.Groups
+      description: The list of groups.
+      type: Unknown
+    - contextPath: SEPM.Groups.created
+      description: Creation time in Epoch
+      type: number
+    - contextPath: SEPM.Groups.fullPathName
+      description: Name of the group
+      type: string
+    - contextPath: SEPM.Groups.id
+      description: ID of the group
+      type: string
+    - contextPath: SEPM.Groups.numberOfPhysicalComputers
+      description: Number of physical computers in the group
+      type: number
+    - contextPath: SEPM.Groups.numberOfRegisteredUsers
+      description: Number of registered users in the group
+      type: number
+    - contextPath: SEPM.Groups.policyDate
+      description: Policy date in Epoch
+      type: number
+    - contextPath: SEPM.Groups.policySerialNumber
+      description: Policy serial number
+      type: number
+  - arguments: [
+      ]
     description: Get the system information (version, AV definition).
     execution: false
     name: sep-system-info
     outputs:
-    - {contextPath: SEPM.ServerAVDefVersion, description: The serverAV definition
-        version., type: string}
+    - contextPath: SEPM.ServerAVDefVersion
+      description: The serverAV definition version.
+      type: string
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: The command ID.
       isArray: false
       name: commandId
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     description: Retrieves the status of a command.
     execution: false
     name: sep-command-status
     outputs:
-    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-        command., type: string}
-    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-      type: string}
-#  - arguments:
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: ip
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: hostname
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: timeout
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: interval
-#      predefined: []
-#      required: false
-#      secret: false
-#    - default: false
-#      defaultValue: ''
-#      description: ''
-#      isArray: false
-#      name: actionType
-#      predefined: [Quarantine, Undo]
-#      required: true
-#      secret: false
-#    description: Quarantines the endpoint according to its policy.
-#    execution: false
-#    name: sep-quarantine
-#    outputs:
-#    - {contextPath: SEPM.LastCommand.CommandDetails, description: The details of the
-#        command., type: string}
-#    - {contextPath: SEPM.LastCommand.CommandId, description: The ID of the command.,
-#      type: string}
-  - arguments: []
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+      type: string
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+      type: string
+  - arguments: [
+      ]
     description: Retrieves the client content.
     execution: false
     name: sep-client-content
     outputs:
-    - {contextPath: SEPM.ClientContentVersions, description: The versions of the clients.,
-      type: string}
-    - {contextPath: SEPM.LastUpdated, description: The last-updated date., type: string}
-  - arguments: []
+    - contextPath: SEPM.ClientContentVersions
+      description: The versions of the clients.
+      type: string
+    - contextPath: SEPM.LastUpdated
+      description: The last-updated date.
+      type: string
+  - arguments: [
+      ]
     description: Retrieve a list of existing policies
     execution: false
     name: sep-list-policies
     outputs:
-    - {contextPath: SEPM.PoliciesList.PolicyName, description: Name of policy, type: string}
-    - {contextPath: SEPM.PoliciesList.Type, description: Policy type, type: string}
-    - {contextPath: SEPM.PoliciesList.ID, description: Policy ID, type: string}
-    - {contextPath: SEPM.PoliciesList.Discription, description: Policy discription,
-      type: string}
-    - {contextPath: SEPM.PoliciesList.Enabled, description: True if enabled false
-        otherwise, type: boolean}
-    - {contextPath: SEPM.PoliciesList.AssignedLocations.GroupID, description: 'Group
-        ID of the locations assigned with this policy ', type: string}
-    - {contextPath: SEPM.PoliciesList.AssignedLocations.Locations, description: List
-        of locations IDs assigned with this policy, type: string}
-    - {contextPath: SEPM.PoliciesList.AssignedCloudGroups.GroupID, description: 'Cloud
-        Group ID of the locations assigned with this policy ', type: string}
-    - {contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations, description: List
-        of locations IDs belonging to a cloud group assigned with this policy, type: string}
+    - contextPath: SEPM.PoliciesList.PolicyName
+      description: Name of policy
+      type: string
+    - contextPath: SEPM.PoliciesList.Type
+      description: Policy type
+      type: string
+    - contextPath: SEPM.PoliciesList.ID
+      description: Policy ID
+      type: string
+    - contextPath: SEPM.PoliciesList.Discription
+      description: Policy discription
+      type: string
+    - contextPath: SEPM.PoliciesList.Enabled
+      description: True if enabled false otherwise
+      type: boolean
+    - contextPath: SEPM.PoliciesList.AssignedLocations.GroupID
+      description: 'Group ID of the locations assigned with this policy '
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedLocations.Locations
+      description: List of locations IDs assigned with this policy
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.GroupID
+      description: 'Cloud Group ID of the locations assigned with this policy '
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations
+      description: List of locations IDs belonging to a cloud group assigned with
+        this policy
+      type: string
   - arguments:
     - default: false
       defaultValue: ''
       description: ''
       isArray: false
       name: groupID
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
@@ -346,7 +283,8 @@ script:
       description: ''
       isArray: false
       name: locationID
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
@@ -354,7 +292,8 @@ script:
       description: ''
       isArray: false
       name: policyType
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
@@ -362,100 +301,122 @@ script:
       description: ''
       isArray: false
       name: policyID
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     description: Assign existing policy to a designated location
     execution: false
     name: sep-assign-policy
-    outputs: []
+    outputs: [
+      ]
   - arguments:
     - default: false
       defaultValue: ''
       description: ''
       isArray: false
       name: groupID
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     description: Retrieve a list of location ID's for a given group
     execution: false
     name: sep-list-locations
     outputs:
-    - {contextPath: SEPM.Locations.ID, description: The ID of the location, type: Unknown}
+    - contextPath: SEPM.Locations.ID
+      description: The ID of the location
+      type: Unknown
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: IP ro Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Add or remove endpoint from quarantine.
       isArray: false
       name: actionType
-      predefined: [Add, Remove]
+      predefined:
+      - Add
+      - Remove
       required: true
       secret: false
     description: Quarantines the endpoint according to its policy.
     execution: false
     name: sep-endpoint-quarantine
     outputs:
-    - {contextPath: SEPM.Quarantine.CommandID, description: ID of the invoked command,
-      type: string}
-    - {contextPath: SEPM.Quarantine.Action, description: The action type ('Add' or
-        'Remove'), type: string}
-    - {contextPath: SEPM.Quarantine.Endpoint, description: The endpoint identifier
-        (IP or Host Name), type: string}
+    - contextPath: SEPM.Quarantine.CommandID
+      description: ID of the invoked command
+      type: string
+    - contextPath: SEPM.Quarantine.Action
+      description: The action type ('Add' or 'Remove')
+      type: string
+    - contextPath: SEPM.Quarantine.Endpoint
+      description: The endpoint identifier (IP or Host Name)
+      type: string
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: IP ro Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Type of scan.
       isArray: false
       name: scanType
-      predefined: [ScanNow_Quick, ScanNow_Full, ScanNow_Custom]
+      predefined:
+      - ScanNow_Quick
+      - ScanNow_Full
+      - ScanNow_Custom
       required: true
       secret: false
     description: Scans an endpoint.
     execution: false
     name: sep-scan-endpoint
     outputs:
-    - {contextPath: SEPM.Scan.CommandID, description: ID of the invoked command, type: string}
-    - {contextPath: SEPM.Scan.Type, description: 'Type of the scan (ScanNow_Quick,
-        ScanNow_Full or ScanNow_Custom)', type: string}
-    - {contextPath: SEPM.Quarantine.Endpoint, description: The endpoint identifier
-        (IP or Host Name), type: Unknown}
+    - contextPath: SEPM.Scan.CommandID
+      description: ID of the invoked command
+      type: string
+    - contextPath: SEPM.Scan.Type
+      description: Type of the scan (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
+      type: string
+    - contextPath: SEPM.Quarantine.Endpoint
+      description: The endpoint identifier (IP or Host Name)
+      type: Unknown
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: IP ro Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     description: Updates the content of the given client.
     execution: false
     name: sep-update-endpoint-content
-    outputs: []
+    outputs: [
+      ]
   - arguments:
     - default: false
       defaultValue: ''
       description: ''
       isArray: false
       name: groupID
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     - default: false
@@ -463,13 +424,15 @@ script:
       description: ''
       isArray: false
       name: hardwareKey
-      predefined: []
+      predefined: [
+        ]
       required: true
       secret: false
     description: Moves a client to a group
     execution: false
     name: sep-move-client-to-group
-    outputs: []
+    outputs: [
+      ]
   dockerimage: ''
   isfetch: false
   runonce: false
@@ -485,14 +448,6 @@ script:
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
-
-    # Default timeout and interval parameters for polling the response
-    CLIENT_COMMAND_PARAMETERS = {
-        'sep-update-content': {'timeout': 120, 'interval': 10},
-        'sep-quarantine': {'timeout': 120, 'interval': 10},
-        #  Don't poll for scan response because it takes too long. The automation will do that
-        'sep-scan': {'timeout': 1, 'interval': 1}
-    }
 
     ENDPOINTS_INFO_DEFAULT_COLUMNS = [
         'computerName',
@@ -645,25 +600,6 @@ script:
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
 
         return res_json
-
-
-    def poll_response(token, command_id, timeout, interval):
-        retries = timeout / interval
-        is_done = False
-        for _ in range(retries):
-            command_status_json = get_command_status_details(token, command_id)
-            cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
-            state_id = cmd_status_detail.get('stateId')
-            if state_id == '2' or state_id == '3':
-                is_done = True
-                break
-            time.sleep(interval)
-
-        return {
-            'cmdStatusDetail': cmd_status_detail,
-            'isDone': is_done
-        }
-
 
     def build_command_response_output(title, command_id, message, response):
         cmd_status_details = response.get('cmdStatusDetail')
@@ -982,42 +918,6 @@ script:
             }
         })
 
-
-    def run_client_command(token, command):
-        endpoint_ip = demisto.getArg('ip')
-        endpoint_host_name = demisto.getArg('hostname')
-        try:
-            computer_id = get_computer_id(token, endpoint_ip, endpoint_host_name)
-            timeout = int(demisto.getParam('timeout')) if demisto.getParam('timeout') else CLIENT_COMMAND_PARAMETERS[command]['timeout']
-            interval = int(demisto.getParam('interval')) if demisto.getParam('interval') else CLIENT_COMMAND_PARAMETERS[command]['interval']
-
-        except Exception, ex:
-            return_error('unable to run command: {}'.format(ex))
-
-        if command == 'sep-update-content':
-            command_id = update_content(token, computer_id)
-        elif command == 'sep-scan':
-            scan_type = demisto.getArg('scanType')
-            command_id = scan(token, computer_id, scan_type)
-        elif command == 'sep-quarantine':
-            action_type = demisto.getArg('actionType')
-            command_id = quarantine(token, computer_id, action_type)
-
-        response = poll_response(token, command_id, timeout, interval)
-        endpoint = endpoint_ip if endpoint_ip else endpoint_host_name
-        title = 'Launched {0} command for endpoint {1}, here is the output.\n'.format(command, endpoint)
-
-        if response.get('isDone'):
-
-            message = 'Command is done.'
-        elif command == 'sep-scan':
-            message = 'Command is in progress.'
-        else:
-            message = 'Command timed out after {0} second(s). Run !sep-command-status to check again.'.format(timeout)
-
-        return build_command_response_output(title, command_id, message, response)
-
-
     def list_policies_command(token):
         policies_list = do_get(token, False, 'sepm/api/v1/policies/summary').get('content')
 
@@ -1204,12 +1104,6 @@ script:
             groups_info_command(token)
         if current_command == 'sep-command-status':
             command_status(token)
-        if current_command == 'sep-quarantine':
-            run_client_command(token, 'sep-quarantine')
-        if current_command == 'sep-update-content':
-            run_client_command(token, 'sep-update-content')
-        if current_command == 'sep-scan':
-            run_client_command(token, 'sep-scan')
         if current_command == 'sep-list-policies':
             list_policies_command(token)
         if current_command == 'sep-assign-policy':
@@ -1235,4 +1129,5 @@ releaseNotes: Enhancments for the integration. New commands sep-list-policies - 
   sep-endpoint-quarantine - Quarantines the endpoint according to its policy. sep-scan-endpoint
   - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given
   client.
-tests: [No test]
+tests:
+- No test
