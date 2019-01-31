@@ -42,8 +42,8 @@ class AMIConnection:
                                                                    REMOTE_MACHINE_USER, self.ip).split()
         return prefix + command
 
-    def call(self, command):
-        return call(self.add_ssh_prefix(command))
+    def call(self, command, **kwargs):
+        return call(self.add_ssh_prefix(command), **kwargs)
 
     def check_call(self, command):
         return check_call(self.add_ssh_prefix(command))
@@ -76,6 +76,9 @@ class MITMProxy:
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
         self.debug = debug
+
+        with open(os.devnull, 'w') as fnull:
+            self.ami.call(['mkdir', '-p', tmp_folder], stderr=fnull)
 
     def __configure_proxy(self, proxy=""):
         http_proxy = https_proxy = proxy
