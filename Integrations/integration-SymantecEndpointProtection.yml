@@ -438,8 +438,6 @@ script:
   isfetch: false
   runonce: false
   script: |-
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     import requests
     import json
     import re
