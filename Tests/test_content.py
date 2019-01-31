@@ -140,10 +140,14 @@ def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playboo
 # run the test using a real instance, record traffic.
 def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    proxy.set_folder_tmp()
     proxy.start(playbook_id, record=True)
     succeed = mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                            test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     proxy.stop()
+    if succeed:
+        proxy.move_to_primary(playbook_id)
+    proxy.set_folder_primary()
     return succeed
 
 
@@ -175,14 +179,8 @@ def run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id, s
             return
 
         print "Test failed with mock, rerunning without mock."
-        proxy.set_folder_tmp()
-        succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                                 test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
-        if succeed:
-            proxy.move_to_primary(playbook_id)
-        proxy.set_folder_primary()
     run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     print '------ Test %s end ------' % (test_message,)
 
 
