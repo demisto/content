@@ -11772,6 +11772,9 @@
                     "fd-ticket-note", 
                     "fd-delete-ticket", 
                     "fd-list-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
                 ]
             }
         }
