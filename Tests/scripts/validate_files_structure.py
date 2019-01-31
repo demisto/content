@@ -759,7 +759,7 @@ def get_all_diff_text_files(branch_name, is_circle):
 def search_potential_secrets(secrets_file_paths):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
-    :return: dictionary of strings sorted by file name for secrets found in files
+    :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
     """
     # Get generic white list set
     with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
