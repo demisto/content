@@ -2570,3 +2570,5 @@ script:
         traceback.print_tb(tb)
         return_error(e.message)
   type: python
+releaseNotes: New integration
+tests: [Freshdesk-Test]
