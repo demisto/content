@@ -141,13 +141,15 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
           "integrations": "Tenable.io",
