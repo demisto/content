@@ -4,36 +4,16 @@ import string
 import unicodedata
 from subprocess import call, Popen, PIPE
 
+LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
+UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
 MOCKS_TMP_PATH = "/tmp/Mocks/"
 MOCKS_GIT_PATH = "content-test-data/Mocks/"
 MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
 REMOTE_MACHINE_USER = "ec2-user"
 VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 
-
-def clone_content_test_data(public_ip):
-    remote_home = "/home/{}/".format(REMOTE_MACHINE_USER)
-    remote_key_filepath = os.path.join(remote_home + '.ssh/', MOCK_KEY_FILE)
-    remote_script_path = os.path.join(remote_home, CLONE_MOCKS_SCRIPT)
-    call(['scp', '-o', ' StrictHostKeyChecking=no',
-          os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE),
-          "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_key_filepath)
-          ])
-    call(['scp', '-o', ' StrictHostKeyChecking=no',
-          os.path.join('/home/circleci/project/Tests/scripts/', CLONE_MOCKS_SCRIPT),
-          "{}@{}:{}".format(REMOTE_MACHINE_USER, public_ip, remote_home)
-          ])
-
-    remote_call(public_ip, ['chmod', '+x', remote_script_path])
-    remote_call(public_ip, [remote_script_path, remote_key_filepath])
-
-
-def upload_mock_files(public_ip, build_name, build_number):
-    remote_call(public_ip, ['git', 'add', 'Mocks/*.mock'])
-    commit_message = "Updated mock files from content build {} - {}".format(build_name, build_number)
-    remote_call(public_ip, ['git', 'commit', '-m', commit_message])
-    remote_call(public_ip, ['git', 'push'])
+REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
 
 
 def clean_filename(filename, whitelist=VALID_FILENAME_CHARS, replace=' '):
@@ -49,19 +29,41 @@ def clean_filename(filename, whitelist=VALID_FILENAME_CHARS, replace=' '):
     return cleaned_filename
 
 
-def add_ssh_prefix(public_ip, command, ssh_options=""):
-    if ssh_options and not isinstance(ssh_options, str):
-        raise TypeError("options must be string")
-    if not isinstance(command, list):
-        raise TypeError("command must be list")
-    full_command = "ssh {} -o StrictHostKeyChecking=no {}@{}".format(ssh_options,
-                                                                     REMOTE_MACHINE_USER, public_ip).split()
-    full_command.extend(command)
-    return full_command
+class AMIConnection:
+    def __init__(self, public_ip):
+        self.ip = public_ip
 
+    def add_ssh_prefix(self, command, ssh_options=""):
+        if ssh_options and not isinstance(ssh_options, str):
+            raise TypeError("options must be string")
+        if not isinstance(command, list):
+            raise TypeError("command must be list")
+        prefix = "ssh {} -o StrictHostKeyChecking=no {}@{}".format(ssh_options,
+                                                                   REMOTE_MACHINE_USER, self.ip).split()
+        return prefix + command
 
-def remote_call(public_ip, command):
-    return call(add_ssh_prefix(public_ip, command))
+    def call(self, command):
+        return call(self.add_ssh_prefix(command))
+
+    def copy_file(self, src, dst=REMOTE_HOME):
+        call(['scp', '-o', ' StrictHostKeyChecking=no', src,
+              "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)])
+
+    def run_script(self, script, *args):
+        remote_script_path = os.path.join(REMOTE_HOME, UPLOAD_MOCKS_SCRIPT)
+        self.copy_file(os.path.join(LOCAL_SCRIPTS_DIR, script))
+        self.call(['chmod', '+x', remote_script_path])
+        self.call([remote_script_path] + list(args))
+
+    def upload_mock_files(self, build_name, build_number):
+        remote_script_path = os.path.join(REMOTE_HOME, UPLOAD_MOCKS_SCRIPT)
+        self.run_script(remote_script_path, build_name, build_number)
+
+    def clone_mock_data(self):
+        remote_key_filepath = os.path.join(REMOTE_HOME + '.ssh/', MOCK_KEY_FILE)
+        remote_script_path = os.path.join(REMOTE_HOME, CLONE_MOCKS_SCRIPT)
+        self.copy_file(os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE))
+        self.run_script(CLONE_MOCKS_SCRIPT, remote_script_path, remote_key_filepath)
 
 
 class MITMProxy:
@@ -69,6 +71,7 @@ class MITMProxy:
                  primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
         self.demisto_client = demisto_client
         self.ip = public_ip
+        self.ami = AMIConnection(self.ip)
         self.process = None
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
@@ -89,7 +92,7 @@ class MITMProxy:
         self.active_folder = self.tmp_folder
 
     def move_to_primary(self, playbook_id):
-        remote_call(self.ip, ['mv', os.path.join(self.tmp_folder, playbook_id + '.mock'), self.primary_folder])
+        self.ami.call(['mv', os.path.join(self.tmp_folder, playbook_id + '.mock'), self.primary_folder])
 
     def start(self, playbook_id, path=None, record=False):
         if self.process:
@@ -100,7 +103,7 @@ class MITMProxy:
         command = "mitmdump -p 9997 {}".format(action).split()
         command.append(os.path.join(path, clean_filename(playbook_id) + ".mock"))
 
-        self.process = Popen(add_ssh_prefix(self.ip, command, "-t"), stdout=PIPE, stderr=PIPE)
+        self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy('localhost:9997')
 
     def stop(self):
@@ -109,7 +112,7 @@ class MITMProxy:
 
         self.__configure_proxy('')
         self.process.send_signal(signal.SIGINT)
-        call(add_ssh_prefix(self.ip, ["rm", "-rf", "/tmp/_MEI*"]))
+        self.ami.call(["rm", "-rf", "/tmp/_MEI*"])
         if self.debug:
             print "proxy outputs:"
             print self.process.stdout.read()

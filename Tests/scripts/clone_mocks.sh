@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 
 cat > ~/.ssh/config << EOF
 host github.com

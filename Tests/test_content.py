@@ -11,8 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, remote_call, clean_filename, clone_content_test_data, upload_mock_files, \
-    MOCKS_GIT_PATH
+from mock_server import MITMProxy, AMIConnection, clean_filename, MOCKS_GIT_PATH
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -86,10 +85,9 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def has_mock_file(public_ip, playbook_id):
+def has_mock_file(ami, playbook_id):
     command = ["[", "-f", os.path.join(MOCKS_GIT_PATH, clean_filename(playbook_id) + ".mock"), "]"]
-    # print "running command {}".format(add_ssh_prefix(public_ip, command))  # DEBUG
-    file_exists = remote_call(public_ip, command) == 0
+    file_exists = ami.call(command) == 0
     if not file_exists:
         print "Mock file does not exist, running without mock."
 
@@ -151,7 +149,7 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
     return succeed
 
 
-def run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+def run_test(c, proxy, ami, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
 
@@ -164,7 +162,7 @@ def run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id, s
         return
 
     set_mock_params(integrations)
-    if has_mock_file(public_ip, playbook_id):
+    if has_mock_file(ami, playbook_id):
         print "Running with playback"
         proxy.start(playbook_id)
         # run test
@@ -390,7 +388,8 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
-    clone_content_test_data(public_ip)  # FUTURE: pull instead of clone
+    ami = AMIConnection(public_ip)
+    ami.clone_mock_data()  # FUTURE: pull instead of clone
     proxy = MITMProxy(c, public_ip, debug=True)
 
     failed_playbooks = []
@@ -450,7 +449,7 @@ def main():
 
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, proxy, public_ip, failed_playbooks, integrations, playbook_id,
+        run_test(c, proxy, ami, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
@@ -458,7 +457,7 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    upload_mock_files(public_ip, build_name, buildNumber)
+    ami.upload_mock_files(build_name, buildNumber)
 
     if get_content_branch() == 'master':
         # TODO: Get new/updated mock files from remote machine
