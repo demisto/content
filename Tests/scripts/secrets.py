@@ -51,7 +51,8 @@ def get_all_diff_text_files(branch_name, is_circle):
     :return:
     """
     if is_circle:
-        branch_changed_files_string = validate_files_structure.run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+        branch_changed_files_string = \
+            validate_files_structure.run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
 
     else:
@@ -77,6 +78,7 @@ def search_potential_secrets(secrets_file_paths):
         high_entropy_strings = []
         regex_secrets = []
         yml_file_contents = None
+        skip_secrets = False
 
         # if py file, search for yml in order to retrieve temp white list
         file_path_temp, file_extension = os.path.splitext(file_path)
@@ -92,11 +94,14 @@ def search_potential_secrets(secrets_file_paths):
             secrets_white_list = secrets_white_list.union(temp_white_list)
 
             # Search by lines after strings with high entropy as possibly suspicious
-            for line in set(file_contents.split('\n')):
+            for line in file_contents.split('\n'):
 
                 # if detected disable-secrets comment, skip the line
-                if bool(re.findall(r'(disable-secrets-detection)', line)):
-                    file_contents = file_contents.replace(line, '')
+                if bool(re.findall(r'(disable-secrets-detection-start)', line)):
+                    skip_secrets = True
+                if bool(re.findall(r'(disable-secrets-detection-end)', line)):
+                    skip_secrets = False
+                if bool(re.findall(r'(disable-secrets-detection)', line)) or skip_secrets:
                     continue
 
                 # REGEX scanning for IOCs and false positive groups
@@ -161,7 +166,7 @@ def regex_for_secrets(file_contents):
     emails = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', file_contents)
     if emails:
         potential_secrets += emails
-    # IPV6 REGEX
+    # IPV6 REGEX disable-secrets-detection-start
     ipv6_list = re.findall(r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1'
                            r'[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::'
                            r'(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]'
@@ -180,6 +185,7 @@ def regex_for_secrets(file_contents):
                            r'|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
                            r'(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|'
                            r'(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)', file_contents)
+    # disable-secrets-detection-end
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::':
