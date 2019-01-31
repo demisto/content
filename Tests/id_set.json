@@ -9513,6 +9513,9 @@
                     "cs-indicators", 
                     "cs-reports", 
                     "cs-report-pdf"
+                ], 
+                "tests": [
+                    "CrowdStrike Falcon Intel v2"
                 ]
             }
         }, 
