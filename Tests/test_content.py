@@ -178,7 +178,7 @@ def run_test(c, proxy, ami, failed_playbooks, integrations, playbook_id, succeed
 
         print "Test failed with mock, rerunning without mock."
     run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     print '------ Test %s end ------' % (test_message,)
 
 
