@@ -1008,6 +1008,22 @@ script:
 
 
     def handle_list_tickets_pagination(args, response):
+        """
+        Retrieve all resulting tickets even over the default 30 returned by a single API call.
+
+        When the list_tickets_command results in more tickets than the default per page count (30) returned from
+        making an API call, then this function retrieves the remaining tickets by iterating and making API calls
+        per additional page of results.
+
+        parameter: (dict) args
+            list_tickets_command arguments
+
+        parameter: (dict) response
+            The initial json response from making an API call in the list_tickets function
+
+        returns:
+            All Ticket Objects
+        """
         # If user entered custom_query arg, the resulting tickets are in the 'results' attribute of the response
         max_pages = 10
         if args.get('custom_query'):
@@ -1036,6 +1052,19 @@ script:
 
 
     def attachments_into_context(api_response, context):
+        """
+        Get the attachments field from the api_response argument if present and parse it into the context.
+
+        parameter: (dict) api_response
+            The json response returned by the calling function's associated 'requests' function in which calls
+            to the API are made.
+
+        parameter: (dict) context
+            The context that will be modified and returned to the war room
+
+        returns:
+            The modified context
+        """
         # Parse attachments into context
         attachments = api_response.get('attachments')
         if attachments:
@@ -1048,6 +1077,30 @@ script:
 
 
     def additional_fields_to_context(context, already_in_context, additional_fields, additional_values):
+        """
+        Parses fields not presented as part of the command's standard arguments into the context.
+
+        For commands where the user can enter additional fields and their associated values beyond what
+        is offered by the standard arguments (but are still supported by the API endpoint). If the additional
+        fields are not part of the standard context output for that command, then those fields and values
+        from the API call are parsed and subcategorized under the 'AdditionalFields' context output.
+
+        parameter: (dict) context
+            The context that will be modified and returned to the war room
+
+        parameter: (list) already_in_context
+            List of fields which are ordinarily/already parsed into the context
+
+        parameter: (list) additional_fields
+            List of the fields beyond the command's standard arguments that the user entered as part
+            of the call to the API endpoint
+
+        parameter: (list) additional_values
+            List of values corresponding to the additional_fields argument
+
+        returns:
+            The modified context
+        """
         # Parse additional fields into context
         if additional_fields and additional_values:
             additional_field_contexts = []
@@ -1060,7 +1113,13 @@ script:
 
 
     def reformat_args(args, fields_arg_name, values_arg_name):
-        # Format args according to API expecations
+        """
+        Merge additional fields and additional values arguments into the args parameter
+        which will be used when making the API call, from how they were entered on the
+        command line (as lists) to the format the API endpoint expects (individual
+        keys and values in the args dictionary).
+        """
+        # Format args according to API expectations
         additional_update_fields = args.get(fields_arg_name)
         additional_field_values = args.get(values_arg_name)
         if additional_update_fields and additional_field_values:
@@ -1071,7 +1130,10 @@ script:
         return args
 
 
-    def addional_fields_to_args(args, fields_arg_name, values_arg_name):
+    def additional_fields_to_args(args, fields_arg_name, values_arg_name):
+        """
+        Parses sublists given in the 'additional_values' or 'update_values' argument.
+        """
         fields_arg = args.get(fields_arg_name)
         values_arg = args.get(values_arg_name)
         if fields_arg and values_arg:
@@ -1116,6 +1178,9 @@ script:
 
 
     def ticket_to_incident(ticket):
+        """
+        Create incident from ticket object.
+        """
         incident = {}
         # Incident Title
         incident['name'] = 'Ticket Incident: "{}"'.format(ticket.get('subject'))
@@ -1127,6 +1192,9 @@ script:
 
 
     def get_additional_fields(args):
+        """
+        Determine which fields need to be added to context based off arguments given in the list_tickets_command.
+        """
         additional_fields = []  # fields that should be added to output context
         filter = args.get('filter')
         if filter:
@@ -1147,6 +1215,9 @@ script:
 
 
     def entries_to_files(entry_ids):
+        """
+        Format file details (retrieved using the files' entry IDs) to API expectations to include files in API call.
+        """
         attachments = []
         for entry_id in entry_ids:
             execute_results = demisto.getFilePath(entry_id)
@@ -1158,6 +1229,9 @@ script:
 
 
     def handle_array_input(args):
+        """
+        Format any command argument that is supposed to be an array from a string to a list.
+        """
         array_inputs = [
             'tags', 'attachments', 'cc_emails', 'bcc_emails', 'to_emails',
             'update_fields', 'update_values', 'notify_emails'
@@ -1174,6 +1248,9 @@ script:
 
 
     def handle_bool_input(args):
+        """
+        Format entered values for command arguments 'private' and 'incoming' to API expectations.
+        """
         bool_inputs = ['private', 'incoming']
         acceptable_vals = ['true', 'false']
 
@@ -1190,6 +1267,9 @@ script:
 
 
     def validate_priority_input(args):
+        """
+        Check entered value for command argument 'priority' and format to API expectations.
+        """
         # Parse and ensure valid command argument
         priority = args.get('priority', None)
 
@@ -1217,6 +1297,9 @@ script:
 
 
     def validate_status_input(args):
+        """
+        Check entered value for command argument 'status' and format to API expectations.
+        """
         # Parse and ensure valid command argument
         status = args.get('status', None)
 
@@ -1246,11 +1329,10 @@ script:
         return args
 
 
-    def clean_arguments(args):
-        args = validate_status_input(args)
-        args = validate_priority_input(args)
-        args = handle_array_input(args)
-
+    def handle_number_input(args):
+        """
+        Format any command argument that is supposed to be a number from a string to an int.
+        """
         # Command args that should be numbers
         number_args = [
             'requester_id', 'status', 'priority', 'responder_id',
@@ -1263,7 +1345,22 @@ script:
         return args
 
 
+    def clean_arguments(args):
+        """
+        Perform all validation and reformatting of command arguments.
+        """
+        args = validate_status_input(args)
+        args = validate_priority_input(args)
+        args = handle_array_input(args)
+        args = handle_number_input(args)
+        return args
+
+
     def determine_identifier(args):
+        """
+        Determine whether the input for the 'identifier' argument is an
+        email or twitter handle and adjust 'args' accordingly.
+        """
         identifier = args.get('identifier')
         if identifier.startswith('@'):
             # Then it's a twitter handle
@@ -1277,6 +1374,9 @@ script:
 
 
     def determine_responder(args):
+        """
+        Determine whether the input for the 'responder' argument is a group or an agent and adjust 'args' accordingly.
+        """
         responder = args.get('responder', None)
         if responder:
             args = determine_group(args, 'responder')
@@ -1285,6 +1385,10 @@ script:
 
 
     def determine_agent(args, key_name):
+        """
+        Determine if the value points to an agent by checking against all agent names, emails, and IDs, and adjust
+        'args' accordingly.
+        """
         assigned_agent = args.get(key_name, None)
         if assigned_agent:
             agent_emails, agent_names, agent_ids = [], [], []
@@ -1310,6 +1414,10 @@ script:
 
 
     def determine_group(args, key_name):
+        """
+        Determine if the value points to a group by checking against all group names and IDs, and adjust
+        'args' accordingly.
+        """
         assigned_group = args.get(key_name, None)
         if assigned_group:
             group_names, group_ids = [], []
@@ -1330,7 +1438,9 @@ script:
 
 
     def http_request(method, url_suffix, params=None, data=None, files=None,):
-        # A wrapper for requests lib to send our requests and handle requests and responses better
+        """
+        A wrapper for requests lib to send our requests and handle requests and responses better.
+        """
         res = requests.request(
             method,
             BASE_URL + url_suffix,
@@ -1479,7 +1589,7 @@ script:
         args = demisto.args()
 
         # Handle additional_fields and additional_values command arguments
-        args, additional_fields, additional_values = addional_fields_to_args(args, 'additional_fields', 'additional_values')
+        args, additional_fields, additional_values = additional_fields_to_args(args, 'additional_fields', 'additional_values')
 
         # Make request and get raw response
         ticket = create_ticket(args)
@@ -1544,7 +1654,7 @@ script:
 
     def update_ticket_command():
         """
-        Update the ticket specified by a ticket ID number
+        Update the ticket specified by a ticket ID number.
 
         demisto parameter: (string) subject
             Update the ticket's subject field
@@ -1580,7 +1690,7 @@ script:
             Ticket specified by the ticket ID number with its updated values
         """
         args = demisto.args()
-        args, additional_fields, additional_fields_values = addional_fields_to_args(args, 'update_fields', 'update_values')
+        args, additional_fields, additional_fields_values = additional_fields_to_args(args, 'update_fields', 'update_values')
 
         # Make request and get raw response
         ticket = update_ticket(args)
@@ -1692,7 +1802,7 @@ script:
 
     def delete_ticket_command():
         """
-        Soft-Delete the ticket specified by the 'id' command argument
+        Soft-Delete the ticket specified by the 'id' command argument.
 
         demisto parameter: (number) id
             ID of the ticket to delete
@@ -1891,7 +2001,7 @@ script:
 
     def ticket_reply_command():
         """
-        Reply to a specified ticket
+        Reply to a specified ticket.
 
         demisto parameter: (number) ticket_id
             ID of the ticket you wish to respond to
@@ -1939,36 +2049,6 @@ script:
 
 
     def ticket_note(args):
-        """
-        Create a note for a specified ticket.
-
-        Notes by default are private (AKA not visible to non-agents) unless you
-        set the 'private' command argument to False.
-
-        demisto parameter: (number) ticket_id
-            ID of the ticket you wish to make a note for
-
-        demisto parameter: (string) body
-            Content of the note in HTML format
-
-        demisto parameter: (boolean) private
-            Set to false if the note is not private
-
-        demisto parameter: (number) user_id
-            ID of the agent who is adding the note
-
-        demisto parameter: (list) notify_emails
-            Array of email addresses of agents/users who need to be notified about this note
-
-        demisto parameter: (boolean) incoming
-            Set to true if a particular note should appear as being created from outside (i.e., not through web portal).
-
-        demisto parameter: (list) attachments
-            Entry IDs of files to attach to the note. The total size of these attachments cannot exceed 15MB.
-
-        returns:
-            Note Object
-        """
         ticket_id = args.get('ticket_id')
         del args['ticket_id']
         args = handle_array_input(args)
@@ -2001,6 +2081,36 @@ script:
 
 
     def ticket_note_command():
+        """
+        Create a note for a specified ticket.
+
+        Notes by default are private (AKA not visible to non-agents) unless you
+        set the 'private' command argument to False.
+
+        demisto parameter: (number) ticket_id
+            ID of the ticket you wish to make a note for
+
+        demisto parameter: (string) body
+            Content of the note in HTML format
+
+        demisto parameter: (boolean) private
+            Set to false if the note is not private
+
+        demisto parameter: (number) user_id
+            ID of the agent who is adding the note
+
+        demisto parameter: (list) notify_emails
+            Array of email addresses of agents/users who need to be notified about this note
+
+        demisto parameter: (boolean) incoming
+            Set to true if a particular note should appear as being created from outside (i.e., not through web portal).
+
+        demisto parameter: (list) attachments
+            Entry IDs of files to attach to the note. The total size of these attachments cannot exceed 15MB.
+
+        returns:
+            Note Object
+        """
         # Get command arguments
         args = demisto.args()
         # Make request and get raw response
@@ -2031,7 +2141,7 @@ script:
 
     def get_conversations_command():
         """
-        Lists all replies and notes for a specified ticket
+        Lists all replies and notes for a specified ticket.
 
         demisto parameter: (number) ticket_id
             ID of the ticket for which you would like to list all of its conversations
@@ -2217,7 +2327,7 @@ script:
 
     def list_cr_folders_command():
         """
-        List all Canned Response Folders (Only users with Admin Privileges)
+        List all Canned Response Folders (Only users with Admin Privileges).
 
         returns:
             Folder Objects
@@ -2252,7 +2362,7 @@ script:
 
     def list_crs_in_folder_command():
         """
-        List all Canned Responses in a Folder
+        List all Canned Responses in a Folder.
 
         demisto parameter: (number) id
             ID of the Canned Response folder for which you want to list the canned responses inside of it.
@@ -2335,7 +2445,7 @@ script:
 
     def list_groups_command():
         """
-        List all groups
+        List all groups.
 
         returns:
             Group Objects
