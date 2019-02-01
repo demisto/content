@@ -79,9 +79,9 @@ def get_changed_files(files_string):
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         elif file_status.lower() == 'a' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            added_script_list.add(os.path.dirname(file_path))
+            added_script_list.add(os.path.join(os.path.dirname(file_path), ''))
         elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            modified_script_list.add(os.path.dirname(file_path))
+            modified_script_list.add(os.path.join(os.path.dirname(file_path), ''))
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 
@@ -157,7 +157,7 @@ def get_task_ids_from_playbook(param_to_enrich_by, data_dict):
 
 
 def get_commmands_from_playbook(data_dict):
-    commands = set([])
+    command_to_integration = {}
     tasks = data_dict.get('tasks', [])
 
     for task in tasks.values():
@@ -165,10 +165,12 @@ def get_commmands_from_playbook(data_dict):
 
         command = task_details.get('script')
         if command:
-            command = command.split('|')[-1]
-            commands.add(command)
+            splitted_cmd = command.split('|')
 
-    return list(commands)
+            if 'Builtin' not in command:
+                command_to_integration[splitted_cmd[-1]] = splitted_cmd[0]
+
+    return command_to_integration
 
 
 def get_integration_data(file_path):
@@ -207,7 +209,7 @@ def get_playbook_data(file_path):
     fromversion = data_dictionary.get('fromversion')
     implementing_scripts = get_task_ids_from_playbook('scriptName', data_dictionary)
     implementing_playbooks = get_task_ids_from_playbook('playbookName', data_dictionary)
-    implementing_commands = get_commmands_from_playbook(data_dictionary)
+    command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
     if toversion:
@@ -218,8 +220,8 @@ def get_playbook_data(file_path):
         playbook_data['implementing_scripts'] = implementing_scripts
     if implementing_playbooks:
         playbook_data['implementing_playbooks'] = implementing_playbooks
-    if implementing_commands:
-        playbook_data['implementing_commands'] = implementing_commands
+    if command_to_integration:
+        playbook_data['command_to_integration'] = command_to_integration
     if tests:
         playbook_data['tests'] = tests
 
@@ -374,7 +376,7 @@ def update_id_set():
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
-    if added_files or modified_files:
+    if added_files or modified_files or added_scripts or modified_scripts:
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:

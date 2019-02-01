@@ -662,6 +662,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-releaseNotes: "Updated playbook to utilize the new feature of extracting indicators from word documents"
 tests:
   - Extract Indicators From File - test
