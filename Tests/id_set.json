@@ -4809,6 +4809,14 @@
                     "No test - fetches indicators"
                 ]
             }
+        }, 
+        {
+            "e7e700eb-0d46-4175-828b-1161f9295164": {
+                "name": "RecordedFutureHashRiskList", 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -8939,7 +8947,9 @@
                     "recorded-future-get-hash-riskrules", 
                     "recorded-future-get-ip-riskrules", 
                     "recorded-future-get-url-riskrules", 
-                    "recorded-future-get-vulnerability-riskrules"
+                    "recorded-future-get-vulnerability-riskrules", 
+                    "recorded-future-get-alert-rules", 
+                    "recorded-future-get-alerts"
                 ]
             }
         }, 
@@ -14887,6 +14897,7 @@
             "Recorded Future Test": {
                 "name": "Recorded Future Test", 
                 "implementing_scripts": [
+                    "FetchFromInstance", 
                     "VerifyContext", 
                     "DeleteContext"
                 ], 
@@ -14897,6 +14908,7 @@
                     "ip", 
                     "recorded-future-get-threats-hash", 
                     "domain", 
+                    "recorded-future-get-alerts", 
                     "recorded-future-get-threats-vulnerabilities", 
                     "recorded-future-get-related-entities", 
                     "recorded-future-get-vulnerability-riskrules", 
@@ -14904,6 +14916,7 @@
                     "file", 
                     "recorded-future-get-threats-ip", 
                     "recorded-future-get-url-riskrules", 
+                    "recorded-future-get-alert-rules", 
                     "recorded-future-get-ip-riskrules", 
                     "recorded-future-get-hash-riskrules"
                 ]
