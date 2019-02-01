@@ -2839,5 +2839,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "Added: Commands for retrieving threats by a specified order; Retrieving risk lists as csv files (with additional scripts to create indicators using them); Retrieving and fetching alerts."
-test:
+tests:
   - Recorded Future Test
