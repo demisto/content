@@ -9075,6 +9075,9 @@
                     "recorded-future-get-vulnerability-riskrules", 
                     "recorded-future-get-alert-rules", 
                     "recorded-future-get-alerts"
+                ], 
+                "tests": [
+                    "Recorded Future Test"
                 ]
             }
         }, 
