@@ -1081,7 +1081,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2760
+          "y": 3605
         }
       }
     note: false
@@ -1106,7 +1106,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 2410
         }
       }
@@ -1132,7 +1132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 2410
         }
       }
@@ -1158,7 +1158,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2410
         }
       }
@@ -1184,7 +1184,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 2410
         }
       }
@@ -1233,7 +1233,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "37"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -1250,12 +1250,183 @@ tasks:
       }
     note: false
     timertriggers: []
+  "37":
+    id: "37"
+    taskid: 955fc18a-7b52-474e-8b12-539fec8a6927
+    type: title
+    task:
+      id: 955fc18a-7b52-474e-8b12-539fec8a6927
+      version: -1
+      name: Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+  "38":
+    id: "38"
+    taskid: 458a0d94-f4c6-4785-8992-b78347e47f09
+    type: regular
+    task:
+      id: 458a0d94-f4c6-4785-8992-b78347e47f09
+      version: -1
+      name: recorded-future-get-alert-rules
+      description: Get Recorded Future Alert rules by rule name
+      script: Recorded Future|||recorded-future-get-alert-rules
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      limit: {}
+      rule_name:
+        simple: DJIA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: 91bb0c5d-7e3f-45c6-8e6b-b0eeb5ee3fb2
+    type: regular
+    task:
+      id: 91bb0c5d-7e3f-45c6-8e6b-b0eeb5ee3fb2
+      version: -1
+      name: recorded-future-get-alerts
+      description: Get alerts from Recorded Future
+      script: Recorded Future|||recorded-future-get-alerts
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      assignee: {}
+      direction: {}
+      freetext: {}
+      from: {}
+      limit: {}
+      orderby: {}
+      rule_id:
+        simple: ${RecordedFuture.AlertRule.ID}
+      status: {}
+      triggered: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: 2902630e-9462-4566-8a96-4d7e18e0ada5
+    type: regular
+    task:
+      id: 2902630e-9462-4566-8a96-4d7e18e0ada5
+      version: -1
+      name: VerifyContext - Alerts
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Alert
+      path:
+        simple: RecordedFuture
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: 70a745f8-d119-4889-8fc1-b211526d50ef
+    type: regular
+    task:
+      id: 70a745f8-d119-4889-8fc1-b211526d50ef
+      version: -1
+      name: Test fetch
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      add_to_context: {}
+      brand_name: {}
+      expect_data: {}
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Recorded
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 3620,
         "width": 2100,
         "x": 50,
         "y": 50
