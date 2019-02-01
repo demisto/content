@@ -1,9 +1,12 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import glob
 import yaml
 import base64
 import argparse
+import re
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
@@ -19,6 +22,16 @@ IMAGE_PREFIX = 'data:image/png;base64,'
 
 
 def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
+    """Merge the various components to create an output yml file
+
+    Args:
+        package_path (str): Directory containing the various files
+        dir_name (str): Parent directory containing package (Scripts/Integrations)
+        dest_path (str, optional): Defaults to "". Destination output
+
+    Returns:
+        output path, script path, image path
+    """
     output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir_name], os.path.basename(os.path.dirname(package_path)))
     if dest_path:
         output_path = os.path.join(dest_path, output_filename)
@@ -37,17 +50,20 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     with open(yml_path, 'r') as yml_file:
         yml_text = yml_file.read()
 
-    yml_text = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
-    yml_text = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
+    yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
+    yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
 
     with open(output_path, 'w') as f:
         f.write(yml_text)
+    return output_path, yml_path, script_path, image_path
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_path = glob.glob(package_path + '*png')
+    found_img_path = None
     if dir_name == 'Integrations' and image_path:
-        with open(image_path[0], 'rb') as image_file:
+        found_img_path = image_path[0]
+        with open(found_img_path, 'rb') as image_file:
             image_data = image_file.read()
 
         if yml_data.get('image'):
@@ -56,11 +72,13 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
         else:
             yml_text = 'image: ' + IMAGE_PREFIX + base64.b64encode(image_data) + '\n' + yml_text
 
-    return yml_text
+    return yml_text, found_img_path
 
 
 def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data):
-    script_path = glob.glob(package_path + '*' + script_type)[0]
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    script_path = list(filter(lambda x: not re.search(ignore_regex, x),
+                              glob.glob(package_path + '*' + script_type)))[0]
     with open(script_path, 'r') as script_file:
         script_code = script_file.read()
 
@@ -82,7 +100,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
         else:
             yml_text = yml_text.replace("script: ''", "script: " + script_code)
 
-    return yml_text
+    return yml_text, script_path
 
 
 def clean_python_code(script_code):
@@ -95,7 +113,7 @@ def clean_python_code(script_code):
 def get_package_path():
     parser = argparse.ArgumentParser(description='Utility merging package yml with its code into one yml file')
     parser.add_argument('-p', '--packagePath', help='Path to the package', required=True)
-    parser.add_argument('-d', '--destPath', help='Destination direrctory path for the result yml', default="")
+    parser.add_argument('-d', '--destPath', help='Destination directory path for the result yml', default="")
     options = parser.parse_args()
     package_path = options.packagePath
     dest_path = options.destPath
@@ -117,4 +135,5 @@ def get_package_path():
 
 if __name__ == "__main__":
     package_path, dir_name, dest_path = get_package_path()
-    merge_script_package_to_yml(package_path, dir_name, dest_path)
+    output, yml, script, image = merge_script_package_to_yml(package_path, dir_name, dest_path)
+    print("Done creating: {}, from: {}, {}, {}".format(output, yml, script, image))
