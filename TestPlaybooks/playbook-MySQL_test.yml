@@ -1,0 +1,256 @@
+id: MySQL Test
+version: -1
+name: MySQL Test
+description: Test MySQL queries via script execution and directly in playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c9203936-01e5-4282-838b-106bd31cbdd3
+    type: start
+    task:
+      id: c9203936-01e5-4282-838b-106bd31cbdd3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: b6ec96d3-467f-4175-84b3-1cde56a868ab
+    type: regular
+    task:
+      id: b6ec96d3-467f-4175-84b3-1cde56a868ab
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 3ef2280a-ed48-4319-81ed-da161f31b8d4
+    type: regular
+    task:
+      id: 3ef2280a-ed48-4319-81ed-da161f31b8d4
+      version: -1
+      name: Run Mysql Test Script
+      description: Search for messages in the user's mailbox.
+      scriptName: TestMysqlQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 15661fc6-cac9-4e7d-8f84-8c6aa485f641
+    type: condition
+    task:
+      id: 15661fc6-cac9-4e7d-8f84-8c6aa485f641
+      version: -1
+      name: Check MySQL Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MySQLResult
+                accessor: result
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: test is good
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 4821f2d5-9f8f-43d5-872a-a42b58c8fcd0
+    type: regular
+    task:
+      id: 4821f2d5-9f8f-43d5-872a-a42b58c8fcd0
+      version: -1
+      name: All is good
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 1c9ec9d6-e62e-4e40-8f3f-b2421f6034f5
+    type: regular
+    task:
+      id: 1c9ec9d6-e62e-4e40-8f3f-b2421f6034f5
+      version: -1
+      name: Failed validation
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: result validation from context failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: d16b8156-438b-41e3-82c4-b38a8c191937
+    type: regular
+    task:
+      id: d16b8156-438b-41e3-82c4-b38a8c191937
+      version: -1
+      name: Mysql Long Query (sleep)
+      description: Query a rational DB using SQL
+      script: mysql|||query
+      type: regular
+      iscommand: true
+      brand: mysql
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      columns: {}
+      limit: {}
+      query:
+        simple: select sleep(30)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 3b0272f9-244b-4262-88e6-b9a6b885b0c9
+    type: regular
+    task:
+      id: 3b0272f9-244b-4262-88e6-b9a6b885b0c9
+      version: -1
+      name: MySQl Simple Query
+      description: Query a rational DB using SQL
+      script: mysql|||query
+      type: regular
+      iscommand: true
+      brand: mysql
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      columns: {}
+      extend-context:
+        simple: MySQLResult=.
+      limit: {}
+      query:
+        simple: select "test is good" as result
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 830,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

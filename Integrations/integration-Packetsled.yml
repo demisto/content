@@ -7,7 +7,7 @@ category: Network Security
 image: data:image/png;base64,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
 description: Packetsled Network Security API commands
 detaileddescription: |
-  #Packetsled Demisto Integration
+  # Packetsled Demisto Integration
 
   Provides ability to enumerate sensors, enumerate entities (hosts) that have incidents, and to retrieve metadata, file, and packet capture artifacts from the Packetsled API.
 
@@ -44,55 +44,55 @@ detaileddescription: |
   ```json
   {"name": "Source: Packetsled SENSOR: <sensor label>, ENTITY: <ip address>", "rawJSON": {<packetsled incident>}}
   ```
-  |argument  | description   |    |
-  |:---|:---|:---|
-  | start_time      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime | options, will default to 1 hour ago or lastRunTime |
-  | stop_time     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime | optional, will default to "now" |
-  | envid      | A unique id in packetsled to identify a group of sensors belonging to a single customer | optional, if not provided, all sensors are queried  |
-  | probe      | A unique id within an envid used to identify a sensingle sensor | optional, if not provided, all sensors are queried  |
+  |argument  | description   |
+  |---|---|
+  | `start_time`      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime - options, will default to 1 hour ago or lastRunTime |
+  |  `stop_time`   | The end of the time range to query, can be either epoch seconds or ISO formatted datetime - optional, will default to "now" |
+  |  `envid`      | A unique id in packetsled to identify a group of sensors belonging to a single customer - optional, if not provided, all sensors are queried  |
+  |  `probe`      | A unique id within an envid used to identify a sensingle sensor - optional, if not provided, all sensors are queried  |
 
   ### packetsled-get-flows
   Retrieves flow metadata based on provided constraints. The flows are delivered as JSON files into the demisto war room.
 
-  |argument  | description   |    |
-  |:---|:---|:---|
-  | start_time      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime | options, will default to 1 hour ago or lastRunTime |
-  | stop_time     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime | optional, will default to "now" |
-  | envid      | A unique id in packetsled to identify a group of sensors belonging to a single customer | optional, if not provided, all sensors are queried  |
-  | probe      | A unique id within an envid used to identify a sensingle sensor | optional, if not provided, all sensors are queried  |
-  | entity      | an ip address | optional |
-  | port      | port | optional |
-  | geo      | geo code | optional |
-  | family      | A protocol family (enumeration value) | optional |
-  | proto      | a protocol (enumeration value) | optional |
+  |argument  | description   |
+  |---|---|
+  | `start_time`  | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime - options, will default to 1 hour ago or lastRunTime |
+  | `stop_time`     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime - optional, will default to "now" |
+  | `envid`      | A unique id in packetsled to identify a group of sensors belonging to a single customer - optional, if not provided, all sensors are queried  |
+  | `probe`      | A unique id within an envid used to identify a sensingle sensor - optional, if not provided, all sensors are queried  |
+  |  `entity`      | an ip address - optional |
+  |  `port`     | port - optional |
+  |  `geo`     | geo code - optional |
+  |  `family`     | A protocol family (enumeration value) - optional |
+  |  `proto`      | a protocol (enumeration value) - optional |
 
   ### packetsled-get-files
   Retrieves file artifacts based on provided constraints. The files are delivered into the demisto war room.
 
-  |argument  | description   |    |
-  |:---|:---|:---|
-  | start_time      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime | options, will default to 1 hour ago or lastRunTime |
-  | stop_time     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime | optional, will default to "now" |
-  | envid      | A unique id in packetsled to identify a group of sensors belonging to a single customer | optional, if not provided, all sensors are queried  |
-  | probe      | A unique id within an envid used to identify a sensingle sensor | optional, if not provided, all sensors are queried  |
-  | entity      | an ip address | optional |
-  | port      | port | optional |
-  | geo      | geo code | optional |
-  | family      | A protocol family (enumeration value) | optional |
-  | proto      | a protocol (enumeration value) | optional |
+  |argument  | description   |
+  |:---|:---|
+  | `start_time`      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime - options, will default to 1 hour ago or lastRunTime |
+  |  `stop_time`     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime - optional, will default to "now" |
+  |  `envid`      | A unique id in packetsled to identify a group of sensors belonging to a single customer - optional, if not provided, all sensors are queried  |
+  |  `probe`      | A unique id within an envid used to identify a sensingle sensor - optional, if not provided, all sensors are queried  |
+  | `entity `     | an ip address - optional |
+  |  `port `     | port - optional |
+  |  `geo `     | geo code - optional |
+  |  `family`      | A protocol family (enumeration value) - optional |
+  |  `proto`      | a protocol (enumeration value) - optional |
 
   ### packetsled-get-pcaps
   Retrieves full packet capture files based on provided constraints. The PCAP files are delivered into the demisto war room.
 
-  |argument  | description   |    |
-  |:---|:---|:---|
-  | start_time      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime | options, will default to 1 hour ago or lastRunTime |
-  | stop_time     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime | optional, will default to "now" |
-  | envid      | A unique id in packetsled to identify a group of sensors belonging to a single customer | optional, if not provided, all sensors are queried  |
-  | probe      | A unique id within an envid used to identify a sensingle sensor | optional, if not provided, all sensors are queried  |
-  | entity      | an ip address | optional |
-  | port      | port | optional |
-  | proto      | a protocol (enumeration value) | optional |
+  |argument  | description   |
+  |:---|:---|
+  | ` start_time`      | The beginning of the time range to query, can be either epoch seconds or ISO formatted datetime - options, will default to 1 hour ago or lastRunTime |
+  | ` stop_time`     | The end of the time range to query, can be either epoch seconds or ISO formatted datetime - optional, will default to "now" |
+  |  `envid`      | A unique id in packetsled to identify a group of sensors belonging to a single customer - optional, if not provided, all sensors are queried  |
+  |  `probe`     | A unique id within an envid used to identify a sensingle sensor - optional, if not provided, all sensors are queried  |
+  |  `entity`      | an ip address | optional |
+  |  `port`     | port | optional |
+  |  `proto`      | a protocol (enumeration value) - optional |
 configuration:
 - display: The protocol and domain of the packetsled instance.
   name: ApiServer
@@ -1209,3 +1209,5 @@ script:
       description: The respondant of the Events
     description: Get all of the events for a given uid
   isfetch: true
+tests:
+  - No test
