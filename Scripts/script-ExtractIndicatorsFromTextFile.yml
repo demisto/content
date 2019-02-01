@@ -2,6 +2,7 @@ commonfields:
   id: ExtractIndicatorsFromTextFile
   version: -1
 name: ExtractIndicatorsFromTextFile
+fromversion: 4.1.0
 script: |-
   try:
       maxFileSize = int(demisto.args().get('maxFileSize'))
@@ -21,31 +22,15 @@ script: |-
   with open(filePath, mode='r') as f:
       data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
 
-      # Extract Email
-      demisto.results(demisto.executeCommand("ExtractEmail", {
-          'text': data
-      }))
-
-      # Extract Domain
-      demisto.results(demisto.executeCommand("ExtractDomain", {
-          'text': data,
-          'calcReputation':'false'
-      }))
-
-      # Extract Hash
-      demisto.results(demisto.executeCommand("ExtractHash", {
-          'text': data
-      }))
-
-      # Extract IP
-      demisto.results(demisto.executeCommand("ExtractIP", {
-          'text': data
-      }))
-
-      # Extract URL
-      demisto.results(demisto.executeCommand("ExtractURL", {
-          'text': data
-      }))
+      # Extract indicators (omitting context output, letting auto-extract work)
+      indicators_hr = demisto.executeCommand("extractIndicators", {
+          'text': data})[0][u'Contents']
+      demisto.results( {
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['text'],
+          'Contents': indicators_hr,
+          'HumanReadable': indicators_hr
+                       })
 type: python
 tags: []
 comment: |-
@@ -87,3 +72,6 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole
+tests:
+  - Extract Indicators From File - test

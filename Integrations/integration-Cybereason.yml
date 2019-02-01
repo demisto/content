@@ -199,16 +199,28 @@ script:
         return output
 
     def get_pylum_id(machine):
-        cmd_url='/rest/sensors/query'
-        json = {
-            'filters': [{
-                'fieldName': 'machineName',
-                'operator': 'Equals',
-                'values': [machine]
-            }]
-        }
+
+        query_fields = ['pylumId']
+        path = [
+            {
+                'requestedType': 'Machine',
+                'filters': [
+                    {'facetName': 'elementDisplayName', 'values': [machine]}
+                ],
+                'isResult': True
+            }
+        ]
+        json = build_query(query_fields, path)
+        cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        pylum_id = response['sensors'][0]['pylumId']
+        data = response['data'].get('resultIdToElementDataMap')
+
+        if not data:
+            return_error('Could not find machine')
+
+        guid = data.keys()[0]
+        simple_values = data[guid]['simpleValues']
+        pylum_id = simple_values['pylumId']['values'][0]
         return pylum_id
 
     def get_machine_guid(machine_name):
@@ -1923,4 +1935,3 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "Added involved hashes and affected machines outputs to query-malops command"
