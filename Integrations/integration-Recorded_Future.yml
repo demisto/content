@@ -10,7 +10,7 @@ description: Unique threat intel technology that automatically serves up relevan
 configuration:
 - display: Server URL (e.g. https://api.recordedfuture.com)
   name: server
-  defaultvalue: ""
+  defaultvalue: https://api.recordedfuture.com
   type: 0
   required: true
 - display: 'API Token'
@@ -54,6 +54,32 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Comma separated rule names to fetch alerts by
+  name: rule_names
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Limit number of alerts to fetch each time
+  name: limit
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
+  name: triggered
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -62,6 +88,7 @@ script:
     import json
     import urllib
     import time
+    from datetime import datetime
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -87,6 +114,8 @@ script:
     URL_THRESHOLD = int(demisto.params()['url_threshold'])
     CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
 
+    FETCH_TIME = '1 day'
+    FETCH_LIMIT = 10
 
     ''' HELPER FUNCTIONS '''
 
@@ -421,6 +450,7 @@ script:
         params = {
             'fields': 'sightings,timestamps,risk'
         }
+
         response = http_request('get', cmd_url, params=params)
         return response
 
@@ -1176,15 +1206,12 @@ script:
     def get_url_risklist_command():
         specific_list = demisto.args().get('specific_list')
 
-        file_path = demisto.getFilePath('64985@cc00e449-9e7b-4609-8a68-1c8c01114562')
-        with open(file_path['path'], 'r') as file:
-            res = file.read()
-        #res = get_url_risklist(specific_list) .encode('utf-8')
+        res = get_url_risklist(specific_list)
 
         if not res:
             return_error('Received empty response')
 
-        demisto.results(fileResult(filename='url_risk_list.csv', data=res, file_type=entryTypes['entryInfoFile']))
+        demisto.results(fileResult(filename='url_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
     def get_url_risklist(specific_list):
@@ -1202,7 +1229,7 @@ script:
     def get_domain_risklist_command():
         specific_list = demisto.args().get('specific_list')
 
-        res = get_domain_risklist(specific_list) .encode('utf-8')
+        res = get_domain_risklist(specific_list)
 
         if not res:
             return_error('Received empty response')
@@ -1460,6 +1487,185 @@ script:
 
         return res
 
+
+    def get_alert_rules_command():
+        rule_name = demisto.args()['rule_name']
+        limit = demisto.args().get('limit')
+
+        response = json.loads(get_alert_rules(rule_name, limit))
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+        mapped_rules = [{
+            'Name': r['title'],
+            'ID': r['id']
+        } for r in response['data'].get('results', [])]
+
+        if len(mapped_rules) == 0:
+            return 'No results found'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future Alert rules', mapped_rules, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.AlertRule(val.ID === obj.ID)': createContext(mapped_rules)
+            }
+        })
+
+    def get_alert_rules(rule_name, limit=None):
+        cmd_url = 'alert/rule'
+
+        params = {
+            'freetext': rule_name
+        }
+
+        if limit:
+            params['limit'] = limit
+
+        return http_request('get', cmd_url, params=params)
+
+
+    def get_alerts_command():
+        rule_id = demisto.args().get('rule_id')
+        limit = demisto.args().get('limit')
+        triggered = demisto.args().get('triggered')
+        assignee = demisto.args().get('assignee')
+        status = demisto.args().get('status')
+        freetext = demisto.args().get('freetext')
+        offset = demisto.args().get('from')
+        orderby = demisto.args().get('orderby')
+        direction = demisto.args().get('direction')
+
+        triggered_time = None
+        if triggered:
+            date, _ = parse_date_range(triggered, date_format='%Y-%m-%d %H:%M:%S')
+            triggered_time = '[{},)'.format(date)
+
+        response = json.loads(get_alerts(rule_id, triggered_time, limit, assignee, status, freetext, offset, orderby, direction))
+
+        if not response or 'data' not in response:
+            return 'No data found'
+
+
+        headers = ['ID', 'Name', 'Type', 'Triggered', 'Status', 'Assignee', 'Rule']
+
+        mapped_alerts = [{
+            'ID': a['id'],
+            'Name': a['title'],
+            'Type': a['type'],
+            'Triggered': a['triggered'],
+            'Status': a.get('review', {}).get('status'),
+            'Assignee': a.get('review', {}).get('assignee'),
+            'Rule': a.get('rule', {}).get('name')
+        } for a in response['data'].get('results', [])]
+
+        if len(mapped_alerts) == 0:
+            return 'No results found'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Recorded Future Alerts', mapped_alerts, headers=headers, removeNull=True),
+            'EntryContext': {
+                'RecordedFuture.Alert(val.ID === obj.ID)': createContext(mapped_alerts)
+            }
+        })
+
+
+    def get_alerts(rule_id=None, triggered=None, limit=None, assignee=None, status=None, freetext=None, offset=None, orderby=None, direction=None):
+        cmd_url = 'alert/search'
+
+        params = {}
+
+        if rule_id:
+            params['alertRule'] = rule_id
+        if limit:
+            params['limit'] = limit
+        if triggered:
+            params['triggered'] = triggered
+        if assignee:
+            params['assignee'] = assignee
+        if status:
+            params['status'] = status
+        if freetext:
+            params['freetext'] = freetext
+        if offset:
+            params['from'] = offset
+        if orderby:
+            params['orderby'] = orderby
+        if direction:
+            params['direction'] = direction
+
+        return http_request('get', cmd_url, params=params)
+
+    def get_alert(alert_id):
+        cmd_url = 'alert/' + alert_id
+
+        return http_request('get', cmd_url)
+
+
+    def fetch_incidents():
+        rule_names = argToList(demisto.params().get('rule_names', []))
+        limit = demisto.params().get('limit', FETCH_LIMIT)
+
+        last_run = demisto.getLastRun()
+        if not last_run:
+            last_run = {}
+        if 'time' not in last_run:
+            time, _ = parse_date_range(demisto.params().get('triggered', FETCH_TIME), date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            time = last_run['time']
+
+        current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        triggered_time = '[{},)'.format(datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S'))
+        max_time = current_time
+
+        rule_ids = []
+
+        for rule in rule_names:
+            rules = json.loads(get_alert_rules(rule))
+            if rules and 'data' in rules:
+                rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
+
+        all_alerts = []
+        if len(rule_ids) > 0:
+            for rule_id in rule_ids:
+                alerts = json.loads(get_alerts(rule_id, triggered_time, limit))
+                if alerts and 'data' in alerts:
+                    all_alerts += alerts['data'].get('results', [])
+        else:
+            alerts = json.loads(get_alerts(triggered=triggered_time, limit=limit))
+            if alerts and 'data' in alerts:
+                all_alerts += alerts['data'].get('results', [])
+
+        incidents = []
+        for alert in all_alerts:
+            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            if alert_time > current_time:
+                alert_data = json.loads(get_alert(alert['id']))
+                if alert_data and 'data' in alert_data:
+                    alert = alert_data['data']
+                incidents.append({
+                    'name': 'Recorded Future Alert - ' + alert['title'],
+                    'occurred': datetime.strftime(alert_time, '%Y-%m-%dT%H:%M:%SZ'),
+                    'rawJSON': json.dumps(alert)
+                })
+
+                if alert_time > max_time:
+                    max_time = alert_time
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({
+            'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        })
+
+
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
 
@@ -1467,6 +1673,9 @@ script:
         if demisto.command() == 'test-module':
             ip_lookup('8.8.8.8')
             demisto.results('ok')
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
         elif demisto.command() == 'domain':
             domain_command()
@@ -1528,10 +1737,15 @@ script:
         elif demisto.command() == 'recorded-future-get-vulnerability-riskrules':
             get_vulnerability_riskrules_command()
 
+        elif demisto.command() == 'recorded-future-get-alert-rules':
+            get_alert_rules_command()
+
+        elif demisto.command() == 'recorded-future-get-alerts':
+            get_alerts_command()
+
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
         return_error(e.message)
   type: python
   commands:
@@ -2547,5 +2761,83 @@ script:
       description: Risk rule criticality
       type: string
     description: Get the risk rules for vulnerability data
+  - name: recorded-future-get-alert-rules
+    arguments:
+    - name: rule_name
+      required: true
+      default: true
+      description: Rule name to search, can be partial.
+    - name: limit
+      description: Limit number of rules
+      defaultValue: "10"
+    outputs:
+    - contextPath: RecordedFuture.AlertRule.ID
+      description: Alert Rule ID
+      type: string
+    - contextPath: RecordedFuture.AlertRule.Name
+      description: Alert Rule Name
+      type: string
+    description: Get Recorded Future Alert rules by rule name
+  - name: recorded-future-get-alerts
+    arguments:
+    - name: rule_id
+      description: Alert Rule ID
+    - name: limit
+      description: Limit number of alerts
+      defaultValue: "10"
+    - name: triggered
+      description: Alert triggered time, e.g. "1 hour" or "2 days"
+    - name: assignee
+      description: Alert assignee - Email address
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - unassigned
+      - assigned
+      - actionable
+      - no-action
+      - tuning
+      description: Alert review status
+    - name: freetext
+      description: Free text search
+    - name: from
+      description: Alerts from offset
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - triggered
+      description: Alerts sort order
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Alerts sort direction
+    outputs:
+    - contextPath: RecordedFuture.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: RecordedFuture.Alert.Name
+      description: Alert Name
+      type: string
+    - contextPath: RecordedFuture.Alert.Type
+      description: Alert Type
+      type: string
+    - contextPath: RecordedFuture.Alert.Triggered
+      description: Alert Triggered time
+      type: date
+    - contextPath: RecordedFuture.Alert.Status
+      description: Alert Status
+      type: string
+    - contextPath: RecordedFuture.Alert.Assignee
+      description: Alert Assignee
+      type: string
+    - contextPath: RecordedFuture.Alert.Rule
+      description: Alert Rule name
+      type: string
+    description: Get alerts from Recorded Future
+  isfetch: true
   runonce: false
-releaseNotes: "Added commands for retrieving threats by a specified order, also for retrieving risk lists as csv files (with additional scripts to create indicators using them)."
+releaseNotes: "Added: Commands for retrieving threats by a specified order; Retrieving risk lists as csv files (with additional scripts to create indicators using them); Retrieving and fetching alerts."
+test:
+  - Recorded Future Test
