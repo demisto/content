@@ -1,6 +1,6 @@
-id: SymantecEndpointProtection Test
+id: SymantecEndpointProtection_Test
 version: -1
-name: SymantecEndpointProtection Test
+name: SymantecEndpointProtection_Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
 tasks:
