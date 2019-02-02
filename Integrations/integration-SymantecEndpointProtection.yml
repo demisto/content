@@ -1131,4 +1131,4 @@ releaseNotes: Enhancments for the integration. New commands sep-list-policies - 
   - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given
   client.
 tests:
-- SymantecEndpointProtection Test
+- SymantecEndpointProtection_Test
