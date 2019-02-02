@@ -6111,8 +6111,11 @@
                 "implementing_playbooks": [
                     "ATD - Detonate File"
                 ], 
-                "implementing_commands": [
-                    "dxl-send-event"
+                "command_to_integration": {
+                    "dxl-send-event": "McAfee DXL"
+                }, 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
