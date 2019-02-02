@@ -4,24 +4,14 @@ import yaml
 import json
 import glob
 import shutil
-import base64
 import zipfile
+
+from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
-DIR_TO_PREFIX = {
-    'Integrations': 'integration',
-    'Scripts': 'script'
-}
-
-TYPE_TO_EXTENSION = {
-    'python': '.py',
-    'javascript': '.js'
-}
-
 TEST_DIR = 'TestPlaybooks'
-IMAGE_PREFIX = 'data:image/png;base64,'
 
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
@@ -31,60 +21,6 @@ BUNDLE_TEST = 'bundle_test'
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
-
-
-def merge_script_package_to_yml(package_path, dir_name):
-    output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir_name], os.path.basename(os.path.dirname(package_path)))
-    output_path = os.path.join(dir_name, output_filename)
-
-    yml_path = glob.glob(package_path + '*.yml')[0]
-    with open(yml_path, 'r') as yml_file:
-        yml_data = yaml.safe_load(yml_file)
-
-    if dir_name == 'Scripts':
-        yml_data['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
-        script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    elif dir_name == 'Integrations':
-        yml_data['script']['script'] = '~~~REPLACE_SCRIPT_HERE~~~'
-        script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
-
-    insert_image_to_yml(dir_name, package_path, yml_data)
-    yml = insert_script_to_yml(package_path, script_type, yml_data)
-
-    with open(output_path, 'w') as f:
-        f.write(yml)
-
-
-def insert_image_to_yml(dir_name, package_path, yml_data):
-    image_path = glob.glob(package_path + '*png')
-    if dir_name == 'Integrations' and image_path:
-        with open(image_path[0], 'rb') as image_file:
-            image_data = image_file.read()
-
-        yml_data['image'] = IMAGE_PREFIX + base64.b64encode(image_data)
-
-
-def insert_script_to_yml(package_path, script_type, yml_data):
-    script_path = glob.glob(package_path + '*' + script_type)[0]
-    with open(script_path, 'r') as script_file:
-        script_code = script_file.read()
-
-    script_code = clean_python_code(script_code)
-
-    lines = ['|-']
-    lines.extend('    {}'.format(line) for line in script_code.split('\n'))
-    script_code = '\n'.join(lines)
-
-    yml = yaml.dump(yml_data, default_flow_style=False)
-    yml = yml.replace('~~~REPLACE_SCRIPT_HERE~~~', script_code)
-    return yml
-
-
-def clean_python_code(script_code):
-    script_code = script_code.replace("import demistomock as demisto", "")
-    script_code = script_code.replace("from CommonServerPython import *", "")
-    script_code = script_code.replace("from CommonServerUserPython import *", "")
-    return script_code
 
 
 def is_ge_version(ver1, ver2):
