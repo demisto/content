@@ -1,3 +1,4 @@
+
 id: SymantecEndpointProtection_Test
 version: -1
 name: SymantecEndpointProtection_Test
@@ -339,7 +340,8 @@ tasks:
       - "30"
     scriptarguments:
       columns: {}
-      computerName: {}
+      computerName:
+        simple: demisto-PC
       computerNamed: {}
       lastUpdate: {}
       os: {}
@@ -377,7 +379,7 @@ tasks:
       - "33"
     scriptarguments:
       expectedValue:
-        simple: 192.168.1.125
+        simple: 192.168.1.17
       fields: {}
       path:
         simple: SEPM.Endpoint.IPAddresses.[0]
@@ -526,7 +528,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
+          "x": 180,
           "y": 1680
         }
       }
@@ -609,7 +611,7 @@ tasks:
     task:
       id: 8658ec79-137e-43f4-8610-3de25c9d279b
       version: -1
-      name: VerifyContext (SEPM.Update.Endpoint)
+      name: VerifyContext (SEPM.Update.commandID)
       description: |-
         Verifies path in context:
         - Verifies path existence
@@ -940,6 +942,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
     scriptarguments:
       expectedValue:
         simple: ${SEPM.Endpoint.Hostname}
@@ -963,7 +968,7 @@ tasks:
     task:
       id: 28b1a20c-f647-4000-8bf3-c0a9dd74dc12
       version: -1
-      name: VerifyContext (SEPM.Quarantine.Action)
+      name: VerifyContext (SEPM.Scan.Action)
       description: |-
         Verifies path in context:
         - Verifies path existence
@@ -974,6 +979,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
     scriptarguments:
       expectedValue:
         simple: ScanNow_Quick
