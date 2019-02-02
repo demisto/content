@@ -4777,42 +4777,6 @@
             }
         }, 
         {
-            "RecordedFutureURLRiskList": {
-                "name": "RecordedFutureURLRiskList", 
-                "script_executions": [
-                    "createNewIndicator", 
-                    "deleteIndicators"
-                ], 
-                "tests": [
-                    "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
-            "RecordedFutureIPRiskList": {
-                "name": "RecordedFutureIPRiskList", 
-                "script_executions": [
-                    "createNewIndicator", 
-                    "deleteIndicators"
-                ], 
-                "tests": [
-                    "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
-            "RecordedFutureDomainRiskList": {
-                "name": "RecordedFutureDomainRiskList", 
-                "script_executions": [
-                    "createNewIndicator", 
-                    "deleteIndicators"
-                ], 
-                "tests": [
-                    "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
             "StringContainsArray": {
                 "name": "StringContainsArray", 
                 "tests": [
@@ -4883,29 +4847,6 @@
             }
         }, 
         {
-            "RecordedFutureVulnerabilityRiskList": {
-                "name": "RecordedFutureVulnerabilityRiskList", 
-                "script_executions": [
-                    "createNewIndicator", 
-                    "deleteIndicators"
-                ], 
-                "tests": [
-                    "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
-            "e7e700eb-0d46-4175-828b-1161f9295164": {
-                "name": "RecordedFutureHashRiskList", 
-                "script_executions": [
-                    "createNewIndicator"
-                ], 
-                "tests": [
-                    "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
             "SendEmailOnSLABreach": {
                 "name": "SendEmailOnSLABreach", 
                 "script_executions": [
@@ -4921,6 +4862,65 @@
                 "name": "HighlightWords", 
                 "tests": [
                     "HighlightWords_Test"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureURLRiskList": {
+                "name": "RecordedFutureURLRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureIPRiskList": {
+                "name": "RecordedFutureIPRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureDomainRiskList": {
+                "name": "RecordedFutureDomainRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureHashRiskList": {
+                "name": "RecordedFutureHashRiskList", 
+                "script_executions": [
+                    "createNewIndicator"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureVulnerabilityRiskList": {
+                "name": "RecordedFutureVulnerabilityRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
                 ]
             }
         }

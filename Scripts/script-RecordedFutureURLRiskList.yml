@@ -84,6 +84,25 @@ args:
   description: Specify in order to delete the existing Recorded Future malicious URL
     indicators.
   defaultValue: "false"
+outputs:
+- contextPath: InfoFile.Name
+  description: File Name
+  type: string
+- contextPath: InfoFile.EntryID
+  description: File entry ID
+  type: string
+- contextPath: InfoFile.Size
+  description: File size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: InfoFile.Extension
+  description: File extension
+  type: string
 scripttarget: 0
 dependson:
   must: []
