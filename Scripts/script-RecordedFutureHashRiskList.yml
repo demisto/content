@@ -1,6 +1,6 @@
 commonfields:
-  id: e7e700eb-0d46-4175-828b-1161f9295164
-  version: 9
+  id: RecordedFutureHashRiskList
+  version: -1
 name: RecordedFutureHashRiskList
 script: |-
   specific_list = demisto.args().get('list')
@@ -48,7 +48,7 @@ script: |-
       if hash_indicator:
           hash_type = get_hash_type(hash_indicator)
           indicator_res = demisto.executeCommand('createNewIndicator', {
-              'type': 'File {}'.format(hash_type),
+              'type': 'File {}'.format(hash_type.upper()),
               'value': hash_indicator,
               'source': 'Recorded Future',
               'reputation': 'Bad',
@@ -73,6 +73,25 @@ args:
 - name: threshold
   description: Specify a threshold to consider indicators as malicious.
   defaultValue: "65"
+outputs:
+- contextPath: InfoFile.Name
+  description: File Name
+  type: string
+- contextPath: InfoFile.EntryID
+  description: File entry ID
+  type: string
+- contextPath: InfoFile.Size
+  description: File size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: InfoFile.Extension
+  description: File extension
+  type: string
 scripttarget: 0
 dependson:
   must: []
