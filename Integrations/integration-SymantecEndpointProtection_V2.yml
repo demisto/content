@@ -272,7 +272,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: 'Group ID of the endpoint '
       isArray: false
       name: groupID
       predefined: [
@@ -281,7 +281,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Location ID of the endpoint
       isArray: false
       name: locationID
       predefined: [
@@ -290,7 +290,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Type of policy to be assigned
       isArray: false
       name: policyType
       predefined: [
@@ -299,7 +299,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: 'Policy ID to be assigned '
       isArray: false
       name: policyID
       predefined: [
@@ -314,7 +314,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: Group ID to list locations from
       isArray: false
       name: groupID
       predefined: [
@@ -398,7 +398,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: IP ro Hostname of the endpoint
+      description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
       predefined: [
@@ -413,7 +413,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ''
+      description: 'Group ID to move the client to '
       isArray: false
       name: groupID
       predefined: [
@@ -422,7 +422,7 @@ script:
       secret: false
     - default: false
       defaultValue: ''
-      description: ''
+      description: Hardware-key of the client to be moved
       isArray: false
       name: hardwareKey
       predefined: [
