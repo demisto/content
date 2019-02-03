@@ -74,16 +74,16 @@ script:
       predefined: []
       required: true
     - default: false
-      defaultValue: '1'
+      defaultValue: ''
       description: Priority of the ticket. Each number has a corresponding value.
         1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this
         command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
       isArray: false
       name: priority
-      predefined: ['1', Low, '2', Medium, '3', High, '4', Urgent]
+      predefined: [Low, Medium, High, Urgent]
       required: false
     - default: false
-      defaultValue: '2'
+      defaultValue: ''
       description: Status of the ticket. Each number has a corresponding value. 2
         is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
         7 is Waiting on Third Party. Acceptable values for this command argument are
@@ -91,8 +91,8 @@ script:
         on Customer','Waiting on Third Party'.
       isArray: false
       name: status
-      predefined: ['2', Open, '3', Pending, '4', Resolved, '5', Closed, '6', Waiting
-          on Customer, '7', Waiting on Third Party]
+      predefined: [Open, Pending, Resolved, Closed, Waiting on Customer, Waiting on
+          Third Party]
       required: false
     - default: false
       defaultValue: ''
@@ -235,8 +235,8 @@ script:
         on Customer','Waiting on Third Party'.
       isArray: false
       name: status
-      predefined: ['2', Open, '3', Pending, '4', Resolved, '5', Closed, '6', Waiting
-          on Customer, '7', Waiting on Third Party]
+      predefined: [Open, Pending, Resolved, Closed, Waiting on Customer, Waiting on
+          Third Party]
       required: false
     - default: false
       defaultValue: ''
@@ -245,7 +245,7 @@ script:
         command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
       isArray: false
       name: priority
-      predefined: ['1', Low, '2', Medium, '3', High, '4', Urgent]
+      predefined: [Low, Medium, High, Urgent]
       required: false
     - default: false
       defaultValue: ''
@@ -305,11 +305,11 @@ script:
     - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+    - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+    - {contextPath: FD.Ticket.GroupID, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
@@ -321,7 +321,7 @@ script:
     - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
-    - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
+    - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -367,7 +367,7 @@ script:
     - {contextPath: FD.Contact.Active, description: Set to true if the contact has
         been verified, type: Boolean}
     - {contextPath: FD.Contact.Address, description: Address of the contact, type: String}
-    - {contextPath: FD.Contact.CompanyId, description: ID of the primary company to
+    - {contextPath: FD.Contact.CompanyID, description: ID of the primary company to
         which this contact belongs, type: Number}
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
         can see all tickets that are associated with the company to which s/he belong,
@@ -380,7 +380,7 @@ script:
         contact, type: String}
     - {contextPath: FD.Contact.Email, description: Primary email address of the contact.,
       type: String}
-    - {contextPath: FD.Contact.Id, description: ID of the contact, type: Number}
+    - {contextPath: FD.Contact.ID, description: ID of the contact, type: Number}
     - {contextPath: FD.Contact.JobTitle, description: Job Title of the contact, type: String}
     - {contextPath: FD.Contact.Language, description: Language of the contact, type: String}
     - {contextPath: FD.Contact.Mobile, description: Mobile number of the contact,
@@ -394,9 +394,9 @@ script:
       type: Unknown}
     - {contextPath: FD.Contact.TimeZone, description: Time zone in which the contact
         resides, type: String}
-    - {contextPath: FD.Contact.TwitterId, description: Twitter handle of the contact,
+    - {contextPath: FD.Contact.TwitterID, description: Twitter handle of the contact,
       type: String}
-    - {contextPath: FD.Contact.UniqueExternalId, description: External ID of the contact,
+    - {contextPath: FD.Contact.UniqueExternalID, description: External ID of the contact,
       type: String}
     - {contextPath: FD.Contact.OtherCompanies, description: Additional companies associated
         with the contact (array of hashes), type: Unknown}
@@ -433,7 +433,7 @@ script:
     - {contextPath: FD.Contact.Active, description: Set to true if the contact has
         been verified, type: Boolean}
     - {contextPath: FD.Contact.Address, description: Address of the contact, type: String}
-    - {contextPath: FD.Contact.CompanyId, description: ID of the primary company to
+    - {contextPath: FD.Contact.CompanyID, description: ID of the primary company to
         which this contact belongs, type: Number}
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
         can see all tickets that are associated with the company to which s/he belong,
@@ -460,9 +460,9 @@ script:
       type: Unknown}
     - {contextPath: FD.Contact.TimeZone, description: Time zone in which the contact
         resides, type: String}
-    - {contextPath: FD.Contact.TwitterId, description: Twitter handle of the contact,
+    - {contextPath: FD.Contact.TwitterID, description: Twitter handle of the contact,
       type: String}
-    - {contextPath: FD.Contact.UniqueExternalId, description: External ID of the contact,
+    - {contextPath: FD.Contact.UniqueExternalID, description: External ID of the contact,
       type: String}
     - {contextPath: FD.Contact.OtherCompanies, description: Additional companies associated
         with the contact (array of hashes), type: Unknown}
@@ -474,7 +474,7 @@ script:
     execution: false
     name: fd-list-canned-response-folders
     outputs:
-    - {contextPath: FD.CRFolder.Id, description: Unique ID of the canned response
+    - {contextPath: FD.CRFolder.ID, description: Unique ID of the canned response
         folder, type: Number}
     - {contextPath: FD.CRFolder.Name, description: Name of the canned response folder,
       type: String}
@@ -501,7 +501,7 @@ script:
     execution: false
     name: fd-list-canned_responses-in-folder
     outputs:
-    - {contextPath: FD.CRFolder.CR.Id, description: ID of the Canned Response, type: Number}
+    - {contextPath: FD.CRFolder.CR.ID, description: ID of the Canned Response, type: Number}
     - {contextPath: FD.CRFolder.CR.Title, description: Title of the Canned Response,
       type: String}
   - arguments:
@@ -518,7 +518,7 @@ script:
     execution: false
     name: fd-get-canned-response-folder
     outputs:
-    - {contextPath: FD.CRFolder.CR.Id, description: Unique ID of the canned response,
+    - {contextPath: FD.CRFolder.CR.ID, description: Unique ID of the canned response,
       type: Number}
     - {contextPath: FD.CRFolder.CR.Title, description: Title of the canned response,
       type: String}
@@ -535,17 +535,17 @@ script:
     execution: false
     name: fd-list-groups
     outputs:
-    - {contextPath: FD.Group.AgentIds, description: Array of agent user IDs separated
+    - {contextPath: FD.Group.AgentIDs, description: Array of agent user IDs separated
         by commas., type: Unknown}
     - {contextPath: FD.Group.AutoTicketAssign, description: Set to true if automatic
         ticket assignment has been enabled. Automatic ticket assignment is only available
         on certain plans., type: Boolean}
-    - {contextPath: FD.Group.BusinessHourId, description: Unique ID of the business
+    - {contextPath: FD.Group.BusinessHourID, description: Unique ID of the business
         hour associated with the group, type: Number}
     - {contextPath: FD.Group.Description, description: Description of the group, type: String}
     - {contextPath: FD.Group.EscalateTo, description: The ID of the user to whom an
         escalation email is sent if a ticket is unassigned., type: Number}
-    - {contextPath: FD.Group.Id, description: Unique ID of the group, type: Number}
+    - {contextPath: FD.Group.ID, description: Unique ID of the group, type: Number}
     - {contextPath: FD.Group.Name, description: Name of the group, type: String}
     - {contextPath: FD.Group.UnassignedFor, description: 'The time after which an
         escalation email is sent if a ticket remains unassigned. The accepted values
@@ -619,7 +619,7 @@ script:
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
-    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
+    - {contextPath: FD.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
@@ -632,9 +632,9 @@ script:
         conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
         from which the reply is sent. For notes, this value will be null.', type: String}
-    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+    - {contextPath: FD.Ticket.Conversation.TicketID, description: ID of the ticket
         to which this conversation is being added, type: Number}
-    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+    - {contextPath: FD.Ticket.Conversation.UserID, description: ID of the agent/user
         who is adding the conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
         timestamp, type: Date}
@@ -661,7 +661,7 @@ script:
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
-    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
+    - {contextPath: FD.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
@@ -674,9 +674,9 @@ script:
         conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
         from which the reply is sent. For notes, this value will be null.', type: String}
-    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+    - {contextPath: FD.Ticket.Conversation.TicketID, description: ID of the ticket
         to which this note or reply belongs, type: Number}
-    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+    - {contextPath: FD.Ticket.Conversation.UserID, description: ID of the agent/user
         who is adding the conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
         timestamp, type: Date}
@@ -726,7 +726,7 @@ script:
     - {contextPath: FD.Agent.AvailableSince, description: Timestamp that denotes when
         the agent became available/unavailable (depending on the value of the 'available'
         attribute), type: Date}
-    - {contextPath: FD.Agent.Id, description: User ID of the agent, type: Number}
+    - {contextPath: FD.Agent.ID, description: User ID of the agent, type: Number}
     - {contextPath: FD.Agent.Occasional, description: 'Set to true if this is an occasional
         agent (true => occasional, false => full-time)', type: Boolean}
     - {contextPath: FD.Agent.Signature, description: Signature of the agent in HTML
@@ -736,9 +736,9 @@ script:
         Ticket permission of the agent
         (1 -> Global Access, 2 -> Group Access, 3 -> Restricted Access)
       type: Number
-    - {contextPath: FD.Agent.GroupIds, description: Group IDs associated with the
+    - {contextPath: FD.Agent.GroupIDs, description: Group IDs associated with the
         agent, type: Unknown}
-    - {contextPath: FD.Agent.RoleIds, description: Role IDs associated with the agent,
+    - {contextPath: FD.Agent.RoleIDs, description: Role IDs associated with the agent,
       type: Unknown}
     - {contextPath: FD.Agent.CreatedAt, description: Agent creation timestamp, type: Date}
     - {contextPath: FD.Agent.UpdatedAt, description: Agent updated timestamp, type: Date}
@@ -828,7 +828,7 @@ script:
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
-    - {contextPath: FD.Ticket.Conversation.Id, description: ID of the conversation,
+    - {contextPath: FD.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
@@ -841,9 +841,9 @@ script:
         conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.SupportEmail, description: 'Email address
         from which the reply is sent. For notes, this value will be null.', type: String}
-    - {contextPath: FD.Ticket.Conversation.TicketId, description: ID of the ticket
+    - {contextPath: FD.Ticket.Conversation.TicketID, description: ID of the ticket
         to which this conversation is being added, type: Number}
-    - {contextPath: FD.Ticket.Conversation.UserId, description: ID of the agent/user
+    - {contextPath: FD.Ticket.Conversation.UserID, description: ID of the agent/user
         who is adding the conversation, type: Number}
     - {contextPath: FD.Ticket.Conversation.CreatedAt, description: Conversation creation
         timestamp, type: Date}
@@ -967,27 +967,30 @@ script:
     - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+    - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+    - {contextPath: FD.Ticket.GroupID, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+    - {contextPath: FD.Ticket.ResponderID, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
     - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were specified in the command's filter-type or include-type arguments., type: Unknown}
-    - {contextPath: FD.Ticket.Id, description: ID of the updated ticket, type: Number}
+    - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
   dockerimage: ''
   isfetch: true
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
 
