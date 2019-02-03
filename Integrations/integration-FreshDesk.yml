@@ -177,21 +177,21 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: If set to 'yes' then the ticket requester's id, email, mobile,
+      description: If set to 'true' then the ticket requester's id, email, mobile,
         name, and phone will be included in the ticket's output.
       isArray: false
       name: include_requester
-      predefined: ['yes', 'no']
+      predefined: ['true', 'false']
       required: false
     - default: false
       defaultValue: ''
-      description: If set to 'yes' then ticket’s closed_at, resolved_at and first_responded_at
+      description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
         time will be included in the response.
       isArray: false
       name: include_stats
-      predefined: ['yes', 'no']
+      predefined: ['true', 'false']
       required: false
-    description: View a Ticket.
+    description: View the details of a ticket specified by its ID number.
     execution: false
     name: fd-get-ticket
     outputs:
@@ -353,8 +353,8 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: return contacts that have been updated after the timestamp given
-        as this argument value
+      description: Return contacts that have been updated after the timestamp given
+        as this argument value. Acceptable format is 'YYYY-MM-DDTHH:MM:SSZ' E.g. '2018-01-19T02:00:00Z'.
       isArray: false
       name: updated_since
       predefined: []
@@ -367,7 +367,6 @@ script:
     - {contextPath: FD.Contact.Active, description: Set to true if the contact has
         been verified, type: Boolean}
     - {contextPath: FD.Contact.Address, description: Address of the contact, type: String}
-    - {contextPath: FD.Contact.Avatar, description: Avatar of the contact, type: Unknown}
     - {contextPath: FD.Contact.CompanyId, description: ID of the primary company to
         which this contact belongs, type: Number}
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
@@ -433,7 +432,6 @@ script:
     - {contextPath: FD.Contact.Active, description: Set to true if the contact has
         been verified, type: Boolean}
     - {contextPath: FD.Contact.Address, description: Address of the contact, type: String}
-    - {contextPath: FD.Contact.Avatar, description: Avatar of the contact, type: Unknown}
     - {contextPath: FD.Contact.CompanyId, description: ID of the primary company to
         which this contact belongs, type: Number}
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
@@ -971,6 +969,9 @@ script:
   isfetch: true
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     # For debugging
@@ -1757,9 +1758,9 @@ script:
 
         # Check if embedding additional info in API response was specified in cmd args
         include = ''
-        if args.get('include_stats') and args.get('include_stats').lower() == 'yes':
+        if args.get('include_stats') and args.get('include_stats').lower() == 'true':
             include += 'stats'
-        if args.get('include_requester') and args.get('include_requester').lower() == 'yes':
+        if args.get('include_requester') and args.get('include_requester').lower() == 'true':
             include += 'requester' if include == '' else ', requester'
         if include != '':
             url_params['include'] = include
