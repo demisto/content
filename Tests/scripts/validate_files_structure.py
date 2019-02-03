@@ -388,11 +388,10 @@ def validate_version(file_path):
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
     elif file_extension == '.json':
-        with open("./" + file_path) as json_file:
-            json_dict = json.load(json_file)
-            if isinstance(json_dict, 'dict'):
-                if 'version' in json_dict:
-                    version_number = json_dict.get('version')
+        if checked_type(file_path):
+            with open("./" + file_path) as json_file:
+                json_dict = json.load(json_file)
+                version_number = json_dict.get('version')
 
     if version_number != -1:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
