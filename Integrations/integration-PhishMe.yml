@@ -469,11 +469,9 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if sender address is malicious
+    description: Check if sender email is malicious
   runonce: false
 releaseNotes: "Reimplemented the way dbot score is calculated"
-    description: Checks if a sender email address is malicious.
 hidden: false
-releaseNotes: "Updated descriptions of arguments and commands to make them clearer"
 tests:
   - Test - PhishMe Intelligence
