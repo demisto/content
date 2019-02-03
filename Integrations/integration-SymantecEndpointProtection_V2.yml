@@ -408,8 +408,13 @@ script:
     description: Updates the content of the given client.
     execution: false
     name: sep-update-endpoint-content
-    outputs: [
-      ]
+    outputs:
+    - contextPath: SEPM.Update.Endpoint
+      description: The endpoint that is being updated
+      type: String
+    - contextPath: SEPM.Update.CommandID
+      description: Command ID to check status
+      type: String
   - arguments:
     - default: false
       defaultValue: ''
@@ -438,6 +443,9 @@ script:
   isfetch: false
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     import requests
     import json
     import re
@@ -1087,7 +1095,7 @@ script:
     current_command = demisto.command()
     try:
         '''
-        Before EVERY command the follwing tow lines are performed (do_auth and get_token_from_response)
+        Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
         '''
         resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam('authentication'), insecure=demisto.getParam('insecure'))
         token = get_token_from_response(resp)
