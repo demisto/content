@@ -11758,7 +11758,7 @@
                 "name": "Freshdesk", 
                 "commands": [
                     "fd-create-ticket", 
-                    "fd-view-ticket", 
+                    "fd-get-ticket", 
                     "fd-update-ticket", 
                     "fd-list-contacts", 
                     "fd-view-contact", 
