@@ -13,8 +13,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   data to investigate the email. Also extracts inner attachments and returns them
   to the war room. The incident labels themselves are preserved and not modified -
   only the "Label/x" context items that originated from the labels, and the best practice
-  is to rely on these for the remainder of the playbook. Requires pip and access to
-  python repository to install "olefile" package.
+  is to rely on these for the remainder of the playbook.
 enabled: true
 args:
 - name: entryid
