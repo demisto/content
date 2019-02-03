@@ -3,7 +3,12 @@ commonfields:
   version: -1
 name: TestPYCommonServer
 script: |-
+  #!/usr/bin/env python
+  # -*- coding: utf-8 -*-
+
   import copy
+  import unittest
+
   INFO = {'b' : 1,
       'a': {
           'safd' : 3,
@@ -357,6 +362,7 @@ script: |-
 
       demisto.results('ok')
 
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
@@ -370,11 +376,91 @@ script: |-
       'PASCAL_TO_SPACE' : test_pascalToSpace,
   }
 
-  test_type = demisto.args()['test_type']
-  if test_type not in TESTS:
-      demisto.results('Invalid test: %s' % (test_type, ))
-  else:
-      TESTS[test_type]()
+
+  class TestIsError(unittest.TestCase):
+
+      def test_is_error_true(self):
+          execute_command_results = [
+              {
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents": "this is error message"
+              }
+          ]
+          self.assertTrue(is_error(execute_command_results))
+
+
+      def test_is_error_single_entry(self):
+          execute_command_results = {
+              "Type": entryTypes["error"],
+              "ContentsFormat": formats["text"],
+              "Contents": "this is error message"
+          }
+
+          self.assertTrue(is_error(execute_command_results))
+
+      def test_is_error_false(self):
+          execute_command_results = [
+              {
+                  "Type": entryTypes["note"],
+                  "ContentsFormat": formats["text"],
+                  "Contents": "this is regular note"
+              }
+          ]
+          self.assertFalse(is_error(execute_command_results))
+
+      def test_not_error_entry(self):
+          execute_command_results = "invalid command results as string"
+          self.assertFalse(is_error(execute_command_results))
+
+
+  class TestGetError(unittest.TestCase):
+      def test_get_error(self):
+          execute_command_results = [
+              {
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents": "this is error message"
+              }
+          ]
+          error = get_error(execute_command_results)
+          self.assertEquals(error, "this is error message")
+
+      def test_get_error_single_entry(self):
+          execute_command_results = {
+              "Type": entryTypes["error"],
+              "ContentsFormat": formats["text"],
+              "Contents": "this is error message"
+          }
+
+          error = get_error(execute_command_results)
+          self.assertEquals(error, "this is error message")
+
+      def test_get_error_need_raise_error_on_non_error_input(self):
+          execute_command_results = [
+              {
+                  "Type": entryTypes["note"],
+                  "ContentsFormat": formats["text"],
+                  "Contents": "this is not an error"
+              }
+          ]
+          try:
+              get_error(execute_command_results)
+              self.fail("get_error should raise an error")
+          except ValueError, e:
+              self.assertEquals(e.message, "execute_command_result has no error entry. before using get_error use is_error")
+
+
+  def main():
+      test_type = demisto.args()['test_type']
+      if test_type not in TESTS:
+          demisto.results('Invalid test: %s' % (test_type,))
+      else:
+          TESTS[test_type]()
+
+
+  if __name__ == '__builtin__':
+      main()
 type: python
 tags: []
 comment: Tests for common function dq
@@ -383,7 +469,6 @@ args:
 - name: test_type
   required: true
   default: true
-  auto: PREDEFINED
   predefined:
   - DQ
   - ENTRY
@@ -398,5 +483,6 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole
 tests:
   - Test CommonServer
