@@ -166,6 +166,8 @@ script:
         '100': 'Missing'
     }
 
+
+    # Map SNOW severity to Demisto severity for incident creation
     SEVERITY_MAP = {
         '1': 3,
         '2': 2,
