@@ -15777,7 +15777,8 @@
                 "implementing_scripts": [
                     "PcapHTTPExtractor", 
                     "DeleteContext", 
-                    "http"
+                    "http", 
+                    "AreValuesEqual"
                 ]
             }
         }
