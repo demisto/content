@@ -108,7 +108,7 @@ def has_mock_file(ami, playbook_id):
 
 
 def has_unmockable_integration(integrations, unmockable_integrations):
-    return list(set(x['name'] for x in integrations).intersection(set(unmockable_integrations)))
+    return list(set(x['name'] for x in integrations).intersection(unmockable_integrations))
 
 
 # Configure integrations to work with mock
@@ -149,11 +149,11 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
     return succeed
 
 
-def run_test(c, proxy, ami, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+def run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
 
-    if has_unmockable_integration(integrations, []):  # TODO: Replace with unmockable_integrations
+    if has_unmockable_integration(integrations, unmockable_integrations):
         print "Test has unmockable integrations, bypassing mock mechanism."
         mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                      test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
@@ -375,6 +375,7 @@ def main():
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
+    unmockable_integrations = conf['unmockable_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
@@ -449,7 +450,7 @@ def main():
 
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, proxy, ami, failed_playbooks, integrations, playbook_id,
+        run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 

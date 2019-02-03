@@ -991,5 +991,8 @@
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
+    ],
+    "unmockable_integrations": [
+        "Pwned"
     ]
 }
