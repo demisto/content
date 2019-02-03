@@ -382,14 +382,20 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
-    is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
+    file_extension = os.path.splitext(file_path)[1]
+    version_number = -1
+    if file_extension == '.yml':
+        yaml_dict = get_json(file_path)
+        version_number = yaml_dict.get('commonfields', {}).get('version')
+    elif file_extension == '.json':
+        if checked_type(file_path):
+            with open("./" + file_path) as json_file:
+                json_dict = json.load(json_file)
+                version_number = json_dict.get('version')
 
-    if is_incorrect_version or is_incorrect_version_secondary:
+    if version_number != -1:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
         return True
-
     return False
 
 
@@ -514,7 +520,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
     has_schema_problem = False
     for file_path in added_files:
         print "Validating {}".format(file_path)
-        if not validate_schema(file_path):
+        if not validate_schema(file_path) or validate_version(file_path):
             has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
