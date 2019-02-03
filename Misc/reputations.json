@@ -150,6 +150,8 @@
       "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
       "reputationCommand": "url",
       "details": "URL",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
       "enhancementScriptNames": [
         "URLReputation",
         "SplunkSearch"
@@ -189,6 +191,8 @@
       "regex": "CVE-\\d{4}-\\d{4,7}",
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
+      "contextValue": "ID",
+      "contextPath": "CVE(val.ID && val.ID === obj.ID)",
       "enhancementScriptNames": [
         "cveSearch"
       ]

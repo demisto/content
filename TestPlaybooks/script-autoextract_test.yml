@@ -16,7 +16,7 @@ script: |
 
   ###  Aggregating all indicator data ###
   indicator_data = ip_context_output + ipescaped_context_output + url_context_output + urlescaped_context_output + md5_context_output +\
-  sha1_context_output + sha256_context_output + email_context_output
+  sha1_context_output + sha256_context_output + email_context_output, cve_context_output
 
 
   ###  Printing humanreadable to the war room, for auto-extract to work on ###
@@ -29,9 +29,19 @@ script: |
 type: python
 tags:
 - autoextract
-comment: Prints different types of "fake", or made up indicators, to the war room.
-  This script is used to test the bare function of auto-extract, without the help
-  of any integration enrichment.
+comment: |-
+  Prints different types of "fake", or made up indicators, to the war room. This script is used to test the bare function of auto-extract, without the help of any integration enrichment.
+  The indicators are:
+  2 external IPs
+  1 internal IP
+  1 escaped, external IP
+  2 URLs (one with http, one without)
+  1 escaped URL (having hxxp instead of http)
+  2 MD5 hashes
+  2 SHA1 hashes
+  2 SHA256 hashes
+  2 email addresses
+  1 ID of a CVE
 enabled: true
 scripttarget: 0
 runonce: false

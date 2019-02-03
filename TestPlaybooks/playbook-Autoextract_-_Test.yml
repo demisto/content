@@ -6,12 +6,12 @@ description: |-
   The test currently tests auto-extract on:
   - IPs
   - Escaped IPs
-  - URLs
+  - URLs (includes domains from URLs)
   - Escaped URLs
   - MD5 hash
   - SHA1 hash
   - SHA256 hash
-  - Email addresses
+  - Email addresses (includes domains from email addresses)
 starttaskid: "0"
 tasks:
   "0":
@@ -92,6 +92,7 @@ tasks:
       - "8"
       - "11"
       - "15"
+      - "25"
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -193,7 +194,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1280
+          "y": 1290
         }
       }
     note: false
@@ -604,7 +605,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": 1495
+          "y": 1655
         }
       }
     note: false
@@ -629,7 +630,7 @@ tasks:
       {
         "position": {
           "x": 1080,
-          "y": 1510
+          "y": 1670
         }
       }
     note: false
@@ -651,7 +652,54 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1670
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+    type: condition
+    task:
+      id: 6570f3ad-c973-4afd-8cdf-e697291a6b21
+      version: -1
+      name: Was the CVE ID extracted?
+      description: Checks whether the ID of the CVE that was printed is found in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CVE
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVE.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE-2019-7312
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1460
         }
       }
     note: false
@@ -659,20 +707,21 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_22_#default#": 0.36,
+      "11_22_#default#": 0.34,
       "11_23_yes": 0.4,
-      "15_22_#default#": 0.31,
+      "15_22_#default#": 0.3,
       "15_23_yes": 0.35,
-      "17_22_#default#": 0.42,
+      "17_22_#default#": 0.4,
       "17_23_yes": 0.7,
-      "3_22_#default#": 0.63,
+      "25_22_#default#": 0.7,
+      "3_22_#default#": 0.56,
       "3_23_yes": 0.72,
-      "8_22_#default#": 0.5,
+      "8_22_#default#": 0.46,
       "8_23_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1685,
+        "height": 1845,
         "width": 1650,
         "x": -190,
         "y": 50
