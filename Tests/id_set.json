@@ -4932,7 +4932,7 @@
                     "getFilePath"
                 ], 
                 "tests": [
-                    "Test-PcapHTTPExtractor"
+                    "PcapHTTPExtractor-Test"
                 ]
             }
         }
@@ -15774,6 +15774,17 @@
         {
             "playbook-PcapHTTPExtractor-test": {
                 "name": "playbook-PcapHTTPExtractor-test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
                 "implementing_scripts": [
                     "PcapHTTPExtractor", 
                     "DeleteContext", 
