@@ -101,10 +101,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 15f54d71-8dba-4e77-8b88-9cafa91bf680
+    taskid: 49a000dd-654b-4481-8b7c-9d6291a39b8e
     type: regular
     task:
-      id: 15f54d71-8dba-4e77-8b88-9cafa91bf680
+      id: 49a000dd-654b-4481-8b7c-9d6291a39b8e
       version: -1
       name: PcapHTTPExtractor
       description: Allows to parse and extract http flows (requests & responses) from
@@ -136,36 +136,31 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: c48ac5c1-0a8e-4e09-8bbe-0918e22510cc
+    taskid: cb7ffdcc-ba7f-4442-8fe7-102d34fd4319
     type: condition
     task:
-      id: c48ac5c1-0a8e-4e09-8bbe-0918e22510cc
+      id: cb7ffdcc-ba7f-4442-8fe7-102d34fd4319
       version: -1
       name: IsResultContextCorrect
+      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "7"
       "yes":
       - "6"
+    scriptarguments:
+      left:
+        complex:
+          root: PcapHTTPFlows
+          accessor: '[1].Response.HttpDate'
+          transformers:
+          - operator: trim
+      right:
+        simple: 2019-01-14T11:20:42
+    results:
+    - AreValuesEqual
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PcapHTTPFlows
-                accessor: '[1].Response.HttpDate'
-                transformers:
-                - operator: trim
-            iscontext: true
-          right:
-            value:
-              simple: 2019-01-14T11:20:42
     view: |-
       {
         "position": {
@@ -177,42 +172,21 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 18195139-4241-4a55-86e5-d2e6c07711e1
-    type: regular
+    taskid: 721eacc0-1482-424d-8b9f-d401f5da181d
+    type: title
     task:
-      id: 18195139-4241-4a55-86e5-d2e6c07711e1
+      id: 721eacc0-1482-424d-8b9f-d401f5da181d
       version: -1
-      name: Completed
-      type: regular
+      name: All Good
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: d5c6840e-1ab0-48ee-8ed2-5b770d23e2ed
-    type: regular
-    task:
-      id: d5c6840e-1ab0-48ee-8ed2-5b770d23e2ed
-      version: -1
-      name: Error
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 290,
-          "y": 920
+          "x": -90,
+          "y": 900
         }
       }
     note: false
@@ -222,9 +196,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 965,
-        "width": 810,
-        "x": -140,
+        "height": 915,
+        "width": 520,
+        "x": -90,
         "y": 50
       }
     }
