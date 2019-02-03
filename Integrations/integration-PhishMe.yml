@@ -98,6 +98,22 @@ script:
         return md;
     };
 
+    var checkThreat = function(threats, threatArray, k) {
+        var severityLevel = 0;
+        var md = '';
+        for (var i = 0; i < threats[k].blockSet.length; i++){
+            if (threats[k].blockSet[i]['impact']) {
+                severityLevel += calcScore(threats[k].blockSet[i]['impact']);
+            }
+        }
+        var severityScore = Math.ceil(severityLevel / i);
+        var threatLevel = calcVerdict(severityScore);
+        md += 'Verdict: ' + threatLevel +'\n';
+        md += addMD(threats, k);
+        threatArray[k] = threats[k].id;
+        return {'severityScore':severityScore, 'md': md};
+    }
+
     var searchUrl = function(url) {
         var tmpargs = {};
         tmpargs.urlSearch = url;
@@ -107,27 +123,24 @@ script:
         var md = "## PhishMe URL Reputation for: "+url+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
+        if (threats.length && threats.length !== 0) {
             ec.URL = {
                         Data: url,
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                       };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['data'].indexOf(url) !== -1) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
-                threatArray[k] = threats[k].id;
+                threatAnalysis = checkThreat(threats, threatArray, k)
+                dbotScore += threatAnalysis['severityScore'];
+                md += threatAnalysis['md'];
             }
             ec.URL['PhishMe'] = {};
             ec.URL.PhishMe['ThreatIDs'] = threatArray;
         } else {
             md += "No information found for this url";
+        }
+
+        if (threats.length && threats.length > 1) {
+            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'PhishMe', Score: dbotScore};
@@ -182,7 +195,7 @@ script:
         var md = "## PhishMe email Reputation for: " + sender_name + "\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
+        if (threats.length && threats.length !== 0) {
             ec.Email = {
                 'Data': sender_name,
                 'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
@@ -194,21 +207,18 @@ script:
                 }
             };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['data'].indexOf(sender_name) !== -1) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
-                threatArray[k] = threats[k].id;
+                threatAnalysis = checkThreat(threats, threatArray, k)
+                dbotScore += threatAnalysis['severityScore'];
+                md += threatAnalysis['md'];
             }
             ec.Email['PhishMe'] = {};
             ec.Email.PhishMe['ThreatIDs'] = threatArray;
         } else {
             md += "No infomation found for this email";
+        }
+
+        if (threats.length && threats.length > 1) {
+            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'PhishMe', Score: dbotScore};
@@ -231,21 +241,18 @@ script:
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                         };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].executableSet.length; i++){
-                    if (threats[0].executableSet[i]['md5Hex'] === str) {
-                        var severityLevel = threats[0].executableSet[i]['severityLevel'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
-                threatArray[k] = threats[k].id;
+                threatAnalysis = checkThreat(threats, threatArray, k)
+                dbotScore += threatAnalysis['severityScore'];
+                md += threatAnalysis['md'];
             }
             ec.File['PhishMe'] = {};
             ec.File.PhishMe['ThreatIDs'] = threatArray;
         } else {
             md += "No information found for this hash";
+        }
+
+        if (threats.length && threats.length > 1) {
+            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'PhishMe', Score: dbotScore};
@@ -262,28 +269,25 @@ script:
         var md = "## PhishMe IP Reputation for: "+ip+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
+        if (threats.length && threats.length !== 0) {
             ec.IP = {
                       Data: ip,
                       Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                     };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['ipDetail'] && threats[0].blockSet[i]['ipDetail']['ip']===ip) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats,k);
-                threatArray[k] = threats[k].id;
+                threatAnalysis = checkThreat(threats, threatArray, k)
+                dbotScore += threatAnalysis['severityScore'];
+                md += threatAnalysis['md'];
             }
             ec.IP['PhishMe'] = {};
             ec.IP.PhishMe['ThreatIDs'] = threatArray;
 
         } else {
             md += "No information found for this ip";
+        }
+
+        if (threats.length && threats.length > 1) {
+            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'PhishMe', Score: dbotScore};
@@ -312,6 +316,8 @@ script:
                 return 2;
             case 'Major':
                 return 3;
+            default:
+                return 0;
         }
     }
 
@@ -441,7 +447,7 @@ script:
       description: Number of threats
     - contextPath: PhishMe.String
       description: String to search
-    description: 'Search for extracted strings discovered within malware campaigns.'
+    description: Search for extracted strings discovered within malware campaigns.
   - name: email
     arguments:
     - name: email
@@ -466,7 +472,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Check if sender address is malicious
-hidden: false
+  runonce: false
 releaseNotes: "Added new outputs !email commands"
 tests:
-  - No tests
+  - Test - PhishMe Intelligence
