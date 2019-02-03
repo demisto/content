@@ -1235,7 +1235,10 @@
         }, 
         {
             "D2Drop": {
-                "name": "D2Drop"
+                "name": "D2Drop", 
+                "tests": [
+                    "No test - D2 test are not supported yet in content tests"
+                ]
             }
         }, 
         {
@@ -1287,7 +1290,13 @@
         }, 
         {
             "CopyFileD2": {
-                "name": "CopyFileD2"
+                "name": "CopyFileD2", 
+                "depends_on": [
+                    "D2Drop"
+                ], 
+                "tests": [
+                    "No test - D2 test are not supported yet in content tests"
+                ]
             }
         }, 
         {
