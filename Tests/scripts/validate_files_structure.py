@@ -466,21 +466,9 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 def validate_committed_files(branch_name, is_circle):
 
-    # Get all files that have been modified & added to repo
-    secrets_file_paths = secrets.get_all_diff_text_files(branch_name, is_circle)
-    secrets_found = secrets.search_potential_secrets(secrets_file_paths)
-
-    if secrets_found:
-        print_error('Secrets were found in the following files:\n')
-        for file_name in secrets_found:
-            print_error('\nFile Name: ' + file_name)
-            print_error(json.dumps(secrets_found[file_name], indent=4))
-        if not is_circle:
-            print_error('Remove or whitelist secrets in order to proceed, then re-commit\n')
-        else:
-            print_error('The secrets were exposed in public repository, remove the files asap and report it.\n')
-
-        sys.exit(1)
+    secrets_found, secrets_found_string = secrets.get_secrets(branch_name, is_circle)
+    if secrets_found_string:
+        print_error(secrets_found_string)
 
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
@@ -497,7 +485,7 @@ def validate_committed_files(branch_name, is_circle):
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
                                               script_set, test_playbook_set, is_circle) or has_schema_problem
 
-    if has_schema_problem:
+    if has_schema_problem or secrets_found:
         sys.exit(1)
 
 

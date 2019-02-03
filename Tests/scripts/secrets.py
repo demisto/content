@@ -10,12 +10,37 @@ import validate_files_structure
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
 ENTROPY_THRESHOLD = 3.8
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
+ACCEPTED_FILE_STATUSES = ['M', 'A']
+TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js'}
+URLS_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
+IPV6_REGEX = r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1' \
+             r'[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::'\
+             r'(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]'\
+             r'{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'\
+             r'(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'\
+             r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'\
+             r'|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}'\
+             r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'\
+             r'\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}'\
+             r'[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'\
+             r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'\
+             r'|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:'\
+             r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4]'\
+             r'[0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]'\
+             r'{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]'\
+             r'|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'\
+             r'(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|'\
+             r'(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)'
+
+IPV4_REGEX = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
+DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)'
 
 
 def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
-    text_file_types = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv'}
-    if file_extension in text_file_types:
+    if file_extension in TEXT_FILE_TYPES:
         return True
     return False
 
@@ -26,7 +51,6 @@ def get_diff_text_files(files_string):
     :return: text_files_list: string of full path to text files
     """
     # file statuses to filter from the diff, no need to test deleted files.
-    accepted_file_statuses = ['M', 'A']
     all_files = files_string.split('\n')
     text_files_list = set()
     for file_name in all_files:
@@ -37,7 +61,7 @@ def get_diff_text_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
         # only modified/added file, text readable, exclude white_list file
-        if file_status.upper() in accepted_file_statuses and is_text_file(file_path) \
+        if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path) \
                 and SECRETS_WHITE_LIST_FILE not in file_path:
             text_files_list.add(file_path)
 
@@ -46,9 +70,10 @@ def get_diff_text_files(files_string):
 
 def get_all_diff_text_files(branch_name, is_circle):
     """
+    Get all new/modified text files that need to be searched for secrets
     :param branch_name: current branch being worked on
     :param is_circle: boolean to check if being ran from circle
-    :return:
+    :return: list: list of text files
     """
     if is_circle:
         branch_changed_files_string = \
@@ -76,18 +101,18 @@ def search_potential_secrets(secrets_file_paths):
     for file_path in secrets_file_paths:
         file_name = file_path.split('/')[-1]
         high_entropy_strings = []
-        regex_secrets = []
+        secrets_found_with_regex = []
         yml_file_contents = None
         skip_secrets = False
 
         # if py file, search for yml in order to retrieve temp white list
         file_path_temp, file_extension = os.path.splitext(file_path)
-        if file_extension == '.py':
+        if file_extension == '.py' or file_extension == '.js':
             yml_file_contents = retrieve_related_yml(file_path_temp)
 
         # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
-        with io.open('./' + file_path, mode="r", encoding="utf-8") as file:
-            file_contents = file.read()
+        with io.open('./' + file_path, mode="r", encoding="utf-8") as commited_file:
+            file_contents = commited_file.read()
 
             # Add all context output paths keywords to whitelist temporary
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
@@ -108,7 +133,7 @@ def search_potential_secrets(secrets_file_paths):
                 potential_secrets, false_positives = regex_for_secrets(line)
                 for potential_secret in potential_secrets:
                     if not any(white_list_string in potential_secret for white_list_string in secrets_white_list):
-                        regex_secrets.append(potential_secret)
+                        secrets_found_with_regex.append(potential_secret)
                 # added false positives into white list array before testing the strings in line
                 secrets_white_list = secrets_white_list.union(false_positives)
 
@@ -122,9 +147,9 @@ def search_potential_secrets(secrets_file_paths):
                         if entropy >= ENTROPY_THRESHOLD:
                             high_entropy_strings.append(string_)
 
-        if high_entropy_strings or regex_secrets:
+        if high_entropy_strings or secrets_found_with_regex:
             # uniquify identical matches between lists
-            file_secrets = list(set(high_entropy_strings + regex_secrets))
+            file_secrets = list(set(high_entropy_strings + secrets_found_with_regex))
             secrets_found[file_name] = file_secrets
 
     return secrets_found
@@ -159,45 +184,26 @@ def regex_for_secrets(file_contents):
     false_positives = []
 
     # URL REGEX
-    urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', file_contents)
+    urls = re.findall(URLS_REGEX, file_contents)
     if urls:
         potential_secrets += urls
     # EMAIL REGEX
-    emails = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', file_contents)
+    emails = re.findall(EMAIL_REGEX, file_contents)
     if emails:
         potential_secrets += emails
     # IPV6 REGEX disable-secrets-detection-start
-    ipv6_list = re.findall(r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1'
-                           r'[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::'
-                           r'(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]'
-                           r'{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
-                           r'(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
-                           r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'
-                           r'|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}'
-                           r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
-                           r'\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}'
-                           r'[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|'
-                           r'(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}'
-                           r'|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:'
-                           r'(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4]'
-                           r'[0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]'
-                           r'{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]'
-                           r'|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|'
-                           r'(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|'
-                           r'(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)', file_contents)
+    ipv6_list = re.findall(IPV6_REGEX, file_contents)
     # disable-secrets-detection-end
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::':
                 potential_secrets.append(ipv6)
     # IPV4 REGEX
-    ipv4_list = re.findall(r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',
-                           file_contents)
+    ipv4_list = re.findall(IPV4_REGEX, file_contents)
     if ipv4_list:
         potential_secrets += ipv4_list
     # Dates REGEX for false positive preventing since they have high entropy
-    dates = re.findall(r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)',
-                       file_contents)
+    dates = re.findall(DATES_REGEX, file_contents)
     if dates:
         false_positives += [date[0] for date in dates]
 
@@ -221,3 +227,21 @@ def calculate_shannon_entropy(data):
             # the information in every possible news, in bits
             entropy += - px * math.log(px, 2)
     return entropy
+
+
+def get_secrets(branch_name, is_circle):
+    secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
+    secrets_found = search_potential_secrets(secrets_file_paths)
+    secrets_found_string = ''
+    if secrets_found:
+        secrets_found_string += 'Secrets were found in the following files:\n'
+        for file_name in secrets_found:
+            secrets_found_string =('\nFile Name: ' + file_name)
+            secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
+        if not is_circle:
+            secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
+        else:
+            secrets_found_string += 'The secrets were exposed in public repository,' \
+                                    ' remove the files asap and report it.\n'
+
+    return secrets_found, secrets_found_string
