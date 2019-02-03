@@ -74,7 +74,7 @@ script:
       predefined: []
       required: true
     - default: false
-      defaultValue: ''
+      defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
         1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this
         command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
@@ -83,7 +83,7 @@ script:
       predefined: [Low, Medium, High, Urgent]
       required: false
     - default: false
-      defaultValue: ''
+      defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
         is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
         7 is Waiting on Third Party. Acceptable values for this command argument are
@@ -147,8 +147,6 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
-        size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
@@ -167,6 +165,16 @@ script:
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were entered using the 'additional_fields' and 'additional_values' arguments.,
       type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.AttachmentURL, description: URL to download
+        the file attached to the Ticket to your local machine., type: String}
+    - {contextPath: FD.Ticket.Attachment.Name, description: The name of the file attached
+        to the ticket., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.ContentType, description: Content type of
+        the attached file., type: String}
+    - {contextPath: FD.Ticket.Attachment.ID, description: ID number for the attached
+        file., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.Size, description: Size of the attached file
+        in bytes., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -199,8 +207,6 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
-        size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
@@ -218,6 +224,16 @@ script:
     - {contextPath: FD.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
     - {contextPath: FD.Ticket.ID, description: ID of the fetched ticket, type: Number}
+    - {contextPath: FD.Ticket.Attachment, description: URL of the attached file from
+        which you can download the file to your local machine., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.Name, description: The name of the file attached
+        to the ticket., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.ContentType, description: Content type of
+        the attached file., type: String}
+    - {contextPath: FD.Ticket.Attachment.ID, description: ID number for the attached
+        file., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.Size, description: Size of the attached file
+        in bytes., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -227,7 +243,7 @@ script:
       predefined: []
       required: false
     - default: false
-      defaultValue: ''
+      defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
         is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
         7 is Waiting on Third Party. Acceptable values for this command argument are
@@ -239,7 +255,7 @@ script:
           Third Party]
       required: false
     - default: false
-      defaultValue: ''
+      defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
         1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this
         command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
@@ -281,7 +297,7 @@ script:
       defaultValue: ''
       description: List of ticket fields you wish to update the values of.
       isArray: true
-      name: update_fields
+      name: additional_fields
       predefined: [name, requester_id, email, facebook_id, phone, twitter_id, unique_external_id,
         type, attachments, custom_fields, email_config_id, product_id, source, tags,
         company_id, due_by, fr_due_by]
@@ -302,8 +318,6 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
-        size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
@@ -322,6 +336,16 @@ script:
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
     - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
+    - {contextPath: FD.Ticket.Attachment.AttachmentURL, description: URL of the attached
+        file from which you can download the file to your local machine., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.Name, description: The name of the file attached
+        to the ticket., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.ContentType, description: Content type of
+        the attached file., type: String}
+    - {contextPath: FD.Ticket.Attachment.ID, description: ID number for the attached
+        file., type: Unknown}
+    - {contextPath: FD.Ticket.Attachment.Size, description: Size of the attached file
+        in bytes., type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -528,8 +552,17 @@ script:
         canned response content, type: String}
     - {contextPath: FD.CRFolder.CR.ContentHtml, description: HTML version of the canned
         response content, type: String}
-    - {contextPath: FD.CRFolder.CR.Attachment, description: Array of attachments associated
-        with the canned response, type: Unknown}
+    - {contextPath: FD.CRFolder.CR.Attachment.AttachmentURL, description: URL of the
+        attached file from which you can download the file to your local machine.,
+      type: String}
+    - {contextPath: FD.CRFolder.CR.Attachment.Name, description: The name of the attached
+        file., type: String}
+    - {contextPath: FD.CRFolder.CR.Attachment.ContentType, description: Content type
+        of the attached file., type: String}
+    - {contextPath: FD.CRFolder.CR.Attachment.ID, description: ID number for the attached
+        file., type: Number}
+    - {contextPath: FD.CRFolder.CR.Attachment.Size, description: Size of the attached
+        file in bytes., type: Number}
   - arguments: []
     description: List all groups
     execution: false
@@ -613,8 +646,6 @@ script:
     execution: false
     name: fd-ticket-reply
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
-        associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
@@ -643,6 +674,17 @@ script:
     - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
         from which the reply is sent. By default the global support email will be
         used., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.AttachmentURL, description: URL
+        of the attached file from which you can download the file to your local machine.,
+      type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Name, description: The name
+        of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ContentType, description: Content
+        type of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ID, description: ID number for
+        the attached file., type: Number}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Size, description: Size of the
+        attached file in bytes., type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -655,8 +697,6 @@ script:
     execution: false
     name: fd-get-ticket-conversations
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
-        associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
@@ -685,6 +725,17 @@ script:
     - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
         from which the reply/note is sent. By default the global support email will
         be used., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.AttachmentURL, description: URL
+        of the attached file from which you can download the file to your local machine.,
+      type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Name, description: The name
+        of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ContentType, description: Content
+        type of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ID, description: ID number for
+        the attached file., type: Number}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Size, description: Size of the
+        attached file in bytes., type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -822,8 +873,6 @@ script:
     execution: false
     name: fd-create-ticket-note
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
-        associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
@@ -852,6 +901,17 @@ script:
     - {contextPath: FD.Ticket.Conversation.FromEmail, description: The email address
         from which the reply/note is sent. By default the global support email will
         be used., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.AttachmentURL, description: URL
+        of the attached file from which you can download the file to your local machine.,
+      type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Name, description: The name
+        of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ContentType, description: Content
+        type of the attached file., type: String}
+    - {contextPath: FD.Ticket.Conversation.Attachment.ID, description: ID number for
+        the attached file., type: Number}
+    - {contextPath: FD.Ticket.Conversation.Attachment.Size, description: Size of the
+        attached file in bytes., type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -964,8 +1024,6 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
-        size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
@@ -984,6 +1042,16 @@ script:
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were specified in the command's filter-type or include-type arguments., type: Unknown}
     - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
+    - {contextPath: FD.Ticket.Attachment.AttachmentURL, description: URL of the attached
+        file from which you can download the file to your local machine., type: String}
+    - {contextPath: FD.Ticket.Attachment.Name, description: The name of the attached
+        file., type: String}
+    - {contextPath: FD.Ticket.Attachment.ContentType, description: Content type of
+        the attached file., type: String}
+    - {contextPath: FD.Ticket.Attachment.ID, description: ID number for the attached
+        file., type: Number}
+    - {contextPath: FD.Ticket.Attachment.Size, description: Size of the attached file
+        in bytes., type: Number}
   dockerimage: ''
   isfetch: true
   runonce: false
@@ -1038,7 +1106,7 @@ script:
     PER_PAGE = 30
 
     DEFAULT_TICKET_CONTEXT_FIELDS = [
-        'priority', 'due_by', 'subject', 'attachments', 'status',
+        'priority', 'due_by', 'subject', 'status',
         'requester_id', 'tags', 'group_id', 'source', 'created_at',
         'responder_id', 'fr_due_by', 'id'
     ]
@@ -1057,10 +1125,10 @@ script:
         returns:
             The reformatted context
         """
-        need_to_take_off_s = ['Attachments', 'Tags']
+        # need_to_take_off_s = ['Attachments', 'Tags']
 
         for key, val in context.iteritems():
-            if key in need_to_take_off_s:
+            if key == 'Tags':
                 new_key = key[:-1]
                 context[new_key] = val
                 del context[key]
@@ -1136,14 +1204,26 @@ script:
         returns:
             The modified context
         """
+        attachment_keys_to_include = [
+            'attachment_url', 'content_type', 'id', 'name', 'size'
+        ]
         # Parse attachments into context
         attachments = api_response.get('attachments')
         if attachments:
             attachments_context = []
             for attachment in attachments:
-                attachment_context = {string_to_context_key(key): val for key, val in attachment.iteritems()}
+                attachment_context = {}
+                for key, val in attachment.iteritems():
+                    if key in attachment_keys_to_include:
+                        if key == 'attachment_url':
+                            key = 'AttachmentURL'
+                        elif key == 'id':
+                            key = 'ID'
+                        else:
+                            key = string_to_context_key(key)
+                        attachment_context[key] = val
                 attachments_context.append(attachment_context)
-            context['Attachments'] = attachments_context
+            context['Attachment'] = attachments_context
         return context
 
 
@@ -1174,105 +1254,138 @@ script:
         """
         # Parse additional fields into context
         if additional_fields and additional_values:
-            additional_field_contexts = []
+            # additional_field_contexts = []
+            context['AdditionalFields'] = {}
             for field, value in zip(additional_fields, additional_values):
-                if field not in already_in_context:
-                    field_context = {string_to_context_key(field): value}
-                    additional_field_contexts.append(field_context)
-            context['AdditionalFields'] = additional_field_contexts
+                if field not in already_in_context and field != 'attachments':
+                    # field_context = {string_to_context_key(field): value}
+                    # additional_field_contexts.append(field_context)
+                    key = string_to_context_key(field)
+                    context['AdditionalFields'][key] = value
+            # context['AdditionalFields'] = additional_field_contexts
         return context
 
 
-    def reformat_args(args, fields_arg_name, values_arg_name):
-        """
-        Merge additional fields and additional values arguments into the args parameter
-        which will be used when making the API call, from how they were entered on the
-        command line (as lists) to the format the API endpoint expects (individual
-        keys and values in the args dictionary).
+    # def reformat_args(args, fields_arg_name, values_arg_name):
+    #     """
+    #     Merge additional fields and additional values arguments into the args parameter
+    #     which will be used when making the API call, from how they were entered on the
+    #     command line (as lists) to the format the API endpoint expects (individual
+    #     keys and values in the args dictionary).
+    #
+    #     parameter: (dict) args
+    #         The command arguments object that needs reformatting
+    #
+    #     parameter: (string) fields_arg_name
+    #         The name of the command argument whose value is a list of additional fields for the command
+    #
+    #     parameter: (string) values_arg_name
+    #         The name of the command argument whose value is a list of values to be assigned corresponding
+    #         to the additional fields for the command
+    #
+    #     returns:
+    #         The reformatted args dictionary
+    #     """
+    #     # Format args according to API expectations
+    #     additional_update_fields = args.get(fields_arg_name)
+    #     additional_field_values = args.get(values_arg_name)
+    #     if additional_update_fields and additional_field_values:
+    #         for field, value in zip(additional_update_fields, additional_field_values):
+    #             args[field] = value
+    #         del args[fields_arg_name]
+    #         del args[values_arg_name]
+    #     return args
 
-        parameter: (dict) args
-            The command arguments object that needs reformatting
 
-        parameter: (string) fields_arg_name
-            The name of the command argument whose value is a list of additional fields for the command
+    # def additional_fields_to_args(args, fields_arg_name, values_arg_name):
+    #     """
+    #     Parses sublists given in the 'additional_values' or 'update_values' argument.
+    #
+    #     parameter: (dict) args
+    #         The command arguments object
+    #
+    #     parameter: (string) fields_arg_name
+    #         The name of the command argument whose value is a string of additional fields for the command
+    #
+    #     parameter: (string) values_arg_name
+    #         The name of the command argument whose value is a string of additional values corresponding
+    #         to the additional fields entered as command arguments
+    #
+    #     returns:
+    #         The reformatted args dictionary, the additional fields - transformed from a string to a list,
+    #         the additional values - transformed from a string to a list
+    #     """
+    #     fields_arg = args.get(fields_arg_name)
+    #     values_arg = args.get(values_arg_name)
+    #     if fields_arg and values_arg:
+    #         additional_fields = argToList(fields_arg)
+    #         # Doesn't use argToList because does not split properly for our purposes
+    #         additional_fields_values = values_arg.split(',')
+    #
+    #         # Handle sublists in command line arg of 'update_values'
+    #         in_sublist = False
+    #         tmp_list = []
+    #         sublist = []
+    #         for i, val in enumerate(additional_fields_values):
+    #             if val.find('[') != -1:
+    #                 in_sublist = True
+    #                 sublist.append(val[val.find('[') + 1:])
+    #
+    #             elif val.find(']') != -1:
+    #                 sublist.append(val[:val.find(']') - len(val)])
+    #                 tmp_list.append(sublist[:])
+    #
+    #                 del sublist[:]
+    #                 in_sublist = False
+    #             elif in_sublist:
+    #                 sublist.append(val)
+    #
+    #             else:
+    #                 tmp_list.append(val)
+    #
+    #         additional_fields_values = tmp_list
+    #         args[values_arg_name] = additional_fields_values
+    #         args[fields_arg_name] = additional_fields
+    #
+    #         if len(additional_fields) != len(additional_fields_values):
+    #             err_msg = "The '{}' list and '{}' list command arguments".format(fields_arg_name, values_arg_name)
+    #             err_msg += " must contain the same number of items."
+    #             err_msg += "\nlength of '{}' list: {}".format(fields_arg_name, len(additional_fields))
+    #             err_msg += "\nlength of '{}' list: {}".format(values_arg_name, len(additional_fields_values))
+    #             return_error(err_msg)
+    #         return args, additional_fields, additional_fields_values
+    #     else:
+    #         return args, None, None
 
-        parameter: (string) values_arg_name
-            The name of the command argument whose value is a list of values to be assigned corresponding
-            to the additional fields for the command
 
-        returns:
-            The reformatted args dictionary
-        """
-        # Format args according to API expectations
-        additional_update_fields = args.get(fields_arg_name)
-        additional_field_values = args.get(values_arg_name)
-        if additional_update_fields and additional_field_values:
-            for field, value in zip(additional_update_fields, additional_field_values):
-                args[field] = value
-            del args[fields_arg_name]
-            del args[values_arg_name]
-        return args
+    def additional_fields_to_args(args, additional_fields_arg_name):
+        additional_fields = args.get(additional_fields_arg_name)
+        if additional_fields:
+            fields, values = [], []
+            fields_and_vals = additional_fields.split(';')
+            # For the case there is only one additional field + value
+            if len(fields_and_vals) == 1:
+                fields_and_vals = list(fields_and_vals)
+            for field_and_val in fields_and_vals:
+                field_and_val = field_and_val.split('=')
+                # If the length doesn't equal 2, means there were either no equal signs or more than one
+                if not len(field_and_val) == 2:
+                    err_msg = "It appears you entered either too many or too few" \
+                              " equal signs in the 'additional_fields' argument."
+                    return_error(err_msg)
+                field = field_and_val[0].strip()
+                val = field_and_val[1]
+                # If the value contains commas, then it is a list
+                if ',' in val:
+                    val = argToList(val)
+                args[field] = val
+                fields.append(field)
+                values.append(val)
+            del args[additional_fields_arg_name]
+            return args, fields, values
+        return args, None, None
 
 
-    def additional_fields_to_args(args, fields_arg_name, values_arg_name):
-        """
-        Parses sublists given in the 'additional_values' or 'update_values' argument.
-
-        parameter: (dict) args
-            The command arguments object
-
-        parameter: (string) fields_arg_name
-            The name of the command argument whose value is a string of additional fields for the command
-
-        parameter: (string) values_arg_name
-            The name of the command argument whose value is a string of additional values corresponding
-            to the additional fields entered as command arguments
-
-        returns:
-            The reformatted args dictionary, the additional fields - transformed from a string to a list,
-            the additional values - transformed from a string to a list
-        """
-        fields_arg = args.get(fields_arg_name)
-        values_arg = args.get(values_arg_name)
-        if fields_arg and values_arg:
-            additional_fields = argToList(fields_arg)
-            # Doesn't use argToList because does not split properly for our purposes
-            additional_fields_values = values_arg.split(',')
-
-            # Handle sublists in command line arg of 'update_values'
-            in_sublist = False
-            tmp_list = []
-            sublist = []
-            for i, val in enumerate(additional_fields_values):
-                if val.find('[') != -1:
-                    in_sublist = True
-                    sublist.append(val[val.find('[') + 1:])
-
-                elif val.find(']') != -1:
-                    sublist.append(val[:val.find(']') - len(val)])
-                    tmp_list.append(sublist[:])
-
-                    del sublist[:]
-                    in_sublist = False
-                elif in_sublist:
-                    sublist.append(val)
-
-                else:
-                    tmp_list.append(val)
-
-            additional_fields_values = tmp_list
-            args[values_arg_name] = additional_fields_values
-            args[fields_arg_name] = additional_fields
-
-            if len(additional_fields) != len(additional_fields_values):
-                err_msg = "The '{}' list and '{}' list command arguments".format(fields_arg_name, values_arg_name)
-                err_msg += " must contain the same number of items."
-                err_msg += "\nlength of '{}' list: {}".format(fields_arg_name, len(additional_fields))
-                err_msg += "\nlength of '{}' list: {}".format(values_arg_name, len(additional_fields_values))
-                return_error(err_msg)
-            return args, additional_fields, additional_fields_values
-        else:
-            return args, None, None
 
 
     def ticket_to_incident(ticket):
@@ -1372,31 +1485,6 @@ script:
                 if arr_input in args.keys():
                     args[arr_input] = argToList(args.get(arr_input))
         return args
-
-
-    # def handle_bool_input(args):
-    #     """
-    #     Format entered values for command arguments 'private' and 'incoming' to API expectations.
-    #
-    #     parameter: (dict) args
-    #         The command arguments dictionary
-    #
-    #     returns:
-    #         The arguments dict with field values transformed from strings to booleans where necessary
-    #     """
-    #     bool_inputs = ['private', 'incoming']
-    #     acceptable_vals = ['true', 'false']
-    #
-    #     try:
-    #         for bool_input in bool_inputs:
-    #             if bool_input in args.keys():
-    #                 args[bool_input] = args.get(bool_input).lower()
-    #                 if args[bool_input] not in acceptable_vals:
-    #                     raise ValueError('field: "{}"\n'.format(bool_input))
-    #     except ValueError as e:
-    #         return_error(e.message + 'The only valid inputs for this field are either "True" or "False"')
-    #
-    #     return args
 
 
     def validate_priority_input(args):
@@ -1741,7 +1829,7 @@ script:
     def create_ticket(args):
         args = determine_identifier(args)
         args = determine_responder(args)
-        args = reformat_args(args, 'additional_fields', 'additional_values')
+        # args = reformat_args(args, 'additional_fields', 'additional_values')
         args = clean_arguments(args)
         endpoint_url = 'tickets'
 
@@ -1809,7 +1897,8 @@ script:
         args = demisto.args()
 
         # Handle additional_fields and additional_values command arguments
-        args, additional_fields, additional_values = additional_fields_to_args(args, 'additional_fields', 'additional_values')
+        # args, additional_fields, additional_values = additional_fields_to_args(args, 'additional_fields', 'additional_values')
+        args, additional_fields, additional_values = additional_fields_to_args(args, 'additional_fields')
 
         # Make request and get raw response
         ticket = create_ticket(args)
@@ -1845,7 +1934,7 @@ script:
         args = determine_group(args, 'assigned_group')
 
         # Format args according to API expecations
-        args = reformat_args(args, 'update_fields', 'update_values')
+        # args = reformat_args(args, 'update_fields', 'update_values')
 
         args = clean_arguments(args)
 
@@ -1911,7 +2000,8 @@ script:
             Ticket specified by the ticket ID number with its updated values
         """
         args = demisto.args()
-        args, additional_fields, additional_fields_values = additional_fields_to_args(args, 'update_fields', 'update_values')
+        # args, additional_fields, additional_fields_values = additional_fields_to_args(args, 'update_fields', 'update_values')
+        args, additional_fields, additional_fields_values = additional_fields_to_args(args, 'additional_fields')
 
         # Make request and get raw response
         ticket = update_ticket(args)
