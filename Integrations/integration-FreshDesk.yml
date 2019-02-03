@@ -1,4 +1,4 @@
-category: IT Services
+category: Case Management
 commonfields: {id: Freshdesk, version: -1}
 configuration:
 - defaultvalue: https://domain.freshdesk.com
@@ -150,20 +150,20 @@ script:
     - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+    - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+    - {contextPath: FD.Ticket.GroupID, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+    - {contextPath: FD.Ticket.ResponderID, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
-    - {contextPath: FD.Ticket.Id, description: ID number of the ticket, type: Number}
+    - {contextPath: FD.Ticket.ID, description: ID number of the ticket, type: Number}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were entered using the 'additional_fields' and 'additional_values' arguments.,
       type: Unknown}
@@ -202,22 +202,22 @@ script:
     - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
-    - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
+    - {contextPath: FD.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
     - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
-    - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
+    - {contextPath: FD.Ticket.GroupID, description: ID of the group to which the ticket
         has been assigned, type: Number}
     - {contextPath: FD.Ticket.Source, description: The channel through which the ticket
         was created, type: Number}
     - {contextPath: FD.Ticket.CreatedAt, description: Ticket creation timestamp, type: Date}
-    - {contextPath: FD.Ticket.ResponderId, description: ID of the agent to whom the
+    - {contextPath: FD.Ticket.ResponderID, description: ID of the agent to whom the
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
     - {contextPath: FD.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
-    - {contextPath: FD.Ticket.Id, description: ID of the fetched ticket, type: Number}
+    - {contextPath: FD.Ticket.ID, description: ID of the fetched ticket, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -988,16 +988,11 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
 
     import traceback
     import requests
-    from datetime import datetime
-    from distutils.util import strtobool
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -1023,8 +1018,8 @@ script:
 
     AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
 
-    # How many time before the first fetch to retrieve incidents
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    # How much time before the first fetch to retrieve incidents
+    FETCH_TIME = demisto.params().get('fetch_time', '24 hours')
 
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
@@ -1050,6 +1045,34 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
+    def reformat_context_output(context):
+        """
+        Reformat context outputs (from having used string_to_context_key) to desired output format.
+
+        parameter: (dict) context
+            The context to reformat
+
+        returns:
+            The reformatted context
+        """
+        need_to_take_off_s = ['Attachments', 'Tags']
+
+        for key, val in context.iteritems():
+            if key in need_to_take_off_s:
+                new_key = key[:-1]
+                context[new_key] = val
+                del context[key]
+            elif 'Id' in key:
+                new_key = key.replace('Id', 'ID')
+                context[new_key] = val
+                del context[key]
+            elif 'Cc' in key:
+                new_key = key.replace('Cc', 'CC')
+                context[new_key] = val
+                del context[key]
+        return context
 
 
     def handle_search_tickets_pagination(args, response):
@@ -1646,7 +1669,7 @@ script:
         )
         # Handle error responses gracefully
         try:
-            if res.status_code not in set(200, 201, 202, 204):
+            if res.status_code not in (200, 201, 202, 204):
                 LOG(res.json())
                 LOG(res.text)
                 LOG.print_log()
@@ -1685,7 +1708,7 @@ script:
         # demisto.getLastRun() will returns an obj with the previous run in it.
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
-        last_fetch = last_run.get('time')
+        last_fetch = last_run.get('last_created_incident_timestamp')
 
         # Handle first time fetch, fetch incidents retroactively
         if not last_fetch:
@@ -1698,13 +1721,13 @@ script:
         incidents = []
         for ticket in tickets:
             incident = ticket_to_incident(ticket)
-            incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_date > last_fetch:
                 last_fetch = incident_date
                 incidents.append(incident)
 
-        demisto.setLastRun({'time': last_fetch})
+        demisto.setLastRun({'last_created_incident_timestamp': last_fetch})
         demisto.incidents(incidents)
 
 
@@ -1793,6 +1816,7 @@ script:
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
         context = attachments_into_context(ticket, context)
+        context = reformat_context_output(context)
         title = "Newly Created Ticket #{}".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1898,6 +1922,7 @@ script:
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_fields_values)
         # Parse attachments into context
         context = attachments_into_context(ticket, context)
+        context = reformat_context_output(context)
         title = "Ticket #{} Updated".format(context.get('Id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1952,13 +1977,13 @@ script:
         # Make request and get raw response
         ticket = get_ticket(args)
 
-        nonstd_ctx_fields = ['requester', 'stats']
+        nonstd_context_fields = ['requester', 'stats']
 
         # Parse response into context
         context = {
             string_to_context_key(key): val
             for key, val in ticket.iteritems()
-            if key not in nonstd_ctx_fields and val is not None
+            if key not in nonstd_context_fields and val is not None
         }
         # Parse attachments into context
         context = attachments_into_context(ticket, context)
@@ -1973,6 +1998,7 @@ script:
             stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
             context['AdditionalFields']['Stats'] = stats_context
 
+        context = reformat_context_output(context)
         title = "Viewing Ticket #{}".format(ticket.get('id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2121,14 +2147,14 @@ script:
         tickets = handle_search_tickets_pagination(args, response)
 
         global DEFAULT_TICKET_CONTEXT_FIELDS
-        ctx_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
-        ctx_outputs.append('updated_at')
+        context_outputs = DEFAULT_TICKET_CONTEXT_FIELDS[:]
+        context_outputs.append('updated_at')
 
         # Parse response into context
         contexts = []
         for ticket in tickets:
             # Parse ticket into the standard outputs
-            context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in ctx_outputs}
+            context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in context_outputs}
 
             # Parse ticket for the additionally requested fields
             context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
@@ -2145,6 +2171,7 @@ script:
             # Parse ticket attachments into context
             context = attachments_into_context(ticket, context)
 
+            context = reformat_context_output(context)
             contexts.append(context)
 
         title = "Viewing All Requested Tickets"
@@ -2227,6 +2254,7 @@ script:
         context = {string_to_context_key(key): val for key, val in reply.iteritems() if val}
         # Parse attachments into context
         context = attachments_into_context(reply, context)
+        context = reformat_context_output(context)
         title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2312,6 +2340,7 @@ script:
         context = {string_to_context_key(key): val for key, val in note.iteritems() if val}
         # Parse attachments into context
         context = attachments_into_context(note, context)
+        context = reformat_context_output(context)
         title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
         md = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2352,6 +2381,7 @@ script:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
             # Parse attachments into context
             context = attachments_into_context(conversation, context)
+            context = reformat_context_output(context)
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
         md = tableToMarkdown(title, contexts, removeNull=True)
