@@ -11710,8 +11710,8 @@
             }
         }, 
         {
-            "Active Directory Query": {
-                "name": "Active Directory Query", 
+            "Active Directory Query v2": {
+                "name": "Active Directory Query v2", 
                 "commands": [
                     "ad-expire-password", 
                     "ad-create-user", 

@@ -988,7 +988,7 @@
         },
         {
             "playbookID": "Active Directory Test",
-            "integrations": "Active Directory Query"
+            "integrations": "Active Directory Query v2"
 
         },
         {
