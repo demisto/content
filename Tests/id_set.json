@@ -15562,6 +15562,16 @@
                     "query": "mysql"
                 }
             }
+        }, 
+        {
+            "Autoextract - Test": {
+                "name": "Autoextract - Test", 
+                "implementing_scripts": [
+                    "autoextract_test", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
+            }
         }
     ]
 }

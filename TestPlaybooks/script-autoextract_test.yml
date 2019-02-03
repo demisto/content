@@ -1,0 +1,38 @@
+commonfields:
+  id: autoextract_test
+  version: -1
+name: autoextract_test
+script: |
+
+  ###  Creating fake data ###
+  ip_context_output = ["98.222.222.9", "23.223.223.233", "172.16.0.10"]  # External + internal
+  ipescaped_context_output = ["111[.]11[.]11[.]111"]
+  url_context_output = ["http://www.thisurlwillneverexist4444.co.il", "www.thisoneshouldnotexisteither4444.com"]
+  urlescaped_context_output = ["hxxp://www.letsseeifyoucanfindthisone4444.co.il"]
+  md5_context_output = ["999d8c71dd6dddd77777777b85734318", "44f03f1a5280bbb7f4c2550b222bb88c"]
+  sha1_context_output = ["bc44444dd6f5c1111ffbbb139e2af09db9f0000d", "444444c6cccc250e98be5c2ed5346f79dc333dd4"]
+  sha256_context_output = ["0a92f2312a95f807fd192c9c25cb6ae502b564c9a8ae013ff88888888ff77ddd", "1ebf92fc2cb3cf75da3131ef3b13abf36a90fa7aaff3a2451f99999a122aaabb"]
+  email_context_output = ["iamtheeggman@demisto.com", "iamthewalrus@demisto.com"]
+
+  ###  Aggregating all indicator data ###
+  indicator_data = ip_context_output + ipescaped_context_output + url_context_output + urlescaped_context_output + md5_context_output +\
+  sha1_context_output + sha256_context_output + email_context_output
+
+
+  ###  Printing humanreadable to the war room, for auto-extract to work on ###
+  demisto.results( {
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['text'],
+      'Contents': indicator_data,
+      'HumanReadable': indicator_data
+                   })
+type: python
+tags:
+- autoextract
+comment: Prints different types of "fake", or made up indicators, to the war room.
+  This script is used to test the bare function of auto-extract, without the help
+  of any integration enrichment.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
