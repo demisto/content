@@ -267,6 +267,11 @@
             "timeout": 500
         },
         {
+          "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test",
+            "timeout": 500
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },

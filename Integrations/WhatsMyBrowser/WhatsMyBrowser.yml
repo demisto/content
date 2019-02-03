@@ -191,3 +191,5 @@ script:
         test_command()
         sys.exit(0)
   type: python
+tests:
+  - WhatsMyBrowser-Test
