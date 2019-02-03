@@ -11761,17 +11761,17 @@
                     "fd-get-ticket", 
                     "fd-update-ticket", 
                     "fd-list-contacts", 
-                    "fd-view-contact", 
-                    "fd-list-cr-folders", 
-                    "fd-list-crs-in-folder", 
-                    "fd-detail-crs", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-list-canned_responses-in-folder", 
+                    "fd-get-canned-response-folder", 
                     "fd-list-groups", 
                     "fd-ticket-reply", 
-                    "fd-get-conversations", 
+                    "fd-get-ticket-conversations", 
                     "fd-list-agents", 
-                    "fd-ticket-note", 
+                    "fd-create-ticket-note", 
                     "fd-delete-ticket", 
-                    "fd-list-tickets"
+                    "fd-search-tickets"
                 ], 
                 "tests": [
                     "Freshdesk-Test"
