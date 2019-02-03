@@ -981,4 +981,3 @@ outputs:
   type: string
 tests:
   - No test
-releaseNotes: Add 'No test' to playbook
