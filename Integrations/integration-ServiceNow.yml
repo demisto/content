@@ -839,6 +839,9 @@ script:
             'Type': 'Work Note' if n.get('element', '') == 'work_notes' else 'Comment'
         } for n in res['result']]
 
+        if not mapped_notes:
+            return 'No results found'
+
         ticket = {
             'ID': ticket_id,
             'Note': mapped_notes
@@ -1802,7 +1805,7 @@ script:
     - name: reopen_count
       description: How many time the ticket has been reopened
     - name: resolved_at
-      description: 'Format: YYYY-MM-DD HH:MM:SS'
+      description: 'Resolving time, Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
       description: UID Format
     - name: rfc
@@ -1857,7 +1860,7 @@ script:
     - name: state
       description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
     - name: opened_at
-      description: 'Format: YYYY-MM-DD HH:MM:SS'
+      description: ' Ticket opening time, Format: YYYY-MM-DD HH:MM:SS'
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
@@ -3506,10 +3509,11 @@ script:
       type: string
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type
-    description: Get notes from the specified ServiceNow ticket - Permissions are
-      required for the sys_journal_field table.
+      type: string
+    description: Get notes from the specified ServiceNow ticket - Read permissions
+      are required for the sys_journal_field table.
   isfetch: true
   runonce: false
-releaseNotes: "Fixed severity mapping, Fixed parameter descriptions, Fixed human readable headers, Added command to get ticket notes using sys_journal_field table"
+releaseNotes: "Fixed severity mapping, Fixed parameter descriptions, Fixed human readable headers, Added Opened At argument to ticket creation, Added command to get ticket notes using sys_journal_field table"
 tests:
   - No test - Hibernating instance
