@@ -988,9 +988,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
 
@@ -1377,29 +1374,29 @@ script:
         return args
 
 
-    def handle_bool_input(args):
-        """
-        Format entered values for command arguments 'private' and 'incoming' to API expectations.
-
-        parameter: (dict) args
-            The command arguments dictionary
-
-        returns:
-            The arguments dict with field values transformed from strings to booleans where necessary
-        """
-        bool_inputs = ['private', 'incoming']
-        acceptable_vals = ['true', 'false']
-
-        try:
-            for bool_input in bool_inputs:
-                if bool_input in args.keys():
-                    args[bool_input] = args.get(bool_input).lower()
-                    if args[bool_input] not in acceptable_vals:
-                        raise ValueError('field: "{}"\n'.format(bool_input))
-        except ValueError as e:
-            return_error(e.message + 'The only valid inputs for this field are either "True" or "False"')
-
-        return args
+    # def handle_bool_input(args):
+    #     """
+    #     Format entered values for command arguments 'private' and 'incoming' to API expectations.
+    #
+    #     parameter: (dict) args
+    #         The command arguments dictionary
+    #
+    #     returns:
+    #         The arguments dict with field values transformed from strings to booleans where necessary
+    #     """
+    #     bool_inputs = ['private', 'incoming']
+    #     acceptable_vals = ['true', 'false']
+    #
+    #     try:
+    #         for bool_input in bool_inputs:
+    #             if bool_input in args.keys():
+    #                 args[bool_input] = args.get(bool_input).lower()
+    #                 if args[bool_input] not in acceptable_vals:
+    #                     raise ValueError('field: "{}"\n'.format(bool_input))
+    #     except ValueError as e:
+    #         return_error(e.message + 'The only valid inputs for this field are either "True" or "False"')
+    #
+    #     return args
 
 
     def validate_priority_input(args):
@@ -1532,9 +1529,13 @@ script:
         if identifier.startswith('@'):
             # Then it's a twitter handle
             args['twitter_id'] = identifier
-        else:
+        elif '@' in identifier:
             # Otherwise assume it's an email address
             args['email'] = identifier
+        else:
+            err_msg = "The entered value for the 'identifier' argument must " \
+                      "be either a Twitter handle or an Email Address."
+            return_error(err_msg)
         # Delete identifier field from args since it doesn't match API expected inputs
         del args['identifier']
         return args
@@ -1821,13 +1822,13 @@ script:
         context = attachments_into_context(ticket, context)
         context = reformat_context_output(context)
         title = "Newly Created Ticket #{}".format(context.get('Id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': ticket,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket(val.Id && val.Id === obj.Id)': context
             }
@@ -1927,13 +1928,13 @@ script:
         context = attachments_into_context(ticket, context)
         context = reformat_context_output(context)
         title = "Ticket #{} Updated".format(context.get('Id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': ticket,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket(val.Id && val.Id === obj.Id)': context
             }
@@ -2003,13 +2004,13 @@ script:
 
         context = reformat_context_output(context)
         title = "Viewing Ticket #{}".format(ticket.get('id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': ticket,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket(val.Id && val.Id === obj.Id)': context
             }
@@ -2178,13 +2179,13 @@ script:
             contexts.append(context)
 
         title = "Viewing All Requested Tickets"
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': tickets,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2259,13 +2260,13 @@ script:
         context = attachments_into_context(reply, context)
         context = reformat_context_output(context)
         title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': reply,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
             }
@@ -2279,7 +2280,7 @@ script:
         # Set defaults for 'private' and 'incoming' fields if not set by user
         args['private'] = args.get('private', 'True')
         args['incoming'] = args.get('incoming', 'False')
-        args = handle_bool_input(args)
+        # args = handle_bool_input(args)
         endpoint_url = 'tickets/{}/notes'.format(ticket_id)
 
         response = None
@@ -2345,13 +2346,13 @@ script:
         context = attachments_into_context(note, context)
         context = reformat_context_output(context)
         title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': note,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': context
             }
@@ -2387,13 +2388,13 @@ script:
             context = reformat_context_output(context)
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': conversations,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Ticket.Conversation(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2453,13 +2454,13 @@ script:
             contexts.append(context)
         filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
         title = "Contacts Filtered by {}".format(filters_as_strings) if filters else "All Contacts"
-        md = tableToMarkdown(title, contexts, removeNull=False)
+        human_readable = tableToMarkdown(title, contexts, removeNull=False)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contacts,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Contact(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2529,13 +2530,13 @@ script:
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in contact.iteritems() if val}
         title = "Viewing Contact #{}".format(contact.get('id'))
-        md = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contact,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Contact(val.Id && val.Id === obj.Id)': context
             }
@@ -2567,13 +2568,13 @@ script:
             context = {string_to_context_key(key): val for key, val in folder.iteritems() if val}
             contexts.append(context)
         title = "All Canned Response Folders"
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': cr_folders,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.CRFolder(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2608,13 +2609,13 @@ script:
             context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
             contexts.append(context)
         title = "Canned Responses in Folder #{}".format(canned_responses.get('id'))
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': canned_responses,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.CRFolder(val.Id && val.Id === obj.Id).CR(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2647,13 +2648,13 @@ script:
             context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
             contexts.append(context)
         title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': canned_responses,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.CRFolder(val.Id && val.Id === obj.Id).CR(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2685,13 +2686,13 @@ script:
             context = {string_to_context_key(key): val for key, val in group.iteritems() if val}
             contexts.append(context)
         title = "All Groups"
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': groups,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Group(val.Id && val.Id === obj.Id)': contexts
             }
@@ -2735,13 +2736,13 @@ script:
             context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').iteritems() if val}
             contexts.append(context)
         title = "All Agents"
-        md = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': agents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': human_readable,
             'EntryContext': {
                 'FD.Agent(val.Id && val.Id === obj.Id)': contexts
             }
