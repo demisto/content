@@ -257,6 +257,7 @@ script:
                     setIntegrationContext(updatedCache);
                     throw 'Request to RSA Archer ' + fullurl + ' failed, request status code: ' + result.StatusCode + ' and Body: ' + result.Body + '.';
                 }
+                continue;
             }
             logInfo('Successful request to RSA Archer ' + fullurl + ' with session token: ' + currentToken);
             var dic = {};
