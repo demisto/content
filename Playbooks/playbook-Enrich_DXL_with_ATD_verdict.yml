@@ -142,3 +142,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "added test section, nothing for release."
+tests:
+- No test
