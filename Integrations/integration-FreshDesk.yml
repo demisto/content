@@ -152,7 +152,7 @@ script:
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+    - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
@@ -193,7 +193,7 @@ script:
       required: false
     description: View a Ticket.
     execution: false
-    name: fd-view-ticket
+    name: fd-get-ticket
     outputs:
     - {contextPath: FD.Ticket.Priority, description: Priority of the ticket, type: Number}
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
@@ -204,7 +204,7 @@ script:
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+    - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
@@ -307,7 +307,7 @@ script:
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+    - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
@@ -391,7 +391,7 @@ script:
         with the contact, type: Unknown}
     - {contextPath: FD.Contact.Phone, description: Telephone number of the contact,
       type: Number}
-    - {contextPath: FD.Contact.Tags, description: Tags associated with this contact,
+    - {contextPath: FD.Contact.Tag, description: Tags associated with this contact,
       type: Unknown}
     - {contextPath: FD.Contact.TimeZone, description: Time zone in which the contact
         resides, type: String}
@@ -457,7 +457,7 @@ script:
         with the contact, type: Unknown}
     - {contextPath: FD.Contact.Phone, description: Telephone number of the contact,
       type: Number}
-    - {contextPath: FD.Contact.Tags, description: Tags associated with this contact,
+    - {contextPath: FD.Contact.Tag, description: Tags associated with this contact,
       type: Unknown}
     - {contextPath: FD.Contact.TimeZone, description: Time zone in which the contact
         resides, type: String}
@@ -528,8 +528,8 @@ script:
         canned response content, type: String}
     - {contextPath: FD.CRFolder.CR.ContentHtml, description: HTML version of the canned
         response content, type: String}
-    - {contextPath: FD.CRFolder.CR.Attachment, description: Array of attachments
-        associated with the canned response, type: Unknown}
+    - {contextPath: FD.CRFolder.CR.Attachment, description: Array of attachments associated
+        with the canned response, type: Unknown}
   - arguments: []
     description: List all groups
     execution: false
@@ -952,7 +952,7 @@ script:
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
       type: Number}
-    - {contextPath: FD.Ticket.Tags, description: Tags that have been associated with
+    - {contextPath: FD.Ticket.Tag, description: Tags that have been associated with
         the ticket, type: Unknown}
     - {contextPath: FD.Ticket.GroupId, description: ID of the group to which the ticket
         has been assigned, type: Number}
@@ -971,9 +971,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
     # For debugging
@@ -1753,7 +1750,7 @@ script:
         })
 
 
-    def view_ticket(args):
+    def get_ticket(args):
         ticket_number = args.get('id')
         endpoint_url = 'tickets/{}'.format(ticket_number)
         url_params = {}
@@ -1771,7 +1768,7 @@ script:
         return response
 
 
-    def view_ticket_command():
+    def get_ticket_command():
         """
         View a Ticket.
 
@@ -1791,7 +1788,7 @@ script:
         # Get command arguments from user
         args = demisto.args()
         # Make request and get raw response
-        ticket = view_ticket(args)
+        ticket = get_ticket(args)
 
         nonstd_ctx_fields = ['requester', 'stats']
 
@@ -2563,7 +2560,7 @@ script:
     commands = {
         "fd-create-ticket": create_ticket_command,
         "fd-update-ticket": update_ticket_command,
-        "fd-view-ticket": view_ticket_command,
+        "fd-get-ticket": get_ticket_command,
         "fd-view-contact": view_contact_command,
         "fd-list-contacts": list_contacts_command,
         "fd-list-cr-folders": list_cr_folders_command,
