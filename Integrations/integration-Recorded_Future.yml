@@ -59,7 +59,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Semicolon separated rule names to fetch alerts by, if empty all alerts
+- display: Rule names to fetch alerts by separated by semicolon. If empty, all alerts
     will be fetched
   name: rule_names
   defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
