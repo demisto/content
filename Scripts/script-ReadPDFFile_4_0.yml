@@ -141,6 +141,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
-releaseNotes: "Adjusted versioning"
 tests:
   - ReadPDFFile-Test

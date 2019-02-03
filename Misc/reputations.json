@@ -106,7 +106,7 @@
       ],
       "fromVersion": "3.1.0"
     },
-    {
+      {
       "id": "hashRepSHA256",
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{64}\\b",
@@ -125,11 +125,11 @@
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationCommand": "file",
       "details": "File SHA256",
+      "contextValue": "SHA256",
+      "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
       "enhancementScriptNames": [
         "FileReputation",
-        "SplunkSearch",
-        "WildfireReport",
-        "SplunkPySearch"
+        "SplunkSearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -256,5 +256,6 @@
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
-  ]
+  ],
+  "releaseNotes": "Added reputation value and context path for SHA256. Auto-Extract should now work properly for SHA256."
 }

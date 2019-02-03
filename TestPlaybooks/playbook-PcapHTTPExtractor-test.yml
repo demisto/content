@@ -1,21 +1,21 @@
-id: Test-PcapHTTPExtractor
+id: playbook-PcapHTTPExtractor-test
 version: -1
-name: Test-PcapHTTPExtractor
+name: playbook-PcapHTTPExtractor-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b6b01734-7172-4284-81de-278fe988bde7
+    taskid: 0ed5ccfc-ad1a-4369-857b-54ed961c5621
     type: start
     task:
-      id: b6b01734-7172-4284-81de-278fe988bde7
+      id: 0ed5ccfc-ad1a-4369-857b-54ed961c5621
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -26,12 +26,12 @@ tasks:
       }
     note: false
     timertriggers: []
-  "2":
-    id: "2"
-    taskid: f96f028e-8123-43d7-8e67-c456a131b9a1
+  "1":
+    id: "1"
+    taskid: 8f7e9ba0-b987-44ab-8375-f8d073518530
     type: regular
     task:
-      id: f96f028e-8123-43d7-8e67-c456a131b9a1
+      id: 8f7e9ba0-b987-44ab-8375-f8d073518530
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -41,7 +41,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,12 +59,12 @@ tasks:
       }
     note: false
     timertriggers: []
-  "6":
-    id: "6"
-    taskid: 841d939a-133d-4dd5-8b31-6faf82158dfb
+  "2":
+    id: "2"
+    taskid: 1ae67f3e-7fa4-47df-8693-cb43534ce3ba
     type: regular
     task:
-      id: 841d939a-133d-4dd5-8b31-6faf82158dfb
+      id: 1ae67f3e-7fa4-47df-8693-cb43534ce3ba
       version: -1
       name: Get Remote File
       scriptName: http
@@ -73,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "3"
     scriptarguments:
       body: {}
       filename: {}
@@ -94,108 +94,62 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 355
+          "y": 370
         }
       }
     note: false
     timertriggers: []
-  "7":
-    id: "7"
-    taskid: 441a994e-439b-4c5f-840d-8e6130aea204
+  "3":
+    id: "3"
+    taskid: 15f54d71-8dba-4e77-8b88-9cafa91bf680
     type: regular
     task:
-      id: 441a994e-439b-4c5f-840d-8e6130aea204
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 975
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: b8e6545c-44c9-4187-8bd3-0d132545d2e7
-    type: title
-    task:
-      id: b8e6545c-44c9-4187-8bd3-0d132545d2e7
-      version: -1
-      name: We got good results
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1180
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: c02d906d-6733-4986-8e07-34437616ca43
-    type: regular
-    task:
-      id: c02d906d-6733-4986-8e07-34437616ca43
+      id: 15f54d71-8dba-4e77-8b88-9cafa91bf680
       version: -1
       name: PcapHTTPExtractor
+      description: Allows to parse and extract http flows (requests & responses) from
+        a pcap/pcapng file.
       scriptName: PcapHTTPExtractor
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "5"
     scriptarguments:
+      allowedContentTypes: {}
       entryID:
         simple: ${File.EntryID}
+      limit: {}
+      limitData: {}
       pcapFileName: {}
+      start: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 535
+          "y": 545
         }
       }
     note: false
     timertriggers: []
-  "10":
-    id: "10"
-    taskid: d8258c67-177e-43f5-86fa-667452f7ef05
+  "5":
+    id: "5"
+    taskid: c48ac5c1-0a8e-4e09-8bbe-0918e22510cc
     type: condition
     task:
-      id: d8258c67-177e-43f5-86fa-667452f7ef05
+      id: c48ac5c1-0a8e-4e09-8bbe-0918e22510cc
       version: -1
-      name: IsPcapFlowCorrect
+      name: IsResultContextCorrect
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      '#default#':
       - "7"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -205,7 +159,7 @@ tasks:
             value:
               complex:
                 root: PcapHTTPFlows
-                accessor: [3].HttpDate
+                accessor: '[1].Response.HttpDate'
                 transformers:
                 - operator: trim
             iscontext: true
@@ -216,21 +170,61 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 700
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 18195139-4241-4a55-86e5-d2e6c07711e1
+    type: regular
+    task:
+      id: 18195139-4241-4a55-86e5-d2e6c07711e1
+      version: -1
+      name: Completed
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d5c6840e-1ab0-48ee-8ed2-5b770d23e2ed
+    type: regular
+    task:
+      id: d5c6840e-1ab0-48ee-8ed2-5b770d23e2ed
+      version: -1
+      name: Error
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 920
         }
       }
     note: false
     timertriggers: []
 view: |-
   {
-    "linkLabelsPosition": {
-      "10_7_yes": 0.89
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1195,
-        "width": 380,
-        "x": 50,
+        "height": 965,
+        "width": 810,
+        "x": -140,
         "y": 50
       }
     }

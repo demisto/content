@@ -111,4 +111,3 @@ inputs:
   required: false
   description: Get file sample from MD5 input
 outputs: []
-releaseNotes: Add MD4 and SHA256 inputs to playbook
