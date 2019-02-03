@@ -213,16 +213,16 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     integration_to_command = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
-        test_playbook_id = test_playbook.keys()[0]
         test_playbook_data = test_playbook.values()[0]
+        test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
-                tests_set.add(test_playbook_id)
+                tests_set.add(test_playbook_name)
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
-                tests_set.add(test_playbook_id)
+                tests_set.add(test_playbook_name)
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
@@ -233,7 +233,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
 
-                            tests_set.add(test_playbook_id)
+                            tests_set.add(test_playbook_name)
                             catched_intergrations.add(integration_id)
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
@@ -313,7 +313,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist, please re-check your code".format(test)
+                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 

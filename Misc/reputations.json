@@ -117,7 +117,8 @@
       "contextValue": "SHA256",
       "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
       "enhancementScriptNames": [
-        "FileReputation"
+        "FileReputation",
+        "SplunkSearch"
       ],
       "fromVersion": "3.1.0"
     },

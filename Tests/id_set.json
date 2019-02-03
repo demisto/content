@@ -1717,7 +1717,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -3849,6 +3852,7 @@
         {
             "SplunkPySearch": {
                 "name": "SplunkPySearch", 
+                "deprecated": true, 
                 "depends_on": [
                     "splunk-search"
                 ]
@@ -4339,7 +4343,11 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains"
+                "name": "StringContains", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {
@@ -4836,6 +4844,17 @@
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
+            }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
             }
         }
     ], 
@@ -12623,7 +12642,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "whois": "whois"
+                    "whois": "Whois"
                 }
             }
         }, 
@@ -15504,7 +15523,8 @@
             "Alexa Test Playbook": {
                 "name": "Alexa Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "domain": "Alexa Rank Indicator"
@@ -15561,6 +15581,19 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
             }
         }, 
         {
