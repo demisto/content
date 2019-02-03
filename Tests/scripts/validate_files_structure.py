@@ -383,12 +383,19 @@ def changed_docker_image(file_path):
 
 def validate_version(file_path):
     file_extension = os.path.splitext(file_path)[1]
+    version_number = -1
     if file_extension == '.yml':
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
-        if version_number != -1:
-            print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
-            return True
+    elif file_extension == '.json':
+        with open("./" + file_path) as json_file:
+            json_dict = json.load(json_file)
+            if 'version' in json_dict:
+                version_number = json_dict.get('version')
+
+    if version_number != -1:
+        print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
+        return True
     return False
 
 
