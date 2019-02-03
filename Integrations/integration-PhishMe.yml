@@ -473,6 +473,6 @@ script:
       description: The actual score
     description: Check if sender address is malicious
   runonce: false
-releaseNotes: "Added new outputs !email commands"
+releaseNotes: "Reimplemented the way dbot score is calculated"
 tests:
   - Test - PhishMe Intelligence
