@@ -682,5 +682,6 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
+releaseNotes: Rewrite of the current integration in python insread of JS
 tests:
 - No test - deprecated integration
