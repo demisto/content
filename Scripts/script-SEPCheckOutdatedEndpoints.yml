@@ -68,4 +68,4 @@ dependson:
 timeout: 0s
 releaseNotes: "-"
 tests:
-  - No test - postepone for later
+  - No test - postpone for later
