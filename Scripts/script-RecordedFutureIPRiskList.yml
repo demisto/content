@@ -37,13 +37,19 @@ script: |-
   rows = data.split('\n')
   if not rows or len(rows) == 0:
       return_error('No data found')
+
+  headers = map(lambda c: c.strip('\"'), rows[0].split(','))
+  name_column = headers.index('Name')
+  score_column = headers.index('Risk')
+
   for row in rows[1:]:
       # Skip headers line
       columns = row.split(',')
-      ip = columns[0]
+
+      ip = columns[name_column]
       score = None
       try:
-          score = int(columns[1].strip('\"'))
+          score = int(columns[score_column].strip('\"'))
       except:
           pass
 
@@ -74,7 +80,8 @@ args:
   description: Specify an IP list by a risk rule name, which can be retrieved by the
     get-url-riskrules command.
 - name: threshold
-  description: Specify a threshold to consider indicators as malicious.
+  description: Specify a threshold to consider indicators as malicious(equal or greater
+    than) - from 65 to 99.
   defaultValue: "65"
 - name: delete_existing
   auto: PREDEFINED

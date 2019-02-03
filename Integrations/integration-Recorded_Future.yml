@@ -13,7 +13,7 @@ configuration:
   defaultvalue: https://api.recordedfuture.com
   type: 0
   required: true
-- display: 'API Token'
+- display: API Token
   name: token
   defaultvalue: ""
   type: 4
@@ -59,15 +59,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Comma separated rule names to fetch alerts by
+- display: Semicolon separated rule names to fetch alerts by, if empty all alerts
+    will be fetched
   name: rule_names
-  defaultvalue: ""
+  defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
   type: 12
-  required: false
-- display: Limit number of alerts to fetch each time
-  name: limit
-  defaultvalue: "10"
-  type: 0
   required: false
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
@@ -115,7 +111,6 @@ script:
     CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
 
     FETCH_TIME = '1 day'
-    FETCH_LIMIT = 10
 
     ''' HELPER FUNCTIONS '''
 
@@ -134,7 +129,10 @@ script:
                 verify=USE_SSL
             )
             if res.status_code not in {200, 404}:
-                error_str = 'Request failed, status: ' + str(res.status_code) + ', details: ' + res.text
+                if res.status_code == 401:
+                    error_str('Request failed with status 401 - Authentication error')
+                else:
+                    error_str = 'Request failed, status: ' + str(res.status_code) + ', details: ' + res.text
                 return_error(error_str)
         except Exception, e:
             LOG(e.message)
@@ -702,11 +700,13 @@ script:
 
         response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data'].get('results', [])
         if len(resultlist) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data']['results']
         for result in resultlist:
@@ -808,11 +808,13 @@ script:
 
         response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data'].get('results', [])
         if len(resultlist) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         for result in resultlist:
             intelcard = result['intelCard']
@@ -913,11 +915,13 @@ script:
 
         response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data'].get('results', [])
         if len(resultlist) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         for result in resultlist:
             timestamps = result['timestamps']
@@ -1016,11 +1020,13 @@ script:
 
         response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data'].get('results', [])
         if len(resultlist) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         for result in resultlist:
             timestamps = result['timestamps']
@@ -1120,11 +1126,13 @@ script:
 
         response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         resultlist = response['data'].get('results', [])
         if len(resultlist) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         for result in resultlist:
             timestamps = result['timestamps']
@@ -1204,7 +1212,7 @@ script:
         return response
 
     def get_url_risklist_command():
-        specific_list = demisto.args().get('specific_list')
+        specific_list = demisto.args().get('list')
 
         res = get_url_risklist(specific_list)
 
@@ -1215,10 +1223,10 @@ script:
 
 
     def get_url_risklist(specific_list):
-        cmd_url = 'fusion/files'
+        cmd_url = 'url/risklist'
 
         params = {
-            'path': '/public/risklists/default_url_risklist.csv'
+            'format': 'csv/splunk'
         }
 
         if specific_list:
@@ -1227,7 +1235,7 @@ script:
         return http_request('get', cmd_url, params=params)
 
     def get_domain_risklist_command():
-        specific_list = demisto.args().get('specific_list')
+        specific_list = demisto.args().get('list')
 
         res = get_domain_risklist(specific_list)
 
@@ -1238,10 +1246,10 @@ script:
 
 
     def get_domain_risklist(specific_list):
-        cmd_url = 'fusion/files'
+        cmd_url = 'domain/risklist'
 
         params = {
-            'path': '/public/risklists/default_domain_risklist.csv'
+            'format': 'csv/splunk'
         }
 
         if specific_list:
@@ -1261,10 +1269,10 @@ script:
 
 
     def get_ip_risklist(specific_list):
-        cmd_url = 'fusion/files'
+        cmd_url = 'ip/risklist'
 
         params = {
-            'path': '/public/risklists/default_ip_risklist.csv'
+            'format': 'csv/splunk'
         }
 
         if specific_list:
@@ -1285,10 +1293,10 @@ script:
 
 
     def get_hash_risklist(specific_list):
-        cmd_url = 'fusion/files'
+        cmd_url = 'hash/risklist'
 
         params = {
-            'path': '/public/risklists/default_hash_risklist.csv'
+            'format': 'csv/splunk'
         }
 
         if specific_list:
@@ -1309,10 +1317,10 @@ script:
 
 
     def get_vulnerability_risklist(specific_list):
-        cmd_url = 'fusion/files'
+        cmd_url = 'vulnerability/risklist'
 
         params = {
-            'path': '/public/risklists/default_vulnerability_risklist.csv'
+            'format': 'csv/splunk'
         }
 
         if specific_list:
@@ -1324,7 +1332,7 @@ script:
         response = json.loads(get_hash_riskrules())
 
         if not response or 'data' not in response:
-            return 'No data found'
+            'No data found'
 
         headers = ['Name', 'Description', 'Count', 'Criticality']
 
@@ -1358,7 +1366,8 @@ script:
         response = json.loads(get_hash_riskrules())
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
         headers = ['Name', 'Description', 'Count', 'Criticality']
 
@@ -1392,7 +1401,8 @@ script:
         response = json.loads(get_ip_riskrules())
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
         headers = ['Name', 'Description', 'Count', 'Criticality']
 
@@ -1425,7 +1435,8 @@ script:
         response = json.loads(get_url_riskrules())
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
         headers = ['Name', 'Description', 'Count', 'Criticality']
 
@@ -1458,7 +1469,8 @@ script:
         response = json.loads(get_vulnerability_riskrules())
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
         headers = ['Name', 'Description', 'Count', 'Criticality']
 
@@ -1489,13 +1501,14 @@ script:
 
 
     def get_alert_rules_command():
-        rule_name = demisto.args()['rule_name']
+        rule_name = demisto.args().get('rule_name')
         limit = demisto.args().get('limit')
 
         response = json.loads(get_alert_rules(rule_name, limit))
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
         mapped_rules = [{
             'Name': r['title'],
@@ -1503,7 +1516,8 @@ script:
         } for r in response['data'].get('results', [])]
 
         if len(mapped_rules) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1516,13 +1530,13 @@ script:
             }
         })
 
-    def get_alert_rules(rule_name, limit=None):
+    def get_alert_rules(rule_name=None, limit=None):
         cmd_url = 'alert/rule'
 
-        params = {
-            'freetext': rule_name
-        }
+        params = {}
 
+        if rule_name:
+            params['freetext'] = rule_name
         if limit:
             params['limit'] = limit
 
@@ -1532,11 +1546,11 @@ script:
     def get_alerts_command():
         rule_id = demisto.args().get('rule_id')
         limit = demisto.args().get('limit')
-        triggered = demisto.args().get('triggered')
+        triggered = demisto.args().get('triggered_time')
         assignee = demisto.args().get('assignee')
         status = demisto.args().get('status')
         freetext = demisto.args().get('freetext')
-        offset = demisto.args().get('from')
+        offset = demisto.args().get('offset')
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
@@ -1548,7 +1562,8 @@ script:
         response = json.loads(get_alerts(rule_id, triggered_time, limit, assignee, status, freetext, offset, orderby, direction))
 
         if not response or 'data' not in response:
-            return 'No data found'
+            demisto.results('No results found')
+            return
 
 
         headers = ['ID', 'Name', 'Type', 'Triggered', 'Status', 'Assignee', 'Rule']
@@ -1564,7 +1579,8 @@ script:
         } for a in response['data'].get('results', [])]
 
         if len(mapped_alerts) == 0:
-            return 'No results found'
+            demisto.results('No results found')
+            return
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1611,8 +1627,7 @@ script:
 
 
     def fetch_incidents():
-        rule_names = argToList(demisto.params().get('rule_names', []))
-        limit = demisto.params().get('limit', FETCH_LIMIT)
+        rule_names = demisto.params().get('rule_names', []).split(';')
 
         last_run = demisto.getLastRun()
         if not last_run:
@@ -1634,19 +1649,20 @@ script:
                 rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
 
         all_alerts = []
-        if len(rule_ids) > 0:
+        if rule_ids:
             for rule_id in rule_ids:
-                alerts = json.loads(get_alerts(rule_id, triggered_time, limit))
+                alerts = json.loads(get_alerts(rule_id, triggered_time))
                 if alerts and 'data' in alerts:
                     all_alerts += alerts['data'].get('results', [])
         else:
-            alerts = json.loads(get_alerts(triggered=triggered_time, limit=limit))
+            alerts = json.loads(get_alerts(triggered=triggered_time))
             if alerts and 'data' in alerts:
                 all_alerts += alerts['data'].get('results', [])
 
         incidents = []
         for alert in all_alerts:
             alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            # The API returns also alerts that are triggered in the same time
             if alert_time > current_time:
                 alert_data = json.loads(get_alert(alert['id']))
                 if alert_data and 'data' in alert_data:
@@ -1671,7 +1687,10 @@ script:
 
     try:
         if demisto.command() == 'test-module':
-            ip_lookup('8.8.8.8')
+            try:
+                res = json.loads(ip_lookup('8.8.8.8'))
+            except:
+                demisto.results('Failed to get response. The URL might be incorrect.')
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
@@ -2764,8 +2783,6 @@ script:
   - name: recorded-future-get-alert-rules
     arguments:
     - name: rule_name
-      required: true
-      default: true
       description: Rule name to search, can be partial.
     - name: limit
       description: Limit number of rules
@@ -2777,7 +2794,7 @@ script:
     - contextPath: RecordedFuture.AlertRule.Name
       description: Alert Rule Name
       type: string
-    description: Get Recorded Future Alert rules by rule name
+    description: Get Recorded Future Alert rules
   - name: recorded-future-get-alerts
     arguments:
     - name: rule_id
@@ -2785,7 +2802,7 @@ script:
     - name: limit
       description: Limit number of alerts
       defaultValue: "10"
-    - name: triggered
+    - name: triggered_time
       description: Alert triggered time, e.g. "1 hour" or "2 days"
     - name: assignee
       description: Alert assignee - Email address
@@ -2800,7 +2817,7 @@ script:
       description: Alert review status
     - name: freetext
       description: Free text search
-    - name: from
+    - name: offset
       description: Alerts from offset
     - name: orderby
       auto: PREDEFINED
