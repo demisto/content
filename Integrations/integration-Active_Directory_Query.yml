@@ -1,8 +1,8 @@
 commonfields:
-  id: Active Directory Query
+  id: Active Directory Query v2
   version: -1
-name: Active Directory Query
-display: Active Directory Query
+name: Active Directory Query v2
+display: Active Directory Query v2
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Active Direcory Query integration enables accessing and managing Active
@@ -17,11 +17,22 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Port. If this is not specified the port will configured by default as 389,
+    or as 636 for LDAPS.
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
+- display: NTLM authentication
+  name: ntlm
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
   defaultvalue: ""
@@ -40,8 +51,8 @@ configuration:
   options:
   - None
   - SSL
-- display: NTLM authentication
-  name: ntlm
+- display: Trust any certificate (unsecure)
+  name: unsecure
   defaultvalue: ""
   type: 8
   required: false
@@ -62,7 +73,8 @@ script:
     SECURE_CONNECTION = demisto.params().get('secure_connection')
     DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
     NTLM_AUTH = demisto.params().get('ntlm')
-
+    UNSECURE = demisto.params().get('unsecure', 'false') == 'true'
+    PORT = demisto.params().get('port')
 
     ''' GLOBAL VARS '''
 
@@ -103,10 +115,25 @@ script:
         """
         uses the instance configuration to initialize the LDAP server
         """
+        if SECURE_CONNECTION == "None" and not UNSECURE:
+            raise Exception("When using unsecure connection you must check 'Trust any certificate' option")
+
         if SECURE_CONNECTION == "SSL":
             # intialize server with ssl
-            # port is configured by default as 389 or as 636 for LDAPS
+            # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
+            demisto.debug("initializing sever with ssl. port: {}". format(PORT or 'default(636)'))
+            if UNSECURE:
+                demisto.debug("will require server certificate.")
+                tls = Tls(validate=ssl.CERT_REQUIRED)
+                if PORT:
+                    return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls)
+                return Server(SERVER_IP, use_ssl=True, tls=tls)
+            if PORT:
+                return Server(SERVER_IP, port=port, use_ssl=True)
             return Server(SERVER_IP, use_ssl=True)
+        demisto.debug("initializing server without secure connection. port: {}". format(PORT or 'default(389)'))
+        if PORT:
+            return Server(SERVER_IP, port=port)
         return Server(SERVER_IP)
 
     def account_entry(person_object, custome_attributes):
@@ -149,7 +176,7 @@ script:
                 size_limit=1
             )
         except Exception as e:
-            demisto.info(e.message)
+            demisto.info(str(e))
             return False
         return True
 
@@ -861,7 +888,10 @@ script:
         verify base DN is configured correctly
     '''
 
-    server = initialize_server()
+    try:
+        server = initialize_server()
+    except Exception as e:
+        return_error(str(e))
 
     conn = None
     if NTLM_AUTH:
@@ -877,21 +907,20 @@ script:
     try:
         # open socket and bind to server
         if not conn.bind():
-            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(conn.result)
+            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(json.dumps(conn.result))
+            demisto.info(message)
             return_error(message)
     except LDAPSocketOpenError as e:
-    # except Exception as e:
-        demisto.info(e.message)
-        message = "Failed to access LDAP server."
-        if TLS_VERIFY_CERTIFICATE:
-            # probably failed to verify certificate
-            message += '\nCould not verify server certificate'
+        demisto.info(str(e))
+        message = "Failed to access LDAP server. Please validate the server url is configured correctly"
+        demisto.info(message)
         return_error(message)
 
     demisto.info('Established connection with AD LDAP server')
 
     if not base_dn_verified():
-        message = "Failed to verify the base DN configured for the instance.\nLast connection result: {}\nLast error from LDAP server: {}".format(conn.result, conn.last_error)
+        message = "Failed to verify the base DN configured for the instance.\nLast connection result: {}\nLast error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+        demisto.info(message)
         return_error(message)
 
     demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
@@ -957,7 +986,7 @@ script:
             search_group_members()
 
     except Exception as e:
-        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(e.message, json.dumps(conn.result), conn.last_error)
+        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(str(e), json.dumps(conn.result), conn.last_error)
         demisto.info(message)
         return_error(message)
     finally:
