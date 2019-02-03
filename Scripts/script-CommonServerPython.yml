@@ -337,18 +337,50 @@ script: |-
       return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-  def isError(entry):
+  def get_error(execute_command_result):
       """
-         Check if the given entry is an error entry
+          execute_command_result must contain error entry - check the result first with is_error function
+          if there is no error entry in the result then it will raise an Exception
 
-         :type entry: ``dict``
-         :param entry: Demisto entry (required)
+          :type execute_command_result: ``dict`` or  ``list``
+          :param execute_command_result: result of demisto.executeCommand()
 
-         :return: True if the entry is an error entry, false otherwise
-         :rtype: ``bool``
+          :return: Error message extracted from the demisto.executeCommand() result
+          :rtype: ``string``
       """
+
+      if not is_error(execute_command_result):
+          raise ValueError("execute_command_result has no error entry. before using get_error use is_error")
+
+      error_messages = []
+      for entry in execute_command_result:
+          is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
+          if is_error_entry:
+              error_messages.append(entry['Contents'])
+
+      return '\n'.join(error_messages)
+
+
+  def is_error(execute_command_result):
+      """
+          Check if the given execute_command_result has an error entry
+
+          :type execute_command_result: ``dict`` or ``list``
+          :param execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
+
+          :return: True if the execute_command_result has an error entry, false otherwise
+          :rtype: ``bool``
+      """
+      if isinstance(execute_command_result, list):
+          if len(execute_command_result) > 0:
+              for entry in execute_command_result:
+                  if type(entry) == dict and entry['Type'] == entryTypes['error']:
+                      return True
+
       return type(entry) == dict and entry['Type'] == entryTypes['error']
 
+
+  isError = is_error
 
   def FormatADTimestamp(ts):
       """
@@ -1410,3 +1442,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
+releaseNotes: "add is_error and get_error helper functions check and extract error out of demisto.executeCommand() result"
