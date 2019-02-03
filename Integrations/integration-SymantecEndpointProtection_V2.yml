@@ -331,7 +331,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: IP ro Hostname of the endpoint
+      description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
       predefined: [
@@ -364,7 +364,7 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: IP ro Hostname of the endpoint
+      description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
       predefined: [
