@@ -25,7 +25,7 @@ script: |
       'ContentsFormat': formats['text'],
       'Contents': indicator_data,
       'HumanReadable': indicator_data
-                   })
+      })
 type: python
 tags:
 - autoextract
