@@ -211,7 +211,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this domain', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['domain']] = {
                 'Name': domain,
@@ -305,7 +305,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this URL', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['url']] = {
                 'Data': url,
@@ -399,7 +399,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this IP', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['ip']] = {
                 'Address': ip,
@@ -806,7 +806,7 @@ script:
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        response = json.loads(iplist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
             demisto.results('No results found')
             return
@@ -854,7 +854,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this IP', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['ip']] = {
                 'Address': ip,
@@ -913,7 +913,7 @@ script:
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        response = json.loads(domainlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
             demisto.results('No results found')
             return
@@ -959,7 +959,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this domain', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['domain']] = {
                 'Name': domain,
@@ -1018,7 +1018,7 @@ script:
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        response = json.loads(urllist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
             demisto.results('No results found')
             return
@@ -1065,7 +1065,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this URL', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['url']] = {
                 'Data': url,
@@ -1075,7 +1075,7 @@ script:
                     'LastSeen': timestamps.get('lastSeen')
                 }
             }
-            dbot_score = translate_score(rf_score, IP_THRESHOLD)
+            dbot_score = translate_score(rf_score, URL_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': url,
                 'Type': 'url',
@@ -1124,7 +1124,7 @@ script:
         orderby = demisto.args().get('orderby')
         direction = demisto.args().get('direction')
 
-        response = json.loads(hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
+        response = json.loads(vulnlist_lookup(limit, risk_lower, risk_higher, orderby, direction))
         if not response or 'data' not in response:
             demisto.results('No results found')
             return
@@ -1172,7 +1172,7 @@ script:
                     sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
                 sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this CVE', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+                hr += tableToMarkdown('References collected for this vulnerability', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['cve']] = {
                 'ID': vuln,
@@ -1627,7 +1627,9 @@ script:
 
 
     def fetch_incidents():
-        rule_names = demisto.params().get('rule_names', []).split(';')
+        rule_names = demisto.params().get('rule_names')
+        if rule_names:
+            rule_names = rule_names.split(';')
 
         last_run = demisto.getLastRun()
         if not last_run:
