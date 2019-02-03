@@ -1,6 +1,6 @@
-id: playbook-PcapHTTPExtractor-test
+id: PcapHTTPExtractor-Test
 version: -1
-name: playbook-PcapHTTPExtractor-test
+name: PcapHTTPExtractor-Test
 starttaskid: "0"
 tasks:
   "0":
