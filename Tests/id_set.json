@@ -6491,7 +6491,10 @@
                 "fromversion": "3.5.0", 
                 "command_to_integration": {
                     "archer-get-file": "RSA Archer"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
