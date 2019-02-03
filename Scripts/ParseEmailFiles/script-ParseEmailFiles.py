@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
@@ -3315,7 +3314,6 @@ def handle_eml(file_path, b64=False):
 
 
 def main():
-    print('1')
     file_type = ''
     entry_id = demisto.args()['entryid']
     try:
@@ -3334,7 +3332,6 @@ def main():
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex.message))
 
     try:
-        demisto.results(file_type)
         if 'Composite Document File V2 Document'.lower() in file_type.lower() \
                 or 'CDFV2 Microsoft Outlook Message'.lower() in file_type.lower():
             handle_msg(file_path)
