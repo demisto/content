@@ -11643,7 +11643,18 @@
                     "Alexa Test Playbook"
                 ]
             }
-        }, 
+        },
+        {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser",
+                "commands": [
+                    "ua-parse"
+                ],
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
+        },
         {
             "Google Resource Manager": {
                 "name": "Google Resource Manager", 
