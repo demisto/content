@@ -96,7 +96,12 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: This can be an email address or a twitter handle
+      description: The values for this command argument can be an email address or
+        a twitter handle. The value entered (email or twitter handle) should belong
+        to the requesting individual. If an email address is entered and no contact
+        exists with this email address in Freshdesk, it will be added as a new contact.
+        Similarly, if a twitter handle is entered and no contact exists with this
+        handle in Freshdesk, it will be added as a new contact.
       isArray: false
       name: identifier
       predefined: []
@@ -142,7 +147,7 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
@@ -194,7 +199,7 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
@@ -297,7 +302,7 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
@@ -523,7 +528,7 @@ script:
         canned response content, type: String}
     - {contextPath: FD.CRFolder.CR.ContentHtml, description: HTML version of the canned
         response content, type: String}
-    - {contextPath: FD.CRFolder.CR.Attachments, description: Array of attachments
+    - {contextPath: FD.CRFolder.CR.Attachment, description: Array of attachments
         associated with the canned response, type: Unknown}
   - arguments: []
     description: List all groups
@@ -608,7 +613,7 @@ script:
     execution: false
     name: fd-ticket-reply
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
+    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
         associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
@@ -650,7 +655,7 @@ script:
     execution: false
     name: fd-get-conversations
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
+    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
         associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
@@ -808,7 +813,7 @@ script:
     execution: false
     name: fd-ticket-note
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Attachments, description: Array of attachments
+    - {contextPath: FD.Ticket.Conversation.Attachment, description: Array of attachments
         associated with the conversation., type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
         in HTML, type: String}
@@ -942,7 +947,7 @@ script:
     - {contextPath: FD.Ticket.DueBy, description: Timestamp that denotes when the
         ticket is due to be resolved, type: Date}
     - {contextPath: FD.Ticket.Subject, description: Subject of the ticket, type: String}
-    - {contextPath: FD.Ticket.Attachments, description: Ticket attachments. The total
+    - {contextPath: FD.Ticket.Attachment, description: Ticket attachments. The total
         size of these attachments cannot exceed 15MB., type: Unknown}
     - {contextPath: FD.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: FD.Ticket.RequesterId, description: User ID of the requester,
