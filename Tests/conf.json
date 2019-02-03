@@ -1014,7 +1014,8 @@
         "XFE Test": "License expired",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "Tenable.io test": "Error 409 ISSUE OPENED",
-        "Tenable.io Scan Test": "Error 409 ISSUE OPENED"
+        "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
+        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye "
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
