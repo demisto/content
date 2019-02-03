@@ -125,7 +125,6 @@ script:
       type: string
     description: Provides an Alexa ranking of the Domain in question.
   runonce: false
-releaseNotes: Alexa integration checks domain rankings
 fromversion: 3.5.0
 tests:
   - Alexa Test Playbook
