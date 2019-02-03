@@ -16,17 +16,20 @@ VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
 
 
-def clean_filename(filename, whitelist=VALID_FILENAME_CHARS, replace=' '):
+def id_to_mock_file(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
+    if not playbook_id.strip():
+        return ''
+
     # replace spaces
     for r in replace:
-        filename = filename.replace(r, '_')
+        filename = playbook_id.replace(r, '_')
 
     # keep only valid ascii chars
     cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
 
     # keep only whitelisted chars
     cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
-    return cleaned_filename
+    return cleaned_filename + '.mock'
 
 
 class AMIConnection:
@@ -95,7 +98,7 @@ class MITMProxy:
         self.active_folder = self.tmp_folder
 
     def move_to_primary(self, playbook_id):
-        self.ami.call(['mv', os.path.join(self.tmp_folder, playbook_id + '.mock'), self.primary_folder])
+        self.ami.call(['mv', id_to_mock_file(playbook_id), self.primary_folder])
 
     def start(self, playbook_id, path=None, record=False):
         if self.process:
@@ -104,7 +107,7 @@ class MITMProxy:
         path = path or self.active_folder
         action = '--server-replay' if not record else '--save-stream-file'
         command = "mitmdump -p 9997 {}".format(action).split()
-        command.append(os.path.join(path, clean_filename(playbook_id) + ".mock"))
+        command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy('localhost:9997')

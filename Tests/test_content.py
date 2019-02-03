@@ -11,7 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, AMIConnection, clean_filename, MOCKS_GIT_PATH
+from mock_server import MITMProxy, AMIConnection, id_to_mock_file, MOCKS_GIT_PATH
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -86,7 +86,7 @@ def update_test_msg(integrations, test_message):
 
 
 def has_mock_file(ami, playbook_id):
-    command = ["[", "-f", os.path.join(MOCKS_GIT_PATH, clean_filename(playbook_id) + ".mock"), "]"]
+    command = ["[", "-f", os.path.join(MOCKS_GIT_PATH, id_to_mock_file(playbook_id)), "]"]
     file_exists = ami.call(command) == 0
     if not file_exists:
         print "Mock file does not exist, running without mock."
