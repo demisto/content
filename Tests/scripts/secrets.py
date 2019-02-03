@@ -12,6 +12,7 @@ ENTROPY_THRESHOLD = 3.8
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
 ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js'}
+# disable-secrets-detection-start
 URLS_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
 IPV6_REGEX = r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1' \
@@ -36,7 +37,7 @@ IPV6_REGEX = r'(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(
 IPV4_REGEX = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 
 DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)'
-
+# disable-secrets-detection-end
 
 def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
@@ -191,9 +192,8 @@ def regex_for_secrets(file_contents):
     emails = re.findall(EMAIL_REGEX, file_contents)
     if emails:
         potential_secrets += emails
-    # IPV6 REGEX disable-secrets-detection-start
+    # IPV6 REGEX
     ipv6_list = re.findall(IPV6_REGEX, file_contents)
-    # disable-secrets-detection-end
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::':
@@ -236,7 +236,7 @@ def get_secrets(branch_name, is_circle):
     if secrets_found:
         secrets_found_string += 'Secrets were found in the following files:\n'
         for file_name in secrets_found:
-            secrets_found_string =('\nFile Name: ' + file_name)
+            secrets_found_string += ('\nFile Name: ' + file_name)
             secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
         if not is_circle:
             secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
