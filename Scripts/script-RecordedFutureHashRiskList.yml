@@ -32,13 +32,18 @@ script: |-
   rows = data.split('\n')
   if not rows or len(rows) == 0:
       return_error('No data found')
+  headers = map(lambda c: c.strip('\"'), rows[0].split(','))
+  name_column = headers.index('Name')
+  score_column = headers.index('Risk')
+
   for row in rows[1:]:
       # Skip headers line
       columns = row.split(',')
-      hash_indicator = columns[0].strip('\"')
+
+      ip = columns[name_column]
       score = None
       try:
-          score = int(columns[1].strip('\"'))
+          score = int(columns[score_column].strip('\"'))
       except:
           pass
 
@@ -71,7 +76,8 @@ args:
   description: Specify a Hash list by a risk rule name, which can be retrieved by
     the get-hash-riskrules command.
 - name: threshold
-  description: Specify a threshold to consider indicators as malicious.
+  description: Specify a threshold to consider indicators as malicious(Equal or greater
+    than). From 65 to 99.
   defaultValue: "65"
 outputs:
 - contextPath: InfoFile.Name
