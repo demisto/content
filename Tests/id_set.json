@@ -7753,7 +7753,7 @@
                     "email"
                 ], 
                 "tests": [
-                    "No tests"
+                    "Test - PhishMe Intelligence"
                 ]
             }
         }, 
@@ -15520,18 +15520,17 @@
             "Test - PhishMe Intelligence": {
                 "name": "Test - PhishMe Intelligence", 
                 "implementing_scripts": [
-                    "CloseInvestigation", 
                     "IsGreaterThan", 
                     "DeleteContext", 
                     "AreValuesEqual"
                 ], 
-                "implementing_commands": [
-                    "url", 
-                    "phishme-search", 
-                    "email", 
-                    "file", 
-                    "ip"
-                ]
+                "command_to_integration": {
+                    "url": "Phishme Intelligence", 
+                    "phishme-search": "Phishme Intelligence", 
+                    "email": "Phishme Intelligence", 
+                    "file": "Phishme Intelligence", 
+                    "ip": "Phishme Intelligence"
+                }
             }
         }
     ]
