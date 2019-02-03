@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "HighlightWords_Test"
+        },
+        {
             "playbookID": "StringContainsArray_test"
         },
         {
@@ -17,6 +20,9 @@
         {
             "integrations": "Alexa Rank Indicator",
             "playbookID": "Alexa Test Playbook"
+        },
+        {
+            "playbookID": "TestUnEscapeUrl"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -85,6 +91,15 @@
             "nightly" : true
         },
         {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream"
+            ],
+            "playbookID" : "detonate_file_-_generic_test"
+        },
+        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
@@ -129,13 +144,15 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
           "integrations": "Tenable.io",
@@ -829,7 +846,6 @@
             "nightly": true
         },
         {
-            "integrations": "whois",
             "playbookID": "whois_test"
         },
         {
@@ -869,6 +885,11 @@
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
           "timeout": 600
+        },
+        {
+            "integrations" : "VxStream",
+            "playbookID" : "Test-Detonate URL - Crowdstrike",
+            "timeout" : 1200
         },
         {
            "playbookID": "Detonate File - Generic Test",
@@ -940,8 +961,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -951,8 +972,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -981,7 +1002,6 @@
         }
     ],
     "skipped_tests": {
-        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
@@ -992,14 +1012,12 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "Tenable.io test": "Error 409 ISSUE OPENED",
         "Tenable.io Scan Test": "Error 409 ISSUE OPENED"
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
-        "Whois": "Server currently has Whois by default, need to deprecate",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
@@ -1025,7 +1043,9 @@
         "Netskope": "instance is down",
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
-        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild"
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
+        "WildFire": "Quota is temporarily over due to circle ci issues",
+        "Recorded Future": "Quota issues"
     },
     "nigthly_integrations": [
         "Lastline",

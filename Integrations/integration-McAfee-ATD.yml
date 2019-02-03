@@ -401,6 +401,12 @@ script:
         body['data'] = {}
         data = {}
         data['data'] = {}
+        # Add missing prefix to url
+        if submitType != 0:
+            if sample.startswith('www.'):
+                sample = "http://" + sample
+            elif not sample.startswith('http://www.') and not sample.startswith('https://www.'):
+                sample = "http://www." + sample
 
         data['data']['vmProfileList'] = vmProfileList
         data['data']['submitType'] = submitType
@@ -1231,5 +1237,6 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
+releaseNotes: "Allow the url argument in atd-upload-file to not contain protocol"
 tests:
 - Test Playbook McAfee ATD
