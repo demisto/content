@@ -40,7 +40,7 @@ script: |-
       # Skip headers line
       columns = row.split(',')
 
-      ip = columns[name_column]
+      hash_indicator = columns[name_column].strip('\"')
       score = None
       try:
           score = int(columns[score_column].strip('\"'))
