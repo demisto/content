@@ -987,7 +987,7 @@
             "playbookID": "Ping Test Playbook"
         },
         {
-            "playbookID": "Test-PcapHTTPExtractor"
+            "playbookID": "playbook-PcapHTTPExtractor-test"
         },
         {
             "integrations": "mysql",
