@@ -17,12 +17,11 @@ REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
 
 
 def id_to_mock_file(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
-    if not playbook_id.strip():
-        return ''
+    filename = playbook_id
 
     # replace spaces
     for r in replace:
-        filename = playbook_id.replace(r, '_')
+        filename = filename.replace(r, '_')
 
     # keep only valid ascii chars
     cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
