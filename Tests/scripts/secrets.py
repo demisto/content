@@ -39,6 +39,7 @@ IPV4_REGEX = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4
 DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6})?([+-]\d{2}:?\d{2})?Z?)?)'
 # disable-secrets-detection-end
 
+
 def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
     if file_extension in TEXT_FILE_TYPES:
