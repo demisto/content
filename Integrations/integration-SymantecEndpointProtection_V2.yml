@@ -392,7 +392,7 @@ script:
     - contextPath: SEPM.Scan.Type
       description: Type of the scan (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
       type: string
-    - contextPath: SEPM.Quarantine.Endpoint
+    - contextPath: SEPM.Scan.Endpoint
       description: The endpoint identifier (IP or Host Name)
       type: Unknown
   - arguments:
