@@ -11690,6 +11690,10 @@
                     "intsights-close-alert", 
                     "intsights-mssp-get-sub-accounts", 
                     "intsights-mssp-test"
+                ], 
+                "tests": [
+                    "IntSights Test", 
+                    "IntSights Mssp Test"
                 ]
             }
         }, 
@@ -15767,28 +15771,6 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
-                ]
-            }
-        }, 
-        {
-            "playbook-PcapHTTPExtractor-test": {
-                "name": "playbook-PcapHTTPExtractor-test", 
-                "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
-                ]
-            }
-        }, 
-        {
-            "PcapHTTPExtractor-Test": {
-                "name": "PcapHTTPExtractor-Test", 
-                "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
                 ]
             }
         }, 

@@ -995,9 +995,6 @@
             "playbookID": "Ping Test Playbook"
         },
         {
-            "playbookID": "PcapHTTPExtractor-Test"
-        },
-        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -1010,7 +1007,6 @@
             "playbookID": "GoogleResourceManager-Test",
             "timeout": 500,
             "nightly": true
-
         }
     ],
     "skipped_tests": {
