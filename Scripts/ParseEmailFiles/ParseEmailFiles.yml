@@ -2,7 +2,7 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
-script: ""
+script: ''
 type: python
 tags:
 - email
