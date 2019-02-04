@@ -161,8 +161,16 @@ def run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrati
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
 
+    if not integrations:
+        print "No integrations, bypassing mock."
+        mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                     test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+        print '------ Test %s end ------' % (test_message,)
+
+        return
+
     if has_unmockable_integration(integrations, unmockable_integrations):
-        print "Test has unmockable integrations, bypassing mock mechanism."
+        print "Unmockable integrations, bypassing mock."
         mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                      test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
         print '------ Test %s end ------' % (test_message,)
