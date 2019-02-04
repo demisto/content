@@ -2325,8 +2325,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Fetching evidence details if true. Evidence is a record that gets         generated
-        if any of the risk rules on Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Number of results to return
