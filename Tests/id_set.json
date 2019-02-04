@@ -506,11 +506,11 @@
         }, 
         {
             "ParseEmailFiles": {
-                "name": "ParseEmailFiles",
+                "name": "ParseEmailFiles", 
                 "script_executions": [
-                    "getEntry",
-                    "getFilePath"                    
-                ],
+                    "getEntry", 
+                    "getFilePath"
+                ], 
                 "tests": [
                     "ParseEmailFiles-test"
                 ]
