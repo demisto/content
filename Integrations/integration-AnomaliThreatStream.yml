@@ -620,3 +620,4 @@ script:
         with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
 hidden: false
+releaseNotes: "Fixes for false positive reports"
