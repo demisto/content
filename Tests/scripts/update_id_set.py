@@ -242,7 +242,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -314,10 +314,28 @@ def add_new_object_to_id_set(obj_id, obj_data, instances_set):
         instances_set.append(obj_data)
 
 
+def get_code_file(package_path, script_type):
+    """Return the first code file in the specified directory path
+    TODO: COPIED from: package_creator.py. Need to refactor to use shared code
+
+    :param package_path: directory to search for code file
+    :type package_path: str
+    :param script_type: script type: .py or .js
+    :type script_type: str
+    :return: path to found code file
+    :rtype: str
+    """
+
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    script_path = list(filter(lambda x: not re.search(ignore_regex, x),
+                              glob.glob(package_path + '*' + script_type)))[0]
+    return script_path
+
+
 def get_script_package_data(package_path):
     yml_path = glob.glob(package_path + '*.yml')[0]
     code_type = get_json(yml_path).get('type')
-    code_path = glob.glob(package_path + '*' + TYPE_TO_EXTENSION[code_type])[0]
+    code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
         code = code_file.read()
 

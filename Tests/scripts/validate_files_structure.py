@@ -83,6 +83,7 @@ REGEXES_TO_SCHEMA_DIC = {
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "test-playbook",
     SCRIPT_REGEX: "script",
+    SCRIPT_YML_REGEX: "script",
     WIDGETS_REGEX: "widget",
     DASHBOARD_REGEX: "dashboard",
     CONNECTIONS_REGEX: "canvas-context-connections",
@@ -325,20 +326,25 @@ def is_existing_image(file_path):
 
 
 def get_modified_and_added_files(branch_name, is_circle):
-    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-
     if is_circle:
+        all_changed_files_string = run_git_command("git diff --name-status origin/master..{}".format(branch_name))
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
         files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-        modified_files, added_files = get_modified_files(files_string)
-        _, added_files_from_branch = get_modified_files(all_changed_files_string)
-        for mod_file in modified_files:
-            if mod_file in added_files_from_branch:
-                added_files.add(mod_file)
-                modified_files = modified_files - set([mod_file])
+        modified_files2, added_files2 = get_modified_files(files_string)
+        all_changed_files_string = run_git_command("git diff --name-status origin/master")
+        modified_files_from_branch, added_files_from_branch = get_modified_files(all_changed_files_string)
+
+        added_files = []
+        modified_files = []
+        for mod_file in modified_files_from_branch:
+            if mod_file in modified_files2:
+                modified_files.append(mod_file)
+        for add_file in added_files_from_branch:
+            if add_file in added_files2:
+                added_files.append(add_file)
 
     return modified_files, added_files
 
@@ -563,7 +569,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
         elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            yml_path, code = get_script_package_data(os.path.dirname(file_path) + '/')
             script_data = get_script_data(yml_path, script_code=code)
 
             if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
