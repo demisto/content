@@ -8,15 +8,15 @@ from subprocess import Popen, PIPE
 from collections import OrderedDict
 
 
-SCRIPT_YML_REGEX = "scripts.*.yml"
-SCRIPT_PY_REGEX = "scripts.*.py"
-SCRIPT_JS_REGEX = "scripts.*.js"
-SCRIPT_REGEX = "scripts.*script-.*.yml"
-INTEGRATION_YML_REGEX = "integrations.(?!integration)*.yml"
-PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "integrations.*integration-.*.yml"
-TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_SCRIPT_REGEX = "TestPlaybooks.*script-.*.yml"
+SCRIPT_YML_REGEX = r"scripts.*\.yml"
+SCRIPT_PY_REGEX = r"scripts.*\.py"
+SCRIPT_JS_REGEX = r"scripts.*\.js"
+SCRIPT_REGEX = r"scripts.*script-.*\.yml"
+INTEGRATION_YML_REGEX = r"integrations.(?!integration)*\.yml"
+PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
+INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
+TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
+TEST_SCRIPT_REGEX = r"TestPlaybooks.*script-.*\.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX]

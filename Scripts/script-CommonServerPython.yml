@@ -377,10 +377,11 @@ script: |-
                   if type(entry) == dict and entry['Type'] == entryTypes['error']:
                       return True
 
-      return type(entry) == dict and entry['Type'] == entryTypes['error']
+      return type(execute_command_result) == dict and execute_command_result['Type'] == entryTypes['error']
 
 
   isError = is_error
+  
 
   def FormatADTimestamp(ts):
       """
