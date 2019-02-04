@@ -24,96 +24,93 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Zookeeper url
-  name: zookeeper
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Client ID
-  name: client_id
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: CA cartificate of Kafka server (type pem)
-  name: ca_cert
-  defaultvalue: ""
-  type: 4
-  required: false
-- display: Client cartificate (type pem)
-  name: client_cert
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Client cartificate key (type pem)
-  name: client_cert_key
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: 3 days
   type: 8
   required: false
-- display: Fetches incidents
-  name: fetch
+- display:
+     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                     Certificate Parameters
+
+    CA certificate of Kafka server (type cert)
+  name: ca_cert
   defaultvalue: ""
-  type: 8
+  type: 4
   required: false
-- display: ""
-  name: incident_type
+- display: Client cartificate (type cert)
+  name: client_cert
   defaultvalue: ""
   type: 0
   required: false
-- display: Import from offset
+- display: Client certificate key (type cert)
+  name: client_cert_key
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Additonal password (if required)
+  name: additional_password
+  defaultvalue: ""
+  type: 0
+  required: false
+- display:      ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                           Fetch incidents
+
+    Topic to fetch incidents from
+  name: topic
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Offset to fetch incidents from
   name: offset
   defaultvalue: "0"
   type: 0
   required: false
-- display: Import from topic
-  name: topic
-  defaultvalue: ""
+- display:      ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                           Debug options
+
+    Enable debug (yes or no)
+  name: enable_debug
+  defaultvalue: "no"
   type: 0
   required: false
-- display: Import from partition
-  name: partition
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Do not use be default
-  name: default
+- display: Fetch incidents
+  name: isFetch
   defaultvalue: ""
   type: 8
   required: false
-- display: Additonal password (if required)
-  name: password
+- display: Incident type
+  name: incidentType
   defaultvalue: ""
-  type: 0
+  type: 13
   required: false
 script:
-  script: |-
+  script: |
     ''' IMPORTS '''
-
-    import json
-    import os
+    import json, os, math
+    from itertools import islice
     import requests
     from distutils.util import strtobool
-    from pykafka import KafkaClient, SslConfig, producer
+    from pykafka import KafkaClient, SslConfig, exceptions
+    from pykafka.common import OffsetType
+    import logging as log
+
+    # Enable debug
+    if demisto.params().get('enable_debug') == 'yes':
+        log.basicConfig(level=log.DEBUG)
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBALS/PARAMS '''
 
-    # Remove trailing slash to prevent wrong URL path to service
     BROKERS = demisto.params().get('brokers')
-    # Should we use SSL
-    USE_SSL = not demisto.params().get('insecure', False)
-    ZOOKEEPER = demisto.params().get('zookeeper', None)
 
-    # Broker configuration
-    OFFSET = demisto.params().get('offset')
-    TOPIC = demisto.params().get('topic')
-    PARTITION = demisto.params().get('partition')
+    # Should we use SSL
+    USE_SSL = demisto.params().get('insecure', False)
 
     # Certificates
     CA_CERT = demisto.params().get('ca_cert', None)
@@ -130,14 +127,48 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
+    def create_incident(message, topic):
+        """
+        Creates incident
+        :return incident:
+        """
+        return {
+            'name': 'Kafka {} {} {}'.format(topic, message.partition_id, message.offset),
+            'occurred': timestamp_to_datestring(int(time.time())),
+            'details': message.value
+        }
+
+
+    def check_latest_offset(topic):
+        """
+        :param topic: topic to check the latest offset
+        :type topic: :class:`pykafka.topic.Topic`
+        """
+        consumer = topic.get_simple_consumer(
+            auto_offset_reset=OffsetType.LATEST,
+            reset_offset_on_start=True)
+        LAST_N_MESSAGES = 1
+        # how many messages should we get from the end of each partition?
+        MAX_PARTITION_REWIND = int(math.ceil(LAST_N_MESSAGES / len(consumer._partitions)))
+        # find the beginning of the range we care about for each partition
+        offsets = [(p, op.last_offset_consumed - MAX_PARTITION_REWIND)
+                   for p, op in consumer._partitions.iteritems()]
+        # if we want to rewind before the beginning of the partition, limit to beginning
+        offsets = [(p, (o if o > -1 else -2)) for p, o in offsets]
+        # reset the consumer's offsets
+        consumer.reset_offsets(offsets)
+        for message in islice(consumer, LAST_N_MESSAGES):
+            pass
+        return message.offset
+
 
     def create_certificate():
         """
         Creating certificate
         """
-        ca_path = 'ca.pem'
-        client_path = 'client.pem'
-        client_key_path = 'client_key.pem'
+        ca_path = 'ca.cet'
+        client_path = 'client.cert'
+        client_key_path = 'client_key.key'
         if CA_CERT:
             with open(ca_path, 'wb') as file:
                 file.write(CA_CERT)
@@ -166,6 +197,7 @@ script:
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
 
+
     def test_module():
         """
         If we got here, the instance is working without any error
@@ -179,20 +211,24 @@ script:
         """
         data = KAFKA_CLIENT.topics
         topics = [k for k in KAFKA_CLIENT.topics.keys()]
+        topics_list = [{'Name': k} for k in topics]
         ec = {
-            'Kafka(val.Topic === obj.Topic)': topics
+            'Kafka.Topic(val.Name === obj.Name)': topics_list
         }
-        md = ''
-        for topic in topics:
-            md += topic + ', '
-        md = md[:-2]
+        if topics:
+            md = 'Topics from Kafka: '
+            for topic in topics:
+                md += topic + ', '
+            md = md[:-2]
+        else:
+            md = 'No topics found in Kafka'
         demisto.results({
-            'Type' : entryTypes['note'],
+            'Type': entryTypes['note'],
             'Contents': data,
-            'ContentsFormat' : formats['json'],
+            'ContentsFormat': formats['json'],
             'HumanReadable': md,
-            'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext' : ec
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': ec
         })
 
 
@@ -203,10 +239,23 @@ script:
         topic = demisto.args().get('topic')
         value = demisto.args().get('value')
         partitioning_key = demisto.args().get('partitioning-key')
-        kafka_topic = KAFKA_CLIENT.topics[topic]
-        with topic.get_sync_producer() as producer:
-            producer.produce(value)
-        demisto.results('Message has succefully produced to topic \'{}\''.format(topic))
+
+        partitioning_key = str(partitioning_key)
+        if partitioning_key.isdigit():
+            partitioning_key = int(partitioning_key)
+        else:
+            partitioning_key = None
+
+        if topic in KAFKA_CLIENT.topics:
+            kafka_topic = KAFKA_CLIENT.topics[topic]
+            with kafka_topic.get_sync_producer() as producer:
+                producer.produce(
+                    message=str(value),
+                    partition_key=partitioning_key
+                )
+            demisto.results('Message has succefully produced to topic \'{}\''.format(topic))
+        else:
+            return_error('Topic {} was not found in Kafka'.format(topic))
 
 
     def consume_message():
@@ -215,12 +264,65 @@ script:
         """
         topic = demisto.args().get('topic')
         offset = demisto.args().get('offset')
-        partition = demisto.args().get('partition')
+        partition = demisto.args().get('partition', None)
 
-        kafka_topic = KAFKA_CLIENT.topics[topic]
-        consumer = kafka_topic.get_simple_consumer()
-        message = consumer.consume()
-        demisto.results('Message consumed from topic {}: {}'.format(topic, message))
+        # Checking if valid offset is given
+        offset = str(offset)
+        if offset.isdigit():
+            offset = int(offset)
+        elif offset.lower() == 'earliest':
+            offset = OffsetType.EARLIEST
+        elif offset.lower() == 'latest':
+            offset = OffsetType.LATEST
+        else:
+            return_error('Offset is not a number, earliest or latest')
+
+        if partition:
+            partition = int(partition)
+
+        if topic in KAFKA_CLIENT.topics:
+            kafka_topic = KAFKA_CLIENT.topics[str(topic)]
+            if check_latest_offset(kafka_topic) < offset:
+                return_error('Offset is higher than the latest offset in Kafka topic {}'.format(topic))
+
+            consumer = kafka_topic.get_simple_consumer(
+                auto_offset_reset=offset,
+                reset_offset_on_start=True
+            )
+            message = consumer.consume()
+            md = tableToMarkdown(
+                name='Message consumed from topic \'{}\''.format(topic),
+                t={
+                    'Offset': message.offset,
+                    'Message': message.value
+                },
+                headers=[
+                    'Offset',
+                    'Message'
+                ]
+            )
+            ec = {
+                'Kafka.Topic(val.Name === obj.Name)': {
+                    'Name': topic,
+                    'Message': {
+                        'Value': message.value,
+                        'Offset': message.offset
+                    }
+                }
+            }
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': {
+                    'Message': message.value,
+                    'Offset': message.offset
+                },
+                'ContentsFormat': formats['json'],
+                'HumanReadable': md,
+                'ReadableContentsFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+        else:
+            return_error('Topic {} was not found in Kafka'.format(topic))
 
 
     def fetch_partitions():
@@ -228,12 +330,84 @@ script:
         Fetching available partitions in given topic
         """
         topic = demisto.args().get('topic')
-        if topic in KAFKA_CLIENT.topics
+        if topic in KAFKA_CLIENT.topics:
             kafka_topic = KAFKA_CLIENT.topics[topic]
-            partitions = kafka_topic.partitions
-            demisto.results('Available partitions for topic {}: {}'.format(topic, partitions))
+            partitions = kafka_topic.partitions.keys()
+
+            md = tableToMarkdown(
+                name='Available partitions for topic \'{}\''.format(topic),
+                t=partitions,
+                headers='Partitions'
+            )
+            ec = {
+                'Kafka.Topic(val.Name == obj.Name)': {
+                    'Name': topic,
+                    'Partition': partitions
+                }
+            }
+            contents = {
+                topic: partitions
+            }
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': partitions,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': md,
+                'ReadableContentsFormat': formats['markdown'],
+                'EntryContext': ec
+            })
         else:
             return_error('Topic is not in Kafka broker')
+
+
+    def fetch_incidents():
+        """
+        Fetches incidents
+        """
+        # Incidents configuration
+        offset = demisto.params().get('offset')
+        topic = demisto.params().get('topic')
+        partition = demisto.params().get('partition')
+
+        # Checking if valid offset is given
+        offset = str(offset)
+        if offset.isdigit():
+            offset = int(offset)
+        elif offset.lower() == 'earliest':
+            offset = OffsetType.EARLIEST
+        else:
+            return_error('Offset is not a number, earliest or latest')
+
+        partition = str(partition)
+        if partition.isdigit():
+            partition = int(partition)
+        else:
+            partition = None
+
+        incidents = list()
+
+        # Chck for topic in Kafka
+        if topic in KAFKA_CLIENT.topics:
+            last_offset = demisto.getLastRun().get('last_offset')
+            last_fetch = last_offset if last_offset > offset else offset
+            kafka_topic = KAFKA_CLIENT.topics[topic]
+
+            # If need to fetch
+            latest_offset = check_latest_offset(kafka_topic)
+            if latest_offset > last_fetch:
+                consumer = kafka_topic.get_simple_consumer(
+                    auto_offset_reset=last_fetch,
+                    reset_offset_on_start=True
+                )
+                for i in range(last_fetch, latest_offset):
+                    message = consumer.consume()
+                    incidents.append(create_incident(message=message, topic=topic))
+                    if message.offset == last_fetch - 1:
+                        break;
+                demisto.setLastRun({'last_offset': latest_offset})
+            demisto.incidents(incidents)
+        else:
+            return_error('No such topic \'{}\' to fetch incidents from.'.format(topic))
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -241,16 +415,16 @@ script:
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
+        # Initialize KafkaClient
         if USE_SSL:
             ssl_config = create_certificate()
-            KAFKA_CLIENT = KafkaClient(hosts=BROKERS, zookeeper_hosts=ZOOKEEPER, ssl_config=ssl_config)
+            KAFKA_CLIENT = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
         else:
-            KAFKA_CLIENT = KafkaClient(hosts=BROKERS, zookeeper_hosts=ZOOKEEPER)
+            KAFKA_CLIENT = KafkaClient(hosts=BROKERS)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
-            demisto.results('ok')
         elif demisto.command() == 'kafka-print-topics':
             print_topics()
         elif demisto.command() == 'kafka-publish-msg':
@@ -259,16 +433,19 @@ script:
             consume_message()
         elif demisto.command() == 'kafka-fetch-partitions':
             fetch_partitions()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
     # Log exceptions
     except Exception, e:
+        return_error(e.message)
+    # pykafka exception
+    except exceptions, e:
         LOG(e.message)
-        LOG.print_log()
-        raise
     finally:
         try:
-            os.remove(os.path.abspath('ca.pem'))
-            os.remove(os.path.abspath('client.pem')
-            os.remove(os.path.abspath('client_key.pem'))
+            os.remove(os.path.abspath('ca.cert'))
+            os.remove(os.path.abspath('client.cert'))
+            os.remove(os.path.abspath('client_key.key'))
         except:
             pass
   type: python
@@ -276,8 +453,9 @@ script:
   - name: kafka-print-topics
     arguments: []
     outputs:
-    - contextPath: Kafka.Topic
-      description: List of topics in Kafka
+    - contextPath: Kafka.Topic.Name
+      description: Kafka topic name
+      type: string
     description: Print all partitions for a topic
   - name: kafka-publish-msg
     arguments:
@@ -290,20 +468,31 @@ script:
     - name: partitioning-key
       description: Message Partition key
     description: Publish a message to Kafka
-  - name: kafka-consume-message
+  - name: kafka-consume-msg
     arguments:
     - name: topic
       required: true
       description: A Topic to filter by
     - name: offset
-      description: 'Message offset (number) '
+      description: 'Message offset (Can be Earliest, Latest or any number) '
+      defaultValue: EARLIEST
     - name: partition
       description: Partition (number)
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of the topic
+      type: string
+    - contextPath: Kafka.Name.Message.Value
+      description: Value of the message
+      type: string
+    - contextPath: Kafka.Name.Message.Offset
+      description: Offset of the value in the topic
+      type: number
     description: Consume a single kafka message
   - name: kafka-fetch-partitions
     arguments:
     - name: topic
       description: A Topic to filter by
     description: Print all partitions for a topic
-  dockerimage: devtesting/pykafka:testing
+  isfetch: true
   runonce: false

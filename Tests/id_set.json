@@ -506,11 +506,11 @@
         }, 
         {
             "ParseEmailFiles": {
-                "name": "ParseEmailFiles",
+                "name": "ParseEmailFiles", 
                 "script_executions": [
-                    "getEntry",
-                    "getFilePath"                    
-                ],
+                    "getEntry", 
+                    "getFilePath"
+                ], 
                 "tests": [
                     "ParseEmailFiles-test"
                 ]
@@ -11751,7 +11751,7 @@
                 "commands": [
                     "kafka-print-topics", 
                     "kafka-publish-msg", 
-                    "kafka-consume-message", 
+                    "kafka-consume-msg", 
                     "kafka-fetch-partitions"
                 ]
             }
