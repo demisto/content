@@ -49,25 +49,25 @@ MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
 
 # file types regexes
-IMAGE_REGEX = ".*.png"
-SCRIPT_YML_REGEX = "{}.*.yml".format(SCRIPTS_DIR)
-SCRIPT_PY_REGEX = "{}.*.py".format(SCRIPTS_DIR)
-SCRIPT_JS_REGEX = "{}.*.js".format(SCRIPTS_DIR)
-INTEGRATION_YML_REGEX = "{}.*.yml".format(INTEGRATIONS_DIR)
-INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
-PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
-TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
-TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
-SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
-WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
-DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
-CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
-LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
-INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
-MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
-REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+IMAGE_REGEX = r".*\.png"
+SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
+PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+SCRIPT_REGEX = r"{}.*script-.*\.yml".format(SCRIPTS_DIR)
+WIDGETS_REGEX = r"{}.*widget-.*\.json".format(WIDGETS_DIR)
+DASHBOARD_REGEX = r"{}.*dashboard-.*\.json".format(DASHBOARDS_DIR)
+CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json".format(CONNECTIONS_DIR)
+CLASSIFIER_REGEX = r"{}.*classifier-.*\.json".format(CLASSIFIERS_DIR)
+LAYOUT_REGEX = r"{}.*layout-.*\.json".format(LAYOUTS_DIR)
+INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
+MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
+REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
