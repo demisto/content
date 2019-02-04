@@ -3332,16 +3332,17 @@ def main():
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex.message))
 
     try:
-        if 'Composite Document File V2 Document'.lower() in file_type.lower() \
-                or 'CDFV2 Microsoft Outlook Message'.lower() in file_type.lower():
+        file_type_lower = file_type.lower()
+        if 'composite document file v2 document' in file_type_lower \
+                or 'cdfv2 microsoft outlook message' in file_type_lower:
             handle_msg(file_path)
             return
 
-        elif 'rfc 822 mail' in file_type.lower():
+        elif 'rfc 822 mail' in file_type_lower or 'smpt mail' in file_type_lower:
             handle_eml(file_path)
             return
 
-        elif 'ASCII text' in file_type:
+        elif 'ascii text' in file_type_lower:
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
