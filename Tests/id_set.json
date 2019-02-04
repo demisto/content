@@ -508,8 +508,8 @@
             "ParseEmailFiles": {
                 "name": "ParseEmailFiles",
                 "script_executions": [
-                    "getFilePath",
-                    "getEntry"
+                    "getEntry",
+                    "getFilePath"                    
                 ],
                 "tests": [
                     "ParseEmailFiles-test"
