@@ -194,10 +194,10 @@ script:
     - default: false
       defaultValue: ''
       description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
-        time will be included in the response. Note that this is
-        not set by default because setting this to 'true' will consume an additional
-        API credit per API call. To see more details, please turn to the Freshdesk
-        API documentation - https://developers.freshdesk.com/api/#embedding
+        time will be included in the response. Note that this is not set by default
+        because setting this to 'true' will consume an additional API credit per API
+        call. To see more details, please turn to the Freshdesk API documentation
+        - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined: ['true', 'false']
@@ -392,8 +392,6 @@ script:
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
         can see all tickets that are associated with the company to which s/he belong,
       type: Boolean}
-    - {contextPath: FD.Contact.CustomFields, description: Key value pair containing
-        the name and value of the custom fields., type: Unknown}
     - {contextPath: FD.Contact.Deleted, description: Set to true if the contact has
         been deleted., type: Boolean}
     - {contextPath: FD.Contact.Description, description: A short description of the
@@ -406,8 +404,6 @@ script:
     - {contextPath: FD.Contact.Mobile, description: Mobile number of the contact,
       type: Number}
     - {contextPath: FD.Contact.Name, description: Name of the contact, type: String}
-    - {contextPath: FD.Contact.OtherEmails, description: Additional emails associated
-        with the contact, type: Unknown}
     - {contextPath: FD.Contact.Phone, description: Telephone number of the contact,
       type: Number}
     - {contextPath: FD.Contact.Tag, description: Tags associated with this contact,
@@ -418,8 +414,6 @@ script:
       type: String}
     - {contextPath: FD.Contact.UniqueExternalID, description: External ID of the contact,
       type: String}
-    - {contextPath: FD.Contact.OtherCompanies, description: Additional companies associated
-        with the contact (array of hashes), type: Unknown}
     - {contextPath: FD.Contact.CreatedAt, description: Contact creation stamp, type: Date}
     - {contextPath: FD.Contact.UpdatedAt, description: Contact updated timestamp,
       type: Date}
@@ -458,8 +452,6 @@ script:
     - {contextPath: FD.Contact.ViewAllTickets, description: Set to true if the contact
         can see all tickets that are associated with the company to which s/he belong,
       type: Boolean}
-    - {contextPath: FD.Contact.CustomFields, description: Key value pair containing
-        the name and value of the custom fields., type: Unknown}
     - {contextPath: FD.Contact.Deleted, description: Set to true if the contact has
         been deleted., type: Boolean}
     - {contextPath: FD.Contact.Description, description: A short description of the
@@ -472,8 +464,6 @@ script:
     - {contextPath: FD.Contact.Mobile, description: Mobile number of the contact,
       type: Number}
     - {contextPath: FD.Contact.Name, description: Name of the contact, type: String}
-    - {contextPath: FD.Contact.OtherEmails, description: Additional emails associated
-        with the contact, type: Unknown}
     - {contextPath: FD.Contact.Phone, description: Telephone number of the contact,
       type: Number}
     - {contextPath: FD.Contact.Tag, description: Tags associated with this contact,
@@ -484,8 +474,6 @@ script:
       type: String}
     - {contextPath: FD.Contact.UniqueExternalID, description: External ID of the contact,
       type: String}
-    - {contextPath: FD.Contact.OtherCompanies, description: Additional companies associated
-        with the contact (array of hashes), type: Unknown}
     - {contextPath: FD.Contact.CreatedAt, description: Contact creation stamp, type: Date}
     - {contextPath: FD.Contact.UpdatedAt, description: Contact updated timestamp,
       type: Date}
@@ -626,8 +614,8 @@ script:
     - default: false
       defaultValue: ''
       description: Array of email address strings added in the 'bcc' field of the
-        outgoing ticket email. Entered email addresses should be separated by commas. E.g.
-        "example1@gmail.com,example2@gmail.com,example3@gmail.com".
+        outgoing ticket email. Entered email addresses should be separated by commas.
+        E.g. "example1@gmail.com,example2@gmail.com,example3@gmail.com".
       isArray: true
       name: bcc_emails
       predefined: []
@@ -846,8 +834,7 @@ script:
     - default: false
       defaultValue: ''
       description: Array of email addresses of agents who need to be notified about
-        this note. Entered email addresses should be separated by commas. E.g.
-        "example1@gmail.com,example2@gmail.com,example3@gmail.com".
+        this note. Entered email addresses should be separated by commas. E.g. "example1@gmail.com,example2@gmail.com,example3@gmail.com".
       isArray: true
       name: notify_emails
       predefined: []
@@ -979,8 +966,7 @@ script:
       description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
         time will be included. Note that this is not set by default because setting
         this to 'true' will consume an additional 2 API credits per API call. To see
-        more details, please turn to the Freshdesk API
-        documentation - https://developers.freshdesk.com/api/#embedding
+        more details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined: ['true', 'false']
@@ -988,11 +974,10 @@ script:
     - default: false
       defaultValue: ''
       description: If set to 'true' then the ticket requester's id, email, mobile,
-        name, and phone will be included in the ticket's output for each ticket.
-        Note that this is not set by default because setting
-        this to 'true' will consume an additional 2 API credits per API call. To see
-        more details, please turn to the Freshdesk API
-        documentation - https://developers.freshdesk.com/api/#embedding
+        name, and phone will be included in the ticket's output for each ticket. Note
+        that this is not set by default because setting this to 'true' will consume
+        an additional 2 API credits per API call. To see more details, please turn
+        to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_requester
       predefined: ['true', 'false']
@@ -1000,10 +985,10 @@ script:
     - default: false
       defaultValue: ''
       description: If set to 'true' then the ticket's description and description_text
-        will be included the tickets' outputs. Note that this is not set by default because setting
-        this to 'true' will consume an additional 2 API credits per API call. To see
-        more details, please turn to the Freshdesk API
-        documentation - https://developers.freshdesk.com/api/#embedding
+        will be included the tickets' outputs. Note that this is not set by default
+        because setting this to 'true' will consume an additional 2 API credits per
+        API call. To see more details, please turn to the Freshdesk API documentation
+        - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_description
       predefined: ['true', 'false']
@@ -1122,6 +1107,21 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
+    def format_contact_context(contact):
+        dont_include = ['other_companies', 'other_emails', 'custom_fields', 'avatar']
+        # Parse response into context
+        context = {}
+        for key, val in contact.iteritems():
+            if key not in dont_include and val:
+                new_key = string_to_context_key(key)
+                if 'Id' in new_key:
+                    new_key = new_key.replace('Id', 'ID')
+                elif new_key == 'Tags':
+                    new_key = 'Tag'
+                context[new_key] = val
+        return context
 
 
     def reformat_context_output(context):
@@ -2434,7 +2434,7 @@ script:
         contexts = []
         for contact in contacts:
             # Parse individual contact response in context
-            context = {string_to_context_key(key): val for key, val in contact.iteritems() if val}
+            context = format_contact_context(contact)
             contexts.append(context)
         filters_as_strings = ', '.join(['{}: {}'.format(key, val) for key, val in filters.iteritems()])
         title = "Contacts Filtered by {}".format(filters_as_strings) if filters else "All Contacts"
@@ -2511,8 +2511,8 @@ script:
         args = demisto.args()
         # Make request and get raw response
         contact = get_contact(args)
-        # Parse response into context
-        context = {string_to_context_key(key): val for key, val in contact.iteritems() if val}
+
+        context = format_contact_context(contact)
         title = "Viewing Contact #{}".format(contact.get('id'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
