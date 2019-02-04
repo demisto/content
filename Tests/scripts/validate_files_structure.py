@@ -564,7 +564,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
         elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path) + '/')
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
             script_data = get_script_data(yml_path, script_code=code)
 
             if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
