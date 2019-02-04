@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc16a1a8-e966-460b-8056-aac54e3515f2
+    taskid: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
     type: start
     task:
-      id: cc16a1a8-e966-460b-8056-aac54e3515f2
+      id: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,14 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: fd7db6e3-2385-4d83-8774-ab014d1965cc
+    taskid: 099d108e-14f9-4fc6-8306-8daab8122d91
     type: regular
     task:
-      id: fd7db6e3-2385-4d83-8774-ab014d1965cc
+      id: 099d108e-14f9-4fc6-8306-8daab8122d91
       version: -1
       name: threatstream-intelligence (type=ip, value=218.227.212.90)
       description: To retrieve threat intelligence from the ThreatStream cloud
@@ -84,12 +86,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 7408f6a4-8790-4753-88ca-60e70aeaefcf
+    taskid: 979be6e4-e77b-44ab-8f17-5316865fa6f0
     type: regular
     task:
-      id: 7408f6a4-8790-4753-88ca-60e70aeaefcf
+      id: 979be6e4-e77b-44ab-8f17-5316865fa6f0
       version: -1
       name: ip (176.228.66.70)
       description: Checks the reputation of the given IP
@@ -99,7 +103,7 @@ tasks:
       brand: Anomali ThreatStream
     nexttasks:
       '#none#':
-      - "8"
+      - "13"
     scriptarguments:
       ip:
         simple: 176.228.66.70
@@ -112,12 +116,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
+    taskid: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
     type: regular
     task:
-      id: 4cc9bcd7-f27b-44b4-80ef-bcb1886b0fbd
+      id: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
       version: -1
       name: domain (kpanels.in)
       description: Checks the reputation of the given IP or domain name
@@ -127,7 +133,7 @@ tasks:
       brand: Anomali ThreatStream
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     scriptarguments:
       domain:
         simple: kpanels.in
@@ -137,15 +143,17 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 900
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: ce92b708-ce6d-4dce-887c-6f84b160ebd2
+    taskid: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
     type: regular
     task:
-      id: ce92b708-ce6d-4dce-887c-6f84b160ebd2
+      id: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
       version: -1
       name: file (3e5d63b93a68d715f7559f42285223f4)
       description: Checks the reputation of the given checksum
@@ -155,7 +163,7 @@ tasks:
       brand: Anomali ThreatStream
     nexttasks:
       '#none#':
-      - "7"
+      - "12"
     scriptarguments:
       file:
         simple: 3e5d63b93a68d715f7559f42285223f4
@@ -168,12 +176,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 9949f81e-3a07-4272-8c2a-39d3a0a92b0a
+    taskid: d4d50859-5601-40df-8f0c-9c9193aaf4a8
     type: regular
     task:
-      id: 9949f81e-3a07-4272-8c2a-39d3a0a92b0a
+      id: d4d50859-5601-40df-8f0c-9c9193aaf4a8
       version: -1
       name: threatstream-email-reputation (mailonline_16@filposcv.com)
       description: Checks the reputation of the given email
@@ -183,7 +193,7 @@ tasks:
       brand: Anomali ThreatStream
     nexttasks:
       '#none#':
-      - "11"
+      - "14"
     scriptarguments:
       email:
         simple: mailonline_16@filposcv.com
@@ -196,12 +206,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 0350626f-e2bc-4011-8627-672c67fe1855
+    taskid: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
     type: regular
     task:
-      id: 0350626f-e2bc-4011-8627-672c67fe1855
+      id: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -224,32 +236,33 @@ tasks:
           "y": 195
         }
       }
-  "7":
-    id: "7"
-    taskid: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
-    type: regular
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
+    type: condition
     task:
-      id: e8cbe5cb-5d7a-4b95-83c1-59d3c5d77433
+      id: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
       version: -1
-      name: VerifyContext (File)
-      description: |+
-        Verify path in context
-        - Verify path existence
-        - If matching object is array - verify fields exists in each object in array
-        - If matching object is not array - verify fields exists in matching object
-        - if 'expectedValue' supplied - ensure that given value equal to context path
-
-      scriptName: VerifyContext
-      type: regular
+      name: CheckContext
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: MD5, Malicious, Score
-      path:
-        simple: File
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Score
+            iscontext: true
     view: |-
       {
         "position": {
@@ -257,35 +270,51 @@ tasks:
           "y": 720
         }
       }
-  "8":
-    id: "8"
-    taskid: 255a564c-e2bb-473e-82f5-69ff848b978f
-    type: regular
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 14836e07-2481-4e3b-8826-6cb93932b2d8
+    type: condition
     task:
-      id: 255a564c-e2bb-473e-82f5-69ff848b978f
+      id: 14836e07-2481-4e3b-8826-6cb93932b2d8
       version: -1
-      name: VerifyContext (IP)
-      description: |+
-        Verify path in context
-        - Verify path existence
-        - If matching object is array - verify fields exists in each object in array
-        - If matching object is not array - verify fields exists in matching object
-        - if 'expectedValue' supplied - ensure that given value equal to context path
-
-      scriptName: VerifyContext
-      type: regular
+      name: CheckContext (IP)
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: ASN, Address, Geo, Malicious, Score
-      path:
-        simple: IP
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Geo
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
     view: |-
       {
         "position": {
@@ -293,66 +322,73 @@ tasks:
           "y": 720
         }
       }
-  "9":
-    id: "9"
-    taskid: 54fcfa9e-2a6c-4f02-806e-2c2d19d8d6f0
-    type: regular
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: be58204e-0ee0-4b95-8e36-e560195fb17e
+    type: condition
     task:
-      id: 54fcfa9e-2a6c-4f02-806e-2c2d19d8d6f0
+      id: be58204e-0ee0-4b95-8e36-e560195fb17e
       version: -1
-      name: VerifyContext (Domain)
-      description: |+
-        Verify path in context
-        - Verify path existence
-        - If matching object is array - verify fields exists in each object in array
-        - If matching object is not array - verify fields exists in matching object
-        - if 'expectedValue' supplied - ensure that given value equal to context path
-
-      scriptName: VerifyContext
-      type: regular
+      name: CheckContext (Email)
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: DNS, Name, Score
-      path:
-        simple: Domain
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 7bf1a60f-4517-46db-8183-0cbd7049e434
-    type: regular
-    task:
-      id: 7bf1a60f-4517-46db-8183-0cbd7049e434
-      version: -1
-      name: VerifyContext (ThreatStream.EmailReputation)
-      description: |+
-        Verify path in context
-        - Verify path existence
-        - If matching object is array - verify fields exists in each object in array
-        - If matching object is not array - verify fields exists in matching object
-        - if 'expectedValue' supplied - ensure that given value equal to context path
-
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Itype, Created, Modified, Confidence, Details1, Details2, Status,
-          ThreatScore, Source, Id, Email, Severity
-      path:
-        simple: ThreatStream.EmailReputation
-    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Itype
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Created
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Modified
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Confidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Details1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Details2
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.ThreatScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Severity
+            iscontext: true
     view: |-
       {
         "position": {
@@ -360,12 +396,157 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: b91fce12-d594-4d14-8873-1e69ccab9f39
+    type: condition
+    task:
+      id: b91fce12-d594-4d14-8873-1e69ccab9f39
+      version: -1
+      name: CheckContext (Domain)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.DNS
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
+    type: regular
+    task:
+      id: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
+    type: regular
+    task:
+      id: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
+      version: -1
+      name: ip
+      description: Checks the reputation of the given IP
+      script: Anomali ThreatStream|||ip
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      detailed: {}
+      fullResponse: {}
+      ip:
+        simple: 127.0.0.1
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 6b3b153d-b891-401d-8a0e-dada8bbd5428
+    type: condition
+    task:
+      id: 6b3b153d-b891-401d-8a0e-dada8bbd5428
+      version: -1
+      name: Check Known False Positive
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1655,
         "width": 1240,
         "x": 50,
         "y": 50
