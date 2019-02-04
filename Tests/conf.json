@@ -267,6 +267,9 @@
             "timeout": 500
         },
         {
+            "playbookID": "TransformersTestPlaybook"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },

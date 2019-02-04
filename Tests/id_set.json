@@ -4923,6 +4923,14 @@
                     "No test - fetches indicators"
                 ]
             }
+        }, 
+        {
+            "Cut": {
+                "name": "Cut", 
+                "tests": [
+                    "TransformersTestPlaybook"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -12757,7 +12765,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "whois": "whois"
+                    "whois": "Whois"
                 }
             }
         }, 
@@ -15665,7 +15673,8 @@
             "Alexa Test Playbook": {
                 "name": "Alexa Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "domain": "Alexa Rank Indicator"
@@ -15755,6 +15764,15 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
+                ]
+            }
+        }, 
+        {
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
                 ]
             }
         }
