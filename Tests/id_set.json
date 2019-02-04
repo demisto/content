@@ -15169,8 +15169,8 @@
                 "name": "Anomali ThreatStream Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "ip": "Anomali ThreatStream", 
