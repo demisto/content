@@ -1674,3 +1674,4 @@ script:
 tests:
   - IntSights Test
   - IntSights Mssp Test
+releaseNotes: Added mssp features.
