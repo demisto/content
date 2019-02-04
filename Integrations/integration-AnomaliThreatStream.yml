@@ -211,7 +211,7 @@ script:
                 ipContext.Geo.Organization = output['Organization'];
                 ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
                 ipContext.Hostname = output['Hostname'];
-                if (output['Threat Score'] >= args.threshold) {
+                if (output['Threat Score'] >= args.threshold && output['Status'] !== 'falsepos') {
                     ipContext.Malicious = {};
                     ipContext.Malicious.Vendor = output['Source'];
                 }
@@ -226,7 +226,7 @@ script:
 
                 entry.EntryContext['IP'] = ipContext;
 
-            } else if (command == 'file') {
+            } else if (command == 'file' && output['Status'] !== 'falsepos') {
                 context.MD5 = args.value;
                 if (output['Threat Score'] >= args.threshold) {
                     context.Malicious = {};
@@ -245,7 +245,7 @@ script:
         }
 
         var dbotScore = 1;
-        if (output['Threat Score'] >= args.threshold) {
+        if (output['Threat Score'] >= args.threshold && output['Status'] !== 'falsepos') {
             dbotScore = 3;
         } else if (output['Threat Score'] > 0) {
             dbotScore = 2;
