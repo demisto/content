@@ -133,8 +133,8 @@ script:
       isArray: true
       name: additional_fields
       predefined: [name, requester_id, facebook_id, phone, unique_external_id, type,
-        cc_emails, custom_fields, due_by, email_config_id, fr_due_by, product_id,
-        source, tags, company_id, email, twitter_id, responder_id, group_id]
+        cc_emails, due_by, email_config_id, fr_due_by, product_id, source, tags, company_id,
+        email, twitter_id, responder_id, group_id]
       required: false
     description: Create a new Freshdesk ticket.
     execution: false
@@ -304,8 +304,8 @@ script:
       isArray: true
       name: additional_fields
       predefined: [name, requester_id, email, facebook_id, phone, twitter_id, unique_external_id,
-        type, attachments, custom_fields, email_config_id, product_id, source, tags,
-        company_id, due_by, fr_due_by]
+        type, attachments, email_config_id, product_id, source, tags, company_id,
+        due_by, fr_due_by]
       required: false
     description: Update the ticket specified by the ID
     execution: false
@@ -523,11 +523,11 @@ script:
       type: Number}
     - {contextPath: FD.CRFolder.CR.Title, description: Title of the canned response,
       type: String}
-    - {contextPath: FD.CRFolder.CR.FolderId, description: ID of the containing folder,
+    - {contextPath: FD.CRFolder.CR.FolderID, description: ID of the containing folder,
       type: Number}
     - {contextPath: FD.CRFolder.CR.Content, description: Plaintext version of the
         canned response content, type: String}
-    - {contextPath: FD.CRFolder.CR.ContentHtml, description: HTML version of the canned
+    - {contextPath: FD.CRFolder.CR.ContentHTML, description: HTML version of the canned
         response content, type: String}
     - {contextPath: FD.CRFolder.CR.Attachment.AttachmentURL, description: URL of the
         attached file from which you can download the file to your local machine.,
@@ -1099,7 +1099,40 @@ script:
     ''' HELPER FUNCTIONS '''
 
 
-    def format_conversation_context(context):
+    def reformat_canned_response_context(context):
+        """
+        Reformat context for canned-response related commands (from having used string_to_context_key)
+        to desired output format.
+
+        parameter: (dict) context
+            The context to reformat
+
+        returns:
+            The reformatted context
+        """
+        for key, val in context.iteritems():
+            if 'Id' in key:
+                new_key = key.replace('Id', 'ID')
+                context[new_key] = val
+                del context[key]
+            elif 'Html' in key:
+                new_key = key.replace('Html', 'HTML')
+                context[new_key] = val
+                del context[key]
+        return context
+
+
+    def reformat_conversation_context(context):
+        """
+        Reformat context for conversation related commands (from having used string_to_context_key)
+        to desired output format.
+
+        parameter: (dict) context
+            The context to reformat
+
+        returns:
+            The reformatted context
+        """
         to_emails = context.get('ToEmails')
         body = context.get('Body')
         attachments = context.get('Attachments')
@@ -1115,6 +1148,16 @@ script:
 
 
     def format_contact_context(contact):
+        """
+        Format context for contact related commands.
+
+        parameter: (dict) contact
+            The API response from executing a contact related command whose attributes need
+            to be parsed into context
+
+        returns:
+            The formatted context
+        """
         dont_include = ['other_companies', 'other_emails', 'custom_fields', 'avatar']
         # Parse response into context
         context = {}
@@ -1146,6 +1189,10 @@ script:
                 del context[key]
             elif key == 'CustomFields':
                 new_key = key[:-1]
+                context[new_key] = val
+                del context[key]
+            elif key == 'Description':
+                new_key = 'DescriptionHTML'
                 context[new_key] = val
                 del context[key]
             elif 'Id' in key:
@@ -1287,6 +1334,20 @@ script:
 
 
     def additional_fields_to_args(args, additional_fields_arg_name):
+        """
+        Parses the additional_fields command argument for the individual fields and values and
+        reassigns them to the args dictionary.
+
+        parameter: (dict) args
+            The command's arguments
+
+        parameter: (string) additional_fields_arg_name
+            The name of the command argument that contains the additional fields and values
+
+        returns:
+            The args dictionary that has been updated with the additional fields and values,
+            the list of additional fields, and the list of additional values.
+        """
         additional_fields = args.get(additional_fields_arg_name)
         if additional_fields:
             fields, values = [], []
@@ -1304,38 +1365,10 @@ script:
                 field = field_and_val[0].strip()
                 val = field_and_val[1]
 
-                # If the field is 'custom_fields'
-                if field == 'custom_fields':
-                    custom_fields = {}
-                    custom_fields_and_vals = val.split('*')
-                    if len(custom_fields_and_vals) == 1:
-                        custom_fields_and_vals = list(custom_fields_and_vals)
-
-                    for custom_field_and_val in custom_fields_and_vals:
-                        custom_field_and_val = custom_field_and_val.split(':')
-                        # If the length doesn't equal 2, means there were either no ':'s or more than one
-                        if not len(custom_field_and_val) == 2:
-                            err_msg = "It appears you entered either too many or too few" \
-                                      " colons in the value for the 'custom_fields' option" \
-                                      " in the 'additional_fields' argument."
-                            return_error(err_msg)
-                        custom_field = custom_field_and_val[0].strip()
-                        custom_val = custom_field_and_val[1]
-                        if ',' in custom_val:
-                            custom_val = argToList(custom_val)
-                        custom_fields[custom_field] = custom_val
-                    val = custom_fields
-                    demisto.log('custom_fields: {}'.format(custom_fields))
-                    demisto.log('val: {}'.format(val))
-
                 # If the value contains commas, then it is a list
-                elif ',' in val:
+                if ',' in val:
                     val = argToList(val)
                 args[field] = val
-
-                demisto.log('field: {}'.format(field))
-                demisto.log('args[field]: {}'.format(args[field]))
-
                 fields.append(field)
                 values.append(val)
             del args[additional_fields_arg_name]
@@ -1703,6 +1736,9 @@ script:
         parameter: (list) files
             The multipart-encoded files to upload
 
+        parameter: (dict) headers
+            The headers to use with the request
+
         returns:
             JSON Response Object
         """
@@ -1717,30 +1753,24 @@ script:
             files=files
         )
         # Handle error responses gracefully
-        try:
-            if res.status_code not in {200, 201, 202, 204}:
-                LOG(res.json())
-                LOG(res.text)
-                LOG.print_log()
-                err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
-                err = json.loads(res.content)
-                if err.get('errors'):
-                    for error in err.get('errors'):
-                        err_msg += '\n' + json.dumps(error, indent=2)
-                else:
-                    for key, value in res.json().iteritems():
-                        err_msg += '\n{}: {}'.format(key, value)
-                return_error(err_msg)
-            # Handle response with no content
-            elif res.status_code == 204:
-                return res
+        if res.status_code not in {200, 201, 202, 204}:
+            LOG(res.json())
+            LOG(res.text)
+            LOG.print_log()
+            err_msg = 'Error in API call to Freshdesk Integration [{}] - {}'.format(res.status_code, res.reason)
+            err = json.loads(res.content)
+            if err.get('errors'):
+                for error in err.get('errors'):
+                    err_msg += '\n' + json.dumps(error, indent=2)
+            else:
+                for key, value in res.json().iteritems():
+                    err_msg += '\n{}: {}'.format(key, value)
+            return_error(err_msg)
+        # Handle response with no content
+        elif res.status_code == 204:
+            return res
 
-            return res.json()
-        except Exception as e:
-            LOG(e)
-            ex_type, ex, tb = sys.exc_info()
-            traceback.print_tb(tb)
-            return_error('error occurred in the http_request method')
+        return res.json()
 
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1836,11 +1866,7 @@ script:
             The total size of these attachments cannot exceed 15MB.
 
         demisto parameter: (list) additional_fields
-            List of ticket fields you wish to enter the value for.
-
-        demisto parameter: (list) additional_values
-            List of values that are assigned to the field at the same
-            list index in the additional_fields argument.
+            Additional ticket fields you wish to set the value of
 
         returns:
             Ticket Object
@@ -1889,15 +1915,10 @@ script:
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
 
-        demisto.log('update_ticket args: {}'.format(args))
-        demisto.log('update_ticket args json dumped: {}'.format(json.dumps(args)))
-
         response = None
         if not args.get('attachments'):
             # Send a request using our http_request wrapper
-
             response = http_request('PUT', endpoint_url, data=json.dumps(args))
-            # response = http_request('PUT', endpoint_url, data=args)
         else:
             # Get the files from their entry IDs
             attachments = entries_to_files(args.get('attachments'))
@@ -1915,11 +1936,14 @@ script:
         demisto parameter: (string) subject
             Update the ticket's subject field
 
-        demisto parameter: (number) status
-            Update the ticket's status. Possible values are 2,3,4,5,6,7
+        demisto parameter: (number,string) status
+            Update the ticket's status. Possible values are 2,3,4,5,6,7 or
+            'Open' , 'Pending', 'Resolved', 'Closed', 'Waiting on Customer',
+            'Waiting on Third Party'
 
-        demisto parameter: (number) priority
-            Update the ticket's priority. Possible values are 1,2,3,4
+        demisto parameter: (number,string) priority
+            Update the ticket's priority. Possible values are 1,2,3,4 or
+            'Low', 'Medium', 'High', 'Urgent'
 
         demisto parameter: (string) description
             The HTML content of the ticket
@@ -1935,12 +1959,9 @@ script:
             Update which group is assigned to respond to this ticket.
             Values can be either the group's ID number or name.
 
-        demisto parameter: (list) update_fields
-            List of additional ticket fields whose values you wish to update
-
-        demisto parameter: (list) update_values
-            List of values that are assigned to the ticket field at the
-            corresponding list index in the update_fields argument
+        demisto parameter: (list) additional_fields
+            Fields not included in the default command arguments that
+            you wish to enter the value for
 
         returns:
             Ticket specified by the ticket ID number with its updated values
@@ -2071,12 +2092,13 @@ script:
         ticket_id = demisto.args().get('id')
         # Make request
         response = delete_ticket(ticket_id)
+        response = get_ticket(demisto.args())
         ticket_context = {'ID': ticket_id, 'Deleted': 'true'}
         message = "Soft-Deleted Ticket #{}".format(ticket_id)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': ticket_context,
+            'Contents': response,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': message,
             'EntryContext': {
@@ -2293,7 +2315,7 @@ script:
         reply = ticket_reply(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in reply.iteritems() if val}
-        context = format_conversation_context(context)
+        context = reformat_conversation_context(context)
         # Parse attachments into context
         context = attachments_into_context(reply, context)
         context = reformat_ticket_context(context)
@@ -2375,7 +2397,7 @@ script:
         note = create_ticket_note(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in note.iteritems() if val}
-        context = format_conversation_context(context)
+        context = reformat_conversation_context(context)
         # Parse attachments into context
         context = attachments_into_context(note, context)
         context = reformat_ticket_context(context)
@@ -2417,7 +2439,7 @@ script:
         contexts = []
         for conversation in conversations:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
-            context = format_conversation_context(context)
+            context = reformat_conversation_context(context)
             # Parse attachments into context
             context = attachments_into_context(conversation, context)
             context = reformat_ticket_context(context)
@@ -2463,9 +2485,6 @@ script:
 
         demisto parameter: (number) phone
             phone number to filter contacts by
-
-        demisto parameter: (number) company_id
-            Company ID by which to filter the contacts
 
         demisto parameter: (string) state
             The state of contacts by which you want to filter the contacts. Values
@@ -2601,6 +2620,7 @@ script:
         for folder in cr_folders:
             # Parse individual contact response in context
             context = {string_to_context_key(key): val for key, val in folder.iteritems() if val}
+            context = reformat_canned_response_context(context)
             contexts.append(context)
         title = "All Canned Response Folders"
         human_readable = tableToMarkdown(title, contexts, removeNull=True)
@@ -2642,6 +2662,7 @@ script:
         contexts = []
         for cr in canned_responses.get('canned_responses'):
             context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
+            context = reformat_canned_response_context(context)
             contexts.append(context)
         title = "Canned Responses in Folder #{}".format(canned_responses.get('id'))
         human_readable = tableToMarkdown(title, contexts, removeNull=True)
@@ -2681,6 +2702,8 @@ script:
         contexts = []
         for cr in canned_responses:
             context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
+            context = reformat_canned_response_context(context)
+            context = attachments_into_context(cr, context)
             contexts.append(context)
         title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
         human_readable = tableToMarkdown(title, contexts, removeNull=True)
@@ -2840,9 +2863,6 @@ script:
     # Log exceptions
     except Exception as e:
         LOG(e)
-
-        ex_type, ex, tb = sys.exc_info()
-        traceback.print_tb(tb)
         return_error(e.message)
   type: python
 image: data:image/png;base64,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
