@@ -166,7 +166,7 @@ script:
         """
         Creating certificate
         """
-        ca_path = 'ca.cet'
+        ca_path = 'ca.cert'
         client_path = 'client.cert'
         client_key_path = 'client_key.key'
         if CA_CERT:
