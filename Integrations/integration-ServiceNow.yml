@@ -1453,7 +1453,7 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        return_error(e.message)
+        return_error(str(e.message))
   type: python
   commands:
   - name: servicenow-get-ticket
