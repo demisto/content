@@ -474,10 +474,9 @@ def main():
     ami.upload_mock_files(build_name, buildNumber)
 
     if get_content_branch() == 'master':
-        # TODO: Get new/updated mock files from remote machine
-        print "New/Updated mock files: {}".format("PLACEHOLDER")  # TODO: Remove placeholder
+        # TODO: Get new/updated mock file names.
         print "Pushing new/updated mock files to mock git repo."
-        # TODO: git commit + push mock files
+        # ami.upload_mock_files(build_name, buildNumber)
 
     os.remove(FILTER_CONF)
 
