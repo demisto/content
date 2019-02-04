@@ -75,10 +75,25 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     return yml_text, found_img_path
 
 
-def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data):
+def get_code_file(package_path, script_type):
+    """Return the first code file in the specified directory path
+
+    :param package_path: directory to search for code file
+    :type package_path: str
+    :param script_type: script type: .py or .js
+    :type script_type: str
+    :return: path to found code file
+    :rtype: str
+    """
+
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
+    return script_path
+
+
+def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data):
+    script_path = get_code_file(package_path, script_type)
     with open(script_path, 'r') as script_file:
         script_code = script_file.read()
 
