@@ -18,7 +18,7 @@ def extract_code(yml_path, output_path, demisto_mock, commonserver=None, yml_typ
             raise ValueError(
                 'Could not auto determine yml type ({}/{}) based on path: {}'.format(SCRIPT, INTEGRATION, yml_path))
     if commonserver is None:
-        commonserver = "CommonServerPython" not in yml_path 
+        commonserver = "CommonServerPython" not in yml_path
     with open(yml_path, 'rb') as yml_file:
         yml_data = yaml.safe_load(yml_file)
         script = yml_data['script']
