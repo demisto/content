@@ -249,6 +249,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -335,6 +338,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -411,7 +417,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -520,6 +526,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -541,13 +550,71 @@ tasks:
       }
     note: false
     timertriggers: []
+  "19":
+    id: "19"
+    taskid: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
+    type: regular
+    task:
+      id: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1165
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 5e5cdf32-5c9b-4721-8b65-1c498fda0c92
+    type: regular
+    task:
+      id: 5e5cdf32-5c9b-4721-8b65-1c498fda0c92
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all: {}
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1655,
-        "width": 1240,
+        "height": 1910,
+        "width": 1280,
         "x": 50,
         "y": 50
       }
