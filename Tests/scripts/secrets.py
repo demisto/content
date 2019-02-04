@@ -1,9 +1,9 @@
 import io
 import os
-import math
-import string
 import re
+import math
 import json
+import string
 import PyPDF2
 import validate_files_structure
 
@@ -39,6 +39,25 @@ DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6
 # disable-secrets-detection-end
 
 
+def get_all_diff_text_files(branch_name, is_circle):
+    """
+    Get all new/modified text files that need to be searched for secrets
+    :param branch_name: current branch being worked on
+    :param is_circle: boolean to check if being ran from circle
+    :return: list: list of text files
+    """
+    if is_circle:
+        branch_changed_files_string = \
+            validate_files_structure.run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+        text_files_list = get_diff_text_files(branch_changed_files_string)
+
+    else:
+        local_changed_files_string = validate_files_structure.run_git_command("git diff --name-status --no-merges HEAD")
+        text_files_list = get_diff_text_files(local_changed_files_string)
+
+    return text_files_list
+
+
 def is_text_file(file_path):
     file_extension = os.path.splitext(file_path)[1]
     if file_extension in TEXT_FILE_TYPES:
@@ -69,25 +88,6 @@ def get_diff_text_files(files_string):
     return text_files_list
 
 
-def get_all_diff_text_files(branch_name, is_circle):
-    """
-    Get all new/modified text files that need to be searched for secrets
-    :param branch_name: current branch being worked on
-    :param is_circle: boolean to check if being ran from circle
-    :return: list: list of text files
-    """
-    if is_circle:
-        branch_changed_files_string = \
-            validate_files_structure.run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-        text_files_list = get_diff_text_files(branch_changed_files_string)
-
-    else:
-        local_changed_files_string = validate_files_structure.run_git_command("git diff --name-status --no-merges HEAD")
-        text_files_list = get_diff_text_files(local_changed_files_string)
-
-    return text_files_list
-
-
 def search_potential_secrets(secrets_file_paths):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
@@ -105,48 +105,46 @@ def search_potential_secrets(secrets_file_paths):
         skip_secrets = False
         file_path_temp, file_extension = os.path.splitext(file_path)
 
+        # get file contents
+        file_contents = get_file_contents(file_path, file_extension)
+
         # if py/js file, search for yml in order to retrieve temp white list
         if file_extension in {'.py', '.js'}:
             yml_file_contents = retrieve_related_yml(file_path_temp)
 
-        # if pdf file, parse text
-
-        # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
-        with io.open('./' + file_path, mode="r", encoding="utf-8") as commited_file:
-            file_contents = commited_file.read()
-
-            # Add all context output paths keywords to whitelist temporary
+        # Add all context output paths keywords to whitelist temporary
+        if file_extension == '.yml' or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
 
-            # Search by lines after strings with high entropy as possibly suspicious
-            for line in file_contents.split('\n'):
+        # Search by lines after strings with high entropy as possibly suspicious
+        for line in file_contents.split('\n'):
 
-                # if detected disable-secrets comment, skip the line
-                if bool(re.findall(r'(disable-secrets-detection-start)', line)):
-                    skip_secrets = True
-                if bool(re.findall(r'(disable-secrets-detection-end)', line)):
-                    skip_secrets = False
-                if skip_secrets or bool(re.findall(r'(disable-secrets-detection)', line)):
-                    continue
+            # if detected disable-secrets comment, skip the line
+            if bool(re.findall(r'(disable-secrets-detection-start)', line)):
+                skip_secrets = True
+            if bool(re.findall(r'(disable-secrets-detection-end)', line)):
+                skip_secrets = False
+            if skip_secrets or bool(re.findall(r'(disable-secrets-detection)', line)):
+                continue
 
-                # REGEX scanning for IOCs and false positive groups
-                potential_secrets, false_positives = regex_for_secrets(line)
-                for potential_secret in potential_secrets:
-                    if not any(white_list_string in potential_secret for white_list_string in secrets_white_list):
-                        secrets_found_with_regex.append(potential_secret)
-                # added false positives into white list array before testing the strings in line
-                secrets_white_list = secrets_white_list.union(false_positives)
+            # REGEX scanning for IOCs and false positive groups
+            potential_secrets, false_positives = regex_for_secrets(line)
+            for potential_secret in potential_secrets:
+                if not any(white_list_string in potential_secret for white_list_string in secrets_white_list):
+                    secrets_found_with_regex.append(potential_secret)
+            # added false positives into white list array before testing the strings in line
+            secrets_white_list = secrets_white_list.union(false_positives)
 
-                # calculate entropy for each string in the file
-                for string_ in line.split():
-                    string_ = string_.strip("\"()[],'><:;\\")
-                    string_lower = string_.lower()
-                    # compare the lower case of the string against both generic whitelist & temp white list
-                    if not any(white_list_string in string_lower for white_list_string in secrets_white_list):
-                        entropy = calculate_shannon_entropy(string_)
-                        if entropy >= ENTROPY_THRESHOLD:
-                            high_entropy_strings.append(string_)
+            # calculate entropy for each string in the file
+            for string_ in line.split():
+                string_ = string_.strip("\"()[],'><:;\\")
+                string_lower = string_.lower()
+                # compare the lower case of the string against both generic whitelist & temp white list
+                if not any(white_list_string in string_lower for white_list_string in secrets_white_list):
+                    entropy = calculate_shannon_entropy(string_)
+                    if entropy >= ENTROPY_THRESHOLD:
+                        high_entropy_strings.append(string_)
 
         if high_entropy_strings or secrets_found_with_regex:
             # uniquify identical matches between lists
@@ -212,7 +210,7 @@ def regex_for_secrets(file_contents):
 
 def calculate_shannon_entropy(data):
     """Algorithm to determine the randomness of a given data.
-    Higher is more random/complex, most English words will yield result of around 3+-
+    Higher is more random/complex, most English words will yield in average result of 3
     :param data: could be either a list/dict or a string.
     :return: entropy: entropy score.
     """
@@ -250,3 +248,30 @@ def get_secrets(branch_name, is_circle):
 def get_white_list():
     with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
         return set(json.load(secrets_white_list_file))
+
+
+def extract_text_from_pdf(file_path):
+    page_num = 0
+    file_contents = ''
+    pdf_file_obj = open('./' + file_path, 'rb')
+    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+    num_pages = pdf_reader.numPages
+
+    while page_num < num_pages:
+        pdf_page = pdf_reader.getPage(page_num)
+        page_num += 1
+        file_contents += pdf_page.extractText()
+
+    return file_contents
+
+
+def get_file_contents(file_path, file_extension):
+    # if pdf file, parse text
+    if file_extension == '.pdf':
+        file_contents = extract_text_from_pdf(file_path)
+    else:
+        # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
+        with io.open('./' + file_path, mode="r", encoding="utf-8") as commited_file:
+            file_contents = commited_file.read()
+
+    return file_contents
