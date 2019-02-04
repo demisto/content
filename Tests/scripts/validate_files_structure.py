@@ -324,13 +324,6 @@ def is_existing_image(file_path):
     return is_image_in_package or is_image_in_yml
 
 
-def intersection(lst1, lst2):
-    # Use of hybrid method
-    temp = set(lst2)
-    lst3 = [value for value in lst1 if value in temp]
-    return lst3
-
-
 def get_modified_and_added_files(branch_name, is_circle):
     all_changed_files_string = run_git_command("git diff --name-status origin/master".format(branch_name))
 
