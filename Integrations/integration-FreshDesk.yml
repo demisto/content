@@ -552,7 +552,7 @@ script:
     execution: false
     name: fd-list-groups
     outputs:
-    - {contextPath: FD.Group.AgentIDs, description: Array of agent user IDs separated
+    - {contextPath: FD.Group.AgentID, description: Array of agent user IDs separated
         by commas., type: Unknown}
     - {contextPath: FD.Group.AutoTicketAssign, description: Set to true if automatic
         ticket assignment has been enabled. Automatic ticket assignment is only available
@@ -2667,7 +2667,15 @@ script:
         contexts = []
         for group in groups:
             # Parse individual group response in context
-            context = {string_to_context_key(key): val for key, val in group.iteritems() if val}
+            context = {}
+            for key, val in group.iteritems():
+                if val:
+                    if key == 'agent_ids':
+                        key = 'agent_id'
+                    new_key = string_to_context_key(key)
+                    if 'Id' in new_key:
+                        new_key = new_key.replace('Id', 'ID')
+                    context[new_key] = val
             contexts.append(context)
         title = "All Groups"
         human_readable = tableToMarkdown(title, contexts, removeNull=True)
