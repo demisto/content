@@ -4,7 +4,7 @@ import re
 import math
 import json
 import string
-#import PyPDF2
+# import PyPDF2
 import validate_files_structure
 
 # secrets settings
@@ -251,7 +251,7 @@ def get_white_list():
 
 
 def extract_text_from_pdf(file_path):
-    #page_num = 0
+    # page_num = 0
     file_contents = ''
     # pdf_file_obj = open('./' + file_path, 'rb')
     # pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
