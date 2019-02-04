@@ -55,6 +55,5 @@ outputs:
 - contextPath: URL.Data
   description: Shortened URL
 scripttarget: 0
-releaseNotes: "-"
 tests:
   - "No test"

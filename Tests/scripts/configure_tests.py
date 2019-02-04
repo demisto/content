@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import json
+import glob
 import argparse
 from subprocess import Popen, PIPE
 
@@ -20,18 +21,26 @@ NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
-SCRIPT_REGEX = "scripts.*script-.*.yml"
-PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "integrations.*integration-.*.yml"
-TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
-BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
-BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
-BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
+SCRIPT_PY_REGEX = r"scripts.*\.py$"
+SCRIPT_JS_REGEX = r"scripts.*\.js$"
+SCRIPT_YML_REGEX = r"scripts.*\.yml$"
+SCRIPT_REGEX = r"scripts.*script-.*\.yml$"
+INTEGRATION_PY_REGEX = r"integrations.*\.py$"
+INTEGRATION_JS_REGEX = r"integrations.*\.js$"
+INTEGRATION_YML_REGEX = r"integrations.*\.yml$"
+PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml$"
+INTEGRATION_REGEX = r"integrations.*integration-.*\.yml$"
+TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml$"
+TEST_NOT_PLAYBOOK_REGEX = r"TestPlaybooks.(?!playbook).*-.*\.yml$"
+BETA_SCRIPT_REGEX = r"beta_integrations.*script-.*\.yml$"
+BETA_PLAYBOOK_REGEX = r"beta_integrations.*playbook-.*\.yml$"
+BETA_INTEGRATION_REGEX = r"beta_integrations.*integration-.*\.yml$"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
+                         INTEGRATION_YML_REGEX]
 
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 # File type regex
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
@@ -101,6 +110,10 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path, CODE_FILES_REGEX):
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -200,16 +213,16 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     integration_to_command = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
-        test_playbook_id = test_playbook.keys()[0]
         test_playbook_data = test_playbook.values()[0]
+        test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
-                tests_set.add(test_playbook_id)
+                tests_set.add(test_playbook_name)
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
-                tests_set.add(test_playbook_id)
+                tests_set.add(test_playbook_name)
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
@@ -220,7 +233,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
 
-                            tests_set.add(test_playbook_id)
+                            tests_set.add(test_playbook_name)
                             catched_intergrations.add(integration_id)
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
@@ -300,7 +313,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist, please re-check your code".format(test)
+                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 
