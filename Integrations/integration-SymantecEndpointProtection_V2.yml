@@ -836,6 +836,7 @@ script:
         entry_context = []
         filtered_json_response = json_response.get('content')
         for content in filtered_json_response:
+            content['macAddresses'] = list(set(content.get('macAddresses')))    # used `set` on the mac address list as it sometimes contained duplicated values
             entry_context.append({
                 'Hostname': content.get('computerName'),
                 'Domain': content.get('domainOrWorkgroup'),
