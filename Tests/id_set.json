@@ -506,11 +506,11 @@
         }, 
         {
             "ParseEmailFiles": {
-                "name": "ParseEmailFiles", 
+                "name": "ParseEmailFiles",
                 "script_executions": [
-                    "getEntry", 
-                    "getFilePath"
-                ], 
+                    "getEntry",
+                    "getFilePath"                    
+                ],
                 "tests": [
                     "ParseEmailFiles-test"
                 ]
@@ -1717,7 +1717,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -4340,7 +4343,11 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains"
+                "name": "StringContains", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {
@@ -4837,6 +4844,84 @@
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
+            }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
+            }
+        }, 
+        {
+            "HighlightWords": {
+                "name": "HighlightWords", 
+                "tests": [
+                    "HighlightWords_Test"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureURLRiskList": {
+                "name": "RecordedFutureURLRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureIPRiskList": {
+                "name": "RecordedFutureIPRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureDomainRiskList": {
+                "name": "RecordedFutureDomainRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureHashRiskList": {
+                "name": "RecordedFutureHashRiskList", 
+                "script_executions": [
+                    "createNewIndicator"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureVulnerabilityRiskList": {
+                "name": "RecordedFutureVulnerabilityRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
             }
         }
     ], 
@@ -5390,7 +5475,10 @@
                 "implementing_scripts": [
                     "Print", 
                     "CloseInvestigationAsDuplicate", 
-                    "GetDuplicatesMl"
+                    "GetDuplicatesMlv2"
+                ], 
+                "tests": [
+                    "No Test"
                 ]
             }
         }, 
@@ -5919,7 +6007,10 @@
                 "command_to_integration": {
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream"
-                }
+                }, 
+                "tests": [
+                    "Test-Detonate URL - Crowdstrike"
+                ]
             }
         }, 
         {
@@ -6079,8 +6170,11 @@
                 "implementing_playbooks": [
                     "ATD - Detonate File"
                 ], 
-                "implementing_commands": [
-                    "dxl-send-event"
+                "command_to_integration": {
+                    "dxl-send-event": "McAfee DXL"
+                }, 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6397,7 +6491,10 @@
                 "fromversion": "3.5.0", 
                 "command_to_integration": {
                     "archer-get-file": "RSA Archer"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -8395,8 +8492,7 @@
                 ], 
                 "tests": [
                     "VxStream Test", 
-                    "detonate_file_-_generic_test", 
-                    "detonate_url_-_generic_test"
+                    "detonate_file_-_generic_test"
                 ]
             }
         }, 
@@ -8966,7 +9062,28 @@
                     "domain", 
                     "ip", 
                     "file", 
-                    "recorded-future-get-related-entities"
+                    "recorded-future-get-related-entities", 
+                    "url", 
+                    "recorded-future-get-threats-hash", 
+                    "recorded-future-get-threats-ip", 
+                    "recorded-future-get-threats-url", 
+                    "recorded-future-get-threats-domain", 
+                    "recorded-future-get-threats-vulnerabilities", 
+                    "recorded-future-get-domain-risklist", 
+                    "recorded-future-get-url-risklist", 
+                    "recorded-future-get-ip-risklist", 
+                    "recorded-future-get-vulnerability-risklist", 
+                    "recorded-future-get-hash-risklist", 
+                    "recorded-future-get-domain-riskrules", 
+                    "recorded-future-get-hash-riskrules", 
+                    "recorded-future-get-ip-riskrules", 
+                    "recorded-future-get-url-riskrules", 
+                    "recorded-future-get-vulnerability-riskrules", 
+                    "recorded-future-get-alert-rules", 
+                    "recorded-future-get-alerts"
+                ], 
+                "tests": [
+                    "Recorded Future Test"
                 ]
             }
         }, 
@@ -9490,6 +9607,9 @@
                     "cs-indicators", 
                     "cs-reports", 
                     "cs-report-pdf"
+                ], 
+                "tests": [
+                    "CrowdStrike Falcon Intel v2"
                 ]
             }
         }, 
@@ -10234,6 +10354,15 @@
                     "panorama-create-address-group", 
                     "panorama-delete-address-group", 
                     "panorama-edit-address-group", 
+                    "panorama-list-services", 
+                    "panorama-get-service", 
+                    "panorama-create-service", 
+                    "panorama-delete-service", 
+                    "panorama-list-service-groups", 
+                    "panorama-get-service-group", 
+                    "panorama-create-service-group", 
+                    "panorama-delete-service-group", 
+                    "panorama-edit-service-group", 
                     "panorama-get-custom-url-category", 
                     "panorama-create-custom-url-category", 
                     "panorama-delete-custom-url-category", 
@@ -10522,7 +10651,8 @@
                     "servicenow-query-computers", 
                     "servicenow-query-groups", 
                     "servicenow-query-users", 
-                    "servicenow-get-table-name"
+                    "servicenow-get-table-name", 
+                    "servicenow-get-ticket-notes"
                 ], 
                 "tests": [
                     "No test - Hibernating instance"
@@ -10781,7 +10911,8 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
                     "ews-o365-get-compliance-search-purge-status", 
-                    "ews-get-autodiscovery-config"
+                    "ews-get-autodiscovery-config", 
+                    "ews-expand-group"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -11982,6 +12113,8 @@
             "CopyContextToFieldTest": {
                 "name": "CopyContextToFieldTest", 
                 "implementing_scripts": [
+                    "DeleteContext", 
+                    "Sleep", 
                     "Set", 
                     "PrintErrorEntry", 
                     "CopyContextToField"
@@ -12708,21 +12841,25 @@
                 "command_to_integration": {
                     "panorama-list-applications": "", 
                     "panorama-create-rule": "", 
-                    "panorama-delete-rule": "", 
+                    "panorama-list-address-groups": "", 
                     "panorama-create-address-group": "", 
                     "panorama-list-addresses": "", 
                     "panorama-get-address-group": "", 
                     "panorama-get-url-category": "", 
+                    "panorama-delete-rule": "", 
                     "panorama": "", 
                     "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
                     "panorama-get-url-filter": "", 
-                    "panorama-list-address-groups": "", 
+                    "panorama-delete-address": "", 
                     "panorama-get-custom-url-category": "", 
                     "panorama-edit-address-group": "", 
-                    "panorama-create-address": "", 
-                    "panorama-delete-address-group": "", 
                     "panorama-move-rule": "", 
-                    "panorama-delete-address": ""
+                    "panorama-delete-service-group": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-create-address": "", 
+                    "panorama-list-services": "", 
+                    "panorama-create-service-group": ""
                 }
             }
         }, 
@@ -12762,7 +12899,7 @@
                 ], 
                 "command_to_integration": {
                     "joe-download-report": "Joe Security", 
-                    "joe-is-online": "Joe Security", 
+                    "joe-is-online": "", 
                     "joe-analysis-info": "Joe Security", 
                     "joe-search": "Joe Security", 
                     "joe-analysis-submit-sample": "Joe Security", 
@@ -13074,11 +13211,12 @@
                 "command_to_integration": {
                     "Exception": "Exception", 
                     "ews-get-out-of-office": "", 
-                    "ews-get-searchable-mailboxes": "", 
+                    "ews-expand-group": "", 
                     "ews-find-folders": "", 
                     "ews-get-items": "", 
                     "ews-get-contacts": "", 
                     "ews-get-attachment": "", 
+                    "ews-get-searchable-mailboxes": "", 
                     "ews-search-mailboxes": ""
                 }
             }
@@ -13818,22 +13956,29 @@
                     "DeleteContext", 
                     "Sleep"
                 ], 
+                "implementing_playbooks": [
+                    "PanoramaCommitConfiguration"
+                ], 
                 "command_to_integration": {
                     "panorama-list-applications": "", 
                     "panorama-create-rule": "", 
                     "panorama-commit": "", 
-                    "panorama-delete-rule": "", 
+                    "panorama-create-service": "", 
                     "panorama-create-address-group": "", 
                     "panorama-get-address-group": "", 
                     "panorama-move-rule": "", 
+                    "panorama-delete-rule": "", 
                     "panorama": "", 
                     "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
                     "panorama-get-url-filter": "", 
+                    "panorama-get-service": "", 
                     "panorama-list-address-groups": "", 
                     "panorama-get-custom-url-category": "", 
                     "panorama-create-address": "", 
                     "panorama-delete-address-group": "", 
                     "panorama-list-addresses": "", 
+                    "panorama-delete-service": "", 
                     "panorama-delete-address": ""
                 }
             }
@@ -14956,13 +15101,28 @@
             "Recorded Future Test": {
                 "name": "Recorded Future Test", 
                 "implementing_scripts": [
-                    "VerifyContext"
+                    "FetchFromInstance", 
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
+                    "recorded-future-get-threats-url": "Recorded Future", 
+                    "recorded-future-get-threats-domain": "Recorded Future", 
+                    "url": "Recorded Future", 
                     "ip": "Recorded Future", 
+                    "recorded-future-get-threats-hash": "Recorded Future", 
                     "domain": "Recorded Future", 
+                    "recorded-future-get-alerts": "Recorded Future", 
+                    "recorded-future-get-threats-vulnerabilities": "Recorded Future", 
                     "recorded-future-get-related-entities": "Recorded Future", 
-                    "file": "Recorded Future"
+                    "recorded-future-get-vulnerability-riskrules": "Recorded Future", 
+                    "recorded-future-get-domain-riskrules": "Recorded Future", 
+                    "file": "Recorded Future", 
+                    "recorded-future-get-threats-ip": "Recorded Future", 
+                    "recorded-future-get-url-riskrules": "Recorded Future", 
+                    "recorded-future-get-alert-rules": "Recorded Future", 
+                    "recorded-future-get-ip-riskrules": "Recorded Future", 
+                    "recorded-future-get-hash-riskrules": "Recorded Future"
                 }
             }
         }, 
@@ -15573,6 +15733,40 @@
                 "command_to_integration": {
                     "query": "mysql"
                 }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - Crowdstrike": {
+                "name": "Test-Detonate URL - Crowdstrike", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike"
+                ]
+            }
+        }, 
+        {
+            "HighlightWords_Test": {
+                "name": "HighlightWords - Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "HighlightWords"
+                ]
             }
         }
     ]

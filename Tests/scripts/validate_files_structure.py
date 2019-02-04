@@ -49,25 +49,25 @@ MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
 
 # file types regexes
-IMAGE_REGEX = ".*.png"
-SCRIPT_YML_REGEX = "{}.*.yml".format(SCRIPTS_DIR)
-SCRIPT_PY_REGEX = "{}.*.py".format(SCRIPTS_DIR)
-SCRIPT_JS_REGEX = "{}.*.js".format(SCRIPTS_DIR)
-INTEGRATION_YML_REGEX = "{}.*.yml".format(INTEGRATIONS_DIR)
-INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
-PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
-TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
-TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
-SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
-WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
-DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
-CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
-LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
-INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
-MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
-REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+IMAGE_REGEX = r".*\.png"
+SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
+PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+SCRIPT_REGEX = r"{}.*script-.*\.yml".format(SCRIPTS_DIR)
+WIDGETS_REGEX = r"{}.*widget-.*\.json".format(WIDGETS_DIR)
+DASHBOARD_REGEX = r"{}.*dashboard-.*\.json".format(DASHBOARDS_DIR)
+CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json".format(CONNECTIONS_DIR)
+CLASSIFIER_REGEX = r"{}.*classifier-.*\.json".format(CLASSIFIERS_DIR)
+LAYOUT_REGEX = r"{}.*layout-.*\.json".format(LAYOUTS_DIR)
+INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
+MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
+REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
@@ -83,6 +83,7 @@ REGEXES_TO_SCHEMA_DIC = {
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "test-playbook",
     SCRIPT_REGEX: "script",
+    SCRIPT_YML_REGEX: "script",
     WIDGETS_REGEX: "widget",
     DASHBOARD_REGEX: "dashboard",
     CONNECTIONS_REGEX: "canvas-context-connections",
@@ -382,14 +383,20 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
-    is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
+    file_extension = os.path.splitext(file_path)[1]
+    version_number = -1
+    if file_extension == '.yml':
+        yaml_dict = get_json(file_path)
+        version_number = yaml_dict.get('commonfields', {}).get('version')
+    elif file_extension == '.json':
+        if checked_type(file_path):
+            with open("./" + file_path) as json_file:
+                json_dict = json.load(json_file)
+                version_number = json_dict.get('version')
 
-    if is_incorrect_version or is_incorrect_version_secondary:
+    if version_number != -1:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
         return True
-
     return False
 
 
@@ -514,7 +521,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
     has_schema_problem = False
     for file_path in added_files:
         print "Validating {}".format(file_path)
-        if not validate_schema(file_path):
+        if not validate_schema(file_path) or validate_version(file_path):
             has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
@@ -557,7 +564,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
         elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            yml_path, code = get_script_package_data(os.path.dirname(file_path) + '/')
             script_data = get_script_data(yml_path, script_code=code)
 
             if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
