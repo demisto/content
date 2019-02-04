@@ -2,10 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: ronykoz/content-build-node911:latest
+      - image: devdemisto/content-build:latest
     environment:
       CONTENT_VERSION: "19.1.2"
-      GIT_SHA1: "806824e9fbcf7753591b4c110368877acf89eb00" # guardrails-disable-line
+      GIT_SHA1: "806824e9fbcf7753591b4c110368877acf89eb00" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
@@ -19,7 +19,7 @@ jobs:
               sudo pip install flake8
       - add_ssh_keys:
           fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
+              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
       - run:
           name: Validate Files and Yaml
           command: |
