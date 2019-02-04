@@ -506,11 +506,11 @@
         }, 
         {
             "ParseEmailFiles": {
-                "name": "ParseEmailFiles",
+                "name": "ParseEmailFiles", 
                 "script_executions": [
-                    "getEntry",
-                    "getFilePath"                    
-                ],
+                    "getEntry", 
+                    "getFilePath"
+                ], 
                 "tests": [
                     "ParseEmailFiles-test"
                 ]
@@ -11687,10 +11687,9 @@
                     "intsights-get-alert-takedown-status", 
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
-                    "intsights-close-alert"
-                ], 
-                "tests": [
-                    "IntSights Test"
+                    "intsights-close-alert", 
+                    "intsights-mssp-get-sub-accounts", 
+                    "intsights-mssp-test"
                 ]
             }
         }, 
@@ -15791,6 +15790,18 @@
                     "http", 
                     "AreValuesEqual"
                 ]
+            }
+        }, 
+        {
+            "IntSights Mssp Test": {
+                "name": "IntSights Mssp Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ], 
+                "command_to_integration": {
+                    "intsights-mssp-test": ""
+                }
             }
         }
     ]
