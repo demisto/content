@@ -220,6 +220,14 @@
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Test",
+            "instance_names": "intsights_standard_account",
+            "nightly": true,
+            "timeout": 500
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Mssp Test",
+            "instance_names": "intsights_mssp_account",
             "nightly": true,
             "timeout": 500
         },
