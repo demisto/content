@@ -1671,3 +1671,6 @@ script:
     description: Tests intsights mssp features, should be an mssp account.
   isfetch: true
   runonce: false
+tests:
+  - IntSights Test
+  - IntSights Mssp Test
