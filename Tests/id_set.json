@@ -2608,6 +2608,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
+                ], 
+                "tests": [
+                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
