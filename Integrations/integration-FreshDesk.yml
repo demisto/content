@@ -1035,8 +1035,12 @@ script:
       name: custom_query
       predefined: []
       required: false
-    description: List all tickets that match the filter criteria you specify. If no
-      filters are specified, all tickets from the last 30 days will be listed.
+    description: "List all tickets that match the filter criteria you specify. If\
+      \ no filters are specified, all tickets from the last 30 days will be listed.\
+      \ \n\nNote that this command can consume multiple API credits - this can occur\
+      \ if the count of tickets resulting from your query exceeds 30 - in that instance\
+      \ this command makes additional calls to the API to retrieve additional tickets\
+      \ matching your query."
     execution: false
     name: fd-search-tickets
     outputs:
@@ -1267,12 +1271,14 @@ script:
 
         new_context = {}
         new_context['AdditionalFields'] = context.get('AdditionalFields') if context.get('AdditionalFields') else {}
+        additional_fields = {}
         for key, val in context.iteritems():
             if key not in standard_context_outputs:
                 if not ((isinstance(val, list) or isinstance(val, dict)) and len(val) == 0):
-                    new_context['AdditionalFields'][key] = val
+                    additional_fields[key] = val
             else:
                 new_context[key] = val
+        new_context['AdditionalFields'] = dict(new_context.get('AdditionalFields'), **additional_fields)
         return new_context
 
 
@@ -1340,10 +1346,13 @@ script:
         attachment_keys_to_include = [
             'attachment_url', 'content_type', 'id', 'name', 'size'
         ]
+
+        context_readable = dict(**context)
         # Parse attachments into context
         attachments = api_response.get('attachments')
         if attachments:
             attachments_context = []
+            attachments_context_readable = []
             for attachment in attachments:
                 attachment_context = {}
                 for key, val in attachment.iteritems():
@@ -1357,9 +1366,51 @@ script:
                         attachment_context[key] = val
                 attachment_formatted = formatCell(attachment_context).split('\n')
                 attachment_formatted = ', '.join(attachment_formatted)
-                attachments_context.append(attachment_formatted)
+                attachments_context_readable.append(attachment_formatted)
+
+                attachments_context.append(attachment_context)
             context['Attachment'] = attachments_context
-        return context
+            context_readable['Attachment'] = attachments_context_readable
+        return context, context_readable
+
+
+    # def attachments_to_humanreadable_context(api_response, context):
+    #     """
+    #     Get the attachments field from the api_response argument if present and parse it into the context.
+    #
+    #     parameter: (dict) api_response
+    #         The json response returned by the calling function's associated 'requests' function in which calls
+    #         to the API are made.
+    #
+    #     parameter: (dict) context
+    #         The context that will be modified and returned to the war room
+    #
+    #     returns:
+    #         The modified context
+    #     """
+    #     attachment_keys_to_include = [
+    #         'attachment_url', 'content_type', 'id', 'name', 'size'
+    #     ]
+    #     # Parse attachments into context
+    #     attachments = api_response.get('attachments')
+    #     if attachments:
+    #         attachments_context = []
+    #         for attachment in attachments:
+    #             attachment_context = {}
+    #             for key, val in attachment.iteritems():
+    #                 if key in attachment_keys_to_include:
+    #                     if key == 'attachment_url':
+    #                         key = 'AttachmentURL'
+    #                     elif key == 'id':
+    #                         key = 'ID'
+    #                     else:
+    #                         key = string_to_context_key(key)
+    #                     attachment_context[key] = val
+    #             attachment_formatted = formatCell(attachment_context).split('\n')
+    #             attachment_formatted = ', '.join(attachment_formatted)
+    #             attachments_context.append(attachment_formatted)
+    #         context['Attachment'] = attachments_context
+    #     return context
 
 
     def additional_fields_to_context(context, already_in_context, additional_fields, additional_values):
@@ -1950,13 +2001,13 @@ script:
         # Parse response into context
         include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
 
-        # context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val}
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
-        context = attachments_into_context(ticket, context)
+        context, context_readable = attachments_into_context(ticket, context)
         context = reformat_ticket_context(context)
+        context_readable = reformat_ticket_context(context_readable)
         title = "Newly Created Ticket #{}".format(context.get('ID'))
-        human_readable = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context_readable, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2044,15 +2095,15 @@ script:
         include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
         include_in_context.append('updated_at')
         # Parse default context fields
-        # context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val}
         # Parse additional fields into context
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_fields_values)
         # Parse attachments into context
-        context = attachments_into_context(ticket, context)
+        context, context_readable = attachments_into_context(ticket, context)
         context = reformat_ticket_context(context)
+        context_readable = reformat_ticket_context(context_readable)
         title = "Ticket #{} Updated".format(context.get('ID'))
-        human_readable = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context_readable, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2115,7 +2166,7 @@ script:
         }
 
         # Parse attachments into context
-        context = attachments_into_context(ticket, context)
+        context, context_readable = attachments_into_context(ticket, context)
 
         context['AdditionalFields'] = {}
         requester = ticket.get('requester')
@@ -2131,9 +2182,9 @@ script:
             context['AdditionalFields']['Deleted'] = False
 
         context = reformat_ticket_context(context)
+        context_readable = reformat_ticket_context(context_readable)
         title = "Viewing Ticket #{}".format(ticket.get('id'))
-        human_readable = tableToMarkdown(title, context, removeNull=True)
-        demisto.log(human_readable)
+        human_readable = tableToMarkdown(title, context_readable, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2291,12 +2342,13 @@ script:
 
         # Parse response into context
         contexts = []
+        readable_contexts = []
         for ticket in tickets:
             # Parse ticket into the standard outputs
             context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in context_outputs}
 
             # Parse ticket attachments into context
-            context = attachments_into_context(ticket, context)
+            context, context_readable = attachments_into_context(ticket, context)
 
             # Parse ticket for the additionally requested fields
             context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
@@ -2309,6 +2361,8 @@ script:
                 stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
                 context['AdditionalFields']['Stats'] = stats_context
 
+            context_readable = reformat_ticket_context(context_readable)
+            readable_contexts.append(context_readable)
             context = reformat_ticket_context(context)
             contexts.append(context)
 
@@ -2317,7 +2371,7 @@ script:
             'Source', 'CreatedAt', 'UpdatedAt', 'Tag', 'AdditionalFields', 'Attachment'
         ]
         title = "Viewing All Requested Tickets"
-        human_readable = tableToMarkdown(title, contexts, headers=table_headers, removeNull=True)
+        human_readable = tableToMarkdown(title, readable_contexts, headers=table_headers, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2391,14 +2445,15 @@ script:
         context = {string_to_context_key(key): val for key, val in reply.iteritems() if val}
         context = reformat_conversation_context(context)
         # Parse attachments into context
-        context = attachments_into_context(reply, context)
+        context, context_readable = attachments_into_context(reply, context)
         context = reformat_ticket_context(context)
+        context_readable = reformat_ticket_context(context_readable)
         complete_context = {
             'ID': int(reply.get('ticket_id')),
             'Conversation': context
         }
         title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
-        human_readable = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context_readable, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2477,14 +2532,15 @@ script:
         context = {string_to_context_key(key): val for key, val in note.iteritems() if val}
         context = reformat_conversation_context(context)
         # Parse attachments into context
-        context = attachments_into_context(note, context)
+        context, context_readable = attachments_into_context(note, context)
         context = reformat_ticket_context(context)
+        context_readable = reformat_ticket_context(context_readable)
         complete_context = {
             'ID': int(note.get('ticket_id')),
             'Conversation': context
         }
         title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
-        human_readable = tableToMarkdown(title, context, removeNull=True)
+        human_readable = tableToMarkdown(title, context_readable, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2519,19 +2575,22 @@ script:
         conversations = get_ticket_conversations(ticket_id)
         # Parse response into context
         contexts = []
+        readable_contexts = []
         for conversation in conversations:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
             context = reformat_conversation_context(context)
             # Parse attachments into context
-            context = attachments_into_context(conversation, context)
+            context, context_readable = attachments_into_context(conversation, context)
             context = reformat_ticket_context(context)
+            context_readable = reformat_ticket_context(context_readable)
             contexts.append(context)
+            readable_contexts.append(context_readable)
         complete_context = {
             'ID': int(ticket_id),
             'Conversation': contexts
         }
         title = 'Conversations of Ticket #{}'.format(ticket_id)
-        human_readable = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, readable_contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2786,13 +2845,15 @@ script:
         canned_responses = get_canned_response_folder(cr_folder_id)
         # Parse the responses into context
         contexts = []
+        readable_contexts = []
         for cr in canned_responses:
             context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
             context = reformat_canned_response_context(context)
-            context = attachments_into_context(cr, context)
+            context, context_readable = attachments_into_context(cr, context)
             contexts.append(context)
+            readable_contexts.append(context_readable)
         title = "Details of Canned Responses in CR Folder #{}".format(cr_folder_id)
-        human_readable = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, readable_contexts, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
