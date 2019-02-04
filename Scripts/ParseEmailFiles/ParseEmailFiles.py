@@ -7,6 +7,7 @@ from base64 import b64decode
 import sys
 import email.utils
 from email.parser import HeaderParser
+import traceback
 
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
@@ -3329,7 +3330,8 @@ def main():
 
         file_type = result[0]['FileMetadata']['info']
     except Exception, ex:
-        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex.message))
+        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
+                     str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
 
     try:
         file_type_lower = file_type.lower()
@@ -3338,7 +3340,7 @@ def main():
             handle_msg(file_path)
             return
 
-        elif 'rfc 822 mail' in file_type_lower or 'smpt mail' in file_type_lower:
+        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower:
             handle_eml(file_path)
             return
 
@@ -3366,7 +3368,7 @@ def main():
             return_error("Unknown file format: " + file_type)
 
     except Exception, ex:
-        return_error(ex.message)
+        return_error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
 
 
 if __name__ == "__builtin__":
