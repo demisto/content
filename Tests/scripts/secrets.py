@@ -9,7 +9,7 @@ import validate_files_structure
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 3.4
+ENTROPY_THRESHOLD = 3.8
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
 ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf'}
@@ -155,7 +155,7 @@ def search_potential_secrets(secrets_file_paths):
 
 
 def create_temp_white_list(file_contents):
-    temp_white_list = set([])
+    temp_white_list = set()
     context_paths = re.findall(r'contextPath: (\S+\.+\S+)', file_contents)
     for context_path in context_paths:
         context_path = context_path.split('.')
