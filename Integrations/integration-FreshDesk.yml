@@ -774,9 +774,9 @@ script:
         Ticket permission of the agent
         (1 -> Global Access, 2 -> Group Access, 3 -> Restricted Access)
       type: Number
-    - {contextPath: FD.Agent.GroupIDs, description: Group IDs associated with the
-        agent, type: Unknown}
-    - {contextPath: FD.Agent.RoleIDs, description: Role IDs associated with the agent,
+    - {contextPath: FD.Agent.GroupID, description: Group IDs associated with the agent,
+      type: Unknown}
+    - {contextPath: FD.Agent.RoleID, description: Role IDs associated with the agent,
       type: Unknown}
     - {contextPath: FD.Agent.CreatedAt, description: Agent creation timestamp, type: Date}
     - {contextPath: FD.Agent.UpdatedAt, description: Agent updated timestamp, type: Date}
@@ -2724,7 +2724,17 @@ script:
         contexts = []
         for agent in agents:
             # Parse the individual agent into context
-            context = {string_to_context_key(key): val for key, val in agent.iteritems() if val}
+            context = {}
+            for key, val in agent.iteritems():
+                if val:
+                    if key == 'group_ids':
+                        key = 'group_id'
+                    elif key == 'role_ids':
+                        key = 'role_id'
+                    new_key = string_to_context_key(key)
+                    if 'Id' in new_key:
+                        new_key = new_key.replace('Id', 'ID')
+                    context[new_key] = val
             context['Contact'] = {string_to_context_key(key): val for key, val in agent.get('contact').iteritems() if val}
             contexts.append(context)
         title = "All Agents"
