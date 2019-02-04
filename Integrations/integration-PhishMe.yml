@@ -320,15 +320,33 @@ script:
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.ip_threshold;
+        var threshold_score = calcScore(threshold);
         if (threats.length && threats.length !== 0) {
             ec.IP = {
                       Data: ip,
                       Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                     };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats, threatArray, k, threshold);
-                dbotScore += threatAnalysis['severityScore'];
-                md += threatAnalysis['md'];
+                var severityLevel = 0;
+                for (var i = 0; i < threats[k].blockSet.length; i++){
+                    if (threats[k].blockSet[i]['impact']) {
+                        threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                        severityLevel += (threshold_score <= threat_score ? 3 : threat_score);
+                    }
+                    if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
+                        ec.IP.ASN = threats[k].blockSet[i].ipDetail.asn;
+                        ec.IP.GEO = {
+                            "Location": (threats[k].blockSet[i].ipDetail.latitude + ', ' + threats[k].blockSet[i].ipDetail.longitude),
+                            "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
+                        };
+                    }
+                }
+                var severityScore = Math.ceil(severityLevel / i);
+                var threatLevel = calcVerdict(severityScore);
+                md += 'Verdict: ' + threatLevel +'\n';
+                md += addMD(threats, k);
+                threatArray[k] = threats[k].id;
+                dbotScore += severityScore;
             }
             ec.IP['PhishMe'] = {};
             ec.IP.PhishMe['ThreatIDs'] = threatArray;
@@ -513,6 +531,12 @@ script:
       description: For malicious IPs, the reason that the vendor made the decision
     - contextPath: PhishMe.IP.PhishMe.ThreatIDs
       description: The thread ids retrieved by the vendor.
+    - contextPath: IP.ASN
+      description: Autonomous System name for the IP.
+    - contextPath: IP.GEO.Location
+      description: Location in format latitude, longitude.
+    - contextPath: IP.GEO.Country
+      description: Country of the IP.
     description: Check the reputation of an IP address.
   - name: phishme-search
     arguments:
