@@ -4923,18 +4923,6 @@
                     "No test - fetches indicators"
                 ]
             }
-        }, 
-        {
-            "PcapHTTPExtractor": {
-                "name": "PcapHTTPExtractor", 
-                "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "PcapHTTPExtractor-Test"
-                ]
-            }
         }
     ], 
     "playbooks": [
