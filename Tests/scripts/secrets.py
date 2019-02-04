@@ -4,6 +4,7 @@ import math
 import string
 import re
 import json
+import PyPDF2
 import validate_files_structure
 
 # secrets settings
@@ -93,9 +94,7 @@ def search_potential_secrets(secrets_file_paths):
     :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
     """
     # Get generic white list set
-    with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
-        secrets_white_list = set(json.load(secrets_white_list_file))
-
+    secrets_white_list = get_white_list()
     secrets_found = {}
 
     for file_path in secrets_file_paths:
@@ -104,11 +103,13 @@ def search_potential_secrets(secrets_file_paths):
         secrets_found_with_regex = []
         yml_file_contents = None
         skip_secrets = False
-
-        # if py file, search for yml in order to retrieve temp white list
         file_path_temp, file_extension = os.path.splitext(file_path)
-        if file_extension == '.py' or file_extension == '.js':
+
+        # if py/js file, search for yml in order to retrieve temp white list
+        if file_extension in {'.py', '.js'}:
             yml_file_contents = retrieve_related_yml(file_path_temp)
+
+        # if pdf file, parse text
 
         # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
         with io.open('./' + file_path, mode="r", encoding="utf-8") as commited_file:
@@ -244,3 +245,8 @@ def get_secrets(branch_name, is_circle):
                                     ' remove the files asap and report it.\n'
 
     return secrets_found, secrets_found_string
+
+
+def get_white_list():
+    with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
+        return set(json.load(secrets_white_list_file))
