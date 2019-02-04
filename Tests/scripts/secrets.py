@@ -9,7 +9,7 @@ import validate_files_structure
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 3.8
+ENTROPY_THRESHOLD = 3.4
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
 ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf'}
