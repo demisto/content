@@ -111,6 +111,14 @@ def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations))
 
 
+def check_mock_params(integrations):
+    no_mock_params = []
+    for elem in integrations:
+        if 'proxy' not in elem['params'] or ('insecure' not in elem['params'] and 'unsecure' not in elem['params']):
+            no_mock_params.append(elem['name'])
+    return no_mock_params
+
+
 # Configure integrations to work with mock
 def set_mock_params(integrations):
     for elem in integrations:
@@ -397,6 +405,7 @@ def main():
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+    no_params_integrations = set([])
     for t in tests:
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
@@ -450,11 +459,15 @@ def main():
 
         test_message = update_test_msg(integrations, test_message)
 
+        no_params_integrations.union(set(check_mock_params(integrations)))
+
         run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
+
+    print 'No proxy/insecure params found for:\n{}'.format('\n'.join(list(no_params_integrations)))
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
