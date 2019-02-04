@@ -158,7 +158,6 @@ script:
         ticket has been assigned, type: Number}
     - {contextPath: FD.Ticket.FrDueBy, description: Timestamp that denotes when the
         first response is due, type: Date}
-    - {contextPath: FD.Ticket.ID, description: ID number of the ticket, type: Number}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were entered using the 'additional_fields' and 'additional_values' arguments.,
       type: Unknown}
@@ -226,7 +225,6 @@ script:
         first response is due, type: Date}
     - {contextPath: FD.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
-    - {contextPath: FD.Ticket.ID, description: ID of the fetched ticket, type: Number}
     - {contextPath: FD.Ticket.Attachment, description: URL of the attached file from
         which you can download the file to your local machine., type: Unknown}
     - {contextPath: FD.Ticket.Attachment.Name, description: The name of the file attached
@@ -298,20 +296,16 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: List of ticket fields you wish to update the values of.
+      description: Fields not included in the default command arguments that you wish
+        to enter the value for. Format - "field=value" where field value pairs are
+        delimited from subsequent pairs by a semicolon symbol ';' and where values
+        that are lists are delimited by commas ','. E.g. - "name=Jeffrey Collins;email=jeffrey.collings@gmail.com;tags=new,attention
+        needed,billing related"
       isArray: true
       name: additional_fields
       predefined: [name, requester_id, email, facebook_id, phone, twitter_id, unique_external_id,
         type, attachments, custom_fields, email_config_id, product_id, source, tags,
         company_id, due_by, fr_due_by]
-      required: false
-    - default: false
-      defaultValue: ''
-      description: List of values that are assigned to the field at the same list
-        index in the update_fields argument.
-      isArray: true
-      name: update_values
-      predefined: []
       required: false
     description: Update the ticket specified by the ID
     execution: false
@@ -338,7 +332,6 @@ script:
     - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were updated using the 'update_fields' and 'update_values' arguments., type: Unknown}
-    - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
     - {contextPath: FD.Ticket.Attachment.AttachmentURL, description: URL of the attached
         file from which you can download the file to your local machine., type: Unknown}
     - {contextPath: FD.Ticket.Attachment.Name, description: The name of the file attached
@@ -633,7 +626,7 @@ script:
     execution: false
     name: fd-ticket-reply
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
+    - {contextPath: FD.Ticket.Conversation.BodyHTML, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
@@ -642,7 +635,7 @@ script:
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
         not through web portal)', type: Boolean}
-    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+    - {contextPath: FD.Ticket.Conversation.ToEmail, description: Array of email addresses
         of agents/users who need to be notified about this conversation, type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
         note is private, type: Boolean}
@@ -684,7 +677,7 @@ script:
     execution: false
     name: fd-get-ticket-conversations
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
+    - {contextPath: FD.Ticket.Conversation.BodyHTML, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
@@ -693,7 +686,7 @@ script:
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
         not through web portal)', type: Boolean}
-    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+    - {contextPath: FD.Ticket.Conversation.ToEmail, description: Array of email addresses
         of agents/users who need to be notified about this conversation, type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
         note is private, type: Boolean}
@@ -861,7 +854,7 @@ script:
     execution: false
     name: fd-create-ticket-note
     outputs:
-    - {contextPath: FD.Ticket.Conversation.Body, description: Content of the conversation
+    - {contextPath: FD.Ticket.Conversation.BodyHTML, description: Content of the conversation
         in HTML, type: String}
     - {contextPath: FD.Ticket.Conversation.BodyText, description: Content of the conversation
         in plain text, type: String}
@@ -870,7 +863,7 @@ script:
     - {contextPath: FD.Ticket.Conversation.Incoming, description: 'Set to true if
         a particular conversation should appear as being created from outside (i.e.,
         not through web portal)', type: Boolean}
-    - {contextPath: FD.Ticket.Conversation.ToEmails, description: Array of email addresses
+    - {contextPath: FD.Ticket.Conversation.ToEmail, description: Array of email addresses
         of agents/users who need to be notified about this conversation, type: Unknown}
     - {contextPath: FD.Ticket.Conversation.Private, description: Set to true if the
         note is private, type: Boolean}
@@ -911,10 +904,7 @@ script:
     description: Delete ticket by ticket ID
     execution: false
     name: fd-delete-ticket
-    outputs:
-    - {contextPath: FD.Ticket.ID, description: ID number of the ticket, type: Number}
-    - {contextPath: FD.Ticket.Deleted, description: Whether the ticket has been deleted
-        or not., type: Boolean}
+    outputs: []
   - arguments:
     - default: false
       defaultValue: ''
@@ -965,8 +955,9 @@ script:
       defaultValue: ''
       description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
         time will be included. Note that this is not set by default because setting
-        this to 'true' will consume an additional 2 API credits per API call. To see
-        more details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+        this to 'true' will consume an additional 2 API credits per API call made
+        by this command. To see more details, please turn to the Freshdesk API documentation
+        - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined: ['true', 'false']
@@ -976,8 +967,8 @@ script:
       description: If set to 'true' then the ticket requester's id, email, mobile,
         name, and phone will be included in the ticket's output for each ticket. Note
         that this is not set by default because setting this to 'true' will consume
-        an additional 2 API credits per API call. To see more details, please turn
-        to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+        an additional 2 API credits per API call made by this command. To see more
+        details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_requester
       predefined: ['true', 'false']
@@ -987,8 +978,8 @@ script:
       description: If set to 'true' then the ticket's description and description_text
         will be included the tickets' outputs. Note that this is not set by default
         because setting this to 'true' will consume an additional 2 API credits per
-        API call. To see more details, please turn to the Freshdesk API documentation
-        - https://developers.freshdesk.com/api/#embedding
+        API call made by this command. To see more details, please turn to the Freshdesk
+        API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_description
       predefined: ['true', 'false']
@@ -1033,7 +1024,6 @@ script:
     - {contextPath: FD.Ticket.UpdatedAt, description: Ticket update timestamp, type: Date}
     - {contextPath: FD.Ticket.AdditionalFields, description: Additional fields that
         were specified in the command's filter-type or include-type arguments., type: Unknown}
-    - {contextPath: FD.Ticket.ID, description: ID of the updated ticket, type: Number}
     - {contextPath: FD.Ticket.Attachment.AttachmentURL, description: URL of the attached
         file from which you can download the file to your local machine., type: String}
     - {contextPath: FD.Ticket.Attachment.Name, description: The name of the attached
@@ -1109,6 +1099,21 @@ script:
     ''' HELPER FUNCTIONS '''
 
 
+    def format_conversation_context(context):
+        to_emails = context.get('ToEmails')
+        body = context.get('Body')
+        attachments = context.get('Attachments')
+        if to_emails:
+            context['ToEmail'] = to_emails
+            del context['ToEmails']
+        if body:
+            context['BodyHTML'] = body
+            del context['Body']
+        if attachments:
+            del context['Attachments']
+        return context
+
+
     def format_contact_context(contact):
         dont_include = ['other_companies', 'other_emails', 'custom_fields', 'avatar']
         # Parse response into context
@@ -1124,7 +1129,7 @@ script:
         return context
 
 
-    def reformat_context_output(context):
+    def reformat_ticket_context(context):
         """
         Reformat context outputs (from having used string_to_context_key) to desired output format.
 
@@ -1139,6 +1144,10 @@ script:
                 new_key = key[:-1]
                 context[new_key] = val
                 del context[key]
+            elif key == 'CustomFields':
+                new_key = key[:-1]
+                context[new_key] = val
+                del context[key]
             elif 'Id' in key:
                 new_key = key.replace('Id', 'ID')
                 context[new_key] = val
@@ -1147,6 +1156,10 @@ script:
                 new_key = key.replace('Cc', 'CC')
                 context[new_key] = val
                 del context[key]
+        # If 'Attachments' are still in context get rid of them - should be 'Attachment'
+        attachments = context.get('Attachments')
+        if attachments:
+            del context['Attachments']
         return context
 
 
@@ -1290,10 +1303,39 @@ script:
                     return_error(err_msg)
                 field = field_and_val[0].strip()
                 val = field_and_val[1]
+
+                # If the field is 'custom_fields'
+                if field == 'custom_fields':
+                    custom_fields = {}
+                    custom_fields_and_vals = val.split('*')
+                    if len(custom_fields_and_vals) == 1:
+                        custom_fields_and_vals = list(custom_fields_and_vals)
+
+                    for custom_field_and_val in custom_fields_and_vals:
+                        custom_field_and_val = custom_field_and_val.split(':')
+                        # If the length doesn't equal 2, means there were either no ':'s or more than one
+                        if not len(custom_field_and_val) == 2:
+                            err_msg = "It appears you entered either too many or too few" \
+                                      " colons in the value for the 'custom_fields' option" \
+                                      " in the 'additional_fields' argument."
+                            return_error(err_msg)
+                        custom_field = custom_field_and_val[0].strip()
+                        custom_val = custom_field_and_val[1]
+                        if ',' in custom_val:
+                            custom_val = argToList(custom_val)
+                        custom_fields[custom_field] = custom_val
+                    val = custom_fields
+                    demisto.log('custom_fields: {}'.format(custom_fields))
+                    demisto.log('val: {}'.format(val))
+
                 # If the value contains commas, then it is a list
-                if ',' in val:
+                elif ',' in val:
                     val = argToList(val)
                 args[field] = val
+
+                demisto.log('field: {}'.format(field))
+                demisto.log('args[field]: {}'.format(args[field]))
+
                 fields.append(field)
                 values.append(val)
             del args[additional_fields_arg_name]
@@ -1818,7 +1860,7 @@ script:
         context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in include_in_context}
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
         context = attachments_into_context(ticket, context)
-        context = reformat_context_output(context)
+        context = reformat_ticket_context(context)
         title = "Newly Created Ticket #{}".format(context.get('ID'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1846,6 +1888,9 @@ script:
 
         # The service endpoint to request from
         endpoint_url = 'tickets/{}'.format(ticket_number)
+
+        demisto.log('update_ticket args: {}'.format(args))
+        demisto.log('update_ticket args json dumped: {}'.format(json.dumps(args)))
 
         response = None
         if not args.get('attachments'):
@@ -1916,7 +1961,7 @@ script:
         context = additional_fields_to_context(context, include_in_context, additional_fields, additional_fields_values)
         # Parse attachments into context
         context = attachments_into_context(ticket, context)
-        context = reformat_context_output(context)
+        context = reformat_ticket_context(context)
         title = "Ticket #{} Updated".format(context.get('ID'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -1992,7 +2037,7 @@ script:
             stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
             context['AdditionalFields']['Stats'] = stats_context
 
-        context = reformat_context_output(context)
+        context = reformat_ticket_context(context)
         title = "Viewing Ticket #{}".format(ticket.get('id'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2154,6 +2199,9 @@ script:
             # Parse ticket into the standard outputs
             context = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in context_outputs}
 
+            # Parse ticket attachments into context
+            context = attachments_into_context(ticket, context)
+
             # Parse ticket for the additionally requested fields
             context['AdditionalFields'] = {string_to_context_key(key): val for key, val in ticket.iteritems() if key in additional_fields}
             requester = ticket.get('requester')
@@ -2165,15 +2213,15 @@ script:
                 stats_context = {string_to_context_key(key): val for key, val in stats.iteritems() if val}
                 context['AdditionalFields']['Stats'] = stats_context
 
-
-            # Parse ticket attachments into context
-            context = attachments_into_context(ticket, context)
-
-            context = reformat_context_output(context)
+            context = reformat_ticket_context(context)
             contexts.append(context)
 
+        table_headers = [
+            'ID', 'Priority', 'Status', 'Subject', 'DueBy', 'FrDueBy', 'RequesterID', 'GroupID',
+            'Source', 'CreatedAt', 'UpdatedAt', 'Tag', 'AdditionalFields', 'Attachment'
+        ]
         title = "Viewing All Requested Tickets"
-        human_readable = tableToMarkdown(title, contexts, removeNull=True)
+        human_readable = tableToMarkdown(title, contexts, headers=table_headers, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -2245,9 +2293,10 @@ script:
         reply = ticket_reply(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in reply.iteritems() if val}
+        context = format_conversation_context(context)
         # Parse attachments into context
         context = attachments_into_context(reply, context)
-        context = reformat_context_output(context)
+        context = reformat_ticket_context(context)
         title = "Reply to Ticket #{}".format(reply.get('ticket_id'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2267,8 +2316,8 @@ script:
         del args['ticket_id']
         args = handle_array_input(args)
         # Set defaults for 'private' and 'incoming' fields if not set by user
-        args['private'] = args.get('private', 'True')
-        args['incoming'] = args.get('incoming', 'False')
+        args['private'] = args.get('private', 'true')
+        args['incoming'] = args.get('incoming', 'false')
         # args = handle_bool_input(args)
         endpoint_url = 'tickets/{}/notes'.format(ticket_id)
 
@@ -2326,9 +2375,10 @@ script:
         note = create_ticket_note(args)
         # Parse response into context
         context = {string_to_context_key(key): val for key, val in note.iteritems() if val}
+        context = format_conversation_context(context)
         # Parse attachments into context
         context = attachments_into_context(note, context)
-        context = reformat_context_output(context)
+        context = reformat_ticket_context(context)
         title = 'Note for Ticket #{}'.format(note.get('ticket_id'))
         human_readable = tableToMarkdown(title, context, removeNull=True)
         demisto.results({
@@ -2367,9 +2417,10 @@ script:
         contexts = []
         for conversation in conversations:
             context = {string_to_context_key(key): val for key, val in conversation.iteritems() if val}
+            context = format_conversation_context(context)
             # Parse attachments into context
             context = attachments_into_context(conversation, context)
-            context = reformat_context_output(context)
+            context = reformat_ticket_context(context)
             contexts.append(context)
         title = 'Conversations of Ticket #{}'.format(ticket_id)
         human_readable = tableToMarkdown(title, contexts, removeNull=True)
