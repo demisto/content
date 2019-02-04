@@ -489,7 +489,6 @@ script:
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    LITERALS    @@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    # TOKEN = demisto.getIntegrationContext().get('TOKEN')
     EPOCH_MINUTE = 60 * 1000
     EPOCH_HOUR = 60 * EPOCH_MINUTE
 
@@ -548,7 +547,6 @@ script:
         server = demisto.getParam('server')
         url = fix_url(server) + suffix
         res = requests.put(url, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify=not insecure)
-        # res = requests.put('https://httpbin.org/put', headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify = not insecure)
         parsed_response = parse_response(res)
         return parsed_response
 
@@ -801,8 +799,6 @@ script:
         epoch_time = client_content_json.get('lastUpdated')
         if time_zone:
             epoch_time = parse_epoch_to_local(epoch_time, time_zone)
-        # epoch_time = '1546185294597'
-        # last_update_date = time.localtime(int(epoch_time) /1000)
         last_update_date = timestamp_to_datestring(epoch_time, '%a %b %d %y %H:%M:%S %z')
         client_version = client_content_json.get('clientDefStatusList')
         md = '## Client Content, last updated on {0}\n'.format(last_update_date)
@@ -813,7 +809,6 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': client_content_json,
             'HumanReadable': md,
-            # 'EntryContext': createContext({'SEPM': sepm_context}, removeNull=True)
             'EntryContext': {
                 'SEPM.ClientContentVersions': client_version,
                 'SEPM.LastUpdated': last_update_date
@@ -908,7 +903,6 @@ script:
             is_done = True
         message = 'Command is done.' if is_done else 'Command is in progress. Run !sep-command-status to check again.';
 
-        # md = tableToMarkdown(title, cmd_status_details) + '\n'
         md = '### Command ID: {0}\n'.format(command_id)
         md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
         md += '### ' + message;
@@ -966,7 +960,6 @@ script:
         url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
         url_resp = do_get(token, False, url)
         location_ids = map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp)
-        # demisto.results(location_ids )
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
