@@ -44,7 +44,7 @@ tasks:
       - "2"
     scriptarguments:
       input:
-        simple: CVE-2018-20477
+        simple: CVE-2018-20478
     separatecontext: false
     view: |-
       {
@@ -71,7 +71,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries.[0]}
       substring:
-        simple: "3"
+        simple: "2"
     separatecontext: false
     view: |-
       {
