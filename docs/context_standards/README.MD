@@ -144,7 +144,11 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
             "Phone": "STRING, Phone number of the domain admin"
         }
     },
-    "WHOIS/History": "List of whois objects"
+    "WHOIS/History": "List of whois objects",
+    "Malicious":{
+        "Vendor": "STRING, Vendor reporting malicious",
+        "Description": "STRING, Description about why Domain was determined malicious"
+    },
 }
 ```
 ## URL
@@ -252,5 +256,29 @@ The following is the format for a process.
     "Parent": "STRING, process object",
     "Sibling": "LIST, Sibling process objects",
     "Child": "LIST, of Child process objects"
+}
+```
+
+## DBot Score
+The following is the format for a DBot Score entry.
+```python
+"InfoFile": {
+    "Name": "STRING, FileName",
+    "EntryID": "STRING, If the file is in the war room, where it can be found",
+    "Size": "INT, Size of the file in bytes",
+    "Type": "STRING, File type as determined by libmagic (same as we display in file entries)",
+    "Extension": "STRING, the file extension e.g. xls",
+    "Info": "STRING, Basic information of the file"
+}
+```
+
+## InfoFile
+The following is the expected format for an InfoFile
+```python
+"DBotScore": {
+    "Indicator": "STRING, The indicator that was tested",
+    "Type": "STRING, Indicator type",
+    "Vendor": "STRING, Vendor used to calculate the score",
+    "Score": "INT, The actual score",
 }
 ```
