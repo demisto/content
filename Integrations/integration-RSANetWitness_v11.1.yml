@@ -1365,3 +1365,4 @@ script:
   isfetch: true
 tests:
   - RSA NetWitness Test
+releaseNotes: "Fixed disabling proxy"
