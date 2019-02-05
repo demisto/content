@@ -1,0 +1,474 @@
+id: Test - PhishMe Intelligence
+version: 1
+name: Test - PhishMe Intelligence
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29e2ab29-1a86-4f09-8292-a26aaef50ea9
+    type: start
+    task:
+      id: 29e2ab29-1a86-4f09-8292-a26aaef50ea9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 81749d32-4f22-4112-8dd0-4db399271c60
+    type: regular
+    task:
+      id: 81749d32-4f22-4112-8dd0-4db399271c60
+      version: -1
+      name: Check IP
+      script: Phishme Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip: 35.165.118.153
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 262496ad-c412-4858-8eda-d389604284e3
+    type: condition
+    task:
+      id: 262496ad-c412-4858-8eda-d389604284e3
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      key: ""
+      left: ${DBotScore.Score}
+      right: "2"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 2fe18bb8-c515-411b-801a-b8255c5dfec6
+    type: regular
+    task:
+      id: 2fe18bb8-c515-411b-801a-b8255c5dfec6
+      version: -1
+      name: Check url
+      script: Phishme Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      url: heckwassleftran2.ru
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f86a9321-fedd-40c0-8117-34582395f86f
+    type: condition
+    task:
+      id: f86a9321-fedd-40c0-8117-34582395f86f
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      key: ""
+      left: ${DBotScore.Score}
+      right: "3"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a076ab25-129a-43ba-8e9a-c8d07788f350
+    type: regular
+    task:
+      id: a076ab25-129a-43ba-8e9a-c8d07788f350
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b146a15c-76c6-4a5c-81d3-344930ab2ce9
+    type: regular
+    task:
+      id: b146a15c-76c6-4a5c-81d3-344930ab2ce9
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 7fde49e3-5b18-4043-8545-2b24bb3f1536
+    type: regular
+    task:
+      id: 7fde49e3-5b18-4043-8545-2b24bb3f1536
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: f22d6412-023d-4f2f-88c6-8ff47f9eb990
+    type: regular
+    task:
+      id: f22d6412-023d-4f2f-88c6-8ff47f9eb990
+      version: -1
+      name: Check file hash
+      script: Phishme Intelligence|||file
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      destpath: ""
+      entryid: ""
+      file: 77d736dc280968d0af8c3f46e673f821
+      fileNames: ""
+      hostname: ""
+      ip: ""
+      path: ""
+      system: ""
+      url: heckwassleftran2.ru
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 077a55cf-beae-4eed-8452-b549cbc34d3a
+    type: condition
+    task:
+      id: 077a55cf-beae-4eed-8452-b549cbc34d3a
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    scriptarguments:
+      key: ""
+      left: ${DBotScore.Score}
+      right: "3"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 9977c874-aad6-4895-8a04-78674bf31778
+    type: regular
+    task:
+      id: 9977c874-aad6-4895-8a04-78674bf31778
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "11":
+    id: "11"
+    taskid: e512a4a7-78e0-486d-8193-30923cc99fa2
+    type: regular
+    task:
+      id: e512a4a7-78e0-486d-8193-30923cc99fa2
+      version: -1
+      name: Check email
+      script: Phishme Intelligence|||email
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      destpath: ""
+      email: forme@kanhseai.com
+      entryid: ""
+      file: 77d736dc280968d0af8c3f46e673f821
+      fileNames: ""
+      hostname: ""
+      ip: ""
+      path: ""
+      system: ""
+      url: heckwassleftran2.ru
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 5988644e-06b7-4456-83a4-bb51777de286
+    type: condition
+    task:
+      id: 5988644e-06b7-4456-83a4-bb51777de286
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    scriptarguments:
+      key: ""
+      left: ${DBotScore.Score}
+      right: "3"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "13":
+    id: "13"
+    taskid: f3c7d03b-b9ab-4758-8402-2e7fcee447b2
+    type: regular
+    task:
+      id: f3c7d03b-b9ab-4758-8402-2e7fcee447b2
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "14":
+    id: "14"
+    taskid: e1af3c19-b4a0-45fd-89b8-40a920d2e75c
+    type: regular
+    task:
+      id: e1af3c19-b4a0-45fd-89b8-40a920d2e75c
+      version: -1
+      name: Check PhishMe string
+      script: Phishme Intelligence|||phishme-search
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      destpath: ""
+      email: diverseconstgroup.com
+      entryid: ""
+      file: 77d736dc280968d0af8c3f46e673f821
+      fileNames: ""
+      hostname: ""
+      ip: ""
+      limit: ""
+      path: ""
+      str: sex
+      system: ""
+      url: heckwassleftran2.ru
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 12ba7cf6-002a-465f-81a2-3e7b1644db4d
+    type: condition
+    task:
+      id: 12ba7cf6-002a-465f-81a2-3e7b1644db4d
+      version: -1
+      name: Check number of PhishMe threats
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    scriptarguments:
+      first: ${PhishMe.NumOfThreats}
+      key: ""
+      left: ${DBotScore.Score}
+      right: "0"
+      second: "9"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 048d516f-235e-4da0-85ea-69cd27cdd2d2
+    type: regular
+    task:
+      id: 048d516f-235e-4da0-85ea-69cd27cdd2d2
+      version: -1
+      name: Close investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: ""
+      reason: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2865,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+

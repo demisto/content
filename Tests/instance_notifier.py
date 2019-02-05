@@ -59,7 +59,7 @@ def options_handler():
 def get_demisto_instance_and_login(server, username, password):
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
@@ -94,10 +94,12 @@ def test_instances(secret_conf_path, server, username, password):
             instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
             if not instance_id:
                 print_error('Failed to create instance of %s' % (integration_name,))
-                failed_integration.append("{0} {1} - {2}".format(integration_name, product_description, devops_comments))
+                failed_integration.append("{0} {1} - {2}".format(integration_name,
+                                                                 product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
+                __delete_integrations_instances(c, instance_ids)
 
     return failed_integration, integrations_counter
 

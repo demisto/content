@@ -374,7 +374,7 @@ script:
                 'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
                 'EntryContext': {
                     'Aella.Event(val._id==obj._id)': source,
-                    'DBotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' : createContext(dbot_scores, removeNull=True),
+                    'DBotScore' : createContext(dbot_scores, removeNull=True),
                 }
             })
         else:

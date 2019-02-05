@@ -337,18 +337,51 @@ script: |-
       return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-  def isError(entry):
+  def get_error(execute_command_result):
       """
-         Check if the given entry is an error entry
+          execute_command_result must contain error entry - check the result first with is_error function
+          if there is no error entry in the result then it will raise an Exception
 
-         :type entry: ``dict``
-         :param entry: Demisto entry (required)
+          :type execute_command_result: ``dict`` or  ``list``
+          :param execute_command_result: result of demisto.executeCommand()
 
-         :return: True if the entry is an error entry, false otherwise
-         :rtype: ``bool``
+          :return: Error message extracted from the demisto.executeCommand() result
+          :rtype: ``string``
       """
-      return type(entry) == dict and entry['Type'] == entryTypes['error']
 
+      if not is_error(execute_command_result):
+          raise ValueError("execute_command_result has no error entry. before using get_error use is_error")
+
+      error_messages = []
+      for entry in execute_command_result:
+          is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
+          if is_error_entry:
+              error_messages.append(entry['Contents'])
+
+      return '\n'.join(error_messages)
+
+
+  def is_error(execute_command_result):
+      """
+          Check if the given execute_command_result has an error entry
+
+          :type execute_command_result: ``dict`` or ``list``
+          :param execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
+
+          :return: True if the execute_command_result has an error entry, false otherwise
+          :rtype: ``bool``
+      """
+      if isinstance(execute_command_result, list):
+          if len(execute_command_result) > 0:
+              for entry in execute_command_result:
+                  if type(entry) == dict and entry['Type'] == entryTypes['error']:
+                      return True
+
+      return type(execute_command_result) == dict and execute_command_result['Type'] == entryTypes['error']
+
+
+  isError = is_error
+  
 
   def FormatADTimestamp(ts):
       """
@@ -443,10 +476,12 @@ script: |-
 
 
       def print_log(self, verbose=False):
-          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          if verbose:
-            demisto.log(text)
-          demisto.info(text)
+          if self.messages:
+              text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+              if verbose:
+                  demisto.log(text)
+              demisto.info(text)
+              self.messages = []
 
 
   """
@@ -1159,16 +1194,23 @@ script: |-
       return True
 
 
-  def return_error(message):
+  def return_error(message, error=''):
       """
-         Returns error entry with given message and exits the script
+          Returns error entry with given message and exits the script
 
-         :type message: ``str``
-         :param message: The message to return in the entry (required)
+          :type message: ``str``
+          :param message: The message to return in the entry (required)
 
-         :return: Error entry object
-         :rtype: ``dict``
+          :type error: ``str``
+          :param error: The raw error message to log (optional)
+
+          :return: Error entry object
+          :rtype: ``dict``
       """
+      LOG(message)
+      if error:
+          LOG(error)
+      LOG.print_log()
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
@@ -1208,7 +1250,7 @@ script: |-
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
     'email': 'Account.Email(val.Address && val.Address == obj.Address)',
-    'dbotscore': 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+    'dbotscore': 'DBotScore'
   }
 
   ############################### REGEX FORMATTING ###############################
@@ -1401,3 +1443,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
+releaseNotes: "add is_error and get_error helper functions check and extract error out of demisto.executeCommand() result"

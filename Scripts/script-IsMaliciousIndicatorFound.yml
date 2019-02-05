@@ -6,6 +6,8 @@ script: |-
   var files = dq(invContext,'File(val.Malicious)');
   var urls = dq(invContext,'URL.Malicious');
   var ips = dq(invContext,'IP(val.Malicious)');
+  var domains = dq(invContext,'Domain(val.Malicious)');
+  var emails = dq(invContext,'Account.Email(val.Malicious)');
 
   if (args.includeSuspicious == 'yes') {
       if (!files || files.length === 0) {
@@ -17,6 +19,12 @@ script: |-
       if (!urls || urls.length === 0) {
           urls = dq(invContext,"DBotScore(val.Type.toLowerCase()=='url' && val.Score>1)");
       }
+      if (!domains || domains.length === 0) {
+          domains = dq(invContext,"DBotScore(val.Type.toLowerCase()=='domain' && val.Score>1)");
+      }
+      if (!emails || emails.length === 0) {
+          emails = dq(invContext,"DBotScore(val.Type.toLowerCase()=='email' && val.Score>1)");
+      }
   }
   if (files && (!Array.isArray(files) || files.length > 0)) {
       return 'yes';
@@ -25,6 +33,12 @@ script: |-
       return 'yes';
   }
   if (ips && (!Array.isArray(ips) || ips.length > 0)) {
+      return 'yes';
+  }
+  if (domains && (!Array.isArray(domains) || domains.length > 0)) {
+      return 'yes';
+  }
+  if (emails && (!Array.isArray(emails) || emails.length > 0)) {
       return 'yes';
   }
   var query = "(reputation:Bad";
@@ -63,7 +77,9 @@ args:
   description: Override the query to search for malicious indicators in Demisto
 outputs:
 - contextPath: "yes"
-  description: if found any Malicious File/URL/IP in the investigation
+  description: if found any Malicious File/URL/IP/Email/Domain in the investigation
 - contextPath: "no"
-  description: if did not found any Malicious File/URL/IP in the investigation
+  description: if did not found any Malicious File/URL/IP/Email/Domain in the investigation
 scripttarget: 0
+tests:
+- "Test-IsMaliciousIndicatorFound"

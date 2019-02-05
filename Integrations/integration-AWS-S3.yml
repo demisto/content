@@ -328,7 +328,7 @@ script:
                 return 'File %s was uploaded successfully to %s' % (args.get('key'), args.get('bucket'))
 
         except Exception as e:
-            return raise_error("Error: entry %s is not a file." % (args['entryID']))
+            return raise_error(e)
 
 
     # The command demisto.command() holds the command sent from the user.
@@ -606,4 +606,4 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 tests:
-  - No Tests
+  - No test

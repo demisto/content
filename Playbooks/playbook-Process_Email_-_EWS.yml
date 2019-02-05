@@ -254,3 +254,5 @@ outputs:
 - contextPath: File
   description: Email's Attachment
   type: unknown
+tests:
+- No test

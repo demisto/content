@@ -1,18 +1,22 @@
 id: extract_indicators_from_file_-_generic
 version: -1
 name: Extract Indicators From File - Generic
-fromversion: 3.6.0
+fromversion: 4.1.0
 description: |-
-  Extract indicators from a file.
-  Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).
+  Extracts indicators from a file.
+  Supported file types:
+  - PDF
+  - TXT
+  - HTM, HTML
+  - DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: da3a5643-2e84-43b5-8e37-60032a95355b
+    taskid: 7c475fe8-ef6f-4203-8649-88c8ee1355a4
     type: start
     task:
-      id: da3a5643-2e84-43b5-8e37-60032a95355b
+      id: 7c475fe8-ef6f-4203-8649-88c8ee1355a4
       version: -1
       name: ""
       description: ""
@@ -26,26 +30,27 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -20
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+    taskid: 7d301230-7301-4a9c-879f-2e3b4366a3d7
     type: condition
     task:
-      id: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
+      id: 7d301230-7301-4a9c-879f-2e3b4366a3d7
       version: -1
-      name: Is there a file in context?
+      name: Is there a file?
       description: |
-        Check if there is a file in the playbook input.
+        Checks if there is a file in the playbook input.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "10"
       "yes":
       - "2"
     separatecontext: false
@@ -63,16 +68,17 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 115
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+    taskid: 864c6f5e-7214-4a36-8c37-80f7057bd36e
     type: regular
     task:
-      id: 49a307bb-ec5a-41bb-8f75-658e444f1f94
+      id: 864c6f5e-7214-4a36-8c37-80f7057bd36e
       version: -1
       name: Set file to local context
       description: Set the input file into local context.
@@ -90,21 +96,23 @@ tasks:
       value:
         complex:
           root: inputs.File
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 370
+          "x": 510,
+          "y": 350
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 3c91d141-7645-4300-8610-51328a06369a
+    taskid: cc0c7ac6-f764-47df-8f1e-cfbdcbd25c4e
     type: title
     task:
-      id: 3c91d141-7645-4300-8610-51328a06369a
+      id: cc0c7ac6-f764-47df-8f1e-cfbdcbd25c4e
       version: -1
       name: Done
       description: ""
@@ -115,17 +123,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -73,
-          "y": 1027
+          "x": 420,
+          "y": 1240
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 190a8c7e-cdaf-4b32-8e28-f93153071b5a
+    taskid: a3d79b72-2b6b-498f-887a-d406249d18e8
     type: title
     task:
-      id: 190a8c7e-cdaf-4b32-8e28-f93153071b5a
+      id: a3d79b72-2b6b-498f-887a-d406249d18e8
       version: -1
       name: Extract Indicators from file
       description: ""
@@ -136,31 +145,33 @@ tasks:
       '#none#':
       - "5"
       - "7"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 545
+          "x": 510,
+          "y": 535
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
+    taskid: 5e2997db-65a5-49a7-8f9a-87892701e8fe
     type: condition
     task:
-      id: 6dd8fd00-b025-4c12-89d5-b78e3d356be4
+      id: 5e2997db-65a5-49a7-8f9a-87892701e8fe
       version: -1
-      name: Is there a text-based file
-      description: Check if there is a text-based file in context Skips .msg and .eml
-        files.
+      name: Is there a text-based file?
+      description: Checks if there is a text-based file in context. Skips MSG and
+        EML files.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "10"
       "yes":
       - "6"
     separatecontext: false
@@ -214,25 +225,36 @@ tasks:
                     right:
                       value:
                         simple: Composite Document File V2 Document, No summary info
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: message/rfc822
                 accessor: EntryID
+                transformers:
+                - operator: uniq
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 690
+          "x": 92.5,
+          "y": 700
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
+    taskid: e077b5e8-a546-4da5-86ea-fb327ead5a2e
     type: regular
     task:
-      id: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
+      id: e077b5e8-a546-4da5-86ea-fb327ead5a2e
       version: -1
       name: Extract indicators from text-based file
-      description: Extract indicators from text-based files.
+      description: Extracts indicators from text-based files.
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
@@ -254,33 +276,76 @@ tasks:
                 value:
                   simple: ASCII text
               ignorecase: true
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: news or mail
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: eml
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: msg
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Composite Document File V2 Document, No summary info
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: message/rfc822
           accessor: EntryID
+          transformers:
+          - operator: uniq
       maxFileSize: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 865
+          "x": 92.5,
+          "y": 990
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 07542fb0-0931-468e-89ab-5d6550e1f99a
+    taskid: 542f7e7a-6978-480e-8356-cc7cda51a6d7
     type: condition
     task:
-      id: 07542fb0-0931-468e-89ab-5d6550e1f99a
+      id: 542f7e7a-6978-480e-8356-cc7cda51a6d7
       version: -1
-      name: Is there a PDF file
-      description: Check if there is a PDF file in context.
+      name: Is there a PDF file?
+      description: Checks if there is a PDF file in context.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "10"
       "yes":
       - "8"
     separatecontext: false
@@ -312,25 +377,28 @@ tasks:
                         simple: application/pdf
                     ignorecase: true
                 accessor: EntryID
+                transformers:
+                - operator: uniq
             iscontext: true
           ignorecase: true
     view: |-
       {
         "position": {
-          "x": 582,
-          "y": 690
+          "x": 510,
+          "y": 700
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 458345d2-ad32-449f-8c3d-0a54c61dc24d
+    taskid: 34c98942-d6e9-4db6-81e9-a04339cdf58c
     type: regular
     task:
-      id: 458345d2-ad32-449f-8c3d-0a54c61dc24d
+      id: 34c98942-d6e9-4db6-81e9-a04339cdf58c
       version: -1
-      name: Read PDF file
-      description: Extract indicators from PDF files.
+      name: Extract indicators from PDF file
+      description: Extracts indicators from PDF files.
       scriptName: ReadPDFFile
       type: regular
       iscommand: false
@@ -361,26 +429,193 @@ tasks:
                   simple: application/pdf
               ignorecase: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
       maxFileSize: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 582,
-          "y": 865
+          "x": 510,
+          "y": 990
         }
       }
     note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: d729d532-4b81-4cef-8baa-278a442408de
+    type: condition
+    task:
+      id: d729d532-4b81-4cef-8baa-278a442408de
+      version: -1
+      name: Is there a Word file?
+      description: Checks if there is a Word file (DOC, DOCX) in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Composite Document File V2 Document
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Word
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: doc
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: c552720b-f6fc-49be-8c2a-1beb7178c737
+    type: title
+    task:
+      id: c552720b-f6fc-49be-8c2a-1beb7178c737
+      version: -1
+      name: No File To Parse
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
+    type: regular
+    task:
+      id: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
+      version: -1
+      name: Extract indicators from Word file
+      description: Extracts indicators from word files (DOC, DOCX).
+      scriptName: ExtractIndicatorsFromWordFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Composite Document File V2 Document
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Word
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: doc
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1042,
-        "width": 1035,
-        "x": -73,
-        "y": 50
+        "height": 1325,
+        "width": 1830,
+        "x": -530,
+        "y": -20
       }
     }
   }
@@ -392,28 +627,6 @@ inputs:
   required: false
   description: The file to extract indicators from.
 outputs:
-- contextPath: File.ModDate
-  description: The PDF File ModDate
-- contextPath: File.dc
-  description: The PDF File dc
-- contextPath: File.Producer
-  description: The PDF File producer
-- contextPath: File.Title
-  description: The PDF File Title
-- contextPath: File.xap
-  description: The PDF File xap
-- contextPath: File.Text
-  description: The PDF File extracted text
-- contextPath: File.Author
-  description: The PDF File Author
-- contextPath: URL.Data
-  description: List of URLs that were extracted from the PDF file
-- contextPath: File.xapmm
-  description: The PDF File xapmm
-- contextPath: File.CreationDate
-  description: The PDF File CreationDate
-- contextPath: File.Pages
-  description: Number of pages in PDF file
 - contextPath: Domain.Name
   description: Extracted domains
 - contextPath: Account.Email.Address
@@ -426,5 +639,28 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
+- contextPath: File.Text
+  description: The PDF File extracted text
+- contextPath: File.Producer
+  description: The PDF File producer
+- contextPath: File.Title
+  description: The PDF File Title
+- contextPath: File.xap
+  description: The PDF File xap
+- contextPath: File.Author
+  description: The PDF File Author
+- contextPath: File.dc
+  description: The PDF File dc
+- contextPath: File.xapmm
+  description: The PDF File xapmm
+- contextPath: File.ModDate
+  description: The PDF File ModDate
+- contextPath: File.CreationDate
+  description: The PDF File CreationDate
+- contextPath: File.Pages
+  description: Number of pages in PDF file
+- contextPath: URL.Data
+  description: List of URLs that were extracted from the PDF file
+  type: unknown
 tests:
   - Extract Indicators From File - test
