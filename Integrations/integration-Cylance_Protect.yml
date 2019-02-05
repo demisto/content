@@ -212,7 +212,7 @@ script:
             var context = {};
             context.Cylance = {};
             context.Cylance[contextType] = [];
-            
+
             if (!Array.isArray(body)) {
                 body = [body];
             }
@@ -389,7 +389,7 @@ script:
             return runAndParseCommand(command,args,"data",parseGeneric('Threat'));
         case 'cp-download-threat': //deprecated
         case 'cylance-protect-download-threat':
-            return runAndParseCommand(command,args,"");
+            return runAndParseCommand(command,args,"",parseGeneric('Threat'));
         case 'cp-get-threat-details': //deprecated
         case 'cylance-protect-get-threat-details':
             return runAndParseCommand(command,args,"",parseGeneric('Threat'));
@@ -516,7 +516,7 @@ script:
     - contextPath: Endpoint.IP
       description: List of endpoint IP addresses
     - contextPath: Endpoint.MAC
-      description: List of endpoint MAC addresses 
+      description: List of endpoint MAC addresses
     - contextPath: Endpoint.DNSName
       description: Endpoint DNS name
   - name: cylance-protect-get-threats
@@ -744,7 +744,7 @@ script:
     - contextPath: Endpoint.IP
       description: List of endpoint IP addresses
     - contextPath: Endpoint.MAC
-      description: List of endpoint MAC addresses 
+      description: List of endpoint MAC addresses
     - contextPath: Endpoint.DNSName
       description: Endpoint DNS name
     - contextPath: Endpoint.CylanceThreat.Abnormal
