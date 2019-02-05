@@ -140,6 +140,8 @@ script:
     execution: false
     name: fd-create-ticket
     outputs:
+    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+      type: Number}
     - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
@@ -208,6 +210,8 @@ script:
     execution: false
     name: fd-get-ticket
     outputs:
+    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+      type: Number}
     - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
@@ -319,6 +323,8 @@ script:
     execution: false
     name: fd-update-ticket
     outputs:
+    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+      type: Number}
     - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
@@ -509,25 +515,6 @@ script:
         creation timestamp, type: Date}
     - {contextPath: Freshdesk.CRFolder.UpdatedAt, description: Canned Response Folder's
         updated timestamp, type: Date}
-  - arguments:
-    - default: false
-      defaultValue: ''
-      description: ID of the Canned Response folder for which you want to list the
-        canned responses inside of it. To find the ID of a Canned Response folder,
-        execute the `fd-list-canned-response-folders` command to see the Canned Response
-        folders accessible to you.
-      isArray: false
-      name: id
-      predefined: []
-      required: true
-    description: List all Canned Responses in a Folder
-    execution: false
-    name: fd-list-canned_responses-in-folder
-    outputs:
-    - {contextPath: Freshdesk.CRFolder.CR.ID, description: ID of the Canned Response,
-      type: Number}
-    - {contextPath: Freshdesk.CRFolder.CR.Title, description: Title of the Canned
-        Response, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -1044,6 +1031,8 @@ script:
     execution: false
     name: fd-search-tickets
     outputs:
+    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+      type: Number}
     - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
@@ -1085,6 +1074,9 @@ script:
   isfetch: true
   runonce: false
   script: |-
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
     ''' IMPORTS '''
 
 
@@ -1372,45 +1364,6 @@ script:
             context['Attachment'] = attachments_context
             context_readable['Attachment'] = attachments_context_readable
         return context, context_readable
-
-
-    # def attachments_to_humanreadable_context(api_response, context):
-    #     """
-    #     Get the attachments field from the api_response argument if present and parse it into the context.
-    #
-    #     parameter: (dict) api_response
-    #         The json response returned by the calling function's associated 'requests' function in which calls
-    #         to the API are made.
-    #
-    #     parameter: (dict) context
-    #         The context that will be modified and returned to the war room
-    #
-    #     returns:
-    #         The modified context
-    #     """
-    #     attachment_keys_to_include = [
-    #         'attachment_url', 'content_type', 'id', 'name', 'size'
-    #     ]
-    #     # Parse attachments into context
-    #     attachments = api_response.get('attachments')
-    #     if attachments:
-    #         attachments_context = []
-    #         for attachment in attachments:
-    #             attachment_context = {}
-    #             for key, val in attachment.iteritems():
-    #                 if key in attachment_keys_to_include:
-    #                     if key == 'attachment_url':
-    #                         key = 'AttachmentURL'
-    #                     elif key == 'id':
-    #                         key = 'ID'
-    #                     else:
-    #                         key = string_to_context_key(key)
-    #                     attachment_context[key] = val
-    #             attachment_formatted = formatCell(attachment_context).split('\n')
-    #             attachment_formatted = ', '.join(attachment_formatted)
-    #             attachments_context.append(attachment_formatted)
-    #         context['Attachment'] = attachments_context
-    #     return context
 
 
     def additional_fields_to_context(context, already_in_context, additional_fields, additional_values):
@@ -2777,48 +2730,6 @@ script:
             'HumanReadable': human_readable,
             'EntryContext': {
                 'Freshdesk.CRFolder(val.ID && val.ID === obj.ID)': contexts
-            }
-        })
-
-
-    def list_canned_responses_in_folder(id):
-        endpoint_url = 'canned_response_folders/{}'.format(id)
-        response = http_request('GET', endpoint_url)
-        return response
-
-
-    def list_canned_responses_in_folder_command():
-        """
-        List all Canned Responses in a Folder.
-
-        demisto parameter: (number) id
-            ID of the Canned Response folder for which you want to list the canned responses inside of it.
-            To find the ID of a Canned Response folder, execute the `fd-list-cr-folders` command to see
-            the Canned Response folders accessible to you.
-
-        returns:
-            Canned Response Objects
-        """
-        # Get id of the containing canned response folder as cmd argument
-        cr_folder_id = demisto.args().get('id')
-        # Make request and get raw response
-        canned_responses = list_canned_responses_in_folder(cr_folder_id)
-        # Parse response into context
-        contexts = []
-        for cr in canned_responses.get('canned_responses'):
-            context = {string_to_context_key(key): val for key, val in cr.iteritems() if val}
-            context = reformat_canned_response_context(context)
-            contexts.append(context)
-        title = "Canned Responses in Folder #{}".format(canned_responses.get('id'))
-        human_readable = tableToMarkdown(title, contexts, removeNull=True)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': canned_responses,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': {
-                'Freshdesk.CRFolder(val.ID && val.ID === obj.ID).CR(val.ID && val.ID === obj.ID)': contexts
             }
         })
 
