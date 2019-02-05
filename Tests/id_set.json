@@ -4931,6 +4931,14 @@
                     "No test - fetches indicators"
                 ]
             }
+        }, 
+        {
+            "Cut": {
+                "name": "Cut", 
+                "tests": [
+                    "TransformersTestPlaybook"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -6499,7 +6507,10 @@
                 "fromversion": "3.5.0", 
                 "command_to_integration": {
                     "archer-get-file": "RSA Archer"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -12816,7 +12827,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "whois": "whois"
+                    "whois": "Whois"
                 }
             }
         }, 
@@ -12947,7 +12958,7 @@
                 ], 
                 "command_to_integration": {
                     "joe-download-report": "Joe Security", 
-                    "joe-is-online": "Joe Security", 
+                    "joe-is-online": "", 
                     "joe-analysis-info": "Joe Security", 
                     "joe-search": "Joe Security", 
                     "joe-analysis-submit-sample": "Joe Security", 
@@ -15743,7 +15754,8 @@
             "Alexa Test Playbook": {
                 "name": "Alexa Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "domain": "Alexa Rank Indicator"
@@ -15833,6 +15845,15 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
+                ]
+            }
+        }, 
+        {
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
                 ]
             }
         }
