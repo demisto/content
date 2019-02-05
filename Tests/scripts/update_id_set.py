@@ -333,6 +333,8 @@ def get_code_file(package_path, script_type):
 
 
 def get_script_package_data(package_path):
+    if package_path[-1] != os.sep:
+        package_path = os.path.join(package_path, '')
     yml_path = glob.glob(package_path + '*.yml')[0]
     code_type = get_json(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
