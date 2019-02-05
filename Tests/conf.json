@@ -476,10 +476,6 @@
             "timeout": 240
         },
         {
-            "integration": "Kafka V2",
-            "playbookID": "Kafka Test"
-        },
-        {
             "integrations": "activedir",
             "playbookID": "account_enrichment_-_generic_test"
         },
@@ -1058,8 +1054,7 @@
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
-        "Kafka V2": "Instance cannot connect from remote"
+        "WildFire": "Quota is temporarily over due to circle ci issues"
     },
     "nigthly_integrations": [
         "Lastline",

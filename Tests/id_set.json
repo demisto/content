@@ -11787,7 +11787,7 @@
                     "kafka-fetch-partitions"
                 ], 
                 "tests": [
-                    "No Tests"
+                    "No Test - Can not connect to instance from remote"
                 ]
             }
         }
