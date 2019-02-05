@@ -46,6 +46,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
     def tearDown(self):
         os.remove(FILTER_CONF)
 
+
 class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
@@ -75,7 +76,6 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
 
     def test_changed_playbook(self):
         self.create_test_file()
-        run_git_command = self.run_git_command
 
         with open(FILTER_CONF, 'r') as filter_file:
             filterd_tests = filter_file.readlines()
@@ -85,7 +85,6 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
 
     def tearDown(self):
         os.remove(FILTER_CONF)
-
 
 
 class TestConfigureTests_ChangedBoth(unittest.TestCase):

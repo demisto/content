@@ -2,6 +2,7 @@ commonfields:
   id: ReadPDFFile
   version: -1
 name: ReadPDFFile
+fromversion: 4.1.0
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
@@ -15,7 +16,7 @@ script: |-
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
-          'DBotScore(val.Indicator == obj.Indicator)':
+          'DBotScore':
           {
               'Indicator': entryID,
               'Type': 'file',
@@ -29,12 +30,6 @@ script: |-
           'ContentsFormat': formats["text"],
           'Contents': "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entryID),
           })
-
-
-  #File entity
-  pdfFile = {
-      "EntryID" : entryID
-  }
 
   #URLS
   URLs = []
@@ -64,18 +59,13 @@ script: |-
               })
               sys.exit(0)
 
+
+          # Get metadata:
           metadata = pdf.get_metadata()
-          references_dict = pdf.get_references_as_dict()
+          # Get text:
           text = pdf.get_text()
-
-          #Add Text to file entity
-          pdfFile["Text"] = text
-
-          #Add Metadata to file entity
-          for k in metadata.keys():
-              pdfFile[k] = metadata[k]
-
-          #Add URLs
+          # Get URLs:
+          references_dict = pdf.get_references_as_dict()
           if "url" in references_dict.keys():
               for url in references_dict['url']:
                   URLs.append({'Data':url})
@@ -94,9 +84,29 @@ script: |-
           demisto.results({"Type" : entryTypes["note"],
                           "ContentsFormat" : formats["markdown"],
                           "Contents" : md,
-                          "HumanReadable": md,
-                          "EntryContext": {"File(val.EntryID == obj.EntryID)" : pdfFile, "URL" : URLs}
+                          "HumanReadable": md
                           })
+
+          all_pdf_data = ""
+          if metadata:
+              for k,v in metadata.iteritems():
+                  all_pdf_data += str(v)
+          if text:
+              all_pdf_data += text
+          if URLs:
+              for u in URLs:
+                  u = u["Data"] + " "
+                  all_pdf_data += u
+
+          # Extract indicators (omitting context output, letting auto-extract work)
+          indicators_hr = demisto.executeCommand("extractIndicators", {
+              'text': all_pdf_data})[0][u'Contents']
+          demisto.results( {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['text'],
+              'Contents': indicators_hr,
+              'HumanReadable': indicators_hr
+                           })
 
       else:
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "EntryID {0} path could not be found".format(entryID) } )
@@ -139,5 +149,6 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
+runas: DBotWeakRole
 tests:
-  - ReadPDFFile-Test
+  - Extract Indicators From File - test

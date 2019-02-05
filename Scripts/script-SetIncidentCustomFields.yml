@@ -15,7 +15,8 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Sets current incident custom fields
+comment: Sets current incident custom fields. (Deprecated. Use the setIncident command to set incident custom fields.)
+deprecated: true
 enabled: true
 args:
 - name: fields
@@ -29,3 +30,5 @@ args:
   description: The list of values to match the fields - can be either array or comma
     separated
 scripttarget: 0
+tests:
+  - No test - script should be phased out of use

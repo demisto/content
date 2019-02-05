@@ -433,10 +433,7 @@ script:
         """
         LOG('Requestig to update incident ' + incident_id)
 
-        body = {
-            'assignee': assignee,
-            'status': status
-        }
+        body = "{{\"status\": \"{}\",\"asignee\": \"{}\"}}".format(status, assignee)
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         response = http_request(
             'PATCH',

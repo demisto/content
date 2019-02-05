@@ -1901,7 +1901,5 @@ script:
     description: Get the results of a specified group export
   dockerimage: demisto/gvault
   runonce: false
-New playbooks: Google Vault - Search Mail, Google Vault - Search Drive, Google Vault - Search Groups, Google Vault - Display Results
-BREAKING COMPATIBILITY: context formation changed - Export objects moved into matching Matter objects'
 tests:
   - Google-Vault-Generic-Test
