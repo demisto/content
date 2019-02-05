@@ -5,7 +5,7 @@ The purpose of standardising our code conventions is to ensure uniformity among 
 We do not use epoch time for customer facing results (Context, Human Readable, etc.). If the API you are working with requires the time format to be in epoch, then convert the date string into epoch as needed. Where possible, use the human readable format of date ```%Y-%m-%dT%H:%M:%S```
 
 ```python
-time_epoch = '499137720'
+time_epoch = 499137720
 formatted_time = formatEpochDate(time_epoch)
 print(formatted_time)
 >>> '1985-10-26T01:22:00'
@@ -166,14 +166,30 @@ In some cases, it may be necessary to pass some information to the logs in order
 First, we need to ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
  
 To post to the logs, we use the following:
-```
+```python
 demisto.debug('This is some information we want in the logs')
 ```
 
 ```LOG``` is also available for logging and will print to the logs only when  ```LOG.print_log()``` is executed. This is used to print trace logs.
+```python
+try:
+    LOG('message 1')
+    if demisto.command() == 'virustotal-get-ip':
+        LOG('message 2')
+        get_ip_command()
+
+except Exception, ex:
+    LOG(ex.message)
+    LOG.print_log() # all the above messages will be printed to logs only when LOG.print_log() executed
+```
 
 The ```@logger``` decorator is also available for use in Demisto. When the decorator is placed at the top of each function, the logger will print the function name as well as all of the argument values to the ```LOG```.
-
+```python
+@logger
+def get_ip(ip):
+    ip_data = http_request('POST', '/v1/api/ip' + ip)
+    return ip_data
+```
 
 ## No Printing Sensitive Data To The Log
 This should go without saying, however when an integration is ready to be used as part of a public release (meaning you are done debugging it) we **always** remove print statements that are not absolutely necessary.
@@ -342,6 +358,23 @@ demisto.results({
 Will produce a note in the war room as seen below:
 
 <img width="743" src="https://user-images.githubusercontent.com/42912128/50571514-4cc91900-0db5-11e9-9f89-ae4a607ff2ba.png">
+
+### AutoExtract
+As part of ```demisto.results()``` there is a field called ```IgnoreAutoExtract``` which prevents the built-in autoextract tool from enriching IPs, URLs, Files, and other indicators from the result. To use this, see the example below:
+
+```python
+demisto.results({
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['text'],
+    'Contents': command_id,
+    'HumanReadable': message,
+    'IgnoreAutoExtract': True,
+    'EntryContext': {
+        'SEPM.Quarantine': context
+    }
+})
+```
+**Please Note:** By default, IgnoreAutoExtract is set to ```False```.
 
 ## Quality Examples of Integrations
 * [McAfee Advanced Threat Defence](https://github.com/demisto/content/blob/master/Integrations/integration-McAfee-ATD.yml)
