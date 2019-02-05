@@ -48,7 +48,7 @@ script:
     }
 
     var defaultLimit = 20;
-
+    
     var doReq = function(method, path, parameters) {
         if (!parameters) {
             parameters = {};
@@ -96,7 +96,12 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', score: 0});
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange', Score: 0
+            });
+
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + hash + '\n',
                 EntryContext: ec
@@ -116,9 +121,20 @@ script:
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({indicator: hash, type: 'hash', vendor: 'ThreatExchange', Score: dbotScore});
+            ec.DBotScore.push({
+                Indicator: hash,
+                Type: 'hash',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            });
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     };
 
     var doIP = function(ip) {
@@ -141,8 +157,16 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push({Indicator: ip, Type: 'ip', Vendor: 'ThreatExchange', Score: 0});
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+            ec.DBotScore.push({
+                Indicator: ip,
+                Type: 'ip',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            });
+            return {
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + ip + '\n',
                 EntryContext: ec
             };
@@ -154,15 +178,32 @@ script:
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
                 // not really an array, so I can override
-                addMalicious(ec,outputPaths.ip,{Address: ip, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
+                addMalicious(ec, outputPaths.ip, {
+                    Address: ip,
+                    Malicious: {
+                        Vendor: 'ThreatExchange',
+                        Description: data[i].description
+                    }
+                });
             } else if (data[i].status == 'SUSPICIOUS') {
                 dbotScore = 2;
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({Indicator: ip, Type: 'ip', Vendor: 'ThreatExchange', Score: dbotScore});
+            ec.DBotScore.push({
+                Indicator: ip,
+                Type: 'ip',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            });
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     };
 
     var doURL = function(url) {
@@ -182,8 +223,16 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push({Indicator: url, Type: 'url', Vendor: 'ThreatExchange', Score: 0});
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+            ec.DBotScore.push({
+                Indicator: url,
+                Type: 'url',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            });
+            return {
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + url + '\n',
                 EntryContext: ec
             };
@@ -195,15 +244,32 @@ script:
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
                 // not really an array, so I can override
-                addMalicious(ec,outputPaths.url,{Data: url, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
+                addMalicious(ec, outputPaths.url, {
+                    Data: url,
+                    Malicious: {
+                        Vendor: 'ThreatExchange',
+                        Description: data[i].description
+                    }
+                });
             } else if (data[i].status == 'SUSPICIOUS'){
                 dbotScore = 2;
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({Indicator: url, Type: 'url', Vendor: 'ThreatExchange', Score: dbotScore});
+            ec.DBotScore.push({
+                Indicator: url,
+                Type: 'url',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            });
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     };
 
     var doDomain = function(domain) {
@@ -211,7 +277,13 @@ script:
         if (args.limit) {
             limit = args.limit;
         }
-        var argsForCall = {text: domain, limit: limit, strict_text: true, type: 'DOMAIN'};
+        var argsForCall = {
+            text: domain,
+            limit: limit,
+            strict_text: true,
+            type: 'DOMAIN'
+        };
+
         if (args.since) {
             argsForCall.since = args.since;
         }
@@ -223,8 +295,16 @@ script:
         var ec = {};
         ec.DBotScore = [];
         if (data.length === 0) {
-            ec.DBotScore.push({Indicator: domain, Type: 'domain', Vendor: 'ThreatExchange', Score: 0});
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+            ec.DBotScore.push({
+                Indicator: domain,
+                Type: 'domain',
+                Vendor: 'ThreatExchange',
+                Score: 0
+            });
+            return {
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
                 HumanReadable: 'ThreatExchange does not have details about ' + domain + '\n',
                 EntryContext: ec
             };
@@ -235,15 +315,32 @@ script:
             var dbotScore = 0;
             if (data[i].status == 'MALICIOUS') {
                 dbotScore = 3;
-                addMalicious(ec,outputPaths.domain,{Name: domain, Malicious: {Vendor: 'ThreatExchange', Description: data[i].description}});
+                addMalicious(ec, outputPaths.domain, {
+                    Name: domain,
+                    Malicious: {
+                        Vendor: 'ThreatExchange',
+                        Description: data[i].description
+                    }
+                });
             } else if (data[i].status == 'SUSPICIOUS') {
                 dbotScore = 2;
             } else if (data[i].status == 'NON_MALICIOUS'){
                 dbotScore = 1;
             }
-            ec.DBotScore.push({Indicator: domain, Type: 'domain', Vendor: 'ThreatExchange', Score: dbotScore});
+            ec.DBotScore.push({
+                Indicator: domain,
+                Type: 'domain',
+                Vendor: 'ThreatExchange',
+                Score: dbotScore
+            });
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     };
 
     var doQuery = function(text) {
@@ -251,7 +348,10 @@ script:
         if (args.limit) {
             limit = args.limit;
         }
-        var argsForCall = {limit: limit, strict_text: false};
+        var argsForCall = {
+            limit: limit,
+            strict_text: false
+        };
         if (args.type) {
             argsForCall.type = args.type;
         }
@@ -267,20 +367,35 @@ script:
         var res = doReq('GET', 'threat_descriptors', argsForCall);
         var data = res.obj.data;
         if (data.length === 0) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'ThreatExchange does not have details about ' + text + '\n'};
+            return {
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
+                HumanReadable: 'ThreatExchange does not have details about ' + text + '\n'
+            };
         }
         var ec = {};
         ec.queryResult = data;
         var md = tblToMd('ThreatExchange Query Result', data, argToList(args.headers));
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     };
 
     var doMembers = function() {
         var res = doReq('GET', 'threat_exchange_members', {});
         var data = res.obj.data;
         var md = tblToMd('ThreatExchange Members', data, argToList(args.headers));
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
     };
 
     switch (command) {

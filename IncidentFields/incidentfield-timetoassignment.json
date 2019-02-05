@@ -32,6 +32,5 @@
     "fieldCalcScript": "",
     "selectValues": null,
     "validationRegex": "",
-    "sla": 0,
-    "releaseNotes": "Changed SLA risk to zero."
+    "sla": 0
 }

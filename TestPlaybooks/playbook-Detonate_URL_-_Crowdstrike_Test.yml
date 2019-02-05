@@ -1,0 +1,140 @@
+id: Test-Detonate URL - Crowdstrike
+version: -1
+name: Test-Detonate URL - Crowdstrike
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d5cd3fa4-321a-4d11-85ab-d15bbb97754c
+    type: start
+    task:
+      id: d5cd3fa4-321a-4d11-85ab-d15bbb97754c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 9a811e86-f854-40da-8260-e9bd58201051
+    type: regular
+    task:
+      id: 9a811e86-f854-40da-8260-e9bd58201051
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: c6b5a843-947e-4170-8a8d-d6af8b83352d
+    type: regular
+    task:
+      id: c6b5a843-947e-4170-8a8d-d6af8b83352d
+      version: -1
+      name: Set URL
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.facebook.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 73b9c430-abb2-45be-8a3c-2cd45c496ecf
+    type: playbook
+    task:
+      id: 73b9c430-abb2-45be-8a3c-2cd45c496ecf
+      version: -1
+      name: Detonate URL - CrowdStrike
+      playbookName: Detonate URL - CrowdStrike
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -498,6 +498,7 @@ script:
 
             if domain_security_context:
                 secure_rank = res.get('securerank2', False)
+                DBotScore = 0
                 if secure_rank:
                     if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
                         DBotScore = 3
@@ -2914,3 +2915,4 @@ script:
   runonce: false
 tests:
   - Cisco Umbrella Test
+releaseNotes: "DBotScore was missing in case of no rank"

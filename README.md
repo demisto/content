@@ -30,32 +30,32 @@ Integrations written in Javascript or Python enable the Demisto Platform to orch
 ### Creating an Integration
 Let's look at Demisto and get started on your first integration.
 
-[Follow the steps here to learn about the Demisto IDE](/docs/getting_started/README.MD)
+[Follow the steps here to learn about the Demisto IDE](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD)
 
 ### Code Conventions
 The Demisto Code Conventions will help you understand how we format our Integrations and some of the tips and tricks we have developed over the years.
 
-[Learn about the Demisto Code Conventions](/docs/code_conventions/README.MD)
+[Learn about the Demisto Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD)
  
 ### Context and Outputs
 The Demisto platform relies heavily on collecting data from various endpoints (integrations) and creating a "Context" for them. This allows customers to be able to use the data to perform various tasks they may need to accomplish.
 
-[Click here to learn about Context and Outputs](/docs/context_and_ouputs/README.MD)
+[Click here to learn about Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD)
 
 ### Context Standards
 When we are working with data that is generic across all platforms, we format them according to our context standards. This helps integrations work interchangeably inside other playbooks.
 
-[Learn about our Context Standards here](/docs/context_standards/README.MD)
+[Learn about our Context Standards here](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD)
 
 ### Docker
 In some cases, it will be necessary to create a docker image to enable your integration to run. When this happens, we must create a new docker image using the steps outlined here:
 
-[Create a Docker Image](/docs/docker/README.MD)
+[Create a Docker Image](https://github.com/demisto/content/blob/master/docs/docker/README.MD)
 ## Reports
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
 ## Contributing Content
-For instructions about adding/modifying playbooks and scripts please see our [contributor guide](docs/contributing/README.MD).
+For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/docs/contributing/README.MD).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
 
