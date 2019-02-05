@@ -620,3 +620,5 @@ script:
     description: Checks the reputation of the given IP
 hidden: false
 releaseNotes: "Fixes for false positive reports"
+tests:
+  - Anomali_ThreatStream_Test
