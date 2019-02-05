@@ -3378,7 +3378,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   to the war room. The incident labels themselves are preserved and not modified -
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook. Requires pip and access to
-  python repository to install "olefile" package.
+  python repository to install "olefile" package. This script is deprecated, use ParseEmailFiles.
 system: true
 deprecated: true
 args:
@@ -3389,3 +3389,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
