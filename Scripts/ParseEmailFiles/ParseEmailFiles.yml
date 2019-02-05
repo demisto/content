@@ -81,6 +81,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: fix - parsing recursively msg in msg file
+releaseNotes: Fix - support email files with type 'SMTP Mail'
 tests:
   - "ParseEmailFiles-test"
