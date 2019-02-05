@@ -860,7 +860,8 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1 &&
+          val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {
@@ -887,7 +888,8 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1 &&
+          val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {
@@ -914,7 +916,8 @@ tasks:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
       maxResult: {}
       viewID:
-        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1).ViewID}
+        simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1 &&
+          val.Status == 'COMPLETED').ViewID}
     separatecontext: false
     view: |-
       {

@@ -16,6 +16,10 @@ RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
+                            "instance_name argument in conf.json the options are:\n{}"
+
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -110,7 +114,8 @@ def http_request(url, params_dict=None):
 
 
 def get_user_name_from_circle(circleci_token, build_number):
-    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
+    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number,
+                                                                                                     circleci_token)
     res = http_request(url)
 
     user_details = res.get('user', {})
@@ -122,7 +127,8 @@ def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, serve
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
 
-    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
+    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 \
+        else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
 
     if user_id:
         sc.api_call(
@@ -171,11 +177,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
                         found_matching_instance = True
 
                 if not found_matching_instance:
-                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in integration_params]
-                    print_error("{} Failed to run\n, There are {} instances of {},"
-                                "please select of them by using the instance_name "
-                                "argument in conf.json the options are:\n{}".format(playbook_id, len(integration_params),
-                                                                                  integration['name'], '\n'.join(optional_instance_names)))
+                    optional_instance_names = [optional_integration.get('instance_name') for optional_integration in
+                                               integration_params]
+                    print_error(FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
+                                                                 integration['name'],
+                                                                 '\n'.join(optional_instance_names)))
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
@@ -262,7 +268,7 @@ def main():
 
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
@@ -283,7 +289,7 @@ def main():
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
-    if not tests or len(tests) is 0:
+    if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
 
@@ -336,7 +342,8 @@ def main():
         if has_skipped_integration:
             continue
 
-        are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf, playbook_id)
+        are_params_set = set_integration_params(demisto_api_key, integrations,
+                                                secret_params, instance_names_conf, playbook_id)
         if not are_params_set:
             failed_playbooks.append(playbook_id)
             continue

@@ -3,7 +3,7 @@
     "cliName": "timetoassignment",
     "fromVersion": "4.1.0",
     "neverSetAsRequired": false,
-    "threshold": 72,
+    "threshold": 0,
     "id": "incident_timetoassignment",
     "group": 0,
     "script": "",

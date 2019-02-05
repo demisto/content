@@ -61,10 +61,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: dcb73a33-76f0-493c-84f7-c8aa103ec30b
+    taskid: b50230b2-bcbf-4d7c-8fce-7038b1166428
     type: regular
     task:
-      id: dcb73a33-76f0-493c-84f7-c8aa103ec30b
+      id: b50230b2-bcbf-4d7c-8fce-7038b1166428
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -85,7 +85,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook
+        simple: special test via playbook (1)
       templateParams: {}
       to:
         simple: yarden@demistodev.com
@@ -473,7 +473,7 @@ tasks:
       id: 881121a3-6850-41d1-8c48-4182c8e70f18
       version: -1
       name: Email found without attachment
-      script: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -492,19 +492,22 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: a0bc21bf-cc03-40cb-8e90-fad3a027a550
+    taskid: 9e1cab3b-9302-408f-86df-c12d6c8c3395
     type: regular
     task:
-      id: a0bc21bf-cc03-40cb-8e90-fad3a027a550
+      id: 9e1cab3b-9302-408f-86df-c12d6c8c3395
       version: -1
       name: Test failed
-      script: ThrowException
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
+      actual: {}
+      details: {}
       error:
         simple: Mail was not found after 30 sec.
+      expected: {}
     separatecontext: false
     view: |-
       {
@@ -648,10 +651,10 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: 7c44bc3e-1c31-4673-84ab-876ac05e8bd7
+    taskid: 21873270-125e-4bfd-8498-d168e9dd6b43
     type: regular
     task:
-      id: 7c44bc3e-1c31-4673-84ab-876ac05e8bd7
+      id: 21873270-125e-4bfd-8498-d168e9dd6b43
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -674,7 +677,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook
+        simple: special test via playbook (2)
       templateParams: {}
       to:
         simple: yarden@demistodev.com
@@ -1162,18 +1165,33 @@ tasks:
     timertriggers: []
   "35":
     id: "35"
-    taskid: eae2a1ef-2622-4193-8d15-ecaf448f0874
+    taskid: 527caf79-a5b3-4342-885e-40ad1187e738
     type: regular
     task:
-      id: eae2a1ef-2622-4193-8d15-ecaf448f0874
+      id: 527caf79-a5b3-4342-885e-40ad1187e738
       version: -1
       name: Email found without attachment
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: Email
+          accessor: Attachments
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+          - operator: count
+      details: {}
       error:
-        simple: No attachment found.
+        simple: Not all attachments found.
+      expected:
+        simple: "3"
     separatecontext: false
     view: |-
       {
