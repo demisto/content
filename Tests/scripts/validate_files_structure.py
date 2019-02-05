@@ -478,7 +478,15 @@ def integration_valid_in_id_set(file_path, integration_set):
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
+        try:
+            id_set = json.load(id_set_file)
+        except ValueError, ex:
+            if "Expecting property name" in ex.message:
+                print_error("You probably merged from master and your id_set.json has conflicts. "
+                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                return
+            else:
+                raise ex
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']

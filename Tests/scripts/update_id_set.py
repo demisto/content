@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import time
 import glob
 import json
 import yaml
@@ -400,7 +401,18 @@ def update_id_set():
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
+            try:
+                ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
+            except ValueError, ex:
+                if "Expecting property name" in ex.message:
+                    # if we got this error it means we have corrupted id_set.json
+                    # usually it will happen if we merged from master and we had a conflict in id_set.json
+                    # so we checkout the id_set.json to be exact as in master and then run update_id_set
+                    run_git_command("git checkout origin/master Tests/id_set.json")
+                    with open('./Tests/id_set.json', 'r') as id_set_file_from_master:
+                        ids_dict = json.load(id_set_file_from_master, object_pairs_hook=OrderedDict)
+                else:
+                    raise ex
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
