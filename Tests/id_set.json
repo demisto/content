@@ -11776,6 +11776,20 @@
                     "Freshdesk-Test"
                 ]
             }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-msg", 
+                    "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "No Test - Can not connect to instance from remote"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15821,6 +15835,17 @@
                     "fd-create-ticket-note": "", 
                     "fd-get-ticket": "", 
                     "fd-get-canned-response-folder": ""
+                }
+            }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
                 }
             }
         }
