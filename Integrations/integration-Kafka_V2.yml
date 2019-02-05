@@ -6,58 +6,47 @@ display: Kafka V2
 category: Messaging
 image: data:image/png;base64,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
 description: The Open source distributed streaming platform
-detaileddescription: |-
-  By default, the Kafka instance uses a non SSL connection. Turnning on the insecure flag, or providing any certificate will switch to SSL connection.
-  To generate the files needed for SSL, you will need to create a Kafka client keystore. You can use the script at:
-  https://github.com/confluentinc/confluent-platform-security-tools/blob/master/kafka-generate-ssl.sh
-  Then run the command “keytool -list -rfc -keystore kafka.client.keystore.jks” to verify that there are 3 entries in that keystore.
-  run “keytool -exportcert -alias localhost -keystore kafka.client.keystore.jks -rfc -file certificate.pem” to export the certificate.pem, this is the Client cartificate.
-  Next, you need to extract the private.key. You can do this using the following commands:
-  keytool -v -importkeystore -srckeystore kafka.client.keystore.jks -srcalias localhost -destkeystore cert_and_key.p12 -deststoretype PKCS12 openssl pkcs12 -in cert_and_key.p12 -nocerts -nodes
-  This wil print the stdout the content of the private key, copy the lines (inclusive) between —–BEGIN PRIVATE KEY—– and —–END PRIVATE KEY—– to a new key.pem file. This is the Client cartificate key nano key.pem.
-  Finally, you need to extract the CA cartificate:
-  keytool -exportcert -alias CARoot -keystore kafka.client.keystore.jks -rfc -file CARoot.pem
 configuration:
-- display: 'The Kafka brokers to connect to, as a comma separated list, in the form:
-    ip:port,ip2:port2'
+- display: Use proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: 'CSV list of Kafka brokers to connect to, e.g., ip:port,ip2:port2'
   name: brokers
   defaultvalue: ""
   type: 0
   required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
-  defaultvalue: 3 days
   type: 8
   required: false
-- display:
-     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-
-    ‎                                     Certificate Parameters
-
-    CA certificate of Kafka server (type cert)
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Certificate Settings
+    CA certificate of Kafka server (.cer)
   name: ca_cert
   defaultvalue: ""
-  type: 4
+  type: 0
   required: false
-- display: Client cartificate (type cert)
+- display: Client certificate (.cer)
   name: client_cert
   defaultvalue: ""
-  type: 0
+  type: 12
   required: false
-- display: Client certificate key (type cert)
+- display: Client certificate key (.key)
   name: client_cert_key
   defaultvalue: ""
-  type: 0
+  type: 12
   required: false
 - display: Additonal password (if required)
   name: additional_password
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
-- display:      ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-
-    ‎                                           Fetch incidents
-
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Fetch Incidents Settings
     Topic to fetch incidents from
   name: topic
   defaultvalue: ""
@@ -66,15 +55,6 @@ configuration:
 - display: Offset to fetch incidents from
   name: offset
   defaultvalue: "0"
-  type: 0
-  required: false
-- display:      ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-
-    ‎                                           Debug options
-
-    Enable debug (yes or no)
-  name: enable_debug
-  defaultvalue: "no"
   type: 0
   required: false
 - display: Fetch incidents
@@ -87,10 +67,18 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Debug Settings
+    Enable debug (will post Kafka connection logs to the War Room)
+  name: enable_debug
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
     ''' IMPORTS '''
-    import json, os, math
+    import math
     from itertools import islice
     import requests
     from distutils.util import strtobool
@@ -99,7 +87,7 @@ script:
     import logging as log
 
     # Enable debug
-    if demisto.params().get('enable_debug') == 'yes':
+    if demisto.params().get('enable_debug', False):
         log.basicConfig(level=log.DEBUG)
 
     # Disable insecure warnings
@@ -127,46 +115,102 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
+    def check_params(topic, old_offset=None, old_partition=None):
+        """
+        :param topic: topic to check
+        :type topic: :class: `pykafka.topic.Topic`
+        :param offset: offset to check if is in the topic (and cast it to in if needed)
+        :type offset: int, str, unicode or None
+        :param partition: partition to check if is in the topic (and cast to int if needed)
+        :type partition: int or str or unicode or None
+        :returns: new_offset, new_partition
+        :rtype: int, int
+        """
+        partition = None
+        offset = None
+        # Casting
+        if old_partition:
+            # Casting
+            if isinstance(old_partition, (unicode, str)):
+                if old_partition.isdigit():
+                    partition = int(old_partition)
+                else:
+                    return_error('Supplied partition is not a number')
+            if isinstance(old_partition, int):
+                partition = old_partition
+        if old_offset:
+            # Casting
+            if isinstance(old_offset, (unicode, str)):
+                if old_offset.isdigit():
+                    offset = int(old_offset)
+                    offset = OffsetType.EARLIEST if offset == 0 else offset-1
+                elif old_offset.lower() == 'earliest':
+                    offset = OffsetType.EARLIEST
+                elif old_offset.lower() == 'latest':
+                    offset = check_latest_offset(topic, partition_number=partition)-1
+                else:
+                    return_error('Supplied offset is not a number')
+                if check_latest_offset(topic, partition_number=partition) <= offset:
+                    return_error('Offset is out of bounds')
+            else:
+                return_error('Offset is not a number, earliest or latest')
+        return offset, partition
+
+
     def create_incident(message, topic):
         """
         Creates incident
+        :param message: Kafka message to create incident from
+        :type message: :class:`pykafka.common.Message`
+        :param topic: Message's topic
+        :type topic: str
         :return incident:
         """
+        raw = {
+                'Topic': topic,
+                'Partition': message.partition_id,
+                'Offset': message.offset,
+                'Message': message.value
+            }
         return {
-            'name': 'Kafka {} {} {}'.format(topic, message.partition_id, message.offset),
+            'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition_id, message.offset),
             'occurred': timestamp_to_datestring(int(time.time())),
-            'details': message.value
+            'details': message.value,
+            'rawJSON': json.dumps(raw)
         }
 
 
-    def check_latest_offset(topic):
+    def check_latest_offset(topic, partition_number=None):
         """
         :param topic: topic to check the latest offset
         :type topic: :class:`pykafka.topic.Topic`
+        :param partition_number: partition to take latest offset from
+        :type partition_number: int, str
+        :return latest_offset: last message offset
+        :rtype: int
         """
-        consumer = topic.get_simple_consumer(
-            auto_offset_reset=OffsetType.LATEST,
-            reset_offset_on_start=True)
-        LAST_N_MESSAGES = 1
-        # how many messages should we get from the end of each partition?
-        MAX_PARTITION_REWIND = int(math.ceil(LAST_N_MESSAGES / len(consumer._partitions)))
-        # find the beginning of the range we care about for each partition
-        offsets = [(p, op.last_offset_consumed - MAX_PARTITION_REWIND)
-                   for p, op in consumer._partitions.iteritems()]
-        # if we want to rewind before the beginning of the partition, limit to beginning
-        offsets = [(p, (o if o > -1 else -2)) for p, o in offsets]
-        # reset the consumer's offsets
-        consumer.reset_offsets(offsets)
-        for message in islice(consumer, LAST_N_MESSAGES):
-            pass
-        return message.offset
+        partitions = topic.latest_available_offsets()
+        latest_offset = 0
+        if partition_number is not None:
+            partition = partitions.get(str(partition))
+            if partitions.get(str(partition)):
+                latest_offset = partition[0][0]
+            else:
+                return_error('Partition does not exist')
+        else:
+            for partition in partitions.values():
+                if latest_offset < partition[0][0]:
+                    latest_offset = partition[0][0]
+        return latest_offset-1
 
 
     def create_certificate():
         """
         Creating certificate
+        :return certificate:
+        :return type: :class: `pykafka.connection.SslConfig`
         """
-        ca_path = 'ca.cert'
+        ca_path = 'ca.cet'
         client_path = 'client.cert'
         client_key_path = 'client_key.key'
         if CA_CERT:
@@ -202,7 +246,8 @@ script:
         """
         If we got here, the instance is working without any error
         """
-        demisto.results('ok')
+        if KAFKA_CLIENT.topics:
+            demisto.results('ok')
 
 
     def print_topics():
@@ -216,10 +261,9 @@ script:
             'Kafka.Topic(val.Name === obj.Name)': topics_list
         }
         if topics:
-            md = 'Topics from Kafka: '
+            md = '### Topics from Kafka:'
             for topic in topics:
-                md += topic + ', '
-            md = md[:-2]
+                md += '\n* ' + topic
         else:
             md = 'No topics found in Kafka'
         demisto.results({
@@ -238,7 +282,7 @@ script:
         """
         topic = demisto.args().get('topic')
         value = demisto.args().get('value')
-        partitioning_key = demisto.args().get('partitioning-key')
+        partitioning_key = demisto.args().get('partitioning_key')
 
         partitioning_key = str(partitioning_key)
         if partitioning_key.isdigit():
@@ -253,7 +297,7 @@ script:
                     message=str(value),
                     partition_key=partitioning_key
                 )
-            demisto.results('Message has succefully produced to topic \'{}\''.format(topic))
+            demisto.results('Message was succefully produced to topic \'{}\''.format(topic))
         else:
             return_error('Topic {} was not found in Kafka'.format(topic))
 
@@ -264,27 +308,11 @@ script:
         """
         topic = demisto.args().get('topic')
         offset = demisto.args().get('offset')
-        partition = demisto.args().get('partition', None)
-
-        # Checking if valid offset is given
-        offset = str(offset)
-        if offset.isdigit():
-            offset = int(offset)
-        elif offset.lower() == 'earliest':
-            offset = OffsetType.EARLIEST
-        elif offset.lower() == 'latest':
-            offset = OffsetType.LATEST
-        else:
-            return_error('Offset is not a number, earliest or latest')
-
-        if partition:
-            partition = int(partition)
+        partition = demisto.args().get('partition')
 
         if topic in KAFKA_CLIENT.topics:
-            kafka_topic = KAFKA_CLIENT.topics[str(topic)]
-            if check_latest_offset(kafka_topic) < offset:
-                return_error('Offset is higher than the latest offset in Kafka topic {}'.format(topic))
-
+            kafka_topic = KAFKA_CLIENT.topics[topic]
+            offset, partition = check_params(kafka_topic, old_offset=offset, old_partition=partition)
             consumer = kafka_topic.get_simple_consumer(
                 auto_offset_reset=offset,
                 reset_offset_on_start=True
@@ -369,28 +397,14 @@ script:
         topic = demisto.params().get('topic')
         partition = demisto.params().get('partition')
 
-        # Checking if valid offset is given
-        offset = str(offset)
-        if offset.isdigit():
-            offset = int(offset)
-        elif offset.lower() == 'earliest':
-            offset = OffsetType.EARLIEST
-        else:
-            return_error('Offset is not a number, earliest or latest')
-
-        partition = str(partition)
-        if partition.isdigit():
-            partition = int(partition)
-        else:
-            partition = None
-
         incidents = list()
 
         # Chck for topic in Kafka
         if topic in KAFKA_CLIENT.topics:
+            kafka_topic = KAFKA_CLIENT.topics[topic]
+            offset, partition = check_params(kafka_topic, old_offset=offset, old_partition=partition)
             last_offset = demisto.getLastRun().get('last_offset')
             last_fetch = last_offset if last_offset > offset else offset
-            kafka_topic = KAFKA_CLIENT.topics[topic]
 
             # If need to fetch
             latest_offset = check_latest_offset(kafka_topic)
@@ -402,7 +416,7 @@ script:
                 for i in range(last_fetch, latest_offset):
                     message = consumer.consume()
                     incidents.append(create_incident(message=message, topic=topic))
-                    if message.offset == last_fetch - 1:
+                    if message.offset == latest_offset:
                         break;
                 demisto.setLastRun({'last_offset': latest_offset})
             demisto.incidents(incidents)
@@ -440,7 +454,7 @@ script:
         return_error(e.message)
     # pykafka exception
     except exceptions, e:
-        LOG(e.message)
+        return_error(e.message)
     finally:
         try:
             os.remove(os.path.abspath('ca.cert'))
@@ -456,43 +470,52 @@ script:
     - contextPath: Kafka.Topic.Name
       description: Kafka topic name
       type: string
-    description: Print all partitions for a topic
+    description: Prints all partitions of a topic.
   - name: kafka-publish-msg
     arguments:
     - name: topic
       required: true
-      description: A Topic to filter by
+      description: A topic to filter messages by
     - name: value
       required: true
-      description: Message value in string format
-    - name: partitioning-key
-      description: Message Partition key
-    description: Publish a message to Kafka
+      description: Message value (string)
+    - name: partitioning_key
+      description: Message partition key (number)
+    description: Publishes a message to Kafka.
   - name: kafka-consume-msg
     arguments:
     - name: topic
       required: true
       description: A Topic to filter by
     - name: offset
-      description: 'Message offset (Can be Earliest, Latest or any number) '
-      defaultValue: EARLIEST
+      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
+      defaultValue: Earliest
     - name: partition
       description: Partition (number)
     outputs:
     - contextPath: Kafka.Topic.Name
       description: Name of the topic
       type: string
-    - contextPath: Kafka.Name.Message.Value
+    - contextPath: Kafka.Topic.Message.Value
       description: Value of the message
       type: string
-    - contextPath: Kafka.Name.Message.Offset
+    - contextPath: Kafka.Topic.Message.Offset
       description: Offset of the value in the topic
       type: number
-    description: Consume a single kafka message
+    description: Consumes a single Kafka message.
   - name: kafka-fetch-partitions
     arguments:
     - name: topic
-      description: A Topic to filter by
+      description: A topic to filter by
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of topic
+      type: string
+    - contextPath: Kafka.Topic.Partition
+      description: Prints all partitions for a topic.
+      type: number
     description: Print all partitions for a topic
   isfetch: true
   runonce: false
+tests:
+  - Kafka Test

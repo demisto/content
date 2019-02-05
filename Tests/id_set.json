@@ -11753,6 +11753,9 @@
                     "kafka-publish-msg", 
                     "kafka-consume-msg", 
                     "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "Kafka Test"
                 ]
             }
         }
@@ -15767,6 +15770,17 @@
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
                 ]
+            }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
+                }
             }
         }
     ]
