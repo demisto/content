@@ -306,10 +306,7 @@ script:
         dbot_scores = []
         for item in reader:
             if isinstance(item, results.Message):
-                if "Error in" in item.message:
-                    raise ValueError(item.message)
-                res.append(item.message)
-
+                demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(item.message)})
             elif isinstance(item, dict):
                 if demisto.get(item, 'host'):
                     dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
@@ -319,22 +316,7 @@ script:
         ec['Splunk.Result'] = res
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
-
-        headers=""
-        if (res and len(res)>0):
-            if not isinstance(res[0], dict):
-                headers = "results"
-
-        human_readable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
-
-        demisto.results({
-          "Type": 1,
-          "Contents": res,
-          "ContentsFormat": "json",
-          "EntryContext": ec,
-          "HumanReadable": human_readable
-        })
-
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res), "EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'splunk-job-create':
         searchquery_normal = demisto.args()['query']
@@ -557,4 +539,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "Prettify splunk-search command output - Add results to Markdown table"
