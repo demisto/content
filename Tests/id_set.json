@@ -11763,7 +11763,6 @@
                     "fd-list-contacts", 
                     "fd-get-contact", 
                     "fd-list-canned-response-folders", 
-                    "fd-list-canned_responses-in-folder", 
                     "fd-get-canned-response-folder", 
                     "fd-list-groups", 
                     "fd-ticket-reply", 
