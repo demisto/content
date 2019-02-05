@@ -7,6 +7,7 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 flake8 = "*"
+pytest-mock = "*"
 
 [packages]
 olefile = "*"
