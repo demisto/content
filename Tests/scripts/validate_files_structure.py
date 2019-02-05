@@ -327,7 +327,7 @@ def is_existing_image(file_path):
 
 def get_modified_and_added_files(branch_name, is_circle):
     if is_circle:
-        all_changed_files_string = run_git_command("git diff --name-status origin/master..{}".format(branch_name))
+        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
