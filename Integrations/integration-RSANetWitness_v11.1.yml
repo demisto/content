@@ -83,7 +83,7 @@ script:
                 'https': https
             }
             return proxies
-        return None
+        return {"http": None, "https": None}
 
 
     """
