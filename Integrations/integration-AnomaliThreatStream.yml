@@ -247,9 +247,8 @@ script:
         var dbotScore = 1;
         if (output['Threat Score'] >= args.threshold && output['Status'] !== 'falsepos') {
             dbotScore = 3;
-        } else if (output['Threat Score'] > 0) {
+        } else if (output['Threat Score'] > 0 && output['Status'] !== 'falsepos') {
             dbotScore = 2;
-        }
 
         entry.EntryContext.DBotScore = {
             Indicator: args.value,
