@@ -619,6 +619,6 @@ script:
         with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
 hidden: false
-releaseNotes: "Fixed Dbot Score for false positive reports"
+releaseNotes: "Fixed DbotScore for false positive reports"
 tests:
   - Anomali_ThreatStream_Test
