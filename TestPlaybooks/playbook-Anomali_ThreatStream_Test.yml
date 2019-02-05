@@ -540,7 +540,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     view: |-
       {
         "position": {
