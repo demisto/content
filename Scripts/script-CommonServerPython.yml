@@ -1443,4 +1443,3 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "add is_error and get_error helper functions check and extract error out of demisto.executeCommand() result"
