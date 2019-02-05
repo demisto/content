@@ -74,16 +74,9 @@ script:
     """
 
     def set_proxies():
-
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return {"http": None, "https": None}
+        if not demisto.params()['proxy']:
+            for _ in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
+                del os.environ[_]
 
 
     """
