@@ -15808,20 +15808,19 @@
                 ], 
                 "command_to_integration": {
                     "fd-list-contacts": "Freshdesk", 
-                    "fd-view-contact": "Freshdesk", 
+                    "fd-get-ticket-conversations": "", 
                     "fd-list-agents": "Freshdesk", 
                     "fd-update-ticket": "Freshdesk", 
+                    "fd-get-contact": "", 
+                    "fd-search-tickets": "", 
+                    "fd-list-canned-response-folders": "", 
                     "fd-delete-ticket": "Freshdesk", 
                     "fd-list-groups": "Freshdesk", 
                     "fd-ticket-reply": "Freshdesk", 
                     "fd-create-ticket": "Freshdesk", 
-                    "fd-view-ticket": "Freshdesk", 
-                    "fd-list-crs-in-folder": "Freshdesk", 
-                    "fd-detail-crs": "Freshdesk", 
-                    "fd-list-tickets": "Freshdesk", 
-                    "fd-ticket-note": "Freshdesk", 
-                    "fd-get-conversations": "Freshdesk", 
-                    "fd-list-cr-folders": "Freshdesk"
+                    "fd-create-ticket-note": "", 
+                    "fd-get-ticket": "", 
+                    "fd-get-canned-response-folder": ""
                 }
             }
         }

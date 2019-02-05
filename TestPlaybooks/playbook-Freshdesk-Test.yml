@@ -101,10 +101,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: bcbde368-bc80-464f-8eb9-c2c6e6e4d1e5
+    taskid: 338e9b09-fa15-4f39-89fa-d10b61323ff8
     type: condition
     task:
-      id: bcbde368-bc80-464f-8eb9-c2c6e6e4d1e5
+      id: 338e9b09-fa15-4f39-89fa-d10b61323ff8
       version: -1
       name: Verify Ticket Creation
       type: condition
@@ -120,7 +120,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Subject
+              simple: Freshdesk.Ticket.Subject
             iscontext: true
           right:
             value:
@@ -169,17 +169,17 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: c6c31da9-3d26-499e-8fa6-3d82c46c2289
+    taskid: 16e25f02-eaf5-477f-8e34-a77a841e60a6
     type: regular
     task:
-      id: c6c31da9-3d26-499e-8fa6-3d82c46c2289
+      id: 16e25f02-eaf5-477f-8e34-a77a841e60a6
       version: -1
-      name: fd-view-ticket
+      name: fd-get-ticket
       description: View a Ticket.
-      script: Freshdesk|||fd-view-ticket
+      script: '|||fd-get-ticket'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -200,12 +200,12 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: a5595c5f-59e4-45e4-811a-f8e8abb55821
+    taskid: 38327088-c043-4591-82f7-734196708c3c
     type: condition
     task:
-      id: a5595c5f-59e4-45e4-811a-f8e8abb55821
+      id: 38327088-c043-4591-82f7-734196708c3c
       version: -1
-      name: Verify View Ticket
+      name: Verify Get Ticket
       type: condition
       iscommand: false
       brand: ""
@@ -219,7 +219,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Subject
+              simple: Freshdesk.Ticket.Subject
             iscontext: true
           right:
             value:
@@ -304,10 +304,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 567b3c26-874b-443b-8784-e07411328542
+    taskid: bfd543db-9356-4488-89f9-6a4b20319e42
     type: regular
     task:
-      id: 567b3c26-874b-443b-8784-e07411328542
+      id: bfd543db-9356-4488-89f9-6a4b20319e42
       version: -1
       name: fd-update-ticket
       description: Update the ticket specified by the ID
@@ -319,6 +319,7 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      additional_fields: {}
       assigned_agent: {}
       assigned_group: {}
       description: {}
@@ -343,10 +344,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 2f792870-7f33-401e-818e-eae804a6ad7b
+    taskid: 4a5aab12-0c5f-4f33-8207-eb2446a6f910
     type: condition
     task:
-      id: 2f792870-7f33-401e-818e-eae804a6ad7b
+      id: 4a5aab12-0c5f-4f33-8207-eb2446a6f910
       version: -1
       name: Verify Ticket Update
       type: condition
@@ -362,7 +363,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Subject
+              simple: Freshdesk.Ticket.Subject
             iscontext: true
           right:
             value:
@@ -370,7 +371,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: FD.Ticket.Priority
+              simple: Freshdesk.Ticket.Priority
             iscontext: true
           right:
             value:
@@ -386,10 +387,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 684f80ad-d467-4ab0-844e-88cc6f830802
+    taskid: f3e1040d-3606-4f1c-8c82-ff3dd7dc73c3
     type: regular
     task:
-      id: 684f80ad-d467-4ab0-844e-88cc6f830802
+      id: f3e1040d-3606-4f1c-8c82-ff3dd7dc73c3
       version: -1
       name: fd-list-contacts
       description: List all contacts matching the specified filters. If no filters
@@ -421,10 +422,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 97e5b10e-995f-4469-8b2a-9f64356c33e3
+    taskid: ff0d070c-6f96-4f9e-8a44-b695422121d0
     type: regular
     task:
-      id: 97e5b10e-995f-4469-8b2a-9f64356c33e3
+      id: ff0d070c-6f96-4f9e-8a44-b695422121d0
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -454,10 +455,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: db8e1891-970c-4cc7-8cb1-af8221eade90
+    taskid: 3e1af708-d5ad-484b-8e6d-859947de54fd
     type: condition
     task:
-      id: db8e1891-970c-4cc7-8cb1-af8221eade90
+      id: 3e1af708-d5ad-484b-8e6d-859947de54fd
       version: -1
       name: Verify List Contacts
       type: condition
@@ -473,7 +474,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.Contact.Id
+              simple: Freshdesk.Contact.ID
             iscontext: true
     view: |-
       {
@@ -486,10 +487,10 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 0be9f39c-468e-4ebf-81bc-b949a4e29463
+    taskid: 792fc43c-9966-430c-8050-96b8e232deda
     type: regular
     task:
-      id: 0be9f39c-468e-4ebf-81bc-b949a4e29463
+      id: 792fc43c-9966-430c-8050-96b8e232deda
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -519,17 +520,17 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: bab68fcd-d15a-458a-89a4-2b4d9a8ff433
+    taskid: b830abd9-2407-4bd4-85d7-20a08b9cb3d1
     type: regular
     task:
-      id: bab68fcd-d15a-458a-89a4-2b4d9a8ff433
+      id: b830abd9-2407-4bd4-85d7-20a08b9cb3d1
       version: -1
-      name: fd-view-contact
+      name: fd-get-contact
       description: View the details of the contact specified by the ID number
-      script: Freshdesk|||fd-view-contact
+      script: '|||fd-get-contact'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -557,12 +558,12 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: fd265908-d438-4926-8fac-6cf2d51e8785
+    taskid: 258a875b-652a-4a21-87a4-44174f770892
     type: condition
     task:
-      id: fd265908-d438-4926-8fac-6cf2d51e8785
+      id: 258a875b-652a-4a21-87a4-44174f770892
       version: -1
-      name: Verify View Contact
+      name: Verify Get Contact
       type: condition
       iscommand: false
       brand: ""
@@ -576,7 +577,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.Contact.CreatedAt
+              simple: Freshdesk.Contact.CreatedAt
             iscontext: true
     view: |-
       {
@@ -589,17 +590,17 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 2ce24514-f526-4a15-8882-ab0cac0c5f41
+    taskid: d176a539-daef-4126-8f8d-66a848a55fa7
     type: regular
     task:
-      id: 2ce24514-f526-4a15-8882-ab0cac0c5f41
+      id: d176a539-daef-4126-8f8d-66a848a55fa7
       version: -1
-      name: fd-list-cr-folders
+      name: fd-list-canned-response-folders
       description: List all Canned Response Folders (Only users with Admin Privileges)
-      script: Freshdesk|||fd-list-cr-folders
+      script: '|||fd-list-canned-response-folders'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
@@ -615,10 +616,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 51eb44ae-9a8b-4693-8b6f-79861203700a
+    taskid: 8034e020-3e43-45b0-88aa-ce203dc5b835
     type: regular
     task:
-      id: 51eb44ae-9a8b-4693-8b6f-79861203700a
+      id: 8034e020-3e43-45b0-88aa-ce203dc5b835
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -648,73 +649,12 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 9c896229-7597-4bcd-838f-6876f0daa9ec
+    taskid: 57b9cc34-e349-4c8d-8cf1-39d6c63d3b0c
     type: condition
     task:
-      id: 9c896229-7597-4bcd-838f-6876f0daa9ec
+      id: 57b9cc34-e349-4c8d-8cf1-39d6c63d3b0c
       version: -1
-      name: Verify List CR Folders
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: FD.CRFolder.Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: a2ee2fdc-a848-496c-84e3-2bf60d7f3b35
-    type: regular
-    task:
-      id: a2ee2fdc-a848-496c-84e3-2bf60d7f3b35
-      version: -1
-      name: fd-list-crs-in-folder
-      description: List all Canned Responses in a Folder
-      script: Freshdesk|||fd-list-crs-in-folder
-      type: regular
-      iscommand: true
-      brand: Freshdesk
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      id:
-        simple: ${FD.CRFolder.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-  "21":
-    id: "21"
-    taskid: fa98eece-f8d6-40a3-87df-4acd5d3fb8a8
-    type: condition
-    task:
-      id: fa98eece-f8d6-40a3-87df-4acd5d3fb8a8
-      version: -1
-      name: Verify List Canned Responses in Folder
+      name: Verify List Canned Response Folders
       type: condition
       iscommand: false
       brand: ""
@@ -728,54 +668,54 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.CRFolder.CR.Title
+              simple: Freshdesk.CRFolder.ID
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3345
         }
       }
     note: false
     timertriggers: []
   "22":
     id: "22"
-    taskid: cc4465bb-c2d7-4ba6-8489-99d465e3adec
+    taskid: 6162480b-e3c5-4aae-8f89-1d22ccc7fa37
     type: regular
     task:
-      id: cc4465bb-c2d7-4ba6-8489-99d465e3adec
+      id: 6162480b-e3c5-4aae-8f89-1d22ccc7fa37
       version: -1
-      name: fd-detail-crs
+      name: fd-get-canned-response-folder
       description: View the details of all the Canned Responses in a Folder.
-      script: Freshdesk|||fd-detail-crs
+      script: '|||fd-get-canned-response-folder'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
     scriptarguments:
       id:
-        simple: ${FD.CRFolder.Id}
+        simple: ${Freshdesk.CRFolder.ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 3520
         }
       }
     note: false
     timertriggers: []
   "23":
     id: "23"
-    taskid: af5259a2-dd2a-465e-886f-35e8f82aead2
+    taskid: 7e46379e-202d-49e8-83f5-0e52d6fe5c6e
     type: condition
     task:
-      id: af5259a2-dd2a-465e-886f-35e8f82aead2
+      id: 7e46379e-202d-49e8-83f5-0e52d6fe5c6e
       version: -1
-      name: Verify Detail Canned Responses
+      name: Verify Get Canned Response Folder
       type: condition
       iscommand: false
       brand: ""
@@ -789,13 +729,13 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.CRFolder.CR.Content
+              simple: Freshdesk.CRFolder.CR.Content
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 3695
         }
       }
     note: false
@@ -821,17 +761,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 3870
         }
       }
     note: false
     timertriggers: []
   "25":
     id: "25"
-    taskid: 7e95118b-0033-404c-8d31-648ecf1917f2
+    taskid: f69e5e6a-5eb4-439a-8805-853d6c4ee68e
     type: condition
     task:
-      id: 7e95118b-0033-404c-8d31-648ecf1917f2
+      id: f69e5e6a-5eb4-439a-8805-853d6c4ee68e
       version: -1
       name: Verify List Groups
       type: condition
@@ -847,23 +787,23 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.Group.GroupType
+              simple: Freshdesk.Group.GroupType
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4045
         }
       }
     note: false
     timertriggers: []
   "26":
     id: "26"
-    taskid: cb8482e5-15e7-4b39-82f0-f9457749a60b
+    taskid: cdfc61d3-4685-4b02-87f3-98b1b9e94ec1
     type: regular
     task:
-      id: cb8482e5-15e7-4b39-82f0-f9457749a60b
+      id: cdfc61d3-4685-4b02-87f3-98b1b9e94ec1
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -886,17 +826,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4220
         }
       }
     note: false
     timertriggers: []
   "27":
     id: "27"
-    taskid: 2f0e4cfc-3c24-418a-8dde-409f7f313a77
+    taskid: 0eac5488-9c9d-4356-867b-ee28f728c582
     type: regular
     task:
-      id: 2f0e4cfc-3c24-418a-8dde-409f7f313a77
+      id: 0eac5488-9c9d-4356-867b-ee28f728c582
       version: -1
       name: fd-ticket-reply
       description: Reply to a specified ticket
@@ -923,17 +863,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4395
         }
       }
     note: false
     timertriggers: []
   "28":
     id: "28"
-    taskid: b5d945eb-5726-4c27-821a-3f80e279c625
+    taskid: 98550792-8f7d-4ee9-8e91-1f42f24a940e
     type: condition
     task:
-      id: b5d945eb-5726-4c27-821a-3f80e279c625
+      id: 98550792-8f7d-4ee9-8e91-1f42f24a940e
       version: -1
       name: Verify Ticket Reply
       type: condition
@@ -949,7 +889,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Conversation.BodyText
+              simple: Freshdesk.Ticket.Conversation.BodyText
             iscontext: true
           right:
             value:
@@ -958,25 +898,25 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 4570
         }
       }
     note: false
     timertriggers: []
   "29":
     id: "29"
-    taskid: 2032267f-2cb8-466a-8d86-762c501568fa
+    taskid: 62ea25dc-e337-4bc3-8954-9b39faebc25d
     type: regular
     task:
-      id: 2032267f-2cb8-466a-8d86-762c501568fa
+      id: 62ea25dc-e337-4bc3-8954-9b39faebc25d
       version: -1
-      name: fd-ticket-note
+      name: fd-create-ticket-note
       description: Create a note for a specified ticket. By default any note you add
         will be private unless you set the 'private' command argument to False.
-      script: Freshdesk|||fd-ticket-note
+      script: '|||fd-create-ticket-note'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
@@ -987,7 +927,7 @@ tasks:
       incoming: {}
       notify_emails: {}
       private:
-        simple: "False"
+        simple: "false"
       ticket_id:
         simple: ${OriginalTicketID}
       user_id: {}
@@ -996,19 +936,19 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 4745
         }
       }
     note: false
     timertriggers: []
   "30":
     id: "30"
-    taskid: 0fab909c-b625-4f6c-8634-813e00f36bf5
+    taskid: d1bfdf3f-a0b9-47c5-8e7a-8a563138fa93
     type: condition
     task:
-      id: 0fab909c-b625-4f6c-8634-813e00f36bf5
+      id: d1bfdf3f-a0b9-47c5-8e7a-8a563138fa93
       version: -1
-      name: Verify Ticket Note
+      name: Verify Create Ticket Note
       type: condition
       iscommand: false
       brand: ""
@@ -1022,7 +962,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Conversation.BodyText
+              simple: Freshdesk.Ticket.Conversation.BodyText
             iscontext: true
           right:
             value:
@@ -1031,17 +971,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 4920
         }
       }
     note: false
     timertriggers: []
   "31":
     id: "31"
-    taskid: 6d73afc2-b89d-4b97-84ce-b2f123c337c4
+    taskid: fec4d997-c59a-4220-8863-72385aac0dfe
     type: regular
     task:
-      id: 6d73afc2-b89d-4b97-84ce-b2f123c337c4
+      id: fec4d997-c59a-4220-8863-72385aac0dfe
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1064,24 +1004,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5095
         }
       }
     note: false
     timertriggers: []
   "32":
     id: "32"
-    taskid: fda1420a-5191-4f79-89bf-b300a4f5314c
+    taskid: 74d27f61-3a38-4419-892e-475727c4b69a
     type: regular
     task:
-      id: fda1420a-5191-4f79-89bf-b300a4f5314c
+      id: 74d27f61-3a38-4419-892e-475727c4b69a
       version: -1
-      name: fd-get-conversations
+      name: fd-get-ticket-conversations
       description: Lists all replies and notes for a specified ticket
-      script: Freshdesk|||fd-get-conversations
+      script: '|||fd-get-ticket-conversations'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -1093,19 +1033,19 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 5270
         }
       }
     note: false
     timertriggers: []
   "33":
     id: "33"
-    taskid: 8216e3e0-e00d-4550-8106-c654e366773d
+    taskid: 390893e7-efda-40aa-896e-593cd74d6b60
     type: condition
     task:
-      id: 8216e3e0-e00d-4550-8106-c654e366773d
+      id: 390893e7-efda-40aa-896e-593cd74d6b60
       version: -1
-      name: Verify Get Conversations
+      name: Verify Get Ticket Conversations
       type: condition
       iscommand: false
       brand: ""
@@ -1119,7 +1059,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Conversation.BodyText
+              simple: Freshdesk.Ticket.Conversation.BodyText
             iscontext: true
           right:
             value:
@@ -1127,7 +1067,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FD.Ticket.Conversation.BodyText
+              simple: Freshdesk.Ticket.Conversation.BodyText
             iscontext: true
           right:
             value:
@@ -1136,7 +1076,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 5445
         }
       }
     note: false
@@ -1167,17 +1107,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 5620
         }
       }
     note: false
     timertriggers: []
   "35":
     id: "35"
-    taskid: 5207244b-d316-404e-8f2f-f420b0da4ca2
+    taskid: 9f00efb6-3855-4d4a-84ce-523297fa9cd9
     type: condition
     task:
-      id: 5207244b-d316-404e-8f2f-f420b0da4ca2
+      id: 9f00efb6-3855-4d4a-84ce-523297fa9cd9
       version: -1
       name: Verify List Agents
       type: condition
@@ -1193,35 +1133,34 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: FD.Agent.CreatedAt
+              simple: Freshdesk.Agent.CreatedAt
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 5795
         }
       }
     note: false
     timertriggers: []
   "36":
     id: "36"
-    taskid: 648c00c4-31ad-4538-856d-649ee67c0123
+    taskid: 00621200-68a3-45cb-85a1-c53ef3df8c7d
     type: regular
     task:
-      id: 648c00c4-31ad-4538-856d-649ee67c0123
+      id: 00621200-68a3-45cb-85a1-c53ef3df8c7d
       version: -1
-      name: fd-list-tickets
+      name: fd-search-tickets
       description: List all tickets that match the filter criteria you specify.
-      script: Freshdesk|||fd-list-tickets
+      script: '|||fd-search-tickets'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "37"
     scriptarguments:
-      company_id: {}
       custom_query: {}
       filter: {}
       include_description: {}
@@ -1236,19 +1175,19 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 5970
         }
       }
     note: false
     timertriggers: []
   "37":
     id: "37"
-    taskid: d1c5ee70-050e-4f49-8e9f-7de1d42e05e8
+    taskid: 71bdf060-2964-444b-8f3a-f6c394328bca
     type: condition
     task:
-      id: d1c5ee70-050e-4f49-8e9f-7de1d42e05e8
+      id: 71bdf060-2964-444b-8f3a-f6c394328bca
       version: -1
-      name: Verify List Tickets
+      name: Verify Search Tickets
       type: condition
       iscommand: false
       brand: ""
@@ -1266,23 +1205,23 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: FD.Ticket.Id
+              simple: Freshdesk.Ticket.ID
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 6145
         }
       }
     note: false
     timertriggers: []
   "38":
     id: "38"
-    taskid: 0b4bf8ec-e786-4d25-8365-f16fad3232e3
+    taskid: 65a07546-2bee-47cb-8565-e7fe6bd91514
     type: regular
     task:
-      id: 0b4bf8ec-e786-4d25-8365-f16fad3232e3
+      id: 65a07546-2bee-47cb-8565-e7fe6bd91514
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1305,17 +1244,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 6320
         }
       }
     note: false
     timertriggers: []
   "39":
     id: "39"
-    taskid: f9609a16-89ce-444a-8e16-82b3a270fe62
+    taskid: b55845fa-fcee-495b-852e-96490dc27744
     type: regular
     task:
-      id: f9609a16-89ce-444a-8e16-82b3a270fe62
+      id: b55845fa-fcee-495b-852e-96490dc27744
       version: -1
       name: fd-delete-ticket
       description: Delete the ticket specified by the 'id' command argument
@@ -1334,24 +1273,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 6495
         }
       }
     note: false
     timertriggers: []
   "40":
     id: "40"
-    taskid: fde75ae4-8a44-4f00-8e5c-91a58b78a44b
+    taskid: e4ac2fc1-a81d-4db6-84e9-8cc6dd46af1f
     type: regular
     task:
-      id: fde75ae4-8a44-4f00-8e5c-91a58b78a44b
+      id: e4ac2fc1-a81d-4db6-84e9-8cc6dd46af1f
       version: -1
-      name: fd-view-ticket
+      name: fd-get-ticket
       description: View a Ticket.
-      script: Freshdesk|||fd-view-ticket
+      script: '|||fd-get-ticket'
       type: regular
       iscommand: true
-      brand: Freshdesk
+      brand: ""
     nexttasks:
       '#none#':
       - "41"
@@ -1367,7 +1306,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 6670
         }
       }
     note: false
@@ -1399,7 +1338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 6845
         }
       }
     note: false
@@ -1420,7 +1359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 7020
         }
       }
     note: false
@@ -1430,7 +1369,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7385,
+        "height": 7035,
         "width": 380,
         "x": 50,
         "y": 50
