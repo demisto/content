@@ -581,10 +581,10 @@ tasks:
     timertriggers: []
   "20":
     id: "20"
-    taskid: 5e5cdf32-5c9b-4721-8b65-1c498fda0c92
+    taskid: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
     type: regular
     task:
-      id: 5e5cdf32-5c9b-4721-8b65-1c498fda0c92
+      id: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -593,7 +593,8 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      all: {}
+      all:
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
