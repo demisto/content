@@ -16,5 +16,8 @@ Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 
-This is a test smtp type email
+This is a test smtp type email.  
+              After utf spaces.
+Some hebrew: שלום
+
 

@@ -42,7 +42,7 @@ def test_eml_smtp_type(mocker):
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
-    # assert demisto.executeCommand('getFilePath', {})[0]['Type'] == entryTypes['note']
+    assert demisto.executeCommand('getFilePath', {})[0]['Type'] == entryTypes['note']
     main()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
