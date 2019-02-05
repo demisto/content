@@ -30,7 +30,7 @@ def readJsonFile(filepath):
 
 def readYmlFile(filepath):
     with open(filepath, 'r') as f:
-        out = yaml.load(f)
+        out = yaml.safe_load(f)
         return out
     return []
 

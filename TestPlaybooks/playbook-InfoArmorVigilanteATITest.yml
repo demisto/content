@@ -253,9 +253,9 @@ tasks:
       - "12"
     scriptarguments:
       days_ago:
-        simple: "100"
+        simple: "1000"
       keyword:
-        simple: netflix
+        simple: infoarmor
       leak_id: {}
       limit:
         simple: "5"

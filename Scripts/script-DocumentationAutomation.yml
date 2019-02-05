@@ -8,6 +8,7 @@ script: |-
 
   reload(sys)
   sys.setdefaultencoding('utf-8')
+  CMD_ARGS_REGEX = re.compile('([\w_]+)=((\".+\")|(`.+`)|(\"\"\".+\"\"\")|([^ ]+)) ?')
 
   def get_yaml_obj(entry_id):
       yml_file_path = demisto.getFilePath(entry_id)['path']
@@ -32,13 +33,18 @@ script: |-
       valid_examples = [example for example in command_examples
           if example.startswith(cmd) or example.startswith('!{}'.format(cmd))]
 
-      return valid_examples[0] if len(valid_examples) > 0 else ' '
+      example = valid_examples[0] if len(valid_examples) > 0 else ' '
+      if example.startswith('!'):
+          return example[1:]
+      else:
+          return example
 
 
   def extract_command(cmd_example):
-      parts = cmd_example.split(' ')
+      cmd, args_str = cmd_example.split(' ', 1)
+      args = dict([(k, v.strip('"`')) for k, v, _, _, _, _ in CMD_ARGS_REGEX.findall(args_str)])
 
-      return parts[0], dict([p.replace('"', '').split('=') for p in parts[1:]])
+      return cmd, args
 
 
   def generate_command_example(cmd, cmd_example):
@@ -52,7 +58,7 @@ script: |-
               for entry in res:
                   if isError(entry):
                       demisto.results(res)
-                      raise RuntimeError('something went wrong with your command.')
+                      raise RuntimeError('something went wrong with your command: {}'.format(cmd_example))
 
               raw_context = entry.get('EntryContext')
               context = {k.split('(')[0] : v for k, v in raw_context.items()}
@@ -65,7 +71,7 @@ script: |-
               demisto.results(res)
           except Exception as e:
               demisto.results('Error encountered in the processing of command {}, error was: {}'.format(cmd['name'], str(e)) +
-                  ". Please check your command inputs and outputs")
+                  "Please check your command inputs and outputs")
       else:
           demisto.results('did not get any example for {}. please add it manually.'.format(cmd['name']))
 
@@ -214,7 +220,7 @@ script: |-
               if not arg.get('description'):
                   demisto.results('Error! You are missing description in input {} of command {}'.format(arg['name'], cmd['name']))
               required_status = 'Required' if arg.get('required') == True else 'Optional'
-              section.append('| {} | {} | {} | '.format(arg['name'], arg['description'], required_status))
+              section.append('| {} | {} | {} | '.format(arg['name'], stringEscapeMD(arg['description'], True, True), required_status))
           section.append('')
 
       #Context output
@@ -272,7 +278,7 @@ script: |-
 
   if demisto.args()['withErrors'] == 'True':
       docs.extend([
-          ''
+          '',
           '## Possible Errors (DO NOT PUBLISH ON ZENDESK):',
       ])
       docs.append(addErrorLines(yml_data['script']['script'], yml_data['script']['type']))
