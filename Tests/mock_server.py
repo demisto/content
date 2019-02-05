@@ -2,7 +2,7 @@ import os
 import signal
 import string
 import unicodedata
-from subprocess import call, Popen, PIPE, check_call
+from subprocess import call, Popen, PIPE, check_call, check_output
 
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
@@ -50,6 +50,9 @@ class AMIConnection:
     def check_call(self, command):
         return check_call(self.add_ssh_prefix(command))
 
+    def check_output(self, command):
+        return check_output(self.add_ssh_prefix(command))
+
     def copy_file(self, src, dst=REMOTE_HOME):
         check_call(['scp', '-o', ' StrictHostKeyChecking=no', src,
                     "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)])
@@ -67,13 +70,20 @@ class AMIConnection:
         remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE))
         self.run_script(CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
+    def get_local_ip(self):
+        out = self.check_output("ifconfig | grep inet | grep -v inet6 | grep -v 127.0.0.1 | cut -d' ' -f2").split('\n')
+        if len(out) != 1:
+            raise Exception('Machine should have only one inet4 address (without 127.0.0.1)')
+        return out[0]
+
 
 class MITMProxy:
     def __init__(self, demisto_client, public_ip,
                  primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
         self.demisto_client = demisto_client
-        self.ip = public_ip
-        self.ami = AMIConnection(self.ip)
+        self.public_ip = public_ip
+        self.ami = AMIConnection(self.public_ip)
+        self.local_ip = self.ami.get_local_ip()
         self.process = None
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
@@ -109,7 +119,7 @@ class MITMProxy:
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy(self.ip + ':9997')
+        self.__configure_proxy(self.local_ip + ':9997')
 
     def stop(self):
         if not self.process:
