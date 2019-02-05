@@ -71,13 +71,13 @@ class AMIConnection:
         self.run_script(CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
     def get_docker_ip(self):
-        out = self.check_output(['ifconfig', 'docker0']).split('\n')
+        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)
         address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
                             .format(len(address_lines)))
-        return address_lines[0][1]
+        return address_lines[0][1].split('/')[0]
 
 
 class MITMProxy:
