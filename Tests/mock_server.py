@@ -109,7 +109,7 @@ class MITMProxy:
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy('localhost:9997')
+        self.__configure_proxy(self.ip + ':9997')
 
     def stop(self):
         if not self.process:
