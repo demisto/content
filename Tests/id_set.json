@@ -11812,6 +11812,10 @@
                 ], 
                 "tests": [
                     "Active Directory Test"
+                ]
+            }
+        }, 
+        {
             "Freshdesk": {
                 "name": "Freshdesk", 
                 "commands": [
