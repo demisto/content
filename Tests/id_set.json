@@ -10362,15 +10362,6 @@
                     "panorama-create-address-group", 
                     "panorama-delete-address-group", 
                     "panorama-edit-address-group", 
-                    "panorama-list-services", 
-                    "panorama-get-service", 
-                    "panorama-create-service", 
-                    "panorama-delete-service", 
-                    "panorama-list-service-groups", 
-                    "panorama-get-service-group", 
-                    "panorama-create-service-group", 
-                    "panorama-delete-service-group", 
-                    "panorama-edit-service-group", 
                     "panorama-get-custom-url-category", 
                     "panorama-create-custom-url-category", 
                     "panorama-delete-custom-url-category", 
@@ -10659,8 +10650,7 @@
                     "servicenow-query-computers", 
                     "servicenow-query-groups", 
                     "servicenow-query-users", 
-                    "servicenow-get-table-name", 
-                    "servicenow-get-ticket-notes"
+                    "servicenow-get-table-name"
                 ], 
                 "tests": [
                     "No test - Hibernating instance"
@@ -10919,8 +10909,7 @@
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
                     "ews-o365-get-compliance-search-purge-status", 
-                    "ews-get-autodiscovery-config", 
-                    "ews-expand-group"
+                    "ews-get-autodiscovery-config"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
