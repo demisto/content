@@ -2,13 +2,13 @@ category: Case Management
 commonfields: {id: Freshdesk, version: -1}
 configuration:
 - defaultvalue: https://domain.freshdesk.com
-  display: Server URL (e.g. https://demistohelp.freshdesk.com)
+  display: Server URL (e.g., https://demistohelp.freshdesk.com)
   name: url
   options: []
   required: true
   type: 0
 - defaultvalue: ''
-  display: API Token. (You must enter either the API token or your user credentials)
+  display: API Token. (You must enter either the API token or your Freshdesk credentials)
   name: token
   options: []
   required: false
@@ -37,20 +37,20 @@ configuration:
   options: []
   required: false
   type: 9
-description: The Freshdesk integration allows you to create, update, and delete Tickets;
-  reply to and create notes for Tickets as well as view Groups, Agents and Contacts.
+description: The Freshdesk integration allows you to create, update, and delete tickets;
+  reply to and create notes for tickets as well as view Groups, Agents and Contacts.
 detaileddescription: |-
   Follow these instructions to successfully instantiate an instance of the Freshdesk integration.
-  Enter an API token or User Credentials
-  If you wish to use an API token -
-  To find your API key in the Freshdesk web portal:
-  1. Log in to your Support Portal
-  2. Click on your profile picture on the top right corner of your portal
-  3. Go to Profile setings Page
-  4. Your API key will be available below the change password section to your right
+  Enter an API token or Freshdesk user credentials
+  To use an API token:
+  Follow these instructions to retrieve the API token.
+  1. Log in to your Freshdesk support portal.
+  2. Click on your profile picture in the top right corner.
+  3. Go to the Profile settings page.
+  4. Your API key is below the change password section.
 
-  If you wish to use User Credentials -
-  Simply use the same user/password login information you use when logging in to your Freshdesk support portal.
+  To use User Credentials:
+  Enter the same user/password login credentials you use when logging in to your Freshdesk support portal.
 
   Enter your Server URL -
   If the Freshdesk helpdesk name for your company is, for example, 'dodecahedron', then the Server URL configuration parameter you would enter would be 'https://dodecahedron.freshdesk.com'.
@@ -68,7 +68,7 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: Details of the issue for which you are creating a ticket.
+      description: Details of the issue that you are creating a ticket for
       isArray: false
       name: description
       predefined: []
@@ -76,8 +76,7 @@ script:
     - default: false
       defaultValue: '1'
       description: Priority of the ticket. Each number has a corresponding value.
-        1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this
-        command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
+        1 - Low, 2 - Medium, 3 - High, 4 - Urgent. This argument accepts the priority number or string.
       isArray: false
       name: priority
       predefined: [Low, Medium, High, Urgent]
@@ -85,10 +84,8 @@ script:
     - default: false
       defaultValue: '2'
       description: Status of the ticket. Each number has a corresponding value. 2
-        is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
-        7 is Waiting on Third Party. Acceptable values for this command argument are
-        the digits 2,3,4,5,6,7, or their corresponding strings 'Open','Pending','Resolved','Closed','Waiting
-        on Customer','Waiting on Third Party'.
+        - Open, 3 - Pending, 4 - Resolved, 5 - Closed, 6 - Waiting on Customer,
+        7 - Waiting on Third Party. This argument accepts the ticket status number or string.
       isArray: false
       name: status
       predefined: [Open, Pending, Resolved, Closed, Waiting on Customer, Waiting on
@@ -96,39 +93,33 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: The values for this command argument can be an email address or
-        a twitter handle. The value entered (email or twitter handle) should belong
-        to the requesting individual. If an email address is entered and no contact
-        exists with this email address in Freshdesk, it will be added as a new contact.
-        Similarly, if a twitter handle is entered and no contact exists with this
-        handle in Freshdesk, it will be added as a new contact.
+      description: Email address or a Twitter handle of the requesting user. If an email address is entered and no contact
+        exists with this email address in Freshdesk, it will be added as a new contact. If a Twitter handle is entered and no contact exists with this handle in Freshdesk, it will be added as a new contact.
       isArray: false
       name: identifier
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: ID or name of the group or agent to whom you wish to assign this
-        ticket. To find potential assignees, try executing the fd-list-groups command.
+      description: ID or name of the group or agent to assign the ticket to. Use the `fd-list-groups` command to find potential assignees.
       isArray: false
       name: responder
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Entry IDs of files to attach to the ticket. The total size of these
-        attachments cannot exceed 15MB. Entered IDs should be separated by commas.
-        E.g. "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+      description: CSV list of entry IDs of files to attach to the ticket, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these
+        attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Additional ticket fields you wish to set the value of. Format -
+      description: Additional, optional ticket fields. Format -
         "field=value" where field value pairs are delimited from subsequent pairs
         by a semicolon symbol ';' and where values that are lists are delimited by
-        commas ','. E.g. - "name=Jeffrey Collins;email=jeffrey.collings@gmail.com;tags=new,attention
+        commas ',', e.g., "name=Jeffrey Collins;email=jeffrey.collings@gmail.com;tags=new,attention
         needed,billing related"
       isArray: true
       name: additional_fields
@@ -136,46 +127,42 @@ script:
         cc_emails, due_by, email_config_id, fr_due_by, product_id, source, tags, company_id,
         email, twitter_id, responder_id, group_id]
       required: false
-    description: Create a new Freshdesk ticket.
+    description: Creates a new Freshdesk ticket.
     execution: false
     name: fd-create-ticket
     outputs:
-    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+    - {contextPath: Freshdesk.Ticket.ID, description: ID number of the ticket,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
-      type: Number}
+    - {contextPath: Freshdesk.Ticket.Priority, description: Ticket priority, type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
         the ticket is due to be resolved, type: Date}
-    - {contextPath: Freshdesk.Ticket.Subject, description: Subject of the ticket,
-      type: String}
+    - {contextPath: Freshdesk.Ticket.Subject, description: Ticket subject, type: String}
     - {contextPath: Freshdesk.Ticket.Status, description: Status of the ticket, type: Number}
     - {contextPath: Freshdesk.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Tag, description: Tags that have been associated
-        with the ticket, type: Unknown}
-    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group to which
-        the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.Tag, description: Tags associated with the ticket, type: Unknown}
+    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group the ticket was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.Source, description: The channel through which
         the ticket was created, type: Number}
     - {contextPath: Freshdesk.Ticket.CreatedAt, description: Ticket creation timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent to
-        whom the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent the ticket was assigned to, 
+      type: Number}
     - {contextPath: Freshdesk.Ticket.FrDueBy, description: Timestamp that denotes
         when the first response is due, type: Date}
     - {contextPath: Freshdesk.Ticket.AdditionalFields, description: Additional fields
-        that were entered using the 'additional_fields' and 'additional_values' arguments.,
+         and values that were entered using the 'additional_fields' arguments,
       type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL to
-        download the file attached to the Ticket to your local machine., type: String}
+        download the file attached to the ticket to your local machine, type: String}
     - {contextPath: Freshdesk.Ticket.Attachment.Name, description: The name of the
-        file attached to the ticket., type: Unknown}
+        file attached to the ticket, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
+        type of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number for the
-        attached file., type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the attached
-        file in bytes., type: String}
+        file attached to the ticket, type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the file attached to the ticket,
+        in bytes, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -186,8 +173,8 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: If set to 'true' then the ticket requester's id, email, mobile,
-        name, and phone will be included in the ticket's output. Note that this is
+      description: If set to `true`, the ticket requester's ID, email address, mobile number,
+        name, and phone number will be included in the ticket's output. Note that this is
         not set by default because setting this to 'true' will consume an additional
         API credit per API call. To see more details, please turn to the Freshdesk
         API documentation - https://developers.freshdesk.com/api/#embedding
@@ -197,7 +184,7 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
+      description: If set to `true` then the ticket’s closed_at, resolved_at and first_responded_at
         time will be included in the response. Note that this is not set by default
         because setting this to 'true' will consume an additional API credit per API
         call. To see more details, please turn to the Freshdesk API documentation
@@ -206,45 +193,44 @@ script:
       name: include_stats
       predefined: ['true', 'false']
       required: false
-    description: View the details of a ticket specified by its ID number.
+    description: Gets details of a ticket, specified by the ticket ID number.
     execution: false
     name: fd-get-ticket
     outputs:
-    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+    - {contextPath: Freshdesk.Ticket.ID, description: ID number of the fetched ticket,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
+    - {contextPath: Freshdesk.Ticket.Priority, description: Ticket priority,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
         the ticket is due to be resolved, type: Date}
-    - {contextPath: Freshdesk.Ticket.Subject, description: Subject of the ticket,
+    - {contextPath: Freshdesk.Ticket.Subject, description: Ticket subject,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Status, description: Ticket status, type: Number}
     - {contextPath: Freshdesk.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Tag, description: Tags that have been associated
+    - {contextPath: Freshdesk.Ticket.Tag, description: Tags associated
         with the ticket, type: Unknown}
-    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group to which
-        the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group the ticket was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.Source, description: The channel through which
         the ticket was created, type: Number}
     - {contextPath: Freshdesk.Ticket.CreatedAt, description: Ticket creation timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent to
-        whom the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent the ticket 
+        was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.FrDueBy, description: Timestamp that denotes
         when the first response is due, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation, description: Conversations associated
         with this ticket, type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment, description: URL of the attached
-        file from which you can download the file to your local machine., type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL to download
+        the file attached to the ticket to your local machine, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.Name, description: The name of the
-        file attached to the ticket., type: Unknown}
+        file attached to the ticket, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
-    - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number for the
-        attached file., type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the attached
-        file in bytes., type: String}
+        type of the file attached to the ticket, type: String}
+    - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number of the file
+        attached to the ticket, type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the file attached
+        to the ticket, in bytes, type: String}
     - {contextPath: Freshdesk.Ticket.UpdatedAt, description: Ticket update timestamp,
       type: Date}
   - arguments:
@@ -323,45 +309,45 @@ script:
     execution: false
     name: fd-update-ticket
     outputs:
-    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+    - {contextPath: Freshdesk.Ticket.ID, description: ID of the updated ticket,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
+    - {contextPath: Freshdesk.Ticket.Priority, description: Ticket priority,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
         the ticket is due to be resolved, type: Date}
-    - {contextPath: Freshdesk.Ticket.Subject, description: Subject of the ticket,
+    - {contextPath: Freshdesk.Ticket.Subject, description: Ticket subject,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Status, description: Ticket status, type: Number}
     - {contextPath: Freshdesk.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Tag, description: Tags that have been associated
+    - {contextPath: Freshdesk.Ticket.Tag, description: Tags associated
         with the ticket, type: Unknown}
-    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group to which
-        the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group assigned
+        to the ticket, type: Number}
     - {contextPath: Freshdesk.Ticket.Source, description: The channel through which
         the ticket was created, type: Number}
     - {contextPath: Freshdesk.Ticket.CreatedAt, description: Ticket creation timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Ticket.ResponderId, description: ID of the agent to
-        whom the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.ResponderId, description: ID of the agent the
+        ticket was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.FrDueBy, description: Timestamp that denotes
         when the first response is due, type: Date}
     - {contextPath: Freshdesk.Ticket.UpdatedAt, description: Ticket update timestamp,
       type: Date}
     - {contextPath: Freshdesk.Ticket.AdditionalFields, description: Additional fields
-        that were updated using the 'update_fields' and 'update_values' arguments.,
+        and values that were updated using the 'additional_fields' argument,
       type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL of
-        the attached file from which you can download the file to your local machine.,
+    - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL to download
+        the file attached to the ticket to your local machine,
       type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment.Name, description: The name of the
-        file attached to the ticket., type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.Name, description: The name of the file attached
+        to the ticket, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
+        type of the attached file, type: String}
     - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number for the
-        attached file., type: Unknown}
+        attached file, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the attached
-        file in bytes., type: String}
+        file in bytes, type: String}
   - arguments:
     - default: false
       defaultValue: ''
@@ -407,11 +393,11 @@ script:
         the contact can see all tickets that are associated with the company to which
         s/he belong, type: Boolean}
     - {contextPath: Freshdesk.Contact.Deleted, description: Set to true if the contact
-        has been deleted., type: Boolean}
+        has been deleted, type: Boolean}
     - {contextPath: Freshdesk.Contact.Description, description: A short description
         of the contact, type: String}
     - {contextPath: Freshdesk.Contact.Email, description: Primary email address of
-        the contact., type: String}
+        the contact, type: String}
     - {contextPath: Freshdesk.Contact.ID, description: ID of the contact, type: Number}
     - {contextPath: Freshdesk.Contact.JobTitle, description: Job Title of the contact,
       type: String}
@@ -471,11 +457,11 @@ script:
         the contact can see all tickets that are associated with the company to which
         s/he belong, type: Boolean}
     - {contextPath: Freshdesk.Contact.Deleted, description: Set to true if the contact
-        has been deleted., type: Boolean}
+        has been deleted, type: Boolean}
     - {contextPath: Freshdesk.Contact.Description, description: A short description
         of the contact, type: String}
     - {contextPath: Freshdesk.Contact.Email, description: Primary email address of
-        the contact., type: String}
+        the contact, type: String}
     - {contextPath: Freshdesk.Contact.Id, description: ID of the contact, type: Number}
     - {contextPath: Freshdesk.Contact.JobTitle, description: Job Title of the contact,
       type: String}
@@ -494,7 +480,7 @@ script:
         contact, type: String}
     - {contextPath: Freshdesk.Contact.UniqueExternalID, description: External ID of
         the contact, type: String}
-    - {contextPath: Freshdesk.Contact.CreatedAt, description: Contact creation stamp,
+    - {contextPath: Freshdesk.Contact.CreatedAt, description: Contact creation timestamp,
       type: Date}
     - {contextPath: Freshdesk.Contact.UpdatedAt, description: Contact updated timestamp,
       type: Date}
@@ -539,40 +525,37 @@ script:
         of the canned response content, type: String}
     - {contextPath: Freshdesk.CRFolder.CR.ContentHTML, description: HTML version of
         the canned response content, type: String}
-    - {contextPath: Freshdesk.CRFolder.CR.Attachment.AttachmentURL, description: URL
-        of the attached file from which you can download the file to your local machine.,
+    - {contextPath: Freshdesk.CRFolder.CR.Attachment.AttachmentURL, description: URL to download
+        the file attached to the ticket to your local machine,
       type: String}
-    - {contextPath: Freshdesk.CRFolder.CR.Attachment.Name, description: The name of
-        the attached file., type: String}
-    - {contextPath: Freshdesk.CRFolder.CR.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
-    - {contextPath: Freshdesk.CRFolder.CR.Attachment.ID, description: ID number for
-        the attached file., type: Number}
-    - {contextPath: Freshdesk.CRFolder.CR.Attachment.Size, description: Size of the
-        attached file in bytes., type: Number}
+    - {contextPath: Freshdesk.CRFolder.CR.Attachment.Name, description: The name of the file attached
+        to the ticket, type: String}
+    - {contextPath: Freshdesk.CRFolder.CR.Attachment.ContentType, description: Content type
+        of the file attached to the ticket, type: String}
+    - {contextPath: Freshdesk.CRFolder.CR.Attachment.ID, description: ID number for the file attached
+        to the ticket, type: Number}
+    - {contextPath: Freshdesk.CRFolder.CR.Attachment.Size, description: Size of the file
+        attached to the file, in bytes, type: Number}
   - arguments: []
-    description: List all groups
+    description: Lists all groups.
     execution: false
     name: fd-list-groups
     outputs:
     - {contextPath: Freshdesk.Group.AgentID, description: Array of agent user IDs
-        separated by commas., type: Unknown}
-    - {contextPath: Freshdesk.Group.AutoTicketAssign, description: Set to true if
-        automatic ticket assignment has been enabled. Automatic ticket assignment
-        is only available on certain plans., type: Boolean}
+        separated by commas, type: Unknown}
+    - {contextPath: Freshdesk.Group.AutoTicketAssign, description: Set to true when
+        automatic ticket assignment was enabled. Automatic ticket assignment
+        is only available on certain plans, type: Boolean}
     - {contextPath: Freshdesk.Group.BusinessHourID, description: Unique ID of the
         business hour associated with the group, type: Number}
     - {contextPath: Freshdesk.Group.Description, description: Description of the group,
       type: String}
-    - {contextPath: Freshdesk.Group.EscalateTo, description: The ID of the user to
-        whom an escalation email is sent if a ticket is unassigned., type: Number}
+    - {contextPath: Freshdesk.Group.EscalateTo, description: The ID of the user that
+        an escalation email is sent to if a ticket is unassigned, type: Number}
     - {contextPath: Freshdesk.Group.ID, description: Unique ID of the group, type: Number}
     - {contextPath: Freshdesk.Group.Name, description: Name of the group, type: String}
-    - {contextPath: Freshdesk.Group.UnassignedFor, description: 'The time after which
-        an escalation email is sent if a ticket remains unassigned. The accepted values
-        are "30m" for 30 minutes, "1h" for 1 hour, "2h" for 2 hours, "4h" for 4 hours,
-        "8h" for 8 hours, "12h" for 12 hours, "1d" for 1 day, "2d" for 2 days, and
-        "3d" for 3 days', type: String}
+    - {contextPath: Freshdesk.Group.UnassignedFor, description: The time after which
+        an escalation email is sent if a ticket remains unassigned, type: String}
     - {contextPath: Freshdesk.Group.CreatedAt, description: Group creation timestamp,
       type: Date}
     - {contextPath: Freshdesk.Group.UpdatedAt, description: Grup updated timestamp,
@@ -582,73 +565,70 @@ script:
   - arguments:
     - default: false
       defaultValue: ''
-      description: ID of the ticket you wish to respond to
+      description: ID of the ticket to add a reply to
       isArray: false
       name: ticket_id
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: Content of the reply in HTML format
+      description: Content of the reply (in HTML format)
       isArray: false
       name: body
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: The email address from which the reply is sent. By default the
-        global support email will be used.
+      description: The email address from which the reply is sent. By default, the
+        global support email is used.
       isArray: false
       name: from_email
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: ID of the agent who is adding the note
+      description: ID of the agent who is adding the reply to the ticket
       isArray: false
       name: user_id
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Array of email address strings added in the 'cc' field of the outgoing
-        ticket email. Entered email addresses should be separated by commas. E.g.
-        "example1@gmail.com,example2@gmail.com,example3@gmail.com".
+      description: CSV list of email addresses to add to the 'cc' field of the outgoing
+        ticket email, e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
       isArray: true
       name: cc_emails
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Array of email address strings added in the 'bcc' field of the
-        outgoing ticket email. Entered email addresses should be separated by commas.
-        E.g. "example1@gmail.com,example2@gmail.com,example3@gmail.com".
+      description: CSV list of email addresses to add to the 'bcc' field of the
+        outgoing ticket email, e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
       isArray: true
       name: bcc_emails
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Entry IDs of files to attach to the reply. The total size of these
-        attachments cannot exceed 15MB. Entered IDs should be separated by commas.
-        E.g. "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+      description: CSV list of Entry IDs of files to attach to the reply, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these
+        attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       predefined: []
       required: false
-    description: Reply to a specified ticket
+    description: Adds a reply to a specified ticket.
     execution: false
     name: fd-ticket-reply
     outputs:
     - {contextPath: Freshdesk.Ticket.Conversation.BodyHTML, description: Content of
-        the conversation in HTML, type: String}
+        the conversation (in HTML format), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.BodyText, description: Content of
-        the conversation in plain text, type: String}
+        the conversation (in plain text format), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: 'Set to true
-        if a particular conversation should appear as being created from outside (i.e.,
-        not through web portal)', type: Boolean}
+    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: Set to true when
+        a particular conversation should appear as being created outside of the web portal,
+      type: Boolean}
     - {contextPath: Freshdesk.Ticket.Conversation.ToEmail, description: Array of email
         addresses of agents/users who need to be notified about this conversation,
       type: Unknown}
@@ -656,31 +636,31 @@ script:
         if the note is private, type: Boolean}
     - {contextPath: Freshdesk.Ticket.Conversation.Source, description: Denotes the
         type of conversation, type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: 'Email
-        address from which the reply is sent. For notes, this value will be null.',
+    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: Email
+        address from which the reply is sent. For notes, this value will be null.,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the
-        ticket to which this conversation is being added, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the ticket that the
+        conversation was added to, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.UserID, description: ID of the agent/user
-        who is adding the conversation, type: Number}
+        who added the conversation, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.CreatedAt, description: Conversation
         creation timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.UpdatedAt, description: Conversation
         updated timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.FromEmail, description: The email
-        address from which the reply is sent. By default the global support email
-        will be used., type: String}
+        address that the reply was sent from. By default, the global support email
+        is used., type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.AttachmentURL, description: URL
-        of the attached file from which you can download the file to your local machine.,
+        of the file attached to the ticket, from which you can download the file to your local machine,
       type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Name, description: The
-        name of the attached file., type: String}
+        name of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
+        type of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ID, description: ID number
-        for the attached file., type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: Size
-        of the attached file in bytes., type: Number}
+        of the file attached to the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: Size of the file
+        attached to the ticket, in bytes, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -689,19 +669,19 @@ script:
       name: ticket_id
       predefined: []
       required: true
-    description: Lists all replies and notes for a specified ticket
+    description: Lists all replies and notes for a specified ticket.
     execution: false
     name: fd-get-ticket-conversations
     outputs:
     - {contextPath: Freshdesk.Ticket.Conversation.BodyHTML, description: Content of
-        the conversation in HTML, type: String}
+        the conversation (in HTML format), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.BodyText, description: Content of
-        the conversation in plain text, type: String}
+        the conversation (in plain text format), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: 'Set to true
-        if a particular conversation should appear as being created from outside (i.e.,
-        not through web portal)', type: Boolean}
+    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: Set to true when
+        a particular conversation should appear as being created outside of the web portal,
+      type: Boolean}
     - {contextPath: Freshdesk.Ticket.Conversation.ToEmail, description: Array of email
         addresses of agents/users who need to be notified about this conversation,
       type: Unknown}
@@ -709,39 +689,39 @@ script:
         if the note is private, type: Boolean}
     - {contextPath: Freshdesk.Ticket.Conversation.Source, description: Denotes the
         type of conversation, type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: 'Email
-        address from which the reply is sent. For notes, this value will be null.',
+    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: Email
+        address from which the reply is sent. For notes, this value will be null.,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the
-        ticket to which this note or reply belongs, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the ticket that the
+        conversation was added to, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.UserID, description: ID of the agent/user
-        who is adding the conversation, type: Number}
+        who added the conversation, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.CreatedAt, description: Conversation
         creation timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.UpdatedAt, description: Conversation
         updated timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.FromEmail, description: The email
-        address from which the reply/note is sent. By default the global support email
-        will be used., type: String}
+        address that the reply was sent from. By default, the global support email
+        is used., type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.AttachmentURL, description: URL
-        of the attached file from which you can download the file to your local machine.,
+        of the file attached to the ticket, from which you can download the file to your local machine,
       type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Name, description: The
-        name of the attached file., type: String}
+        name of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
+        type of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ID, description: ID number
-        for the attached file., type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: Size
-        of the attached file in bytes., type: Number}
+        of the file attached to the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: Size of the file
+        attached to the ticket, in bytes, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
       description: Mobile phone number to filter agents by. Enter the number without
         dashes or spaces between the numbers. Numbers should be entered as they appear
-        in your freshdesk web portal. If the number appears in your web portal with
-        a plus sign and country code, then you should enter it this way here as well,
-        e.g. '+972501231231'. If it does not, then it is not necessary, e.g. '8606912312'.
+        in your Freshdesk web portal. If the number appears in your web portal with
+        a plus sign and country code, then that is how you should enter here,
+        e.g., '+972501231231'.
       isArray: false
       name: mobile
       predefined: []
@@ -750,40 +730,37 @@ script:
       defaultValue: ''
       description: Telephone number to filter agents by. Enter the number without
         dashes or spaces between the numbers. Numbers should be entered as they appear
-        in your freshdesk web portal. If the number appears in your web portal with
-        a plus sign and country code, then you should enter it this way here as well,
-        e.g. '+972501231231'. If it does not, then it is not necessary, e.g. '8606912312'.
+        in your Freshdesk web portal. If the number appears in your web portal with
+        a plus sign and country code, then that is how you should enter it here,
+        e.g., '+972501231231'.
       isArray: false
       name: phone
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: list all agents who are either 'fulltime' or 'occasional'
+      description: List all agents who are either 'fulltime' or 'occasional'
       isArray: false
       name: state
       predefined: [fulltime, occasional]
       required: false
-    description: List agents that match the criteria of the filters entered as command
-      arguments.
+    description: Returns a list of agents that match the filter criteria.
     execution: false
     name: fd-list-agents
     outputs:
-    - {contextPath: Freshdesk.Agent.Available, description: 'If the agent is in a
-        group that has enabled "Automatic Ticket Assignment", this attribute will
-        be set to true if the agent is accepting new tickets', type: Boolean}
-    - {contextPath: Freshdesk.Agent.AvailableSince, description: Timestamp that denotes
-        when the agent became available/unavailable (depending on the value of the
-        'available' attribute), type: Date}
+    - {contextPath: Freshdesk.Agent.Available, description: Set to `true` when the agent is in a group that
+        has enabled "Automatic Ticket Assignment" and is accepting new tickets, type: Boolean}
+    - {contextPath: Freshdesk.Agent.AvailableSince, description: Timestamp that denotes when
+        the agent became available/unavailable (depending on the value of the 'available'
+        attribute), type: Date}
     - {contextPath: Freshdesk.Agent.ID, description: User ID of the agent, type: Number}
-    - {contextPath: Freshdesk.Agent.Occasional, description: 'Set to true if this
-        is an occasional agent (true => occasional, false => full-time)', type: Boolean}
-    - {contextPath: Freshdesk.Agent.Signature, description: Signature of the agent
-        in HTML format, type: String}
+    - {contextPath: Freshdesk.Agent.Occasional, description: Set to true when the agent is an occasional
+        agent (true => occasional, false => full-time), type: Boolean}
+    - {contextPath: Freshdesk.Agent.Signature, description: Signature of the agent (in HTML format), type: String}
     - contextPath: Freshdesk.Agent.TicketScope
       description: |-
         Ticket permission of the agent
-        (1 -> Global Access, 2 -> Group Access, 3 -> Restricted Access)
+        (1 - Global Access, 2 - Group Access, 3 - Restricted Access)
       type: Number
     - {contextPath: Freshdesk.Agent.GroupID, description: Group IDs associated with
         the agent, type: Unknown}
@@ -793,7 +770,7 @@ script:
       type: Date}
     - {contextPath: Freshdesk.Agent.UpdatedAt, description: Agent updated timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Agent.Contact.Active, description: Set to true if the
+    - {contextPath: Freshdesk.Agent.Contact.Active, description: Set to true when the
         agent is verified, type: Boolean}
     - {contextPath: Freshdesk.Agent.Contact.Email, description: Email Address of the
         agent, type: String}
@@ -811,45 +788,43 @@ script:
         the agent, type: Number}
     - {contextPath: Freshdesk.Agent.Contact.TimeZone, description: Time zone of the
         agent, type: String}
-    - {contextPath: Freshdesk.Agent.Contact.CreatedAt, description: Creation timestamp,
+    - {contextPath: Freshdesk.Agent.Contact.CreatedAt, description: Contact creation timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Agent.Contact.UpdatedAt, description: Timestamp of the
-        last update, type: Date}
+    - {contextPath: Freshdesk.Agent.Contact.UpdatedAt, description: Contact updated timestamp, type: Date}
     - {contextPath: Freshdesk.Agent.Type, description: Type of agent, type: String}
   - arguments:
     - default: false
       defaultValue: ''
-      description: ID of the ticket you wish to make a note for
+      description: ID of the ticket to make a note for
       isArray: false
       name: ticket_id
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: Content of the note in HTML format
+      description: Content of the note (in HTML format)
       isArray: false
       name: body
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: Set to false if the note is not private
+      description: Set to false if the note is public
       isArray: false
       name: private
       predefined: ['true', 'false']
       required: false
     - default: false
       defaultValue: ''
-      description: ID of the agent who is adding the note. To find ID numbers of agents
-        try executing the 'fd-list-agents' command.
+      description: ID of the agent who is adding the note. To find agent ID numbers, run the 'fd-list-agents' command.
       isArray: false
       name: user_id
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Array of email addresses of agents who need to be notified about
-        this note. Entered email addresses should be separated by commas. E.g. "example1@gmail.com,example2@gmail.com,example3@gmail.com".
+      description: CSV list of agent email addresses to be notify about
+        this note, e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
       isArray: true
       name: notify_emails
       predefined: []
@@ -857,66 +832,60 @@ script:
     - default: false
       defaultValue: ''
       description: Set to true if a particular note should appear as being created
-        from outside (i.e. not through web portal).
+        outside of the web portal
       isArray: false
       name: incoming
       predefined: ['true', 'false']
       required: false
     - default: false
       defaultValue: ''
-      description: Entry IDs of files to attach to the note. The total size of these
-        attachments cannot exceed 15MB. Entered IDs should be separated by commas.
-        E.g. "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+      description: CSV list of entry IDs of files to attach to the note, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these
+        attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       predefined: []
       required: false
-    description: Create a note for a specified ticket. By default any note you add
-      will be private unless you set the 'private' command argument to false.
+    description: Creates a note for a specified ticket. By default, notes are private. To make a note public, set the 'private' argument to false.
     execution: false
     name: fd-create-ticket-note
     outputs:
     - {contextPath: Freshdesk.Ticket.Conversation.BodyHTML, description: Content of
-        the conversation in HTML, type: String}
+        the conversation (in HTML), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.BodyText, description: Content of
-        the conversation in plain text, type: String}
+        the conversation (in plain text), type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.ID, description: ID of the conversation,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: 'Set to true
-        if a particular conversation should appear as being created from outside (i.e.,
-        not through web portal)', type: Boolean}
-    - {contextPath: Freshdesk.Ticket.Conversation.ToEmail, description: Array of email
+    - {contextPath: Freshdesk.Ticket.Conversation.Incoming, description: Set to true when
+        a particular conversation should appear as being created outside of the web portal, type: Boolean}
+    - {contextPath: Freshdesk.Ticket.Conversation.ToEmail, description: List of agent/user email
         addresses of agents/users who need to be notified about this conversation,
       type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Conversation.Private, description: Set to true
-        if the note is private, type: Boolean}
-    - {contextPath: Freshdesk.Ticket.Conversation.Source, description: Denotes the
-        type of conversation, type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: 'Email
-        address from which the reply is sent. For notes, this value will be null.',
+    - {contextPath: Freshdesk.Ticket.Conversation.Private, description: Is the conversation private, type: Boolean}
+    - {contextPath: Freshdesk.Ticket.Conversation.Source, description: Conversation type, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.SupportEmail, description: Email
+        address the reply is sent from. For notes, this value is null.,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the
-        ticket to which this conversation is being added, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.TicketID, description: ID of the ticket the conversation was added to, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.UserID, description: ID of the agent/user
-        who is adding the conversation, type: Number}
+        who added the conversation, type: Number}
     - {contextPath: Freshdesk.Ticket.Conversation.CreatedAt, description: Conversation
         creation timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.UpdatedAt, description: Conversation
         updated timestamp, type: Date}
     - {contextPath: Freshdesk.Ticket.Conversation.FromEmail, description: The email
-        address from which the reply/note is sent. By default the global support email
-        will be used., type: String}
+        address that the reply/note was sent from. By default, the global support email
+        is used., type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.AttachmentURL, description: URL
-        of the attached file from which you can download the file to your local machine.,
+        of the file attached to the ticket, from which you can download the file to your local machine,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Name, description: The
-        name of the attached file., type: String}
+    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Name, description: The name
+        of the file attached to the ticket, type: String}
     - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
-    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ID, description: ID number
-        for the attached file., type: Number}
-    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: Size
-        of the attached file in bytes., type: Number}
+        type of the file attached to the ticket, type: String}
+    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.ID, description: ID number of
+        the file attached to the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Conversation.Attachment.Size, description: ize of the
+        file attached to the ticket, in bytes, type: Number}
   - arguments:
     - default: false
       defaultValue: ''
@@ -925,7 +894,7 @@ script:
       name: id
       predefined: []
       required: true
-    description: Delete ticket by ticket ID
+    description: Deletes a ticket.
     execution: false
     name: fd-delete-ticket
     outputs: []
@@ -933,7 +902,7 @@ script:
     - default: false
       defaultValue: ''
       description: |-
-        Predefined filters for filtering tickets. The options are as follows:
+        Predefined filters for filtering tickets. The options are:
         'new_and_my_open' - New and my open tickets.
         'watching' - Tickets I'm watching.
         'spam' - Tickets that have been marked as spam.
@@ -944,33 +913,31 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: Filter by either the ticket requester's email or ID. To find ID
-        numbers or emails for your contacts try executing the 'fd-list-contacts' command.
+      description: Filter results by the ticket requester's email address or ID. To find your contacts' ID
+        numbers or email addresses, run the 'fd-list-contacts' command.
       isArray: false
       name: requester
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: By default, only tickets that have been created within the past
-        30 days will be returned. For older tickets, use this filter. Example value
-        for this field would be "2015-01-19T02:00:00Z"
+      description: By default, tickets created within the previous
+        30 days are returned. For older tickets, use this filter ("2015-01-19T02:00:00Z")
       isArray: false
       name: updated_since
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: Reference field for ordering the list of tickets. The default sort
-        order is created_at.
+      description: Field for ordering the list of tickets. The default sort
+        order uses the 'created_at' field.
       isArray: false
       name: order_by
       predefined: [created_at, due_by, updated_at, status]
       required: false
     - default: false
       defaultValue: ''
-      description: Whether to order the resulting tickets in ascending or descending
-        order. The default is descending.
+      description: Return list results in ascending or descending order according to the order_by value, default is descending
       isArray: false
       name: order_type
       predefined: [asc, desc]
@@ -979,20 +946,18 @@ script:
       defaultValue: ''
       description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
         time will be included. Note that this is not set by default because setting
-        this to 'true' will consume an additional 2 API credits per API call made
-        by this command. To see more details, please turn to the Freshdesk API documentation
-        - https://developers.freshdesk.com/api/#embedding
+        this to 'true' will consume an additional 2 API credits per API call. To see
+        more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined: ['true', 'false']
       required: false
     - default: false
       defaultValue: ''
-      description: If set to 'true' then the ticket requester's id, email, mobile,
-        name, and phone will be included in the ticket's output for each ticket. Note
+      description: If set to 'true' then the ticket requester's ID, email address, mobile number,
+        name, and phone number are included in the ticket's output for each ticket. Note
         that this is not set by default because setting this to 'true' will consume
-        an additional 2 API credits per API call made by this command. To see more
-        details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+        an additional 2 API credits per API call. To see more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_requester
       predefined: ['true', 'false']
@@ -1000,10 +965,10 @@ script:
     - default: false
       defaultValue: ''
       description: If set to 'true' then the ticket's description and description_text
-        will be included the tickets' outputs. Note that this is not set by default
+        are included the tickets' outputs. Note that this is not set by default
         because setting this to 'true' will consume an additional 2 API credits per
-        API call made by this command. To see more details, please turn to the Freshdesk
-        API documentation - https://developers.freshdesk.com/api/#embedding
+        API call. To see more details, see the Freshdesk API documentation
+        - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_description
       predefined: ['true', 'false']
@@ -1013,63 +978,59 @@ script:
       description: |-
         Filter tickets using a custom query.
 
-        Format -    "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
-        Example -  "(type:'Question' OR type:'Problem') AND (due_by:>'2017-10-01' AND due_by:<'2017-10-07')"
-        For more examples please see the API documentation https://developers.freshdesk.com/api/#filter_tickets
+        Format - "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
+        Example - "(type:'Question' OR type:'Problem') AND (due_by:>'2017-10-01' AND due_by:<'2017-10-07')"
+        For more examples, see the Freshdesk API documentation https://developers.freshdesk.com/api/#filter_tickets
 
         Note that the custom_query argument cannot be used in conjunction with this command's other arguments.
       isArray: false
       name: custom_query
       predefined: []
       required: false
-    description: "List all tickets that match the filter criteria you specify. If\
-      \ no filters are specified, all tickets from the last 30 days will be listed.\
-      \ \n\nNote that this command can consume multiple API credits - this can occur\
-      \ if the count of tickets resulting from your query exceeds 30 - in that instance\
-      \ this command makes additional calls to the API to retrieve additional tickets\
-      \ matching your query."
+    description: |-
+      Returns a list of all tickets that match the filter criteria. If
+      no filters are specified, all tickets from the last 30 days are returned.
+      Note that this command can consume multiple API credits - this can occur
+      if the count of tickets resulting from your query exceeds 30 - in that instance
+      this command makes additional calls to the API to retrieve additional tickets
+      matching your query.
     execution: false
     name: fd-search-tickets
     outputs:
-    - {contextPath: Freshdesk.Ticket.ID, description: Unique ID number of the ticket,
+    - {contextPath: Freshdesk.Ticket.ID, description: ID number of the fetched ticket,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Priority, description: Priority of the ticket,
+    - {contextPath: Freshdesk.Ticket.Priority, description: Ticket priority,
       type: Number}
     - {contextPath: Freshdesk.Ticket.DueBy, description: Timestamp that denotes when
         the ticket is due to be resolved, type: Date}
-    - {contextPath: Freshdesk.Ticket.Subject, description: Subject of the ticket,
+    - {contextPath: Freshdesk.Ticket.Subject, description: Ticket subject,
       type: String}
-    - {contextPath: Freshdesk.Ticket.Status, description: Status of the ticket, type: Number}
+    - {contextPath: Freshdesk.Ticket.Status, description: Ticket status, type: Number}
     - {contextPath: Freshdesk.Ticket.RequesterID, description: User ID of the requester,
       type: Number}
-    - {contextPath: Freshdesk.Ticket.Tag, description: Tags that have been associated
+    - {contextPath: Freshdesk.Ticket.Tag, description: Tags associated
         with the ticket, type: Unknown}
-    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group to which
-        the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.GroupID, description: ID of the group the ticket was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.Source, description: The channel through which
         the ticket was created, type: Number}
     - {contextPath: Freshdesk.Ticket.CreatedAt, description: Ticket creation timestamp,
       type: Date}
-    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent to
-        whom the ticket has been assigned, type: Number}
+    - {contextPath: Freshdesk.Ticket.ResponderID, description: ID of the agent the ticket 
+        was assigned to, type: Number}
     - {contextPath: Freshdesk.Ticket.FrDueBy, description: Timestamp that denotes
         when the first response is due, type: Date}
-    - {contextPath: Freshdesk.Ticket.UpdatedAt, description: Ticket update timestamp,
-      type: Date}
-    - {contextPath: Freshdesk.Ticket.AdditionalFields, description: Additional fields
-        that were specified in the command's filter-type or include-type arguments.,
-      type: Unknown}
-    - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL of
-        the attached file from which you can download the file to your local machine.,
-      type: String}
+    - {contextPath: Freshdesk.Ticket.Conversation, description: Conversations associated
+        with this ticket, type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.AttachmentURL, description: URL to download
+        the file attached to the ticket to your local machine, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.Name, description: The name of the
-        attached file., type: String}
+        file attached to the ticket, type: Unknown}
     - {contextPath: Freshdesk.Ticket.Attachment.ContentType, description: Content
-        type of the attached file., type: String}
-    - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number for the
-        attached file., type: Number}
-    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the attached
-        file in bytes., type: Number}
+        type of the file attached to the ticket, type: String}
+    - {contextPath: Freshdesk.Ticket.Attachment.ID, description: ID number of the file
+        attached to the ticket, type: Unknown}
+    - {contextPath: Freshdesk.Ticket.Attachment.Size, description: Size of the file attached
+        to the ticket, in bytes, type: String}
   dockerimage: ''
   isfetch: true
   runonce: false
