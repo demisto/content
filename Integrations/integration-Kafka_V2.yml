@@ -518,4 +518,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Kafka Test
+  - No Tests

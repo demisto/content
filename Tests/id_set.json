@@ -11787,7 +11787,7 @@
                     "kafka-fetch-partitions"
                 ], 
                 "tests": [
-                    "Kafka Test"
+                    "No Tests"
                 ]
             }
         }
