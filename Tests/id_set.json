@@ -8739,6 +8739,9 @@
                     "file", 
                     "threatstream-email-reputation", 
                     "ip"
+                ], 
+                "tests": [
+                    "Anomali_ThreatStream_Test"
                 ]
             }
         }, 
