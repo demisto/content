@@ -485,7 +485,7 @@ script:
             'viewType': view_type,
         }
         if projection == 'custom':
-            command_args['customFieldMask'] = custom_field_mask
+            command_args['customFieldMask'] = customer_field_mask
 
         credentials = get_credentials()
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
