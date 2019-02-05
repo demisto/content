@@ -71,7 +71,7 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params=None, data=None):
+    def http_request(method, url_suffix, params=None, data=None, is_file=False):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         headers = {}
         if SESSION_ID is not None:
@@ -83,7 +83,7 @@ script:
             SERVER_URL + url_suffix,
             data=None if data is None else json.dumps(data),
             headers=headers,
-            # params=params,
+            params=params,
             verify=not INSECURE,
         )
 
@@ -91,7 +91,10 @@ script:
         if res.status_code not in {200, 201}:
             return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
 
-        return res.json()
+        if is_file:
+            return res.content
+        else:
+            return res.json()
 
 
     @logger
@@ -103,7 +106,7 @@ script:
                 res = http_request('GET', url)
                 if res.get('error') is not None:
                     raise requests.HTTPError('Failed to login: {}'.format(res['error']))
-            except requests.ConnectionError as ce:
+            except requests.exceptions.BaseHTTPError as bhe:
                 return_error('Demisto has encounter a connection error, please check the server_url parameter')
             SESSION_ID = res.get('uid')
 
@@ -239,27 +242,6 @@ script:
         return result
 
 
-    def fidelis_export_alert_command():
-        args = demisto.args()
-        alert_id = args['alert_id']
-
-        results = fidelis_export_alert(alert_id)
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': results,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
-            # 'EntryContext': create_context([indicator]),
-        })
-
-
-    @logger
-    def fidelis_export_alert(alert_id):
-        raise NotImplementedError()
-
-
     def fidelis_get_malware_data_command():
         args = demisto.args()
         alert_id = args['alert_id']
@@ -320,23 +302,26 @@ script:
 
     def fidelis_get_alert_report_command():
         args = demisto.args()
-        alert_id = args['alert_id']
+        alert_id = int(args['alert_id'])
 
-        results = fidelis_get_alert_report(alert_id)
+        pdf_content = fidelis_get_alert_report(alert_id)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': results,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
-            # 'EntryContext': create_context([indicator]),
-        })
+        demisto.results(fileResult(
+            'Alert_Details_{}.pdf'.format(alert_id),
+            pdf_content,
+            file_type=entryTypes['entryInfoFile']
+        ))
 
 
     @logger
     def fidelis_get_alert_report(alert_id):
-        raise NotImplementedError()
+        result = http_request(
+            'GET',
+            '/j/rest/v1/alert/export/alertdetails/pdf',
+            params={'alertIds': alert_id},
+            is_file=True)
+
+        return result
 
 
     def fidelis_sandbox_upload_command():
@@ -495,9 +480,6 @@ script:
         elif command == 'fidelis-delete-alert':
             fidelis_delete_alert_command()
 
-        elif command == 'fidelis-export-alert':
-            fidelis_export_alert_command()
-
         elif command == 'fidelis-get-malware-data':
             fidelis_get_malware_data_command()
 
@@ -517,9 +499,6 @@ script:
             fidelis_upload_pcap_command()
 
     except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
         return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
     finally:
         logout()
@@ -572,12 +551,6 @@ script:
       description: Alert ID
       isArray: true
     description: Delete an alert from Fidelis Elevate
-  - name: fidelis-export-alert
-    arguments:
-    - name: alert_id
-      required: true
-      description: Alert ID
-    description: Export alert details to pdf
   - name: fidelis-get-malware-data
     arguments:
     - name: alert_id
@@ -617,7 +590,6 @@ script:
       description: Alert ID
     description: Retrieve the alert pcap from Fidelis Elevate
   - name: fidelis-get-alert-report
-    deprecated: true
     arguments:
     - name: alert_id
       required: true

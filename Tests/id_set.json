@@ -11759,7 +11759,6 @@
                 "commands": [
                     "fidelis-get-alert", 
                     "fidelis-delete-alert", 
-                    "fidelis-export-alert", 
                     "fidelis-get-malware-data", 
                     "fidelis-get-alert-pcap", 
                     "fidelis-get-alert-report", 
