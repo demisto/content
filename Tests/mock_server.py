@@ -71,7 +71,7 @@ class AMIConnection:
         self.run_script(CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
     def get_docker_ip(self):
-        out = self.check_output("ifconfig docker0").split('\n')
+        out = self.check_output(['ifconfig', 'docker0']).split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)
         address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)
         if len(address_lines) != 1:
