@@ -3,6 +3,7 @@ import datetime
 import json
 import sys
 import yaml
+import os
 
 from Tests.test_utils import print_error
 
@@ -13,10 +14,10 @@ limitedVersion = False
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
 
-SKIPPED_FILES_SUFFIX = [
-    "py",
-    "js",
-    "png"
+CONTENT_FILE_SUFFIXES = [
+    "yml",
+    "yaml",
+    "json"
 ]
 
 LAYOUT_TYPE_TO_NAME = {
@@ -523,10 +524,14 @@ def create_file_release_notes(file_name, delete_file_path):
         if "/" not in full_file_name:
             return
 
-        file_type, file_suffix = full_file_name.split("/")[0], full_file_name.split(".")[-1]
+        file_type = full_file_name.split("/")[0]
+        file_suffix = None
+        base_name = os.path.basename(full_file_name)
+        if '.' in base_name:
+            file_suffix = base_name.split(".")[-1]
         file_type_mapping = release_note_generator.get(file_type)
-        if file_type_mapping is None or file_suffix in SKIPPED_FILES_SUFFIX:
-            print "Unsupported file type " + file_type
+        if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
+            print("Unsupported file type: {}".format(full_file_name))
             return
 
         if change_type == "D":

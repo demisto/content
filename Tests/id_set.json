@@ -4923,6 +4923,14 @@
                     "No test - fetches indicators"
                 ]
             }
+        }, 
+        {
+            "Cut": {
+                "name": "Cut", 
+                "tests": [
+                    "TransformersTestPlaybook"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -11744,6 +11752,30 @@
                     "GoogleResourceManager-Test"
                 ]
             }
+        }, 
+        {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-get-ticket", 
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-get-canned-response-folder", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-ticket-conversations", 
+                    "fd-list-agents", 
+                    "fd-create-ticket-note", 
+                    "fd-delete-ticket", 
+                    "fd-search-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -12757,7 +12789,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "whois": "whois"
+                    "whois": "Whois"
                 }
             }
         }, 
@@ -12888,7 +12920,7 @@
                 ], 
                 "command_to_integration": {
                     "joe-download-report": "Joe Security", 
-                    "joe-is-online": "Joe Security", 
+                    "joe-is-online": "", 
                     "joe-analysis-info": "Joe Security", 
                     "joe-search": "Joe Security", 
                     "joe-analysis-submit-sample": "Joe Security", 
@@ -15665,7 +15697,8 @@
             "Alexa Test Playbook": {
                 "name": "Alexa Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "domain": "Alexa Rank Indicator"
@@ -15766,6 +15799,37 @@
                     "DeleteContext", 
                     "PrintErrorEntry"
                 ]
+         },
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ]
+            }
+        }, 
+        {
+            "Freshdesk-Test": {
+                "name": "Freshdesk-Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "fd-list-contacts": "Freshdesk", 
+                    "fd-get-ticket-conversations": "", 
+                    "fd-list-agents": "Freshdesk", 
+                    "fd-update-ticket": "Freshdesk", 
+                    "fd-get-contact": "", 
+                    "fd-search-tickets": "", 
+                    "fd-list-canned-response-folders": "", 
+                    "fd-delete-ticket": "Freshdesk", 
+                    "fd-list-groups": "Freshdesk", 
+                    "fd-ticket-reply": "Freshdesk", 
+                    "fd-create-ticket": "Freshdesk", 
+                    "fd-create-ticket-note": "", 
+                    "fd-get-ticket": "", 
+                    "fd-get-canned-response-folder": ""
+                }
             }
         }
     ]
