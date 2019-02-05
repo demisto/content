@@ -1074,9 +1074,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     ''' IMPORTS '''
 
 
@@ -1108,13 +1105,13 @@ script:
 
     # How much time before the first fetch to retrieve incidents
     FETCH_TIME = demisto.params().get('fetch_time', '24 hours')
-
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     # Should we use SSL
     USE_SSL = not demisto.params().get('unsecure', False)
     # Service base URL
     BASE_URL = SERVER + '/api/v2/'
+
     # Headers to be sent in requests
     HEADERS = {
         'Content-Type': 'application/json',
@@ -1122,11 +1119,14 @@ script:
     }
     # Headers to be used when making a request to POST a multi-part encoded file
     MULTIPART_HEADERS = {'Accept': 'application/json'}
+
     # Default amount of results returned per-page/per-api-call when the
     # fd-search-tickets command's results that match the command's specified
     # filter criteria exceeds 30
     PER_PAGE = 30
 
+    # The API response ticket attributes that will be included
+    # in most command's context outputs
     DEFAULT_TICKET_CONTEXT_FIELDS = [
         'priority', 'due_by', 'subject', 'status',
         'requester_id', 'tags', 'group_id', 'source', 'created_at',
@@ -1333,7 +1333,8 @@ script:
             The context that will be modified and returned to the war room
 
         returns:
-            The modified context
+            The modified context, and the modified context with the attachments in readable format for the
+            human readable output
         """
         attachment_keys_to_include = [
             'attachment_url', 'content_type', 'id', 'name', 'size'
@@ -1393,15 +1394,12 @@ script:
         """
         # Parse additional fields into context
         if additional_fields and additional_values:
-            # additional_field_contexts = []
-            context['AdditionalFields'] = {}
+            added_context = {}
             for field, value in zip(additional_fields, additional_values):
                 if field not in already_in_context and field != 'attachments':
-                    # field_context = {string_to_context_key(field): value}
-                    # additional_field_contexts.append(field_context)
                     key = string_to_context_key(field)
-                    context['AdditionalFields'][key] = value
-            # context['AdditionalFields'] = additional_field_contexts
+                    added_context[key] = value
+            context['AdditionalFields'] = added_context
         return context
 
 
@@ -1463,7 +1461,7 @@ script:
         incident = {}
         # Incident Title
         incident['name'] = 'Freshdesk Ticket: "{}"'.format(ticket.get('subject'))
-        # Incident occurrence time, usually item creation date in service
+        # Incident occurrence time - the ticket's creation time
         incident['occurred'] = ticket.get('created_at')
         # The raw response from the service, providing full info regarding the item
         incident['rawJSON'] = json.dumps(ticket)
@@ -1888,7 +1886,6 @@ script:
     def create_ticket(args):
         args = determine_identifier(args)
         args = determine_responder(args)
-        # args = reformat_args(args, 'additional_fields', 'additional_values')
         args = clean_arguments(args)
         endpoint_url = 'tickets'
 
@@ -2347,7 +2344,6 @@ script:
         args = handle_array_input(args)
         endpoint_url = 'tickets/{}/reply'.format(ticket_id)
 
-        # Handle potential attachments
         response = None
         if not args.get('attachments'):
             # The service endpoint to request from
@@ -2426,7 +2422,6 @@ script:
         # Set defaults for 'private' and 'incoming' fields if not set by user
         args['private'] = args.get('private', 'true')
         args['incoming'] = args.get('incoming', 'false')
-        # args = handle_bool_input(args)
         endpoint_url = 'tickets/{}/notes'.format(ticket_id)
 
         response = None
@@ -2894,7 +2889,6 @@ script:
         "fd-get-contact": get_contact_command,
         "fd-list-contacts": list_contacts_command,
         "fd-list-canned-response-folders": list_canned_response_folders_command,
-        "fd-list-canned-responses-in-folder": list_canned_responses_in_folder_command,
         "fd-get-canned-response-folder": get_canned_response_folder_command,
         "fd-list-groups": list_groups_command,
         "fd-ticket-reply": ticket_reply_command,
