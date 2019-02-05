@@ -486,7 +486,7 @@ script:
     arguments:
     - name: topic
       required: true
-      description: A Topic to filter by
+      description: A topic to filter by
     - name: offset
       description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
       defaultValue: Earliest
