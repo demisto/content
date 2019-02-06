@@ -999,4 +999,3 @@ script:
 tests:
   - JoeSecurityTestPlaybook
   - JoeSecurityTestDetonation
-releaseNotes: "Update Joe security integration to support eml files when there is nothing to analyze in the attachments."
