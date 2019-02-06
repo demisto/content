@@ -87,7 +87,7 @@
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationScriptName": "DataHashReputation",
-      "details": "File SHA1",
+      "details": "File SHA-1",
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
@@ -100,7 +100,7 @@
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationCommand": "file",
-      "details": "File SHA1",
+      "details": "File SHA-1",
       "contextValue": "SHA1",
       "contextPath": "File(val.SHA1 && val.SHA1 === obj.SHA1)",
       "enhancementScriptNames": [
@@ -114,7 +114,7 @@
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationCommand": "file",
-      "details": "File SHA256",
+      "details": "File SHA-256",
       "contextValue": "SHA256",
       "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
       "enhancementScriptNames": [
