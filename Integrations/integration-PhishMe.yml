@@ -249,7 +249,7 @@ script:
                 'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
             };
             ec.Account = {
-                'Account.Email': {
+                'Email': {
                     'Address': sender_name,
                     'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
                 }
