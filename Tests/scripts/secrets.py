@@ -4,7 +4,7 @@ import re
 import math
 import json
 import string
-# import PyPDF2
+import PyPDF2
 import validate_files_structure
 
 # secrets settings
@@ -39,6 +39,24 @@ DATES_REGEX = r'((\d{4}[/.-]\d{2}[/.-]\d{2})[T\s](\d{2}:?\d{2}:?\d{2}:?(\.\d{5,6
 # disable-secrets-detection-end
 
 
+def get_secrets(branch_name, is_circle):
+    secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
+    secrets_found = search_potential_secrets(secrets_file_paths)
+    secrets_found_string = ''
+    if secrets_found:
+        secrets_found_string += 'Secrets were found in the following files:\n'
+        for file_name in secrets_found:
+            secrets_found_string += ('\nFile Name: ' + file_name)
+            secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
+        if not is_circle:
+            secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
+        else:
+            secrets_found_string += 'The secrets were exposed in public repository,' \
+                                    ' remove the files asap and report it.\n'
+
+    return secrets_found, secrets_found_string
+
+
 def get_all_diff_text_files(branch_name, is_circle):
     """
     Get all new/modified text files that need to be searched for secrets
@@ -56,13 +74,6 @@ def get_all_diff_text_files(branch_name, is_circle):
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list
-
-
-def is_text_file(file_path):
-    file_extension = os.path.splitext(file_path)[1]
-    if file_extension in TEXT_FILE_TYPES:
-        return True
-    return False
 
 
 def get_diff_text_files(files_string):
@@ -88,46 +99,44 @@ def get_diff_text_files(files_string):
     return text_files_list
 
 
+def is_text_file(file_path):
+    file_extension = os.path.splitext(file_path)[1]
+    if file_extension in TEXT_FILE_TYPES:
+        return True
+    return False
+
+
 def search_potential_secrets(secrets_file_paths):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
     :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
     """
-    # Get generic white list set
-    secrets_white_list = get_white_list()
     secrets_found = {}
 
     for file_path in secrets_file_paths:
-        file_name = file_path.split('/')[-1]
+        file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
         yml_file_contents = None
-        skip_secrets = False
         file_path_temp, file_extension = os.path.splitext(file_path)
 
+        # Get generic white list set
+        secrets_white_list = get_white_list()
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-
         # if py/js file, search for yml in order to retrieve temp white list
         if file_extension in {'.py', '.js'}:
             yml_file_contents = retrieve_related_yml(file_path_temp)
-
         # Add all context output paths keywords to whitelist temporary
         if file_extension == '.yml' or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
-
         # Search by lines after strings with high entropy as possibly suspicious
         for line in file_contents.split('\n'):
-
             # if detected disable-secrets comment, skip the line
-            if bool(re.findall(r'(disable-secrets-detection-start)', line)):
-                skip_secrets = True
-            if bool(re.findall(r'(disable-secrets-detection-end)', line)):
-                skip_secrets = False
-            if skip_secrets or bool(re.findall(r'(disable-secrets-detection)', line)):
+            skip_line = is_secrets_disabled(line)
+            if skip_line:
                 continue
-
             # REGEX scanning for IOCs and false positive groups
             potential_secrets, false_positives = regex_for_secrets(line)
             for potential_secret in potential_secrets:
@@ -135,13 +144,11 @@ def search_potential_secrets(secrets_file_paths):
                     secrets_found_with_regex.append(potential_secret)
             # added false positives into white list array before testing the strings in line
             secrets_white_list = secrets_white_list.union(false_positives)
-
+            line = remove_false_positives(line)
             # calculate entropy for each string in the file
             for string_ in line.split():
-                string_ = string_.strip("\"()[],'><:;\\")
-                string_lower = string_.lower()
                 # compare the lower case of the string against both generic whitelist & temp white list
-                if not any(white_list_string in string_lower for white_list_string in secrets_white_list):
+                if not any(white_list_string in string_.lower() for white_list_string in secrets_white_list):
                     entropy = calculate_shannon_entropy(string_)
                     if entropy >= ENTROPY_THRESHOLD:
                         high_entropy_strings.append(string_)
@@ -159,7 +166,7 @@ def create_temp_white_list(file_contents):
     context_paths = re.findall(r'contextPath: (\S+\.+\S+)', file_contents)
     for context_path in context_paths:
         context_path = context_path.split('.')
-        context_path = [white_item.lower() for white_item in context_path]
+        context_path = [white_item.lower() for white_item in context_path if len(white_item) > 4]
         temp_white_list = temp_white_list.union(context_path)
 
     return temp_white_list
@@ -227,42 +234,10 @@ def calculate_shannon_entropy(data):
     return entropy
 
 
-def get_secrets(branch_name, is_circle):
-    secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
-    secrets_found = search_potential_secrets(secrets_file_paths)
-    secrets_found_string = ''
-    if secrets_found:
-        secrets_found_string += 'Secrets were found in the following files:\n'
-        for file_name in secrets_found:
-            secrets_found_string += ('\nFile Name: ' + file_name)
-            secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
-        if not is_circle:
-            secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
-        else:
-            secrets_found_string += 'The secrets were exposed in public repository,' \
-                                    ' remove the files asap and report it.\n'
-
-    return secrets_found, secrets_found_string
-
-
 def get_white_list():
     with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
-        return set(json.load(secrets_white_list_file))
-
-
-def extract_text_from_pdf(file_path):
-    # page_num = 0
-    file_contents = ''
-    # pdf_file_obj = open('./' + file_path, 'rb')
-    # pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-    # num_pages = pdf_reader.numPages
-    #
-    # while page_num < num_pages:
-    #     pdf_page = pdf_reader.getPage(page_num)
-    #     page_num += 1
-    #     file_contents += pdf_page.extractText()
-
-    return file_contents
+        secrets_white_list_file = json.load(secrets_white_list_file)
+        return set(white_item for white_item in secrets_white_list_file if len(white_item) > 4)
 
 
 def get_file_contents(file_path, file_extension):
@@ -275,3 +250,38 @@ def get_file_contents(file_path, file_extension):
             file_contents = commited_file.read()
 
     return file_contents
+
+
+def extract_text_from_pdf(file_path):
+    page_num = 0
+    file_contents = ''
+    pdf_file_obj = open('./' + file_path, 'rb')
+    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+    num_pages = pdf_reader.numPages
+
+    while page_num < num_pages:
+        pdf_page = pdf_reader.getPage(page_num)
+        page_num += 1
+        file_contents += pdf_page.extractText()
+
+    return file_contents
+
+
+def remove_false_positives(line):
+    false_positive = re.search('([^\s]*[(\[{].*[)\]}][^\s]*)', line)
+    if false_positive:
+        false_positive = false_positive.group(1)
+        line = line.replace(false_positive, '')
+    return line
+
+
+def is_secrets_disabled(line):
+    skip_secrets = False
+    if bool(re.findall(r'(disable-secrets-detection)', line)):
+        skip_secrets = True
+    elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
+        skip_secrets = True
+    elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
+        skip_secrets = False
+
+    return skip_secrets
