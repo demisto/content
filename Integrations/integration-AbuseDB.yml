@@ -467,4 +467,3 @@ script:
   runonce: false
 tests:
   - AbuseIPDB Test
-releaseNotes: "Ignore 'Unverified HTTPS request is being made' warning when Trust any certificate checked to be true"
