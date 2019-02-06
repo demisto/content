@@ -68,7 +68,7 @@ configuration:
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
   name: triggered
-  defaultvalue: ""
+  defaultvalue: 24 hours
   type: 0
   required: false
 - display: Incident type
@@ -110,8 +110,8 @@ script:
     URL_THRESHOLD = int(demisto.params()['url_threshold'])
     CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
 
-    FETCH_TIME = demisto.params().get('triggered', '1 day')
-    RULE_NAMES = demisto.params().get('rule_names')
+    FETCH_TIME = demisto.params().get('triggered').strip()
+    RULE_NAMES = demisto.params().get('rule_names').strip()
 
     ''' HELPER FUNCTIONS '''
 
@@ -1633,11 +1633,16 @@ script:
         else:
             rule_names = []
 
+        if FETCH_TIME:
+            fetch_time = FETCH_TIME
+        else:
+            fetch_time = '24 hours'
+
         last_run = demisto.getLastRun()
         if not last_run:
             last_run = {}
         if 'time' not in last_run:
-            time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+            time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
         else:
             time = last_run['time']
 
@@ -2858,3 +2863,4 @@ script:
   runonce: false
 tests:
   - Recorded Future Test
+releaseNotes: "-"
