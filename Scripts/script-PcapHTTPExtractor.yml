@@ -318,6 +318,10 @@ script: |-
       # Merge the HTTP and TCP, IP fields.
       r.update(flow_info)
 
+      # Remove the \r\n from the HttpChat
+      if "HttpChat" in r:
+          r["HttpChat"] = r["HttpChat"].replace("\\r\\n", "")
+
       # Trim a file data too big
       if "HttpFileData" in r:
 
@@ -393,7 +397,6 @@ script: |-
       START = demisto.args()["start"]
       LIMIT_DATA = int(demisto.args()["limitData"])
 
-      # @TODO: Make this work
       if "allowedContentTypes" not in demisto.args():
           ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
                                    "application/xml", "application/xhtml+xml",
