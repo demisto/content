@@ -1648,11 +1648,16 @@ script:
         if not accounts:
             return_error("intsights-mssp-get-sub-accounts failed to return data.")
 
+        # Fix accounts _id keys
+        for account in accounts:
+            account["ID"] = account["_id"]
+            del account["_id"]
+
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.MsspAccounts(val.ID === obj.ID)': accounts},
             'HumanReadable': tableToMarkdown('IntSights MSSP accounts for ' + account_id, [a for a in accounts],
-                                             ["_id", 'CompanyName', "Status"]),
+                                             ["ID", 'CompanyName', "Status"]),
             'Contents': accounts,
             'ContentsFormat': formats['json']
         })
@@ -1699,11 +1704,16 @@ script:
         accounts[0].update(json.loads(account_1_ua))
         accounts[1].update(json.loads(account_2_ua))
 
+        # Fix accounts _id keys
+        for account in accounts:
+            account["ID"] = account["_id"]
+            del account["_id"]
+
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.MsspAccounts(val.ID === obj.ID)': accounts},
-            'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, [a for a in accounts], \
-                                             ["_id", 'CompanyName', "Status", "AssetsLimit", "AssetsCount"]),
+            'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, [a for a in accounts],
+                                             ["ID", 'CompanyName', "Status", "AssetsLimit", "AssetsCount"]),
             'Contents': accounts,
             'ContentsFormat': formats['json']
         })
