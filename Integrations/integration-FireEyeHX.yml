@@ -3246,4 +3246,3 @@ script:
   runonce: false
 tests:
   - FireEye HX Test
-releaseNotes: "-"
