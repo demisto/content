@@ -61,13 +61,13 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 467f5a0b-c960-45cd-8635-d668387c7046
+    taskid: 3349a8e5-321b-4d03-8847-e9989f53f8a9
     type: regular
     task:
-      id: 467f5a0b-c960-45cd-8635-d668387c7046
+      id: 3349a8e5-321b-4d03-8847-e9989f53f8a9
       version: -1
       name: Test mssp feature
-      script: '|||intsights-mssp-test'
+      script: '|||intsights-mssp-get-sub-accounts'
       type: regular
       iscommand: true
       brand: ""
@@ -86,10 +86,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 7aa2f202-ed7a-4819-8271-17d8b55c2e41
+    taskid: 5a86fc55-6c7e-4be8-8a34-43f12cc3867c
     type: condition
     task:
-      id: 7aa2f202-ed7a-4819-8271-17d8b55c2e41
+      id: 5a86fc55-6c7e-4be8-8a34-43f12cc3867c
       version: -1
       name: Test mssp different sub accounts
       scriptName: AreValuesEqual
@@ -101,9 +101,9 @@ tasks:
       - "4"
     scriptarguments:
       left:
-        simple: IntSights.MsspAccounts.[0].ID
+        simple: IntSights.MsspAccount.[0].ID
       right:
-        simple: IntSights.MsspAccounts.[1].ID
+        simple: IntSights.MsspAccount.[1].ID
     results:
     - AreValuesEqual
     separatecontext: false
