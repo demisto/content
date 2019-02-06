@@ -5,7 +5,7 @@ jobs:
       - image: ronykoz/content-build-node911:latest
     environment:
       CONTENT_VERSION: "19.2.0"
-      GIT_SHA1: "ab99a312863db413af33a79ea64a482ea9bbcac3" # guardrails-disable-line
+      GIT_SHA1: "e5acb69410069b750fad3d01bc683fecfb967843" # guardrails-disable-line
     steps:
       - checkout
       - run:
