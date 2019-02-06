@@ -399,7 +399,7 @@ def validate_version(file_path):
             version_number = yaml_dict.get('version')
     elif file_extension == '.json':
         if checked_type(file_path):
-            file_name = file_path.split('/')[-1]
+            file_name = os.path.basename(file_path)
             with open("./" + file_path) as json_file:
                 json_dict = json.load(json_file)
                 if file_name == "reputations.json":
