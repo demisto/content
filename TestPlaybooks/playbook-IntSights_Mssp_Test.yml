@@ -101,9 +101,9 @@ tasks:
       - "4"
     scriptarguments:
       left:
-        simple: IntSights.MsspAccounts.[0]._id
+        simple: IntSights.MsspAccounts.[0].ID
       right:
-        simple: IntSights.MsspAccounts.[1]._id
+        simple: IntSights.MsspAccounts.[1].ID
     results:
     - AreValuesEqual
     separatecontext: false
