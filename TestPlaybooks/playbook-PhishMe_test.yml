@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 2f826ce6-2fb8-45b1-8c75-773060ff9a1c
+    taskid: 86a69e04-81ac-4792-8711-546753a99dbb
     type: regular
     task:
-      id: 2f826ce6-2fb8-45b1-8c75-773060ff9a1c
+      id: 86a69e04-81ac-4792-8711-546753a99dbb
       version: -1
       name: Check IP
       script: Phishme Intelligence|||ip
@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       ip:
-        simple: 8.8.8.8
+        simple: 212.126.107.130
     separatecontext: false
     view: |-
       {
@@ -56,10 +56,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 910c72c8-83d9-46fa-8d55-bf3a55862a46
+    taskid: 9ddab12d-b71b-4251-809a-69f2fe829d35
     type: condition
     task:
-      id: 910c72c8-83d9-46fa-8d55-bf3a55862a46
+      id: 9ddab12d-b71b-4251-809a-69f2fe829d35
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -74,7 +74,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "2"
+        simple: "3"
     results:
     - AreValuesEqual
     separatecontext: false
@@ -89,10 +89,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 19d2615a-e488-4f2e-8288-2d0360422529
+    taskid: eb973dca-d33d-45e3-8c3e-2757fc4b6113
     type: regular
     task:
-      id: 19d2615a-e488-4f2e-8288-2d0360422529
+      id: eb973dca-d33d-45e3-8c3e-2757fc4b6113
       version: -1
       name: Check url
       script: Phishme Intelligence|||url
