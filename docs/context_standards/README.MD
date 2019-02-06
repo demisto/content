@@ -259,8 +259,8 @@ The following is the format for a process.
 }
 ```
 
-## DBot Score
-The following is the format for a DBot Score entry.
+## InfoFile
+The following is the expected format for an InfoFile
 ```python
 "InfoFile": {
     "Name": "STRING, FileName",
@@ -272,8 +272,8 @@ The following is the format for a DBot Score entry.
 }
 ```
 
-## InfoFile
-The following is the expected format for an InfoFile
+## DBot Score
+The following is the format for a DBot Score entry.
 ```python
 "DBotScore": {
     "Indicator": "STRING, The indicator that was tested",
