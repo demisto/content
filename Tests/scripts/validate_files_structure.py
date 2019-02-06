@@ -390,6 +390,7 @@ def changed_docker_image(file_path):
 def validate_version(file_path):
     file_extension = os.path.splitext(file_path)[1]
     version_number = -1
+    reputations_valid = True
     if file_extension == '.yml':
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
