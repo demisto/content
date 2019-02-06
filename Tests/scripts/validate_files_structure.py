@@ -388,18 +388,21 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    file_extension = os.path.splitext(file_path)[1]
+    file_name, file_extension = os.path.splitext(file_path)
     version_number = -1
     if file_extension == '.yml':
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
+        # some files like playbooks do not have commonfields key
         if not version_number:
             version_number = yaml_dict.get('version')
     elif file_extension == '.json':
         if checked_type(file_path):
             with open("./" + file_path) as json_file:
-                json_dict = json.load(json_file)
-                version_number = json_dict.get('version')
+                raise Exception(os.path.splitext)
+                if file_name == "reputations.json":
+                    json_dict = json.load(json_file)
+                    version_number = json_dict.get('version')
 
     if version_number != -1:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
