@@ -326,20 +326,25 @@ def is_existing_image(file_path):
 
 
 def get_modified_and_added_files(branch_name, is_circle):
-    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-
     if is_circle:
+        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
         files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-        modified_files, added_files = get_modified_files(files_string)
-        _, added_files_from_branch = get_modified_files(all_changed_files_string)
-        for mod_file in modified_files:
-            if mod_file in added_files_from_branch:
-                added_files.add(mod_file)
-                modified_files = modified_files - set([mod_file])
+        modified_files2, added_files2 = get_modified_files(files_string)
+        all_changed_files_string = run_git_command("git diff --name-status origin/master")
+        modified_files_from_branch, added_files_from_branch = get_modified_files(all_changed_files_string)
+
+        added_files = []
+        modified_files = []
+        for mod_file in modified_files_from_branch:
+            if mod_file in modified_files2:
+                modified_files.append(mod_file)
+        for add_file in added_files_from_branch:
+            if add_file in added_files2:
+                added_files.append(add_file)
 
     return modified_files, added_files
 
@@ -473,7 +478,15 @@ def integration_valid_in_id_set(file_path, integration_set):
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
+        try:
+            id_set = json.load(id_set_file)
+        except ValueError, ex:
+            if "Expecting property name" in ex.message:
+                print_error("You probably merged from master and your id_set.json has conflicts. "
+                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                return
+            else:
+                raise ex
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
@@ -564,7 +577,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
         elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                 re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path) + '/')
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
             script_data = get_script_data(yml_path, script_code=code)
 
             if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
