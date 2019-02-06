@@ -806,9 +806,6 @@ script:
   isfetch: true
   runonce: false
   script: |-
-    import demistomock as demisto
-    from CommonServerPython import *
-    from CommonServerUserPython import *
     import requests
     import json
     import base64
