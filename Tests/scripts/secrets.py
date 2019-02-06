@@ -236,8 +236,16 @@ def calculate_shannon_entropy(data):
 
 def get_white_list():
     with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
+        final_white_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
-        return set(white_item for white_item in secrets_white_list_file if len(white_item) > 4)
+        for name, white_list in secrets_white_list_file.iteritems():
+            if name == 'iocs':
+                for sublist in white_list:
+                    final_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
+            else:
+                final_white_list += [white_item for white_item in white_list if len(white_item) > 4]
+
+        return set(final_white_list)
 
 
 def get_file_contents(file_path, file_extension):
