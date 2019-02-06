@@ -8752,8 +8752,7 @@
                     "domain", 
                     "file", 
                     "threatstream-email-reputation", 
-                    "ip", 
-                    "threatstream-push-indicator"
+                    "ip"
                 ], 
                 "tests": [
                     "Anomali_ThreatStream_Test"
