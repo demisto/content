@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: IntSights3
+  id: IntSights
   version: -1
 configuration:
 - defaultvalue: https://api.intsights.com/
@@ -39,7 +39,7 @@ description: Use IntSights to manage and fetch alerts
 detaileddescription: The credentials username is your user ID and the password is
   the API key.
 display: IntSights
-name: IntSights3
+name: IntSights
 script:
   commands:
   - arguments:

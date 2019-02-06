@@ -11693,8 +11693,7 @@
                     "intsights-mssp-get-sub-accounts"
                 ], 
                 "tests": [
-                    "IntSights Test", 
-                    "IntSights Mssp Test"
+                    "IntSights Test"
                 ]
             }
         }, 
