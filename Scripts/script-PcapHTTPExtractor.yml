@@ -79,6 +79,9 @@ outputs:
 - {contextPath: PcapHttpFlows.MetaSniffTimeStamp, description: Time the packet was
     sniffed (unixtime)., type: String}
 script: |-
+  import demistomock as demisto
+  from CommonServerPython import *
+  from CommonServerUserPython import *
   import zlib
   import pyshark
   from datetime import datetime
@@ -254,7 +257,7 @@ script: |-
 
       # For each packet find the next one that matches the tcp,ip tuple.
       i = 0
-      while (len(http_packets) > 0):
+      while len(http_packets) > 0:
           packet = http_packets[0]
           tcp_src = packet["TCP"].srcport
           tcp_dst = packet["TCP"].dstport
