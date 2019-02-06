@@ -207,7 +207,7 @@ script:
         :return certificate:
         :return type: :class: `pykafka.connection.SslConfig`
         """
-        ca_path = 'ca.cet'
+        ca_path = 'ca.cert'
         client_path = 'client.cert'
         client_key_path = 'client_key.key'
         if CA_CERT:
@@ -350,7 +350,7 @@ script:
             return_error('Topic {} was not found in Kafka'.format(topic))
 
 
-    def fetch_partitions():
+      def fetch_partitions():
         """
         Fetching available partitions in given topic
         """
@@ -365,7 +365,7 @@ script:
                 headers='Partitions'
             )
             ec = {
-                'Kafka.Topic(val.Name == obj.Name)': {
+                'Kafka.Topic(val.Name === obj.Name)': {
                     'Name': topic,
                     'Partition': partitions
                 }
@@ -382,7 +382,7 @@ script:
                 'EntryContext': ec
             })
         else:
-            return_error('Topic is not in Kafka broker')
+            return_error('Topic {} was not found in Kafka'.format(topic))
 
 
     def fetch_incidents():
@@ -411,10 +411,13 @@ script:
                     reset_offset_on_start=True
                 )
                 for i in range(last_fetch, latest_offset):
+                    """
+                    consumer.consume() will consume only one message from the given offset.
+                    """
                     message = consumer.consume()
                     incidents.append(create_incident(message=message, topic=topic))
                     if message.offset == latest_offset:
-                        break;
+                        break
                 demisto.setLastRun({'last_offset': latest_offset})
             demisto.incidents(incidents)
         else:
@@ -435,7 +438,7 @@ script:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            test_module()
+            test_module(
         elif demisto.command() == 'kafka-print-topics':
             print_topics()
         elif demisto.command() == 'kafka-publish-msg':
@@ -453,12 +456,12 @@ script:
     except exceptions, e:
         return_error(e.message)
     finally:
-        try:
+        if os.path.isflie('ca.cert'):
             os.remove(os.path.abspath('ca.cert'))
+        if os.path.isfile('client.cert'):
             os.remove(os.path.abspath('client.cert'))
+        if os.path.isfile('client_key.key'):
             os.remove(os.path.abspath('client_key.key'))
-        except:
-            pass
   type: python
   commands:
   - name: kafka-print-topics
