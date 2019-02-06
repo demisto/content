@@ -352,6 +352,9 @@ script: |-
       if not is_error(execute_command_result):
           raise ValueError("execute_command_result has no error entry. before using get_error use is_error")
 
+      if isinstance(execute_command_result, dict):
+          return execute_command_result['Contents']
+
       error_messages = []
       for entry in execute_command_result:
           is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
@@ -371,6 +374,9 @@ script: |-
           :return: True if the execute_command_result has an error entry, false otherwise
           :rtype: ``bool``
       """
+      if execute_command_result is None:
+          return False
+
       if isinstance(execute_command_result, list):
           if len(execute_command_result) > 0:
               for entry in execute_command_result:
@@ -594,12 +600,15 @@ script: |-
       return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-  def argToList(arg):
+  def argToList(arg, separator=','):
       """
          Converts a string representation of args to a python list
 
          :type arg: ``str`` or ``list``
          :param arg: Args to be converted (required)
+
+         :type separator: ``str``
+         :param separator: A string separator to separate the strings, the default is a comma.
 
          :return: A python list of args
          :rtype: ``list``
@@ -611,7 +620,7 @@ script: |-
       if isinstance(arg, STRING_TYPES):
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return [s.strip() for s in arg.split(',')]
+          return [s.strip() for s in arg.split(separator)]
       return arg
 
 
@@ -1214,7 +1223,7 @@ script: |-
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
-          'Contents': message
+          'Contents': str(message)
       })
       sys.exit(0)
 
