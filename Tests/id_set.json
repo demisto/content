@@ -11690,8 +11690,7 @@
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
                     "intsights-close-alert", 
-                    "intsights-mssp-get-sub-accounts", 
-                    "intsights-mssp-test"
+                    "intsights-mssp-get-sub-accounts"
                 ], 
                 "tests": [
                     "IntSights Test", 
@@ -15866,7 +15865,7 @@
                     "AreValuesEqual"
                 ], 
                 "command_to_integration": {
-                    "intsights-mssp-test": ""
+                    "intsights-mssp-get-sub-accounts": ""
                 }
             }
         }
