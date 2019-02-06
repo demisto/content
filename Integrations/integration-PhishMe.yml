@@ -36,25 +36,25 @@ configuration:
   required: false
 - display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider
     the URL malicious
-  name: url_threshold
+  name: urlThreshold
   defaultvalue: Major
   type: 0
   required: false
 - display: File Threshold (None, Minor, Moderate or Major). Minimum severity to consider
     the file malicious
-  name: file_threshold
+  name: fileThreshold
   defaultvalue: Major
   type: 0
   required: false
 - display: IP Threshold (None, Minor, Moderate or Major). Minimum severity to consider
     the IP malicious
-  name: ip_threshold
+  name: ipThreshold
   defaultvalue: Major
   type: 0
   required: false
 - display: Email Threshold (None, Minor, Moderate or Major). Minimum severity to consider
     the email malicious
-  name: email_threshold
+  name: emailThreshold
   defaultvalue: Major
   type: 0
   required: false
@@ -94,50 +94,59 @@ script:
         }
     };
 
-    var addMD = function(threats, k) {
+    var addMD = function(threat) {
         var md = "";
-        md += '### Threat ID ' + (k+1) + ': ' + threats[k].id + '\n';
+        md += '### Threat ID: ' + threat.id + '\n';
 
-        if (threats[k].label !== undefined) {
-            md += "Name of the campaign: **" + threats[0].label + "**\n";
+        if (threat.label !== undefined) {
+            md += "Name of the campaign: **" + threat.label + "**\n";
         }
-        if (threats[k].blockSet[0].ipDetail !== undefined) {
-            md += "ASN: **" + threats[k].blockSet[0].ipDetail.asn + " " + threats[k].blockSet[0].ipDetail.asnOrganization+"**\n";
+        if (threat.blockSet[0].ipDetail !== undefined) {
+            md += "ASN: **" + threat.blockSet[0].ipDetail.asn + " " + threat.blockSet[0].ipDetail.asnOrganization+"**\n";
         }
-        if (threats[k].blockSet[0].ipDetail !== undefined) {
-            md += "Country: **" + threats[k].blockSet[0].ipDetail.countryName + "**\n";
+        if (threat.blockSet[0].ipDetail !== undefined) {
+            md += "Country: **" + threat.blockSet[0].ipDetail.countryName + "**\n";
         }
-        if (threats[k].executiveSummary !== undefined) {
+        if (threat.executiveSummary !== undefined) {
             md += "#### Executive Summary: \n";
         }
-        if (threats[k].executiveSummary !== undefined) {
-            md += threats[k].executiveSummary + "\n";
+        if (threat.executiveSummary !== undefined) {
+            md += threat.executiveSummary + "\n";
         }
 
         md += "#### Threat Types:\n";
-        for (var j = 0; j < threats[k].malwareFamilySet.length; j++){
-            md += "* " + threats[k].malwareFamilySet[j].description + "\n";
+        for (var j = 0; j < threat.malwareFamilySet.length; j++){
+            md += "* " + threat.malwareFamilySet[j].description + "\n";
         }
-        md += '##### Last published: ' + new Date(threats[k].lastPublished) +'\n';
+        md += '##### Last published: ' + new Date(threat.lastPublished) +'\n';
         return md;
     };
 
-    var checkThreat = function(threats, threatArray, k, threshold) {
+    // Returns {severityScore: 'The severity score found', md: 'The markdown for the threat', indicatorFound: 'set to true if indicator was found in threat'}
+    var checkThreat = function(threat, threshold, indicator) {
         var severityLevel = 0;
         var md = '';
         var threshold_score = calcScore(threshold);
-        for (var i = 0; i < threats[k].blockSet.length; i++){
-            if (threats[k].blockSet[i]['impact']) {
-                threat_score = calcScore(threats[k].blockSet[i]['impact']);
-                severityLevel += (threshold_score <= threat_score ? 3 : threat_score);
+        res = {}
+        for (var i = 0; i < threat.blockSet.length; i++){
+            if (threat.blockSet[i]['impact']) {
+                var threat_score = calcScore(threat.blockSet[i]['impact']);
+                var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                // if the queried indicator has a severity level, we'll take it
+                if (threat.blockSet[i]['data'].indexOf(indicator) !== -1) {
+                    severityLevel = adjusted_score;
+                    res.indicatorFound = true;
+                    break;
+                }
+                severityLevel = Math.max(severityLevel, adjusted_score);
             }
         }
-        var severityScore = Math.ceil(severityLevel / i);
-        var threatLevel = calcVerdict(severityScore);
+        var threatLevel = calcVerdict(severityLevel);
         md += 'Verdict: ' + threatLevel +'\n';
-        md += addMD(threats, k);
-        threatArray[k] = threats[k].id;
-        return {'severityScore':severityScore, 'md': md};
+        md += addMD(threat);
+        res.severityScore = severityLevel;
+        res.md = md;
+        return res;
     }
 
     var searchUrl = function(url) {
@@ -149,16 +158,23 @@ script:
         var md = "## PhishMe URL Reputation for: "+url+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        var threshold = params.url_threshold;
+        var threshold = params.urlThreshold;
+        var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
             ec.URL = {
                         Data: url,
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                       };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats, threatArray, k, threshold)
-                dbotScore += threatAnalysis['severityScore'];
+                threatAnalysis = checkThreat(threats[k], threshold, url, threats[0].label);
+                threatArray[k] = threats[k].id;
                 md += threatAnalysis['md'];
+                if (threatAnalysis.indicatorFound) {
+                    indicatorFnd = true;
+                    dbotScore = threatAnalysis['severityScore'];
+                } else if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                }
             }
             ec.URL['PhishMe'] = {};
             ec.URL.PhishMe['ThreatIDs'] = threatArray;
@@ -171,10 +187,6 @@ script:
             };
         } else {
             md += "No information found for this url";
-        }
-
-        if (threats.length && threats.length > 1) {
-            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'PhishMe', Score: dbotScore};
@@ -200,7 +212,7 @@ script:
             for(var i = 0; i < threats.length && (countThreats<limit); i++){
                 if (threats[i].hasReport === true){
                     countThreats += 1;
-                    mdBody += addMD(threats, i);
+                    mdBody += addMD(threats[i]);
                 }
             }
 
@@ -229,22 +241,29 @@ script:
         var md = "## PhishMe email Reputation for: " + sender_name + "\n";
         var dbotScore = 0;
         var threatArray = [];
-        var threshold = params.email_threshold;
+        var threshold = params.emailThreshold;
+        var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
             ec.Email = {
                 'Data': sender_name,
                 'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
             };
             ec.Account = {
-                'Account.Email(val.Address && val.Address === obj.Address)': {
+                'Account.Email': {
                     'Address': sender_name,
                     'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
                 }
             };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats, threatArray, k, threshold);
-                dbotScore += threatAnalysis['severityScore'];
+                threatAnalysis = checkThreat(threats[k], threshold, sender_name, threats[0].label);
+                threatArray[k] = threats[k].id;
                 md += threatAnalysis['md'];
+                if (threatAnalysis.indicatorFound) {
+                    indicatorFnd = true;
+                    dbotScore = threatAnalysis['severityScore'];
+                } else if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                }
             }
             ec.Email['PhishMe'] = {};
             ec.Email.PhishMe['ThreatIDs'] = threatArray;
@@ -257,10 +276,6 @@ script:
             };
         } else {
             md += "No infomation found for this email";
-        }
-
-        if (threats.length && threats.length > 1) {
-            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'PhishMe', Score: dbotScore};
@@ -277,16 +292,37 @@ script:
         var md = "## PhishMe Hash Reputation for: "+str+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        var threshold = params.file_threshold;
+        var threshold = params.fileThreshold;
+        var threshold_score = calcScore(threshold);
+        var indicatorFnd = false;
         if (threats.length !== 0) {
             ec.File = {
                         MD5: str,
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                         };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats, threatArray, k, threshold);
-                dbotScore += threatAnalysis['severityScore'];
-                md += threatAnalysis['md'];
+                var severityLevel = 0;
+                for (var i = 0; i < threats[k].blockSet.length; i++){
+                    if (threats[k].blockSet[i]['impact']) {
+                        var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                        var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                        // if the queried indicator has a severity level, we'll take it
+                        if (threats[k].executableSet[i] && threats[k].executableSet[i]['md5Hex'] === str) {
+                            severityLevel = adjusted_score;
+                            dbotScore = severityLevel;
+                            indicatorFnd = true;
+                            break;
+                        }
+                        severityLevel = Math.max(severityLevel, adjusted_score);
+                    }
+                }
+                var threatLevel = calcVerdict(severityLevel);
+                md += 'Verdict: ' + threatLevel +'\n';
+                md += addMD(threats[k]);
+                threatArray[k] = threats[k].id;
+                if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, severityLevel);
+                }
             }
             ec.File['PhishMe'] = {};
             ec.File.PhishMe['ThreatIDs'] = threatArray;
@@ -299,10 +335,6 @@ script:
             };
         } else {
             md += "No information found for this hash";
-        }
-
-        if (threats.length && threats.length > 1) {
-            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'PhishMe', Score: dbotScore};
@@ -319,8 +351,9 @@ script:
         var md = "## PhishMe IP Reputation for: "+ip+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        var threshold = params.ip_threshold;
+        var threshold = params.ipThreshold;
         var threshold_score = calcScore(threshold);
+        var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
             ec.IP = {
                       Data: ip,
@@ -329,10 +362,6 @@ script:
             for (var k = 0; k < threats.length; k++) {
                 var severityLevel = 0;
                 for (var i = 0; i < threats[k].blockSet.length; i++){
-                    if (threats[k].blockSet[i]['impact']) {
-                        threat_score = calcScore(threats[k].blockSet[i]['impact']);
-                        severityLevel += (threshold_score <= threat_score ? 3 : threat_score);
-                    }
                     if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
                         ec.IP.ASN = threats[k].blockSet[i].ipDetail.asn;
                         ec.IP.GEO = {
@@ -340,13 +369,26 @@ script:
                             "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
                         };
                     }
+                    if (threats[k].blockSet[i]['impact']) {
+                        var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                        var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                        // if the queried indicator has a severity level, we'll take it
+                        if (threats[k].blockSet[i]['ipDetail'] && threats[k].blockSet[i]['ipDetail']['ip']===ip) {
+                            severityLevel = adjusted_score;
+                            dbotScore = severityLevel;
+                            indicatorFnd = true;
+                            break;
+                        }
+                        severityLevel = Math.max(severityLevel, adjusted_score);
+                    }
                 }
-                var severityScore = Math.ceil(severityLevel / i);
-                var threatLevel = calcVerdict(severityScore);
+                var threatLevel = calcVerdict(severityLevel);
                 md += 'Verdict: ' + threatLevel +'\n';
-                md += addMD(threats, k);
+                md += addMD(threats[k]);
                 threatArray[k] = threats[k].id;
-                dbotScore += severityScore;
+                if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, severityLevel);
+                }
             }
             ec.IP['PhishMe'] = {};
             ec.IP.PhishMe['ThreatIDs'] = threatArray;
@@ -360,10 +402,6 @@ script:
 
         } else {
             md += "No information found for this ip";
-        }
-
-        if (threats.length && threats.length > 1) {
-            dbotScore = Math.ceil(dbotScore / threats.length);
         }
 
         ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'PhishMe', Score: dbotScore};
