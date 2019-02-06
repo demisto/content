@@ -133,7 +133,7 @@ script:
                 var threat_score = calcScore(threat.blockSet[i]['impact']);
                 var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
                 // if the queried indicator has a severity level, we'll take it
-                if (threat.blockSet[i]['data'].indexOf(indicator) !== -1) {
+                if (threat.blockSet[i]['data'].indexOf(indicator) === indicator) {
                     severityLevel = adjusted_score;
                     res.indicatorFound = true;
                     break;
