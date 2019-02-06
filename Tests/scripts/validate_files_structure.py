@@ -400,7 +400,7 @@ def validate_version(file_path):
     elif file_extension == '.json':
         if checked_type(file_path):
             file_name = os.path.basename(file_path)
-            with open("./" + file_path) as json_file:
+            with open(file_path) as json_file:
                 json_dict = json.load(json_file)
                 if file_name == "reputations.json":
                     reputations_valid = validate_reputations(json_dict)
