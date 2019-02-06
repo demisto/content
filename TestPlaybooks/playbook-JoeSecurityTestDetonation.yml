@@ -220,4 +220,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: Fix JoeSecurityTestDetonation playbook - Add url input to 'Detonate URL' Task

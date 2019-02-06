@@ -3662,4 +3662,3 @@ script:
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
-releaseNotes: "Added a caching mechanism for faster execution of commands"
