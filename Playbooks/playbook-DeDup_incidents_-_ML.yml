@@ -250,6 +250,5 @@ outputs:
 - contextPath: duplicateCandidate
   description: the duplicate top candidate
   type: unknown
-releaseNotes: "-"
 tests:
   - No Test
