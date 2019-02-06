@@ -40,4 +40,3 @@ scripttarget: 0
 dependson:
   must:
   - splunk-search
-releaseNotes: "Deprecate SplunkPySearch script"
