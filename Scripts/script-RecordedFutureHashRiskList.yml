@@ -1,0 +1,110 @@
+commonfields:
+  id: RecordedFutureHashRiskList
+  version: -1
+name: RecordedFutureHashRiskList
+script: |-
+  specific_list = demisto.args().get('list')
+  delete_existing = demisto.args().get('delete_existing', 'false').lower()
+  threshold = int(demisto.args().get('threshold', 65))
+  command_args = {}
+
+  if specific_list:
+      command_args['list'] = specific_list
+
+  res = demisto.executeCommand('recorded-future-get-hash-risklist', command_args)
+
+  file_entry = None
+  for entry in res:
+      if isError(entry):
+          return_error('Failed getting the risk list - {}'.format(entry['Contents']))
+      if entry.get('FileID'):
+          file_entry = entry
+
+  if not file_entry:
+      return_error('Could not find the file')
+
+  file_path = demisto.getFilePath(file_entry['FileID'])
+
+  with open(file_path['path'], 'r') as file:
+      # remove null bytes
+      data = file.read().replace('\0', '')
+
+  rows = data.split('\n')
+  if not rows or len(rows) == 0:
+      return_error('No data found')
+  headers = map(lambda c: c.strip('\"'), rows[0].split(','))
+  name_column = headers.index('Name')
+  score_column = headers.index('Risk')
+
+  for row in rows[1:]:
+      # Skip headers line
+      columns = row.split(',')
+
+      hash_indicator = columns[name_column].strip('\"')
+      score = None
+      try:
+          score = int(columns[score_column].strip('\"'))
+      except:
+          pass
+
+      if score and score < threshold:
+          continue
+
+      if hash_indicator:
+          hash_type = get_hash_type(hash_indicator)
+          indicator_res = demisto.executeCommand('createNewIndicator', {
+              'type': 'File {}'.format(hash_type.upper()),
+              'value': hash_indicator,
+              'source': 'Recorded Future',
+              'reputation': 'Bad',
+              'seenNow': 'true',
+              'comment': 'From Recorded Future risk list, Score - ' + str(score)
+          })
+
+          if isError(indicator_res[0]):
+              return_error('Error creating indiciator - {}'.format(indicator_res[0]['Contents']))
+
+  demisto.results(file_entry)
+type: python
+tags:
+- RecordedFuture
+comment: Extracts the hash risk list from Recorded Future and creates indicators
+  accordingly.
+enabled: true
+args:
+- name: list
+  description: Specify a hash list by a risk rule name, which can be retrieved with
+    the get-hash-riskrules command.
+- name: threshold
+  description: Minimum threshold score to consider indicators as malicious (65-99, greater than or equal to)
+  defaultValue: "65"
+outputs:
+- contextPath: InfoFile.Name
+  description: File name
+  type: string
+- contextPath: InfoFile.EntryID
+  description: File entry ID
+  type: string
+- contextPath: InfoFile.Size
+  description: File size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type, e.g., "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: InfoFile.Extension
+  description: File extension
+  type: string
+scripttarget: 0
+dependson:
+  must: []
+  should:
+  - Recorded Future|||recorded-future-get-hash-risklist
+timeout: 3.6µs
+runonce: false
+releaseNotes: "-"
+tests:
+  - No test - fetches indicators
+

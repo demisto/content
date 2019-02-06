@@ -267,9 +267,7 @@
             "timeout": 500
         },
         {
-          "integrations": "WhatsMyBrowser",
-            "playbookID": "WhatsMyBrowser-Test",
-            "timeout": 500
+            "playbookID": "TransformersTestPlaybook"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -1004,6 +1002,12 @@
             "playbookID": "GoogleResourceManager-Test",
             "timeout": 500,
             "nightly": true
+        },
+        {
+            "integrations": "Freshdesk",
+            "playbookID": "Freshdesk-Test",
+            "timeout": 500,
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -1019,7 +1023,8 @@
         "XFE Test": "License expired",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "Tenable.io test": "Error 409 ISSUE OPENED",
-        "Tenable.io Scan Test": "Error 409 ISSUE OPENED"
+        "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
+        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye "
     },
     "skipped_integrations": {
         "FortiGate": "License expired, in the process of getting new one",
@@ -1049,8 +1054,7 @@
         "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
-        "Recorded Future": "Quota issues"
+        "WildFire": "Quota is temporarily over due to circle ci issues"
     },
     "nigthly_integrations": [
         "Lastline",
