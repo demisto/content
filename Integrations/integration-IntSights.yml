@@ -793,15 +793,12 @@ script:
         account's ID, type: String}
     - {contextPath: IntSights.MsspAccount.Status, description: The IntSight's mssp
         sub account's enabled status, type: String}
-  - arguments: []
-    description: Tests intsights mssp features, should be an mssp account.
-    execution: false
-    name: intsights-mssp-test
-    outputs:
-    - {contextPath: IntSights.MsspAccount.ID, description: The IntSight's mssp sub
-        account's ID, type: String}
-    - {contextPath: IntSights.MsspAccount.Status, description: The IntSight's mssp
-        sub account's enabled status, type: String}
+    - {contextPath: IntSights.MsspAccount.AssetsCount, description: The IntSight's
+        mssp sub account's assets count, type: String}
+    - {contextPath: IntSights.MsspAccount.AssetLimit, description: The IntSight's
+        mssp sub account's asset limit, type: String}
+    - {contextPath: IntSights.MsspAccount.CompanyName, description: The IntSight's
+        mssp sub account's company name, type: String}
   dockerimage: ''
   isfetch: true
   runonce: false
@@ -1650,65 +1647,24 @@ script:
             account["ID"] = account["_id"]
             del account["_id"]
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.MsspAccounts(val.ID === obj.ID)': accounts},
-            'HumanReadable': tableToMarkdown('IntSights MSSP accounts for ' + account_id, [a for a in accounts],
-                                             ["ID", 'CompanyName', "Status"]),
-            'Contents': accounts,
-            'ContentsFormat': formats['json']
-        })
+        if len(accounts) < 1:
+            return_error('Current MSSP Account has no sub accounts.')
 
-
-    def test_mssp():
-        account_id = demisto.getParam('credentials')['identifier']
-
-        # Check if mssp_sub_account_id is full or not
-        if not mssp_account_id:
-            return_error('Please insert an mssp sub account id, before preforming this action.')
-
-        # Check if account exsits
-        HEADERS['Account-Id'] = account_id
-        accounts = req('GET', 'public/v1/mssp/customers').json()
-        if not accounts:
-            return_error("intsights-mssp-test failed to fetch sub accounts.")
-
-        account_ids = [i["_id"] for i in accounts]
+        account_ids = [i["ID"] for i in accounts]
         if mssp_account_id not in account_ids:
             demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
-            return_error('Sub account id ({}) is not part of this mssp account'.format(mssp_account_id))
+            return_error('Entered sub account id ({}) is not part of this mssp account'.format(mssp_account_id))
 
-        if len(accounts) < 2:
-            return_error('Current MSSP Account has only one sub account, please test with 2 or more.')
+        for i, account in enumerate(account_ids):
+            # Call account
+            HEADERS['Account-Id'] = account
+            account_ua = req('GET', 'public/v1/account/used-assets').text
 
-        # Call account 1 with /public/v1/account/used-assets after update of account-id in the header
-        account_1 = account_ids[0]
-        HEADERS['Account-Id'] = account_1
-        account_1_ua = req('GET', 'public/v1/account/used-assets').text
-
-        # Call account 2 and check the difference
-        account_2 = account_ids[1]
-        HEADERS['Account-Id'] = account_2
-        account_2_ua = req('GET', 'public/v1/account/used-assets').text
-
-        if account_1_ua == "" and account_2_ua == "":
-            return_error("intsights-mssp-test failed fetching sub accounts (both are empty entries).")
-
-        if account_1_ua == account_2_ua:
-            demisto.log("[DEBUG] - MSSP Sub account results ({}={})".format(str(account_1_ua), str(account_2_ua)))
-            return_error("MSSP test failed, sub accounts are not different.")
-
-        accounts[0].update(json.loads(account_1_ua))
-        accounts[1].update(json.loads(account_2_ua))
-
-        # Fix accounts _id keys
-        for account in accounts:
-            account["ID"] = account["_id"]
-            del account["_id"]
+            accounts[i].update(json.loads(account_ua))
 
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'IntSights.MsspAccounts(val.ID === obj.ID)': accounts},
+            'EntryContext': {'IntSights.MsspAccount(val.ID === obj.ID)': accounts},
             'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, [a for a in accounts],
                                              ["ID", 'CompanyName', "Status", "AssetsLimit", "AssetsCount"]),
             'Contents': accounts,
@@ -1724,8 +1680,6 @@ script:
         demisto.results('ok')
     elif demisto.command() == 'intsights-mssp-get-sub-accounts':
         get_mssp_sub_accounts()
-    elif demisto.command() == 'intsights-mssp-test':
-        test_mssp()
     elif demisto.command() == 'intsights-get-alerts':
         get_alerts()
     elif demisto.command() == 'intsights-get-alert-image':
