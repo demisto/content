@@ -327,7 +327,7 @@ def is_existing_image(file_path):
 
 def get_modified_and_added_files(branch_name, is_circle):
     if is_circle:
-        all_changed_files_string = run_git_command("git diff --name-status origin/master..{}".format(branch_name))
+        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         modified_files, added_files = get_modified_files(all_changed_files_string)
 
     else:
@@ -393,16 +393,35 @@ def validate_version(file_path):
     if file_extension == '.yml':
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
+        # some files like playbooks do not have commonfields key
+        if not version_number:
+            version_number = yaml_dict.get('version')
     elif file_extension == '.json':
         if checked_type(file_path):
+            file_name = file_path.split('/')[-1]
             with open("./" + file_path) as json_file:
                 json_dict = json.load(json_file)
-                version_number = json_dict.get('version')
+                if file_name == "reputations.json":
+                    reputations_valid = validate_reputations(json_dict)
+                else:
+                    version_number = json_dict.get('version')
 
-    if version_number != -1:
+    if version_number != -1 or not reputations_valid:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
         return True
     return False
+
+
+def validate_reputations(json_dict):
+    is_valid = True
+    reputations = json_dict.get('reputations')
+    for reputation in reputations:
+        internal_version = reputation.get('version')
+        if internal_version != -1:
+            object_id = reputation.get('id')
+            print_error("Reputation object with id {} must have version -1".format(object_id))
+            is_valid = False
+    return is_valid
 
 
 def validate_fromversion_on_modified(file_path):
@@ -478,7 +497,15 @@ def integration_valid_in_id_set(file_path, integration_set):
 def validate_committed_files(branch_name, is_circle):
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
+        try:
+            id_set = json.load(id_set_file)
+        except ValueError, ex:
+            if "Expecting property name" in ex.message:
+                print_error("You probably merged from master and your id_set.json has conflicts. "
+                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                return
+            else:
+                raise ex
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
