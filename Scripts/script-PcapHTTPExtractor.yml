@@ -82,6 +82,7 @@ script: |-
   import zlib
   import pyshark
   from datetime import datetime
+  import re
 
   # Used to convert pyshark keys to Demisto's conventions
   # Also used as a whitelist of relevant keys for outputs.
@@ -246,15 +247,17 @@ script: |-
       # Construct request <> response dicts
       http_flows = []
       for req, res in _chunker(http_packets, 2):
-
           # GZ decompress if needed
-          if res["HTTP"].get_field_value("Content-Encoding") == "gzip":
-
-              # Fix data not existing
-              if not hasattr(res["HTTP"], "data"):
-                  res["HTTP"].data = res["HTTP"].get("file_data")
-              else:
-                  res["HTTP"].data = decode_gzip(res["HTTP"].data)
+          # if res["HTTP"].get_field_value("Content-Encoding") == "gzip":
+          #
+          #     # Fix data not existing
+          #     if not hasattr(res["HTTP"], "data"):
+          #         res["HTTP"].data = res["HTTP"].get("file_data")
+          #     # else:
+          #         # try:
+          #         #     res["HTTP"].data = decode_gzip(res["HTTP"].data)
+          #         # except zlib.error:
+          #         #     res["HTTP"].data = "Couldn't decompress gzip data (incomplete or truncated stream)."
 
           http_flows.append({
               "Request": req,
@@ -322,8 +325,15 @@ script: |-
       if "HttpChat" in r:
           r["HttpChat"] = r["HttpChat"].replace("\\r\\n", "")
 
+
+
       # Trim a file data too big
       if "HttpFileData" in r:
+
+          # Remove the \xef\xbf\xbd and \xa hex from the file data
+          if '\\xef\\xbf\\xbd' in r["HttpFileData"]:
+              r["HttpFileData"] = re.sub("(\\\\xef\\\\xbf\\\\xbd)+", "[UNICODE]", r["HttpFileData"])
+          r["HttpFileData"] = r["HttpFileData"].replace("\\xa", "")
 
           if "HttpContentType" not in r:
               r["HttpFileData"] = "Couldn't find response content type, assuming not allowed."
@@ -408,7 +418,7 @@ script: |-
       # Work on the pcap file and return a result
       http_flows = get_http_flows(pcap_file_path_in_container)
 
-      # Cut results according to the user args.
+      # Cut results according to the user args (times 2, because we are working on pairs of requests and responses).
       if START:
           http_flows = http_flows[int(START):]
       if LIMIT:
