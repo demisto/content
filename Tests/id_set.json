@@ -11796,6 +11796,17 @@
                     "No Test - Can not connect to instance from remote"
                 ]
             }
+        }, 
+        {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15852,6 +15863,18 @@
                     "kafka-consume-msg": "Kafka V2", 
                     "kafka-publish-msg": "Kafka V2", 
                     "kafka-print-topics": "Kafka V2"
+                }
+            }
+        }, 
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }
