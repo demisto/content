@@ -232,6 +232,47 @@ script: |-
       return datetime.strptime(strdate, '%a, %d %b %Y %H:%M:%S %Z').isoformat()
 
 
+  def get_next_matching_index(http_packets, tcp_src, tcp_dst, ip_src, ip_dst):
+      for i, p in enumerate(http_packets):
+          if p["TCP"].srcport == tcp_dst and \
+                  p["TCP"].dstport == tcp_src and \
+                  p["IP"].src == ip_dst and \
+                  p["IP"].dst == ip_src:
+              return i
+      return None
+
+
+  def fix_order(http_packets):
+      """
+      Re-organizes the http packets to be request-response pairs.
+      Sometimes pyshark doesn't put the packets in the order they are HTTP-wise.
+      So we are re-organizing them according to the tcp and ip information of the packets.
+      :param http_packets:
+      :return: http_packets
+      """
+      new_order = []
+
+      # For each packet find the next one that matches the tcp,ip tuple.
+      i = 0
+      while (len(http_packets) > 0):
+          packet = http_packets[0]
+          tcp_src = packet["TCP"].srcport
+          tcp_dst = packet["TCP"].dstport
+          ip_src = packet["IP"].src
+          ip_dst = packet["IP"].dst
+          new_order.append(packet)
+          del http_packets[0]
+
+          next_matching_index = get_next_matching_index(http_packets, tcp_src, tcp_dst, ip_src, ip_dst)
+          if next_matching_index is None:
+              new_order.append(None)
+          else:
+              new_order.append(http_packets[next_matching_index])
+              del http_packets[next_matching_index]
+
+      return new_order
+
+
   def get_http_flows(pcap_file_path):
       """
       Return a list of HTTP requests/responses from pcap file
@@ -243,6 +284,8 @@ script: |-
 
       # Filter all non HTTP packets
       http_packets = [p for p in capture_object if "HTTP" in p]
+
+      http_packets = fix_order(http_packets)
 
       # Construct request <> response dicts
       http_flows = []
@@ -311,6 +354,12 @@ script: |-
       :param allowed_content_types: allowed content types to display
       :return: an http flow
       """
+
+      if flow == None:
+          return {
+              "Not found": "No response found"
+          }
+
       # Get the HTTP and TCP, IP and Meta fields.
       r = flow["HTTP"].__dict__["_all_fields"]
       flow_info = get_flow_info(flow)
@@ -324,8 +373,6 @@ script: |-
       # Remove the \r\n from the HttpChat
       if "HttpChat" in r:
           r["HttpChat"] = r["HttpChat"].replace("\\r\\n", "")
-
-
 
       # Trim a file data too big
       if "HttpFileData" in r:
