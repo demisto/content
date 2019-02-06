@@ -393,6 +393,8 @@ def validate_version(file_path):
     if file_extension == '.yml':
         yaml_dict = get_json(file_path)
         version_number = yaml_dict.get('commonfields', {}).get('version')
+        if not version_number:
+            version_number = yaml_dict.get('version')
     elif file_extension == '.json':
         if checked_type(file_path):
             with open("./" + file_path) as json_file:
