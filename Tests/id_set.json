@@ -1876,7 +1876,10 @@
         {
             "GenerateInvestigationSummaryReport": {
                 "name": "GenerateInvestigationSummaryReport", 
-                "fromversion": "3.5.0"
+                "fromversion": "3.5.0", 
+                "tests": [
+                    "No test - No need"
+                ]
             }
         }, 
         {
@@ -2608,6 +2611,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
+                ], 
+                "tests": [
+                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
