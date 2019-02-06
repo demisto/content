@@ -2266,6 +2266,5 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-releaseNotes: "Bug fix - submit a file with unicode chars in its name or newline character"
 tests:
   - ThreatGridTest
