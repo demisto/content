@@ -219,6 +219,7 @@
         },
         {
             "integrations": "IntSights",
+            "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
             "nightly": true,
             "timeout": 500
@@ -1046,7 +1047,6 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "WildFire": "Quota is temporarily over due to circle ci issues",
