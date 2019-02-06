@@ -1238,4 +1238,3 @@ script:
 hidden: false
 tests:
 - No test
-releaseNotes: "fixed - as-get-security-events was ignoring proxy param"
