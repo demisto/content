@@ -484,6 +484,5 @@ inputs:
   description: States if the instance we have configures is a Palo Alto Firewall or
     Panorama
 outputs: []
-releaseNotes: "Filtering JobIDs to not execute GenericPolling task if not necessary"
 tests:
 - palo_alto_firewall_test_pb

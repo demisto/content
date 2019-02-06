@@ -68,20 +68,19 @@ script: |-
 type: python
 tags:
 - RecordedFuture
-comment: Extracts the Hash risk list from Recorded Future, and creates indicators
+comment: Extracts the hash risk list from Recorded Future and creates indicators
   accordingly.
 enabled: true
 args:
 - name: list
-  description: Specify a Hash list by a risk rule name, which can be retrieved by
+  description: Specify a hash list by a risk rule name, which can be retrieved with
     the get-hash-riskrules command.
 - name: threshold
-  description: Specify a threshold to consider indicators as malicious(Equal or greater
-    than). From 65 to 99.
+  description: Minimum threshold score to consider indicators as malicious (65-99, greater than or equal to)
   defaultValue: "65"
 outputs:
 - contextPath: InfoFile.Name
-  description: File Name
+  description: File name
   type: string
 - contextPath: InfoFile.EntryID
   description: File entry ID
@@ -90,7 +89,7 @@ outputs:
   description: File size
   type: number
 - contextPath: InfoFile.Type
-  description: File type e.g. "PE"
+  description: File type, e.g., "PE"
   type: string
 - contextPath: InfoFile.Info
   description: Basic information of the file
@@ -105,7 +104,6 @@ dependson:
   - Recorded Future|||recorded-future-get-hash-risklist
 timeout: 3.6µs
 runonce: false
-releaseNotes: "-"
 tests:
   - No test - fetches indicators
 
