@@ -51,7 +51,7 @@ configuration:
   name: topic
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
 - display: Offset to fetch incidents from
   name: offset
   defaultvalue: "0"
@@ -67,10 +67,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                        Debug Settings
-    Enable debug (will post Kafka connection logs to the War Room)
+- display: Enable debug (will post Kafka connection logs to the War Room)
   name: enable_debug
   defaultvalue: ""
   type: 8
@@ -516,6 +513,8 @@ script:
       type: number
     description: Print all partitions for a topic
   isfetch: true
+  dockerimage: demisto/pykafka:1.0.0.128
   runonce: false
+releaseNotes: '-'
 tests:
   - No Test - Can not connect to instance from remote
