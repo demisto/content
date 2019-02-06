@@ -270,6 +270,5 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "New test for UnEscapeUrl script"
 tests:
   - no tests

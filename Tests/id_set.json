@@ -1876,7 +1876,10 @@
         {
             "GenerateInvestigationSummaryReport": {
                 "name": "GenerateInvestigationSummaryReport", 
-                "fromversion": "3.5.0"
+                "fromversion": "3.5.0", 
+                "tests": [
+                    "No test - No need"
+                ]
             }
         }, 
         {
@@ -2608,6 +2611,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
+                ], 
+                "tests": [
+                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
@@ -4925,14 +4931,10 @@
             }
         }, 
         {
-            "PcapHTTPExtractor": {
-                "name": "PcapHTTPExtractor", 
-                "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
-                ], 
+            "Cut": {
+                "name": "Cut", 
                 "tests": [
-                    "PcapHTTPExtractor-Test"
+                    "TransformersTestPlaybook"
                 ]
             }
         }
@@ -11756,6 +11758,44 @@
                     "GoogleResourceManager-Test"
                 ]
             }
+        }, 
+        {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-get-ticket", 
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-get-canned-response-folder", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-ticket-conversations", 
+                    "fd-list-agents", 
+                    "fd-create-ticket-note", 
+                    "fd-delete-ticket", 
+                    "fd-search-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
+                ]
+            }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-msg", 
+                    "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "No Test - Can not connect to instance from remote"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -12900,7 +12940,7 @@
                 ], 
                 "command_to_integration": {
                     "joe-download-report": "Joe Security", 
-                    "joe-is-online": "Joe Security", 
+                    "joe-is-online": "", 
                     "joe-analysis-info": "Joe Security", 
                     "joe-search": "Joe Security", 
                     "joe-analysis-submit-sample": "Joe Security", 
@@ -15772,25 +15812,47 @@
             }
         }, 
         {
-            "playbook-PcapHTTPExtractor-test": {
-                "name": "playbook-PcapHTTPExtractor-test", 
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
                 "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
+                    "Set", 
+                    "DeleteContext"
                 ]
             }
         }, 
         {
-            "PcapHTTPExtractor-Test": {
-                "name": "PcapHTTPExtractor-Test", 
+            "Freshdesk-Test": {
+                "name": "Freshdesk-Test", 
                 "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
-                ]
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "fd-list-contacts": "Freshdesk", 
+                    "fd-get-ticket-conversations": "", 
+                    "fd-list-agents": "Freshdesk", 
+                    "fd-update-ticket": "Freshdesk", 
+                    "fd-get-contact": "", 
+                    "fd-search-tickets": "", 
+                    "fd-list-canned-response-folders": "", 
+                    "fd-delete-ticket": "Freshdesk", 
+                    "fd-list-groups": "Freshdesk", 
+                    "fd-ticket-reply": "Freshdesk", 
+                    "fd-create-ticket": "Freshdesk", 
+                    "fd-create-ticket-note": "", 
+                    "fd-get-ticket": "", 
+                    "fd-get-canned-response-folder": ""
+                }
+            }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
+                }
             }
         }
     ]
