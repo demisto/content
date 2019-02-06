@@ -35,7 +35,7 @@ configuration:
 description: Parse UserAgents and determine if they are malicious
 detaileddescription: Use these detailed instructions in order to retrieve the API
   key
-display: UA Parser
+display: WhatsMyBrowser
 name: WhatsMyBrowser
 script:
   commands:
@@ -152,7 +152,7 @@ script:
             if 'hardware_type' in parsed:
                 hr['Hardware Type'] = parsed['hardware_type']
                 ua_ec['HardwareType'] = parsed['hardware_type']
-            if 'hardware_sub_type' in parsed and 'hardware_sub_type' is not 'null':
+            if 'hardware_sub_type' in parsed and parsed['hardware_sub_type'] is not None:
                 hr['Hardware Sub Type'] = parsed['hardware_sub_type']
                 ua_ec['HardwareSubType'] = parsed['hardware_sub_type']
             ec = {

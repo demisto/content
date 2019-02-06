@@ -274,6 +274,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
+        },
+        {
 
             "integrations": "BigFix",
             "playbookID": "BigFixTest"
