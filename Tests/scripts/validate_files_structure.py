@@ -419,7 +419,7 @@ def validate_reputations(json_dict):
         internal_version = reputation.get('version')
         if internal_version != -1:
             object_id = reputation.get('id')
-            print_error("object with id {} must have version -1".format(object_id))
+            print_error("Reputation object with id {} must have version -1".format(object_id))
             is_valid = False
     return is_valid
 
