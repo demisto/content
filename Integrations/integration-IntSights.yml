@@ -35,6 +35,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: '(MSSP accounts only) Sub account ID:'
+  name: mssp_sub_account_id
+  required: false
+  type: 0
 description: Use IntSights to manage and fetch alerts
 detaileddescription: The credentials username is your user ID and the password is
   the API key.
