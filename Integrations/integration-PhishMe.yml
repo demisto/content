@@ -166,7 +166,7 @@ script:
                         Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
                       };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats[k], threshold, url, threats[0].label);
+                threatAnalysis = checkThreat(threats[k], threshold, url);
                 threatArray[k] = threats[k].id;
                 md += threatAnalysis['md'];
                 if (threatAnalysis.indicatorFound) {
@@ -255,7 +255,7 @@ script:
                 }
             };
             for (var k = 0; k < threats.length; k++) {
-                threatAnalysis = checkThreat(threats[k], threshold, sender_name, threats[0].label);
+                threatAnalysis = checkThreat(threats[k], threshold, sender_name);
                 threatArray[k] = threats[k].id;
                 md += threatAnalysis['md'];
                 if (threatAnalysis.indicatorFound) {
