@@ -1,0 +1,195 @@
+id: TransformersTestPlaybook
+version: -1
+name: TransformersTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 090a733d-4dfd-4d4f-8b08-72b04c744dcb
+    type: start
+    task:
+      id: 090a733d-4dfd-4d4f-8b08-72b04c744dcb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: f52b5d1c-a44f-4b22-8e29-8a2cf093fe3c
+    type: title
+    task:
+      id: f52b5d1c-a44f-4b22-8e29-8a2cf093fe3c
+      version: -1
+      name: Cut
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: c2afe56b-c080-4ffb-841e-30cfa0c93840
+    type: condition
+    task:
+      id: c2afe56b-c080-4ffb-841e-30cfa0c93840
+      version: -1
+      name: Cut
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: cut_transformer_context
+                transformers:
+                - operator: Cut
+                  args:
+                    delimiter:
+                      value:
+                        simple: '-'
+                    fields:
+                      value:
+                        simple: 1,5
+            iscontext: true
+          right:
+            value:
+              simple: A-D
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: f8108be7-5b3e-45bf-870d-ed81e7c5b773
+    type: title
+    task:
+      id: f8108be7-5b3e-45bf-870d-ed81e7c5b773
+      version: -1
+      name: Test Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 2406ea96-d193-4412-8210-70e23fffe298
+    type: regular
+    task:
+      id: 2406ea96-d193-4412-8210-70e23fffe298
+      version: -1
+      name: Set cut_transformer_context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: cut_transformer_context
+      value:
+        simple: A-B-C-E-D
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 1b24bf96-381c-4ea7-863f-e43d9127539f
+    type: regular
+    task:
+      id: 1b24bf96-381c-4ea7-863f-e43d9127539f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

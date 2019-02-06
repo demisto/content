@@ -275,6 +275,9 @@
             "timeout": 500
         },
         {
+            "playbookID": "TransformersTestPlaybook"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -1005,6 +1008,12 @@
         {
             "integrations": "Google Resource Manager",
             "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "integrations": "Freshdesk",
+            "playbookID": "Freshdesk-Test",
             "timeout": 500,
             "nightly": true
         }
