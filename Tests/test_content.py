@@ -87,11 +87,7 @@ def update_test_msg(integrations, test_message):
 
 def has_mock_file(ami, playbook_id):
     command = ["[", "-f", os.path.join(MOCKS_GIT_PATH, id_to_mock_file(playbook_id)), "]"]
-    file_exists = ami.call(command) == 0
-    if not file_exists:
-        print "Mock file does not exist, running without mock."
-
-    return file_exists
+    return ami.call(command) == 0
 
 
 # TODO: Remove before merge
@@ -170,7 +166,9 @@ def run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrati
         return
 
     set_mock_params(integrations)
-    if has_mock_file(ami, playbook_id):
+    if not has_mock_file(ami, playbook_id):
+        print "Mock file does not exist, running without mock."
+    else:
         print "Running with playback"
         proxy.start(playbook_id)
         # run test

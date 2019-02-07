@@ -8,7 +8,7 @@ LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
 MOCKS_TMP_PATH = "/tmp/Mocks/"
-MOCKS_GIT_PATH = "content-test-data/Mocks/"
+MOCKS_GIT_PATH = "content-test-data/"
 MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
 REMOTE_MACHINE_USER = "ec2-user"
 VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -32,11 +32,18 @@ def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
 
 
 def id_to_mock_file(playbook_id):
-    return clean_filename(playbook_id) + '.mock'
+    clean = clean_filename(playbook_id)
+    return os.path.join(clean + '/', clean + '.mock')
 
 
-def id_to_log_file(playbook_id):
-    return clean_filename(playbook_id) + '.log'
+def id_to_log_file(playbook_id, record=False):
+    clean = clean_filename(playbook_id)
+    suffix = '_record' if record else '_playback'
+    return os.path.join(clean + '/', clean + suffix + '.log')
+
+
+def id_to_folder(playbook_id):
+    return clean_filename(playbook_id) + '/'
 
 
 class AMIConnection:
@@ -96,6 +103,8 @@ class MITMProxy:
         self.ami = AMIConnection(self.public_ip)
         self.docker_ip = self.ami.get_docker_ip()
         self.process = None
+        self.last_playbook_id = None
+        self.record = None
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
         self.debug = debug
@@ -119,12 +128,16 @@ class MITMProxy:
         self.active_folder = self.tmp_folder
 
     def move_to_primary(self, playbook_id):
-        mock_filepath = os.path.join(self.tmp_folder, id_to_mock_file(playbook_id))
-        if self.ami.check_output(['stat', '-c', '%s', mock_filepath]).strip() == 0:
+        src_filepath = os.path.join(self.tmp_folder, id_to_mock_file(playbook_id))
+        src_files = os.path.join(self.tmp_folder, id_to_folder(playbook_id) + '*')
+        dst_folder = os.path.join(self.primary_folder, id_to_folder(playbook_id))
+
+        if self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip() == 0:
             print 'Mock file is empty, ignoring.'
             self.empty_files.append(playbook_id)
         else:
-            self.ami.call(['mv', mock_filepath, self.primary_folder])
+            self.ami.call(['mkdir', '--parents', dst_folder])
+            self.ami.call(['mv', src_files, dst_folder])
 
     def print_empty_files(self):
         if self.empty_files:
@@ -134,15 +147,16 @@ class MITMProxy:
         if self.process:
             raise Exception("Cannot start proxy - already running.")
 
+        self.last_playbook_id = playbook_id
+        self.record = record
+
         path = path or self.active_folder
         actions = '--server-replay-kill-extra -S' if not record else '-w'
-        command = "mitmdump -k -p 9997 {}".format(actions).split()
+        command = "mitmdump -k -v -p 9997 {}".format(actions).split()
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy(self.docker_ip + ':9997')
-
-        # sleep(1)  # DEBUG
 
     def stop(self):
         if not self.process:
@@ -151,8 +165,17 @@ class MITMProxy:
         self.__configure_proxy('')
         self.process.send_signal(signal.SIGINT)
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])
+
         if self.debug:
             print "proxy outputs:"
             print self.process.stdout.read()
             print self.process.stderr.read()
+        else:
+            log_filepath = os.path.join(self.primary_folder, id_to_log_file(self.last_playbook_id, self.record))
+            with open(log_filepath, 'wb') as log:
+                log.write('STDOUT:\n')
+                log.write(self.process.stdout.read())
+                log.write('\nSTDERR:\n')
+                log.write(self.process.stdout.read())
+
         self.process = None
