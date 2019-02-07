@@ -128,12 +128,21 @@ script:
         'completed': 2
     }
 
+    DISTRIBUTION_NUMBERS = {
+        'Your_organisation_only': 0,
+        'This_community_only': 1,
+        'Connected_communities': 2,
+        'All_communities': 3
+    }
     ''' HELPER FUNCTIONS '''
+
+
     def convert_timestamp(timestamp):
         """
         Gets a timestamp from MISP response (1546713469) and converts it to human readable format
         """
         return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+
 
     def replace_keys(obj_to_build):
         """
@@ -144,6 +153,7 @@ script:
         if isinstance(obj_to_build, dict):
             return {(ENTITIESDICT[k] if k in ENTITIESDICT else k): replace_keys(v) for k, v in obj_to_build.items()}
         return obj_to_build
+
 
     def build_context(response):
         """
@@ -397,7 +407,7 @@ script:
         # Creating dict with demisto's arguments
         args = ['distribution', 'to_ids', 'category', 'info', 'analysis', 'comment', 'threat_level_id']
         args = {k:demisto.args().get(k) for k in args if demisto.args().get(k)}
-        args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demiso.args().get('threat_level_id')
+        args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
         args['analysis'] = ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get('analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis')
         event_id = demisto.args().get('event_id')
 
@@ -430,7 +440,8 @@ script:
 
     def get_time_now():
         """
-        :return time in year--month--day format:
+        :return: time in year--month--day format
+        :rtype: str
         """
         time_now = time.gmtime(time.time())
         return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
@@ -439,6 +450,10 @@ script:
     def create_event(ret_only_event_id=False):
         """
         Creating event in MISP with the given attriubute attribute
+        :param ret_only_event_id: returning event ID if set to True
+        :type ret_only_event_id: bool
+        :return event_id:
+        :rtype: int
         """
         d_args = demisto.args()
         # new_event in the old integration gets some args that belongs to attribute, so after creating the basic event, we will add attribute
@@ -487,9 +502,10 @@ script:
 
     def add_attribute(eventid=None, internal=None):
         """
-        :param args_list: arguments created by 'takeArgs' func
-        :type args_list: list
-        :return Demisto's object:
+        :param eventid: Event ID to add attribute to
+        :type eventid: int
+        :param internal: if set to True, will not post results to Demisto
+        :type internal: bool
         """
         d_args = demisto.args()
         args = {
@@ -503,12 +519,18 @@ script:
         }
         if eventid:
             args['id'] = eventid
-
-        try:
-            if isinstance(args.get('id'), str):
-                args['id'] = int(args['id'])
-        except ValueError:
+        if isinstance(args.get('id'), str) and args.get('id').isdigit():
+            args['id'] = int(args['id'])
+        elif not isinstance(args.get('id'), int):
             return_error('EventID must be a number')
+        if args.get('distribution'):
+            if not isinstance(args.get('distribution'), int):
+                if isinstance(args.get('distribution'), str) and args.get('distribution').isdigit():
+                    args['distribution'] = int(args['distribution'])
+                elif isinstance(args.get('distribution'), str) and args['distribution'] in DISTRIBUTION_NUMBERS:
+                    args['distribution'] = DISTRIBUTION_NUMBERS.get(args['distribution'])
+                else:
+                    return_error('Distribution must be number 0-3 or predefined string')
 
         event = MISP.get_event(args.get('id'))
 
@@ -555,7 +577,7 @@ script:
         else:
             if unzip:
                 files = list()
-                for f in resonse:
+                for f in response:
                     # Check if it's tuple. if so, f = (EventID, hash, fileContent)
                     if isinstance(f, tuple) and len(f) == 3:
                         filename = f[1]
@@ -632,11 +654,11 @@ script:
         search_args = ['event_id', 'value', 'type', 'category', 'org', 'tags', 'from', 'to', 'last', 'eventid', 'uuid', 'to_ids']
 
         args = dict()
-        # create dict to pass into the search
+        # Create dict to pass into the search
         for k in search_args:
             if k in d_args:
                 args[k] = d_args.get(k)
-        #replacing keys and values from Demisto to Misp's keys
+        # Replacing keys and values from Demisto to Misp's keys
         if 'type' in args:
             args['type_attribute'] = d_args.pop('type')
         # search function 'to_ids' parameter gets 0 or 1 instead of bool.
@@ -680,6 +702,7 @@ script:
         else:
             demisto.results(f"No events found in MISP for {args}")
 
+
     def delete_event():
         """
         Gets an event id and deletes it.
@@ -697,6 +720,7 @@ script:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md
             })
+
 
     def add_tag():
         """
@@ -722,10 +746,10 @@ script:
 
 
     def add_sighting():
-    """
-    Add sighting to MISP attribute
+        """
+        Add sighting to MISP attribute
 
-    """
+        """
         sighting = {
             'sighting': 0,
             'false_positive': 1,
@@ -742,13 +766,14 @@ script:
 
 
     def test():
-    """
-    Test module.
-    """
-        if not MISP.test_connection():
-            return_error('MISP has not connected.')
-        else:
+        """
+        Test module.
+        """
+        if MISP.test_connection():
             demisto.results('ok')
+        else:
+            return_error('MISP has not connected.')
+
 
 
     command = demisto.command()
@@ -784,12 +809,8 @@ script:
         elif command == 'ip':
             check_ip()
     except PyMISPError as e:
-        LOG(e.message)
-        LOG.print_log()
         return_error(e.message)
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
         return_error(e)
   type: python
   commands:
