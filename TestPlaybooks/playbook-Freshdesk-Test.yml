@@ -1,0 +1,1380 @@
+id: Freshdesk-Test
+version: -1
+name: Freshdesk-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21d2973d-f179-4d69-8633-ce74845c9444
+    type: start
+    task:
+      id: 21d2973d-f179-4d69-8633-ce74845c9444
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1c24a4f0-893d-435e-8531-1ebb83ae3e72
+    type: regular
+    task:
+      id: 1c24a4f0-893d-435e-8531-1ebb83ae3e72
+      version: -1
+      name: fd-create-ticket
+      description: Create a new Freshdesk ticket.
+      script: Freshdesk|||fd-create-ticket
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      additional_fields: {}
+      additional_values: {}
+      attachments: {}
+      description:
+        simple: CREATE
+      extend-context:
+        simple: OriginalTicketID=id
+      identifier:
+        simple: playbook@test.com
+      priority: {}
+      responder: {}
+      status: {}
+      subject:
+        simple: Testing Ticket Creation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: a04512ee-1206-4701-8b01-1b410f70eb69
+    type: regular
+    task:
+      id: a04512ee-1206-4701-8b01-1b410f70eb69
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 338e9b09-fa15-4f39-89fa-d10b61323ff8
+    type: condition
+    task:
+      id: 338e9b09-fa15-4f39-89fa-d10b61323ff8
+      version: -1
+      name: Verify Ticket Creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Subject
+            iscontext: true
+          right:
+            value:
+              simple: Testing Ticket Creation
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 5633762e-0642-4c94-8a11-1932c9ec751d
+    type: regular
+    task:
+      id: 5633762e-0642-4c94-8a11-1932c9ec751d
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 16e25f02-eaf5-477f-8e34-a77a841e60a6
+    type: regular
+    task:
+      id: 16e25f02-eaf5-477f-8e34-a77a841e60a6
+      version: -1
+      name: fd-get-ticket
+      description: View a Ticket.
+      script: '|||fd-get-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id:
+        simple: ${OriginalTicketID}
+      include_requester: {}
+      include_stats: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 38327088-c043-4591-82f7-734196708c3c
+    type: condition
+    task:
+      id: 38327088-c043-4591-82f7-734196708c3c
+      version: -1
+      name: Verify Get Ticket
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Subject
+            iscontext: true
+          right:
+            value:
+              simple: Testing Ticket Creation
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 324eaa49-abab-442c-8398-d88460110a59
+    type: condition
+    task:
+      id: 324eaa49-abab-442c-8398-d88460110a59
+      version: -1
+      name: Verify Context Deletion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: FD.Ticket.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OriginalTicketID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 53124c47-65eb-4dbd-86ae-e22821ab1d40
+    type: condition
+    task:
+      id: 53124c47-65eb-4dbd-86ae-e22821ab1d40
+      version: -1
+      name: Verify Extended Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: OriginalTicketID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: bfd543db-9356-4488-89f9-6a4b20319e42
+    type: regular
+    task:
+      id: bfd543db-9356-4488-89f9-6a4b20319e42
+      version: -1
+      name: fd-update-ticket
+      description: Update the ticket specified by the ID
+      script: Freshdesk|||fd-update-ticket
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      additional_fields: {}
+      assigned_agent: {}
+      assigned_group: {}
+      description: {}
+      id:
+        simple: ${OriginalTicketID}
+      priority:
+        simple: Urgent
+      status: {}
+      subject:
+        simple: Testing Ticket Update
+      update_fields: {}
+      update_values: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 4a5aab12-0c5f-4f33-8207-eb2446a6f910
+    type: condition
+    task:
+      id: 4a5aab12-0c5f-4f33-8207-eb2446a6f910
+      version: -1
+      name: Verify Ticket Update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Subject
+            iscontext: true
+          right:
+            value:
+              simple: Testing Ticket Update
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Freshdesk.Ticket.Priority
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: f3e1040d-3606-4f1c-8c82-ff3dd7dc73c3
+    type: regular
+    task:
+      id: f3e1040d-3606-4f1c-8c82-ff3dd7dc73c3
+      version: -1
+      name: fd-list-contacts
+      description: List all contacts matching the specified filters. If no filters
+        are provided then all unblocked and undeleted contacts will be returned.
+      script: Freshdesk|||fd-list-contacts
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      company_id: {}
+      extend-context:
+        simple: ContactIDList=id
+      mobile: {}
+      phone: {}
+      state: {}
+      updated_since: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: ff0d070c-6f96-4f9e-8a44-b695422121d0
+    type: regular
+    task:
+      id: ff0d070c-6f96-4f9e-8a44-b695422121d0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID,ContactID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 3e1af708-d5ad-484b-8e6d-859947de54fd
+    type: condition
+    task:
+      id: 3e1af708-d5ad-484b-8e6d-859947de54fd
+      version: -1
+      name: Verify List Contacts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.Contact.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 792fc43c-9966-430c-8050-96b8e232deda
+    type: regular
+    task:
+      id: 792fc43c-9966-430c-8050-96b8e232deda
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID,ContactIDList
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: b830abd9-2407-4bd4-85d7-20a08b9cb3d1
+    type: regular
+    task:
+      id: b830abd9-2407-4bd4-85d7-20a08b9cb3d1
+      version: -1
+      name: fd-get-contact
+      description: View the details of the contact specified by the ID number
+      script: '|||fd-get-contact'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      email: {}
+      id:
+        complex:
+          root: ContactIDList
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      mobile: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 258a875b-652a-4a21-87a4-44174f770892
+    type: condition
+    task:
+      id: 258a875b-652a-4a21-87a4-44174f770892
+      version: -1
+      name: Verify Get Contact
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.Contact.CreatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: d176a539-daef-4126-8f8d-66a848a55fa7
+    type: regular
+    task:
+      id: d176a539-daef-4126-8f8d-66a848a55fa7
+      version: -1
+      name: fd-list-canned-response-folders
+      description: List all Canned Response Folders (Only users with Admin Privileges)
+      script: '|||fd-list-canned-response-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 8034e020-3e43-45b0-88aa-ce203dc5b835
+    type: regular
+    task:
+      id: 8034e020-3e43-45b0-88aa-ce203dc5b835
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 57b9cc34-e349-4c8d-8cf1-39d6c63d3b0c
+    type: condition
+    task:
+      id: 57b9cc34-e349-4c8d-8cf1-39d6c63d3b0c
+      version: -1
+      name: Verify List Canned Response Folders
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.CRFolder.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 6162480b-e3c5-4aae-8f89-1d22ccc7fa37
+    type: regular
+    task:
+      id: 6162480b-e3c5-4aae-8f89-1d22ccc7fa37
+      version: -1
+      name: fd-get-canned-response-folder
+      description: View the details of all the Canned Responses in a Folder.
+      script: '|||fd-get-canned-response-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      id:
+        simple: ${Freshdesk.CRFolder.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 7e46379e-202d-49e8-83f5-0e52d6fe5c6e
+    type: condition
+    task:
+      id: 7e46379e-202d-49e8-83f5-0e52d6fe5c6e
+      version: -1
+      name: Verify Get Canned Response Folder
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.CRFolder.CR.Content
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: c8ba2481-8613-4fa9-85ca-aec56a8eecbd
+    type: regular
+    task:
+      id: c8ba2481-8613-4fa9-85ca-aec56a8eecbd
+      version: -1
+      name: fd-list-groups
+      description: List all groups
+      script: Freshdesk|||fd-list-groups
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: f69e5e6a-5eb4-439a-8805-853d6c4ee68e
+    type: condition
+    task:
+      id: f69e5e6a-5eb4-439a-8805-853d6c4ee68e
+      version: -1
+      name: Verify List Groups
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.Group.GroupType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: cdfc61d3-4685-4b02-87f3-98b1b9e94ec1
+    type: regular
+    task:
+      id: cdfc61d3-4685-4b02-87f3-98b1b9e94ec1
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID,ContactIDList
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 0eac5488-9c9d-4356-867b-ee28f728c582
+    type: regular
+    task:
+      id: 0eac5488-9c9d-4356-867b-ee28f728c582
+      version: -1
+      name: fd-ticket-reply
+      description: Reply to a specified ticket
+      script: Freshdesk|||fd-ticket-reply
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      attachments: {}
+      bcc_emails: {}
+      body:
+        simple: Test Playbook Reply
+      cc_emails:
+        simple: test@playbook.com
+      from_email: {}
+      ticket_id:
+        simple: ${OriginalTicketID}
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: 98550792-8f7d-4ee9-8e91-1f42f24a940e
+    type: condition
+    task:
+      id: 98550792-8f7d-4ee9-8e91-1f42f24a940e
+      version: -1
+      name: Verify Ticket Reply
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Conversation.BodyText
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Reply
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 62ea25dc-e337-4bc3-8954-9b39faebc25d
+    type: regular
+    task:
+      id: 62ea25dc-e337-4bc3-8954-9b39faebc25d
+      version: -1
+      name: fd-create-ticket-note
+      description: Create a note for a specified ticket. By default any note you add
+        will be private unless you set the 'private' command argument to False.
+      script: '|||fd-create-ticket-note'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      attachments: {}
+      body:
+        simple: Test Playbook Note
+      incoming: {}
+      notify_emails: {}
+      private:
+        simple: "false"
+      ticket_id:
+        simple: ${OriginalTicketID}
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: d1bfdf3f-a0b9-47c5-8e7a-8a563138fa93
+    type: condition
+    task:
+      id: d1bfdf3f-a0b9-47c5-8e7a-8a563138fa93
+      version: -1
+      name: Verify Create Ticket Note
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Conversation.BodyText
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Note
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: fec4d997-c59a-4220-8863-72385aac0dfe
+    type: regular
+    task:
+      id: fec4d997-c59a-4220-8863-72385aac0dfe
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: 74d27f61-3a38-4419-892e-475727c4b69a
+    type: regular
+    task:
+      id: 74d27f61-3a38-4419-892e-475727c4b69a
+      version: -1
+      name: fd-get-ticket-conversations
+      description: Lists all replies and notes for a specified ticket
+      script: '|||fd-get-ticket-conversations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      ticket_id:
+        simple: ${OriginalTicketID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 390893e7-efda-40aa-896e-593cd74d6b60
+    type: condition
+    task:
+      id: 390893e7-efda-40aa-896e-593cd74d6b60
+      version: -1
+      name: Verify Get Ticket Conversations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Conversation.BodyText
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Reply
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Freshdesk.Ticket.Conversation.BodyText
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Note
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: 23183a3c-3c13-4879-860d-04de50716eb1
+    type: regular
+    task:
+      id: 23183a3c-3c13-4879-860d-04de50716eb1
+      version: -1
+      name: fd-list-agents
+      description: List agents that match the criteria of the filters entered as command
+        arguments.
+      script: Freshdesk|||fd-list-agents
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      mobile: {}
+      phone: {}
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 9f00efb6-3855-4d4a-84ce-523297fa9cd9
+    type: condition
+    task:
+      id: 9f00efb6-3855-4d4a-84ce-523297fa9cd9
+      version: -1
+      name: Verify List Agents
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Freshdesk.Agent.CreatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 00621200-68a3-45cb-85a1-c53ef3df8c7d
+    type: regular
+    task:
+      id: 00621200-68a3-45cb-85a1-c53ef3df8c7d
+      version: -1
+      name: fd-search-tickets
+      description: List all tickets that match the filter criteria you specify.
+      script: '|||fd-search-tickets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      custom_query: {}
+      filter: {}
+      include_description: {}
+      include_requester: {}
+      include_stats: {}
+      order_by: {}
+      order_type: {}
+      requester: {}
+      updated_since: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 71bdf060-2964-444b-8f3a-f6c394328bca
+    type: condition
+    task:
+      id: 71bdf060-2964-444b-8f3a-f6c394328bca
+      version: -1
+      name: Verify Search Tickets
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: OriginalTicketID
+            iscontext: true
+          right:
+            value:
+              simple: Freshdesk.Ticket.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+  "38":
+    id: "38"
+    taskid: 65a07546-2bee-47cb-8565-e7fe6bd91514
+    type: regular
+    task:
+      id: 65a07546-2bee-47cb-8565-e7fe6bd91514
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: OriginalTicketID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: b55845fa-fcee-495b-852e-96490dc27744
+    type: regular
+    task:
+      id: b55845fa-fcee-495b-852e-96490dc27744
+      version: -1
+      name: fd-delete-ticket
+      description: Delete the ticket specified by the 'id' command argument
+      script: Freshdesk|||fd-delete-ticket
+      type: regular
+      iscommand: true
+      brand: Freshdesk
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      id:
+        simple: ${OriginalTicketID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: e4ac2fc1-a81d-4db6-84e9-8cc6dd46af1f
+    type: regular
+    task:
+      id: e4ac2fc1-a81d-4db6-84e9-8cc6dd46af1f
+      version: -1
+      name: fd-get-ticket
+      description: View a Ticket.
+      script: '|||fd-get-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      extend-context:
+        simple: TicketDeleted=deleted
+      id:
+        simple: ${OriginalTicketID}
+      include_requester: {}
+      include_stats: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: 42340841-be13-4e47-8a80-282de007459f
+    type: condition
+    task:
+      id: 42340841-be13-4e47-8a80-282de007459f
+      version: -1
+      name: Verify Ticket Deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: TicketDeleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+  "42":
+    id: "42"
+    taskid: ac9b2349-1916-4909-8305-3a2e2364292b
+    type: title
+    task:
+      id: ac9b2349-1916-4909-8305-3a2e2364292b
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7035,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
