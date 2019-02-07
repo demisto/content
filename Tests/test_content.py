@@ -466,8 +466,7 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    if proxy.empty_files:
-        print "Integrations with empty mock files:\n{}".format('\n'.join(proxy.empty_files))
+    proxy.print_empty_files()
     ami.upload_mock_files(build_name, buildNumber)
 
     if get_content_branch() == 'master':

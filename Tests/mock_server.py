@@ -126,6 +126,10 @@ class MITMProxy:
         else:
             self.ami.call(['mv', mock_filepath, self.primary_folder])
 
+    def print_empty_files(self):
+        if self.empty_files:
+            print "Integrations with empty mock files:\n{}".format('\n'.join(self.empty_files))
+
     def start(self, playbook_id, path=None, record=False):
         if self.process:
             raise Exception("Cannot start proxy - already running.")
