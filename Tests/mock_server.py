@@ -110,7 +110,11 @@ class MITMProxy:
         self.active_folder = self.tmp_folder
 
     def move_to_primary(self, playbook_id):
-        self.ami.call(['mv', os.path.join(self.tmp_folder, id_to_mock_file(playbook_id)), self.primary_folder])
+        mock_filepath = os.path.join(self.tmp_folder, id_to_mock_file(playbook_id))
+        if self.ami.check_output(['stat', '-f', '%z', mock_filepath]).strip() == 0:
+            print 'Mock file is empty, ignoring.'
+        else:
+            self.ami.call(['mv', mock_filepath, self.primary_folder])
 
     def start(self, playbook_id, path=None, record=False):
         if self.process:
