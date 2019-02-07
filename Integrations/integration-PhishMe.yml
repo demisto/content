@@ -216,7 +216,7 @@ script:
                 }
             }
 
-            md += "There are {0} threats regarding your string search.\n";
+            md += "There are " + countThreats + " threats regarding your string search.\n";
             md += "### Details from the last campaign\n";
             md += mdBody;
 
