@@ -592,10 +592,10 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: 9543c72f-691b-4219-8506-4441a0c537ae
+    taskid: a2d188fb-8477-4807-852f-d7cbb2e0da8e
     type: condition
     task:
-      id: 9543c72f-691b-4219-8506-4441a0c537ae
+      id: a2d188fb-8477-4807-852f-d7cbb2e0da8e
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -610,7 +610,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "0"
+        simple: "3"
     results:
     - AreValuesEqual
     separatecontext: false
