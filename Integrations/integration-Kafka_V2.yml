@@ -7,7 +7,7 @@ category: Messaging
 image: data:image/png;base64,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
 description: The Open source distributed streaming platform
 configuration:
-- display: 'CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093'
+- display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
   name: brokers
   defaultvalue: ""
   type: 0
@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -96,7 +96,7 @@ script:
     BROKERS = demisto.params().get('brokers')
 
     # Should we use SSL
-    USE_SSL = not demisto.params().get('insecure')
+    VERIFY_SSL = not demisto.params().get('insecure', False)
 
     # Certificates
     CA_CERT = demisto.params().get('ca_cert', None)
@@ -422,7 +422,7 @@ script:
                 demisto.setLastRun({'last_offset': latest_offset})
             demisto.incidents(incidents)
         else:
-            return_error('No such topic \'{}\' to fetch incidents from.'.format(topic))
+            return_error('No such topic \'{}\' to fetch incidents from.'.format(TOPIC))
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -431,7 +431,7 @@ script:
 
     try:
         # Initialize KafkaClient
-        if USE_SSL:
+        if VERIFY_SSL:
             ssl_config = create_certificate()
             KAFKA_CLIENT = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
         else:
