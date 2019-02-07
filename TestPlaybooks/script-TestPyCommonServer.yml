@@ -362,6 +362,22 @@ script: |-
 
       demisto.results('ok')
 
+  def test_argToList():
+      expected = ['a', 'b', 'c']
+      test1 = ['a', 'b', 'c']
+      test2 = 'a,b,c'
+      test3 = '["a","b","c"]'
+      test4 = 'a;b;c'
+
+      results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
+
+      for result in results:
+          if expected != result:
+              return_error('argToList test failed, {} is not equal to {}'.format(str(result), str(expected)))
+
+      demisto.results('ok')
+
+
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
@@ -374,6 +390,7 @@ script: |-
       'CAMELIZE': test_camelize,
       'DATE_TO_TIMESTAMP': test_date_to_timestamp,
       'PASCAL_TO_SPACE' : test_pascalToSpace,
+      'ARG_TO_LIST': test_argToList,
   }
 
 
@@ -480,9 +497,7 @@ args:
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
   description: one of python common server testing features
-  defaultValue: dq
+  defaultValue: DQ
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-tests:
-  - Test CommonServer
