@@ -28,18 +28,14 @@ script: |-
       if entry_id is None:
           return data
 
-      demisto.info('here')
-      demisto.info('{}'.format(entry_id))
       try:
           examples_path = demisto.getFilePath(entry_id)['path']
-          demisto.info('~~~~~ file path is {}'.format(examples_path))
           with open(examples_path, 'r') as examples_file:
               data = examples_file.read().split('\n')
       except:
           commands = entry_id.split('\n')
           errors.append('failed to open command file, tried parsing as free text')
 
-      demisto.info('{}'.format(commands))
       return commands, errors
 
 
