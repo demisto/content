@@ -2915,4 +2915,3 @@ script:
   runonce: false
 tests:
   - Cisco Umbrella Test
-releaseNotes: "DBotScore was missing in case of no rank"
