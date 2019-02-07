@@ -1,6 +1,6 @@
 commonfields:
   id: CopyFileD2
-  version: 1
+  version: -1
 name: CopyFileD2
 script: |-
   var e = executeCommand( 'getEntry', { 'id' : args.entryid } );
@@ -11,7 +11,7 @@ script: |-
   e = e[0];
   if ( e.File ) {
       var fileName = fileNameFromEntry( args.entryid );
-      var rep = executeCommand( 'D2Drop', { destpath : args.destpath , files : fileName, using : args.system } );
+      var rep = executeCommand( 'D2Drop', { destpath : args.destpath , files : fileName, using : args.system, force: args.force } );
       return rep;
   } else
       return "Entry " + args.entryid + " does not include a file.";
@@ -22,6 +22,7 @@ tags:
 comment: |-
   Copy a file from an entry to the destination path on the specified system. This uses the dissolvable agent's HTTPS communication channel rather than scp or other out-of-band methods.
   Example usage: !CopyFileD2 destpath=/home/sansforensics/collectedbinaries/inv8_suspiciousPE1.exe.evil entryid=21@8 system=Analyst1
+enabled: true
 system: true
 args:
 - name: system
@@ -33,6 +34,15 @@ args:
 - name: entryid
   required: true
   description: ID of the war room entry containing the file to copy
+- name: force
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Overwrite file
 scripttarget: 0
-dependson: {}
-timeout: 0s
+runonce: false
+runas: DBotWeakRole
+releaseNotes: added overwrite support to CopyFileD2
+tests:
+  - No test - D2 test are not supported yet in content tests
