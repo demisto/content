@@ -25,6 +25,8 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 0a7acc45-5844-4b3b-8ec7-8e02f4408a9c
@@ -46,10 +48,10 @@ tasks:
       customFieldName: {}
       customFieldValue: {}
       details: {}
-      extend-context: {}
       labels:
         simple: '[{"url": "https://www.threathq.com"}, {"ip": "123.57.77.130"}, {"hash":
-          "666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c"}]'
+          "666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c"},{"email":
+          "a@e-mail.com"}]'
       name: {}
       owner: {}
       playbook: {}
@@ -65,6 +67,8 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: bf9d2db9-6476-4f30-8c2c-6115d3a0d93d
@@ -79,7 +83,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     separatecontext: true
     view: |-
       {
@@ -88,34 +92,8 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: dbe64c77-8f94-4883-847a-fd15e8d9a901
-    type: regular
-    task:
-      id: dbe64c77-8f94-4883-847a-fd15e8d9a901
-      version: -1
-      name: Verify indicators were extracted
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: URL.Data
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: c561f70b-88dc-44fd-8b08-4f2033972358
@@ -143,37 +121,110 @@ tasks:
           "y": 195
         }
       }
-  "6":
-    id: "6"
-    taskid: 17a056ba-b5b5-4265-857c-339d5dc61bd5
-    type: regular
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: ea1a1673-c6af-44f3-8f31-090c777aa4c8
+    type: condition
     task:
-      id: 17a056ba-b5b5-4265-857c-339d5dc61bd5
+      id: ea1a1673-c6af-44f3-8f31-090c777aa4c8
       version: -1
-      name: Verify indicators were extracted
-      scriptName: VerifyContext
-      type: regular
+      name: Verify Context
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: IP.Address
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://www.threathq.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: 666a8dbc172bcf7cd698bf95e5b58de17535121fed7de5ce1349db4446a1fa5c
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 123.57.77.130
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: a@e-mail.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: e-mail.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: threathq.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: e3b6df74-a315-4662-89f4-ae3de0e77780
+    type: title
+    task:
+      id: e3b6df74-a315-4662-89f4-ae3de0e77780
+      version: -1
+      name: Test succeeded
+      type: title
+      iscommand: false
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 900
+          "y": 895
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 945,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50

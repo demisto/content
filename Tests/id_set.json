@@ -12852,8 +12852,7 @@
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
                     "IncidentSet", 
-                    "DeleteContext", 
-                    "VerifyContext"
+                    "DeleteContext"
                 ], 
                 "implementing_playbooks": [
                     "Extract Indicators - Generic"
