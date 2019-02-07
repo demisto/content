@@ -3403,11 +3403,8 @@
                 ], 
                 "script_executions": [
                     "CBSearch"
-                ], 
-                "tests": [
-                    "No test"
                 ]
-            } 
+            }
         }, 
         {
             "D2Rekall": {
