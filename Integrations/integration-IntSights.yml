@@ -950,10 +950,10 @@ script:
       type: String
     - contextPath: IntSights.MsspAccount.AssetsCount
       description: The IntSight's mssp sub account's assets count
-      type: String
+      type: Number
     - contextPath: IntSights.MsspAccount.AssetLimit
       description: The IntSight's mssp sub account's asset limit
-      type: String
+      type: Number
     - contextPath: IntSights.MsspAccount.CompanyName
       description: The IntSight's mssp sub account's company name
       type: String
@@ -1815,9 +1815,12 @@ script:
         for i, account in enumerate(account_ids):
             # Call account
             HEADERS['Account-Id'] = account
-            account_ua = req('GET', 'public/v1/account/used-assets').text
+            account_ua = req('GET', 'public/v1/account/used-assets').json()
 
-            accounts[i].update(json.loads(account_ua))
+            if not account_ua:
+                continue
+
+            accounts[i].update(account_ua)
 
         demisto.results({
             'Type': entryTypes['note'],
