@@ -1652,5 +1652,6 @@ script:
     description: Adds a tag to the given UUID event or attribute.
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
+releaseNotes: "Fixed connection through proxy"
 tests:
 - MISP V2 Test

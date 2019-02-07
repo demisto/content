@@ -1096,5 +1096,6 @@ script:
     description: Lookup and enrich a device
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
 - awake_security_test_pb
