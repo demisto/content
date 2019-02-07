@@ -4937,6 +4937,18 @@
                     "TransformersTestPlaybook"
                 ]
             }
+        }, 
+        {
+            "PcapHTTPExtractor": {
+                "name": "PcapHTTPExtractor", 
+                "script_executions": [
+                    "getEntries", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "PcapHTTPExtractor-Test"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -8753,6 +8765,9 @@
                     "file", 
                     "threatstream-email-reputation", 
                     "ip"
+                ], 
+                "tests": [
+                    "Anomali_ThreatStream_Test"
                 ]
             }
         }, 
@@ -15221,8 +15236,8 @@
                 "name": "Anomali ThreatStream Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "ip": "Anomali ThreatStream", 
@@ -15853,6 +15868,17 @@
                     "kafka-publish-msg": "Kafka V2", 
                     "kafka-print-topics": "Kafka V2"
                 }
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
+                ]
             }
         }
     ]

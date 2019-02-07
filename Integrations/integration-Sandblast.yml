@@ -560,6 +560,5 @@ script:
       and quota status of the API Key that you use
 hidden: false
 fromversion: 3.5.0
-releaseNotes: Improvements to Context and DBot score
 tests:
   - Sandblast_malicious_test
