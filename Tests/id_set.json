@@ -4937,6 +4937,18 @@
                     "TransformersTestPlaybook"
                 ]
             }
+        }, 
+        {
+            "PcapHTTPExtractor": {
+                "name": "PcapHTTPExtractor", 
+                "script_executions": [
+                    "getEntries", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "PcapHTTPExtractor-Test"
+                ]
+            }
         }
     ], 
     "playbooks": [
@@ -15856,6 +15868,17 @@
                     "kafka-publish-msg": "Kafka V2", 
                     "kafka-print-topics": "Kafka V2"
                 }
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
+                ]
             }
         }
     ]

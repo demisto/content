@@ -988,6 +988,9 @@
           "playbookID": "SLA Scripts - Test"
         },
         {
+            "playbookID": "PcapHTTPExtractor-Test"
+        },
+        {
             "playbookID": "Ping Test Playbook"
         },
         {
