@@ -761,8 +761,11 @@ script:
             'type': sighting.get(demisto.args().get('type'))
         }
         att_id = demisto.args().get('id', demisto.args().get('uuid'))
-        MISP.set_sightings(kargs)
-        demisto.results(f'Sighting \'{demisto.args().get("type")}\' has been successfully added to attribute {att_id}')
+        if att_id:
+            MISP.set_sightings(kargs)
+            demisto.results(f'Sighting \'{demisto.args().get("type")}\' has been successfully added to attribute {att_id}')
+        else:
+            return_error('ID or UUID not specified')
 
 
     def test():
@@ -773,7 +776,6 @@ script:
             demisto.results('ok')
         else:
             return_error('MISP has not connected.')
-
 
 
     command = demisto.command()
