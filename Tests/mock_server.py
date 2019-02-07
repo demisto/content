@@ -3,7 +3,6 @@ import signal
 import string
 import unicodedata
 from subprocess import call, Popen, PIPE, check_call, check_output
-from time import sleep
 
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
