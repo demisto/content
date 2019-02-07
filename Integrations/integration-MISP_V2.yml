@@ -522,15 +522,15 @@ script:
         if isinstance(args.get('id'), str) and args.get('id').isdigit():
             args['id'] = int(args['id'])
         elif not isinstance(args.get('id'), int):
-            return_error('EventID must be a number')
-        if args.get('distribution'):
+            return_error('Invalid MISP event ID, must be a number')
+        if args.get('distribution') is not None:
             if not isinstance(args.get('distribution'), int):
                 if isinstance(args.get('distribution'), str) and args.get('distribution').isdigit():
                     args['distribution'] = int(args['distribution'])
                 elif isinstance(args.get('distribution'), str) and args['distribution'] in DISTRIBUTION_NUMBERS:
                     args['distribution'] = DISTRIBUTION_NUMBERS.get(args['distribution'])
                 else:
-                    return_error('Distribution must be number 0-3 or predefined string')
+                    return_error("Distribution can be 'Your_organisation_only', 'This_community_only', 'Connected_communities' or 'All_communities'")
 
         event = MISP.get_event(args.get('id'))
 
