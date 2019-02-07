@@ -219,6 +219,7 @@
         },
         {
             "integrations": "IntSights",
+            "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
             "nightly": true,
             "timeout": 500
@@ -987,6 +988,9 @@
           "playbookID": "SLA Scripts - Test"
         },
         {
+            "playbookID": "PcapHTTPExtractor-Test"
+        },
+        {
             "playbookID": "Ping Test Playbook"
         },
         {
@@ -1027,10 +1031,10 @@
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye "
     },
     "skipped_integrations": {
+        "Jask": "Cannot access instance token not valid",
         "FortiGate": "License expired, in the process of getting new one",
         "Skyformation": "Server installed by skyformation is down, waiting on reply",
         "icebrg": "Requires BD",
-        "Anomali ThreatStream": "Instance is down",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
@@ -1051,7 +1055,6 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "WildFire": "Quota is temporarily over due to circle ci issues"
