@@ -1,0 +1,511 @@
+id: UnEscapeURLs-Test
+version: -1
+name: UnEscapeURLs-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 039c2f4a-257d-40d0-8f4b-e94440942237
+    type: start
+    task:
+      id: 039c2f4a-257d-40d0-8f4b-e94440942237
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 9628f06e-6df0-4379-8205-c8ab212d9447
+    type: regular
+    task:
+      id: 9628f06e-6df0-4379-8205-c8ab212d9447
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "9"
+      - "10"
+      - "11"
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 4444d21b-2c87-4584-8d1b-9b2686fa7005
+    type: regular
+    task:
+      id: 4444d21b-2c87-4584-8d1b-9b2686fa7005
+      version: -1
+      name: UnEscapeUrl
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      input:
+        simple: |
+          https://urldefense.proofpoint.com/v2/url?u=https-3A__lm.ddiworld.com-3FUsername-3Dyasmine.hafez-40danaher.com&d=DwIGaQ&c=9mghv0deYPYDGP-W745IEdQLV1kHpn4XJRvR6xMRXtA&r=bRg5MeHudfXJkMCCQ9leeXPGHZSmGzvAyeeit1tjdqg&m=z6asDUSCvgNHDLRBTXAM6q9qDNKFuuA02LnXZ3po3dI&s=p-83liNM0XOyprpHW99TO-DowLW6lpvHZAc2y-7kQRQ&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 2c6b763e-c7c7-413b-800a-28298fc072cc
+    type: regular
+    task:
+      id: 2c6b763e-c7c7-413b-800a-28298fc072cc
+      version: -1
+      name: UnescapeUrl
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 465c3d29-eddd-4838-84d4-5d1c4784e4a7
+    type: regular
+    task:
+      id: 465c3d29-eddd-4838-84d4-5d1c4784e4a7
+      version: -1
+      name: UnEscapeUrl
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: e379744d-5cb2-414c-80f1-1a06e5708873
+    type: regular
+    task:
+      id: e379744d-5cb2-414c-80f1-1a06e5708873
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 52b25bc3-1961-482b-822a-13852f23a360
+    type: title
+    task:
+      id: 52b25bc3-1961-482b-822a-13852f23a360
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 7512b644-8704-4185-8f8b-7d9f77e6c44c
+    type: regular
+    task:
+      id: 7512b644-8704-4185-8f8b-7d9f77e6c44c
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://lm.ddiworld.com?Username=yasmine.hafez@danaher.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 7d6288a4-f20b-42cc-83cf-714dfb160e56
+    type: regular
+    task:
+      id: 7d6288a4-f20b-42cc-83cf-714dfb160e56
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://maokvo.eu
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 9f065f91-5af1-487f-888d-d2f25af1a19c
+    type: regular
+    task:
+      id: 9f065f91-5af1-487f-888d-d2f25af1a19c
+      version: -1
+      name: UnEscapeURL - ATP Safelink
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      input:
+        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
+    type: regular
+    task:
+      id: 55926cf1-c9d1-4cbd-833d-9fb85aa2e49a
+      version: -1
+      name: UnEscapeURL - ATP Safelink
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      input:
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: ba6f242e-9287-467d-8159-2f5c9db97683
+    type: regular
+    task:
+      id: ba6f242e-9287-467d-8159-2f5c9db97683
+      version: -1
+      name: UnEscapeURL - Mimecast Protected URL
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      input:
+        simple: https://sandbox-api.mimecast.com/s/izY4CzmwniM0H47o1B
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: a3d94779-c273-4c54-8c40-c00be9926dcb
+    type: regular
+    task:
+      id: a3d94779-c273-4c54-8c40-c00be9926dcb
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://www.avanan.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: a1464036-6807-42d3-876f-fcedeaa3a293
+    type: regular
+    task:
+      id: a1464036-6807-42d3-876f-fcedeaa3a293
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://twitter.com/PhilipsBeLux
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: f1ca7cf3-65b8-4539-86ba-3ca4aa4ed2e9
+    type: regular
+    task:
+      id: f1ca7cf3-65b8-4539-86ba-3ca4aa4ed2e9
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: urltest.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: b5ac93ea-c625-4e44-862a-df43ebc242ea
+    type: regular
+    task:
+      id: b5ac93ea-c625-4e44-862a-df43ebc242ea
+      version: -1
+      name: UnEscapeURL
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      input:
+        simple: hxxps://www[.]demisto[.]com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 327f6b8e-e17a-4a6d-80e5-805f4cf37314
+    type: regular
+    task:
+      id: 327f6b8e-e17a-4a6d-80e5-805f4cf37314
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "Updated test for UnEscapeURL script - checks ATP Safelinks and Mimecast and Proofpoint Protected"
+tests:
+  - no tests

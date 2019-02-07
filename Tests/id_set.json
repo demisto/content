@@ -15630,6 +15630,30 @@
                     "fd-get-canned-response-folder": ""
                 }
             }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
+                }
+            }
+        }, 
+        {
+            "UnEscapeURLs-Test": {
+                "name": "UnEscapeURLs-Test", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
         }
     ]
 }
