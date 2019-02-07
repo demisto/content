@@ -5554,11 +5554,11 @@
                 "implementing_playbooks": [
                     "CrowdStrike Endpoint Enrichment"
                 ], 
-                "implementing_commands": [
-                    "cylance-protect-get-devices", 
-                    "cb-sensor-info", 
-                    "so-agents-query"
-                ]
+                "command_to_integration": {
+                    "cylance-protect-get-devices": "Cylance Protect", 
+                    "cb-sensor-info": "carbonblack", 
+                    "so-agents-query": "SentinelOne"
+                }
             }
         }, 
         {
@@ -7508,7 +7508,15 @@
                 "commands": [
                     "mar-search", 
                     "mar-collectors-list", 
-                    "mar-search-multiple"
+                    "mar-search-multiple", 
+                    "mar-search-services", 
+                    "mar-search-processes", 
+                    "mar-search-win-registry", 
+                    "mar-search-files", 
+                    "mar-search-usb-connected-storage-devices", 
+                    "mar-search-user-profiles", 
+                    "mar-search-scheduled-tasks", 
+                    "mar-search-host-info"
                 ]
             }
         }, 
@@ -15304,6 +15312,36 @@
                 ], 
                 "command_to_integration": {
                     "intsights-mssp-get-sub-accounts": ""
+                }
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection test": {
+                "name": "MAR - Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "MAR - Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
+            "Endpoint data collection test": {
+                "name": "Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
                 }
             }
         }
