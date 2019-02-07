@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: 'CSV list of Kafka brokers to connect to, e.g., ip:port,ip2:port2'
+- display: 'CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093'
   name: brokers
   defaultvalue: ""
   type: 0
@@ -350,7 +350,7 @@ script:
             return_error('Topic {} was not found in Kafka'.format(topic))
 
 
-      def fetch_partitions():
+    def fetch_partitions():
         """
         Fetching available partitions in given topic
         """
@@ -438,7 +438,7 @@ script:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            test_module(
+            test_module()
         elif demisto.command() == 'kafka-print-topics':
             print_topics()
         elif demisto.command() == 'kafka-publish-msg':
