@@ -471,10 +471,9 @@ script:
 
         event = MISP.new_event(**event_dic)
         event_id = event.get('id')
-        try:
-            if isinstance(event_id, str):
+        if isinstance(event_id, str) and event_id.isdigit():
                 event_id = int(event_id)
-        except ValueError:
+        elif not isinstance(event_id, int):
             return_error('EventID must be a number')
 
         if ret_only_event_id:
@@ -1718,9 +1717,9 @@ script:
       - expiration
       description: Type of sighting to add
     - name: id
-      description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retreived from MISP.Event.Attribute.ID
+      description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retreived from misp-search
     - name: uuid
-      description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retreived from MISP.Event.Attribute.UUID
+      description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retreived from misp-search
     description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
