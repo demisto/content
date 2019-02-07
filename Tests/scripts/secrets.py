@@ -5,14 +5,16 @@ import math
 import json
 import string
 import PyPDF2
-import validate_files_structure
+from validate_files_structure import run_git_command
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
 ENTROPY_THRESHOLD = 3.8
+
 SECRETS_WHITE_LIST_FILE = 'secrets_white_list'
 ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf'}
+
 # disable-secrets-detection-start
 URLS_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
@@ -66,11 +68,11 @@ def get_all_diff_text_files(branch_name, is_circle):
     """
     if is_circle:
         branch_changed_files_string = \
-            validate_files_structure.run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+            run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
 
     else:
-        local_changed_files_string = validate_files_structure.run_git_command("git diff --name-status --no-merges HEAD")
+        local_changed_files_string = run_git_command("git diff --name-status --no-merges HEAD")
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list
