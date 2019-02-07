@@ -3,6 +3,7 @@ import signal
 import string
 import unicodedata
 from subprocess import call, Popen, PIPE, check_call, check_output
+from time import sleep
 
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
@@ -123,6 +124,8 @@ class MITMProxy:
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy(self.docker_ip + ':9997')
+
+        sleep(1)  # DEBUG
 
     def stop(self):
         if not self.process:
