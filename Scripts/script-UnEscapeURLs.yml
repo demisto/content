@@ -87,4 +87,4 @@ scripttarget: 0
 runonce: false
 releaseNotes: "Adding ability to handle Mimecast and Microsoft ATP protected URLs"
 tests:
-  - TestUnEscapeUrl
+  - UnEscapeURLs-Test
