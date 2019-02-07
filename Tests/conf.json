@@ -1054,8 +1054,7 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
-        "McAfee Advanced Threat Defense": "McAfee has an internal server error. Need to further check."
+        "WildFire": "Quota is temporarily over due to circle ci issues"
     },
     "nigthly_integrations": [
         "Lastline",
