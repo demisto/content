@@ -16,7 +16,7 @@ VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
 
 
-def id_to_mock_file(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
+def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
     filename = playbook_id
 
     # replace spaces
@@ -29,6 +29,14 @@ def id_to_mock_file(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
     # keep only whitelisted chars
     cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
     return cleaned_filename + '.mock'
+
+
+def id_to_mock_file(playbook_id):
+    return clean_filename(playbook_id) + '.mock'
+
+
+def id_to_log_file(playbook_id):
+    return clean_filename(playbook_id) + '.log'
 
 
 class AMIConnection:
@@ -91,6 +99,7 @@ class MITMProxy:
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
         self.debug = debug
+        self.empty_files = []
 
         with open(os.devnull, 'w') as fnull:
             self.ami.call(['mkdir', '-p', tmp_folder], stderr=fnull)
@@ -113,6 +122,7 @@ class MITMProxy:
         mock_filepath = os.path.join(self.tmp_folder, id_to_mock_file(playbook_id))
         if self.ami.check_output(['stat', '-c', '%s', mock_filepath]).strip() == 0:
             print 'Mock file is empty, ignoring.'
+            self.empty_files.append(playbook_id)
         else:
             self.ami.call(['mv', mock_filepath, self.primary_folder])
 
