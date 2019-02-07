@@ -68,7 +68,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "22"
     scriptarguments:
       key: {}
       left:
@@ -110,7 +110,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
@@ -129,7 +129,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "17"
     scriptarguments:
       key: {}
       left:
@@ -143,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
     note: false
@@ -201,7 +201,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2295
         }
       }
     note: false
@@ -267,7 +267,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2470
         }
       }
     note: false
@@ -300,7 +300,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2645
         }
       }
     note: false
@@ -329,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2820
         }
       }
     note: false
@@ -368,7 +368,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2995
         }
       }
     note: false
@@ -401,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3170
         }
       }
     note: false
@@ -430,7 +430,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3345
         }
       }
     note: false
@@ -472,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3520
         }
       }
     note: false
@@ -507,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3695
         }
       }
     note: false
@@ -528,7 +528,189 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 6a5e7da5-23c6-4647-895b-ded19085cdcd
+    type: regular
+    task:
+      id: 6a5e7da5-23c6-4647-895b-ded19085cdcd
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+    type: regular
+    task:
+      id: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+      version: -1
+      name: Check url
+      script: Phishme Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 9543c72f-691b-4219-8506-4441a0c537ae
+    type: condition
+    task:
+      id: 9543c72f-691b-4219-8506-4441a0c537ae
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "0"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
+    type: regular
+    task:
+      id: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
+      version: -1
+      name: Check IP
+      script: Phishme Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 4f3d79db-10dc-428a-8c62-d7ff66e00813
+    type: condition
+    task:
+      id: 4f3d79db-10dc-428a-8c62-d7ff66e00813
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "2"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: cdb30868-d6a7-4175-807d-2e1e041244d8
+    type: regular
+    task:
+      id: cdb30868-d6a7-4175-807d-2e1e041244d8
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -538,7 +720,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
+        "height": 3885,
         "width": 380,
         "x": 50,
         "y": 50
