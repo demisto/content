@@ -1876,7 +1876,10 @@
         {
             "GenerateInvestigationSummaryReport": {
                 "name": "GenerateInvestigationSummaryReport", 
-                "fromversion": "3.5.0"
+                "fromversion": "3.5.0", 
+                "tests": [
+                    "No test - No need"
+                ]
             }
         }, 
         {
@@ -2608,6 +2611,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
+                ], 
+                "tests": [
+                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
@@ -4929,6 +4935,18 @@
                 "name": "Cut", 
                 "tests": [
                     "TransformersTestPlaybook"
+                ]
+            }
+        }, 
+        {
+            "PcapHTTPExtractor": {
+                "name": "PcapHTTPExtractor", 
+                "script_executions": [
+                    "getEntries", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "PcapHTTPExtractor-Test"
                 ]
             }
         }
@@ -8747,6 +8765,9 @@
                     "file", 
                     "threatstream-email-reputation", 
                     "ip"
+                ], 
+                "tests": [
+                    "Anomali_ThreatStream_Test"
                 ]
             }
         }, 
@@ -11774,6 +11795,20 @@
                 ], 
                 "tests": [
                     "Freshdesk-Test"
+                ]
+            }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-msg", 
+                    "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "No Test - Can not connect to instance from remote"
                 ]
             }
         }, 
@@ -15219,8 +15254,8 @@
                 "name": "Anomali ThreatStream Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
                 "command_to_integration": {
                     "ip": "Anomali ThreatStream", 
@@ -15840,6 +15875,28 @@
                     "fd-get-ticket": "", 
                     "fd-get-canned-response-folder": ""
                 }
+            }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
+                }
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
+                ]
             }
         }, 
         {
