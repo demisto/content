@@ -48,6 +48,7 @@ script:
   script: |-
     ''' IMPORTS '''
     import json
+    import shutil
     import requests
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -71,12 +72,13 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params=None, data=None, is_file=False):
+    def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         headers = {}
         if SESSION_ID is not None:
             headers['x-uid'] = SESSION_ID
-            headers['Content-Type'] = 'application/json'
+            if files is None:
+                headers['Content-Type'] = 'application/json'
 
         res = requests.request(
             method,
@@ -84,17 +86,22 @@ script:
             data=None if data is None else json.dumps(data),
             headers=headers,
             params=params,
+            files=files,
             verify=not INSECURE,
         )
 
         # Handle error responses gracefully
         if res.status_code not in {200, 201}:
-            return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
+            if res.status_code == 500:
+                error = res.json()
+                return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error['detailMessage']))
+            else:
+                return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
 
-        if is_file:
-            return res.content
-        else:
+        if is_json:
             return res.json()
+        else:
+            return res.content
 
 
     @logger
@@ -276,6 +283,7 @@ script:
     @logger
     def fidelis_get_malware_data(alert_id):
         result = http_request('GET', '/j/rest/v1/alert/malware/{}/'.format(alert_id))
+
         return result
 
 
@@ -291,12 +299,13 @@ script:
             'Contents': results,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
-            # 'EntryContext': create_context([indicator]),
         })
 
 
     @logger
     def fidelis_get_alert_pcap(alert_id):
+        # result = http_request('GET', '/j/rest/v1/alert/pcap/{}/'.format(alert_id), is_json=False)
+        # return result
         raise NotImplementedError()
 
 
@@ -319,7 +328,7 @@ script:
             'GET',
             '/j/rest/v1/alert/export/alertdetails/pdf',
             params={'alertIds': alert_id},
-            is_file=True)
+            is_json=False)
 
         return result
 
@@ -409,23 +418,81 @@ script:
 
     def fidelis_upload_pcap_command():
         args = demisto.args()
+        component_ip = args['component_ip']
+        entry_id = args['entry_id']
+
+        results = fidelis_upload_pcap(component_ip, entry_id)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+        })
 
 
-        results = fidelis_upload_pcap()
+    @logger
+    def fidelis_upload_pcap(component_ip, entry_id):
+        file_info = demisto.getFilePath(entry_id)
+        shutil.copy(file_info['path'], file_info['name'])
+
+        try:
+            with open(file_info['name'], 'rb') as f:
+                res = http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
+                                    files={'uploadFile':f}, is_json=False)
+        finally:
+            shutil.rmtree(file_info['name'], ignore_errors=True)
+
+        return 'Pcap file uploaded successfully.'
+
+
+    def fidelis_run_pcap_command():
+        args = demisto.args()
+        component_ip = args['component_ip']
+        file_names = args['files'].split(',')
+
+        results = fidelis_run_pcap(component_ip, file_names)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+        })
+
+
+    @logger
+    def fidelis_run_pcap(component_ip, file_names):
+        data = {
+            'component': component_ip,
+            'files': file_names
+        }
+        res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)
+        return 'Pcap file run submitted.'
+
+
+    def fidelis_list_pcap_components_command():
+        args = demisto.args()
+
+        results = fidelis_list_pcap_components()
+        ec = [{
+            'IP': r['ip'],
+            'Name': r['name'],
+        } for r in results]
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': results,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
-            # 'EntryContext': create_context([indicator]),
+            'HumanReadable': tableToMarkdown('PCAP Components', ec, headers=['Name', 'IP']),
+            'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)' : ec},
         })
 
 
     @logger
-    def fidelis_upload_pcap():
-        raise NotImplementedError()
+    def fidelis_list_pcap_components():
+        res = http_request('GET', '/j/rest/policy/pcap/components/')
+
+        return res
 
 
     def test_integration():
@@ -497,6 +564,13 @@ script:
 
         elif command == 'fidelis-upload-pcap':
             fidelis_upload_pcap_command()
+
+        elif command == 'fidelis-run-pcap':
+            fidelis_run_pcap_command()
+
+        elif command == 'fidelis-list-pcap-components':
+            fidelis_list_pcap_components_command()
+
 
     except Exception as e:
         return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
@@ -669,15 +743,35 @@ script:
       type: string
     description: List open Alerts from Fidelis Elevate
   - name: fidelis-upload-pcap
-    deprecated: true
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP
+    - name: entry_id
+      required: true
+      description: War Room entry id of pcap (for example, 3245@4)
+    description: Upload a pcap file for analysis in Fidelis Elevate
+  - name: fidelis-list-pcap-components
     arguments: []
     outputs:
-    - contextPath: Fidelis.Alert.ID
-      description: Alert ID generated from the upload
+    - contextPath: Fidelis.Component.Name
+      description: Component Name
       type: string
-    description: Upload a pcap file for analysis in Fidelis Elevate
+    - contextPath: Fidelis.Component.IP
+      description: Component IP
+      type: string
+    description: Get pcap components
+  - name: fidelis-run-pcap
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP
+    - name: files
+      required: true
+      description: comma-separated list of pcap file names in Fidelis Elevate
+    description: Run pcap file analysis in Fidelis Elevate
   isfetch: true
   runonce: false
-releaseNotes: "New implementation for Fidelis Elevate Network"
+releaseNotes: "add command for pcap upload and analyze Fidelis Elevate Network"
 tests:
   - Fidelis-Test

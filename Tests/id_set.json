@@ -11823,7 +11823,9 @@
                     "fidelis-get-alert-report", 
                     "fidelis-sandbox-upload", 
                     "fidelis-list-alerts", 
-                    "fidelis-upload-pcap"
+                    "fidelis-upload-pcap", 
+                    "fidelis-list-pcap-components", 
+                    "fidelis-run-pcap"
                 ], 
                 "tests": [
                     "Fidelis-Test"
