@@ -7,12 +7,11 @@ script: |-
   from validate_email import validate_email
   import re
 
-
   inp = demisto.args()['input']
 
   is_email = validate_email(inp)
   if is_email:
-      domain = re.search("@[\w.]+", inp)
+      domain = re.search("@[\w.-]+", inp)
       if len(domain.group()) > 0:
           demisto.results(domain.group()[1:])
   else:
@@ -38,3 +37,4 @@ args:
   description: The URL or Email to process
 scripttarget: 0
 dockerimage: demisto/tld
+releaseNotes: '-'
