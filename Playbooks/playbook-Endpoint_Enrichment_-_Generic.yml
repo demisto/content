@@ -835,3 +835,4 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+releaseNotes:
