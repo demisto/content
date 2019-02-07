@@ -11431,7 +11431,8 @@
                     "intsights-get-alert-takedown-status", 
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
-                    "intsights-close-alert"
+                    "intsights-close-alert", 
+                    "intsights-mssp-get-sub-accounts"
                 ], 
                 "tests": [
                     "IntSights Test"
@@ -15286,6 +15287,18 @@
                     "domain", 
                     "email"
                 ]
+            }
+        }, 
+        {
+            "IntSights Mssp Test": {
+                "name": "IntSights Mssp Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ], 
+                "command_to_integration": {
+                    "intsights-mssp-get-sub-accounts": ""
+                }
             }
         }
     ]
