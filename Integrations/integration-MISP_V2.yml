@@ -37,7 +37,15 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    proxies = {
+      "http": os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
+      "https": os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
+    }
     if not demisto.params().get('proxy'):
+        proxies = {
+          "http": None,
+          "https": None
+        }
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
@@ -716,7 +724,7 @@ script:
 
     LOG(f'command is {demisto.command()}')
     try:
-        MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)
+        MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL, proxies=proxies)
         if command == 'test-module':
             #  This is the call made when pressing the integration test button.
             # if MISP havn't encountered an error, will return ok
