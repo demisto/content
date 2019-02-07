@@ -119,13 +119,13 @@ class MITMProxy:
 
         path = path or self.active_folder
         actions = '--server-replay-kill-extra -S' if not record else '-w'
-        command = "mitmdump -p 9997 {}".format(actions).split()
+        command = "mitmdump -k -p 9997 {}".format(actions).split()
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.__configure_proxy(self.docker_ip + ':9997')
 
-        sleep(1)  # DEBUG
+        # sleep(1)  # DEBUG
 
     def stop(self):
         if not self.process:
