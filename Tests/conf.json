@@ -221,6 +221,14 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
+            "instance_names": "intsights_standard_account",
+            "nightly": true,
+            "timeout": 500
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Mssp Test",
+            "instance_names": "intsights_mssp_account",
             "nightly": true,
             "timeout": 500
         },
@@ -988,6 +996,9 @@
           "playbookID": "SLA Scripts - Test"
         },
         {
+            "playbookID": "PcapHTTPExtractor-Test"
+        },
+        {
             "playbookID": "Ping Test Playbook"
         },
         {
@@ -1054,8 +1065,7 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
-        "McAfee Advanced Threat Defense": "McAfee has an internal server error. Need to further check."
+        "WildFire": "Quota is temporarily over due to circle ci issues"
     },
     "nigthly_integrations": [
         "Lastline",
