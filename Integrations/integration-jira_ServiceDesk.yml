@@ -638,6 +638,7 @@ script:
     arguments:
     - name: id
       required: true
+      description: 'ID or Key'
     - name: start
       description: 'The starting index of the returned objects. Base index: 0'
       defaultValue: "0"
