@@ -1,0 +1,236 @@
+commonfields:
+  id: C2sec
+  version: -1
+name: C2sec
+display: C2sec
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Understand Your Cyber Exposure as Easy as a Google Search
+configuration:
+- display: URL
+  name: endpointURL
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: |-
+    import requests
+    import json
+    import datetime
+
+
+    def addcompany(domain, newscan):
+       if newscan == 'true':
+         newscan = 1
+       else:
+           newscan = 0
+       params = {'apikey': demisto.params()['apikey'], 'domain': domain, 'newscan': newscan}
+       headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+       call = requests.get(demisto.params()['endpointURL'] + 'iriskaddcompany', headers=headers, params=params)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('Add Company Result', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+       else:
+           return ('Error adding a new company [%d] - %s' % (call.status_code, call.text))
+
+
+    def queryWorkitem(workitemid):
+       params = {'apikey': demisto.params()['apikey'], 'workitemid': workitemid}
+       headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+       call = requests.get(demisto.params()['endpointURL'] + '/iriskqueryapistatus', headers=headers, params=params)
+       if call.status_code == requests.codes.ok:
+         resp = call.json()
+         resp['apistatus']['workitemid'] = str(workitemid)
+         md = tableToMarkdown('Query WorkItem Result', resp['apistatus'])
+         return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': resp,
+                    'HumanReadable': md,
+                    'EntryContext': {'c2secScanQueryStatus': resp}
+                }
+       else:
+           return ('Error querying a workitem [%d] - %s' % (call.status_code, call.text))
+
+    def queryIssues(domain):
+       params = {'apikey': demisto.params()['apikey'], 'domain': domain }
+       headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+       call = requests.get(demisto.params()['endpointURL'] + 'iRiskQueryIssues', headers=headers, params=params)
+       if call.status_code == requests.codes.ok:
+         md = tableToMarkdown('Query Issues Result', call.json()['issueList'])
+         return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+       else:
+           return ('Error querying for issues [%d] - %s' % (call.status_code, call.text))
+
+
+    def rescan(domain):
+       params = {'apikey': demisto.params()['apikey'], 'domain': domain}
+       headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+       call = requests.get(demisto.params()['endpointURL'] + 'iRiskRescanCompany', headers=headers, params=params)
+       if call.status_code == requests.codes.ok:
+         md = tableToMarkdown('Rescan Results', call.json())
+         return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {'c2secScanRequest': call.json()}
+                }
+       else:
+           return ('Error rescanning the company  [%d] - %s' % (call.status_code, call.text))
+
+
+    def queryComponent(domain, component):
+       params = {'apikey': demisto.params()['apikey'], 'domain': domain, 'component': component }
+       headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+       call = requests.get(demisto.params()['endpointURL'] + 'iRiskQueryComponentData', headers=headers, params=params)
+       if call.status_code == requests.codes.ok:
+         md = tableToMarkdown('Query Component Result', call.json()['data'])
+         return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+       else:
+           return ('Error querying for component [%d] - %s' % (call.status_code, call.text))
+
+    def createIncident(c2sec, domain, component):
+       occured = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000000Z")
+       keys = c2sec.keys()
+       labels = []
+       name = 'test'
+       if component == 'credential':
+         name = 'C2SEC Leaked Credentials'
+       elif component == 'application':
+           name = 'C2SEC Application Vulnerabilities'
+       elif component == 'network':
+           name = 'C2SEC Network Services Exposed'
+       for i in range(len(keys)):
+          if isinstance(c2sec[keys[i]], list):
+            labels.append({'type': keys[i], 'value': json.dumps(c2sec)})
+          else:
+              labels.append({'type': keys[i], 'value': str(c2sec[keys[i]])})
+       return {
+            'name': name,
+            'labels': labels,
+            'rawJSON': json.dumps(c2sec),
+            'occurred': occured
+        }
+
+
+    def return_error(data):
+       """
+       Return error as result and exit
+       """
+       demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents' : data
+       })
+
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test = addcompany('six-group.com', 'false')
+        if not isinstance(test, tuple):
+          demisto.results("ok")
+        else:
+            demisto.results(test)
+        sys.exit(0)
+    elif demisto.command() == 'fetch-incidents':
+        demisto.results(fetch_incidents())
+    elif demisto.command() == 'irisk-add-company':
+      result = addcompany(demisto.args()['domain'],demisto.args()['newscan'])
+      demisto.results(result)
+      sys.exit(0)
+    elif demisto.command() == 'irisk-query-workitem':
+      result = queryWorkitem(demisto.args()['workitemid'])
+      demisto.results(result)
+      sys.exit(0)
+    elif demisto.command() == 'irisk-rescan-company':
+      result = rescan(demisto.args()['domain'])
+      demisto.results(result)
+      sys.exit(0)
+    elif demisto.command() == 'irisk-query-issues':
+      result = queryIssues(demisto.args()['domain'])
+      demisto.results(result)
+      sys.exit(0)
+    elif demisto.command() == 'irisk-query-component':
+      result = queryComponent(demisto.args()['domain'],demisto.args()['component'])
+      demisto.results(result)
+      sys.exit(0)
+  type: python
+  commands:
+  - name: irisk-add-company
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to be added into the portfolio
+    - name: newscan
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Flag to indicate whether we would always start a new scan for the
+        domain
+    description: Add a company into portfolio
+  - name: irisk-query-workitem
+    arguments:
+    - name: workitemid
+      required: true
+      description: Domain whose status to be checked
+    outputs:
+    - contextPath: c2secScanQueryStatus
+      description: Scan Query Status
+    description: Query workitem status
+  - name: irisk-rescan-company
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to be rescaned
+    outputs:
+    - contextPath: c2secScanRequest
+      description: Scan Request Details
+    description: Initiate a rescan for companies inside portfolio
+  - name: irisk-query-issues
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to be queried
+    description: Query identified issues for companies in the portfolio
+  - name: irisk-query-component
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to be queried
+    - name: component
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - credential
+      - network
+      - application
+      description: Component to be queried
+    description: Query Data for specific component for companies in the portfolio
+  runonce: false
