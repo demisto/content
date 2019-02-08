@@ -1,0 +1,680 @@
+commonfields:
+  id: Jira Service Desk (Experimental)
+  version: -1
+name: Jira Service Desk (Experimental)
+display: Jira Service Desk (Experimental)
+category: Case Management
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACFCAYAAADhGcXnAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADLVJREFUeNrs3c9vW1kVwPFnJ/uav6CuxL7uBoFYxCkLQINUG7FAYhFHLBCrxutZJF5UbBBJJDYIITs7xII4QhULpMYRC34Iqe4eqe4SgRi3I5UZOp3hXnNecnLyftp+/hF9PyOPk9jPfu/d+84797wfDQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAt9gHHz47dI8aawJAFuUlBqs99+Qf5wQtAFlsLilY+QB1KL9W3KPrHg+WtRK+/LXv+/lpyK9Hf//Tr8d0jdXj2sm3kW+rsWujI9bI0tvji/Bn1x6lWxmwXLDyAerU/Lnm/t56+uRhr8CVW3dPdfl14FbwQP7u5+dcAqf3aJnBM2eQ9ctz3z2q6qWhe7ySZRzeoo2jrvuN+/2uW772msz7QcpbxtJuQdgvsToZVtdsYIEKFL0Cv9d3+H31e9gxaipYhb+veqA6VME3ajnD947cU8dtBL1b0Fft8q5TGWE/R/v6p757HBO8blpoDUvqVo2MHXJRhrKHC41WPFid51hXVdlB3AaDiHa7rfw2cu7a+1xGAFh0hmXqVlGW0jC+XuU6xbb78bH8qbPC7XVq1tNI9sav1d/uSvZxqw5k+GzDtVNT2unCPda1hmV3kEk77boErm3qqgsMWDF1q1XaGHwn2l3xoWDDDKV7br53E97v39tSgfg2BK2+BOh11k4a6rl2a8kQsqqGvn7b2SZcLS7DiqtbBaswFJOhVpi5jFyHGpkNv2pfk7/X5bWB7YSSytdNptMPC+Fxn5tAf84oKVjJxu0/70Aeacuvl0VnAoO4PbssXzhPY7NcYYZ3YxiXJVMw60Z/dj3rZ8Ws/yCqrWL6Q91ks4NF1JR8vdF9f19GI60w0/KBLK0WaQ4sBZLJZTr4ErO+xrKeBzNsWxXbBrN8XuEBK6VulVSjWCRdxO6YjTzc401ecw1wJHu8etz8u/fsyTR2mLvvXhtINnftc7MElnkH9wwFfD9c9sXfg5gAeh4uuwzX/PLsmfftqODTzjiU21cbq994m/LzuXrPdlSfkWCnpw8i2sAHwS/FbPBxO9d9OYjRlkyv6DJF2+xEfKbci2nHuP4Wvj6Q+R7GvH4gnx83/VjaoT3F0PTQtMVMI5lywcEqrW6lnaxBRnonSCl6u8Y9lGWuJNQpnstnTasmG+YswaoepBfwK7KhZincn0YEK9uujzPMV8Xs4E5yLFNL1m0r5a2VmGnPU0YC/rVTeW/RmdY4uF5PjWxzaZuk/qZrYbWY6fdTpq/IOq3l7GNd0xZHsx6x3iwwWGWuW336n3fjf/3jdb32g99MNp5SyT/8//7/7J7Gfzv53ioUWfdMRnWhsyupM+2ZlNrvmV7I7/dlY6zEbNxJ+ioj89M/93vhaTqAdHxbwO/J8vh53pL5DDeQlpvmLCGzqCesl5Ga76rfaFKGKA0zPO9nXKZacPOI6Ci4eVDivg3S0m5d027h+qjINC01X12ftWQYxs9jeNg167lndo4ts7wnst5rar7DPuPb/J7pB1HTD2X6O6YfzBKsevM4b67IIWGWulXw/rPPg3//881kTx4GKv8cTJ6vgtZXfvjb8V9/9d3eCgQt35hxR20OzfuatlP7IZZ0nGrOzjuU1L6uOqDfcPZlo7xIqjlFDLkqauPcNkGk7z63IxlHTS1bP2WY2owKRlKTaagsK2lYsGOCdJ6hh9aOOxs+4lSBw7T2ddOcBNdPMN4PFnOgRrd51QSbPRMQdm2Jwr3vQgXjqqmFNUxN8EHEum9LNr4TxB/djMpWWwnztlpDwhx1Kx+sJs8bG6WgvFGePEryXNZ/K5dHKxCsxnHBSvbwOgjtRu2BZzwi2Qxunn8UdlwfBD+Sc3dacefvROxVI4OMLGNTf0/UkMIs7zDDcL+Rkvnp7Oc4R3ZVzxKs1LLp7Kqa1r6ybO0syzFnI5MdRg2vB3EBQYKT3tE/ihkaDxLW1+TzMxbvWyZbnVuwKiRg5albvRm/Dd6///wyKN0IUpfBqnT0l182BisQsJIyGLu3GiZ1gGCKEx/9d8tesBPEF97r0mFexlwSUjfzmdRRR2Y+4wLWKOVz+mrvXEmoAbXMus66k7LrPk/5YEtnFUkZqhl+V1IC+Ly8igkw9Rx1vpO49tfr3hyFza3oYFVUhpWtbvXJu+CTt59eBqnSjeyq7LIu91wuD//8i0ercs3Yi4TX7qqfzzKm+tPWNg7c455kQL2Y4BVXMK/mnIdBzLRxWUCcuL183HDwZMqgc5Zzdeqgc5FzfSzzLPRa1qGz2ZnYrGqs/u6zc18b3csbjNURZx385z5kLqKGlV63clnVx2/eToLTteK61K/Cn/3KdE/NYD1Uc27Ar2f9Qn0ipQynGrLR18ye85U6NUEfndyTQ+KLcKxqLg0/v+Z8t7oZmk176sAsmXg34xHRzH19DrYyBNSP5BrE3Bm7m25XsqKKCoQ1aZOwHToZsl1d3yvsROwiMqymDFkiH+/++1n/49dvJ0V1nUltXGVUk8dGueR/3/3jz78zCtbPwi+j8B3KD4VkyNg087Cz4I0sbng5iBn+2Xnsr8mlKNV1/w7Z6T0Ios/xCk9neJnhVI6KGZYX0n5zz7CePnmYePnEV3909tJnTxuSXV1mWO6/sn+e/G9yKkPv/Ojb63oZRi1Y4iUkvhNK0b0b0elfqJrPIOMwaB7ZSzjMq6sAdSB7cnvu1fGSNvB+yrB/3usjyzAryxD+aJaMXXYmu+pkVXtaS5h9jhNOM+mpnZDP6oN1GRLG+vqPf9dwkagaBqlyIEPAqyAVDguHX1w/IjMPdwtevAu1MWb5rvsFz88oQ/ZXiTmLvSjhJSc+QPmjjnWpr+hzr4ZT3MdrqNb9VpDvNkV6PY0WvD7S6NvSjE0taqzW2cU8zr6XrChMONoRZ/4/jtsR++Akw9JCg9ZCby/jhn9bG5MhXynY9EPATSmwXw0B/ekNY/f67rOffWveKWVtgQGikbLnrASLOyyelBXUZj0yNOUGYYeBj00WlpfOilo5C8YXZtqVuJ2LDMGSsk7djo8Laq+BqUXVU96/a3YWrZw1wdUKWC4Y1XyQmgQqCVwSpK5qWBvl9h9++s3hnBu/YQJWEfdS0htiJeUuk90plsEfwenm2Bj3o4KpZC86uJ4u6PB81IbXkO+umaHFNOt+bIYv1SmmDY+UVZYYqKqykXdN+x0lrMf6NIFBvitth5U3cWgHN0+XmNuBnYUOCSenLQRRRwTDS3FKvd//5Bu9GRv8uex9XqvhWcs0wNxrD3LERY/j/SkF/ojcsbrDQ0P2htNmNS3pAOEyvAhu3l+pJt9RTchafKc6NRupn/ezQBVM1ZG7LRk+NuewnoZyEXE1uLpc5DJYTVOslXXfCa4Oq/t18DxcJj2UkmWa1BjlQMVYrj7YV9O+lL/ZW2mHwdWvjxdTDh93YoLEnSD67hKTE3jtepH7gw1UXwrPo+roYbW684V/zZ9Oom9vU5W2H0ofGUasq8M8NTt1f7lrV0lI/au3VgFr02VVgQlS6rQGeybxLEO/pIzhuMAjUB1Tj5n8y0Axh5wHMwSucEiZZVh5Y+8sRfmj4Oo0g/Daxj3pqGlDyXlkWYdqo5llOBgu05Gbb3vtXNL6v8w0feDx94g30+7LTifLMDTvTidPmaGZUNNrmsBQDTOznKc56FMZsmbHeYNWV2paMwWtxdawNssXG9fOap+cxe6DlQ8gu0+fPCz6UHavyKKqZFLbKWn0WOoCF1Ns5HmHsj7IxF1q0pb5WMbpA1GddjTr/aakhtJZ9LQFGMm8PEi5YmIs/W3agnuetj/KU9hX8zY0Q/XWLCtmsUPCcqnvglPUDfnbLljNq660Kyl71exNzxI2iJPA3HnBdJ6BrQWlDHnuyd79kdrDDOVzJkNEMyzIkmpPjt6o6+a2JBOw/4jGQObzLK2DqZvFNWReqxG1vpGsm15EZx9MUxNUJyxWc9YVO1F1OfPZBzIU1MtUVdOMwqFvzmn1ur3ImSl0cgSQXP/aUXjNp/SLHZUt6Yvbh1HbgOqrDbXN1CKW9yRm2+lkaOemySp93awy7SinFCzYBx8+s/dg6rlgtdK3JwawGpbxLz/rYci86lYACFjz57KpsM7jnxdRtwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAFfE/AQYA1rcgTheB7VcAAAAASUVORK5CYII=
+description: Jira Service Desk API (Experimental)
+configuration:
+- display: ""
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: System Use Proxy Settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import requests
+    from requests.auth import HTTPBasicAuth
+    import json
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    credentials = demisto.params().get('credentials')
+    sdusername = credentials['identifier'] if credentials else ''
+    sdpassword = credentials['password'] if credentials else ''
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ##### create customer
+    def createCustomer():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {"email": demisto.args()['email'], "fullName": demisto.args()['fullName']}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/customer', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, json=payload)
+       if call.status_code == 201:
+          md = tableToMarkdown('ServiceDesk Create Customer', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to create customer [%d] - %s' % (call.status_code, call.text))
+
+
+    ##### create customer request
+    def createCustomerRequest():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {"serviceDeskId": demisto.args()['serviceDeskId'], "requestTypeId": demisto.args()['requestTypeId'], 'requestFieldValues': { 'summary': demisto.args()['summary'], 'description': demisto.args()['description']}}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/request', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, json=payload)
+       if call.status_code == 201:
+          md = tableToMarkdown('ServiceDesk Create Customer Request', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to create customer request [%d] - %s' % (call.status_code, call.text))
+
+
+
+    #### create organization
+
+    def createOrganization():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {"name": demisto.args()['name']}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/organization', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, json=payload)
+       if call.status_code == 201:
+          md = tableToMarkdown('ServiceDesk Create Organization', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to create organization [%d] - %s' % (call.status_code, call.text))
+
+    def performCustomerTransition():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {"id": demisto.args()['id']}
+       if 'additionalComment' in demisto.args():
+         payload['additionalComment'] = {'body': demisto.args()['additionalComment'] }
+       demisto.log(str(payload))
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/request/'+ demisto.args()['id'] +'/transition', auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, json=payload)
+       if call.status_code == 204:
+          md = tableToMarkdown('ServiceDesk Perform Transition', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to perform transition [%d] - %s' % (call.status_code, call.text))
+
+
+    def createComment():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {"body": demisto.args()['body'], "public": demisto.args()['public']}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/request/'+ demisto.args()['id'] +'/comment', auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, json=payload)
+       if call.status_code == 201:
+          md = tableToMarkdown('ServiceDesk Create Comment', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to create comment [%d] - %s' % (call.status_code, call.text))
+
+
+
+    def getOrganizations(startAt, maxResults):
+       res = []
+       params = {'startAt': startAt, 'maxResults': maxResults}
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/organization', auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, params=params)
+       if call.status_code == requests.codes.ok:
+          for item in call.json()['values']:
+             res.append({'id': item['id'] , 'name': item['name']})
+          md = tableToMarkdown('ServiceDesk Organizations', res)
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to list organizations [%d] - %s' % (call.status_code, call.text))
+
+    def getOrganizationUsers():
+       params = {'start': demisto.args()['start'], 'limit': demisto.args()['limit']}
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/organization/' + demisto.args()['organizationId'] + "/user", auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, params=params)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Users', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get organization user [%d] - %s' % (call.status_code, call.text))
+
+
+    def getRequestById():
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/' + demisto.args()['id'], auth=(sdusername, sdpassword), verify=USE_SSL, headers=headers)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Customer Request Information', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get request by id [%d] - %s' % (call.status_code, call.text))
+
+
+
+    def getRequestStatus():
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       params = {"start": demisto.args()['start'], "limit": demisto.args()['limit']}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/' + demisto.args()['id'] + '/status', auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, params=params)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Customer Request Status', call.json()['values'])
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get request status [%d] - %s' % (call.status_code, call.text))
+
+    def getRequestComments():
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       params = {'public': demisto.args()['public'], 'internal': demisto.args()['internal'], 'start': demisto.args()['start'], 'limit': demisto.args()['limit']}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/'+ demisto.args()['id'] +'/comment' , auth=(sdusername, sdpassword), headers=headers,verify=USE_SSL, params=params)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Comments', call.json()['values'])
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get request comments [%d] - %s' % (call.status_code, call.text))
+
+
+    def getRequestTypes():
+       res = []
+       params = {'start': demisto.args()['start'], 'limit': demisto.args()['limit']}
+       if 'groupId' in demisto.args():
+         params['groupId'] = demisto.args()['groupId']
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/servicedesk/' + demisto.args()['serviceDeskId'] +'/requesttype', auth=(sdusername, sdpassword), verify=USE_SSL,headers=headers)
+       #demisto.log(json.dumps(call.json()))
+       if call.status_code == requests.codes.ok:
+          for item in call.json()['values']:
+             res.append({'id': item['id'] , 'name': item['name'], 'description': item['description']})
+          md = tableToMarkdown('ServiceDesk Request Types', res)
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get request types [%d] - %s' % (call.status_code, call.text))
+
+    def getCustomerTransitions():
+       res = []
+       params = {'start': demisto.args()['start'], 'limit': demisto.args()['limit']}
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/' + demisto.args()['id']+ '/transition', auth=(sdusername, sdpassword), verify=USE_SSL,headers=headers)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Transitions', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get transitions [%d] - %s' % (call.status_code, call.text))
+
+    def getOrganization():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/organization/' + demisto.args()['organizationId'], auth=(sdusername, sdpassword), verify=USE_SSL,headers=headers)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Organization', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to get organization [%d] - %s' % (call.status_code, call.text))
+
+    def getInfo():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/info', auth=(sdusername, sdpassword), verify=USE_SSL,headers=headers)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Info', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to retrieve information [%d] - %s' % (call.status_code, call.text))
+
+
+
+    def getSLA():
+       res = []
+       params = {'start': demisto.args()['start'], 'limit': demisto.args()['limit']}
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/'+ demisto.args()['id']+'/sla', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL,params=params)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Request SLA', call.json()['values'])
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to retrieve SLA info [%d] - %s' % (call.status_code, call.text))
+
+
+    def getSLAMetric():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       call = requests.get(demisto.params()['url'] + 'rest/servicedeskapi/request/'+demisto.args()['id']+'/sla/' + demisto.args()['slaMetricid'], auth=(sdusername, sdpassword),verify=USE_SSL, headers=headers)
+       if call.status_code == requests.codes.ok:
+          md = tableToMarkdown('ServiceDesk Request SLA', call.json())
+          return  {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': md,
+                    'EntryContext': {}
+                }
+
+       else:
+           return ('Unable to retrieve SLA info [%d] - %s' % (call.status_code, call.text))
+
+
+    def addUserstoOrg():
+       res = []
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       payload = {'usernames': demisto.args()['usernames']}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/organization/' + demisto.args()['organizationId'] + '/user', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, json=payload)
+       if call.status_code == 204:
+          return ('User(s) were added to the organization')
+       else:
+           return ('Unable to add usernames to organization [%d] - %s' % (call.status_code, call.text))
+
+
+
+    def createAttachment():
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       uploadTempFileResult = uploadTempFile(demisto.args()['entryId'])['temporaryAttachments'][0]['temporaryAttachmentId']
+       payload = {"temporaryAttachmentIds": [uploadTempFileResult],"public": demisto.args()['public'],"additionalComment": {"body": demisto.args()['additionalMessage']}}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/request/'+ demisto.args()['issueId'] +'/attachment', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, json=payload)
+       if call.status_code == 201:
+          return {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': call.json(),
+                    'HumanReadable': tableToMarkdown('Create Attachment', call.json()),
+                    'EntryContext': {}
+                }
+       else:
+           return ('Unable to create attachment [%d] - %s' % (call.status_code, call.text))
+
+
+
+
+    def uploadTempFile(entryId):
+       headers = {"Accept": "application/json", "X-ExperimentalApi": "opt-in"}
+       files={'file': (demisto.getFilePath(entryId)['name'],  open(demisto.getFilePath(entryId)['path'], 'rb').read())}
+       call = requests.post(demisto.params()['url'] + 'rest/servicedeskapi/servicedesk/'+demisto.args()['serviceDeskId']+'/attachTemporaryFile', auth=(sdusername, sdpassword), headers=headers, verify=USE_SSL, files=files)
+       return call.json()
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'jira-sd-get-organizations':
+      demisto.results(getOrganizations(demisto.args()['startAt'], demisto.args()['maxResults']))
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-info':
+      demisto.results(getInfo())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-organization':
+      demisto.results(getOrganization())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-create-customer':
+      demisto.results(createCustomer())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-create-organization':
+      demisto.results(createOrganization())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-organization-users':
+      demisto.results(getOrganizationUsers())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-add-users-to-organization':
+      demisto.results(addUserstoOrg())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-create-request':
+      demisto.results(createCustomerRequest())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-request-types':
+      demisto.results(getRequestTypes())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-request':
+      demisto.results(getRequestById())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-create-comment':
+      demisto.results(createComment())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-request-comments':
+      demisto.results(getRequestComments())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-customer-request-status':
+      demisto.results(getRequestStatus())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-customer-transitions':
+      demisto.results(getCustomerTransitions())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-perform-customer-transition':
+      demisto.results(performCustomerTransition())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-sla':
+      demisto.results(getSLA())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-get-sla-metric':
+      demisto.results(getSLAMetric())
+      sys.exit(0)
+    if demisto.command() == 'jira-sd-create-attachment':
+      demisto.results(createAttachment())
+      sys.exit(0)
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test = getInfo()
+        if not isinstance(test, tuple):
+          demisto.results('ok')
+        else:
+            demisto.results(test)
+        sys.exit(0)
+    if demisto.command() == 'fetch-incidents':
+        # You can store the last run time...
+        demisto.setLastRun({'time': 'now'})
+        # And retrieve it for use later:
+        lastRun = demisto.getLastRun()
+        # lastRun is a dictionary, with value "now" for key "time".
+        # JSON of the incident type created by this integration
+        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
+        sys.exit(0)
+    # You can use demisto.args()[argName] to get a specific arg. args are strings.
+    # You can use demisto.params()[paramName] to get a specific params.
+    # Params are of the type given in the integration page creation.
+  type: python
+  commands:
+  - name: jira-sd-get-organizations
+    arguments:
+    - name: startAt
+      description: Start Index
+      defaultValue: "0"
+    - name: maxResults
+      description: Max Results per page
+      defaultValue: "50"
+    description: Get Service Desk Available Organizations
+  - name: jira-sd-create-request
+    arguments:
+    - name: serviceDeskId
+      required: true
+      description: Service Desk ID
+    - name: requestTypeId
+      required: true
+      description: Request ID
+    - name: summary
+      required: true
+      description: Summary of the request
+    - name: description
+      description: Description of the request
+    description: Create Customer Request in Jira Service Desk
+  - name: jira-sd-get-request
+    arguments:
+    - name: id
+      description: Issue ID or Key
+    description: Get Customer Request
+  - name: jira-sd-get-request-types
+    arguments:
+    - name: groupId
+      description: Filter results where the group ID of the request type matches groupId
+    - name: start
+      required: true
+      description: The starting index of the returned objects
+    - name: limit
+      required: true
+      description: The maximum number of items to return per page
+    - name: serviceDeskId
+      required: true
+      description: Service Desk Instance ID
+    description: Returns all request types from a service desk, for a given service
+      desk Id.
+  - name: jira-sd-get-info
+    arguments: []
+    description: Get Info about Service Desk Application
+  - name: jira-sd-create-customer
+    arguments:
+    - name: email
+      required: true
+      description: Customer Email
+    - name: fullName
+      required: true
+      description: Customer Full Name
+    description: Creates a customer that is not associated with a service desk project.
+  - name: jira-sd-create-organization
+    arguments:
+    - name: name
+      required: true
+      description: Organization Name
+    description: Create a new organization in Jira
+  - name: jira-sd-get-organization
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID
+    description: Get Organization Details
+  - name: jira-sd-get-organization-users
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID
+    - name: start
+      required: true
+      description: The starting index of the returned objects
+    - name: limit
+      required: true
+      description: The maximum number of users to return per page
+    description: Get Users inside organization
+  - name: jira-sd-add-users-to-organization
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID
+    - name: usernames
+      required: true
+      description: Username List
+      isArray: true
+    description: Adds users to an organization
+  - name: jira-sd-create-comment
+    arguments:
+    - name: id
+      description: ID or Key
+    - name: body
+      required: true
+      description: Message
+    - name: public
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Visible to all / internal
+    description: Create a new comment in Service Desk Ticket
+  - name: jira-sd-get-request-comments
+    arguments:
+    - name: id
+      required: true
+      description: ID or Key
+    - name: public
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include public comments
+    - name: internal
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Include internal comments
+    - name: start
+      required: true
+      description: The starting index of the returned comment
+      defaultValue: "0"
+    - name: limit
+      required: true
+      description: The maximum number of comments to return per page
+      defaultValue: "50"
+    description: Get Comments for given request
+  - name: jira-sd-get-customer-request-status
+    arguments:
+    - name: start
+      description: 'The starting index of the returned objects. Base index: 0'
+      defaultValue: "0"
+    - name: id
+      required: true
+      description: ID or Key
+    - name: limit
+      description: 'The maximum number of items to return per page. Default: 50'
+      defaultValue: "50"
+    description: Returns the status transitions for a customer request for a given
+      request Id/key.
+  - name: jira-sd-get-customer-transitions
+    arguments:
+    - name: id
+      required: true
+      description: ID or Key
+    - name: start
+      description: 'The starting index of the returned objects. Base index: 0.'
+      defaultValue: "0"
+    - name: limit
+      description: 'The maximum number of items to return per page. Default: 100'
+      defaultValue: "100"
+    description: Returns a list of transitions that customers can perform on the request
+  - name: jira-sd-perform-customer-transition
+    arguments:
+    - name: id
+      required: true
+      description: Issue ID
+    - name: additionalComment
+      description: Optional to add a comment during transition
+    description: Perform a customer transition for a given request and transition
+      ID
+  - name: jira-sd-get-sla
+    arguments:
+    - name: id
+      required: true
+    - name: start
+      description: 'The starting index of the returned objects. Base index: 0'
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of request types to return per page
+      defaultValue: "50"
+    description: Returns the SLA information for a customer request for a given request
+      Id/key.
+  - name: jira-sd-get-sla-metric
+    arguments:
+    - name: id
+      required: true
+      description: ID or Key
+    - name: slaMetricid
+      required: true
+      description: SLA Metric ID
+    description: Returns the SLA information of the customer request
+  - name: jira-sd-create-attachment
+    arguments:
+    - name: entryId
+      required: true
+      description: Entry ID of the file
+    - name: public
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Share this internally or public (e.g. customer)
+    - name: additionalMessage
+      required: true
+      description: A message for the file upload
+    - name: issueId
+      required: true
+      description: Issue ID or Key
+    - name: serviceDeskId
+      required: true
+      description: Service Desk Id
+    description: Upload a comment to an existent Service Desk Ticket
+  runonce: false
