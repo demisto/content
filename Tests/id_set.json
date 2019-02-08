@@ -11466,6 +11466,31 @@
                     "MISP V2 Test"
                 ]
             }
+        }, 
+        {
+            "Jira Service Desk (Experimental)": {
+                "name": "Jira Service Desk (Experimental)", 
+                "commands": [
+                    "jira-sd-get-organizations", 
+                    "jira-sd-create-request", 
+                    "jira-sd-get-request", 
+                    "jira-sd-get-request-types", 
+                    "jira-sd-get-info", 
+                    "jira-sd-create-customer", 
+                    "jira-sd-create-organization", 
+                    "jira-sd-get-organization", 
+                    "jira-sd-get-organization-users", 
+                    "jira-sd-add-users-to-organization", 
+                    "jira-sd-create-comment", 
+                    "jira-sd-get-request-comments", 
+                    "jira-sd-get-customer-request-status", 
+                    "jira-sd-get-customer-transitions", 
+                    "jira-sd-perform-customer-transition", 
+                    "jira-sd-get-sla", 
+                    "jira-sd-get-sla-metric", 
+                    "jira-sd-create-attachment"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
