@@ -7078,24 +7078,6 @@
             }
         }, 
         {
-            "ArcSight Test": {
-                "name": "ArcSight Test", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "as-get-case": "", 
-                    "as-get-all-query-viewers": "", 
-                    "as-clear-entries": "", 
-                    "as-get-all-cases": "", 
-                    "as-get-entries": "", 
-                    "as-add-entries": "", 
-                    "as-update-case": "", 
-                    "as-get-case-event-ids": ""
-                }
-            }
-        }, 
-        {
             "ArcSight ESM Test": {
                 "name": "ArcSight ESM Test", 
                 "implementing_scripts": [
