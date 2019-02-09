@@ -24,15 +24,25 @@ configuration:
   required: true
 - display: Fetch Events as incidents via Query Viewer ID. Mandatory fields for query
     are Start Time and Event ID.
-  name: viewerId
+  name: events_query_viewer_id
   defaultvalue: ""
   type: 0
   required: false
 - display: Fetch Cases as incidents via Query Viewer ID. Mandatory fields for query
     are Create Time and ID.
-  name: casesQueryViewerId
+  name: cases_query_viewer_id
   defaultvalue: ""
   type: 0
+  required: false
+- display: Do not validate server certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -44,1095 +54,790 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
-  required: false
 script:
   script: |-
-    var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
+    from collections import deque
+    import requests
+    from datetime import datetime
 
-    // Arcsight field names
-    var eventIdField = 'Event ID';
-    var caseIdField = 'ID';
-    var eventsTimeField = 'Start Time';
-    var casesTimeField = 'Create Time';
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
-    var pathDictionary = {
-        login: 'www/core-service/rest/LoginService/login',
-        logout: 'www/core-service/rest/LoginService/logout',
-        'as-get-matrix-data': 'www/manager-service/rest/QueryViewerService/getMatrixData',
-        'as-get-all-cases': 'www/manager-service/rest/CaseService/findAllIds',
-        'as-get-case': 'www/manager-service/rest/CaseService/getResourceById',
-        'as-get-all-query-viewers': 'www/manager-service/rest/QueryViewerService/findAllIds',
-        'as-get-case-event-ids': 'www/manager-service/rest/CaseService/getCaseEventIDs',
-        ActiveListService: 'www/manager-service/services/ActiveListService/'
-    };
-
-    function getToken() {
-        var res = JSON.parse(sendRequest(
-            pathDictionary.login, {
-                login: params.credentials.identifier,
-                password: params.credentials.password
-            },
-            true));
-
-        if (res && res['log.loginResponse'] && res['log.loginResponse']['log.return']) {
-            return res['log.loginResponse']['log.return'];
-        }
-
-        throw 'Failed to login. Check username/password. Original login response: ' + res;
+    """ GLOBALS """
+    URL, PORT = demisto.params().get('server'), demisto.params().get('port')
+    BASE_URL = URL.rstrip('/:') + ':' + PORT + '/'
+    VERIFY_CERTIFICATE = not demisto.params().get('unsecure', True)
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
     }
 
-    function logout() {
-        sendRequest(pathDictionary.logout, {
-            authToken: args.authToken
-        });
+    RELEVANT_CASE_ENTRIES = {
+        'Name': 'name',
+        'EventIDs': 'eventIDs',
+        'Action': 'action',
+        'Stage': 'stage',
+        'CaseID': 'resourceid',
+        'Severity': 'consequenceSeverity'
     }
-
-    function sendRequest(url, args, login) {
-        var newArgs = args || {};
-        newArgs.alt = 'json';
-
-        var fullUrl = server + url + encodeToURLQuery(newArgs);
-        var res = http(
-            fullUrl, {
-                Method: 'GET',
-                Headers: {
-                    'Content-Type': ['application/x-www-form-urlencoded'],
-                    'Accept': ['application/json']
-                }
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            if (!login) {
-                sendRequest(pathDictionary.logout, {
-                    authToken: args.authToken
-                });
-            }
-            throw 'Request to ArcSight ' + (login ? (server + url) : fullUrl) + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-
-        return res.Body;
-    }
-
-    function sendAndParse(command, url, args) {
-        var json = parseSOAPResponse(sendRequest(url, args));
-        if (!json) {
-            return null;
-        }
-
-        var result = json;
-        return result;
-    }
-
-    function postRestRequest(queryPath, param, body) {
-        var stringBody = body;
-        if (body && typeof body !== 'string') {
-            stringBody = JSON.stringify(body)
-        }
-
-        var newArgs = param || {};
-        newArgs.alt = 'json';
-
-        // prepare the request url (make sure to encode the query parameter value)
-        var requestUrl = server + queryPath;
-        if (newArgs) {
-            requestUrl += encodeToURLQuery(newArgs);
-        }
-
-        var res = http(
-            requestUrl, {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': ['application/json'],
-                    'Accept': ['application/json']
-                },
-                Body: stringBody
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Body: ' + stringBody + '\n' + 'Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        return res;
-    }
-
-    function sendSOAPRequest(queryPath, param, body) {
-        // prepare the request url (make sure to encode the query parameter value)
-        var requestUrl = server + queryPath;
-        if (param) {
-            requestUrl += encodeToURLQuery(param);
-        }
-
-        var res = http(
-            requestUrl, {
-                Method: 'POST',
-                Body: body
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-
-        return res;
-    }
-
-    function parseSOAPResponse(resBody) {
-        var matches = resBody.match(/<ns\d{1,3}:return>(.|[\r\n])*<\/ns\d{1,3}:return>/);
-        if (!matches || !matches[0]) {
-            return null;
-        }
-
-        var match = matches[0].replace(/:return><ns/gi, ':return>##==##==#<ns').split('##==##==#');
-        if (match.length === 1) {
-            match = match[0];
-            var json = JSON.parse(x2j(match));
-            return json;
-        } else {
-            var arr = [];
-            for (var i = 0; i < match.length; i++) {
-                arr.push(JSON.parse(x2j(match[i])).return);
-            }
-
-            return arr;
-        }
-    }
-
-    function convertByMap(arrSrc, translationMap) {
-        var arrDest = [];
-
-        if (!arrSrc) {
-            throw 'arrSrc can\'t be undefined or null';
-        }
-
-        if (!Array.isArray(arrSrc)) {
-            arrSrc = [arrSrc];
-        }
-
-        if (!translationMap) {
-            throw 'translationMap must contain map';
-        }
-
-        /*
-        [
-            {
-                "name": "Anar",
-                "age": 19
-            }
-        ]
-
-        ==> { "NAME": "name" }
-        [
-            {
-                "NAME": "Anar"
-            }
-        ]
-
-        */
-        arrSrc.forEach(function(objSrc) {
-            var objDest = {};
-            Object.keys(translationMap).forEach(function(destKey) {
-                var srcKey = translationMap[destKey];
-                objDest[destKey] = dq(objSrc, srcKey);
-            });
-            arrDest.push(objDest);
-        });
-
-        return arrDest;
-    }
-
-    function getCasesIncidents(lastRun) {
-        var timeField = 'Create Time'; // Query must contain Start Time field
-        var newIncidents = [];
-
-        var response;
-        try {
-            response = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, false);
-        } catch (ex) {
-            throw 'Cases response to query is not in the correct format. Error: ' + ex;
-        }
-        if (!response) {
-            throw 'Cases response to query is empty';
-        }
-        var fieldNames = response.columnHeaders;
-        if (fieldNames.indexOf(timeField) === -1) {
-            throw 'Cases Query must contain ' + timeField + ' fields';
-        }
-        var data = response.data;
-
-        var lastEventTime = (lastRun && lastRun.caseLastEventTime) ? lastRun.caseLastEventTime : 0;
-        var maxEventTime = lastEventTime;
-        for (var i = 0; i < data.length; i++) {
-            var eventTimeInMillis = Number(data[i][timeField]);
-            if (lastEventTime < eventTimeInMillis) {
-                if (maxEventTime < eventTimeInMillis) {
-                    maxEventTime = eventTimeInMillis;
-                }
-                var keys = Object.keys(data[i]);
-                var labels = [];
-                for (var j = 0; j < keys.length; j++) {
-                    if (keys[j] !== 'Name') {
-                        labels.push({
-                            type: keys[j],
-                            value: String(data[i][keys[j]])
-                        });
-                    }
-                }
-                newIncidents.push({
-                    name: data[i].Name || ('New case from arcsight at ' + Date.now()),
-                    labels: labels,
-                    rawJSON: JSON.stringify(data[i])
-                });
-            }
-        }
-
-        lastRun.caseLastEventTime = maxEventTime;
-        return newIncidents;
-    }
-
-    function getEventsIncidents(lastRun) {
-        var timeField = 'Start Time'; // Query must contain Start Time field
-        var newIncidents = [];
-
-        var response;
-        try {
-            response = getQueryViewerResultsRequest(args.authToken, params.viewerId, false);
-        } catch (ex) {
-            throw 'Events response to query is not in the correct format. Error: ' + ex;
-        }
-        if (!response) {
-            throw 'Events response to query is empty';
-        }
-        var fieldNames = response.columnHeaders;
-        if (fieldNames.indexOf(timeField) === -1) {
-            throw 'Events Query must contain ' + timeField + ' fields';
-        }
-        var data = response.data;
-        var lastEventTime = lastRun && lastRun.lastEventTime ? lastRun.lastEventTime : 0;
-        var maxEventTime = lastEventTime;
-        for (var i = 0; i < data.length; i++) {
-            var eventTimeInMillis = Number(data[i][timeField]);
-            if (lastEventTime < eventTimeInMillis) {
-                if (maxEventTime < eventTimeInMillis) {
-                    maxEventTime = eventTimeInMillis;
-                }
-
-                var keys = Object.keys(data[i]);
-                var labels = [];
-                for (var j = 0; j < keys.length; j++) {
-                    if (keys[j] !== 'Name') {
-                        labels.push({
-                            type: keys[j],
-                            value: String(data[i][keys[j]])
-                        });
-                    }
-                }
-                newIncidents.push({
-                    name: data[i].Name || ('New event from arcsight at ' + Date.now()),
-                    labels: labels,
-                    rawJSON: JSON.stringify(data[i])
-                });
-            }
-        }
-
-        lastRun.lastEventTime = maxEventTime;
-        return newIncidents;
-    }
-
-    function convertRowsToStruct(fields, rows) {
-        var data = [];
-        for (var i = 0; i < rows.length; i++) {
-            var newData = {};
-            for (var j = 0; j < fields.length; j++) {
-                if (rows[i].value[j]['#text']) {
-                    newData[fields[j]] = rows[i].value[j]['#text'];
-                }
-            }
-            data.push(newData);
-        }
-        return data;
-    }
-
-    function getCase() {
-        var ccase = getCaseRequest(args.authToken, args.resourceId);
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: ccase,
-            ReadableContensFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Case ' + args.resourceId, convertByMap(ccase, {
-                'Name': 'name',
-                'EventIDs': 'eventIDs',
-                'Action': 'action',
-                'Stage': 'stage',
-                'CaseID': 'resourceid',
-                'CreatedTime': 'createdTimestamp=Date(val)'
-            })),
-            EntryContext: {
-              'ArcSightESM.Cases(val.resourceid===obj.resourceid)': ccase
-            }
-        };
-    }
-
-    function getCaseRequest(authToken, resourceId) {
-        var reqArgs = {
-            authToken: authToken,
-            resourceId: resourceId
-        };
-
-        var res = sendRequest(pathDictionary['as-get-case'], reqArgs);
-        var json = JSON.parse(res);
-        if (json && json['cas.getResourceByIdResponse'] && json['cas.getResourceByIdResponse']['cas.return']) {
-            return json['cas.getResourceByIdResponse']['cas.return'];
-        }
-
-        return null;
-    }
-
-    function dlog(obj) {
-        try {
-            log(JSON.stringify(obj, null, 2));
-        } catch (err) {
-            log(obj);
-        }
-
-    }
-
-    function getMatrixData() {
-        args.onlyColumns = args.onlyColumns === 'true' ? true : false;
-        var results = getQueryViewerResultsRequest(args.authToken, args.id, args.onlyColumns);
-
-        var entries = [{
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: results.columnHeaders,
-            ReadableContensFormat: formats.markdown,
-            HumanReadable: arrayToMarkdownTable(results.columnHeaders, 'Column Headers') // will print only query viewer column headers
-        }];
-
-        if (!args.onlyColumns) {
-            entries.push({
-                Type: entryTypes.note,
-                ContentsFormat: formats.json,
-                Contents: results.data,
-                ReadableContensFormat: formats.markdown,
-                HumanReadable: tableToMarkdown('Query Viewer Results: ' + args.id, results.data) // will print all the results table
-            });
-        }
-
-        return entries;
-    }
-
-    function getQueryViewerResultsRequest(authToken, queryViewerId, includeOnlyHeaders) {
-        var reqArgs = {
-            authToken: authToken,
-            id: queryViewerId
-        };
-        var resBody = sendRequest(pathDictionary['as-get-matrix-data'], reqArgs);
-        var json;
-        try {
-            json = JSON.parse(resBody);
-        } catch(err) {
-            throw 'Failed to parse results for query viewer ' + queryViewerId + '.\nRaw response body: ' + resBody;
-        }
-
-
-        var returnObject;
-        if (json && json['qvs.getMatrixDataResponse'] && json['qvs.getMatrixDataResponse']['qvs.return']) {
-            // ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
-            returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];
-        } else if (json && json['que.getMatrixDataResponse'] && json['que.getMatrixDataResponse']['que.return']) {
-            // ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
-            returnObject = json['que.getMatrixDataResponse']['que.return'];
-        } else {
-            throw 'Failed to get results for query viewer ' + queryViewerId + '.\nRaw response body: ' + JSON.stringify(json);
-        }
-
-        var columnHeaders = dq(returnObject, 'columnHeaders');
-        if (columnHeaders && !Array.isArray(columnHeaders)) {
-            columnHeaders = [columnHeaders];
-        }
-        if (includeOnlyHeaders) {
-            return {
-                columnHeaders: columnHeaders
-            };
-        }
-
-        if (!returnObject.rows || !Array.isArray(returnObject.rows) || returnObject.rows.length === 0) {
-            // there are no results
-            return {
-                columnHeaders: columnHeaders,
-                data: []
-            };
-        }
-
-        if (!columnHeaders || !columnHeaders.length || columnHeaders.length === 0) {
-            // no columns exists
-            return {
-                columnHeaders: [],
-                data: []
-            };
-        }
-
-        // we should parse the raws by column headers and create result objects from them
-        var queryResults = [];
-        for (var i = 0; i < returnObject.rows.length; i++) {
-            var row = returnObject.rows[i].value;
-            var qResult = {};
-            for (var columnIdx = 0; columnIdx < columnHeaders.length; columnIdx++) {
-                column = columnHeaders[columnIdx];
-                qResult[column] = row[columnIdx]['$'];
-            }
-            queryResults.push(qResult);
-        }
-
-        return {
-            columnHeaders: columnHeaders,
-            data: queryResults
-        };
-    }
-
-    function getAllCases() {
-        var allCases = getAllCasesRequest(args.authToken);
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: allCases,
-            ReadableContensFormat: formats.markdown,
-            HumanReadable: arrayToMarkdownTable(allCases, 'Case ID'),
-            EntryContext: {
-              'ArcSightESM.AllCaseIDs': allCases
-            }
-        };
-    }
-
-    function getAllCasesRequest(authToken) {
-        var reqArgs = {
-            authToken: authToken
-        };
-
-        var json = JSON.parse(sendRequest(pathDictionary['as-get-all-cases'], reqArgs));
-        if (json && json['cas.findAllIdsResponse'] && json['cas.findAllIdsResponse']['cas.return']) {
-            return json['cas.findAllIdsResponse']['cas.return'];
-        }
-
-        return null;
-    }
-
-    function getAllQueryViewers() {
-        var json = JSON.parse(sendRequest(pathDictionary['as-get-all-query-viewers'], args));
-        if (!json || !json['qvs.findAllIdsResponse'] || !json['qvs.findAllIdsResponse']['qvs.return']) {
-            return null;
-        }
-
-        var queryList = json['qvs.findAllIdsResponse']['qvs.return'];
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: queryList,
-            ReadableContensFormat: formats.markdown,
-            HumanReadable: arrayToMarkdownTable(queryList, 'Query Viewers'),
-            EntryContext: {
-                'ArcSightESM.AllQueryViewers': queryList
-            }
-        };
-    }
-
-    // convertCsvToEntryListObject converts entries which is array of entry objects into entryList object according to the SOAP request
-    // entryList object contains separately the columns and the entries
-    function convertCsvToEntryListObject(entries) {
-        var entryList = [];
-        var columns = [];
-        var column;
-
-        if (!entries || !Array.isArray(entries) || entries.length === 0) {
-            return {
-                columns: [],
-                entryList: []
-            };
-        }
-
-        // extract the columns
-        for (column in entries[0]) {
-            if (entries[0].hasOwnProperty(column)) {
-                columns.push(column);
-            }
-        }
-
-        // get the entries
-        for (var i = 0; i < entries.length; i++) {
-            entryRow = [];
-            for (var j = 0; j < columns.length; j++) {
-                column = columns[j];
-                var innerEntryValue = entries[i][column];
-                entryRow.push(innerEntryValue);
-            }
-            entryList.push(entryRow);
-        }
-
-
-        return {
-            columns: columns,
-            entryList: entryList
-        };
-    }
-
-    function convertFromEntryListToJSON(entryList) {
-        var columns = entryList.return.columns;
-        var entries = entryList.return.entryList;
-
-        if (!entries) {
-            return [];
-        }
-
-        // if there is only single column in columns then columns will be parsed as string instead of array
-        // the algorithm requires columns to be array
-        if (columns && !Array.isArray(columns)) {
-            columns = [columns];
-            for (var k = 0; k < entries.length; k++) {
-                entries[k].entry = [entries[k].entry];
-            }
-        }
-
-        var entriesArray = [];
-        for (var i = 0; i < entries.length; i++) {
-            var newEntry = {};
-            for (var columnIdx = 0; columnIdx < columns.length; columnIdx++) {
-                var column = columns[columnIdx];
-
-                var innerEntry = entries[i].entry[columnIdx];
-                newEntry[column] = innerEntry;
-            }
-
-            entriesArray.push(newEntry);
-        }
-
-        return entriesArray;
-    }
-
-
-    var addEntriesTemplate = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/" xmlns:xsd="http://activelist.model.v1.service.resource.manager.product.arcsight.com/xsd"><soapenv:Header /><soapenv:Body><act:addEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId><act:entryList>%entryList%</act:entryList></act:addEntries></soapenv:Body></soapenv:Envelope>';
-
-    function addEntries() {
-        var entries = args.entries;
-        if (typeof args.entries === 'string') {
-            try {
-                entries = JSON.parse(args.entries);
-            } catch (err) {
-                throw 'entries must be in JSON format. Must be array of objects.'
-            }
-        }
-        var entryList = convertCsvToEntryListObject(entries)
-        var stringBuilder = [];
-        entryList.columns.forEach(function(column) {
-            stringBuilder.push(replaceInTemplates('<columns>%column%</columns>', {
-                column: column
-            }));
-        });
-
-        entryList.entryList.forEach(function(entryRow) {
-            stringBuilder.push('<entryList>');
-            entryRow.forEach(function(entry) {
-                stringBuilder.push(replaceInTemplates('<entry>%entry%</entry>', {
-                    entry: entry
-                }));
-            })
-            stringBuilder.push('</entryList>');
-        });
-
-        var entryListXml = stringBuilder.join('');
-        var soapReq = replaceInTemplates(addEntriesTemplate, {
-            authToken: args.authToken,
-            resourceId: args.resourceId,
-            entryList: entryListXml
-        });
-        sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
-        return 'Success';
-    }
-
-    var clearEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/"><soapenv:Header/><soapenv:Body><act:clearEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId></act:clearEntries></soapenv:Body></soapenv:Envelope>';
-
-    function clearEntries() {
-        var soapReq = replaceInTemplates(clearEntriesTemplate, {
-            authToken: args.authToken,
-            resourceId: args.resourceId
-        });
-        var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
-        return 'Success';
-    }
-
-    var getEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/">\
-    <soapenv:Header/>\
-    <soapenv:Body>\
-    <act:getEntries>\
-    <act:authToken>%authToken%</act:authToken>\
-    <act:resourceId>%resourceId%</act:resourceId>\
-    </act:getEntries>\
-    </soapenv:Body>\
-    </soapenv:Envelope>';
-
-    function getEntries() {
-        var soapReq = replaceInTemplates(getEntriesTemplate, {
-            authToken: args.authToken,
-            resourceId: args.resourceId
-        });
-        var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
-
-        var parsedResponse = parseSOAPResponse(res.Body);
-        var entryArray = convertFromEntryListToJSON(parsedResponse);
-
-        // get the column headers which exists in Active List
-        var columns = dq(parsedResponse, 'return.columns');
-        if (columns && !Array.isArray(columns)) {
-          columns = [columns];
-        }
-
-        if (args.entryFilter) {
-            var filteredEntries = [];
-            var conditions = args.entryFilter.split(':');
-            var conditionKey = conditions[0]; // moo
-            var conditionValue = conditions[1]; // moo1
-
-            for (var i = 0; i < entryArray.length; i++) {
-                var entry = entryArray[i];
-
-                if (entry[conditionKey] === conditionValue) {
-                    filteredEntries.push(entry);
-                }
-            }
-            entryArray = filteredEntries;
-        }
-
-        var entryContext = {};
-        entryContext['ArcSightESM.ActiveList.' + args.resourceId] = entryArray;
-        return [
-          {
-              Type: entryTypes.note,
-              ContentsFormat: formats.json,
-              Contents: {
-                  columns: columns
-              },
-              ReadableContentsFormat: formats.markdown,
-              HumanReadable: columns ? arrayToMarkdownTable(columns, 'Columns') : 'Active list has no columns'
-          },
-          {
-              Type: entryTypes.note,
-              ContentsFormat: formats.json,
-              Contents: {
-                  result: entryArray
-              },
-              ReadableContentsFormat: formats.markdown,
-              HumanReadable: (!entryArray || entryArray.length) ? tableToMarkdown('Active List Entries: ' + args.resourceId, entryArray) : 'Active List has no entries',
-              EntryContext: entryContext
-          }
-        ];
-    }
-
-
-    function getCaseEventIDs() {
-        var json = JSON.parse(sendRequest(pathDictionary['as-get-case-event-ids'], args));
-        if (!json || !json['cas.getCaseEventIDsResponse'] || !json['cas.getCaseEventIDsResponse']['cas.return']) {
-            return null;
-        }
-
-        var eventIds = json['cas.getCaseEventIDsResponse']['cas.return'];
-        if (!eventIds) {
-            // case has no events
-            return null;
-        }
-
-        if (!Array.isArray(eventIds)) {
-            eventIds = [eventIds];
-        }
-        var entryContext = {};
-        entryContext['ArcSightESM.CaseEvents'] = eventIds;
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: arrayToMarkdownTable(eventIds, 'Case ' + args.caseId + ' Event IDs'),
-            EntryContext: entryContext
-        };
-    }
-
-    function updateCase() {
-        var currentCase = getCaseRequest(args.authToken, args.caseId);
-        if (!currentCase) {
-            throw 'There is no such case: ' + args.caseId;
-        }
-
-        var updatedCase = currentCase;
-        updatedCase.stage = args.stage;
-        var soapReq = {
-            'cas.update': {
-                'cas.authToken': args.authToken,
-                'cas.resource': updatedCase
-            }
-        };
-        try {
-            var res = postRestRequest('www/manager-service/rest/CaseService/update', null, soapReq);
-        } catch (err) {
-            throw 'soapReq: ' + soapReq + '\n' + err;
-        }
-
-        // creating human readable table
-        var response = JSON.parse(res.Body)
-
-        if (!response || !response['cas.updateResponse'] || !response['cas.updateResponse']['cas.return']) {
-            return null;
-        }
-
-        var responseUpdatedCase = response['cas.updateResponse']['cas.return'];
-        var entryContext = {};
-        entryContext['ArcSightESM.Cases(val.resourceid===obj.resourceid)'] = responseUpdatedCase;
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: responseUpdatedCase,
-            ReadableContensFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Case ' + args.caseId, convertByMap(responseUpdatedCase, {
-                'Name': 'name',
-                'EventIDs': 'eventIDs',
-                'Action': 'action',
-                'Stage': 'stage',
-                'CaseID': 'resourceid',
-                'CreatedTime': 'createdTimestamp=Date(val)'
-            })),
-            EntryContext: entryContext
-        };
-    }
-
-    function deleteCase() {
-        deleteCaseRequest(args.authToken, args.caseId);
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.text,
-            Contents: 'Case ' + args.caseId + ' successfully deleted'
-        };
-    }
-    function deleteCaseRequest(authToken, caseId) {
-        var reqBody = {
-            'cas.deleteByUUID': {
-                'cas.authToken': authToken,
-                'cas.id': caseId
-            }
-        };
-        var res = postRestRequest('www/manager-service/rest/CaseService/deleteByUUID', null, reqBody);
-        return res;
-    }
-
-    var intToIpDT = ';function intToIP(int){\
-        var part1 = int & 255;\
-        var part2 = ((int >> 8) & 255);\
-        var part3 = ((int >> 16) & 255);\
-        var part4 = ((int >> 24) & 255);\
-        return part4 + "." + part3 + "." + part2 + "." + part1;\
-    };';
-
-    // table from JSON to human readable table
-    var eventTranslateMap = {
+    RELEVANT_EVENT_ENTRIES = {
         'Event ID': 'eventId',
-        'Time': 'endTime=new Date(Number(val)).toLocaleString()',
-        'Source Address': 'source.address=intToIP(val)' + intToIpDT,
-        'Destination Address': 'destination.address=intToIP(val)' + intToIpDT,
+        'Time': 'endTime',
+        'Source Address': 'source.address',
+        'Destination Address': 'destination.address',
         'Name': 'name',
         'Source Port': 'source.port',
         'Base Event IDs': 'baseEventIds'
-    };
+    }
 
-    function getSecurityEvents() {
-        var events = getSecurityEventsRequest(args.authToken, args.ids, args.startDate, args.endDate);
-        var hr = 'No events found';
-        if (events) {
-            hr = tableToMarkdown('Security Event: ' + args.ids, convertByMap(events, eventTranslateMap))
-        }
+    REQ_SOAP_BODY = """<?xml version="1.0" encoding="UTF-8"?>
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/">
+        <soapenv:Header />
+            <soapenv:Body>
+                <act:{function}>
+                    <act:authToken>{auth_token}</act:authToken>
+                    <act:resourceId>{resource_id}</act:resourceId>
+                    {entryList}
+                </act:{function}>
+            </soapenv:Body>
+        </soapenv:Envelope>
+    """.format
 
-        var entryContext = {};
-        entryContext['ArcSightESM.SecurityEvents(val.eventId===obj.eventId)'] = events;
+    ENTRY_LIST = "<entryList>{}</entryList>".format
+    ENTRY = "<entry>{}</entry>".format
+    COLUMN = "<columns>{}</columns>".format
+    BODY = "<act:entryList>{}</act:entryList>".format
+
+    AS_NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
+    AS_IP_VALUES = ['address', 'Destination Address', 'Source Address']
+    AS_TIME_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
+                      'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
+
+
+    def int_to_ip(num):
+        """ IP stored as an int within the ArcSight DB. This function transform it into IPv4 format """
+        return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
+
+
+    def parse_timestamp_to_datestring(timestamp):
+        if timestamp not in AS_NONE_VALUES:
+            try:
+                return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            except (ValueError, TypeError) as e:
+                LOG(e.message)
+                return timestamp
+
+
+    def beautifully_json(d, depth=0):
+        """ Converts some of the values from ArcSight DB into a more useful & readable format """
+        if depth < 10:
+            if isinstance(d, list):
+                return [beautifully_json(d_, depth + 1) for d_ in d]
+            if isinstance(d, dict):
+                for key, value in d.items():
+                    if isinstance(value, dict):
+                        beautifully_json(value, depth + 1)
+                    elif value in AS_NONE_VALUES:
+                        d[key] = None
+                    elif value in AS_IP_VALUES:
+                        d[key] = int_to_ip(value)
+                    elif key in AS_TIME_FIELDS:
+                        d[key] = parse_timestamp_to_datestring(value)
+
+
+    def generate_entry(raw, table, out, title=None, context=None, headers=None, to_enrich=None):
+        beautifully_json(raw)
         return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: { events: events },
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: hr,
-            EntryContext: entryContext
-        };
-    }
-
-    function getSecurityEventsRequest(authToken, ids, startDate, endDate) {
-        var startMillis = -1;
-        if (startDate) {
-            if (isNaN(Date.parse(startDate))) {
-                throw 'startDate must be of format yyyy-mm-ddTHH:MM:SS. Example: 2015-09-22T10:00:00';
-            }
-            startMillis = new Date(startDate).getTime();
-        }
-        var endMillis = -1;
-        if (endDate) {
-            if (isNaN(Date.parse(endDate))) {
-                throw 'endDate must be of format yyyy-mm-ddTHH:MM:SS. Example: 2015-09-22T10:00:00';
-            }
-            endMillis = new Date(endDate).getTime();
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw,
+            'HumanReadable': tableToMarkdown(name=title, headers=headers, t=table) if title else table,
+            'EntryContext': {'ArcSightESM.{}'.format(out) + (
+                '(val.{to_enrich}===obj.{to_enrich})'.format(to_enrich=to_enrich) if to_enrich else ''): context or raw}
         }
 
-        var arrIDs = [];
-        if (typeof ids === 'string') {
-          var split = ids.split(',');
-          for (var i = 0; i < split.length; i++) {
-              var id = split[i];
-              if (isNaN(id)) {
-                  throw 'id ' + id + ' must be numeric';
-              }
-              arrIDs.push(parseInt(id));
-          }
-        } else if (typeof ids === 'number') {
-          // ids passed as number
-          // so there only single id
-          arrIDs.push(ids);
+
+    def login():
+        query_path = 'www/core-service/rest/LoginService/login'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+        }
+        params = {
+            'login': demisto.get(demisto.params(), 'credentials.identifier'),
+            'password': demisto.get(demisto.params(), 'credentials.password'),
+            'alt': 'json'
+        }
+        res = send_request(query_path, headers=headers, params=params)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to login, check integration parameters.')
+
+        try:
+            res_json = json.loads(res.text)
+            if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
+                return res_json.get('log.loginResponse').get('log.return')
+
+            return_error('Failed to login. Have not received token after login')
+        except ValueError:
+            return_error('Failed to login. Please check URL and Credentials')
+
+
+    def logout():
+        query_path = 'www/core-service/rest/LoginService/logout'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+        }
+        params = {
+            'authToken': AUTH_TOKEN,
+            'alt': 'json'
+        }
+        res = send_request(query_path, headers=headers, params=params)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to login, check integration parameters.')
+
+
+    def send_request(query_path, body=None, params=None, json=None, headers=None, method='post'):
+        if headers is None:
+            headers = HEADERS
+        full_url = BASE_URL + query_path
+        request_func = requests.post if method == 'post' else requests.get
+        try:
+            return request_func(
+                full_url,
+                headers=headers,
+                verify=VERIFY_CERTIFICATE,
+                data=body,
+                params=params,
+                json=json
+            )
+        except requests.exceptions.ConnectionError as e:
+            return_error('Connection Error. Please check URL')
+
+
+    def test(events_query_viewer_id=None, cases_query_viewer_id=None, isFetch=False, **kwarg):
+        """
+        Login (already done in global).
+        Test if fetch query viewers are valid.
+        Run query viewer if fetch defined.
+        """
+        if isFetch and not events_query_viewer_id and not cases_query_viewer_id:
+            return_error('If fetch is enabled, you must provide query viewer Resource ID for Cases or Events')
+
+        if events_query_viewer_id:
+            fields, results = get_query_viewer_results(events_query_viewer_id)
+            if 'Event ID' not in fields or 'Start Time' not in fields:
+                return_error('Query "{}" must contain "Start Time" and "Event ID" fields'.format(cases_query_viewer_id))
+
+        if cases_query_viewer_id:
+            fields, results = get_query_viewer_results(cases_query_viewer_id)
+            if 'ID' not in fields or 'Create Time' not in fields:
+                return_error('Query "{}" must contain "Create Time" and "ID" fields'.format(cases_query_viewer_id))
+
+
+    def get_query_viewer_results(query_viewer_id):
+        query_path = 'www/manager-service/rest/QueryViewerService/getMatrixData'
+        params = {
+            'authToken': AUTH_TOKEN,
+            'id': query_viewer_id,
+            'alt': 'json'
+        }
+        res = send_request(query_path, params=params, method='get')
+
+        if res.status_code < 200 or res.status_code >= 300:
+            if 'ResourceNotFoundException' in res.text:
+                return_error('Invalid resource ID {} for Query Viewer(ResourceNotFoundException)'.format(query_viewer_id))
+            else:
+                return_error('Failed to get query viewer results.')
+
+        return_object = None
+        res_json = json.loads(res.text)
+        if "qvs.getMatrixDataResponse" in res_json and "qvs.return" in res_json["qvs.getMatrixDataResponse"]:
+            # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
+            return_object = res_json.get("qvs.getMatrixDataResponse").get("qvs.return")
+
+        elif "que.getMatrixDataResponse" in res_json and "que.return" in res_json["que.getMatrixDataResponse"]:
+            # ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
+            return_object = res_json.get("que.getMatrixDataResponse").get("que.return")
+
+        else:
+            return_error('Invalid response structure. Open ticket to Demisto support and attach the logs')
+
+        fields = return_object.get('columnHeaders', [])
+        if not isinstance(fields, (list,)):
+            fields = [fields]
+
+        results = return_object.get("rows", [])
+        if not isinstance(results, (list,)):
+            results = [results]
+
+        if len(fields) == 0 or len(results) == 0:
+            return fields, results
+
+        """
+        we parse the rows by column headers and create formatted result
+
+        "columnHeaders": [
+            "ID",
+            "Event-Event ID",
+        ],
+        "rows": [
+            {
+                "@xsi.type": "listWrapper",
+                "value": [
+                    {
+                        "@xsi.type": "xs:string",
+                        "$": "7-XAMnF8BABDCGttHdj30lA
+                    },
+                    {
+                        "@xsi.type": "xs:string",
+                        "$": "15229903"
+                    }
+                ]
+            },
+            {
+                "@xsi.type": "listWrapper",
+                "value": [
+                    {
+                        "@xsi.type": "xs:string",
+                        "$": "70iANnF8BABDCNsOzD5W2Ig
+                    },
+                    {
+                        "@xsi.type": "xs:string",
+                        "$": "15230009"
+                    }
+                ]
+            }
+        ]
+
+        convert to ===>
+
+        query_results = [
+            {
+                Event-Event ID:15229903
+                ID:7-XAMnF8BABDCGttHdj30lA==
+            },
+            {
+                Event-Event ID:15230009
+                ID:70iANnF8BABDCNsOzD5W2Ig==
+            }
+        ]
+        """
+        results = [{field: result.get('value')[idx].get('$') for idx, field in enumerate(fields)} for result in results]
+        return fields, results
+
+
+    def get_query_viewer_results_command(id):
+        columns, query_results = get_query_viewer_results(query_viewer_id=id)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': {'results': query_results}
+        })
+
+
+    def fetch(events_query_viewer_id=None, cases_query_viewer_id=None, **kwarg):
+        """
+        Query viewer should be defined in ArcSight ESM. fetch incidents fetches the results of query viewer
+        and converts them to Demisto incidents. We can query Cases or Events. If Cases are fetched then the
+        query viewer query must return fields ID and Create Time. If Events are fetched then Event ID and Start Time.
+        """
+        last_run = demisto.getLastRun()
+        last_create_time = last_run.get('last_create_time', 0)
+        already_fetched = deque(last_run.get('already_fetched', []), maxlen=1000)
+        latest_created_time = last_create_time
+
+        fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
+        incidents = []
+        for result in query_results:
+            # convert case or event to demisto incident
+            r_id = result.get('ID') or result.get('Event ID')
+            create_time = int(result.get('Start Time') or result.get('Create Time'))
+            if create_time >= last_create_time and r_id not in already_fetched:
+                # check if case/event already was fetched before
+                latest_created_time = create_time if create_time > latest_created_time else latest_created_time
+
+                result['Create Time'] = parse_timestamp_to_datestring(create_time)
+                incident = {
+                    'name': 'ArcSight Case #{}'.format(r_id),
+                    'occurred': result['Create Time'],
+                    'labels': [{'type': key, 'value': str(value)} for key, value in result.items()],
+                    'rawJSON': json.dumps(result)
+                }
+                incidents.append(incident)
+                already_fetched.append(r_id)
+
+        last_run['last_create_time'] = latest_created_time
+        last_run['already_fetched'] = list(already_fetched)
+        demisto.setLastRun(last_run)
+        beautifully_json(incidents)
+
+        if demisto.command() == 'as-fetch-incidents':
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': {
+                    'incidents': incidents,
+                    'last_create_time': latest_created_time,
+                    'already_fetched': list(already_fetched)}
+            })
+        demisto.incidents(incidents)
+
+
+    def get_case(resourceId, fetch_base_events=False):
+        query_path = 'www/manager-service/rest/CaseService/getResourceById'
+        params = {
+            'authToken': AUTH_TOKEN,
+            'resourceId': resourceId,
+        }
+        res = send_request(query_path, params=params, method='get')
+
+        if res.status_code < 200 or res.status_code >= 300:
+            if 'InvalidResourceIDException: Invalid resource ID' in res.text and 'for Case' in res.text:
+                return_error('Invalid resource ID {} for Case'.format(resourceId))
+            else:
+                return_error('Failed to get case. StatusCode: {}'.format(res.status_code))
+
+        res_json = json.loads(res.text)
+        if 'cas.getResourceByIdResponse' in res_json and 'cas.return' in res_json.get('cas.getResourceByIdResponse'):
+            case = res_json.get('cas.getResourceByIdResponse').get('cas.return')
+
+            if 'eventIDs' in case and case['eventIDs'] and isinstance(case['eventIDs'], int):
+                # if eventIDs is single id then convert to list
+                case['eventIDs'] = [case['eventIDs']]
+
+            if fetch_base_events:
+                case['events'] = get_security_events(case['eventIDs'])
+
+            return case
+
+        return_error('Case {} not found'.format(resourceId))
+
+
+    def get_case_command(resourceId, withBaseEvents=False):
+        raw_case = get_case(resourceId, fetch_base_events=withBaseEvents == 'true')
+        relevant_entries = {new_key: raw_case.get(old_key) for new_key, old_key in RELEVANT_CASE_ENTRIES.items()}
+        relevant_entries['CreatedTime'] = FormatADTimestamp(raw_case.get('createdTimestamp'))
+        demisto.results(generate_entry(raw_case, relevant_entries, title='Case ' + resourceId, out='Cases', to_enrich='resourceid'))
+
+
+    def get_all_cases_command():
+        query_path = 'www/manager-service/rest/CaseService/findAllIds'
+        params = {
+            'authToken': AUTH_TOKEN,
+            'alt': 'json'
+        }
+        res = send_request(query_path, params=params, method='get')
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
+
+        all_cases = res.json().get('cas.findAllIdsResponse').get('cas.return')
+        demisto.results(generate_entry(all_cases, all_cases, title='All cases', headers='caseID', out='AllCaseIDs'))
+
+
+    def extract_relevant_event_entries(raw_events):
+        events = []
+        for event in raw_events:
+            event_entries = {}
+            for new_key, key in RELEVANT_EVENT_ENTRIES.items():
+                event_entries[new_key] = int_to_ip(demisto.get(event, key)) if 'Address' in new_key else demisto.get(event, key)
+                if new_key is 'Time':
+                    event_entries[new_key] = timestamp_to_datestring(event_entries[new_key], '%Y-%m-%d, %H:%M:%S')
+            events.append(event_entries)
+
+        return events
+
+
+    def get_security_events_command(ids, lastDateRange=None):
+        if isinstance(ids, basestring):
+            # if ids is string then convert to list
+            ids = argToList(ids)
+
+        raw_events = get_security_events(ids, lastDateRange)
+        if raw_events:
+            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)), extract_relevant_event_entries(raw_events))
+            demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
+
+        else:
+            demisto.results('No events were found')
+
+
+    def get_security_events(event_ids, last_date_range=None):
+        start_time, end_time = -1, -1
+        if last_date_range:
+            # Must of format 'number date_range_unit'
+            # Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+            start_time, end_time = parse_date_range(last_date_range, to_timestamp=True)
+
+        query_path = 'www/manager-service/rest/SecurityEventService/getSecurityEvents'
+        params = {
+            'alt': 'json'
+        }
+        json_ = {
+            "sev.getSecurityEvents": {
+                "sev.authToken": AUTH_TOKEN,
+                "sev.ids": event_ids,
+                "sev.startMillis": start_time,
+                "sev.endMillis": end_time
+            }
+        }
+        res = send_request(query_path, json=json_, params=params)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error(
+                'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
+                    event_ids, BASE_URL + query_path, res.status_code, res.text))
+
+        res_json = json.loads(res.text)
+        if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
+                'sev.return'):
+            events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
+            return events if isinstance(events, list) else [events]
+
+        return_error('Events are empty for some reason. Response Body: {}'.format(res.text))
+
+
+    def update_case_command(caseId, stage, severity):
+        updated_case = update_case(caseId, stage, severity)
+        relevant_entries = {new_key: updated_case.get(old_key) for new_key, old_key in RELEVANT_CASE_ENTRIES.items()}
+        relevant_entries["CreatedTime"] = FormatADTimestamp(updated_case.get("createdTimestamp"))
+
+        demisto.results(generate_entry(raw=updated_case, table=relevant_entries, title='Case ' + caseId, out='Cases',
+                                       to_enrich='resourceid'))
+
+
+    def update_case(caseId, stage, severity=None):
+        # get the case from arcsight
+        case = get_case(caseId)
+        case['stage'] = stage
+        case['consequenceSeverity'] = severity if severity else case['consequenceSeverity']
+
+        # update its stage and send it back to arcsight
+        query_path = 'www/manager-service/rest/CaseService/update'
+        params = {
+            'alt': 'json'
+        }
+        json_ = {
+            "cas.update": {
+                "cas.authToken": AUTH_TOKEN,
+                "cas.resource": case,
+            }
+        }
+        res = send_request(query_path, json=json_, params=params)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
+                caseId, BASE_URL + query_path, res.status_code, res.text))
+
+        res_json = json.loads(res.text)
+        if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
+            return case
+
+        return_error('Failed to update case, fail to parse response. Response Body: {}'.format(res.text))
+
+
+    def get_case_event_ids_command(caseId):
+        query_path = 'www/manager-service/rest/CaseService/getCaseEventIDs'
+        params = {
+            'authToken': AUTH_TOKEN,
+            'caseId': caseId
         }
 
-        var soapReq = {
-            'sev.getSecurityEvents': {
-                'sev.authToken': authToken,
-                'sev.ids': arrIDs,
-                'sev.startMillis': startMillis,
-                'sev.endMillis': endMillis
-            }
-        };
-        var res = postRestRequest('www/manager-service/rest/SecurityEventService/getSecurityEvents', null, soapReq);
+        res = send_request(query_path, params=params, method='get')
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error("Failed to get Event IDs with:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
-        // creating human readable table
-        var json = JSON.parse(res.Body);
-        if (!json || !json['sev.getSecurityEventsResponse'] || !json['sev.getSecurityEventsResponse']['sev.return']) {
-            return null;
+        res_json = json.loads(res.text)
+        if 'cas.getCaseEventIDsResponse' in res_json and 'cas.return' in res_json.get('cas.getCaseEventIDsResponse'):
+            event_ids = res_json.get('cas.getCaseEventIDsResponse').get('cas.return')
+            if not isinstance(event_ids, list):
+                event_ids = [event_ids]
+            demisto.results(generate_entry(raw=res_json, table=event_ids, title='Case {}'.format(caseId), out='CaseEvents',
+                                           headers='Event ID', context=event_ids))
+        else:
+            demisto.results('No IDs were found')
+
+
+    def delete_case_command(caseId):
+        query_path = 'www/manager-service/rest/CaseService/deleteByUUID'
+        req_body = json.dumps({
+            'cas.deleteByUUID': {
+                'cas.authToken': AUTH_TOKEN,
+                'cas.id': caseId
+            }
+        })
+        params = {
+            'alt': 'json'
         }
+        res = send_request(query_path, params=params, body=req_body)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error("Failed to delete case:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
-        var events = json['sev.getSecurityEventsResponse']['sev.return'];
 
-        if (!Array.isArray(events)) {
-            events = [events];
+    def get_entries_command(resourceId, entryFilter=None):
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=None)
+
+        res = send_request(query_path, body=body)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                resourceId, res.status_code, body, res.text))
+
+        res_json = json.loads(xml2json(res.text))
+        raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
+        if 'entryList' in raw_entries:
+            entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [raw_entries['entryList']]
+            entry_list = [d['entry'] for d in entry_list if 'entry' in d]
+            keys = raw_entries.get('columns')
+            entries = [dict(zip(keys, values)) for values in entry_list]
+            filtered = entries
+            # if the user wants only entries that contain certain 'field:value' sets (filters)
+            # e.g. "name:myName,eventId:0,:ValueInUnknownField"
+            # if the key is empty, search in every key
+            if entryFilter:
+                for f in entryFilter.split(','):
+                    k, v = f.split(':')
+                    filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
+
+            demisto.results(
+                generate_entry(raw=filtered, table=filtered, out='ActiveList.{}'.format(resourceId), title='Active List entries'))
+        else:
+            demisto.results('No Entries were found for this Active List.')
+
+
+    def clear_entries_command(resourceId):
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=None)
+        res = send_request(query_path, body=body)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error(
+                "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                    resourceId, res.status_code, body, res.text))
+
+        demisto.results("Success")
+
+
+    def add_entries_command(resourceId, entries):
+        query_path = 'www/manager-service/services/ActiveListService/'
+        if not isinstance(entries, dict):
+            try:
+                entries = json.loads(entries)
+            except ValueError as e:
+                return_error('Entries must be in JSON format. Must be array of objects.')
+            if not all([entry.keys() == entries[0].keys() for entry in entries[1:]]):
+                return_error('All entries must have the same fields')
+
+        columns = ''.join(COLUMN(column) for column in entries[0])  # the fields in the entryList matrix are the columns
+        entry_list = BODY(columns + ''.join(ENTRY_LIST(''.join(ENTRY(v) for v in en.values())) for en in entries))
+        body = REQ_SOAP_BODY(function='addEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=entry_list)
+        res = send_request(query_path, body=body)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                resourceId, res.status_code, body, res.text))
+
+        demisto.results("Success")
+
+
+    def get_all_query_viewers_command():
+        query_path = 'www/manager-service/rest/QueryViewerService/findAllIds'
+        params = {
+            'authToken': AUTH_TOKEN,
+            'alt': 'json'
         }
-
-        return events;
-    }
-
-
-    var dashboardDataTemplateWithEnv = '<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dashboardService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>\
-                                        <soapenv:Header/>\
-                                        <soapenv:Body>\
-                                          <ns2:getDashboardIfNewer>\
-                                            <ns2:authToken>%authToken%</ns2:authToken>\
-                                            <ns2:id>%monitorID%</ns2:id>\
-                                            <ns2:currentSignature>\
-                                                <ns5:id>%monitorID%</ns5:id>\
-                                                <ns5:modificationCount>%modificationCount%</ns5:modificationCount>\
-                                            </ns2:currentSignature>\
-                                          </ns2:getDashboardIfNewer>\
-                                        </soapenv:Body>\
-                                      </soapenv:Envelope>';
-
-    // currently this function is not works
-    function getDashboardData(authToken, modCount, monitorID) {
-        var soapReq = replaceInTemplates(dashboardDataTemplateWithEnv, {
-            authToken: authToken,
-            modificationCount: modCount,
-            monitorID: monitorID
-        });
-        //return soapReq;
-        var res = postRestRequest('www/manager-service/services/DashboardService/', null, soapReq);
-        return res.Body;
-    }
-
-
-    var monitorDataTemplateWithEnv = '<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dataMonitorService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>\
-                                      <soapenv:Header/>\
-                                      <soapenv:Body>\
-                                        <ns2:getDataMonitorIfNewer>\
-                                          <ns2:authToken>%authToken%</ns2:authToken>\
-                                          <ns2:id>%monitorID%</ns2:id>\
-                                          <ns2:currentSignature>\
-                                            <ns5:id>%monitorID%</ns5:id>\
-                                            <ns5:modificationCount>%modificationCount%</ns5:modificationCount>\
-                                          </ns2:currentSignature>\
-                                        </ns2:getDataMonitorIfNewer>\
-                                      </soapenv:Body>\
-                                    </soapenv:Envelope>';
-
-    function getDataMonitor(authToken, modCount, monitorID) {
-        var soapReq = replaceInTemplates(monitorDataTemplateWithEnv, {
-            authToken: authToken,
-            modificationCount: modCount,
-            monitorID: monitorID
-        });
-        var res = postRestRequest('www/manager-service/services/DataMonitorService/', null, soapReq);
-        return res.Body;
-    }
-
-    function test() {
-        var isFetch = params.isFetch;
-        if (isFetch && !params.viewerId && !params.casesQueryViewerId) {
-            throw 'If Fetch incidents is on, then Events Query Viewer ID or Case Query Viewer ID must be passed';
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
         }
+        res = send_request(query_path, headers=headers, params=params)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error("Failed to get query viewers:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
-        var results;
-        var columnHeaders
-        if (isFetch && params.viewerId) {
-            try {
-                results = getQueryViewerResultsRequest(args.authToken, params.viewerId, true);
-            } catch(ex) {
-                throw 'Make sure Events query viewer id is valid.\nOriginal Error: ' + ex;
-            }
-            columnHeaders = results.columnHeaders;
-            if (columnHeaders.indexOf(eventsTimeField) === -1) {
-                throw 'Event Query in ArcSight must select "' + eventsTimeField + '" field';
-            }
-            if (columnHeaders.indexOf(eventIdField) === -1) {
-                throw 'Event Query in ArcSight  must select "' + eventIdField + '" field';
-            }
-        }
+        res_json = json.loads(res.text)
+        if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
+            query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
+            demisto.results(generate_entry(query_viewers, query_viewers, title='Query Viewers', headers='Query Viewers ID',
+                                           out='AllQueryViewers'))
+        else:
+            demisto.results('No Query Viewers were found')
 
-        if (isFetch && params.casesQueryViewerId) {
-            try {
-                results = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, true);
-            } catch(ex) {
-                throw 'Make sure Cases query viewer id is valid.\nOriginal Error: ' + ex;
-            }
-            columnHeaders = results.columnHeaders;
-            if (columnHeaders.indexOf(casesTimeField) === -1) {
-                throw 'Case Query in ArcSight must select "' + casesTimeField + '" field';
-            }
-            if (columnHeaders.indexOf(caseIdField) === -1) {
-                throw 'Case Query in ArcSight must select "' + caseIdField + '" field';
-            }
-        }
-    }
 
-    var result;
-    args.authToken = getToken();
-    switch (command) {
-        case 'test-module':
-            test();
-            result = 'ok';
-            break;
-        case 'fetch-incidents':
-            var lastRun = getLastRun();
-            lastRun = lastRun && lastRun.value ? JSON.parse(lastRun.value) : {};
-            var casesIncidents = [];
-            var eventsIncidents = [];
-            if (params.casesQueryViewerId) {
-                casesIncidents = getCasesIncidents(lastRun);
-            }
-            if (params.viewerId) {
-                eventsIncidents = getEventsIncidents(lastRun);
-            }
+    AUTH_TOKEN = login()
+    try:
+        if demisto.command() == 'test-module':
+            test(**demisto.params())
+            demisto.results('ok')
 
-            setLastRun({
-                value: JSON.stringify(lastRun)
-            });
-            result = JSON.stringify(casesIncidents.concat(eventsIncidents));
-            break;
-        case 'as-get-matrix-data':
-            result = getMatrixData();
-            break;
-        case 'as-get-all-cases':
-            result = getAllCases();
-            break;
-        case 'as-get-all-query-viewers':
-            result = getAllQueryViewers();
-            break;
-        case 'as-get-case':
-            result = getCase();
-            break;
-        case 'as-add-entries':
-            result = addEntries();
-            break;
-        case 'as-clear-entries':
-            result = clearEntries();
-            break;
-        case 'as-get-entries':
-            result = getEntries();
-            break;
-        case 'as-get-security-events':
-            result = getSecurityEvents();
-            break;
-        case 'as-get-case-event-ids':
-            result = getCaseEventIDs();
-            break;
-        case 'as-update-case':
-            result = updateCase();
-            break;
-        case 'as-case-delete':
-            result = deleteCase();
-            break;
-        default:
-            result = sendAndParse(command, pathDictionary[command], args);
-    }
-    try {
-        logout();
-    } catch (err) {
-        demisto.error('Failed to logout ArcSight ESM session. Error: ' + err);
-    }
+        elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
+            if demisto.args().get('lastRun'):
+                last_run = json.loads(demisto.args().get('lastRun'))
+                demisto.setLastRun(last_run)
 
-    return result;
-  type: javascript
+            fetch(**demisto.params())
+
+        elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
+            get_query_viewer_results_command(**demisto.args())
+
+        elif demisto.command() == 'as-get-all-cases':
+            get_all_cases_command()
+
+        elif demisto.command() == 'as-get-case':
+            get_case_command(**demisto.args())
+
+        elif demisto.command() == 'as-update-case':
+            update_case_command(**demisto.args())
+
+        elif demisto.command() == 'as-case-delete':
+            delete_case_command(**demisto.args())
+
+        elif demisto.command() == 'as-get-security-events':
+            get_security_events_command(**demisto.args())
+
+        elif demisto.command() == 'as-get-entries':
+            get_entries_command(**demisto.args())
+
+        elif demisto.command() == 'as-add-entries':
+            add_entries_command(**demisto.args())
+
+        elif demisto.command() == 'as-clear-entries':
+            clear_entries_command(**demisto.args())
+
+        elif demisto.command() == 'as-get-case-event-ids':
+            get_case_event_ids_command(**demisto.args())
+
+        elif demisto.command() == 'as-get-all-query-viewers':
+            get_all_query_viewers_command()
+
+        LOG.print_log()
+
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+    finally:
+        logout()
+  type: python
   commands:
   - name: as-get-all-cases
     arguments: []
     outputs:
     - contextPath: ArcSightESM.AllCaseIDs
-      description: All cases ids
-    description: commands.server.arcsight.getallcases.description
+      description: All cases resource ids
+      type: Unknown
+    description: (Deprecated) Retrieve all case resource ids
   - name: as-get-case
     arguments:
     - name: resourceId
       required: true
       default: true
       description: commands.server.arcsight.arguments.caseid.description
+    - name: withBaseEvents
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If passed true, then will return case and base events of that case.
+      defaultValue: "false"
     outputs:
     - contextPath: ArcSightESM.Cases.resourceid
-      description: The id of the case
+      description: The resource id of case
+      type: string
     - contextPath: ArcSightESM.Cases.name
       description: Name of the case
+      type: string
     - contextPath: ArcSightESM.Cases.eventIDs
       description: Related base event ids
+      type: Unknown
     - contextPath: ArcSightESM.Cases.createdTimestamp
-      description: The time case created
+      description: Created timestamp (in milliseconds)
+      type: number
+    - contextPath: ArcSightESM.Cases.createdTime
+      description: Created Time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: string
+    - contextPath: ArcSightESM.Cases.modifiedTimestamp
+      description: Modified Timestamp (in milliseconds)
+      type: number
+    - contextPath: ArcSightESM.Cases.modifiedTime
+      description: Modified Time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.action
+      description: Action (e.g BLOCK_OR_SHUTDOWN)
+      type: string
+    - contextPath: ArcSightESM.Cases.associatedImpact
+      description: Associated Impact (e.g AVAILABILITY)
+      type: string
+    - contextPath: ArcSightESM.Cases.attackAgent
+      description: Attack Agent (e.g INSIDER)
+      type: string
+    - contextPath: ArcSightESM.Cases.attackMechanism
+      description: AttackMechanism (e.g PHYSICAL)
+      type: string
+    - contextPath: ArcSightESM.Cases.consequenceSeverity
+      description: Consequence Severity (e.g NONE)
+      type: string
+    - contextPath: ArcSightESM.Cases.detectionTime
+      description: Detection Time (e.g dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.displayID
+      description: Display ID
+      type: number
+    - contextPath: ArcSightESM.Cases.estimatedStartTime
+      description: Estimated Start Time (e.g dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.eventIDs
+      description: Base event IDs
+      type: unknown
+    - contextPath: ArcSightESM.Cases.frequency
+      description: Frequency (e.g NEVER_OR_ONCE)
+      type: string
+    - contextPath: ArcSightESM.Cases.history
+      description: History (e.g KNOWN_OCCURENCE)
+      type: Unknown
+    - contextPath: ArcSightESM.Cases.numberOfOccurences
+      description: Number Of Occurences
+      type: number
+    - contextPath: ArcSightESM.Cases.resistance
+      description: Resistance (e.g HIGH)
+      type: string
+    - contextPath: ArcSightESM.Cases.securityClassification
+      description: Security Classification (e.g UNCLASSIFIED)
+      type: string
+    - contextPath: ArcSightESM.Cases.sensitivity
+      description: Sensitivity (e.g UNCLASSIFIED)
+      type: string
+    - contextPath: ArcSightESM.Cases.stage
+      description: Stage (e.g QUEUED,INITIAL,FOLLOW_UP,FINAL,CLOSED)
+      type: string
+    - contextPath: ArcSightESM.Cases.ticketType
+      description: Ticket type (e.g INTERNAL,CLIENT,INCIDENT)
+      type: string
+    - contextPath: ArcSightESM.Cases.vulnerability
+      description: Vulnerability (e.g DESIGN)
+      type: string
     description: commands.server.arcsight.getspecificcase.description
   - name: as-get-matrix-data
     arguments:
     - name: id
       required: true
       default: true
-      description: commands.server.arcsight.arguments.queryid.description
+      description: Resource id of query viewer
     - name: onlyColumns
-      description: If true will return only the columns of the query. If false will return the column headers and all query results.
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: If true will return only the columns of the query. If false will
+        return the column headers and all query results.
       defaultValue: "true"
-    description: commands.server.arcsight.query.description
+    description: Retrieve query viewer results (query viewer must be configured to
+      be refreshed every minute, see documentation)
   - name: as-add-entries
-    description: Import/add new entries to Active List.
     arguments:
     - name: resourceId
       required: true
@@ -1146,19 +851,15 @@ script:
     description: Add new entries to Active List
     execution: true
   - name: as-clear-entries
-    description: Deletes all the entries in the Active List
     arguments:
     - name: resourceId
-      description: Resource id of specific Active List
       required: true
       description: resource id of Active list
     description: Clean all entries in the Active List
     execution: true
   - name: as-get-entries
-    description: Returns the entries which the Active List contains
     arguments:
     - name: resourceId
-      description: Resource id of specific Active List
       required: true
       description: resource id of Active list
     - name: entryFilter
@@ -1167,47 +868,62 @@ script:
     - contextPath: ArcSightESM.ActiveList
       description: Active List is a map of active list resource id => active list
         entries
+      type: Unknown
+    - contextPath: ArcSightESM.ActiveList.ListID
+      description: The ActiveList ID
+      type: list
+    - contextPath: ArcSightESM.ActiveList.Entry
+      description: Active List is a map of active list resource id => active list
+      type: Unknown
     description: Get all entries from Active List
   - name: as-get-security-events
-    description: Returns security event object by providing id
     arguments:
-    - name: startDate
-      description: 'Start time filter. Example: 2017-05-22T10:00:00'
-    - name: endDate
-      description: 'End time filter. Example: 2017-05-22T10:00:00'
     - name: ids
-      description: 'ID or multiple ids separated by comma of security events. Event ID is ArcSight is always a number. Example: 13906590'
       required: true
+      description: 'ID or multiple ids separated by comma of security events. Event
+        ID is ArcSight is always a number. Example: 13906590'
+      isArray: true
+    - name: lastDateRange
+      description: 'Query last events. Must be of format ''number date_range_unit''
+        Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)'
     outputs:
     - contextPath: ArcSightESM.SecurityEvents
       description: List of security events
+      type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.name
       description: The name of the event
+      type: string
     - contextPath: ArcSightESM.SecurityEvents.eventId
       description: Event id
+      type: number
     - contextPath: ArcSightESM.SecurityEvents.type
-      description: Type of the event
+      description: Type of the event (e.g CORRELATION)
+      type: string
     - contextPath: ArcSightESM.SecurityEvents.baseEventIds
       description: Base event ids
+      type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.startTime
       description: Start time in milliseconds
+      type: date
     description: Returns the security event details
   - name: as-get-case-event-ids
     arguments:
     - name: caseId
-      description: 'Case ID. Example: 7e6LEbF8BABCfA-dlp1rl1A=='
       required: true
+      description: 'Resource ID of case. Example: 7e6LEbF8BABCfA-dlp1rl1A=='
     outputs:
     - contextPath: ArcSightESM.CaseEvents
       description: Map of caseId => related event ids
+      type: Unknown
     - contextPath: ArcSightESM.CaseEvents.LatestResult
       description: Event ids of the last execution of this command
+      type: Unknown
     description: Returns all case event IDs
   - name: as-update-case
     arguments:
     - name: caseId
       required: true
-      description: The ID of the case
+      description: Case resource ID
     - name: stage
       auto: PREDEFINED
       predefined:
@@ -1217,24 +933,69 @@ script:
       - FOLLOW_UP
       - INITIAL
       description: The stage of case
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - INSIGNIFICANT
+      - MARGINAL
+      - CRITICAL
+      - CATASTROPHIC
+      description: Ticket Consequence Severity
     outputs:
     - contextPath: ArcSightESM.Cases
       description: List of cases
+      type: unknown
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: Case resource id
+      type: string
+    - contextPath: ArcSightESM.Cases.stage
+      description: 'Case Stage '
+      type: string
+    - contextPath: ArcSightESM.Cases.consequenceSeverity
+      description: Case Severity
+      type: string
     description: Updates a case
+    execution: true
   - name: as-get-all-query-viewers
     arguments: []
     outputs:
     - contextPath: ArcSightESM.AllQueryViewers
       description: List of all query viewer ids
+      type: Unknown
     description: Returns all the query viewer ids
   - name: as-case-delete
     arguments:
     - name: caseId
       required: true
       description: The resource id of the case
+    outputs:
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: Resource id of case
+      type: string
+    - contextPath: ArcSightESM.Cases.Deleted
+      description: Boolean flag. True if deleted.
+      type: boolean
     description: Deletes a case
     execution: true
+  - name: as-get-query-viewer-results
+    arguments:
+    - name: id
+      required: true
+      description: Resource id of query viewer
+    outputs:
+    - contextPath: ArcSight.QueryViewerResults
+      type: Unknown
+      description: Query viewer results
+    description: Retrieve query viewer results (query viewer must be configured to
+      be refreshed every minute, see documentation)
+  - name: as-fetch-incidents
+    arguments:
+    - name: last_run
+      description: last run to start from
+    description: arcsight
   isfetch: true
-hidden: false
+  runonce: false
 tests:
-- No test
+  - Arcsight Test
+releaseNotes: "The integration was rewritten in python. major issues were fixed"
