@@ -3,7 +3,7 @@ version: -1
 name: ArcSight ESM Test
 fromversion: ""
 description: |-
-  Arcsight Test.
+  Arcsight ESM Test.
 starttaskid: "0"
 tasks:
   "0":
