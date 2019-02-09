@@ -997,5 +997,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Arcsight Test
+  - ArcSight ESM Test
 releaseNotes: "The integration was rewritten in python. major issues were fixed"
