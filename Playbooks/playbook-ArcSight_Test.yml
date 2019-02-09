@@ -1,6 +1,6 @@
-id: ArcSight Test
+id: ArcSight ESM Test
 version: -1
-name: ArcSight Test
+name: ArcSight ESM Test
 fromversion: ""
 description: |-
   Arcsight Test.
