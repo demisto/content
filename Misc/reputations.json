@@ -250,6 +250,5 @@
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
-  ],
-  "releaseNotes": "Added reputation value and context path for SHA256. Auto-Extract should now work properly for SHA256."
+  ]
 }

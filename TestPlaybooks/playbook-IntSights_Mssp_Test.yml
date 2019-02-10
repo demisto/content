@@ -1,0 +1,153 @@
+id: IntSights Mssp Test
+version: -1
+name: IntSights Mssp Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4de7dcd9-7e58-432e-8ef4-2d0c6335b348
+    type: start
+    task:
+      id: 4de7dcd9-7e58-432e-8ef4-2d0c6335b348
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 229f401f-a723-4b35-8872-61557ffd9f9f
+    type: regular
+    task:
+      id: 229f401f-a723-4b35-8872-61557ffd9f9f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 3349a8e5-321b-4d03-8847-e9989f53f8a9
+    type: regular
+    task:
+      id: 3349a8e5-321b-4d03-8847-e9989f53f8a9
+      version: -1
+      name: Test mssp feature
+      script: '|||intsights-mssp-get-sub-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 5a86fc55-6c7e-4be8-8a34-43f12cc3867c
+    type: condition
+    task:
+      id: 5a86fc55-6c7e-4be8-8a34-43f12cc3867c
+      version: -1
+      name: Test mssp different sub accounts
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+    scriptarguments:
+      left:
+        simple: IntSights.MsspAccount.[0].ID
+      right:
+        simple: IntSights.MsspAccount.[1].ID
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: cc834b16-193c-421e-8d50-b4ba8fc376f4
+    type: title
+    task:
+      id: cc834b16-193c-421e-8d50-b4ba8fc376f4
+      version: -1
+      name: Good result
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
