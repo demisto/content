@@ -11684,6 +11684,17 @@
                     "WhatsMyBrowser-Test"
                 ]
             }
+        }, 
+        {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
