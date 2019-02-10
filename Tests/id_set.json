@@ -1716,7 +1716,10 @@
         }, 
         {
             "UnEscapeURLs": {
-                "name": "UnEscapeURLs"
+                "name": "UnEscapeURLs", 
+                "tests": [
+                    "TestUnEscapeUrl"
+                ]
             }
         }, 
         {
@@ -1875,7 +1878,10 @@
         {
             "GenerateInvestigationSummaryReport": {
                 "name": "GenerateInvestigationSummaryReport", 
-                "fromversion": "3.5.0"
+                "fromversion": "3.5.0", 
+                "tests": [
+                    "No test - No need"
+                ]
             }
         }, 
         {
@@ -2607,6 +2613,9 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
+                ], 
+                "tests": [
+                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
@@ -3851,6 +3860,7 @@
         {
             "SplunkPySearch": {
                 "name": "SplunkPySearch", 
+                "deprecated": true, 
                 "depends_on": [
                     "splunk-search"
                 ]
@@ -4341,7 +4351,11 @@
         }, 
         {
             "StringContains": {
-                "name": "StringContains"
+                "name": "StringContains", 
+                "deprecated": true, 
+                "tests": [
+                    "No test - deprecated, didn't have a test prior"
+                ]
             }
         }, 
         {
@@ -4767,6 +4781,104 @@
         {
             "ConvertKeysToTableFieldFormat": {
                 "name": "ConvertKeysToTableFieldFormat"
+            }
+        }, 
+        {
+            "HighlightWords": {
+                "name": "HighlightWords", 
+                "tests": [
+                    "HighlightWords_Test"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureHashRiskList": {
+                "name": "RecordedFutureHashRiskList", 
+                "script_executions": [
+                    "createNewIndicator"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureIPRiskList": {
+                "name": "RecordedFutureIPRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureVulnerabilityRiskList": {
+                "name": "RecordedFutureVulnerabilityRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureDomainRiskList": {
+                "name": "RecordedFutureDomainRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "Cut": {
+                "name": "Cut", 
+                "tests": [
+                    "TransformersTestPlaybook"
+                ]
+            }
+        }, 
+        {
+            "RecordedFutureURLRiskList": {
+                "name": "RecordedFutureURLRiskList", 
+                "script_executions": [
+                    "createNewIndicator", 
+                    "deleteIndicators"
+                ], 
+                "tests": [
+                    "No test - fetches indicators"
+                ]
+            }
+        }, 
+        {
+            "PcapHTTPExtractor": {
+                "name": "PcapHTTPExtractor", 
+                "script_executions": [
+                    "getEntries", 
+                    "getFilePath"
+                ], 
+                "tests": [
+                    "PcapHTTPExtractor-Test"
+                ]
+            }
+        }, 
+        {
+            "SendEmailOnSLABreach": {
+                "name": "SendEmailOnSLABreach", 
+                "script_executions": [
+                    "getUserByUsername"
+                ], 
+                "tests": [
+                    "No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted."
+                ]
             }
         }
     ], 
@@ -5325,7 +5437,10 @@
                 "implementing_scripts": [
                     "Print", 
                     "CloseInvestigationAsDuplicate", 
-                    "GetDuplicatesMl"
+                    "GetDuplicatesMlv2"
+                ], 
+                "tests": [
+                    "No Test"
                 ]
             }
         }, 
@@ -5846,9 +5961,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
-                "implementing_commands": [
-                    "crowdstrike-submit-url", 
-                    "crowdstrike-scan"
+                "command_to_integration": {
+                    "crowdstrike-submit-url": "VxStream", 
+                    "crowdstrike-scan": "VxStream"
+                }, 
+                "tests": [
+                    "Test-Detonate URL - Crowdstrike"
                 ]
             }
         }, 
@@ -6258,12 +6376,12 @@
                 "implementing_playbooks": [
                     "GenericPolling"
                 ], 
-                "implementing_commands": [
-                    "panorama-push-to-device-group", 
-                    "panorama-push-status", 
-                    "panorama-commit", 
-                    "panorama-commit-status"
-                ], 
+                "command_to_integration": {
+                    "panorama-push-to-device-group": "", 
+                    "panorama-push-status": "", 
+                    "panorama-commit": "", 
+                    "panorama-commit-status": ""
+                }, 
                 "tests": [
                     "palo_alto_firewall_test_pb"
                 ]
@@ -6329,8 +6447,11 @@
             "Archer initiate incident": {
                 "name": "Archer initiate incident", 
                 "fromversion": "3.5.0", 
-                "implementing_commands": [
-                    "archer-get-file"
+                "command_to_integration": {
+                    "archer-get-file": "RSA Archer"
+                }, 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7647,7 +7768,9 @@
                     "fireeye-hx-data-acquisition", 
                     "fireeye-hx-delete-data-acquisition", 
                     "fireeye-hx-search", 
-                    "fireeye-hx-get-host-set-information"
+                    "fireeye-hx-get-host-set-information", 
+                    "fireeye-hx-create-indicator", 
+                    "fireeye-hx-append-conditions"
                 ], 
                 "tests": [
                     "FireEye HX Test"
@@ -7686,6 +7809,9 @@
                     "ip", 
                     "phishme-search", 
                     "email"
+                ], 
+                "tests": [
+                    "No tests"
                 ]
             }
         }, 
@@ -8315,8 +8441,7 @@
                 ], 
                 "tests": [
                     "VxStream Test", 
-                    "detonate_file_-_generic_test", 
-                    "detonate_url_-_generic_test"
+                    "detonate_file_-_generic_test"
                 ]
             }
         }, 
@@ -8559,6 +8684,9 @@
                     "file", 
                     "threatstream-email-reputation", 
                     "ip"
+                ], 
+                "tests": [
+                    "Anomali_ThreatStream_Test"
                 ]
             }
         }, 
@@ -8882,7 +9010,28 @@
                     "domain", 
                     "ip", 
                     "file", 
-                    "recorded-future-get-related-entities"
+                    "recorded-future-get-related-entities", 
+                    "url", 
+                    "recorded-future-get-threats-hash", 
+                    "recorded-future-get-threats-ip", 
+                    "recorded-future-get-threats-url", 
+                    "recorded-future-get-threats-domain", 
+                    "recorded-future-get-threats-vulnerabilities", 
+                    "recorded-future-get-domain-risklist", 
+                    "recorded-future-get-url-risklist", 
+                    "recorded-future-get-ip-risklist", 
+                    "recorded-future-get-vulnerability-risklist", 
+                    "recorded-future-get-hash-risklist", 
+                    "recorded-future-get-domain-riskrules", 
+                    "recorded-future-get-hash-riskrules", 
+                    "recorded-future-get-ip-riskrules", 
+                    "recorded-future-get-url-riskrules", 
+                    "recorded-future-get-vulnerability-riskrules", 
+                    "recorded-future-get-alert-rules", 
+                    "recorded-future-get-alerts"
+                ], 
+                "tests": [
+                    "Recorded Future Test"
                 ]
             }
         }, 
@@ -9403,6 +9552,9 @@
                     "cs-indicators", 
                     "cs-reports", 
                     "cs-report-pdf"
+                ], 
+                "tests": [
+                    "CrowdStrike Falcon Intel v2"
                 ]
             }
         }, 
@@ -9522,6 +9674,7 @@
                     "gmail-add-filter"
                 ], 
                 "tests": [
+                    "Gmail Convert Html Test", 
                     "GmailTest"
                 ]
             }
@@ -10146,6 +10299,15 @@
                     "panorama-create-address-group", 
                     "panorama-delete-address-group", 
                     "panorama-edit-address-group", 
+                    "panorama-list-services", 
+                    "panorama-get-service", 
+                    "panorama-create-service", 
+                    "panorama-delete-service", 
+                    "panorama-list-service-groups", 
+                    "panorama-get-service-group", 
+                    "panorama-create-service-group", 
+                    "panorama-delete-service-group", 
+                    "panorama-edit-service-group", 
                     "panorama-get-custom-url-category", 
                     "panorama-create-custom-url-category", 
                     "panorama-delete-custom-url-category", 
@@ -10431,7 +10593,8 @@
                     "servicenow-query-computers", 
                     "servicenow-query-groups", 
                     "servicenow-query-users", 
-                    "servicenow-get-table-name"
+                    "servicenow-get-table-name", 
+                    "servicenow-get-ticket-notes"
                 ], 
                 "tests": [
                     "No test - Hibernating instance"
@@ -10689,7 +10852,9 @@
                     "ews-o365-get-compliance-search", 
                     "ews-o365-purge-compliance-search-results", 
                     "ews-o365-remove-compliance-search", 
-                    "ews-o365-get-compliance-search-purge-status"
+                    "ews-o365-get-compliance-search-purge-status", 
+                    "ews-get-autodiscovery-config", 
+                    "ews-expand-group"
                 ], 
                 "tests": [
                     "pyEWS_Test", 
@@ -11204,6 +11369,9 @@
                     "sandblast-download", 
                     "sb-quota", 
                     "sandblast-quota"
+                ], 
+                "tests": [
+                    "Sandblast_malicious_test"
                 ]
             }
         }, 
@@ -11460,10 +11628,49 @@
                     "misp-add-attribute", 
                     "misp-upload-sample", 
                     "misp-delete-event", 
-                    "misp-add-tag"
+                    "misp-add-tag", 
+                    "misp-add-sighting"
                 ], 
                 "tests": [
                     "MISP V2 Test"
+                ]
+            }
+        }, 
+        {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-get-ticket", 
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-get-canned-response-folder", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-ticket-conversations", 
+                    "fd-list-agents", 
+                    "fd-create-ticket-note", 
+                    "fd-delete-ticket", 
+                    "fd-search-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
+                ]
+            }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-msg", 
+                    "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "No Test - Can not connect to instance from remote"
                 ]
             }
         }
@@ -11825,6 +12032,8 @@
             "CopyContextToFieldTest": {
                 "name": "CopyContextToFieldTest", 
                 "implementing_scripts": [
+                    "DeleteContext", 
+                    "Sleep", 
                     "Set", 
                     "PrintErrorEntry", 
                     "CopyContextToField"
@@ -12479,10 +12688,9 @@
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "whois"
-                ]
+                "command_to_integration": {
+                    "whois": "Whois"
+                }
             }
         }, 
         {
@@ -12551,25 +12759,29 @@
                 "implementing_playbooks": [
                     "PanoramaCommitConfiguration"
                 ], 
-                "implementing_commands": [
-                    "panorama-list-applications", 
-                    "panorama-create-rule", 
-                    "panorama-delete-rule", 
-                    "panorama-create-address-group", 
-                    "panorama-list-addresses", 
-                    "panorama-get-address-group", 
-                    "panorama-get-url-category", 
-                    "panorama", 
-                    "panorama-edit-rule", 
-                    "panorama-get-url-filter", 
-                    "panorama-list-address-groups", 
-                    "panorama-get-custom-url-category", 
-                    "panorama-edit-address-group", 
-                    "panorama-create-address", 
-                    "panorama-delete-address-group", 
-                    "panorama-move-rule", 
-                    "panorama-delete-address"
-                ]
+                "command_to_integration": {
+                    "panorama-list-applications": "", 
+                    "panorama-create-rule": "", 
+                    "panorama-list-address-groups": "", 
+                    "panorama-create-address-group": "", 
+                    "panorama-list-addresses": "", 
+                    "panorama-get-address-group": "", 
+                    "panorama-get-url-category": "", 
+                    "panorama-delete-rule": "", 
+                    "panorama": "", 
+                    "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
+                    "panorama-get-url-filter": "", 
+                    "panorama-delete-address": "", 
+                    "panorama-get-custom-url-category": "", 
+                    "panorama-edit-address-group": "", 
+                    "panorama-move-rule": "", 
+                    "panorama-delete-service-group": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-create-address": "", 
+                    "panorama-list-services": "", 
+                    "panorama-create-service-group": ""
+                }
             }
         }, 
         {
@@ -12606,14 +12818,14 @@
                     "FileCreateAndUpload", 
                     "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "joe-download-report", 
-                    "joe-is-online", 
-                    "joe-analysis-info", 
-                    "joe-search", 
-                    "joe-analysis-submit-sample", 
-                    "joe-analysis-submit-url"
-                ]
+                "command_to_integration": {
+                    "joe-download-report": "Joe Security", 
+                    "joe-is-online": "", 
+                    "joe-analysis-info": "Joe Security", 
+                    "joe-search": "Joe Security", 
+                    "joe-analysis-submit-sample": "Joe Security", 
+                    "joe-analysis-submit-url": "Joe Security"
+                }
             }
         }, 
         {
@@ -12917,16 +13129,17 @@
                     "VerifyContext", 
                     "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "Exception", 
-                    "ews-get-out-of-office", 
-                    "ews-get-searchable-mailboxes", 
-                    "ews-find-folders", 
-                    "ews-get-items", 
-                    "ews-get-contacts", 
-                    "ews-get-attachment", 
-                    "ews-search-mailboxes"
-                ]
+                "command_to_integration": {
+                    "Exception": "Exception", 
+                    "ews-get-out-of-office": "", 
+                    "ews-expand-group": "", 
+                    "ews-find-folders": "", 
+                    "ews-get-items": "", 
+                    "ews-get-contacts": "", 
+                    "ews-get-attachment": "", 
+                    "ews-get-searchable-mailboxes": "", 
+                    "ews-search-mailboxes": ""
+                }
             }
         }, 
         {
@@ -13671,24 +13884,31 @@
                     "DeleteContext", 
                     "Sleep"
                 ], 
-                "implementing_commands": [
-                    "panorama-list-applications", 
-                    "panorama-create-rule", 
-                    "panorama-commit", 
-                    "panorama-delete-rule", 
-                    "panorama-create-address-group", 
-                    "panorama-get-address-group", 
-                    "panorama-move-rule", 
-                    "panorama", 
-                    "panorama-edit-rule", 
-                    "panorama-get-url-filter", 
-                    "panorama-list-address-groups", 
-                    "panorama-get-custom-url-category", 
-                    "panorama-create-address", 
-                    "panorama-delete-address-group", 
-                    "panorama-list-addresses", 
-                    "panorama-delete-address"
-                ]
+                "implementing_playbooks": [
+                    "PanoramaCommitConfiguration"
+                ], 
+                "command_to_integration": {
+                    "panorama-list-applications": "", 
+                    "panorama-create-rule": "", 
+                    "panorama-commit": "", 
+                    "panorama-create-service": "", 
+                    "panorama-create-address-group": "", 
+                    "panorama-get-address-group": "", 
+                    "panorama-move-rule": "", 
+                    "panorama-delete-rule": "", 
+                    "panorama": "", 
+                    "panorama-edit-rule": "", 
+                    "panorama-get-service-group": "", 
+                    "panorama-get-url-filter": "", 
+                    "panorama-get-service": "", 
+                    "panorama-list-address-groups": "", 
+                    "panorama-get-custom-url-category": "", 
+                    "panorama-create-address": "", 
+                    "panorama-delete-address-group": "", 
+                    "panorama-list-addresses": "", 
+                    "panorama-delete-service": "", 
+                    "panorama-delete-address": ""
+                }
             }
         }, 
         {
@@ -14254,17 +14474,17 @@
                     "VerifyContext", 
                     "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "vigilante-get-leak", 
-                    "vigilante-query-infected-host-data", 
-                    "vigilante-query-domains", 
-                    "vigilante-query-accounts", 
-                    "vigilante-watchlist-add-accounts", 
-                    "vigilante-watchlist-remove-accounts", 
-                    "vigilante-get-watchlist", 
-                    "vigilante-query-ecrime-db", 
-                    "vigilante-search-leaks"
-                ]
+                "command_to_integration": {
+                    "vigilante-get-leak": "", 
+                    "vigilante-query-infected-host-data": "", 
+                    "vigilante-query-domains": "", 
+                    "vigilante-query-accounts": "", 
+                    "vigilante-watchlist-add-accounts": "", 
+                    "vigilante-watchlist-remove-accounts": "", 
+                    "vigilante-get-watchlist": "", 
+                    "vigilante-query-ecrime-db": "", 
+                    "vigilante-search-leaks": ""
+                }
             }
         }, 
         {
@@ -14818,14 +15038,29 @@
             "Recorded Future Test": {
                 "name": "Recorded Future Test", 
                 "implementing_scripts": [
-                    "VerifyContext"
+                    "FetchFromInstance", 
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
-                "implementing_commands": [
-                    "ip", 
-                    "domain", 
-                    "recorded-future-get-related-entities", 
-                    "file"
-                ]
+                "command_to_integration": {
+                    "recorded-future-get-threats-url": "Recorded Future", 
+                    "recorded-future-get-threats-domain": "Recorded Future", 
+                    "url": "Recorded Future", 
+                    "ip": "Recorded Future", 
+                    "recorded-future-get-threats-hash": "Recorded Future", 
+                    "domain": "Recorded Future", 
+                    "recorded-future-get-alerts": "Recorded Future", 
+                    "recorded-future-get-threats-vulnerabilities": "Recorded Future", 
+                    "recorded-future-get-related-entities": "Recorded Future", 
+                    "recorded-future-get-vulnerability-riskrules": "Recorded Future", 
+                    "recorded-future-get-domain-riskrules": "Recorded Future", 
+                    "file": "Recorded Future", 
+                    "recorded-future-get-threats-ip": "Recorded Future", 
+                    "recorded-future-get-url-riskrules": "Recorded Future", 
+                    "recorded-future-get-alert-rules": "Recorded Future", 
+                    "recorded-future-get-ip-riskrules": "Recorded Future", 
+                    "recorded-future-get-hash-riskrules": "Recorded Future"
+                }
             }
         }, 
         {
@@ -14882,16 +15117,16 @@
                 "name": "Anomali ThreatStream Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
+                    "DeleteContext", 
+                    "Sleep"
                 ], 
-                "implementing_commands": [
-                    "ip", 
-                    "domain", 
-                    "threatstream-email-reputation", 
-                    "threatstream-intelligence", 
-                    "file"
-                ]
+                "command_to_integration": {
+                    "ip": "Anomali ThreatStream", 
+                    "domain": "Anomali ThreatStream", 
+                    "threatstream-email-reputation": "Anomali ThreatStream", 
+                    "threatstream-intelligence": "Anomali ThreatStream", 
+                    "file": "Anomali ThreatStream"
+                }
             }
         }, 
         {
@@ -15225,17 +15460,18 @@
                     "misp_download_sample", 
                     "misp_upload_sample"
                 ], 
-                "implementing_commands": [
-                    "misp-search", 
-                    "misp-add-attribute", 
-                    "misp-create-event", 
-                    "url", 
-                    "ip", 
-                    "misp-download-sample", 
-                    "misp-upload-sample", 
-                    "file", 
-                    "misp-delete-event"
-                ]
+                "command_to_integration": {
+                    "misp-search": "MISP V2", 
+                    "misp-add-attribute": "MISP V2", 
+                    "misp-add-sighting": "", 
+                    "misp-create-event": "MISP V2", 
+                    "url": "MISP V2", 
+                    "ip": "MISP V2", 
+                    "misp-download-sample": "MISP V2", 
+                    "misp-upload-sample": "MISP V2", 
+                    "file": "MISP V2", 
+                    "misp-delete-event": "MISP V2"
+                }
             }
         }, 
         {
@@ -15304,6 +15540,84 @@
                 ], 
                 "command_to_integration": {
                     "intsights-mssp-get-sub-accounts": ""
+                }
+            }
+        }, 
+        {
+            "TestUnEscapeUrl": {
+                "name": "TestUnEscapeUrl", 
+                "implementing_scripts": [
+                    "UnEscapeURLs", 
+                    "DeleteContext", 
+                    "VerifyHumanReadableContains"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
+        }, 
+        {
+            "TransformersTestPlaybook": {
+                "name": "TransformersTestPlaybook", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ]
+            }
+        }, 
+        {
+            "Kafka Test": {
+                "name": "Kafka Test", 
+                "command_to_integration": {
+                    "kafka-fetch-partitions": "Kafka V2", 
+                    "kafka-consume-msg": "Kafka V2", 
+                    "kafka-publish-msg": "Kafka V2", 
+                    "kafka-print-topics": "Kafka V2"
+                }
+            }
+        }, 
+        {
+            "HighlightWords_Test": {
+                "name": "HighlightWords - Test", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "HighlightWords"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - Crowdstrike": {
+                "name": "Test-Detonate URL - Crowdstrike", 
+                "implementing_scripts": [
+                    "Set", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Detonate URL - CrowdStrike"
+                ]
+            }
+        }, 
+        {
+            "Freshdesk-Test": {
+                "name": "Freshdesk-Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "fd-list-contacts": "Freshdesk", 
+                    "fd-get-ticket-conversations": "", 
+                    "fd-list-agents": "Freshdesk", 
+                    "fd-update-ticket": "Freshdesk", 
+                    "fd-get-contact": "", 
+                    "fd-search-tickets": "", 
+                    "fd-list-canned-response-folders": "", 
+                    "fd-delete-ticket": "Freshdesk", 
+                    "fd-list-groups": "Freshdesk", 
+                    "fd-ticket-reply": "Freshdesk", 
+                    "fd-create-ticket": "Freshdesk", 
+                    "fd-create-ticket-note": "", 
+                    "fd-get-ticket": "", 
+                    "fd-get-canned-response-folder": ""
                 }
             }
         }
