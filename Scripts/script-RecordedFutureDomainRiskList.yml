@@ -116,6 +116,5 @@ dependson:
   - Recorded Future|||recorded-future-get-domain-risklist
 timeout: 3.6µs
 runonce: false
-releaseNotes: "-"
 tests:
   - No test - fetches indicators
