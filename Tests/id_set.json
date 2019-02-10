@@ -4938,15 +4938,14 @@
             "Arcsight - Get events related to the Case": {
                 "name": "Arcsight - Get events related to the Case", 
                 "implementing_scripts": [
-                    "IncidentSet", 
                     "Set", 
                     "Exists"
                 ], 
-                "implementing_commands": [
-                    "as-get-security-events", 
-                    "as-get-case", 
-                    "as-get-case-event-ids"
-                ]
+                "command_to_integration": {
+                    "as-get-security-events": "ArcSight ESM", 
+                    "as-get-case": "ArcSight ESM", 
+                    "as-get-case-event-ids": "ArcSight ESM"
+                }
             }
         }, 
         {
