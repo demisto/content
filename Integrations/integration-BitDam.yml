@@ -20,10 +20,10 @@ configuration:
   name: apitoken
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
 - display: Trust any certificate
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use proxy settings
@@ -281,5 +281,6 @@ script:
       type: string
     description: Get verdict for a scanned file
   runonce: false
+releaseNotes: ""
 tests:
   - Detonate File - BitDam Test
