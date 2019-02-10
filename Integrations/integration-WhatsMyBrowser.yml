@@ -1,6 +1,6 @@
 catcommonfields:
-id: WhatsMyBrowser
-version: -1
+  id: WhatsMyBrowser
+  version: -1
 name: WhatsMyBrowser
 display: WhatsMyBrowser
 category: Data Enrichment & Threat Intelligence
