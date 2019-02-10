@@ -149,6 +149,9 @@ def search_potential_secrets(secrets_file_paths):
                     secrets_found_with_regex.append(regex_secret)
             # added false positives into white list array before testing the strings in line
             secrets_white_list = secrets_white_list.union(false_positives)
+            # due to nature of eml files, skip string by string secret detection - only regex
+            if file_extension == '.eml':
+                continue
             line = remove_false_positives(line)
             # calculate entropy for each string in the file
             for string_ in line.split():
