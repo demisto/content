@@ -58,7 +58,7 @@ def get_secrets(branch_name, is_circle):
         else:
             secrets_found_string += 'The secrets were exposed in public repository,' \
                                     ' remove the files asap and report it.\n'
-        secrets_found_string += 'For my information about whitelisting please visit: ' \
+        secrets_found_string += 'For more information about whitelisting please visit: ' \
                                 'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
     return secrets_found, secrets_found_string
 
