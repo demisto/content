@@ -4935,6 +4935,21 @@
             }
         }, 
         {
+            "Arcsight - Get events related to the Case": {
+                "name": "Arcsight - Get events related to the Case", 
+                "implementing_scripts": [
+                    "IncidentSet", 
+                    "Set", 
+                    "Exists"
+                ], 
+                "implementing_commands": [
+                    "as-get-security-events", 
+                    "as-get-case", 
+                    "as-get-case-event-ids"
+                ]
+            }
+        }, 
+        {
             "process_email_-_generic": {
                 "name": "Process Email - Generic", 
                 "toversion": "3.6.0", 
