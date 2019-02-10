@@ -45,7 +45,7 @@ script:
     USERNAME = demisto.getParam('credentials')['identifier']
     PASSWORD = demisto.getParam('credentials')['password']
     AUTH = (USERNAME, PASSWORD)
-    USE_SSL = not (True if demisto.params().get('insecure') else False)
+    USE_SSL = not demisto.params().get('insecure', False)
     IS_USING_PROXY = True if demisto.params().get('proxy') else False
     LAST_TIME_KEY = 'time_last'
 
