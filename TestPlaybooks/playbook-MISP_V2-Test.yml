@@ -649,14 +649,45 @@ tasks:
       }
     note: false
     timertriggers: []
+  "22":
+    id: "22"
+    taskid: a46f4c12-a656-4b58-8e85-26404dd6986d
+    type: regular
+    task:
+      id: a46f4c12-a656-4b58-8e85-26404dd6986d
+      version: -1
+      name: Add sighting
+      script: '|||misp-add-sighting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        simple: ${MISP.Event.Attribute.ID}
+      type:
+        simple: sighting
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2835,
-        "width": 810,
-        "x": 50,
+        "width": 1110,
+        "x": -250,
         "y": 50
       }
     }
