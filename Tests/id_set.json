@@ -4945,7 +4945,10 @@
                     "as-get-security-events": "ArcSight ESM", 
                     "as-get-case": "ArcSight ESM", 
                     "as-get-case-event-ids": "ArcSight ESM"
-                }
+                }, 
+                "tests": [
+                    "No test - playbook"
+                ]
             }
         }, 
         {
