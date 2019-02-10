@@ -464,3 +464,5 @@ view: |-
 inputs: []
 outputs: []
 releaseNotes: updated deprecated tasks
+tests:
+  - No test - playbook
