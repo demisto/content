@@ -1237,6 +1237,5 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Allow the url argument in atd-upload-file to not contain protocol"
 tests:
 - Test Playbook McAfee ATD

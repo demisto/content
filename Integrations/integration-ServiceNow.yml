@@ -3516,6 +3516,5 @@ script:
       are required for the sys_journal_field table.
   isfetch: true
   runonce: false
-releaseNotes: "Fixed severity mapping, Fixed parameter descriptions, Fixed human readable headers, Added Opened At argument to ticket creation, Added command to get ticket notes using sys_journal_field table"
 tests:
   - No test - Hibernating instance
