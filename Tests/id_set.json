@@ -11673,6 +11673,17 @@
                     "No Test - Can not connect to instance from remote"
                 ]
             }
+        }, 
+        {
+            "-": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15594,7 +15605,7 @@
                     "PrintErrorEntry"
                 ]
             }
-        },
+        }, 
         {
             "Test-Detonate URL - Crowdstrike": {
                 "name": "Test-Detonate URL - Crowdstrike", 
@@ -15629,6 +15640,29 @@
                     "fd-get-ticket": "", 
                     "fd-get-canned-response-folder": ""
                 }
+            }
+        }, 
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
+                }
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
+                ]
             }
         }
     ]
