@@ -9495,6 +9495,9 @@
                 "name": "GoogleSafeBrowsing", 
                 "commands": [
                     "url"
+                ], 
+                "tests": [
+                    "Google Safe Browsing Test"
                 ]
             }
         }, 
