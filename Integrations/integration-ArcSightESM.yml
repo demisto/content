@@ -114,6 +114,12 @@ script:
     AS_TIME_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                       'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
 
+    if not demisto.params().get("proxy", False):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
 
     def int_to_ip(num):
         """ IP stored as an int within the ArcSight DB. This function transform it into IPv4 format """
