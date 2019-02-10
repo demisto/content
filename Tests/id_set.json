@@ -15586,6 +15586,16 @@
             }
         }, 
         {
+            "Autoextract - Test": {
+                "name": "Autoextract - Test", 
+                "implementing_scripts": [
+                    "autoextract_test", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
+            }
+        },
+        {
             "Test-Detonate URL - Crowdstrike": {
                 "name": "Test-Detonate URL - Crowdstrike", 
                 "implementing_scripts": [
