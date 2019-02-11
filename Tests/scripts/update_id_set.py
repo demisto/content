@@ -122,7 +122,12 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        fromversion = data_dictionary.get('fromversion', '0.0.0')
+        if fromversion:
+            return fromversion
+
+        else:
+            return '0.0.0'
 
 
 def get_to_version(file_path):
