@@ -28,7 +28,7 @@ def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
 
     # keep only whitelisted chars
     cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
-    return cleaned_filename + '.mock'
+    return cleaned_filename
 
 
 def id_to_mock_file(playbook_id):
