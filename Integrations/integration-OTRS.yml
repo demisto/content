@@ -86,7 +86,8 @@ script:
     USE_SSL = not demisto.params().get('unsecure', False)
     FETCH_QUEUE = demisto.params().get('fetch_queue', 'Any')
     FETCH_PRIORITY = demisto.params().get('fetch_priority')
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_TIME_DEFAULT = '3 days'
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
 
     ''' HELPER FUNCTIONS '''
 
@@ -554,6 +555,8 @@ script:
             last_run = datetime.strptime(last_run, '%Y-%m-%d %H:%M:%S')
             last_run += timedelta(seconds=1)
         else:
+            if FETCH_TIME is None or FETCH_TIME =='':
+                FETCH_TIME = FETCH_TIME_DEFAULT
             last_run, _ = parse_date_range(FETCH_TIME)
 
         queue_list = argToList(FETCH_QUEUE)
@@ -961,3 +964,4 @@ script:
   runonce: false
 tests:
  - OTRS Test
+releaseNotes: validate FETCH_TIME param and set default value
