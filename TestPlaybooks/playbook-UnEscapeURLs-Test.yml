@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 50
         }
       }
@@ -45,7 +45,6 @@ tasks:
       - "4"
       - "9"
       - "10"
-      - "11"
       - "15"
     scriptarguments:
       all:
@@ -58,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 195
         }
       }
@@ -194,7 +193,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 720
         }
       }
@@ -305,40 +304,12 @@ tasks:
       - "13"
     scriptarguments:
       input:
-        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C # disable-secrets-detection
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: ba6f242e-9287-467d-8159-2f5c9db97683
-    type: regular
-    task:
-      id: ba6f242e-9287-467d-8159-2f5c9db97683
-      version: -1
-      name: UnEscapeURL - Mimecast Protected URL
-      scriptName: UnEscapeURLs
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      input:
-        simple: https://sandbox-api.mimecast.com/s/izY4CzmwniM0H47o1B
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2200,
           "y": 370
         }
       }
@@ -363,7 +334,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://www.avanan.com
+        simple: http://www.avanan.com # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -393,42 +364,12 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: https://twitter.com/PhilipsBeLux
+        simple: https://twitter.com/PhilipsBeLux # disable-secrets-detection
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: f1ca7cf3-65b8-4539-86ba-3ca4aa4ed2e9
-    type: regular
-    task:
-      id: f1ca7cf3-65b8-4539-86ba-3ca4aa4ed2e9
-      version: -1
-      name: Check URL
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      humanReadableEntryId:
-        simple: ${lastCompletedTaskEntries}
-      substring:
-        simple: urltest.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2200,
           "y": 545
         }
       }
@@ -456,7 +397,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 2200,
           "y": 370
         }
       }
@@ -486,7 +427,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 2200,
           "y": 545
         }
       }
@@ -498,7 +439,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 2960,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
@@ -506,6 +447,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Updated test for UnEscapeURL script - checks ATP Safelinks and Mimecast and Proofpoint Protected"
-tests:
-  - no tests

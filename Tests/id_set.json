@@ -15649,9 +15649,6 @@
                     "UnEscapeURLs", 
                     "DeleteContext", 
                     "VerifyHumanReadableContains"
-                ], 
-                "tests": [
-                    "no tests"
                 ]
             }
         }
