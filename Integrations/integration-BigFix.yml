@@ -20,12 +20,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -1202,3 +1202,6 @@ script:
     description: Evaluate a relevance expression and get the result. This runs request
       is processed through the server to WebReports.
   runonce: false
+releaseNotes: "-"
+tests:
+  - BigFixTest

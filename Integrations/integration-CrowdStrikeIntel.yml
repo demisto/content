@@ -26,14 +26,20 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
+    consider the indicator malicious.(low, medium, high)
+  name: threshold
+  defaultvalue: high
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Allow self-signed SSL certificates
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Support indicator API V2
@@ -42,18 +48,31 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     // determine api version for api calls
-    var version = (params.version ? "v2" : "v1");
+    var VERSION = (params.VERSION ? "v2" : "v1");
 
-    var serverUrl = params.url;
-    if (serverUrl[serverUrl.length - 1] !== '/') {
-        serverUrl += '/';
+    var SERVER = params.url;
+    if (SERVER[SERVER.length - 1] !== '/') {
+        SERVER += '/';
     }
+    var THRESHOLD = params.threshold;
+    if (!THRESHOLD){
+        THRESHOLD = 'high';
+    }
+    if (['low', 'medium', 'high'].indexOf(THRESHOLD) < 0) {
+        throw('Threshold parameter must be one of: high, medium, low');
+    }
+    var MALICIOUS_DICTIONARY = {
+        'low': 1,
+        'medium':2,
+        'high': 3
+    };
+    var MALICOUS_THRESHOLD = MALICIOUS_DICTIONARY[THRESHOLD];
 
-    var doReq = function(method, path, query, body) {
+    function doReq(method, path, query, body) {
         var result = http(
-            serverUrl + path + encodeToURLQuery(query),
+            SERVER + path + encodeToURLQuery(query),
             {
                 Headers: {
                     'X-CSIX-CUSTID': [params.id],
@@ -83,14 +102,18 @@ script:
         if (obj.errors && obj.errors.length > 0) {
             throw JSON.stringify(obj.errors);
         }
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
-    };
+        return {
+            body: result.Body,
+            obj: obj,
+            statusCode: result.StatusCode
+        };
+    }
 
-    var dateToEpoch = function(d) {
+    function dateToEpoch(d) {
         return d ? new Date(d).getTime() : null;
-    };
+    }
 
-    var add = function(a, k, ok, f) {
+    function add(a, k, ok, f) {
         if (args[k]) {
             var parts = args[k].split(',');
             for (var i=0; i<parts.length; i++) {
@@ -98,14 +121,14 @@ script:
             }
             a[ok ? ok : k] = f ? f(args[k]) : parts.length > 1 ? parts : args[k];
         }
-    };
+    }
 
-    var simpleValue = function(o, t) {
+    function simpleValue(o, t) {
         return o ? '- ' + t + ': ' + o.map(function(curr) {return curr.value;}).join(', ') + '\n' : '';
-    };
+    }
 
     // Not passing the arguments because there are a lot of them
-    var doActors = function() {
+    function doActors() {
         var a = {};
         add(a, 'q');
         add(a, 'name');
@@ -169,10 +192,15 @@ script:
         } else {
             md = 'No result found';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
 
-    var indicatorToMd = function(o) {
+    function indicatorToMd(o) {
         var md = '';
         if (o) {
             md += '### ' + o.indicator + '\n';
@@ -208,9 +236,9 @@ script:
             }
         }
         return md;
-    };
+    }
 
-    var addIndicatorToContext = function(t, v, score, ec, path) {
+    function addIndicatorToContext(t, v, score, ec, path) {
         var n = {properties_to_append: ['Malicious', 'Reports', 'Actors', 'MalwareFamilies', 'KillChains']};
         n[t] = v.indicator;
         if (v.reports && v.reports.length > 0) {
@@ -232,10 +260,10 @@ script:
             ec[path] = [];
         }
         ec[path].push(n);
-    };
+    }
 
     // Not passing the arguments because there are a lot of them
-    var doIndicators = function() {
+    function doIndicators() {
         var a = {};
         a[args.filter] = args.value;
         add(a, 'page');
@@ -247,7 +275,7 @@ script:
                 a.order = parts[1];
             }
         }
-        var res = doReq('GET', 'indicator/'+ version +'/search/' + args.parameter, a);
+        var res = doReq('GET', 'indicator/'+ VERSION +'/search/' + args.parameter, a);
         var md = '## Falcon Intel Indicator Search for: ' + args.value + '\n';
         var found = false;
         var ec = {};
@@ -255,9 +283,10 @@ script:
             for (var i=0; i<res.obj.length; i++) {
                 md += indicatorToMd(res.obj[i]);
                 var dbotScore = 0;
-                if (res.obj[i].malicious_confidence === 'high') {
+                var malicious_confidence = MALICIOUS_DICTIONARY[res.obj[i].malicious_confidence];
+                if (malicious_confidence === 3 ||  MALICOUS_THRESHOLD === 1) {
                     dbotScore = 3;
-                } else if (res.obj[i].malicious_confidence === 'medium') {
+                } else if (malicious_confidence === 2 || MALICOUS_THRESHOLD === 2) {
                     dbotScore = 2;
                 } else {
                     dbotScore = 1;
@@ -294,12 +323,18 @@ script:
         if (!found) {
             md += 'No result found';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var doIndicator = function(ind, type, title, appendContextFunc) {
+    function doIndicator(ind, type, title, appendContextFunc) {
         var a = {equal: ind};
-        var res = doReq('GET', 'indicator/'+ version +'/search/indicator', a);
+        var res = doReq('GET', 'indicator/'+ VERSION +'/search/indicator', a);
         var md = '## ' + title + ': ' + ind + '\n';
         var ec = {};
         var found = false;
@@ -307,10 +342,10 @@ script:
             for (var i=0; i<res.obj.length; i++) {
                 md += indicatorToMd(res.obj[i]);
                 var dbotScore = 0;
-                if (res.obj[i].malicious_confidence === 'high') {
+                var malicious_confidence = MALICIOUS_DICTIONARY[res.obj[i].malicious_confidence];
+                if (malicious_confidence === 3 ||  MALICOUS_THRESHOLD === 1) {
                     dbotScore = 3;
-                    appendContextFunc(ec);
-                } else if (res.obj[i].malicious_confidence === 'medium') {
+                } else if (malicious_confidence === 2 || MALICOUS_THRESHOLD === 2) {
                     dbotScore = 2;
                 } else {
                     dbotScore = 1;
@@ -323,37 +358,43 @@ script:
             md += 'No result found';
             ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: 0};
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var doFile = function(hash) {
+    function doFile(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
             var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
             malFile[hashType] = hash;
             addMalicious(ec, outputPaths.file, malFile);
         });
-    };
+    }
 
-    var doIP = function(ip) {
+    function doIP(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
             addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
-    };
+    }
 
-    var doURL = function(url) {
+    function doURL(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
             addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
-    };
+    }
 
-    var doDomain = function(domain) {
+    function doDomain(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
             addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
-    };
+    }
 
-    var doReports = function() {
+    function doReports() {
         var a = {};
         add(a, 'q');
         add(a, 'name');
@@ -388,7 +429,7 @@ script:
                     md += 'Sub type: ' + o[i].sub_type.name + '\n';
                     md += 'Slug: ' + o[i].slug + '\n';
                     md += 'Created: ' + new Date(o[i].created_date) + '\n';
-                    md += 'Last modified: ' + new Date(o[i].last_modified_date) + '\n'
+                    md += 'Last modified: ' + new Date(o[i].last_modified_date) + '\n';
                     md += 'Description: ' + o[i].short_description + '\n';
                     if (o[i].target_industries) {
                       md += 'Target industries: ' + o[i].target_industries.map(function(curr) {return curr.value;}).join(', ') + '\n';
@@ -409,12 +450,17 @@ script:
         } else {
             md = 'No result found';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
 
-    var doReport = function() {
+    function doReport() {
         var result = http(
-            serverUrl + 'reports/entities/report-files/v1' + encodeToURLQuery({ids: args.id}),
+            SERVER + 'reports/entities/report-files/v1' + encodeToURLQuery({ids: args.id}),
             {
                 Headers: {
                     'X-CSIX-CUSTID': [params.id],
@@ -445,18 +491,24 @@ script:
                 }
             }
         }
-        return {Type: entryTypes.entryInfoFile, FileID: result.Path, File: filename, Contents: filename};
+        return {
+            Type: entryTypes.entryInfoFile,
+            FileID: result.Path,
+            File: filename,
+            Contents: filename
+        };
     }
 
     switch (command) {
         case 'test-module':
-            if(version === 'v2') {
-                doReq('GET', 'indicator/'+ version +'/search/indicator', {equal: '4.4.4.4'});
+            if(VERSION === 'v2') {
+                doReq('GET', 'indicator/'+ VERSION +'/search/indicator', {equal: '4.4.4.4'});
                 return true;
             } else {
                 doReq('GET', 'actors/queries/actors/v1', {q: 'panda'});
                 return true;
             }
+            break;
         case 'file':
             return doFile(args.file);
         case 'ip':
@@ -772,3 +824,6 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
+releaseNotes: "-"
+tests:
+- CrowdStrike Falcon Intel v2

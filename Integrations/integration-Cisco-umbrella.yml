@@ -498,6 +498,7 @@ script:
 
             if domain_security_context:
                 secure_rank = res.get('securerank2', False)
+                DBotScore = 0
                 if secure_rank:
                     if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
                         DBotScore = 3
@@ -2912,5 +2913,6 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
+releaseNotes: "-"
 tests:
   - Cisco Umbrella Test

@@ -81,6 +81,5 @@ outputs:
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP/Email/Domain in the investigation
 scripttarget: 0
-releaseNotes: "Added support for Email and Domain indicators"
 tests:
 - "Test-IsMaliciousIndicatorFound"

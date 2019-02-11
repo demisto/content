@@ -22,12 +22,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: 2FA token
@@ -2095,3 +2095,4 @@ script:
     description: Returns a list of scans.
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "-"

@@ -28,7 +28,7 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "True"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy
@@ -1245,5 +1245,6 @@ script:
     arguments: []
     description: Returns the usage data for your account.
   runonce: false
+releaseNotes: "-"
 tests:
   - InfoArmorVigilanteATITest

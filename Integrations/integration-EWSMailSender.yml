@@ -35,12 +35,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Has impersonation rights.

@@ -32,7 +32,7 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -174,3 +174,6 @@ script:
     description: Check URL Reputation
 hidden: false
 system: true
+releaseNotes: "-"
+tests:
+  - Google Safe Browsing Test
