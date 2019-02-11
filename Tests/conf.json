@@ -1043,7 +1043,8 @@
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "fails",
         "GmailTest": "fails",
-        "Mail Sender (New) Test": "fails"
+        "Mail Sender (New) Test": "fails",
+        "Luminate-TestPlaybook": "fails"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid",
