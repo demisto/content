@@ -7434,7 +7434,8 @@
                     "archer-get-file", 
                     "archer-upload-file", 
                     "archer-add-to-detailed-analysis", 
-                    "archer-get-user-id"
+                    "archer-get-user-id", 
+                    "archer-get-valuelist"
                 ]
             }
         }, 
