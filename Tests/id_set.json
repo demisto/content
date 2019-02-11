@@ -4935,6 +4935,23 @@
             }
         }, 
         {
+            "Arcsight - Get events related to the Case": {
+                "name": "Arcsight - Get events related to the Case", 
+                "implementing_scripts": [
+                    "Set", 
+                    "Exists"
+                ], 
+                "command_to_integration": {
+                    "as-get-security-events": "ArcSight ESM", 
+                    "as-get-case": "ArcSight ESM", 
+                    "as-get-case-event-ids": "ArcSight ESM"
+                }, 
+                "tests": [
+                    "No test - playbook"
+                ]
+            }
+        }, 
+        {
             "process_email_-_generic": {
                 "name": "Process Email - Generic", 
                 "toversion": "3.6.0", 
@@ -6011,21 +6028,6 @@
                 ], 
                 "tests": [
                     "test_Qradar"
-                ]
-            }
-        }, 
-        {
-            "Arcsight - Get events related to the Case": {
-                "name": "Arcsight - Get events related to the Case", 
-                "implementing_scripts": [
-                    "IncidentSet", 
-                    "Set", 
-                    "Exists"
-                ], 
-                "implementing_commands": [
-                    "as-get-security-events", 
-                    "as-get-case", 
-                    "as-get-case-event-ids"
                 ]
             }
         }, 
@@ -7197,6 +7199,27 @@
                     "Detonate File - HybridAnalysis - Test"
                 ]
             }
+        }, 
+        {
+            "ArcSight ESM Test": {
+                "name": "ArcSight ESM Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "as-get-case": "", 
+                    "as-get-all-query-viewers": "", 
+                    "as-clear-entries": "", 
+                    "as-get-all-cases": "", 
+                    "as-get-entries": "", 
+                    "as-add-entries": "", 
+                    "as-update-case": "", 
+                    "as-get-case-event-ids": ""
+                }, 
+                "tests": [
+                    "No test - test playbook"
+                ]
+            }
         }
     ], 
     "integrations": [
@@ -8268,10 +8291,12 @@
                     "as-get-case-event-ids", 
                     "as-update-case", 
                     "as-get-all-query-viewers", 
-                    "as-case-delete"
+                    "as-case-delete", 
+                    "as-get-query-viewer-results", 
+                    "as-fetch-incidents"
                 ], 
                 "tests": [
-                    "No test"
+                    "ArcSight ESM Test"
                 ]
             }
         }, 
@@ -15594,7 +15619,7 @@
                     "PrintErrorEntry"
                 ]
             }
-        },
+        }, 
         {
             "Test-Detonate URL - Crowdstrike": {
                 "name": "Test-Detonate URL - Crowdstrike", 
