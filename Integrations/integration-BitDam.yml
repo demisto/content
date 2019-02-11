@@ -20,7 +20,7 @@ configuration:
   name: apitoken
   defaultvalue: ""
   type: 4
-  required: false
+  required: true
 - display: Trust any certificate
   name: insecure
   defaultvalue: ""
