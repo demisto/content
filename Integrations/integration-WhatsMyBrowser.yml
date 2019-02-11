@@ -26,7 +26,7 @@ configuration:
   required: false
 - display: URL for the User Agent Parser
   name: API_URL
-  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse
+  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse # disable-secrets-detection
   type: 0
   required: true
 script:
@@ -151,7 +151,7 @@ script:
 
     def test_command():
         post_data = {
-            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36"
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36" # disable-secrets-detection
         }
         post_json = json.dumps(post_data)
         r = http_request(post_json)
