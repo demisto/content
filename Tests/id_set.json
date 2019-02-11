@@ -11673,6 +11673,22 @@
                     "No Test - Can not connect to instance from remote"
                 ]
             }
+        }, 
+        {
+            "EclecticIQ Platform": {
+                "name": "EclecticIQ Platform", 
+                "commands": [
+                    "domain", 
+                    "url", 
+                    "ip", 
+                    "file", 
+                    "eclecticiq-get-observable-related-entity", 
+                    "email"
+                ], 
+                "tests": [
+                    "EclecticIQ Platform Test"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
