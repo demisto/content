@@ -3687,3 +3687,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "Added new command 'archer-get-valuelist' to get the value-list of a field"
+tests:
+  - Archer-Test-Playbook
