@@ -14,6 +14,8 @@ ENTROPY_THRESHOLD = 3.8
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json'}
 ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
+SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
+SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
 
 # disable-secrets-detection-start
 # secrets
@@ -151,7 +153,7 @@ def search_potential_secrets(secrets_file_paths):
             # added false positives into white list array before testing the strings in line
             secrets_white_list = secrets_white_list.union(false_positives)
             # due to nature of eml files, skip string by string secret detection - only regex
-            if file_extension == '.eml':
+            if file_extension in SKIP_FILE_TYPE_ENTROPY_CHECKS or file_name in SKIP_DEMISTO_TYPE_ENTROPY_CHECKS:
                 continue
             line = remove_false_positives(line)
             # calculate entropy for each string in the file
