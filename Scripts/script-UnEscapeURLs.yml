@@ -6,7 +6,7 @@ script: |-
   // Check if it is a Microsoft ATP Safe Link
   var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
   if (atp_link_re.test(args.input)) {
-      // Based off of http://www.o365atp.com/
+      // Based off of http://www.o365atp.com/ // disable-secrets-detection
       var link = args.input;
       var url_parts = link.split("?")[1];
       var params = url_parts.split("&");
@@ -57,7 +57,7 @@ tags:
 comment: |-
   Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
   Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
-  Changes na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com -> http://www.avanan.com
+  Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
   Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
 enabled: true
 args:

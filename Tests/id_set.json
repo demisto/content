@@ -15594,7 +15594,7 @@
                     "PrintErrorEntry"
                 ]
             }
-        },
+        }, 
         {
             "Test-Detonate URL - Crowdstrike": {
                 "name": "Test-Detonate URL - Crowdstrike", 
