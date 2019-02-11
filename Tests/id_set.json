@@ -7811,7 +7811,7 @@
                     "email"
                 ], 
                 "tests": [
-                    "No tests"
+                    "Test - PhishMe Intelligence"
                 ]
             }
         }, 
@@ -15535,11 +15535,113 @@
             "IntSights Mssp Test": {
                 "name": "IntSights Mssp Test", 
                 "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "ip": "ThreatMiner", 
+                    "domain": "ThreatMiner", 
+                    "file": "ThreatMiner"
+                }
+            }
+        }, 
+        {
+            "Ping Test Playbook": {
+                "name": "Ping Test Playbook", 
+                "implementing_scripts": [
+                    "PrintErrorEntry", 
+                    "DeleteContext", 
+                    "Ping", 
+                    "isError", 
+                    "PrintContext"
+                ]
+            }
+        }, 
+        {
+            "Gmail Convert Html Test": {
+                "name": "Gmail Convert Html Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry", 
+                    "PrintContext"
+                ], 
+                "command_to_integration": {
+                    "gmail-search": ""
+                }
+            }
+        }, 
+        {
+            "Get File Sample By Hash - Generic - Test": {
+                "name": "Get File Sample By Hash - Generic - Test", 
+                "fromversion": "3.5.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample By Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Get File Sample From Hash - Generic - Test": {
+                "name": "Get File Sample From Hash - Generic - Test", 
+                "toversion": "3.1.0", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "VerifyContext", 
+                    "Set"
+                ], 
+                "implementing_playbooks": [
+                    "Get File Sample From Hash - Generic"
+                ]
+            }
+        }, 
+        {
+            "Alexa Test Playbook": {
+                "name": "Alexa Test Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "domain": "Alexa Rank Indicator"
+                }
+            }
+        }, 
+        {
+            "GoogleResourceManager-Test": {
+                "name": "GoogleResourceManager-Test", 
+                "implementing_scripts": [
+                    "GenerateUUID", 
+                    "Print", 
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "grm-search-organizations": "Google Resource Manager", 
+                    "grm-update-project": "Google Resource Manager", 
+                    "grm-undelete-project": "Google Resource Manager", 
+                    "grm-list-projects": "Google Resource Manager", 
+                    "grm-delete-project": "Google Resource Manager", 
+                    "grm-create-project": "Google Resource Manager", 
+                    "grm-get-project": "Google Resource Manager", 
+                    "grm-get-organization": "Google Resource Manager"
+                }
+            }
+        }, 
+        {
+            "Test - PhishMe Intelligence": {
+                "name": "Test - PhishMe Intelligence", 
+                "implementing_scripts": [
+                    "IsGreaterThan", 
                     "DeleteContext", 
                     "AreValuesEqual"
                 ], 
                 "command_to_integration": {
-                    "intsights-mssp-get-sub-accounts": ""
+                    "url": "Phishme Intelligence", 
+                    "phishme-search": "Phishme Intelligence", 
+                    "email": "Phishme Intelligence", 
+                    "file": "Phishme Intelligence", 
+                    "ip": "Phishme Intelligence"
                 }
             }
         }, 
@@ -15594,7 +15696,7 @@
                     "PrintErrorEntry"
                 ]
             }
-        },
+        }, 
         {
             "Test-Detonate URL - Crowdstrike": {
                 "name": "Test-Detonate URL - Crowdstrike", 
