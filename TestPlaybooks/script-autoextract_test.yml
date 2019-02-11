@@ -13,6 +13,7 @@ script: |
   sha1_context_output = ["bc44444dd6f5c1111ffbbb139e2af09db9f0000d", "444444c6cccc250e98be5c2ed5346f79dc333dd4"]
   sha256_context_output = ["0a92f2312a95f807fd192c9c25cb6ae502b564c9a8ae013ff88888888ff77ddd", "1ebf92fc2cb3cf75da3131ef3b13abf36a90fa7aaff3a2451f99999a122aaabb"]
   email_context_output = ["iamtheeggman@demisto.com", "iamthewalrus@demisto.com"]
+  cve_context_output = ["CVE-2019-7312"]
 
   ###  Aggregating all indicator data ###
   indicator_data = ip_context_output + ipescaped_context_output + url_context_output + urlescaped_context_output + md5_context_output +\
