@@ -1,0 +1,217 @@
+id: FilterByList - Test
+version: -1
+name: FilterByList - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a053b5e7-9b1e-4dcb-8de4-5730ab9ef1e1
+    type: start
+    task:
+      id: a053b5e7-9b1e-4dcb-8de4-5730ab9ef1e1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 6db4ebba-057f-4d51-8bb8-20b50f040e76
+    type: regular
+    task:
+      id: 6db4ebba-057f-4d51-8bb8-20b50f040e76
+      version: -1
+      name: Create white list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listData:
+        simple: ^demisto.com$,google.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 082233af-185f-47a8-83de-56a1b7939806
+    type: regular
+    task:
+      id: 082233af-185f-47a8-83de-56a1b7939806
+      version: -1
+      name: Run FilterByList
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      listname:
+        simple: whiteList
+      values:
+        simple: demisto.com,google.com,google.co.il
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ec96af3b-98f3-411c-8892-724d5d3f8e9d
+    type: regular
+    task:
+      id: ec96af3b-98f3-411c-8892-724d5d3f8e9d
+      version: -1
+      name: Verify 'In' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: '["demisto.com","google.com"]'
+      fields: {}
+      path:
+        simple: List.In
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 64a840f8-51c7-4a12-87f0-4422060d23ce
+    type: regular
+    task:
+      id: 64a840f8-51c7-4a12-87f0-4422060d23ce
+      version: -1
+      name: Verify 'NotIn' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue:
+        simple: '["google.co.il"]'
+      fields: {}
+      path:
+        simple: List.NotIn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 6689ce5b-d920-4f77-83a8-984131ef7bb2
+    type: title
+    task:
+      id: 6689ce5b-d920-4f77-83a8-984131ef7bb2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 63c2e8e0-0e79-47f6-87eb-82a3d411852f
+    type: regular
+    task:
+      id: 63c2e8e0-0e79-47f6-87eb-82a3d411852f
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1155,
+        "width": 380,
+        "x": 450,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []

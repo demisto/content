@@ -313,6 +313,9 @@
                 "name": "FilterByList", 
                 "script_executions": [
                     "getList"
+                ], 
+                "tests": [
+                    "FilterByList - Test"
                 ]
             }
         }, 
@@ -15629,6 +15632,16 @@
                     "fd-get-ticket": "", 
                     "fd-get-canned-response-folder": ""
                 }
+            }
+        }, 
+        {
+            "FilterByList - Test": {
+                "name": "FilterByList - Test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "FilterByList"
+                ]
             }
         }
     ]

@@ -67,4 +67,6 @@ outputs:
   description: List of items not in the list
 scripttarget: 0
 runonce: false
+tests:
+  - FilterByList - Test
 releaseNotes: Fix FilterByList script to support regex items
