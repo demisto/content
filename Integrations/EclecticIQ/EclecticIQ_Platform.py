@@ -1,8 +1,9 @@
 ''' IMPORTS '''
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
