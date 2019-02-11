@@ -7625,6 +7625,9 @@
                 "commands": [
                     "ip", 
                     "ipinfo_field"
+                ], 
+                "tests": [
+                    "IPInfoTest"
                 ]
             }
         }, 
