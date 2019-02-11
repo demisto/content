@@ -3153,19 +3153,19 @@ script: |-
   def data_to_md(email_data):
       md = "### Results:\n"
 
-      md += "* {0}:\t{1}\n".format('From', email_data['From'] or "")
-      md += "* {0}:\t{1}\n".format('To', email_data['To'] or "")
-      md += "* {0}:\t{1}\n".format('CC', email_data['CC'] or "")
-      md += u"* {0}:\t{1}\n".format('Subject', email_data['Subject'] or "")
+      md += "* {0}:\t{1}\n".format('From', email_data['Label/Email/from'] or "")
+      md += "* {0}:\t{1}\n".format('To', email_data['Label/Email'] or "")
+      md += "* {0}:\t{1}\n".format('CC', email_data['Label/Email/cc'] or "")
+      md += u"* {0}:\t{1}\n".format('Subject', email_data['Label/Email/subject'] or "")
 
-      if email_data['Text']:
-          md += u"* {0}:\t{1}\n".format('Body/Text', email_data['Text'] or "")
+      if email_data['Label/Email/text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', email_data['Label/Email/text'] or "")
 
-      if email_data['HTML']:
-          md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
+      if email_data['Label/Email/html']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['Label/Email/html'] or "")
 
-      md += "* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-      md += "* {0}:\t{1}\n".format('Headers', email_data['Headers'] or "")
+      md += "* {0}:\t{1}\n".format('Attachments', email_data['Label/Email/attachments'] or "")
+      md += "* {0}:\t{1}\n".format('Headers', email_data['Label/Email/headers'] or "")
       return md
 
 
@@ -3366,7 +3366,6 @@ script: |-
 
   if __name__ == "__builtin__":
       main()
-
 type: python
 tags:
 - email
@@ -3379,14 +3378,13 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package. This script is deprecated, use ParseEmailFiles.
-system: true
-deprecated: true
 args:
 - name: entryid
   required: true
   default: true
   description: Entry ID with the Email as a file in msg or eml format
 scripttarget: 0
-dependson: {}
-timeout: 0s
-releaseNotes: "-"
+runonce: false
+deprecated: true
+runas: DBotWeakRole
+releaseNotes: "deprecated script has been updated"
