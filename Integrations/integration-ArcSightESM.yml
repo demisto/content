@@ -176,7 +176,7 @@ script:
             'alt': 'json'
         }
         res = send_request(query_path, headers=headers, params=params)
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error('Failed to login, check integration parameters.')
 
         try:
@@ -200,7 +200,7 @@ script:
             'alt': 'json'
         }
         res = send_request(query_path, headers=headers, params=params)
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error('Failed to login, check integration parameters.')
 
 
@@ -251,7 +251,7 @@ script:
         }
         res = send_request(query_path, params=params, method='get')
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             if 'ResourceNotFoundException' in res.text:
                 return_error('Invalid resource ID {} for Query Viewer(ResourceNotFoundException)'.format(query_viewer_id))
             else:
@@ -294,11 +294,11 @@ script:
                 "value": [
                     {
                         "@xsi.type": "xs:string",
-                        "$": "7-XAMnF8BABDCGttHdj30lA
+                        "$": "<ID1>"
                     },
                     {
                         "@xsi.type": "xs:string",
-                        "$": "15229903"
+                        "$": "<Event-Event ID1>"
                     }
                 ]
             },
@@ -307,11 +307,11 @@ script:
                 "value": [
                     {
                         "@xsi.type": "xs:string",
-                        "$": "70iANnF8BABDCNsOzD5W2Ig
+                        "$": "<ID2>"
                     },
                     {
                         "@xsi.type": "xs:string",
-                        "$": "15230009"
+                        "$": "<Event-Event ID2>"
                     }
                 ]
             }
@@ -321,12 +321,12 @@ script:
 
         query_results = [
             {
-                Event-Event ID:15229903
-                ID:7-XAMnF8BABDCGttHdj30lA==
+                Event-Event ID:<Event-Event ID1>
+                ID:<ID1>
             },
             {
-                Event-Event ID:15230009
-                ID:70iANnF8BABDCNsOzD5W2Ig==
+                Event-Event ID:<Event-Event ID2>
+                ID:<ID2>
             }
         ]
         """
@@ -400,7 +400,7 @@ script:
         }
         res = send_request(query_path, params=params, method='get')
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             if 'InvalidResourceIDException: Invalid resource ID' in res.text and 'for Case' in res.text:
                 return_error('Invalid resource ID {} for Case'.format(resourceId))
             else:
@@ -437,7 +437,7 @@ script:
         }
         res = send_request(query_path, params=params, method='get')
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
 
         all_cases = res.json().get('cas.findAllIdsResponse').get('cas.return')
@@ -492,7 +492,7 @@ script:
         }
         res = send_request(query_path, json=json_, params=params)
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error(
                 'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                     event_ids, BASE_URL + query_path, res.status_code, res.text))
@@ -534,7 +534,7 @@ script:
         }
         res = send_request(query_path, json=json_, params=params)
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                 caseId, BASE_URL + query_path, res.status_code, res.text))
 
@@ -553,7 +553,7 @@ script:
         }
 
         res = send_request(query_path, params=params, method='get')
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error("Failed to get Event IDs with:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
         res_json = json.loads(res.text)
@@ -579,7 +579,7 @@ script:
             'alt': 'json'
         }
         res = send_request(query_path, params=params, body=req_body)
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error("Failed to delete case:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
 
@@ -589,7 +589,7 @@ script:
 
         res = send_request(query_path, body=body)
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                 resourceId, res.status_code, body, res.text))
 
@@ -620,7 +620,7 @@ script:
         body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=None)
         res = send_request(query_path, body=body)
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error(
                 "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                     resourceId, res.status_code, body, res.text))
@@ -643,7 +643,7 @@ script:
         body = REQ_SOAP_BODY(function='addEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=entry_list)
         res = send_request(query_path, body=body)
 
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                 resourceId, res.status_code, body, res.text))
 
@@ -661,7 +661,7 @@ script:
             'Accept': 'application/json'
         }
         res = send_request(query_path, headers=headers, params=params)
-        if res.status_code < 200 or res.status_code >= 300:
+        if not res.ok:
             return_error("Failed to get query viewers:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
         res_json = json.loads(res.text)
