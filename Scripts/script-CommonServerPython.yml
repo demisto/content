@@ -1217,6 +1217,9 @@ script: |-
       :type raw_response: ``dict``
       :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
       raw response from the 3rd party service (originally Contents)
+
+      :return: None
+      :rtype: ``None``
       """
       return_entry = {
           "Type": entryTypes["note"],
