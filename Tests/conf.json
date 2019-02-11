@@ -1040,7 +1040,9 @@
         "Tenable.io test": "Error 409 ISSUE OPENED",
         "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
-        "RedLockTest": "RedLock has API issues - opened an issue (15493)"
+        "RedLockTest": "RedLock has API issues - opened an issue (15493)",
+        "GsuiteTest": "error was fixed only on server master and not on ",
+        "DUO Test Playbook": "DUO integration is failing"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
