@@ -8714,6 +8714,9 @@
                 "name": "Mail Sender (New)", 
                 "commands": [
                     "send-mail"
+                ], 
+                "tests": [
+                    "EWS Mail Sender Test"
                 ]
             }
         }, 
