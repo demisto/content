@@ -47,21 +47,23 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 
 
 def get_secrets(branch_name, is_circle):
-    secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
-    secrets_found = search_potential_secrets(secrets_file_paths)
+    secrets_found = {}
     secrets_found_string = ''
-    if secrets_found:
-        secrets_found_string += 'Secrets were found in the following files:\n'
-        for file_name in secrets_found:
-            secrets_found_string += ('\nFile Name: ' + file_name)
-            secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
-        if not is_circle:
-            secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
-        else:
-            secrets_found_string += 'The secrets were exposed in public repository,' \
-                                    ' remove the files asap and report it.\n'
-        secrets_found_string += 'For more information about whitelisting please visit: ' \
-                                'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
+    if not run_git_command('git rev-parse -q --verify MERGE_HEAD'):
+        secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
+        secrets_found = search_potential_secrets(secrets_file_paths)
+        if secrets_found:
+            secrets_found_string += 'Secrets were found in the following files:\n'
+            for file_name in secrets_found:
+                secrets_found_string += ('\nFile Name: ' + file_name)
+                secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
+            if not is_circle:
+                secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
+            else:
+                secrets_found_string += 'The secrets were exposed in public repository,' \
+                                        ' remove the files asap and report it.\n'
+            secrets_found_string += 'For more information about whitelisting please visit: ' \
+                                    'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
     return secrets_found, secrets_found_string
 
 
