@@ -114,9 +114,7 @@ def get_modified_files(files_string):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
-            if 'secrets_white_list.json' in file_path:
-                modified_files_list.append(file_path)
-            elif checked_type(file_path, ALL_TESTS):
+            if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
