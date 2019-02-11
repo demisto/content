@@ -15775,6 +15775,19 @@
                     "DeleteContext"
                 ]
             }
+        }, 
+        {
+            "TestParseEmailFile-deprecated-script": {
+                "name": "TestParseEmailFile-deprecated-script", 
+                "implementing_scripts": [
+                    "http", 
+                    "ParseEmailFile", 
+                    "ParseEmailFiles", 
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ]
+            }
         }
     ]
 }
