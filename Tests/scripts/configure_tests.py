@@ -53,6 +53,7 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
+
 class LOG_COLORS:
     NATIVE = '\033[m'
     RED = '\033[01;31m'
