@@ -127,6 +127,9 @@ script:
         var severityLevel = 0;
         var md = '';
         var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
         res = {}
         for (var i = 0; i < threat.blockSet.length; i++){
             if (threat.blockSet[i]['impact']) {
@@ -161,10 +164,10 @@ script:
         var threshold = params.urlThreshold;
         var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
-            ec.URL = {
-                        Data: url,
-                        Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                      };
+            ec[outputPaths.url] = {
+                Data: url,
+                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+            };
             for (var k = 0; k < threats.length; k++) {
                 threatAnalysis = checkThreat(threats[k], threshold, url);
                 threatArray[k] = threats[k].id;
@@ -176,14 +179,12 @@ script:
                     dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
                 }
             }
-            ec.URL['PhishMe'] = {};
-            ec.URL.PhishMe['ThreatIDs'] = threatArray;
-            ec.PhishMe = {
-                URL: {
-                    Data: url,
-                    Malicious: ec.URL.Malicious,
-                    ThreatIDs: threatArray
-                }
+            ec[outputPaths.url]['PhishMe'] = {};
+            ec[outputPaths.url].PhishMe['ThreatIDs'] = threatArray;
+            ec["PhishMe." + outputPaths.url] = {
+                Data: url,
+                Malicious: ec[outputPaths.url].Malicious,
+                ThreatIDs: threatArray
             };
         } else {
             md += "No information found for this url";
@@ -244,15 +245,13 @@ script:
         var threshold = params.emailThreshold;
         var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
-            ec.Email = {
+            ec[outputPaths.email] = {
                 'Data': sender_name,
                 'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
             };
-            ec.Account = {
-                'Email': {
-                    'Address': sender_name,
-                    'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
-                }
+            ec['Account.' + outputPaths.email] = {
+                'Address': sender_name,
+                'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
             };
             for (var k = 0; k < threats.length; k++) {
                 threatAnalysis = checkThreat(threats[k], threshold, sender_name);
@@ -265,14 +264,12 @@ script:
                     dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
                 }
             }
-            ec.Email['PhishMe'] = {};
-            ec.Email.PhishMe['ThreatIDs'] = threatArray;
-            ec.PhishMe = {
-                Email: {
-                    Data: sender_name,
-                    Malicious: ec.Email.Malicious,
-                    ThreatIDs: threatArray
-                }
+            ec[outputPaths.email]['PhishMe'] = {};
+            ec[outputPaths.email].PhishMe['ThreatIDs'] = threatArray;
+            ec['PhishMe.' + outputPaths.email] = {
+                Data: sender_name,
+                Malicious: ec[outputPaths.email].Malicious,
+                ThreatIDs: threatArray
             };
         } else {
             md += "No infomation found for this email";
@@ -293,13 +290,16 @@ script:
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.fileThreshold;
-        var threshold_score = calcScore(threshold);
         var indicatorFnd = false;
+        var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
         if (threats.length !== 0) {
-            ec.File = {
-                        MD5: str,
-                        Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                        };
+            ec[outputPaths.file] = {
+                MD5: str,
+                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+            };
             for (var k = 0; k < threats.length; k++) {
                 var severityLevel = 0;
                 for (var i = 0; i < threats[k].blockSet.length; i++){
@@ -324,14 +324,12 @@ script:
                     dbotScore = Math.max(dbotScore, severityLevel);
                 }
             }
-            ec.File['PhishMe'] = {};
-            ec.File.PhishMe['ThreatIDs'] = threatArray;
-            ec.PhishMe = {
-                File: {
+            ec[outputPaths.file]['PhishMe'] = {};
+            ec[outputPaths.file]['ThreatIDs'] = threatArray;
+            ec['PhishMe.' + outputPaths.file] = {
                     MD5: str,
-                    Malicious: ec.File.Malicious,
+                    Malicious: ec[outputPaths.file].Malicious,
                     ThreatIDs: threatArray
-                }
             };
         } else {
             md += "No information found for this hash";
@@ -352,19 +350,22 @@ script:
         var dbotScore = 0;
         var threatArray = [];
         var threshold = params.ipThreshold;
-        var threshold_score = calcScore(threshold);
         var indicatorFnd = false;
+        var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
         if (threats.length && threats.length !== 0) {
-            ec.IP = {
-                      Data: ip,
-                      Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                    };
+            ec[outputPaths.ip] = {
+                Data: ip,
+                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+            };
             for (var k = 0; k < threats.length; k++) {
                 var severityLevel = 0;
                 for (var i = 0; i < threats[k].blockSet.length; i++){
                     if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
-                        ec.IP.ASN = threats[k].blockSet[i].ipDetail.asn;
-                        ec.IP.GEO = {
+                        ec[outputPaths.ip].ASN = threats[k].blockSet[i].ipDetail.asn;
+                        ec[outputPaths.ip].GEO = {
                             "Location": (threats[k].blockSet[i].ipDetail.latitude + ', ' + threats[k].blockSet[i].ipDetail.longitude),
                             "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
                         };
@@ -390,14 +391,12 @@ script:
                     dbotScore = Math.max(dbotScore, severityLevel);
                 }
             }
-            ec.IP['PhishMe'] = {};
-            ec.IP.PhishMe['ThreatIDs'] = threatArray;
-            ec.PhishMe = {
-                IP: {
-                    Data: ip,
-                    Malicious: ec.IP.Malicious,
-                    ThreatIDs: threatArray
-                }
+            ec[outputPaths.ip]['PhishMe'] = {};
+            ec[outputPaths.ip].PhishMe['ThreatIDs'] = threatArray;
+            ec["PhishMe." + outputPaths.ip] = {
+                Data: ip,
+                Malicious: ec[outputPaths.ip].Malicious,
+                ThreatIDs: threatArray
             };
 
         } else {
@@ -431,7 +430,7 @@ script:
             case 'Major':
                 return 3;
             default:
-                return 0;
+                return -1;
         }
     }
 
