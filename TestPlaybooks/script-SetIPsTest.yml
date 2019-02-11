@@ -1,0 +1,36 @@
+commonfields:
+  id: SetIPsTest
+  version: -1
+name: SetIPsTest
+script: |2+
+
+  context_output = [{
+      'Address': '98.137.246.7'
+      },
+      {
+      'Address': '23.210.254.113'
+      },
+      {
+      'Address': '172.16.0.10'
+      }
+      ]
+
+  demisto.results( {
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['json'],
+      'Contents': context_output,
+      'EntryContext': {
+          'IP(val.Address === obj.Address)': context_output
+                   }
+  } )
+
+type: python
+tags:
+- test
+comment: |-
+  Sets IPs in context for testing purposes.
+  3 IPs are set: 1 internal, and 2 external.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

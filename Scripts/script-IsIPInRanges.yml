@@ -38,10 +38,8 @@ script: |
 type: javascript
 tags:
 - ip
-- Condition
 comment: Returns yes if ip is in one of the ranges provided, returns no otherwise.
 enabled: true
-system: true
 args:
 - name: ip
   required: true
@@ -60,3 +58,8 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Script configuration changed to be of a non-condition script."
+tests:
+  - IP Enrichment - Generic - NonReputation Test

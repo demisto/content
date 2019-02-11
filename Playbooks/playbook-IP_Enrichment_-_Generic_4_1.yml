@@ -1,0 +1,222 @@
+id: ip_enrichment_generic
+version: -1
+name: IP Enrichment - Generic
+fromversion: 4.1.0
+description: |-
+  Enrich IP using one or more integrations.
+
+  IP enrichment includes:
+  * Resolve IP to Hostname (DNS)
+  * Threat information
+  * Separate internal and external addresses
+  * IP reputation
+  * For internal addresses, get host information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    type: start
+    task:
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    type: title
+    task:
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: be9b245b-a51c-4e13-8695-7eb0572fe902
+    type: playbook
+    task:
+      id: be9b245b-a51c-4e13-8695-7eb0572fe902
+      version: -1
+      name: IP Enrichment - External - Generic
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      playbookName: IP Enrichment - External - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      InternalRange: {}
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 01ed48af-db70-4d7a-8642-f5c3f5ba125a
+    type: playbook
+    task:
+      id: 01ed48af-db70-4d7a-8642-f5c3f5ba125a
+      version: -1
+      name: IP Enrichment - Internal - Generic
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      playbookName: IP Enrichment - Internal - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      InternalRange: {}
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: The IP address to enrich.
+- key: InternalRange
+  value: {}
+  required: false
+  description: |-
+    The internal range to check against the IP address.
+    The default range is taken from the IPv4 protocol.
+- key: ResolveIP
+  value:
+    complex:
+      root: inputs.ResolveIP
+  required: true
+  description: Determines whether to convert the IP address to a hostname using a
+    DNS query (True/ False).
+- key: GetReputation
+  value:
+    complex:
+      root: inputs.GetReputation
+  required: false
+  description: |-
+    Determines whether to get reputation for the supported entities, using "!command" (such as "!ip"). Supported entities:
+    - IP
+    - File
+    - URL
+    - Domain
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+releaseNotes: "Rewrote playbook to call 2 separate sub-playbooks. One for internal IPs, the other for external ones."
+tests:
+  - IP Enrichment - Generic - NonReputation Test

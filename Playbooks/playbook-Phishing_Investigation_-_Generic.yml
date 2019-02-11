@@ -468,41 +468,16 @@ tasks:
       }
     note: false
     timertriggers: []
-  "25":
-    id: "25"
-    taskid: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
-    type: playbook
-    task:
-      id: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
-      version: -1
-      name: Entity Enrichment - Generic
-      description: ""
-      playbookName: Entity Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
   "26":
     id: "26"
-    taskid: 87a23c95-84b5-4343-8a01-d70c6f97702a
+    taskid: 84ba09c5-3908-4179-82b6-309a34ba30f6
     type: playbook
     task:
-      id: 87a23c95-84b5-4343-8a01-d70c6f97702a
+      id: 84ba09c5-3908-4179-82b6-309a34ba30f6
       version: -1
       name: Process Email - Generic
-      description: ""
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
@@ -511,7 +486,49 @@ tasks:
       '#none#':
       - "35"
       - "22"
+    scriptarguments:
+      Email:
+        complex:
+          root: incident
+          accessor: labels.Email
+      Email/cc:
+        complex:
+          root: incident
+          accessor: labels.CC
+      Email/format:
+        complex:
+          root: incident
+          accessor: labels.Email/format
+      Email/from:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+      Email/headers:
+        complex:
+          root: incident
+          accessor: labels.Email/headers
+      Email/html:
+        complex:
+          root: incident
+          accessor: labels.Email/html
+      Email/subject:
+        complex:
+          root: incident
+          accessor: labels.Email/subject
+      Email/text:
+        complex:
+          root: incident
+          accessor: labels.Email/text
+      File:
+        complex:
+          root: File
+      GetOriginalEmail:
+        simple: "False"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -714,7 +731,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "44"
     separatecontext: true
     view: |-
       {
@@ -981,6 +998,31 @@ tasks:
     timertriggers:
     - fieldname: remediationsla
       action: stop
+  "44":
+    id: "44"
+    taskid: 2acf431a-353c-4e94-8b50-969fcf405abc
+    type: playbook
+    task:
+      id: 2acf431a-353c-4e94-8b50-969fcf405abc
+      version: -1
+      name: Entity Enrichment - Phishing
+      playbookName: Entity Enrichment - Phishing
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1014,6 +1056,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+releaseNotes: "Phishing investigation playbook now utilizes a customized Entity Enrichment playbook to avoid enrichment of irrelevant entities."
 tests:
 - Phishing test - attachment
 - Phishing test - Inline

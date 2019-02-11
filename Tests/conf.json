@@ -1023,6 +1023,12 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "IP Enrichment - Generic - NonReputation Test",
+            "integrations": [
+                "Threat Crowd"
+            ]
         }
     ],
     "skipped_tests": {

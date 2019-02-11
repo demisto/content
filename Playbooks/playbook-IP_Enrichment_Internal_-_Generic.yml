@@ -1,0 +1,436 @@
+id: IP Enrichment - Internal - Generic
+version: -1
+name: IP Enrichment - Internal - Generic
+fromversion: 4.1.0
+description: |-
+  Enrich IP using one or more integrations.
+
+  IP enrichment includes:
+  * Resolve IP to Hostname (DNS)
+  * Threat information
+  * Separate internal and external addresses
+  * IP reputation
+  * For internal addresses, get host information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    type: start
+    task:
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 199
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    type: title
+    task:
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: a22c2045-33e0-4ad3-8627-15886227f805
+    type: title
+    task:
+      id: a22c2045-33e0-4ad3-8627-15886227f805
+      version: -1
+      name: Enrich internal IP addresses
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: b5a0e443-afd5-42ae-8d21-55f16885e641
+    type: condition
+    task:
+      id: b5a0e443-afd5-42ae-8d21-55f16885e641
+      version: -1
+      name: Are there any IP addresses?
+      description: Determine whether the playbook's input contains an IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: 6a9f70f7-69ce-4b60-878c-64ba678b723b
+    type: playbook
+    task:
+      id: 6a9f70f7-69ce-4b60-878c-64ba678b723b
+      version: -1
+      name: Endpoint Enrichment - Generic
+      description: Enrich an Endpoint Hostname using one or more integrations
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Endpoint.IP
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          accessor: Hostname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+  "34":
+    id: "34"
+    taskid: 22936bea-a0fc-4095-8fb7-9d74fa41159e
+    type: condition
+    task:
+      id: 22936bea-a0fc-4095-8fb7-9d74fa41159e
+      version: -1
+      name: Resolve the IP address?
+      description: Checks whether the ResolveIP parameter is set to "True".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ResolveIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: e11258e2-0fc7-4301-88d4-f2a928bc628e
+    type: regular
+    task:
+      id: e11258e2-0fc7-4301-88d4-f2a928bc628e
+      version: -1
+      name: IP to Hostname (DNS)
+      description: Convert the IP address to a hostname using DNS query.
+      scriptName: IPToHost
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: cbcd10d8-201a-414d-8356-6006c81ed53c
+    type: condition
+    task:
+      id: cbcd10d8-201a-414d-8356-6006c81ed53c
+      version: -1
+      name: Is there an internal IP address?
+      description: Checks whether the "InRange" attribute is set to "yes".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.InRange
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "yes"
+                    ignorecase: true
+                accessor: Address
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+  "40":
+    id: "40"
+    taskid: 40343557-643b-46c0-8f62-499ca72d65a7
+    type: regular
+    task:
+      id: 40343557-643b-46c0-8f62-499ca72d65a7
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: "Checks if the IP address is in the internal IP address ranges.\nAdds
+        \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
+        \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
+        \n"
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      ipRanges:
+        complex:
+          root: inputs.InternalRange
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+  "41":
+    id: "41"
+    taskid: 3dbd6139-a053-466c-8abf-86544d804022
+    type: title
+    task:
+      id: 3dbd6139-a053-466c-8abf-86544d804022
+      version: -1
+      name: No Internal IP Address
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_40_yes": 0.6,
+      "28_41_#default#": 0.4,
+      "34_24_#default#": 0.5,
+      "34_26_yes": 0.32,
+      "39_34_yes": 0.47,
+      "39_41_#default#": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1516,
+        "width": 1390,
+        "x": -560,
+        "y": 199
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: false
+  description: The IP address to enrich.
+- key: InternalRange
+  value: {}
+  required: false
+  description: |-
+    The internal range to check against the IP address.
+    The default range is taken from the IPv4 protocol.
+- key: ResolveIP
+  value:
+    complex:
+      root: inputs.ResolveIP
+  required: true
+  description: Convert the IP address to a hostname using a DNS query (True/ False).
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+releaseNotes: "A new generic playbook for internal IP enrichment (now as a separate playbook)"
+tests:
+  - IP Enrichment - Generic - NonReputation Test

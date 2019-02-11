@@ -1,7 +1,7 @@
-id: entity_enrichment_generic
+id: Entity Enrichment - Phishing
 version: -1
-name: Entity Enrichment - Generic
-fromversion: 3.6.0
+name: Entity Enrichment - Phishing
+fromversion: 4.1.0
 description: Enrich entities using one or more integrations
 starttaskid: "0"
 tasks:
@@ -13,17 +13,16 @@ tasks:
       id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
       - "9"
-      - "10"
-      - "12"
       - "11"
       - "13"
-      - "16"
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -101,39 +100,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "10":
-    id: "10"
-    taskid: 06158760-6f5f-466e-8e57-d37f7ec29066
-    type: playbook
-    task:
-      id: 06158760-6f5f-466e-8e57-d37f7ec29066
-      version: -1
-      name: Endpoint Enrichment - Generic
-      description: Enrich an Endpoint Hostname using one or more integrations
-      playbookName: Endpoint Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Hostname:
-        simple: ${inputs.Hostname}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
   "11":
     id: "11"
     taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
@@ -162,40 +128,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 709
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
-    type: playbook
-    task:
-      id: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
-      version: -1
-      name: Account Enrichment - Generic
-      description: Enrich Accounts using one or more integrations
-      playbookName: Account Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Username:
-        simple: ${inputs.Username}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 549
         }
       }
     note: false
@@ -254,19 +187,19 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 881
+          "y": 821
         }
       }
     note: false
     timertriggers: []
-  "16":
-    id: "16"
-    taskid: 7f0308e7-6722-47ff-844f-35dc22d11546
+  "17":
+    id: "17"
+    taskid: 3cb6ebba-40c7-4f8f-859d-218977d7564f
     type: playbook
     task:
-      id: 7f0308e7-6722-47ff-844f-35dc22d11546
+      id: 3cb6ebba-40c7-4f8f-859d-218977d7564f
       version: -1
-      name: IP Enrichment - Generic
+      name: IP Enrichment - External - Generic
       description: |-
         Enrich IP using one or more integrations.
 
@@ -276,7 +209,7 @@ tasks:
         * Separate internal and external addresses
         * IP reputation
         * For internal addresses, get host information
-      playbookName: IP Enrichment - Generic
+      playbookName: IP Enrichment - External - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -284,6 +217,9 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      GetReputation:
+        complex:
+          root: inputs.GetReputation
       IP:
         complex:
           root: inputs.IP
@@ -312,7 +248,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 879,
+        "height": 819,
         "width": 810,
         "x": 50,
         "y": 67
@@ -499,6 +435,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
-releaseNotes: "Multiple improvements to IP enrichment"
+releaseNotes: "A new entity enrichment playbook for phishing to avoid enrichment of irrelevant entities."
 tests:
   - no test - each entity has or will have its own test
