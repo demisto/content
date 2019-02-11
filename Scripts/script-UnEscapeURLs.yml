@@ -3,23 +3,6 @@ commonfields:
   version: -1
 name: UnEscapeURLs
 script: |-
-  // Check if it is a Mimecast Protected URL
-  var mimecast_re = /https:\/\/\w*-(api|eu|us|de|za|au)\.mimecast.com\/s\//;
-  // If it is a Mimecast Protected URL
-  if (mimecast_re.test(args.input)) {
-      var mimecast_cmd = 'mimecast-url-decode';
-      if (isCommandAvailable(mimecast_cmd)) {
-          var cmd_response = executeCommand(mimecast_cmd, {'url': args.input});
-          var decoded_url = cmd_response[0].Contents['Decoded URL'];
-          return decoded_url;
-      } else {
-          // If no Mimecast instance, log error and return non-decoded URL
-          var error_msg = 'Mimecast Protected URL could not be decoded because ';
-          error_msg += 'no instance of the Mimecast integration was found to be running.';
-          logInfo(error_msg);
-          return args.input;
-      }
-  }
   // Check if it is a Microsoft ATP Safe Link
   var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
   if (atp_link_re.test(args.input)) {
@@ -72,9 +55,8 @@ type: javascript
 tags:
 - indicator-format
 comment: |-
-  Extract original URLs from Protected URLs from security tools like Proofpoint, Mimecast and Microsoft ATP.
+  Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
   Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
-  Changes https://sandbox-api.mimecast.com/s/izY4CzmwniM0H47o1B -> urltest.com
   Changes na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com -> http://www.avanan.com
   Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
 enabled: true
@@ -85,6 +67,6 @@ args:
   description: The URL to process
 scripttarget: 0
 runonce: false
-releaseNotes: "Adding ability to handle Mimecast and Microsoft ATP protected URLs"
+releaseNotes: "Adding ability to handle Microsoft ATP protected URLs"
 tests:
   - UnEscapeURLs-Test
