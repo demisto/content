@@ -15630,6 +15630,22 @@
                     "fd-get-canned-response-folder": ""
                 }
             }
+        }, 
+        {
+            "EclecticIQ Test": {
+                "name": "EclecticIQ Test", 
+                "implementing_scripts": [
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "domain": "integration-EclecticIQ_Platform", 
+                    "url": "integration-EclecticIQ_Platform", 
+                    "ip": "integration-EclecticIQ_Platform", 
+                    "file": "integration-EclecticIQ_Platform", 
+                    "eclecticiq-get-observable-related-entity": "", 
+                    "email": "integration-EclecticIQ_Platform"
+                }
+            }
         }
     ]
 }
