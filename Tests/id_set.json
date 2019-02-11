@@ -11631,6 +11631,9 @@
                     "url", 
                     "phishtank-reload", 
                     "phishtank-status"
+                ], 
+                "tests": [
+                    "PhishTank Testing"
                 ]
             }
         }, 
