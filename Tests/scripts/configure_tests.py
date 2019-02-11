@@ -50,6 +50,9 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
              "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
              "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
 
+# secrets white list file to be ignored in tests to prevent full tests running each time it is updated
+SECRETS_WHITE_LIST = 'secrets_white_list.json'
+
 
 class LOG_COLORS:
     NATIVE = '\033[m'
@@ -122,6 +125,8 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+            elif SECRETS_WHITE_LIST in file_path:
+                modified_files_list.append(file_path)
             elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
                 all_tests.append(file_path)
 
@@ -161,7 +166,7 @@ def get_tests(file_path):
     """Collect tests mentioned in file_path"""
     data_dictionary = get_json(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
-    if 'secrets_white_list.json' in file_path:
+    if SECRETS_WHITE_LIST in file_path:
         data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
