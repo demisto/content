@@ -250,5 +250,6 @@
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
-  ]
+  ],
+  "releaseNotes": "Added reputation value and context paths for IPs, escaped IPs, domains, MD5, SHA1, URL and escaped URL. Removed unnecessary scripts."
 }
