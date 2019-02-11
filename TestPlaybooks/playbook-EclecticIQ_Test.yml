@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: ip
       description: Get reputation of IP address observable
-      script: integration-EclecticIQ_Platform|||ip
+      script: EclecticIQ Platform|||ip
       type: regular
       iscommand: true
-      brand: integration-EclecticIQ_Platform
+      brand: EclecticIQ Platform
     nexttasks:
       '#none#':
       - "2"
@@ -157,10 +157,10 @@ tasks:
       id: 65f761f4-cf19-4671-8a50-9173f609e02e
       version: -1
       name: url
-      script: integration-EclecticIQ_Platform|||url
+      script: EclecticIQ Platform|||url
       type: regular
       iscommand: true
-      brand: integration-EclecticIQ_Platform
+      brand: EclecticIQ Platform
     nexttasks:
       '#none#':
       - "5"
@@ -329,10 +329,10 @@ tasks:
       id: 9ba5db8c-03ec-4c3b-88de-8de8836858b1
       version: -1
       name: domain
-      script: integration-EclecticIQ_Platform|||domain
+      script: EclecticIQ Platform|||domain
       type: regular
       iscommand: true
-      brand: integration-EclecticIQ_Platform
+      brand: EclecticIQ Platform
     nexttasks:
       '#none#':
       - "8"
@@ -478,10 +478,10 @@ tasks:
       id: d07f29f6-531e-4492-8f1d-e7ee1258ab07
       version: -1
       name: email
-      script: integration-EclecticIQ_Platform|||email
+      script: EclecticIQ Platform|||email
       type: regular
       iscommand: true
-      brand: integration-EclecticIQ_Platform
+      brand: EclecticIQ Platform
     nexttasks:
       '#none#':
       - "11"
@@ -625,10 +625,10 @@ tasks:
       id: a05c39f2-ec80-49f2-86ee-e853f0e32938
       version: -1
       name: file
-      script: integration-EclecticIQ_Platform|||file
+      script: EclecticIQ Platform|||file
       type: regular
       iscommand: true
-      brand: integration-EclecticIQ_Platform
+      brand: EclecticIQ Platform
     nexttasks:
       '#none#':
       - "14"
