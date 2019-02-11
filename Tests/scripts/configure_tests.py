@@ -162,7 +162,8 @@ def get_to_version(file_path):
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
     data_dictionary = get_json(file_path)
-
+    if 'secrets_white_list.json' in file_path:
+        data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
 
