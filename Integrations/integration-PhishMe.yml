@@ -165,8 +165,7 @@ script:
         var indicatorFnd = false;
         if (threats.length && threats.length !== 0) {
             ec[outputPaths.url] = {
-                Data: url,
-                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+                Data: url
             };
             for (var k = 0; k < threats.length; k++) {
                 threatAnalysis = checkThreat(threats[k], threshold, url);
@@ -179,13 +178,20 @@ script:
                     dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
                 }
             }
+
             ec[outputPaths.url]['PhishMe'] = {};
             ec[outputPaths.url].PhishMe['ThreatIDs'] = threatArray;
             ec["PhishMe." + outputPaths.url] = {
                 Data: url,
-                Malicious: ec[outputPaths.url].Malicious,
                 ThreatIDs: threatArray
             };
+            if (dbotScore === 3) {
+                ec[outputPaths.url].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
+            }
         } else {
             md += "No information found for this url";
         }
@@ -244,14 +250,13 @@ script:
         var threatArray = [];
         var threshold = params.emailThreshold;
         var indicatorFnd = false;
+        var contextEmailKey = 'Email(val.Data && val.Data === obj.Data)';
         if (threats.length && threats.length !== 0) {
-            ec[outputPaths.email] = {
-                'Data': sender_name,
-                'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
+            ec[contextEmailKey] = {
+                'Data': sender_name
             };
-            ec['Account.' + outputPaths.email] = {
-                'Address': sender_name,
-                'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
+            ec[outputPaths.email] = {
+                'Address': sender_name
             };
             for (var k = 0; k < threats.length; k++) {
                 threatAnalysis = checkThreat(threats[k], threshold, sender_name);
@@ -264,13 +269,20 @@ script:
                     dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
                 }
             }
-            ec[outputPaths.email]['PhishMe'] = {};
-            ec[outputPaths.email].PhishMe['ThreatIDs'] = threatArray;
-            ec['PhishMe.' + outputPaths.email] = {
+            ec[contextEmailKey]['PhishMe'] = {};
+            ec[contextEmailKey].PhishMe['ThreatIDs'] = threatArray;
+            ec['PhishMe.' + contextEmailKey] = {
                 Data: sender_name,
-                Malicious: ec[outputPaths.email].Malicious,
                 ThreatIDs: threatArray
             };
+            if (dbotScore === 3) {
+                ec[outputPaths.email].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
+            }
+
         } else {
             md += "No infomation found for this email";
         }
@@ -297,8 +309,7 @@ script:
         }
         if (threats.length !== 0) {
             ec[outputPaths.file] = {
-                MD5: str,
-                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+                MD5: str
             };
             for (var k = 0; k < threats.length; k++) {
                 var severityLevel = 0;
@@ -328,9 +339,15 @@ script:
             ec[outputPaths.file]['ThreatIDs'] = threatArray;
             ec['PhishMe.' + outputPaths.file] = {
                     MD5: str,
-                    Malicious: ec[outputPaths.file].Malicious,
                     ThreatIDs: threatArray
             };
+            if (dbotScore === 3) {
+                ec[outputPaths.file].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
+            }
         } else {
             md += "No information found for this hash";
         }
@@ -357,8 +374,7 @@ script:
         }
         if (threats.length && threats.length !== 0) {
             ec[outputPaths.ip] = {
-                Data: ip,
-                Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
+                Data: ip
             };
             for (var k = 0; k < threats.length; k++) {
                 var severityLevel = 0;
@@ -395,10 +411,15 @@ script:
             ec[outputPaths.ip].PhishMe['ThreatIDs'] = threatArray;
             ec["PhishMe." + outputPaths.ip] = {
                 Data: ip,
-                Malicious: ec[outputPaths.ip].Malicious,
                 ThreatIDs: threatArray
             };
-
+            if (dbotScore === 3) {
+                ec[outputPaths.ip].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
+            }
         } else {
             md += "No information found for this ip";
         }
