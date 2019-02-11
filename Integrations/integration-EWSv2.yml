@@ -1962,7 +1962,7 @@ script:
       - "False"
       description: Is the folder a Public Folder?
     - name: message-id
-      description: The message id string.
+      description: The message id of email. Will be ignored if query argument is provided.
     outputs:
     - contextPath: EWS.Items.itemId
       description: The email item id.
