@@ -68,7 +68,8 @@ script:
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_TIME_DEFAULT = '3 days'
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
     SESSION = None
 
     def get_server_url():
@@ -1680,6 +1681,9 @@ script:
         if not last_run:
             last_run = {}
         if 'time' not in last_run:
+            if FETCH_TIME is None or FETCH_TIME =='':
+                FETCH_TIME = FETCH_TIME_DEFAULT
+
             # get timestamp in seconds
             timestamp, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
             timestamp /= 1000
@@ -2549,3 +2553,4 @@ script:
   isfetch: true
 tests:
   - tenable-sc-test
+releaseNotes: validate FETCH_TIME param and set default value
