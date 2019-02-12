@@ -5841,7 +5841,10 @@
                 "command_to_integration": {
                     "nexpose-start-assets-scan": "Rapid7 Nexpose", 
                     "nexpose-get-scan": "Rapid7 Nexpose"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -6409,7 +6412,10 @@
                 "command_to_integration": {
                     "nexpose-start-site-scan": "Rapid7 Nexpose", 
                     "nexpose-get-scan": "Rapid7 Nexpose"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -6482,7 +6488,10 @@
                 "command_to_integration": {
                     "nexpose-create-assets-report": "Rapid7 Nexpose", 
                     "nexpose-search-assets": "Rapid7 Nexpose"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -6560,7 +6569,10 @@
                     "epo-update-repository": "epo", 
                     "epo-get-latest-dat": "epo", 
                     "epo-get-current-dat": "epo"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
