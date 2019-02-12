@@ -5688,6 +5688,9 @@
                 ], 
                 "implementing_commands": [
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -6879,6 +6882,9 @@
                 "implementing_commands": [
                     "closeInvestigation", 
                     "setIncident"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
