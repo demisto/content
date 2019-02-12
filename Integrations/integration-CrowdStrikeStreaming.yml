@@ -40,6 +40,63 @@ detaileddescription: Use these detailed instructions in order to retrieve the AP
 display: CrowdStrike Falcon Streaming V2
 name: integration-CrowdStrikeStreaming
 script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of the IoC to upload.
+      isArray: false
+      name: ioc_type
+      predefined:
+      - sha1
+      - sha256
+      - md5
+      - ipv4
+      - ipv6
+      - domain
+      required: true
+      secret: false
+    - default: false
+      description: The value of the IoC to upload.
+      isArray: false
+      name: ioc_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The policy that should be enacted when the value is detected on a host.
+        * detect: Send a notification when the particular indicator has been detected on a host.
+        * none: Take no action when the particular indicator has been detected on a host. This is equivalent to turning the indicator off.
+      isArray: false
+      name: policy
+      predefined:
+      - detect
+      - none
+      required: false
+      secret: false
+    - default: false
+      description: This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types.
+      isArray: false
+      name: expiration_days
+      required: false
+      secret: false
+    - default: false
+      description: The source where this indicator originated (limit 200 characters).
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: Description for the indicator (limit 200 characters).
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    description: Uploads a new custom IoC to crowdstrike watch list.
+    execution: false
+    name: crowdstrike-create-ioc
   isfetch: true
   runonce: false
   script: |-
@@ -94,6 +151,8 @@ script:
         'user_name': 'UserName'
     }
 
+    ''' SPLIT KEY DICTIONARY '''
+
     #   Pattern: {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
     DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
         {
@@ -124,7 +183,6 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-
     def http_request(method, url_suffix, params=None, data=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         demisto.info('#### url: {}'.format(SERVER + url_suffix))
@@ -137,13 +195,23 @@ script:
             headers=HEADERS,
             auth=(USERNAME, PASSWORD)
         )
-        demisto.info('#### AFTER REQUEST')
         demisto.info('#### STATUS CODE: {}'.format(res.status_code))
         # Handle error responses gracefully
         if res.status_code not in {200}:
             return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
-        demisto.info("\n\n{0}\n\n".format(str(res.json())))
+        demisto.info("#### RESULT: {}".format(str(res.json())))
         return res.json()
+
+
+    def create_entry_object(contents='', ec='', hr=''):
+        return {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
 
 
     def behavior_to_incident(behavior, raw_response):
@@ -192,17 +260,9 @@ script:
         return new_dict
 
 
-    ''' COMMANDS + REQUESTS FUNCTIONS '''
+    ''' REQUESTS FUNCTIONS '''
 
-
-    def test_module():
-        """
-        Performs basic get request to get item samples
-        """
-        return http_request('GET', 'detects/queries/detects/v1')
-
-
-    def get_detections_request(last_behavior_time):
+    def get_detections(last_behavior_time):
         # The service endpoint to request from
         endpoint_url = '/detects/queries/detects/v1'
         # Dictionary of params for the request
@@ -218,13 +278,39 @@ script:
         return response
 
 
-    def get_detections_entities_request(detections_ids):
+    def get_detections_entities(detections_ids):
         ids_json = {'ids': detections_ids}
         demisto.info("#### Data: {0}".format(json.dumps(ids_json)))
         if detections_ids:
             response = http_request('POST', '/detects/entities/summaries/GET/v1', data=json.dumps(ids_json))
             return response
         return detections_ids
+
+
+    def create_ioc():
+        args = demisto.args()
+        payload = {}
+        try:
+            payload['ioc_type'] = args['ioc_type']
+            payload['ioc_value'] = args['ioc_value']
+            payload['policy'] = args['policy']
+        except KeyError, e:
+            arg = e.args[0]
+            return_error("Command Error: Please provide mandatory argument: {0}".format(arg))
+        payload['expiration_days'] = args.get('expiration_days')
+        payload['source'] = args.get('source')
+        payload['description'] = args.get('description')
+        return http_request('POST', '/indicators/entities/iocs/v1', params=payload)
+    # TODO: Check how an error response looks like
+
+
+    ''' COMMANDS FUNCTIONS '''
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        return http_request('GET', 'detects/queries/detects/v1')
 
 
     def fetch_incidents():
@@ -239,8 +325,8 @@ script:
         last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
 
         incidents = []
-        detections_ids = demisto.get(get_detections_request(last_fetch), 'resources')
-        raw_res = get_detections_entities_request(detections_ids)
+        detections_ids = demisto.get(get_detections(last_fetch), 'resources')
+        raw_res = get_detections_entities(detections_ids)
         demisto.info('\n#### Items: {}\n'.format(raw_res))
         demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
         if "resources" in raw_res:
@@ -258,6 +344,11 @@ script:
         demisto.incidents(incidents)
 
 
+    def create_ioc_command():
+        raw_res = create_ioc()
+        return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
+
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -269,4 +360,6 @@ script:
     elif demisto.command() == 'fetch-incidents':
         # Set and define the fetch incidents command to run after activated via integration settings.
         fetch_incidents()
+    elif demisto.command() == 'crowdstrike-create-ioc':
+        demisto.results(create_ioc_command())
   type: python
