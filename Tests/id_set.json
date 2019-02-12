@@ -15702,6 +15702,19 @@
                     "fd-get-canned-response-folder": ""
                 }
             }
+        }, 
+        {
+            "IP Enrichment - Generic - NonReputation Test": {
+                "name": "IP Enrichment - Generic - NonReputation Test", 
+                "implementing_scripts": [
+                    "SetIPsTest", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "implementing_playbooks": [
+                    "IP Enrichment - Generic"
+                ]
+            }
         }
     ]
 }
