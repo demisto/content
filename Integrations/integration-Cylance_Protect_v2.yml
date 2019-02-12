@@ -2218,4 +2218,3 @@ script:
   runonce: false
 tests:
   - Cylance Protect v2 Test
-releaseNotes: "Better error handling for cylance-protect-get-device when no device is found"
