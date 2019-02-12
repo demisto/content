@@ -5,7 +5,9 @@ name: Tufin
 display: Tufin
 category: Network Security
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABoCAYAAABLw827AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAACs9JREFUeNrsnXuwVVUdx9e9V15yb15QfCAvJRXDLEQd0zRAFFTUlAIJi5pMqxknnXJGG/9IalTKsWxSJ0lixsSaBnWuolMpAVLmIzU1BB88LgmKoiAPCQH7/Wavm4fjuffus8/ea+21z+cz8x0ucM9ea//2Ot+19tp7/VbDtpnDDEDGDBaNFI0QDRcNFPUXtYg+Ieplf1ZaRQ32552ibaINVitFz4meEf1dtIvQ1hcNGBZkQB/ROaLzRaeJhmRQxibRw6KvEG4MCyAJR4m+L5omanbVhgl7/bAPIYAU0Nu4n4guo01BEQ1L5zJ2iFZzCYLnVNE9okMJBWRNo6NydIJ1smi2qF30kuhkwh88F4kexawg9BFWk+hE0ZmiCfbnJsJdKHSe6i6uK4RqWINEE61JnW5HVVBMjhX9BrOCkAxrXxPNX0ywRnU04awL1KTm2OsPkGvD+rToDGtS+n5Nb0JYd3xdNJowQB4Nq3+JQZ1hb/ugvtvL1YQB8mRYx4vOs7d5xxnmKeAjxos+SRggT4Y1x976AZQzlRCATxoJAVQ5wgLI1QgLoBKaZSEPc5h7RGtE7xieVGJYAJ0w0mPZH4oeMtGLqn+xZgUYFkCnHOmp3MdE3xW9yCUA5rAgLod4KPOXojGYFTDCgmo5wHF580VX2NtBAEZYkNvOTVMPXY5ZAYYFSWlxWNaDovWEHDAsCKGtLCTcgGFBKLxCCADDglDYQQgAwwKAwhnWgYQFKrAfIYC8GZamljnIUdnNhD8Y9Fod57C8VkIOlSh/t+ZHDsvWlf93cAmC4NvG7ULja020q/NuQp97dCNbXQUx0HY0rfbftojeM9FCdX1FZU8qhZXs/HyxiRaXukJfChwjWsI1zzUniRaJejkud57oe6K3U+iUWzzFTh8evF/F7+ub/Qc7ruNy0dwqfn+AiTaa0W36ThB9StS3m89sFT0vWmw7or8lNTA1LM0oOkN0m4dGqS58g6hN9B/R5oS9/1WeGuQ6E23EEQfN4vpzT/W80sa4GnqKfiq6VNTH4xd+ie2lS996f1X0s5jH+LyJFlD74EbRNVX8vn6pXSfPXCCa1M3v6AhK96Ccak2q1od1q+3d1a12FFZV77PeuqYPtOe73ippUHUIenhObqm7otljPZPMF/axIxyf9La9eTlLqzAs6JquBikn2zZwgahHimUOs9/5H4iuE/0q7oir0aNZAYB/Rpm9nwBrJ6ybzjxib92mpGxWpegmN7fYEXCs3cPJ1gBQ3+wvekn0uInmonSX9n6O66AjuadFZ4uexbAAoCt0jupCz3XQhw2aTXas6IWubgkBAPIy2muzf2JYAJB7holmY1gAEAr6VPJcDAsAQmFWJX/CsAAgjxwtOgfDAoBQ+BqGBQChoO9l9cWwACAENEPI5zAsgHzCtmYf55Ryw3oi8BPSNU9/DaCeGuffm5TyAjlgu+jPBWjwq0yU3SEEvmmiDCDwEceUG5Y62K0eK6T5gnQBpC641Nw6wyvoki4+r2uQxpnoicLmHAf+NdE0E6U7eTOAhvKBnUOY47EOmqVDF9+OKGsPU6s4xusmSonyTAAx17b8BdFb+NT/GV76F11LqFkddZddXcsz2XFlVojOsr1grTxkolQki4y//E1x0EWmk+yfeV/LqW1D842NFn3G8a3RV0V3p3S8TaLzrWnlPTuJjgZn2PYMxgwuH2F1NBBN8rbTcWVmpGRWHTxpoqRpIfSkoaSH1pHWTMdl3p2iWXWgCSK/FUjMNSvn7xyXqXnxfmyiRH1TyjRd9Atr/K7ZKzV3aYpkZZ69bXHBMtHIDI6ruaXXGjcPFNpFQxN+9gjRy45iPd1e26ToSPAN08Wi1JTRZRkPZmgGEx2dR7UZR0sZYqINZXs6qOdaO4J+t5vfGyS6z0Sb1bikoXyE1cG9DiuxLKPjrkt51JYV2hjXBNLj7zJR+l5XtGd47JsCibnGoM1RWffEMKuOUer4DL+73VJuWI87LDvL28/tgTTKlQHNJWx0WFaWj/cXmSrziHtksaNyllfxu/pgS99A9/K0u7HC6ATcsT2gurqc38xyz8rdDm/Fa2W9o3KqnZv6p/H0KlFjhZ5tCz4CFXC5o1JTxsffEUjMXdUzSWf0QB4My5hwXmwEt/QmBFDCU3kxLACA7vDywAjDAoAkbMWwAADDwrAAIGV6+CgUwwKAJPTyUSiGBQCMsACg0OyLYQEAYFgAgGEBAGBYQLsEoGFAGLQQAsCwAADDAgDAsAAAMCwAwLAAADAsAAAMCwAwrLrhv4QAAMMKhR2EAADDCoVthAAAwwqFXYQAoD4Mq0cB4sccFkCdGNYBBYhfL5pQJvQhBJA3wzqyAPHbnyaUCT0JAeTNsA4VjQg8focZ5gEB6sKwlAmBx693jaYbktnt5uvi/Pr2dNiOMawYXFSARjm5hs+6SlSXxpyQy51+98n4+K4e+Ayp8fOu2sfhoUwR+Dask0TjAjesy0X9PDXouAxM4RguHzAMzvj4Bzk6j9NFTTV8fpCjek7M+XesJU+3JLeL9gvYsAaI/ijqW+XnRjo0rBNTOMbBDmM6JsNjHyga6rBtTKvh8+McxntUjr9jw/NkWPq0sE3UP8Vjun4/SnvSJ0UXxOxRtYef67h+tWx8qdfmBIf1HWcNPQumixocnsv1CW/tRjs0LPWBOcbT5qgx+FLHDw3bZg4r/8+NKZtHXFaKLhT9K4VjLRSN9RTcDaJnRWtE75u91xtqwzjMDsGbHddLzfT+hJ+dLbrEcX2fsj3/9hSPeYxoqYcR/XzRl0UfVnFLvNThCLyDe62hx1kjO8S2cRfo/OnxohWVDGu1wyFzORqoH4puEe2p4Th/EE0xUMrDorOr/IxOds4SXeGpzkvsdXwzhWOdao1jgKdz0c7iYtP9+lMdLLwoOsRTPZ8XXWk7/bwYlvKG6NJKt4QbPX6p9PHqzaKn7Sgk6S3rKvzpY5wluqHK26HHPJqVcppouWh8Csea5tGslC+aeE/jmj2alXKs6Lc5bL86h9rW2ImT+WaUHRGsSnhf/W/8qSJXix618yNxG4lvWkVHcOnAdDKCeSVH9dNhZ5J3Zv7Bpe2UsTntQQESGdYLBTgvNd12Li9A8Q2rKKOTeVxegOIb1jLjdvY/K+aa+I+RASBQw9Iv+fwCnNsKE72QCgAFNixFl8vsKcD5XWvIMgBQeMN6VXRXAc5PX8CbxWUGKLZhKfrG+TsFOMfrRE9wqQGKbVjrRN8w4U9c7xSda0eNAFBQw1J00vo7BTCtt0y08n0ZlxyguIal/NpE67BC3zR0rYkWwPp8cqiZHG4yUZZSzZ7wJ5ogQLqGpWj2A03vsDDw89U5OV2EepnobYflvmai9CyaNuQqE6XxuN/WZQvNECBdw1J01bwmgpskWhzwOevt7R0mWlB7o+i9jMr5QLRAdJ7oKNGdJppPK0XT6bxLMwSIR5Jk/wus9AuvuYo0DYxmo0wz53e7HdXp8prNGZ37JtE1JsoIqRkNdUOMMaa2nUq0ro+YKNOEjqA2xoyn601l466z1Pj3z0E7TWPuURPiNXk+jzhP3bfaDpV6VqBSAr8kqFl91kRbXuloQpPna+7sfiWNpKXMILfaEccGq9dtw9RcWC97ulCal/0UE6Vf0bxAQ+1tnP57q63vJis1J32SqovFNenZcybKmlqEF24Bcsn/BBgAr4qtqkfLSPAAAAAASUVORK5CYII=
-description: Tufin
+description: Retrieve and analyze network access controls across Tufin-managed firewalls,
+  SDN, and public cloud to identify vulnerable access paths of an attack
+detaileddescription: Learn more about Tufin at [https://www.tufin.com/](https://www.tufin.com/)
 configuration:
 - display: SecureTrack User Credentials
   name: SecureTrack-User
@@ -22,6 +24,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     import json
@@ -29,11 +36,17 @@ script:
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
 
     # Request something from TOS
     def tos_request(path, params=None, headers=None):
-        # Get something from TOS
+        """ Function to access TOS via REST API """
         if headers is None:
             headers = {
                 'accept': "application/json",
@@ -68,7 +81,9 @@ script:
 
 
     def path_finder():
-        # querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:22","includeIncompletePaths":"true"}
+        """ Sample query: querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:22","includeIncompletePaths":"true"} """
+
+        # Build the query from user input
         querystring = {
             "src": demisto.args()['Source'],
             "dst": demisto.args()['Destination'],
@@ -76,6 +91,7 @@ script:
             "includeIncompletePaths": "true"
         }
 
+        # Define the basic output for the function, augmenting later with TOS data
         entry = {
             'Type': entryTypes['note'],
             'Contents': '',
@@ -85,22 +101,29 @@ script:
             'EntryContext': {}
         }
 
+        # Ask TOS for the path
         o = tos_request("/securetrack/api/topology/path", querystring)
 
+        # Verify the data and return
         try:
             entry['EntryContext']['Tufin.TrafficAllowed'] = o['path_calc_results']['traffic_allowed']
-            entry['EntryContext']['Tufin.JSON'] = o['path_calc_results']['device_info']
+            entry['EntryContext']['Tufin.TrafficRawJSON'] = o['path_calc_results']['device_info']
+            entry['EntryContext']['Tufin.TrafficDevices'] = [d['name'] for d in o['path_calc_results']['device_info']]
             entry['Contents'] = o['path_calc_results']['device_info']
             entry['HumanReadable'] = tableToMarkdown('Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'], querystring['dst'], querystring['service'], ('**Denied**', '**Allowed**')[o['path_calc_results']['traffic_allowed']]),
             {'Start': querystring['src'], 'Devices in Path' : "-->".join(['**' + d['name'] + '**' + ' ({})'.format(d['vendor']) for d in o['path_calc_results']['device_info']]), 'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
-        except:
-            return('Unknown Output Returned')
+        except KeyError:
+            entry['HumanReadable'] = 'Unknown Output Returned'
+            entry['Contents'] = 'Unknown Output Returned'
+            entry['ContentsFormat'] = formats['text']
+            entry['Type'] = entryTypes['error']
+            return entry
 
         return entry
 
 
     def path_finder_image():
-        # querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:80","includeIncompletePaths":"true","displayBlockedStatus":"true"}
+        """ Sample query: querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:80","includeIncompletePaths":"true","displayBlockedStatus":"true"} """
         querystring = {
             "src": demisto.args()['Source'],
             "dst": demisto.args()['Destination'],
@@ -137,7 +160,7 @@ script:
 
 
     def object_lookup():
-        # querystring = {"filter":"subnet","count":"50","exact_subnet":"1.1.1.1"}
+        """ Sample query: querystring = {"filter":"subnet","count":"50","exact_subnet":"1.1.1.1"} """
         querystring = {
             "filter":"subnet",
             "count":"50",
@@ -169,12 +192,14 @@ script:
 
         # Return to Demisto
         entry['Contents'] = json.dumps(return_json)
-        entry['HumanReadable'] = tableToMarkdown('Object Lookup for {}'.format(querystring['exact_subnet']), return_json['objects'], ['object_name', 'device', 'comment'], underscoreToCamelCase)
+        entry['HumanReadable'] = tableToMarkdown('Object Lookup for {}'.format(querystring['exact_subnet']), return_json['objects'], ['object_name', 'device', 'comment'], underscoreToCamelCase, removeNull=True)
         return entry
 
 
     def policy_search():
+        """ Search policy across all devices.  See docs for syntax """
         u = '/securetrack/api/rule_search'
+        max_rules_per_device = 100
         querystring = {"search_text": demisto.args()['search']}
 
         entry = {
@@ -186,30 +211,38 @@ script:
         }
 
         matches = tos_request(u, querystring)
-        search_devices = [e['device_id'] for e in matches['device_list']['device'] if e['rule_count'] > 0]
+        search_devices = [e['device_id'] for e in matches['device_list']['device'] if int(e['rule_count']) > 0]
         if not len(search_devices):
             entry['HumanReadable'] = 'No Results Found'
             return entry
         else:
+            querystring['count'] = max_rules_per_device
+            querystring['start'] = 0
             rule_return = []
             device_json = tos_request('/securetrack/api/devices')['devices']['device']
             for d in search_devices:
                 rules = tos_request(u + '/{}'.format(d), querystring)
                 # If no matches(there should be) just break the iteration
-                if rules['rules']['count'] < 1:
+                if rules['rules']['count'] == 0:
                     break
+
+                current_device = device_name(device_json, d)
+                # except Exception as e:
+                #     entry['HumanReadable'] = str(e)
+                #     return entry
+
                 for rule in rules['rules']['rule']:
                     rule_return.append({
-                    'Device': device_name(device_json, d),
-                    'Source': [d['display_name'] for d in rule['src_network']],
-                    'Source Service': [d['display_name'] for d in rule['src_service']],
-                    'Destination': [d['display_name'] for d in rule['dst_network']],
-                    'Destination Service': [d['display_name'] for d in rule['dst_service']],
-                    'Action': rule['action']
+                        'Device': current_device,
+                        'Source': [d['display_name'] for d in rule['src_network']],
+                        'Source Service': [d['display_name'] for d in rule['src_service']],
+                        'Destination': [d['display_name'] for d in rule['dst_network']],
+                        'Destination Service': [d['display_name'] for d in rule['dst_service']],
+                        'Action': rule['action']
                     })
             # Send back to Demisto
             entry['Contents'] = json.dumps(rule_return)
-            entry['HumanReadable'] = tableToMarkdown('Policy Search Results for: {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service','Destination', 'Destination Service', 'Action'])
+            entry['HumanReadable'] = tableToMarkdown('Policy Search Results for: {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
             return entry
 
 
@@ -219,25 +252,21 @@ script:
             # This is the call made when pressing the integration test button.
             tos_request('/securetrack/api/devices')
             demisto.results('ok')
-        elif demisto.command() == 'Tufin-SearchTopology':
+        elif demisto.command() == 'tufin-search-topology':
             demisto.results(path_finder())
-        elif demisto.command() == 'Tufin-ObjectResolve':
+        elif demisto.command() == 'tufin-object-resolve':
             demisto.results(object_lookup())
-        elif demisto.command() == 'Tufin-SearchTopologyImage':
+        elif demisto.command() == 'tufin-search-topology-image':
             demisto.results(path_finder_image())
-        elif demisto.command() == 'Tufin-PolicySearch':
+        elif demisto.command() == 'tufin-policy-search':
             demisto.results(policy_search())
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
         return_error(e)
-
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
   type: python
   commands:
-  - name: Tufin-SearchTopology
+  - name: tufin-search-topology
     arguments:
     - name: Source
       required: true
@@ -254,11 +283,14 @@ script:
     - contextPath: Tufin.TrafficAllowed
       description: Traffic Permitted
       type: boolean
-    - contextPath: Tufin.JSON
+    - contextPath: Tufin.TrafficRawJSON
       description: JSON of Traffic Path
       type: string
+    - contextPath: Tufin.TrafficDevices
+      description: List of devices in path
+      type: string
     description: Search the Tufin Topology Map
-  - name: Tufin-SearchTopologyImage
+  - name: tufin-search-topology-image
     arguments:
     - name: Source
       required: true
@@ -272,13 +304,13 @@ script:
       description: Service parameter can be a port (for example, “tcp:80”, “any”)
         or an application (for example, “Skype”, “Facebook”).
     description: Search the Tufin Topology Map, returning an image
-  - name: Tufin-ObjectResolve
+  - name: tufin-object-resolve
     arguments:
     - name: IP
       required: true
       description: IP Address
     description: Resolve IP address to Network Object
-  - name: Tufin-PolicySearch
+  - name: tufin-policy-search
     arguments:
     - name: search
       required: true
