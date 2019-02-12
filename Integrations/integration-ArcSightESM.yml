@@ -110,7 +110,7 @@ script:
     BODY = "<act:entryList>{}</act:entryList>".format
 
     AS_NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
-    AS_IP_VALUES = ['address', 'Destination Address', 'Source Address']
+    AS_IP_KEYS = ['address', 'Destination Address', 'Source Address']
     AS_TIME_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                       'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
 
@@ -145,8 +145,8 @@ script:
                     if isinstance(value, dict):
                         beautifully_json(value, depth + 1)
                     elif value in AS_NONE_VALUES:
-                        d[key] = None
-                    elif value in AS_IP_VALUES:
+                        d.pop(key, None)
+                    elif key in AS_IP_KEYS and isinstance(value, int):
                         d[key] = int_to_ip(value)
                     elif key in AS_TIME_FIELDS:
                         d[key] = parse_timestamp_to_datestring(value)
@@ -208,9 +208,9 @@ script:
         if headers is None:
             headers = HEADERS
         full_url = BASE_URL + query_path
-        request_func = requests.post if method == 'post' else requests.get
         try:
-            return request_func(
+            return requests.request(
+                method,
                 full_url,
                 headers=headers,
                 verify=VERIFY_CERTIFICATE,
@@ -449,9 +449,10 @@ script:
         for event in raw_events:
             event_entries = {}
             for new_key, key in RELEVANT_EVENT_ENTRIES.items():
-                event_entries[new_key] = int_to_ip(demisto.get(event, key)) if 'Address' in new_key else demisto.get(event, key)
-                if new_key is 'Time':
-                    event_entries[new_key] = timestamp_to_datestring(event_entries[new_key], '%Y-%m-%d, %H:%M:%S')
+                if demisto.get(event, key):
+                    event_entries[new_key] = int_to_ip(demisto.get(event, key)) if 'Address' in new_key else demisto.get(event, key)
+                    if new_key is 'Time':
+                        event_entries[new_key] = timestamp_to_datestring(event_entries[new_key], '%Y-%m-%d, %H:%M:%S')
             events.append(event_entries)
 
         return events
@@ -464,9 +465,9 @@ script:
 
         raw_events = get_security_events(ids, lastDateRange)
         if raw_events:
-            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)), extract_relevant_event_entries(raw_events))
-            demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
-
+            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)),
+                             extract_relevant_event_entries(beautifully_json(raw_events)))
+             demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
         else:
             demisto.results('No events were found')
 
@@ -609,8 +610,8 @@ script:
                     k, v = f.split(':')
                     filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
-            demisto.results(
-                generate_entry(raw=filtered, table=filtered, out='ActiveList.{}'.format(resourceId), title='Active List entries'))
+            demisto.results(generate_entry(raw=filtered, table=filtered,
+                                           out='ActiveList.{}'.format(resourceId), title='Active List entries'))
         else:
             demisto.results('No Entries were found for this Active List.')
 
