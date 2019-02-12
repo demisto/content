@@ -5975,6 +5975,7 @@
         {
             "ip_enrichment_generic": {
                 "name": "IP Enrichment - Generic", 
+                "toversion": "4.0.9", 
                 "fromversion": "3.6.0", 
                 "implementing_scripts": [
                     "IsIPInRanges", 
@@ -5984,8 +5985,11 @@
                 "implementing_playbooks": [
                     "Endpoint Enrichment - Generic"
                 ], 
-                "implementing_commands": [
-                    "vt-private-get-ip-report"
+                "command_to_integration": {
+                    "vt-private-get-ip-report": "VirusTotal - Private API"
+                }, 
+                "tests": [
+                    "no test - VirusTotal quota problem, and new playbook from 4.1 (which has a test)"
                 ]
             }
         }, 
