@@ -2057,7 +2057,10 @@
         }, 
         {
             "IsIPInRanges": {
-                "name": "IsIPInRanges"
+                "name": "IsIPInRanges", 
+                "tests": [
+                    "IP Enrichment - Generic - NonReputation Test"
+                ]
             }
         }, 
         {
@@ -4894,18 +4897,17 @@
                 ], 
                 "implementing_playbooks": [
                     "Search And Delete Emails - Generic", 
+                    "Entity Enrichment - Phishing", 
                     "Detonate File - Generic", 
                     "Extract Indicators From File - Generic", 
-                    "Entity Enrichment - Generic", 
                     "Process Email - Generic", 
                     "Block Indicators - Generic", 
                     "Email Address Enrichment - Generic", 
                     "Calculate Severity - Generic"
                 ], 
-                "implementing_commands": [
-                    "closeInvestigation", 
-                    "send-mail"
-                ], 
+                "command_to_integration": {
+                    "send-mail": ""
+                }, 
                 "tests": [
                     "Phishing test - attachment", 
                     "Phishing test - Inline"
@@ -6546,6 +6548,9 @@
                     "File Enrichment - Generic", 
                     "Domain Enrichment - Generic", 
                     "IP Enrichment - Generic"
+                ], 
+                "tests": [
+                    "no test - each entity has or will have its own test"
                 ]
             }
         }, 
@@ -7195,6 +7200,69 @@
                 ], 
                 "tests": [
                     "Detonate File - HybridAnalysis - Test"
+                ]
+            }
+        }, 
+        {
+            "IP Enrichment - External - Generic": {
+                "name": "IP Enrichment - External - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "IsIPInRanges", 
+                    "IPToHost"
+                ], 
+                "command_to_integration": {
+                    "ip": "", 
+                    "vt-private-get-ip-report": "VirusTotal - Private API", 
+                    "threat-crowd-ip": ""
+                }, 
+                "tests": [
+                    "IP Enrichment - Generic - NonReputation Test"
+                ]
+            }
+        }, 
+        {
+            "ip_enrichment_generic": {
+                "name": "IP Enrichment - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_playbooks": [
+                    "IP Enrichment - External - Generic", 
+                    "IP Enrichment - Internal - Generic"
+                ], 
+                "tests": [
+                    "IP Enrichment - Generic - NonReputation Test"
+                ]
+            }
+        }, 
+        {
+            "Entity Enrichment - Phishing": {
+                "name": "Entity Enrichment - Phishing", 
+                "fromversion": "4.1.0", 
+                "implementing_playbooks": [
+                    "IP Enrichment - External - Generic", 
+                    "Email Address Enrichment - Generic", 
+                    "URL Enrichment - Generic", 
+                    "File Enrichment - Generic", 
+                    "Domain Enrichment - Generic"
+                ], 
+                "tests": [
+                    "no test - each entity has or will have its own test"
+                ]
+            }
+        }, 
+        {
+            "IP Enrichment - Internal - Generic": {
+                "name": "IP Enrichment - Internal - Generic", 
+                "fromversion": "4.1.0", 
+                "implementing_scripts": [
+                    "IsIPInRanges", 
+                    "IPToHost"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint Enrichment - Generic"
+                ], 
+                "tests": [
+                    "IP Enrichment - Generic - NonReputation Test"
                 ]
             }
         }
