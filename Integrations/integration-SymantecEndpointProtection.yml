@@ -249,7 +249,8 @@ script:
                 Description: content.description,
                 MACAddresses: content.macAddresses,
                 BIOSVersion: content.biosVersion,
-                DHCPServer: content.dhcpServer
+                DHCPServer: content.dhcpServer,
+                LastScanTime: content.lastScanTime
             });
         });
 
@@ -576,6 +577,8 @@ script:
       description: The endpoint's BIOS version.
     - contextPath: SEPM.Endpoint.DHCPServer
       description: The endpoint's DHCP server address.
+    - contextPath: SEPM.Endpoint.LastScanTime
+      description: The endpoint's LastScanTime.
     description: Get information about endpoints.
   - name: sep-update-content
     arguments:
