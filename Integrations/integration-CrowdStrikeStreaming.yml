@@ -206,6 +206,49 @@ script:
     description: Deletes a list of IoCs by IoC ID.
     execution: false
     name: crowdstrike-delete-iocs
+  - arguments:
+    - default: false
+      description: The ids of the IoCs to update (combination of type and value delimited
+        by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The policy that should be enacted when the value is detected on a host. See below for a list of policies.
+        * detect: Send a notification when the particular indicator has been detected on a host.
+        * none: Take no action when the particular indicator has been detected on a host. This is equivalent to turning the indicator off.
+      isArray: false
+      name: policy
+      predefined:
+      - detect
+      - none
+      required: false
+      secret: false
+    - default: false
+      description: This represents the days the indicator should be valid for. This
+        only applies to domain, ipv4, and ipv6 types.
+      isArray: false
+      name: expiration_days
+      required: false
+      secret: false
+    - default: false
+      description: The source where this indicator originated (limit 200 characters).
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: Description for the indicator (limit 200 characters).
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    description: Updates a list of IoCs by IoC ID.
+    execution: false
+    name: crowdstrike-update-iocs
   isfetch: true
   runonce: false
   script: |-
@@ -477,6 +520,18 @@ script:
         return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
+    def update_iocs():
+        args = demisto.args()
+        payload = {
+            'ids': args.get('ids'),
+            'policy': args.get('policy', ''),
+            'expiration_days': args.get('expiration_days', ''),
+            'source': args.get('source'),
+            'description': args.get('description')
+        }
+        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload)
+
+
     ''' COMMANDS FUNCTIONS '''
 
     def test_module():
@@ -538,6 +593,12 @@ script:
         return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
 
 
+    def update_iocs_command():
+        raw_res = update_iocs()
+        ids = demisto.args().get('ids')
+        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
+
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -555,4 +616,6 @@ script:
         demisto.results(search_iocs_command())
     elif demisto.command() == 'crowdstrike-delete-iocs':
         demisto.results(delete_iocs_command())
+    elif demisto.command() == 'crowdstrike-update-iocs':
+        demisto.results(update_iocs_command())
   type: python
