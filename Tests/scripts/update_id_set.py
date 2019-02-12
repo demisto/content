@@ -142,6 +142,8 @@ def get_to_version(file_path):
             raise ValueError("{} toversion is invalid \"{}\". "
                              "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
 
+        return to_version
+
 
 def get_integration_commands(file_path):
     cmd_list = []
