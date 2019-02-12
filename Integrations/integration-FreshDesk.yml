@@ -1066,7 +1066,8 @@ script:
 
     FETCH_TIME_DEFAULT = '24 hours'
     # How much time before the first fetch to retrieve incidents
-    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     # Should we use SSL
@@ -1823,8 +1824,6 @@ script:
 
         # Handle first time fetch, fetch incidents retroactively
         if not last_fetch:
-            if FETCH_TIME is None or FETCH_TIME =='':
-                FETCH_TIME = FETCH_TIME_DEFAULT
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
         updated_since = timestamp_to_datestring(last_fetch, date_format="%Y-%m-%dT%H:%M:%SZ")
         args = {'updated_since': updated_since, 'order_type': 'asc'}

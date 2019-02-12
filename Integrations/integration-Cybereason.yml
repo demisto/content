@@ -82,7 +82,8 @@ script:
     USE_SSL = not demisto.params().get('unsecure', False)
     CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
     FETCH_TIME_DEFAULT = '3 days'
-    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
     FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
 
     STATUS_MAP = {
@@ -1258,8 +1259,6 @@ script:
         if last_run and last_run['creation_time']:
             last_update_time = int(last_run['creation_time'])
         else:
-            if FETCH_TIME is None or FETCH_TIME =='':
-                FETCH_TIME = FETCH_TIME_DEFAULT
             # In first run
             last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
