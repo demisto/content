@@ -1,6 +1,6 @@
 commonfields:
   id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
-  version: 3
+  version: -1
 name: SEPScan
 deprecated: true
 script: |-
