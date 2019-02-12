@@ -2717,6 +2717,9 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - postpone for later"
                 ]
             }
         }, 
@@ -4545,8 +4548,12 @@
         {
             "2aa9f737-8c7c-42f5-815f-4d104bb3af06": {
                 "name": "SEPScan", 
+                "deprecated": true, 
                 "depends_on": [
                     "sep-command-status"
+                ], 
+                "tests": [
+                    "No test - deprecated"
                 ]
             }
         }, 
@@ -10086,20 +10093,24 @@
             }
         }, 
         {
-            "Symantec Endpoint Protection": {
-                "name": "Symantec Endpoint Protection", 
+            "Symantec Endpoint Protection V2": {
+                "name": "Symantec Endpoint Protection V2", 
                 "commands": [
                     "sep-endpoints-info", 
-                    "sep-update-content", 
-                    "sep-scan", 
                     "sep-groups-info", 
                     "sep-system-info", 
                     "sep-command-status", 
-                    "sep-quarantine", 
-                    "sep-client-content"
+                    "sep-client-content", 
+                    "sep-list-policies", 
+                    "sep-assign-policy", 
+                    "sep-list-locations", 
+                    "sep-endpoint-quarantine", 
+                    "sep-scan-endpoint", 
+                    "sep-update-endpoint-content", 
+                    "sep-move-client-to-group"
                 ], 
                 "tests": [
-                    "sep_-_test_endpoint_search"
+                    "SymantecEndpointProtection_Test"
                 ]
             }
         }, 
@@ -11742,6 +11753,24 @@
                 ], 
                 "tests": [
                     "GoogleResourceManager-Test"
+                ]
+            }
+        }, 
+        {
+            "Symantec Endpoint Protection old": {
+                "name": "Symantec Endpoint Protection old", 
+                "commands": [
+                    "sep-endpoints-info", 
+                    "sep-update-content", 
+                    "sep-scan", 
+                    "sep-groups-info", 
+                    "sep-system-info", 
+                    "sep-command-status", 
+                    "sep-quarantine", 
+                    "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - deprecated integration"
                 ]
             }
         }
@@ -13726,19 +13755,6 @@
             }
         }, 
         {
-            "sep_-_test_endpoint_search": {
-                "name": "SEP - Test endpoint search", 
-                "fromversion": "3.5.0", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoints-info": "Symantec Endpoint Protection"
-                }
-            }
-        }, 
-        {
             "awake_security_test_pb": {
                 "name": "awake_security_test_pb", 
                 "implementing_scripts": [
@@ -15380,25 +15396,6 @@
                     "scadafence-getAsset": "SCADAfence CNM", 
                     "scadafence-setAlertStatus": "SCADAfence CNM", 
                     "scadafence-getAlerts": "SCADAfence CNM"
-                }
-            }
-        }, 
-        {
-            "c19e328d-0cf3-4a94-88b3-df670d984602": {
-                "name": "SymantecEndpointProtection Test", 
-                "implementing_scripts": [
-                    "SEPScan", 
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-quarantine": "Symantec Endpoint Protection", 
-                    "sep-command-status": "Symantec Endpoint Protection", 
-                    "sep-update-content": "Symantec Endpoint Protection", 
-                    "sep-endpoints-info": "Symantec Endpoint Protection", 
-                    "sep-groups-info": "Symantec Endpoint Protection", 
-                    "sep-client-content": "Symantec Endpoint Protection", 
-                    "sep-system-info": "Symantec Endpoint Protection"
                 }
             }
         }, 
