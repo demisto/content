@@ -171,28 +171,28 @@ script:
       required: true
       description: User Agent String
     outputs:
-    - contextPath: ua-parse.Software
+    - contextPath: UA.Parse.Software
       description: Software extracted from UA string
       type: string
-    - contextPath: ua-parse.SoftwareName
+    - contextPath: UA.Parse.SoftwareName
       description: Software Name extracted from UA string
       type: string
-    - contextPath: ua-parse.OperatingSystem
+    - contextPath: UA.Parse.OperatingSystem
       description: Operating System extracted from UA string
       type: string
-    - contextPath: ua-parse.Abusive
+    - contextPath: UA.Parse.Abusive
       description: Whether or not the UA has been identified as abusive
       type: boolean
-    - contextPath: ua-parse.OperatingSystemName
+    - contextPath: UA.Parse.OperatingSystemName
       description: Operating System Name extracted from UA string
       type: string
-    - contextPath: ua-parse.UserAgent
+    - contextPath: UA.Parse.UserAgent
       description: User agent string
       type: string
-    - contextPath: ua-parse.HardwareType
+    - contextPath: UA.Parse.HardwareType
       description: Hardware Type as extracted from UA string
       type: string
-    - contextPath: ua-parse.HardwareSubType
+    - contextPath: UA.Parse.HardwareSubType
       description: Hardware Sub Type as extracted from UA string
       type: string
     description: Parses a User Agent string
