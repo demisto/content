@@ -6267,10 +6267,10 @@
                     "Print", 
                     "Exists"
                 ], 
-                "implementing_commands": [
-                    "so-agents-query", 
-                    "so-get-agent-processes"
-                ]
+                "command_to_integration": {
+                    "so-agents-query": "SentinelOne", 
+                    "so-get-agent-processes": "SentinelOne"
+                }
             }
         }, 
         {
