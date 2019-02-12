@@ -208,6 +208,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     :return: (test_names, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
     """
+    caught_missing_test = False
     catched_intergrations = set([])
 
     test_names = get_test_names()
@@ -220,15 +221,18 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     integration_to_command = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
+        detected_usage = False
         test_playbook_data = test_playbook.values()[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
+                detected_usage = True
                 tests_set.add(test_playbook_name)
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
+                detected_usage = True
                 tests_set.add(test_playbook_name)
                 catched_playbooks.add(playbook)
 
@@ -240,13 +244,19 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
 
+                            detected_usage = True
                             tests_set.add(test_playbook_name)
                             catched_intergrations.add(integration_id)
+
+        if detected_usage and test_playbook_name not in test_names:
+            caught_missing_test = True
+            print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
+                        "pleae update the conf.json file accordingly".format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
 
-    return test_names, missing_ids
+    return test_names, missing_ids, caught_missing_test
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -289,14 +299,16 @@ def find_tests_for_modified_files(modified_files):
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
                                                                         script_names, modified_files)
-    test_names, missing_ids = collect_tests(script_names, playbook_names, integration_ids,
-                                            catched_scripts, catched_playbooks, tests_set)
+    test_names, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
+                                                                 catched_scripts, catched_playbooks, tests_set)
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests_set)
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
         message = "You've failed to provide tests for:\n{0}".format(test_string)
         print_color(message, LOG_COLORS.RED)
+
+    if caught_missing_test or len(missing_ids) > 0:
         sys.exit(1)
 
     return tests_set
