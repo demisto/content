@@ -6038,7 +6038,6 @@
                 "tests": [
                     "no test - VirusTotal quota problem, and new playbook from 4.1 (which has a test)"
                 ]
-                }
             }
         }, 
         {
