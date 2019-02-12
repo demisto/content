@@ -909,6 +909,12 @@ script:
     - contextPath: ArcSightESM.SecurityEvents.baseEventIds
       description: Base event ids
       type: Unknown
+    - contextPath: ArcSightESM.SecurityEvents.source.address
+      description: The Source address of the event
+      type: Unknown
+    - contextPath: ArcSightESM.SecurityEvents.destination.address
+      description: The Destination address of the event
+      type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.startTime
       description: Start time in milliseconds
       type: date
