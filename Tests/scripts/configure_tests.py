@@ -21,20 +21,20 @@ NO_TESTS_FORMAT = 'No test( - .*)?'
 
 # file types regexes
 CONF_REGEX = "Tests/conf.json"
-SCRIPT_PY_REGEX = "scripts.*.py"
-SCRIPT_JS_REGEX = "scripts.*.js"
-SCRIPT_YML_REGEX = "scripts.*.yml"
-SCRIPT_REGEX = "scripts.*script-.*.yml"
-INTEGRATION_PY_REGEX = "integrations.*.py"
-INTEGRATION_JS_REGEX = "integrations.*.js"
-INTEGRATION_YML_REGEX = "integrations.*.yml"
-PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "integrations.*integration-.*.yml"
-TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
-BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
-BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
-BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
+SCRIPT_PY_REGEX = r"scripts.*\.py$"
+SCRIPT_JS_REGEX = r"scripts.*\.js$"
+SCRIPT_YML_REGEX = r"scripts.*\.yml$"
+SCRIPT_REGEX = r"scripts.*script-.*\.yml$"
+INTEGRATION_PY_REGEX = r"integrations.*\.py$"
+INTEGRATION_JS_REGEX = r"integrations.*\.js$"
+INTEGRATION_YML_REGEX = r"integrations.*\.yml$"
+PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml$"
+INTEGRATION_REGEX = r"integrations.*integration-.*\.yml$"
+TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml$"
+TEST_NOT_PLAYBOOK_REGEX = r"TestPlaybooks.(?!playbook).*-.*\.yml$"
+BETA_SCRIPT_REGEX = r"beta_integrations.*script-.*\.yml$"
+BETA_PLAYBOOK_REGEX = r"beta_integrations.*playbook-.*\.yml$"
+BETA_INTEGRATION_REGEX = r"beta_integrations.*integration-.*\.yml$"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
                          BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
@@ -49,6 +49,9 @@ SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
              "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
              "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
+
+# secrets white list file to be ignored in tests to prevent full tests running each time it is updated
+SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 
 class LOG_COLORS:
@@ -122,6 +125,8 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+            elif SECRETS_WHITE_LIST in file_path:
+                modified_files_list.append(file_path)
             elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
                 all_tests.append(file_path)
 
@@ -160,7 +165,9 @@ def get_to_version(file_path):
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
     data_dictionary = get_json(file_path)
-
+    # inject no tests to whitelist so adding values to white list will not force all tests
+    if SECRETS_WHITE_LIST in file_path:
+        data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
 

@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "version": -1,
   "reputations": [
     {
       "id": "fileRep",
@@ -32,9 +33,10 @@
       "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
       "reputationCommand": "ip",
       "details": "IP",
+      "contextValue": "Address",
+      "contextPath": "IP(val.Address && val.Address === obj.Address)",
       "enhancementScriptNames": [
-        "IPReputation",
-        "SplunkSearch"
+        "IPReputation"
       ],
       "fromVersion": "3.1.0"
     },
@@ -44,9 +46,10 @@
       "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\[\\.\\]){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
       "reputationCommand": "ip",
       "details": "IP",
+      "contextValue": "Address",
+      "contextPath": "IP(val.Address && val.Address === obj.Address)",
       "enhancementScriptNames": [
         "IPReputation",
-        "SplunkSearch",
         "SplunkPySearch"
       ],
       "formatScript": "UnEscapeIPs",
@@ -71,10 +74,10 @@
       "regex": "\\b[a-fA-F\\d]{32}\\b",
       "reputationCommand": "file",
       "details": "File MD5",
+      "contextValue": "MD5",
+      "contextPath": "File(val.MD5 && val.MD5 === obj.MD5)",
       "enhancementScriptNames": [
         "FileReputation",
-        "SplunkSearch",
-        "WildfireReport",
         "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
@@ -84,7 +87,7 @@
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationScriptName": "DataHashReputation",
-      "details": "File SHA1",
+      "details": "File SHA-1",
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
@@ -97,39 +100,25 @@
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{40}\\b",
       "reputationCommand": "file",
-      "details": "File SHA1",
+      "details": "File SHA-1",
+      "contextValue": "SHA1",
+      "contextPath": "File(val.SHA1 && val.SHA1 === obj.SHA1)",
       "enhancementScriptNames": [
         "FileReputation",
-        "SplunkSearch",
-        "WildfireReport",
         "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
-    },
-      {
-      "id": "hashRepSHA256",
-      "version": -1,
-      "regex": "\\b[a-fA-F\\d]{64}\\b",
-      "reputationScriptName": "DataHashReputation",
-      "details": "File SHA256",
-      "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkSearch",
-        "WildfireReport"
-      ],
-      "toVersion": "3.0.1"
     },
     {
       "id": "hashRepSHA256",
       "version": -1,
       "regex": "\\b[a-fA-F\\d]{64}\\b",
       "reputationCommand": "file",
-      "details": "File SHA256",
+      "details": "File SHA-256",
       "contextValue": "SHA256",
       "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
       "enhancementScriptNames": [
-        "FileReputation",
-        "SplunkSearch"
+        "FileReputation"
       ],
       "fromVersion": "3.1.0"
     },
@@ -162,6 +151,8 @@
       "regex": "(?i)(?:(?:https?|ftp):\\/\\/|www\\.|ftp\\.)(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[-A-Z0-9+&@#\\/%=~_$?!:,.])*(?:\\([-A-Z0-9+&@#\\/%=~_$?!:,.]*\\)|[A-Z0-9+&@#\\/%=~_$])",
       "reputationCommand": "url",
       "details": "URL",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
       "enhancementScriptNames": [
         "URLReputation",
         "SplunkSearch"
@@ -177,7 +168,6 @@
       "details": "URL",
       "enhancementScriptNames": [
         "URLReputation",
-        "SplunkSearch",
         "SplunkPySearch"
       ],
       "formatScript": "UnEscapeURLs",
@@ -202,6 +192,8 @@
       "regex": "CVE-\\d{4}-\\d{4,7}",
       "reputationScriptName": "cveReputation",
       "details": "CVE CVSS Score",
+      "contextValue": "ID",
+      "contextPath": "CVE(val.ID && val.ID === obj.ID)",
       "enhancementScriptNames": [
         "cveSearch"
       ]
@@ -250,6 +242,8 @@
       "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?|\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
       "reputationCommand": "domain",
       "details": "Domain",
+      "contextValue": "Name",
+      "contextPath": "Domain(val.Name && val.Name === obj.Name)",
       "enhancementScriptNames": [
         "DomainReputation"
       ],
@@ -257,5 +251,5 @@
       "fromVersion": "3.6"
     }
   ],
-  "releaseNotes": "Added reputation value and context path for SHA256. Auto-Extract should now work properly for SHA256."
+  "releaseNotes": "Added reputation value and context paths for IPs, escaped IPs, domains, MD5, SHA1, URL and escaped URL. Removed unnecessary scripts."
 }
