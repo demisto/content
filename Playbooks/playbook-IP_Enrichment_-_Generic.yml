@@ -633,6 +633,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-- releaseNotes: "Playbook supported up to version 4.0.9 (included). A new one exists starting at 4.1."
-- tests:
-    - no test - VirusTotal quota problem, and new playbook from 4.1 (which has a test)
+releaseNotes: "Playbook supported up to version 4.0.9 (included). A new one exists starting at 4.1."
+tests:
+- no test - VirusTotal quota problem, and new playbook from 4.1 (which has a test)

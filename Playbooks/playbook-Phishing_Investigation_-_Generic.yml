@@ -1006,6 +1006,7 @@ tasks:
       id: 2acf431a-353c-4e94-8b50-969fcf405abc
       version: -1
       name: Entity Enrichment - Phishing
+      description: Enrich entities using one or more integrations. This playbook is customized for phishing investigations.
       playbookName: Entity Enrichment - Phishing
       type: playbook
       iscommand: false
