@@ -7215,7 +7215,10 @@
                     "as-add-entries": "", 
                     "as-update-case": "", 
                     "as-get-case-event-ids": ""
-                }
+                }, 
+                "tests": [
+                    "No test - test playbook"
+                ]
             }
         }
     ], 
