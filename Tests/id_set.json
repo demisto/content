@@ -4947,7 +4947,7 @@
                     "as-get-case-event-ids": "ArcSight ESM"
                 }, 
                 "tests": [
-                    "No test - playbook"
+                    "test Arcsight - Get events related to the Case"
                 ]
             }
         }, 
@@ -7215,10 +7215,7 @@
                     "as-add-entries": "", 
                     "as-update-case": "", 
                     "as-get-case-event-ids": ""
-                }, 
-                "tests": [
-                    "No test - test playbook"
-                ]
+                }
             }
         }
     ], 
@@ -15654,6 +15651,17 @@
                     "fd-get-ticket": "", 
                     "fd-get-canned-response-folder": ""
                 }
+            }
+        }, 
+        {
+            "test Arcsight - Get events related to the Case": {
+                "name": "test Arcsight - Get events related to the Case", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Arcsight - Get events related to the Case"
+                ]
             }
         }
     ]
