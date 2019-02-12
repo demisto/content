@@ -28,6 +28,7 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+import secrets
 
 from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
@@ -496,6 +497,11 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 
 def validate_committed_files(branch_name, is_circle):
+
+    secrets_found, secrets_found_string = secrets.get_secrets(branch_name, is_circle)
+    if secrets_found_string:
+        print_error(secrets_found_string)
+
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
         try:
@@ -519,7 +525,7 @@ def validate_committed_files(branch_name, is_circle):
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
                                               script_set, test_playbook_set, is_circle) or has_schema_problem
 
-    if has_schema_problem:
+    if has_schema_problem or secrets_found:
         sys.exit(1)
 
 
