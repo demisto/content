@@ -1,46 +1,37 @@
 category: End Point
-commonfields: {id: integration-CrowdStrikeStreaming, version: -1}
+commonfields:
+  id: integration-CrowdStrikeStreaming
+  version: -1
 configuration:
-- defaultvalue: ''
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
-  options: []
   required: false
   type: 8
-- defaultvalue: ''
-  display: Incident type
+- display: Incident type
   name: incidentType
-  options: []
   required: false
   type: 13
 - defaultvalue: https://falconapi.crowdstrike.com
   display: Server URL (e.g. https://example.net)
   name: url
-  options: []
   required: true
   type: 0
-- defaultvalue: ''
-  display: Username
+- display: Username
   name: credentials
-  options: []
   required: true
   type: 9
 - defaultvalue: 'true'
   display: Trust any certificate (unsecure)
   name: insecure
-  options: []
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy
+- display: Use system proxy
   name: proxy
-  options: []
   required: false
   type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  options: []
   required: false
   type: 0
 description: The Falcon Streaming API (formerly known as the Falcon Firehose API)
@@ -49,8 +40,6 @@ detaileddescription: Use these detailed instructions in order to retrieve the AP
 display: CrowdStrike Falcon Streaming V2
 name: integration-CrowdStrikeStreaming
 script:
-  commands: []
-  dockerimage: ''
   isfetch: true
   runonce: false
   script: |-
@@ -141,7 +130,6 @@ script:
         demisto.info('#### url: {}'.format(SERVER + url_suffix))
         res = requests.request(
             method,
-            # 'https://httpbin.org/post',
             SERVER + url_suffix,
             verify=USE_SSL,
             params=params,
@@ -153,7 +141,7 @@ script:
         demisto.info('#### STATUS CODE: {}'.format(res.status_code))
         # Handle error responses gracefully
         if res.status_code not in {200}:
-            return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+            return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
         demisto.info("\n\n{0}\n\n".format(str(res.json())))
         return res.json()
 
@@ -232,15 +220,16 @@ script:
 
     def get_detections_entities_request(detections_ids):
         ids_json = {'ids': detections_ids}
-        response = http_request('POST', '/detects/entities/summaries/GET/v1', data=json.dumps(ids_json))
-        # Check if response contains errors
-        if response.get('errors'):
-            return_error(response.get('errors'))
-        return response
+        demisto.info("#### Data: {0}".format(json.dumps(ids_json)))
+        if detections_ids:
+            response = http_request('POST', '/detects/entities/summaries/GET/v1', data=json.dumps(ids_json))
+            return response
+        return detections_ids
 
 
     def fetch_incidents():
         last_run = demisto.getLastRun()
+        demisto.info("#### Last run: {0}".format(last_run))
         # Get the last fetch time, if exists
         last_fetch = last_run.get('first_behavior_time')
 
@@ -254,15 +243,16 @@ script:
         raw_res = get_detections_entities_request(detections_ids)
         demisto.info('\n#### Items: {}\n'.format(raw_res))
         demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
-        for resource in demisto.get(raw_res, "resources"):
-            for behavior in demisto.get(resource, 'behaviors'):
-                incident = behavior_to_incident(behavior, resource)
-                incident_date = incident['occurred']
-                incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
-                # Update last run and add incident if the incident is newer than last fetch
-                if incident_date_timestamp > last_fetch_timestamp:
-                    last_fetch = incident_date
-                incidents.append(incident)
+        if "resources" in raw_res:
+            for resource in demisto.get(raw_res, "resources"):
+                for behavior in demisto.get(resource, 'behaviors'):
+                    incident = behavior_to_incident(behavior, resource)
+                    incident_date = incident['occurred']
+                    incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
+                    # Update last run and add incident if the incident is newer than last fetch
+                    if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch = incident_date
+                    incidents.append(incident)
 
         demisto.setLastRun({'first_behavior_time': last_fetch})
         demisto.incidents(incidents)
