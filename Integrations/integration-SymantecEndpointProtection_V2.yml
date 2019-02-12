@@ -3,46 +3,30 @@ commonfields:
   id: Symantec Endpoint Protection V2
   version: -1
 configuration:
-- defaultvalue: ''
-  display: Server (e.g. https://1.2.3.4:8446)
+- display: Server (e.g. https://1.2.3.4:8446)
   name: server
-  options: [
-    ]
   required: true
   type: 0
-- defaultvalue: ''
-  display: Authentication
+- display: Authentication
   name: authentication
-  options: [
-    ]
   required: true
   type: 9
-- defaultvalue: ''
-  display: SEPM domain for the user
+- display: SEPM domain for the user
   name: domain
-  options: [
-    ]
   required: false
   type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (unsecure)
   name: insecure
-  options: [
-    ]
   required: false
   type: 8
-- defaultvalue: 'true'
+- defaultvalue: 'false'
   display: Use proxy system settings
   name: proxy
-  options: [
-    ]
   required: false
   type: 8
-- defaultvalue: ''
-  display: 'Local time zone (for example: +02:30,-06:00)'
+- display: 'Local time zone (for example: +02:30,-06:00)'
   name: timeZone
-  options: [
-    ]
   required: false
   type: 0
 description: Query the Symantec Endpoint Protection Manager using the official REST
@@ -55,39 +39,30 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: ''
       description: The columns to show.
       isArray: false
       name: columns
-      predefined: [
-        ]
       required: false
       secret: false
     - default: false
-      defaultValue: ''
       description: Filter by the host name of a computer. Wild card is supported as
         '*'.
       isArray: false
       name: computerName
-      predefined: [
-        ]
       required: false
       secret: false
     - default: false
-      defaultValue: ''
       description: Indicates when a computer last updated its status. The default
         value of 0 gets all the results.
       isArray: false
       name: lastUpdate
-      predefined: [
-        ]
       required: false
       secret: false
     - default: false
-      defaultValue: ''
       description: Operating system to filter.
       isArray: false
       name: os
+      auto: PREDEFINED
       predefined:
       - CentOs
       - Debian
@@ -117,12 +92,9 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: ''
       description: The number of results to include on each page. The default is 20.
       isArray: false
       name: pageSize
-      predefined: [
-        ]
       required: false
       secret: false
     description: Get information about endpoints.
@@ -158,12 +130,9 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: ''
       description: The columns to show.
       isArray: false
       name: columns
-      predefined: [
-        ]
       required: false
       secret: false
     description: Get information about groups.
@@ -194,9 +163,7 @@ script:
     - contextPath: SEPM.Groups.policySerialNumber
       description: Policy serial number
       type: number
-  - arguments: [
-      ]
-    description: Get the system information (version, AV definition).
+  - description: Get the system information (version, AV definition).
     execution: false
     name: sep-system-info
     outputs:
@@ -205,12 +172,9 @@ script:
       type: string
   - arguments:
     - default: false
-      defaultValue: ''
       description: The command ID.
       isArray: false
       name: commandId
-      predefined: [
-        ]
       required: true
       secret: false
     description: Retrieves the status of a command.
@@ -223,9 +187,7 @@ script:
     - contextPath: SEPM.LastCommand.CommandId
       description: The ID of the command.
       type: string
-  - arguments: [
-      ]
-    description: Retrieves the client content.
+  - description: Retrieves the client content.
     execution: false
     name: sep-client-content
     outputs:
@@ -235,9 +197,7 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last-updated date.
       type: string
-  - arguments: [
-      ]
-    description: Retrieve a list of existing policies
+  - description: Retrieve a list of existing policies
     execution: false
     name: sep-list-policies
     outputs:
@@ -271,54 +231,37 @@ script:
       type: string
   - arguments:
     - default: false
-      defaultValue: ''
       description: 'Group ID of the endpoint '
       isArray: false
       name: groupID
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: Location ID of the endpoint
       isArray: false
       name: locationID
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: Type of policy to be assigned
       isArray: false
       name: policyType
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: 'Policy ID to be assigned '
       isArray: false
       name: policyID
-      predefined: [
-        ]
       required: true
       secret: false
     description: Assign existing policy to a designated location
     execution: false
     name: sep-assign-policy
-    outputs: [
-      ]
   - arguments:
     - default: false
-      defaultValue: ''
       description: Group ID to list locations from
       isArray: false
       name: groupID
-      predefined: [
-        ]
       required: true
       secret: false
     description: Retrieve a list of location ID's for a given group
@@ -330,19 +273,16 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: ''
       description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: Add or remove endpoint from quarantine.
       isArray: false
       name: actionType
+      auto: PREDEFINED
       predefined:
       - Add
       - Remove
@@ -363,19 +303,16 @@ script:
       type: string
   - arguments:
     - default: false
-      defaultValue: ''
       description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: Type of scan.
       isArray: false
       name: scanType
+      auto: PREDEFINED
       predefined:
       - ScanNow_Quick
       - ScanNow_Full
@@ -397,12 +334,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: ''
       description: IP or Hostname of the endpoint
       isArray: false
       name: endpoint
-      predefined: [
-        ]
       required: true
       secret: false
     description: Updates the content of the given client.
@@ -417,29 +351,20 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: ''
       description: 'Group ID to move the client to '
       isArray: false
       name: groupID
-      predefined: [
-        ]
       required: true
       secret: false
     - default: false
-      defaultValue: ''
       description: Hardware-key of the client to be moved
       isArray: false
       name: hardwareKey
-      predefined: [
-        ]
       required: true
       secret: false
     description: Moves a client to a group
     execution: false
     name: sep-move-client-to-group
-    outputs: [
-      ]
-  dockerimage: ''
   isfetch: false
   runonce: false
   script: |-
@@ -501,8 +426,8 @@ script:
 
     def build_query_params(params):
         list_params = map(lambda key: key + '=' + str(params[key]), params.keys())
-        quert_params = '&'.join(list_params)
-        return '?' + quert_params if quert_params else ''
+        query_params = '&'.join(list_params)
+        return '?' + query_params if query_params else ''
 
 
     def do_auth(server, crads, insecure):
@@ -550,6 +475,7 @@ script:
         parsed_response = parse_response(res)
         return parsed_response
 
+
     def do_patch(token, suffix, body):
         insecure = demisto.getParam('insecure')
         server = demisto.getParam('server')
@@ -557,6 +483,7 @@ script:
         res = requests.patch(url, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, data=json.dumps(body), verify=not insecure)
         parsed_response = parse_response(res)
         return parsed_response
+
 
     def parse_response(resp):
         if resp.status_code == 200 or resp.status_code == 207:
@@ -607,6 +534,7 @@ script:
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
 
         return res_json
+
 
     def build_command_response_output(title, command_id, message, response):
         cmd_status_details = response.get('cmdStatusDetail')
@@ -744,7 +672,7 @@ script:
             'PolicyName': policy['name'],
             'Type': policy['policytype'],
             'ID': policy['id'],
-            'Discription': policy['desc'],
+            'Description': policy['desc'],
             'Enabled': policy['enabled'],
             'AssignedLocations': map(lambda location: {
                 'GroupID': location.get('groupId'),
@@ -762,7 +690,128 @@ script:
         return bool(pattern.match(ip))
 
 
-    # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS    @@@@@@@@@@@@@@@@@@@@@@@@@@
+    def get_client_content(token, time_zone):
+        client_content_json = do_get(token, False, 'sepm/api/v1/stats/client/content')
+        epoch_time = client_content_json.get('lastUpdated')
+        if time_zone:
+            epoch_time = parse_epoch_to_local(epoch_time, time_zone)
+        last_update_date = timestamp_to_datestring(epoch_time, '%a %b %d %y %H:%M:%S %z')
+        client_version = client_content_json.get('clientDefStatusList')
+        return client_content_json, client_version, last_update_date
+
+
+    def get_endpoints_info(token, computer_name, last_update, os, page_size, columns):
+        params = {
+            'computerName': computer_name,
+            'lastUpdate': last_update,
+            'os': os,
+            'pageSize': page_size,
+            'columns': columns
+        }
+        params = createContext(params, removeNull=True)
+        json_response = do_get(token, False, 'sepm/api/v1/computers' + build_query_params(params))
+        filtered_json_response = json_response.get('content')
+        entry_context = []
+        for content in filtered_json_response:
+            content['macAddresses'] = list(set(content.get('macAddresses')))  # used `set` on the mac address list as it sometimes contained duplicated values
+            entry_context.append({
+                'Hostname': content.get('computerName'),
+                'Domain': content.get('domainOrWorkgroup'),
+                'IPAddresses': content.get('ipAddresses'),
+                'OS': content.get('operatingSystem') + ' | ' + content.get('osBitness'),
+                'Description': content.get('content.description'),
+                'MACAddresses': content.get('macAddresses'),
+                'BIOSVesrsion': content.get('biosVersion'),
+                'DHCPServer': content.get('dhcpServer'),
+                'HardwareKey': content.get('hardwareKey')
+            })
+        return filtered_json_response, entry_context
+
+
+    def create_endpints_filter_string(computer_name, last_update, os, page_size):
+        md = '## Endpoints Information'
+        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
+        md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
+        md += ', filtered for os: {}'.format(os) if os else ''
+        md += ', page size: {}'.format(page_size) if page_size else ''
+        md += '\n'
+        return md
+
+
+    def get_groups_info(token, columns):
+        json_res = do_get(token, False, 'sepm/api/v1/groups' + build_query_params({'columns': columns}))
+        sepm_groups = []
+        filtered_json_response = json_res.get('content')
+        for entry in filtered_json_response:
+            group = {}
+            for header in GROUPS_INFO_DEFAULT_COLUMNS:
+                group[header] = entry[header]
+                sepm_groups.append(group)
+
+        return filtered_json_response, json_res, sepm_groups
+
+
+    def get_command_status(token, command_id):
+        command_status_json = get_command_status_details(token, command_id)
+        cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
+        cmd_status_detail.pop('hardwareKey', None)
+
+        state_id = cmd_status_detail.get('stateId')
+        is_done = False
+        if state_id == '2' or state_id == '3':
+            is_done = True
+        message = 'Command is done.' if is_done else 'Command is in progress. Run !sep-command-status to check again.';
+        return cmd_status_detail, message
+
+
+    def get_list_of_policies(token):
+        policies_list = do_get(token, False, 'sepm/api/v1/policies/summary').get('content')
+        fixed_policy_list = sanitize_policies_list(policies_list)
+        md_list = sanitize_policies_list_for_md(fixed_policy_list)
+        return md_list, policies_list, fixed_policy_list
+
+
+    def endpoint_quarantine(token, endpoint, action):
+        action_type = 'Quarantine' if action == 'Add' else 'Undo'
+        computer_id = get_id_by_endpoint(token, endpoint)
+        command_id = quarantine(token, computer_id, action_type)
+
+        return command_id
+
+
+    def get_location_list(token, group_id):
+        url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
+        url_resp = do_get(token, False, url)
+        location_ids = map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp)
+        return url_resp, location_ids
+
+
+    def get_id_by_endpoint(token, endpoint):
+        if not endpoint:
+            return_error('Please provide the IP address or the hostname of endpoint.')
+        elif validate_ip(endpoint):
+            computer_id = get_computer_id(token, endpoint, None)
+        else:
+            computer_id = get_computer_id(token, None, endpoint)
+        return computer_id
+
+
+    def scan_endpoint(token, endpoint, scan_type):
+        computer_id = get_id_by_endpoint(token, endpoint)
+        command_id = scan(token, computer_id, scan_type)
+        return command_id
+
+
+    def update_endpoint_content(token, endpoint):
+        computer_id = get_id_by_endpoint(token, endpoint)
+        command_id = update_content(token, computer_id)
+        return command_id
+
+
+
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
     def system_info_command(token):
@@ -779,7 +828,7 @@ script:
         md += tableToMarkdown('AV Definitions', avdef_json)
 
         context = avdef_json.get('publishedBySymantec')
-        if type(context) is dict    :
+        if type(context) is dict:
             context = createContext(context, removeNull=True)
 
         demisto.results({
@@ -795,12 +844,7 @@ script:
 
     def client_content_command(token):
         time_zone = demisto.getParam('timeZone')
-        client_content_json = do_get(token, False, 'sepm/api/v1/stats/client/content')
-        epoch_time = client_content_json.get('lastUpdated')
-        if time_zone:
-            epoch_time = parse_epoch_to_local(epoch_time, time_zone)
-        last_update_date = timestamp_to_datestring(epoch_time, '%a %b %d %y %H:%M:%S %z')
-        client_version = client_content_json.get('clientDefStatusList')
+        client_content_json, client_version, last_update_date = get_client_content(token, time_zone)
         md = '## Client Content, last updated on {0}\n'.format(last_update_date)
         md += tableToMarkdown('Client Content Versions', client_version)
 
@@ -824,34 +868,12 @@ script:
         page_size = demisto.getArg('pageSize')
         columns = demisto.getArg('columns')
 
-        json_response = do_get(token, False, 'sepm/api/v1/computers' + build_query_params(demisto.args()))
-
-        md = '## Endpoints Information'
-        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
-        md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
-        md += ', filtered for os: {}'.format(os) if os else ''
-        md += ', page size: {}'.format(page_size) if page_size else ''
-        md += '\n'
-
-        entry_context = []
-        filtered_json_response = json_response.get('content')
-        for content in filtered_json_response:
-            content['macAddresses'] = list(set(content.get('macAddresses')))    # used `set` on the mac address list as it sometimes contained duplicated values
-            entry_context.append({
-                'Hostname': content.get('computerName'),
-                'Domain': content.get('domainOrWorkgroup'),
-                'IPAddresses': content.get('ipAddresses'),
-                'OS': content.get('operatingSystem') + ' | ' + content.get('osBitness'),
-                'Description': content.get('content.description'),
-                'MACAddresses': content.get('macAddresses'),
-                'BIOSVesrsion': content.get('biosVersion'),
-                'DHCPServer': content.get('dhcpServer'),
-                'HardwareKey': content.get('hardwareKey')
-            })
-
+        filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size, columns)
         columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
 
+        md = create_endpints_filter_string(computer_name, last_update, os, page_size)
         md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -866,16 +888,9 @@ script:
 
     def groups_info_command(token):
         columns = demisto.getArg('columns')
-        json_res = do_get(token, False, 'sepm/api/v1/groups' + build_query_params(demisto.args()))
-        sepm_groups = []
-        filtered_json_response = json_res.get('content')
-        for entry in filtered_json_response:
-            group = {}
-            for header in GROUPS_INFO_DEFAULT_COLUMNS:
-                group[header] = entry[header]
-                sepm_groups.append(group)
-        default_headers = GROUPS_INFO_DEFAULT_COLUMNS
-        columns_list = choose_columns(columns, default_headers)
+
+        filtered_json_response, json_res, sepm_groups = get_groups_info(token, columns)
+        columns_list = choose_columns(columns, GROUPS_INFO_DEFAULT_COLUMNS)
 
         md = tableToMarkdown('Groups Information', filtered_json_response, columns_list)
         demisto.results({
@@ -894,16 +909,7 @@ script:
     def command_status(token):
         command_id = demisto.getArg('commandId')
 
-        command_status_json = get_command_status_details(token, command_id)
-        cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
-        cmd_status_detail.pop('hardwareKey', None)
-
-        state_id = cmd_status_detail.get('stateId')
-        is_done = False
-        if state_id == '2' or state_id == '3':
-            is_done = True
-        message = 'Command is done.' if is_done else 'Command is in progress. Run !sep-command-status to check again.';
-
+        cmd_status_detail, message = get_command_status(token, command_id)
         md = '### Command ID: {0}\n'.format(command_id)
         md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
         md += '### ' + message;
@@ -922,12 +928,10 @@ script:
             }
         })
 
-    def list_policies_command(token):
-        policies_list = do_get(token, False, 'sepm/api/v1/policies/summary').get('content')
 
-        fixed_policie_list = sanitize_policies_list(policies_list)
-        md_list = sanitize_policies_list_for_md(fixed_policie_list)
-        md = tableToMarkdown('List of existing policies', md_list, ['Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Discription'])
+    def list_policies_command(token):
+        md_list, policies_list, fixed_policy_list = get_list_of_policies(token)
+        md = tableToMarkdown('List of existing policies', md_list, ['Policy Name', 'Type', 'ID', 'Enabled', 'Assigned', 'Description'])
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -935,7 +939,7 @@ script:
             'HumanReadable': md,
             'IgnoreAutoExtract': True,
             'EntryContext': {
-                'SEPM.PoliciesList': createContext(fixed_policie_list, removeNull=True)
+                'SEPM.PoliciesList': createContext(fixed_policy_list, removeNull=True)
             }
         })
 
@@ -958,9 +962,8 @@ script:
 
     def list_locations_command(token):
         group_id = demisto.getArg('groupID')
-        url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
-        url_resp = do_get(token, False, url)
-        location_ids = map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp)
+        url_resp, location_ids = get_location_list(token, group_id)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -976,15 +979,8 @@ script:
     def endpoint_quarantine_command(token):
         endpoint = demisto.getArg('endpoint')
         action = demisto.getArg('actionType')
-        action_type = 'Quarantine' if action == 'Add' else 'Undo'
 
-        if not endpoint:
-            return_error('Please provide the IP address or the hostname of endpoint.')
-        elif validate_ip(endpoint):
-            computer_id = get_computer_id(token, endpoint, None)
-        else:
-            computer_id = get_computer_id(token, None, endpoint)
-        command_id = quarantine(token, computer_id, action_type)
+        command_id = endpoint_quarantine(token, endpoint, action)
         message = '### Initiated quarantine for endpoint {0}. Command ID: {1}.'.format(endpoint, command_id) if action == 'Add' else '### Removing endpoint: {0} from quarantine. Command ID: {1}.'.format(
             endpoint, command_id)
         context = {
@@ -1009,13 +1005,7 @@ script:
         endpoint = demisto.getArg('endpoint')
         scan_type = demisto.getArg('scanType')
 
-        if not endpoint:
-            return_error('Please provide the IP address or the hostname of endpoint.')
-        elif validate_ip(endpoint):
-            computer_id = get_computer_id(token, endpoint, None)
-        else:
-            computer_id = get_computer_id(token, None, endpoint)
-        command_id = scan(token, computer_id, scan_type)
+        command_id = scan_endpoint(token, endpoint, scan_type)
         message = '### Initiated scan on endpoint: {0} with type: {1}. Command ID: {2}.'.format(endpoint, scan_type, command_id)
         context = {
             'CommandID': command_id,
@@ -1037,14 +1027,8 @@ script:
 
     def update_endpoint_content_command(token):
         endpoint = demisto.getArg('endpoint')
-        if not endpoint:
-            return_error('Please provide the IP address or the hostname of endpoint.')
-        elif validate_ip(endpoint):
-            computer_id = get_computer_id(token, endpoint, None)
-        else:
-            computer_id = get_computer_id(token, None, endpoint)
 
-        command_id = update_content(token, computer_id)
+        command_id = update_endpoint_content(token, endpoint)
         message = '### Updating endpoint: {0}. Command ID: {1}.'.format(endpoint, command_id)
         context = {
             'CommandID': command_id,
@@ -1062,9 +1046,7 @@ script:
             }
         })
 
-    def move_client_to_group_command(token):
-        group_id = demisto.getArg('groupID')
-        hardware_key = demisto.getArg('hardwareKey')
+    def move_client_to_group(token, group_id, hardware_key):
         body = [{
             'group': {
                 'id': group_id
@@ -1075,14 +1057,22 @@ script:
         message = '### Moved client to requested group successfully' \
             if response[0].get('responseCode') == '200' \
             else '### Error moving client'
+        return response, message
+
+
+    def move_client_to_group_command(token):
+        group_id = demisto.getArg('groupID')
+        hardware_key = demisto.getArg('hardwareKey')
+
+        response, message = move_client_to_group(token, group_id, hardware_key)
         demisto.results(
-                {
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['text'],
-                    'Contents': response,
-                    'HumanReadable': message,
-                    'IgnoreAutoExtract': True,
-                })
+            {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': response,
+                'HumanReadable': message,
+                'IgnoreAutoExtract': True,
+            })
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS SWITCH    @@@@@@@@@@@@@@@@@@@@@@@@@@
