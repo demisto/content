@@ -1205,8 +1205,7 @@ script: |-
 
   def return_outputs(readable_output, outputs, raw_response=None):
       """
-      This function replaces demisto.results(), makes the use more easy and intuitive.
-      This function will call demisto.results() internally.
+      This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
       :type readable_output: ``str``
       :param readable_output: markdown string that will be presented in the warroom, should be human readable - (HumanReadable)
@@ -1223,22 +1222,18 @@ script: |-
       """
       return_entry = {
           "Type": entryTypes["note"],
-          "HumanReadable": "",
-          "ContentsFormat": formats["text"],
+          "HumanReadable": None,
+          "ContentsFormat": formats["json"],
           "Contents": None
       }
-      if readable_output:
-          return_entry["HumanReadable"] = readable_output
 
-      if raw_response is not None:
-          return_entry["ContentsFormat"] = formats["json"]
-          return_entry["Contents"] = raw_response
+      return_entry["HumanReadable"] = readable_output
 
-      if outputs is not None:
-          return_entry["EntryContext"] = outputs
-          if raw_response is None:
-              return_entry["ContentsFormat"] = formats["json"]
-              return_entry["Contents"] = outputs
+      return_entry["Contents"] = raw_response
+
+      return_entry["EntryContext"] = outputs
+      if outputs and raw_response is None:
+          return_entry["Contents"] = outputs
 
       demisto.results(return_entry)
 
