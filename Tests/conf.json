@@ -968,7 +968,7 @@
         },
         {
             "playbookID": "Phishing test - attachment",
-            "timeout": 500,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -993,7 +993,7 @@
             "playbookID": "DUO Test Playbook"
         },
         {
-          "playbookID": "SLA Scripts - Test"
+            "playbookID": "SLA Scripts - Test"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
@@ -1020,6 +1020,9 @@
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
             "nightly": true
+        },
+        {
+            "playbookID": "Autoextract - Test"
         }
     ],
     "skipped_tests": {
@@ -1036,18 +1039,25 @@
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "Tenable.io test": "Error 409 ISSUE OPENED",
         "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
-        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye "
+        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
+        "RedLockTest": "RedLock has API issues - opened an issue (15493)",
+        "GsuiteTest": "error was fixed only on server master and not on ",
+        "DUO Test Playbook": "DUO integration is failing",
+        "MISP V2 Test": "fails",
+        "CreatePhishingClassifierMLTest": "fails",
+        "GmailTest": "fails",
+        "cisco-ise-test-playbook": "fails"
     },
     "skipped_integrations": {
-        "Jask": "Cannot access instance token not valid",
-        "FortiGate": "License expired, in the process of getting new one",
-        "Skyformation": "Server installed by skyformation is down, waiting on reply",
-        "icebrg": "Requires BD",
-        "Cylance Protect": "Under development",
+        "Jask": "Cannot access instance token not valid (issue 12900)",
+        "FortiGate": "License expired, in the process of getting new one (issue 14723)",
+        "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
+        "icebrg": "Requires BD (issue 14312)",
+        "Cylance Protect": "Under development (issue 15244)",
         "VMware": "DevOps investigation",
-        "Farsight DNSDB": "No instance",
-        "Symantec MSS": "No instance",
-        "Remedy AR": "DevOps investigation",
+        "Farsight DNSDB": "No instance (issue 15512)",
+        "Symantec MSS": "No instance (issue 15513)",
+        "Remedy AR": "DevOps investigation (issue 15514)",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
@@ -1065,7 +1075,9 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues"
+        "WildFire": "Quota is temporarily over due to circle ci issues",
+        "Freshdesk": "Trial account expired",
+        "Tanium": "Instance is not stable (issue 15497)"
     },
     "nigthly_integrations": [
         "Lastline",
