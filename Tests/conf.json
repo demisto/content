@@ -1044,7 +1044,9 @@
         "GsuiteTest": "error was fixed only on server master and not on ",
         "DUO Test Playbook": "DUO integration is failing",
         "MISP V2 Test": "fails",
-        "CreatePhishingClassifierMLTest": "fails"
+        "CreatePhishingClassifierMLTest": "fails",
+        "GmailTest": "fails",
+        "cisco-ise-test-playbook": "fails"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
