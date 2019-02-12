@@ -12,7 +12,7 @@ SCRIPT_YML_REGEX = r"scripts.*\.yml"
 SCRIPT_PY_REGEX = r"scripts.*\.py"
 SCRIPT_JS_REGEX = r"scripts.*\.js"
 SCRIPT_REGEX = r"scripts.*script-.*\.yml"
-INTEGRATION_YML_REGEX = r"integrations.(?!integration)*\.yml"
+INTEGRATION_YML_REGEX = r"integrations.*\.yml"
 PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
 INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
 TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
@@ -73,7 +73,6 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):

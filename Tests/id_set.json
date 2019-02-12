@@ -11678,15 +11678,12 @@
             "EclecticIQ Platform": {
                 "name": "EclecticIQ Platform", 
                 "commands": [
-                    "domain", 
-                    "url", 
                     "ip", 
+                    "url", 
                     "file", 
                     "eclecticiq-get-observable-related-entity", 
-                    "email"
-                ], 
-                "tests": [
-                    "EclecticIQ Test"
+                    "email", 
+                    "domain"
                 ]
             }
         }
