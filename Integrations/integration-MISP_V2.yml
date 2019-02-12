@@ -1734,4 +1734,3 @@ script:
 releaseNotes: "Fixed connection through proxy. Added add_sighting command and test connection"
 tests:
 - MISP V2 Test
-releaseNotes: add_sighting command and test connection
