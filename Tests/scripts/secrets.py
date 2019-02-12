@@ -4,7 +4,14 @@ import re
 import math
 import json
 import string
-import PyPDF2
+
+try:
+    import PyPDF2
+except ImportError:
+    import pip._internal as pip
+    pip.main(['install', 'PyPDF2'])
+    import PyPDF2
+
 from validate_files_structure import run_git_command
 
 # secrets settings
