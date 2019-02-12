@@ -97,6 +97,104 @@ script:
     description: Uploads a new custom IoC to crowdstrike watch list.
     execution: false
     name: crowdstrike-create-ioc
+  - arguments:
+    - default: false
+      description: List of IoC types to retrieve, comma seperated (e.g. sha256,sha1,md5,domain,ipv4,ipv6).
+      isArray: true
+      name: ioc_types
+      required: false
+      secret: false
+    - default: false
+      description: List of IoC values to retrieve, comma seperated.
+      isArray: false
+      name: ioc_values
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: IoC policy to retrieve, comma seperated.
+      isArray: false
+      name: policy
+      predefined:
+      - detect
+      - none
+      required: false
+      secret: false
+    - default: false
+      description: List of the IoC sources to retrieve, comma seperated.
+      isArray: true
+      name: sources
+      required: false
+      secret: false
+    - default: false
+      description: An RFC3339 DateTime (e.g. 2019-01-02T150:00:00Z) that represents
+        the starting date range to search for IOCs by their expiration timestamp.
+      isArray: false
+      name: expiration_from
+      required: false
+      secret: false
+    - default: false
+      description: An RFC3339 DateTime (e.g. 2019-01-02T150:00:00Z) that represents
+        the ending date range to search for IOCs by their expiration timestamp.
+      isArray: false
+      name: expiration_to
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of records to return. The default is 50. The
+        minimum is 1 and the maximum is 500.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The ids of the IoCs to retrieve (combination of type and value
+        delimited by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    description: Retrieves a list of IoCs.
+    execution: false
+    name: crowdstrike-search-iocs
+    outputs:
+    - contextPath: CrowdStrike.IoC.ID
+      description: ID of the IoC (Type:Value).
+      type: String
+    - contextPath: CrowdStrike.IoC.Type
+      description: Type of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.Value
+      description: Value of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.Policy
+      description: Policy of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.Source
+      description: Source of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.ShareLevel
+      description: Share level of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.Expiration
+      description: Expiration timestamp of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.Description
+      description: Description of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.CreatedTime
+      description: Time of creation of the IoC.
+      type: Date
+    - contextPath: CrowdStrike.IoC.CreatedBy
+      description: Identity of the creator of the IoC.
+      type: String
+    - contextPath: CrowdStrike.IoC.ModifiedTime
+      description: Time of the last modification to the IoC.
+      type: Date
+    - contextPath: CrowdStrike.IoC.ModifiedBy
+      description: Identity of the user who last edited the IoC.
+      type: String
   isfetch: true
   runonce: false
   script: |-
@@ -151,6 +249,21 @@ script:
         'user_name': 'UserName'
     }
 
+    SEARCH_IOC_KEY_MAP = {
+        #TODO: Add ID
+        'type': 'Type',
+        'value': 'Value',
+        'policy': 'Policy',
+        'source': 'Source',
+        'share_level': 'ShareLevel',
+        'expiration_timestamp': 'Expiration',
+        'description': 'Description',
+        'created_timestamp': 'CreatedTime',
+        'created_by': 'CreatedBy',
+        'modified_timestamp': 'ModifiedTime',
+        'modified_by': 'ModifiedBy'
+    }
+
     ''' SPLIT KEY DICTIONARY '''
 
     #   Pattern: {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
@@ -203,7 +316,7 @@ script:
         return res.json()
 
 
-    def create_entry_object(contents='', ec='', hr=''):
+    def create_entry_object(contents='', ec=None, hr=''):
         return {
             'Type': entryTypes['note'],
             'Contents': contents,
@@ -260,7 +373,7 @@ script:
         return new_dict
 
 
-    ''' REQUESTS FUNCTIONS '''
+    ''' COMMAND SPECIFIC FUNCTIONS '''
 
     def get_detections(last_behavior_time):
         # The service endpoint to request from
@@ -291,8 +404,8 @@ script:
         args = demisto.args()
         payload = {}
         try:
-            payload['ioc_type'] = args['ioc_type']
-            payload['ioc_value'] = args['ioc_value']
+            payload['type'] = args['ioc_type']
+            payload['value'] = args['ioc_value']
             payload['policy'] = args['policy']
         except KeyError, e:
             arg = e.args[0]
@@ -302,6 +415,33 @@ script:
         payload['description'] = args.get('description')
         return http_request('POST', '/indicators/entities/iocs/v1', params=payload)
     # TODO: Check how an error response looks like
+
+
+    def search_iocs():
+        args = demisto.args()
+        ids = args.get('ids')
+        if not ids:
+            payload = {
+                'types': args.get('ioc_types', '').split(','),
+                'values': args.get('ioc_values', '').split(','),
+                'policies': args.get('policy', ''),
+                'sources': args.get('sources', '').split(','),
+                'from.expiration_timestamp': args.get('expiration_from', ''),
+                'to.expiration_timestamp': args.get('expiration_to', ''),
+                'limit': args.get('limit', 50)
+            } #TODO: Check if sending empty arrays is ok
+            ids = http_request('GET', '/indicators/queries/iocs/v1', payload).json().get('resources')
+            if not ids:
+                return None
+        payload = {
+            'ids': ids
+        }
+        return http_request('GET','/indicators/entities/iocs/v1', params=payload)
+
+
+    def enrich_ioc_dict_with_ids(ioc_dict):
+        for ioc in ioc_dict:
+            ioc['ID'] = '{0}:{1}'.format(ioc.get('Type'), ioc.get('Value'))
 
 
     ''' COMMANDS FUNCTIONS '''
@@ -349,6 +489,15 @@ script:
         return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
 
 
+    def search_iocs_command():
+        raw_res = search_iocs()
+        if not raw_res:
+            return create_entry_object(hr='Could not find any Indicators of Compromise')
+        iocs = raw_res.get('resources')
+        ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
+        enrich_ioc_dict_with_ids(ec)
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec}, hr=tableToMarkdown('Indicators of Compromise', ec))
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -362,4 +511,6 @@ script:
         fetch_incidents()
     elif demisto.command() == 'crowdstrike-create-ioc':
         demisto.results(create_ioc_command())
+    elif demisto.command() == 'crowdstrike-search-iocs':
+        demisto.results(search_iocs_command())
   type: python
