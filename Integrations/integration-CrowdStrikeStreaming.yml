@@ -195,6 +195,17 @@ script:
     - contextPath: CrowdStrike.IoC.ModifiedBy
       description: Identity of the user who last edited the IoC.
       type: String
+  - arguments:
+    - default: false
+      description: The ids of the IoCs to delete (combination of type and value delimited
+        by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    description: Deletes a list of IoCs by IoC ID.
+    execution: false
+    name: crowdstrike-delete-iocs
   isfetch: true
   runonce: false
   script: |-
@@ -347,7 +358,7 @@ script:
 
     def get_trasnformed_dict(old_dict, transformation_dict):
         """
-           Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
         """
         new_dict = {}
         for k in old_dict.keys():
@@ -358,8 +369,8 @@ script:
 
     def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
         """
-           Extracts new values out of old_dict using a json structure of:
-           {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+        Extracts new values out of old_dict using a json structure of:
+        {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
         """
         new_dict = {}
         for trans_dict in transformation_dict_arr:
@@ -371,6 +382,18 @@ script:
             except:
                 LOG('Error with: {}'.format(trans_dict))
         return new_dict
+
+
+    def convert_to_str(obj):
+        """
+        Converts an obj to an str
+        """
+        if isinstance(obj, unicode):
+            return obj.encode('utf-8')
+        try:
+            return str(obj)
+        except:
+            return obj
 
 
     ''' COMMAND SPECIFIC FUNCTIONS '''
@@ -404,15 +427,15 @@ script:
         args = demisto.args()
         payload = {}
         try:
-            payload['type'] = args['ioc_type']
-            payload['value'] = args['ioc_value']
-            payload['policy'] = args['policy']
+            payload['type'] = convert_to_str(args['ioc_type'])
+            payload['value'] = convert_to_str(args['ioc_value'])
+            payload['policy'] = convert_to_str(args['policy'])
         except KeyError, e:
             arg = e.args[0]
             return_error("Command Error: Please provide mandatory argument: {0}".format(arg))
-        payload['expiration_days'] = args.get('expiration_days')
-        payload['source'] = args.get('source')
-        payload['description'] = args.get('description')
+        payload['expiration_days'] = convert_to_str(args.get('expiration_days'))
+        payload['source'] = convert_to_str(args.get('source'))
+        payload['description'] = convert_to_str(args.get('description'))
         return http_request('POST', '/indicators/entities/iocs/v1', params=payload)
     # TODO: Check how an error response looks like
 
@@ -422,17 +445,19 @@ script:
         ids = args.get('ids')
         if not ids:
             payload = {
-                'types': args.get('ioc_types', '').split(','),
-                'values': args.get('ioc_values', '').split(','),
-                'policies': args.get('policy', ''),
-                'sources': args.get('sources', '').split(','),
-                'from.expiration_timestamp': args.get('expiration_from', ''),
-                'to.expiration_timestamp': args.get('expiration_to', ''),
-                'limit': args.get('limit', 50)
+                'types': convert_to_str(args.get('ioc_types', '')).split(','),
+                'values': convert_to_str(args.get('ioc_values', '')).split(','),
+                'policies': convert_to_str(args.get('policy', '')),
+                'sources': convert_to_str(args.get('sources', '')).split(','),
+                'from.expiration_timestamp': convert_to_str(args.get('expiration_from', '')),
+                'to.expiration_timestamp': convert_to_str(args.get('expiration_to', '')),
+                'limit': convert_to_str(args.get('limit', 50))
             } #TODO: Check if sending empty arrays is ok
             ids = http_request('GET', '/indicators/queries/iocs/v1', payload).json().get('resources')
             if not ids:
                 return None
+        else:
+            ids = convert_to_str(ids)
         payload = {
             'ids': ids
         }
@@ -442,6 +467,14 @@ script:
     def enrich_ioc_dict_with_ids(ioc_dict):
         for ioc in ioc_dict:
             ioc['ID'] = '{0}:{1}'.format(ioc.get('Type'), ioc.get('Value'))
+
+
+    def delete_ioc():
+        ids = convert_to_str(demisto.args().get('ids'))
+        payload = {
+            'ids': ids
+        }
+        return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
     ''' COMMANDS FUNCTIONS '''
@@ -498,6 +531,13 @@ script:
         enrich_ioc_dict_with_ids(ec)
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec}, hr=tableToMarkdown('Indicators of Compromise', ec))
 
+
+    def delete_iocs_command():
+        raw_res = delete_ioc()
+        ids = demisto.args().get('ids')
+        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
+
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -513,4 +553,6 @@ script:
         demisto.results(create_ioc_command())
     elif demisto.command() == 'crowdstrike-search-iocs':
         demisto.results(search_iocs_command())
+    elif demisto.command() == 'crowdstrike-delete-iocs':
+        demisto.results(delete_iocs_command())
   type: python
