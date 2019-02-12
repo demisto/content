@@ -1222,17 +1222,14 @@ script: |-
       """
       return_entry = {
           "Type": entryTypes["note"],
-          "HumanReadable": None,
+          "HumanReadable": readable_output,
           "ContentsFormat": formats["json"],
-          "Contents": None
+          "Contents": raw_response,
+          "EntryContext": outputs
       }
 
-      return_entry["HumanReadable"] = readable_output
-
-      return_entry["Contents"] = raw_response
-
-      return_entry["EntryContext"] = outputs
       if outputs and raw_response is None:
+          # if raw_response was not provided but outputs were provided then set Contents as outputs
           return_entry["Contents"] = outputs
 
       demisto.results(return_entry)
