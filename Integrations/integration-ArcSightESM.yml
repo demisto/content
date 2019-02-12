@@ -160,7 +160,7 @@ script:
                 Body: stringBody
             },
             params.insecure,
-            params.useproxy
+            params.proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {

@@ -1223,7 +1223,13 @@ script:
         return results
 
 
-    def search_items_in_mailbox(query, folder_path='', limit=100, target_mailbox=None, is_public=None):
+    def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None, is_public=None):
+        if not query and not message_id:
+            return_error("Missing required argument. Provide query or message-id")
+
+        if message_id and message_id[0] != '<' and message_id[-1] != '>' :
+            message_id = '<{}>'.format(message_id)
+
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         limit = int(limit)
         if folder_path:
@@ -1236,7 +1242,10 @@ script:
         for folder in folders:
             if Message not in folder.supported_item_models:
                 continue
-            items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            if query:
+                items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            else:
+                items_qs = folder.filter(message_id=message_id).only(*map(lambda x: x.name, Message.FIELDS))
             items += get_limited_number_of_messages_from_qs(items_qs, limit)
             if len(items) >= limit:
                 break
@@ -1937,7 +1946,6 @@ script:
   - name: ews-search-mailbox
     arguments:
     - name: query
-      required: true
       description: 'The search query string. Syntax here: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
@@ -1953,6 +1961,8 @@ script:
       - "True"
       - "False"
       description: Is the folder a Public Folder?
+    - name: message-id
+      description: The message id of email. Will be ignored if query argument is provided.
     outputs:
     - contextPath: EWS.Items.itemId
       description: The email item id.
@@ -2391,7 +2401,7 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added command ews-expand-group. Fixed issue with 2016-2010 mixed environments."
+releaseNotes: "Added option to search by message-id in ews-search-mailbox"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
