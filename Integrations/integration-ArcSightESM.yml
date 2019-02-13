@@ -465,9 +465,8 @@ script:
 
         raw_events = get_security_events(ids, lastDateRange)
         if raw_events:
-            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)),
-                             extract_relevant_event_entries(beautifully_json(raw_events)))
-             demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
+            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)), extract_relevant_event_entries(beautifully_json(raw_events)))
+            demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
         else:
             demisto.results('No events were found')
 
