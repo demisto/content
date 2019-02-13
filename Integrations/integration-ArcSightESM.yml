@@ -56,9 +56,10 @@ configuration:
   required: false
 script:
   script: |-
+    """ IMPORTS """
     from collections import deque
-    import requests
     from datetime import datetime
+    import requests
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -66,28 +67,10 @@ script:
     """ GLOBALS """
     URL, PORT = demisto.params().get('server'), demisto.params().get('port')
     BASE_URL = URL.rstrip('/:') + ':' + PORT + '/'
-    VERIFY_CERTIFICATE = not demisto.params().get('unsecure', True)
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
     HEADERS = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-    }
-
-    RELEVANT_CASE_ENTRIES = {
-        'Name': 'name',
-        'EventIDs': 'eventIDs',
-        'Action': 'action',
-        'Stage': 'stage',
-        'CaseID': 'resourceid',
-        'Severity': 'consequenceSeverity'
-    }
-    RELEVANT_EVENT_ENTRIES = {
-        'Event ID': 'eventId',
-        'Time': 'endTime',
-        'Source Address': 'source.address',
-        'Destination Address': 'destination.address',
-        'Name': 'name',
-        'Source Port': 'source.port',
-        'Base Event IDs': 'baseEventIds'
     }
 
     REQ_SOAP_BODY = """<?xml version="1.0" encoding="UTF-8"?>
@@ -109,11 +92,6 @@ script:
     COLUMN = "<columns>{}</columns>".format
     BODY = "<act:entryList>{}</act:entryList>".format
 
-    AS_NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
-    AS_IP_KEYS = ['address', 'Destination Address', 'Source Address']
-    AS_TIME_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
-                      'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
-
     if not demisto.params().get("proxy", False):
         del os.environ["HTTP_PROXY"]
         del os.environ["HTTPS_PROXY"]
@@ -127,7 +105,7 @@ script:
 
 
     def parse_timestamp_to_datestring(timestamp):
-        if timestamp not in AS_NONE_VALUES:
+        if timestamp and timestamp > 0:
             try:
                 return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.000Z")
             except (ValueError, TypeError) as e:
@@ -137,6 +115,13 @@ script:
 
     def beautifully_json(d, depth=0):
         """ Converts some of the values from ArcSight DB into a more useful & readable format """
+        # arcsight stores some None values as follows
+        NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
+        # arcsight stores IP addresses as int, in the following keys
+        IP_FIELDS = ['address', 'Destination Address', 'Source Address']
+        # arcsight stores Dates as timeStamps in the following keys, need to format them into Date
+        TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
+                            'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
         if depth < 10:
             if isinstance(d, list):
                 return [beautifully_json(d_, depth + 1) for d_ in d]
@@ -144,24 +129,14 @@ script:
                 for key, value in d.items():
                     if isinstance(value, dict):
                         beautifully_json(value, depth + 1)
-                    elif value in AS_NONE_VALUES:
+                    elif value in NONE_VALUES:
                         d.pop(key, None)
-                    elif key in AS_IP_KEYS and isinstance(value, int):
+                    elif key in IP_FIELDS and isinstance(value, int):
                         d[key] = int_to_ip(value)
-                    elif key in AS_TIME_FIELDS:
+                    elif key in TIMESTAMP_FIELDS:
+                        key = key.replace('Time', 'Date').replace('stamp', '')
                         d[key] = parse_timestamp_to_datestring(value)
-
-
-    def generate_entry(raw, table, out, title=None, context=None, headers=None, to_enrich=None):
-        beautifully_json(raw)
-        return {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': raw,
-            'HumanReadable': tableToMarkdown(name=title, headers=headers, t=table) if title else table,
-            'EntryContext': {'ArcSightESM.{}'.format(out) + (
-                '(val.{to_enrich}===obj.{to_enrich})'.format(to_enrich=to_enrich) if to_enrich else ''): context or raw}
-        }
+        return d
 
 
     def login():
@@ -180,7 +155,7 @@ script:
             return_error('Failed to login, check integration parameters.')
 
         try:
-            res_json = json.loads(res.text)
+            res_json = res.json()
             if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
                 return res_json.get('log.loginResponse').get('log.return')
 
@@ -222,13 +197,17 @@ script:
             return_error('Connection Error. Please check URL')
 
 
-    def test(events_query_viewer_id=None, cases_query_viewer_id=None, isFetch=False, **kwarg):
+    def test():
         """
         Login (already done in global).
         Test if fetch query viewers are valid.
         Run query viewer if fetch defined.
         """
-        if isFetch and not events_query_viewer_id and not cases_query_viewer_id:
+        events_query_viewer_id = demisto.args().get('events_query_viewer_id')
+        cases_query_viewer_id = demisto.args().get('cases_query_viewer_id')
+        is_fetch = demisto.args().get('isFetch')
+
+        if is_fetch and not events_query_viewer_id and not cases_query_viewer_id:
             return_error('If fetch is enabled, you must provide query viewer Resource ID for Cases or Events')
 
         if events_query_viewer_id:
@@ -258,7 +237,7 @@ script:
                 return_error('Failed to get query viewer results.')
 
         return_object = None
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if "qvs.getMatrixDataResponse" in res_json and "qvs.return" in res_json["qvs.getMatrixDataResponse"]:
             # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
             return_object = res_json.get("qvs.getMatrixDataResponse").get("qvs.return")
@@ -334,8 +313,9 @@ script:
         return fields, results
 
 
-    def get_query_viewer_results_command(id):
-        columns, query_results = get_query_viewer_results(query_viewer_id=id)
+    def get_query_viewer_results_command():
+        resource_id = demisto.args().get('ids')
+        columns, query_results = get_query_viewer_results(query_viewer_id=resource_id)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -344,12 +324,15 @@ script:
         })
 
 
-    def fetch(events_query_viewer_id=None, cases_query_viewer_id=None, **kwarg):
+    def fetch():
         """
         Query viewer should be defined in ArcSight ESM. fetch incidents fetches the results of query viewer
         and converts them to Demisto incidents. We can query Cases or Events. If Cases are fetched then the
         query viewer query must return fields ID and Create Time. If Events are fetched then Event ID and Start Time.
         """
+        events_query_viewer_id = demisto.params().get('events_query_viewer_id')
+        cases_query_viewer_id = demisto.params().get('cases_query_viewer_id')
+
         last_run = demisto.getLastRun()
         last_create_time = last_run.get('last_create_time', 0)
         already_fetched = deque(last_run.get('already_fetched', []), maxlen=1000)
@@ -392,21 +375,21 @@ script:
         demisto.incidents(incidents)
 
 
-    def get_case(resourceId, fetch_base_events=False):
+    def get_case(resource_id, fetch_base_events=False):
         query_path = 'www/manager-service/rest/CaseService/getResourceById'
         params = {
             'authToken': AUTH_TOKEN,
-            'resourceId': resourceId,
+            'resourceId': resource_id,
         }
         res = send_request(query_path, params=params, method='get')
 
         if not res.ok:
             if 'InvalidResourceIDException: Invalid resource ID' in res.text and 'for Case' in res.text:
-                return_error('Invalid resource ID {} for Case'.format(resourceId))
+                return_error('Invalid resource ID {} for Case'.format(resource_id))
             else:
                 return_error('Failed to get case. StatusCode: {}'.format(res.status_code))
 
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if 'cas.getResourceByIdResponse' in res_json and 'cas.return' in res_json.get('cas.getResourceByIdResponse'):
             case = res_json.get('cas.getResourceByIdResponse').get('cas.return')
 
@@ -419,14 +402,31 @@ script:
 
             return case
 
-        return_error('Case {} not found'.format(resourceId))
+        return_error('Case {} not found'.format(resource_id))
 
 
-    def get_case_command(resourceId, withBaseEvents=False):
-        raw_case = get_case(resourceId, fetch_base_events=withBaseEvents == 'true')
-        relevant_entries = {new_key: raw_case.get(old_key) for new_key, old_key in RELEVANT_CASE_ENTRIES.items()}
-        relevant_entries['CreatedTime'] = FormatADTimestamp(raw_case.get('createdTimestamp'))
-        demisto.results(generate_entry(raw_case, relevant_entries, title='Case ' + resourceId, out='Cases', to_enrich='resourceid'))
+    def get_case_command():
+        resource_id = demisto.args().get('resourceId')
+        with_base_events = demisto.args().get('withBaseEvents')
+
+        raw_case = get_case(resource_id, fetch_base_events=with_base_events == 'true')
+        case = {
+            'Name': raw_case.get('name'),
+            'EventIDs': raw_case.get('eventIDs'),
+            'Action': raw_case.get('action'),
+            'Stage': raw_case.get('stage'),
+            'CaseID': raw_case.get('resourceid'),
+            'Severity': raw_case.get('consequenceSeverity'),
+            'CreatedTime': FormatADTimestamp(raw_case.get('createdTimestamp'))
+        }
+        entry_context = beautifully_json(raw_case)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': entry_context,
+            'HumanReadable': tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True),
+            'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
+        })
 
 
     def get_all_cases_command():
@@ -441,32 +441,60 @@ script:
             return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
 
         all_cases = res.json().get('cas.findAllIdsResponse').get('cas.return')
-        demisto.results(generate_entry(all_cases, all_cases, title='All cases', headers='caseID', out='AllCaseIDs'))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': all_cases,
+            'HumanReadable': tableToMarkdown(name='All cases', headers='caseID', t=all_cases, removeNull=True),
+            'EntryContext': {'ArcSightESM.AllCaseIDs': all_cases}
+        })
 
 
     def extract_relevant_event_entries(raw_events):
         events = []
-        for event in raw_events:
-            event_entries = {}
-            for new_key, key in RELEVANT_EVENT_ENTRIES.items():
-                if demisto.get(event, key):
-                    event_entries[new_key] = int_to_ip(demisto.get(event, key)) if 'Address' in new_key else demisto.get(event, key)
-                    if new_key is 'Time':
-                        event_entries[new_key] = timestamp_to_datestring(event_entries[new_key], '%Y-%m-%d, %H:%M:%S')
-            events.append(event_entries)
-
+        for raw_event in raw_events:
+            event = {
+                'Event ID': raw_event.get('eventId'),
+                'Time': timestamp_to_datestring(raw_event.get('endTime'), '%Y-%m-%d, %H:%M:%S'),
+                'Source Address': int_to_ip(demisto.get(raw_event, 'source.address')),
+                'Destination Address': int_to_ip(demisto.get(raw_event, 'destination.address')),
+                'Name': raw_event.get('name'),
+                'Source Port': demisto.get(raw_event, 'source.port'),
+                'Base Event IDs': raw_event.get('baseEventIds')
+            }
+            events.append(event)
         return events
 
 
-    def get_security_events_command(ids, lastDateRange=None):
-        if isinstance(ids, basestring):
-            # if ids is string then convert to list
-            ids = argToList(ids)
+    def get_security_events_command():
+        ids = demisto.args().get('ids')
+        last_date_range = demisto.args().get('lastDateRange')
 
-        raw_events = get_security_events(ids, lastDateRange)
+        ids = argToList(ids)
+        raw_events = get_security_events(ids, last_date_range)
+
         if raw_events:
-            hr = tableToMarkdown('Security Event: {}'.format(','.join(ids)), extract_relevant_event_entries(beautifully_json(raw_events)))
-            demisto.results(generate_entry(raw=raw_events, table=hr, out='SecurityEvents', to_enrich='eventId'))
+            events = []
+            for raw_event in beautifully_json(raw_events):
+                event = {
+                    'Event ID': raw_event.get('eventId'),
+                    'Time': timestamp_to_datestring(raw_event.get('endTime'), '%Y-%m-%d, %H:%M:%S'),
+                    'Source Address': int_to_ip(demisto.get(raw_event, 'source.address')),
+                    'Destination Address': int_to_ip(demisto.get(raw_event, 'destination.address')),
+                    'Name': raw_event.get('name'),
+                    'Source Port': demisto.get(raw_event, 'source.port'),
+                    'Base Event IDs': raw_event.get('baseEventIds')
+                }
+                events.append(event)
+
+            entry_context = beautifully_json(raw_events)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': entry_context,
+                'HumanReadable': tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True),
+                'EntryContext': {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': entry_context}
+            })
         else:
             demisto.results('No events were found')
 
@@ -497,7 +525,7 @@ script:
                 'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                     event_ids, BASE_URL + query_path, res.status_code, res.text))
 
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
                 'sev.return'):
             events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
@@ -506,18 +534,34 @@ script:
         return_error('Events are empty for some reason. Response Body: {}'.format(res.text))
 
 
-    def update_case_command(caseId, stage, severity):
-        updated_case = update_case(caseId, stage, severity)
-        relevant_entries = {new_key: updated_case.get(old_key) for new_key, old_key in RELEVANT_CASE_ENTRIES.items()}
-        relevant_entries["CreatedTime"] = FormatADTimestamp(updated_case.get("createdTimestamp"))
+    def update_case_command():
+        case_id = demisto.args().get('caseId')
+        stage = demisto.args().get('stage')
+        severity = demisto.args().get('severity')
 
-        demisto.results(generate_entry(raw=updated_case, table=relevant_entries, title='Case ' + caseId, out='Cases',
-                                       to_enrich='resourceid'))
+        raw_updated_case = update_case(case_id, stage, severity)
+        updated_case = {
+            'Name': raw_updated_case.get('name'),
+            'EventIDs': raw_updated_case.get('eventIDs'),
+            'Action': raw_updated_case.get('action'),
+            'Stage': raw_updated_case.get('stage'),
+            'CaseID': raw_updated_case.get('resourceid'),
+            'Severity': raw_updated_case.get('consequenceSeverity'),
+            'CreatedTime': FormatADTimestamp(raw_updated_case.get('createdTimestamp'))
+        }
+        entry_context = beautifully_json(raw_updated_case)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': entry_context,
+            'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True),
+            'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
+        })
 
 
-    def update_case(caseId, stage, severity=None):
+    def update_case(case_id, stage, severity):
         # get the case from arcsight
-        case = get_case(caseId)
+        case = get_case(case_id)
         case['stage'] = stage
         case['consequenceSeverity'] = severity if severity else case['consequenceSeverity']
 
@@ -536,43 +580,54 @@ script:
 
         if not res.ok:
             return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
-                caseId, BASE_URL + query_path, res.status_code, res.text))
+                case_id, BASE_URL + query_path, res.status_code, res.text))
 
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
             return case
 
         return_error('Failed to update case, fail to parse response. Response Body: {}'.format(res.text))
 
 
-    def get_case_event_ids_command(caseId):
+    def get_case_event_ids_command():
+        case_id = demisto.args().get('caseId')
+
         query_path = 'www/manager-service/rest/CaseService/getCaseEventIDs'
         params = {
             'authToken': AUTH_TOKEN,
-            'caseId': caseId
+            'caseId': case_id
         }
 
         res = send_request(query_path, params=params, method='get')
         if not res.ok:
             return_error("Failed to get Event IDs with:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if 'cas.getCaseEventIDsResponse' in res_json and 'cas.return' in res_json.get('cas.getCaseEventIDsResponse'):
             event_ids = res_json.get('cas.getCaseEventIDsResponse').get('cas.return')
             if not isinstance(event_ids, list):
                 event_ids = [event_ids]
-            demisto.results(generate_entry(raw=res_json, table=event_ids, title='Case {}'.format(caseId), out='CaseEvents',
-                                           headers='Event ID', context=event_ids))
+
+            entry_context = beautifully_json(res_json)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': entry_context,
+                'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), headers='Event ID', t=event_ids, removeNull=True),
+                'EntryContext': {'ArcSightESM.CaseEvents': event_ids}
+            })
         else:
             demisto.results('No IDs were found')
 
 
-    def delete_case_command(caseId):
+    def delete_case_command():
+        case_id = demisto.args().get('caseId')
+
         query_path = 'www/manager-service/rest/CaseService/deleteByUUID'
         req_body = json.dumps({
             'cas.deleteByUUID': {
                 'cas.authToken': AUTH_TOKEN,
-                'cas.id': caseId
+                'cas.id': case_id
             }
         })
         params = {
@@ -583,15 +638,18 @@ script:
             return_error("Failed to delete case:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
 
-    def get_entries_command(resourceId, entryFilter=None):
+    def get_entries_command():
+        resource_id = demisto.args().get('resourceId')
+        entry_filter = demisto.args().get('entryFilter')
+
         query_path = 'www/manager-service/services/ActiveListService/'
-        body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=None)
+        body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
 
         res = send_request(query_path, body=body)
 
         if not res.ok:
             return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                resourceId, res.status_code, body, res.text))
+                resource_id, res.status_code, body, res.text))
 
         res_json = json.loads(xml2json(res.text))
         raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
@@ -604,31 +662,40 @@ script:
             # if the user wants only entries that contain certain 'field:value' sets (filters)
             # e.g. "name:myName,eventId:0,:ValueInUnknownField"
             # if the key is empty, search in every key
-            if entryFilter:
-                for f in entryFilter.split(','):
+            if entry_filter:
+                for f in entry_filter.split(','):
                     k, v = f.split(':')
                     filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
-            demisto.results(generate_entry(raw=filtered, table=filtered,
-                                           out='ActiveList.{}'.format(resourceId), title='Active List entries'))
+            entry_context = beautifully_json(filtered)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': entry_context,
+                'HumanReadable': tableToMarkdown(name='Active List entries', t=filtered, removeNull=True),
+                'EntryContext': {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): entry_context}
+            })
         else:
             demisto.results('No Entries were found for this Active List.')
 
 
-    def clear_entries_command(resourceId):
+    def clear_entries_command():
+        resource_id = demisto.args().get('resourceId')
         query_path = 'www/manager-service/services/ActiveListService/'
-        body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=None)
+        body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
         res = send_request(query_path, body=body)
 
         if not res.ok:
             return_error(
                 "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                    resourceId, res.status_code, body, res.text))
+                    resource_id, res.status_code, body, res.text))
 
         demisto.results("Success")
 
 
-    def add_entries_command(resourceId, entries):
+    def add_entries_command():
+        resource_id = demisto.args().get('resourceId')
+        entries = demisto.args().get('entries')
         query_path = 'www/manager-service/services/ActiveListService/'
         if not isinstance(entries, dict):
             try:
@@ -640,12 +707,12 @@ script:
 
         columns = ''.join(COLUMN(column) for column in entries[0])  # the fields in the entryList matrix are the columns
         entry_list = BODY(columns + ''.join(ENTRY_LIST(''.join(ENTRY(v) for v in en.values())) for en in entries))
-        body = REQ_SOAP_BODY(function='addEntries', auth_token=AUTH_TOKEN, resource_id=resourceId, entryList=entry_list)
+        body = REQ_SOAP_BODY(function='addEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=entry_list)
         res = send_request(query_path, body=body)
 
         if not res.ok:
             return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                resourceId, res.status_code, body, res.text))
+                resource_id, res.status_code, body, res.text))
 
         demisto.results("Success")
 
@@ -664,11 +731,18 @@ script:
         if not res.ok:
             return_error("Failed to get query viewers:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
-        res_json = json.loads(res.text)
+        res_json = res.json()
         if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
             query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
-            demisto.results(generate_entry(query_viewers, query_viewers, title='Query Viewers', headers='Query Viewers ID',
-                                           out='AllQueryViewers'))
+
+            entry_context = beautifully_json(query_viewers)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': entry_context,
+                'HumanReadable': tableToMarkdown(name='Query Viewers', t=query_viewers, headers='Query Viewers ID', removeNull=True),
+                'EntryContext': {'ArcSightESM.AllQueryViewers': entry_context}
+            })
         else:
             demisto.results('No Query Viewers were found')
 
@@ -676,7 +750,7 @@ script:
     AUTH_TOKEN = login()
     try:
         if demisto.command() == 'test-module':
-            test(**demisto.params())
+            test()
             demisto.results('ok')
 
         elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
@@ -684,37 +758,37 @@ script:
                 last_run = json.loads(demisto.args().get('lastRun'))
                 demisto.setLastRun(last_run)
 
-            fetch(**demisto.params())
+            fetch()
 
         elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
-            get_query_viewer_results_command(**demisto.args())
+            get_query_viewer_results_command()
 
         elif demisto.command() == 'as-get-all-cases':
             get_all_cases_command()
 
         elif demisto.command() == 'as-get-case':
-            get_case_command(**demisto.args())
+            get_case_command()
 
         elif demisto.command() == 'as-update-case':
-            update_case_command(**demisto.args())
+            update_case_command()
 
         elif demisto.command() == 'as-case-delete':
-            delete_case_command(**demisto.args())
+            delete_case_command()
 
         elif demisto.command() == 'as-get-security-events':
-            get_security_events_command(**demisto.args())
+            get_security_events_command()
 
         elif demisto.command() == 'as-get-entries':
-            get_entries_command(**demisto.args())
+            get_entries_command()
 
         elif demisto.command() == 'as-add-entries':
-            add_entries_command(**demisto.args())
+            add_entries_command()
 
         elif demisto.command() == 'as-clear-entries':
-            clear_entries_command(**demisto.args())
+            clear_entries_command()
 
         elif demisto.command() == 'as-get-case-event-ids':
-            get_case_event_ids_command(**demisto.args())
+            get_case_event_ids_command()
 
         elif demisto.command() == 'as-get-all-query-viewers':
             get_all_query_viewers_command()
@@ -728,6 +802,7 @@ script:
         return_error(e.message)
     finally:
         logout()
+
   type: python
   commands:
   - name: as-get-all-cases
