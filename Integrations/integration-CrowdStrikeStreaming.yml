@@ -64,6 +64,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: detect
       description: |-
         The policy that should be enacted when the value is detected on a host.
         * detect: Send a notification when the particular indicator has been detected on a host.
@@ -443,19 +444,17 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def http_request(method, url_suffix, params=None, data=None):
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS):
         # A wrapper for requests lib to send our requests and handle requests and responses better
-        demisto.info('#### url: {}'.format(SERVER + url_suffix))
         res = requests.request(
             method,
             SERVER + url_suffix,
             verify=USE_SSL,
             params=params,
             data=data,
-            headers=HEADERS,
+            headers=headers,
             auth=(USERNAME, PASSWORD)
         )
-        demisto.info('#### STATUS CODE: {}'.format(res.status_code))
         # Handle error responses gracefully
         if res.status_code not in {200}:
             return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
@@ -561,18 +560,20 @@ script:
 
     def create_ioc():
         args = demisto.args()
-        payload = {}
+        input_args = {}
         try:
-            payload['type'] = convert_to_str(args['ioc_type'])
-            payload['value'] = convert_to_str(args['ioc_value'])
-            payload['policy'] = convert_to_str(args['policy'])
+            input_args['type'] = args['ioc_type']
+            input_args['value'] = args['ioc_value']
+            input_args['policy'] = args['policy']
         except KeyError, e:
             arg = e.args[0]
             return_error("Command Error: Please provide mandatory argument: {0}".format(arg))
-        payload['expiration_days'] = convert_to_str(args.get('expiration_days'))
-        payload['source'] = convert_to_str(args.get('source'))
-        payload['description'] = convert_to_str(args.get('description'))
-        return http_request('POST', '/indicators/entities/iocs/v1', params=payload)
+        input_args['expiration_days'] = args.get('expiration_days')
+        input_args['source'] = args.get('source')
+        input_args['description'] = args.get('description')
+        payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
+        return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=None)
+    # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
     # TODO: Check how an error response looks like
 
 
@@ -580,7 +581,7 @@ script:
         args = demisto.args()
         ids = args.get('ids')
         if not ids:
-            payload = { #TODO: Handle context array args
+            search_args = { #TODO: Handle context array args
                 'types': convert_to_str(args.get('ioc_types', '')).split(','),
                 'values': convert_to_str(args.get('ioc_values', '')).split(','),
                 'policies': convert_to_str(args.get('policy', '')),
@@ -588,8 +589,15 @@ script:
                 'from.expiration_timestamp': convert_to_str(args.get('expiration_from', '')),
                 'to.expiration_timestamp': convert_to_str(args.get('expiration_to', '')),
                 'limit': convert_to_str(args.get('limit', 50))
-            } #TODO: Check if sending empty arrays is ok
-            ids = http_request('GET', '/indicators/queries/iocs/v1', payload).json().get('resources')
+            }
+            payload = {}
+            for k, arg in search_args.iteritems():
+                if type(arg) is list:
+                    if arg[0]:
+                        payload[k] = arg
+                elif arg:
+                    payload[k] = arg
+            ids = http_request('GET', '/indicators/queries/iocs/v1', payload).get('resources')
             if not ids:
                 return None
         else:
@@ -615,14 +623,16 @@ script:
 
     def update_iocs():
         args = demisto.args()
-        payload = {
-            'ids': convert_to_str(args.get('ids')),
-            'policy': convert_to_str(args.get('policy', '')),
-            'expiration_days': convert_to_str(args.get('expiration_days', '')),
-            'source': convert_to_str(args.get('source')),
-            'description': convert_to_str(args.get('description'))
+        input_args = {
+            'ids': args.get('ids'),
+            'policy': args.get('policy', ''),
+            'expiration_days': args.get('expiration_days', ''),
+            'source': args.get('source'),
+            'description': args.get('description')
         }
-        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload)
+        payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
+        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload, headers=None)
+    # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
 
 
     def search_device():
