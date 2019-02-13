@@ -644,7 +644,7 @@ script:
                     arg_filter = ''
                     for arg_elem in arg:
                         if arg_elem:
-                            arg_filter = "{0}:'{1}'".format('{0}+{1}'.format(arg_filter, k) if arg_filter else k, arg_elem)
+                            arg_filter = "{0}:'{1}'".format('{0},{1}'.format(arg_filter, k) if arg_filter else k, arg_elem)
                     if arg_filter:
                         url_filter = "{0}{1}".format(url_filter + '+' if url_filter else '', arg_filter)
                 else:
@@ -729,7 +729,8 @@ script:
             return create_entry_object(hr='Could not find any devices.')
         devices = raw_res.get('resources')
         ec = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-        return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=tableToMarkdown('Devices', ec))
+        hr = tableToMarkdown('Devices', ec, headers=['ID','Hostname','OS','MacAddress','localIP','ExternalIP','FirstSeen','LastSeen'])
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=hr)
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
