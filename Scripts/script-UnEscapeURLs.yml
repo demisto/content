@@ -6,21 +6,19 @@ script: |-
   // Check if it is a Microsoft ATP Safe Link
   var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
   if (atp_link_re.test(args.input)) {
-      // Based off of http://www.o365atp.com/ // disable-secrets-detection
-      var link = args.input;
-      var url_parts = link.split("?")[1];
-      var params = url_parts.split("&");
-      var target_url = "Error:  couldn't find target URL.";
-      for (n = 0; n < params.length; n++) {
-          namval = params[n].split("=");
-          if (namval[0] == "url") target_url = namval[1];
+      var url_params_section = args.input.split("?")[1];
+      var url_params = url_params_section.split("&");
+      var encoded_url = null;
+      for (i = 0; i < url_params.length; i++) {
+          param_name = url_params[i].split("=");
+          if (param_name[0] == "url") encoded_url = param_name[1];
       }
-      if (target_url === "Error:  couldn't find target URL.") {
+      if (encoded_url === null) {
           error_msg = "Could not decode ATP Safe Link. Returning original URL.";
           logInfo(error_msg);
-          return link;
+          return args.input;
       }
-      decoded_url = decodeURIComponent(target_url);
+      decoded_url = decodeURIComponent(encoded_url);
       return decoded_url;
   }
   // Check if it is a Proofpoint Protected URL
