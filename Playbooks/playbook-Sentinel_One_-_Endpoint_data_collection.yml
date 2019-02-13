@@ -282,5 +282,7 @@ inputs:
   required: false
   description: The Hostname of the device to run on
 outputs: []
+tests:
+  - No test
 releaseNotes: Fix sentinelOne integration name to SentinelOne
               Add task validation to the playbook to check if SentinelOne enabled
