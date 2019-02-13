@@ -8,16 +8,20 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
   for preventative protection, post-breach detection, automated investigation, and
   response.
+detaileddescription: |-
+  To allow us access to the security graph, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fatp&client_id=d96bc816-4e4c-4d71-8aef-299d312db20d).
+  After authorising Demisto app, you will get a tenant ID, which should be inserted in the integration instance settings.
 configuration:
 - display: Host URL (e.g. https://api.securitycenter.windows.com)
   name: url
   defaultvalue: https://api.securitycenter.windows.com
   type: 0
   required: true
-- display: Access Token
-  name: token
+- display: Tenant ID (as received from the admin consent - see detailed instructions
+    (?))
+  name: tenant_id
   defaultvalue: ""
-  type: 4
+  type: 0
   required: true
 - display: Fetch incidents
   name: isFetch
@@ -67,12 +71,41 @@ script:
 
     SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
     BASE_URL = SERVER + '/api'
-    TOKEN = demisto.params()['token']
+    TENANT_ID = demisto.params()['tenant_id']
     USE_SSL = not demisto.params().get('unsecure', False)
     FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
     FETCH_STATUS = demisto.params().get('fetch_status').split(',')
 
     ''' HELPER FUNCTIONS '''
+    def epoch_seconds(d=None):
+        """
+        Return the number of seconds for given date. If no date, return current.
+        """
+        if not d:
+            d = datetime.utcnow()
+        return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+    def get_token():
+        """
+        Check if we have a valid token and if not get one
+        """
+        ctx = demisto.getIntegrationContext()
+        if ctx.get('token') and ctx.get('stored'):
+            if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
+                return ctx.get('token')
+        r = requests.get('https://demistobot.demisto.com/atp-token', params={'tenant': TENANT_ID}, verify=False)
+        data = r.json()
+        if r.status_code != requests.codes.ok:
+            error_object = json.loads(data.get('detail'))
+            error_details = error_object.get('error_description')
+            if error_details:
+                return_error(error_details)
+            else:
+                return_error(error_object)
+        demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
+        return data.get('token')
+
 
     def http_request(method, url_suffix, json=None, params=None):
 
@@ -81,7 +114,7 @@ script:
             BASE_URL + url_suffix,
             json=json,
             headers={
-                'Authorization': 'Bearer ' + TOKEN,
+                'Authorization': 'Bearer ' + get_token(),
                 'Content-Type': 'application/json'
             }
         )
@@ -1115,5 +1148,6 @@ script:
     description: Update the properties of an alert entity
   isfetch: true
   runonce: false
+releaseNotes: "Implemented OAuth2 authentication"
 tests:
-- No test
+- No test - TBD
