@@ -397,8 +397,7 @@
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD Upload File",
-            "timeout": 700
+            "playbookID": "Test Playbook McAfee ATD Upload File"
         },
         {
             "playbookID": "exporttocsv_script_test"
