@@ -164,7 +164,7 @@ class MITMProxy:
         path = path or self.active_folder
 
         with open(os.devnull, 'w') as FNULL:
-            self.ami.call(['mkdir', id_to_folder(playbook_id)], stderr=FNULL)
+            self.ami.call(['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr=FNULL)
 
         actions = '--server-replay-kill-extra -S' if not record else '-w'
         command = "mitmdump -k -v -p 9997 {}".format(actions).split()
