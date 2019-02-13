@@ -6277,7 +6277,10 @@
                 "command_to_integration": {
                     "so-agents-query": "SentinelOne", 
                     "so-get-agent-processes": "SentinelOne"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
