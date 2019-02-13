@@ -1080,6 +1080,18 @@
     ],
     "unmockable_integrations": [
         "Pwned",
-        "Luminate"
+        "Luminate",
+        "OpenPhish",
+        "PhishTank",
+        "Cisco Meraki",
+        "VxStream",
+        "epo",
+        "ThreatExchange",
+        "wildfire",
+        "FalconIntel",
+        "FalconHost",
+        "VirusTotal",
+        "ipinfo",
+        "carbonblack-v2"
     ]
 }
