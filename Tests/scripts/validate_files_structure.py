@@ -339,11 +339,11 @@ def get_modified_and_added_files(branch_name, is_circle):
 
         for mod_file in modified_files_from_master:
             if mod_file in non_committed_modified_files:
-                modified_files.append(mod_file)
+                modified_files.add(mod_file)
 
         for add_file in added_files_from_master:
             if add_file in non_committed_added_files:
-                added_files.append(add_file)
+                added_files.add(add_file)
 
     return modified_files, added_files
 
