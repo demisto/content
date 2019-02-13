@@ -221,7 +221,6 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "instance_names": "intsights_standard_account",
             "nightly": true,
             "timeout": 500
         },

@@ -316,7 +316,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
                 else:
                     id = get_name(file_path)
 
-                missing_ids = missing_ids - set([id])
+                missing_ids = missing_ids - {id}
                 tests.add(test)
 
             else:
