@@ -17,34 +17,34 @@ detaileddescription: "To allow access and manage MS Virtual Machine, you first n
   the Azure subscription’ section\n \nClick the ‘Test’ button. And if it has no errors,
   click the ‘Done’ button"
 configuration:
-- display: Host URL (e.g. https://graph.microsoft.com)
-  name: host
-  defaultvalue: https://management.azure.com
-  type: 0
-  required: true
 - display: The tenant ID of the subscription
   name: tenant_id
-  defaultvalue: 8233db86-5229-43eb-a2b6-7f1f43ad0f1f
+  defaultvalue: ""
   type: 0
   required: true
 - display: Application ID of the Azure Active Directory Registration
   name: client_id
-  defaultvalue: 2222a627-77f5-431a-b2f8-ac87a762f2e1
+  defaultvalue: ""
   type: 0
   required: true
 - display: Client secret of the application
   name: client_secret
-  defaultvalue: e844e95e-e29b-4dd0-85bd-8737226304db
+  defaultvalue: ""
   type: 4
   required: true
 - display: Subscription ID for the Azure subscription
   name: subscription_id
-  defaultvalue: eaa0012a-7439-4357-a702-b23100e3e05d
+  defaultvalue: ""
   type: 0
   required: false
 - display: Trust any certificate (unsecure)
   name: unsecure
   defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -57,19 +57,84 @@ script:
     '''GLOBAL VARS'''
 
     PARAMS = demisto.params()
-    USE_SSL = not demisto.params().get('unsecure', False)
+    USE_SSL = not demisto.params().get('unsecure')
     CLIENT_ID = PARAMS.get('client_id')
     CLIENT_SECRET = PARAMS.get('client_secret')
     SUBSCRIPTION_ID = PARAMS.get('subscription_id')
     TENANT_ID = PARAMS.get('tenant_id')
     SERVER = 'https://management.azure.com'
     BASE_URL = SERVER + "/subscriptions/" + SUBSCRIPTION_ID + "/resourceGroups/"
+    API_VERSION = "2018-06-01"
     HEADERS = {}
+
+    # Image options to be used in the create_vm_command
+    IMAGES = {
+        "ubuntu server 14.04 lts": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04-LTS",
+            "version": "latest"
+        },
+        "ubuntu server 16.04 lts": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "latest"
+        },
+        "ubuntu server 18.04 lts": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18.04-LTS",
+            "version": "latest"
+        },
+        "red hat enterprise linux 7.6": {
+            "publisher": "RedHat",
+            "offer": "RHEL",
+            "sku": "7-RAW",
+            "version": "latest"
+        },
+        "centos-based 7.5": {
+            "publisher": "OpenLogic",
+            "offer": "CentOS",
+            "sku": "7.5",
+            "version": "latest"
+        },
+        "windows server 2012 r2 datacenter": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2012-R2-Datacenter",
+            "version": "latest"
+        },
+        "windows server 2016 datacenter": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+        },
+        "windows 10 pro version 1803": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-10",
+            "sku": "rs4-pro",
+            "version": "latest"
+        },
+        "windows 10 pro version 1809": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-10",
+            "sku": "rs5-pro",
+            "version": "latest"
+        }
+    }
 
     '''SETUP'''
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+    # Remove proxy if not set to true in params
+    if not PARAMS.get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     '''HELPER FUNCTIONS'''
 
@@ -100,21 +165,34 @@ script:
             'resource': SERVER
 
         }
-        r = requests.post(login_url, data=payload)
-        response = json.loads(r.content)
+        response = http_request('POST', full_url=login_url, data=payload, codes={200})
         api_token = response.get('access_token')
-        if r.status_code != requests.codes.ok:
-            return_error('Error in Authorization {} - {}'.format(r.status_code, r.text))
         HEADERS['Authorization'] = 'Bearer ' + api_token
 
 
+    def assign_image_attributes(image):
+        image = image.lower()
+        image_properties = IMAGES.get(image)
+        if not image_properties:
+            err_msg = "Invalid value entered for the 'image' argument. "
+            err_msg += "Only values from the provided options are accepted."
+            raise Exception(err_msg)
+        sku = image_properties.get('sku')
+        publisher = image_properties.get('publisher')
+        offer = image_properties.get('offer')
+        version = image_properties.get('version')
+        return sku, publisher, offer, version
+
+
     def create_vm_parameters(args):
-        """Create the VM parameters structure.
+        """
+        Construct the VM object
         """
         # Retrieve relevant command arguments
         nic_id = args.get('nic_id')
         location = args.get('location')
         vm_size = args.get('vm_size')
+        image = args.get('image')
         sku = args.get('sku')
         publisher = args.get('publisher')
         version = args.get('version')
@@ -123,6 +201,14 @@ script:
         resource_group = args.get('resource_group')
         admin_username = args.get('admin_username')
         admin_password = args.get('admin_password')
+
+        if not image and not (sku and publisher and version and offer):
+            err_msg = "You must enter a value for the 'image' argument "
+            err_msg += "or the group of arguments, 'sku', 'publisher', 'version', and 'offer'."
+            raise Exception(err_msg)
+
+        if image:
+            sku, publisher, offer, version = assign_image_attributes(image)
 
         # Construct VM object
         vm = {
@@ -169,7 +255,7 @@ script:
         return vm
 
 
-    def http_request(method, url_endpoint, data=None, headers=HEADERS, codes=None, full_url=None, j_son=None):
+    def http_request(method, url_endpoint=None, data=None, headers=HEADERS, codes=None, full_url=None, j_son=None):
         try:
             url = full_url if full_url else BASE_URL + url_endpoint
             r = requests.request(
@@ -183,6 +269,10 @@ script:
             green_codes = codes if codes else {200, 201, 202, 204}
             if r.status_code not in green_codes:
                 err_msg = 'Error in API call to Azure Compute Integration [{}] - {}'.format(r.status_code, r.reason)
+                err = r.json().get('error')
+                if err:
+                    err_msg1 = "\nError code: {}\nError message: {}".format(err.get('code'), err.get('message'))
+                    err_msg += err_msg1
                 raise Exception(err_msg)
             response = json.loads(r.content)
         except ValueError as e:
@@ -195,10 +285,47 @@ script:
 
     '''MAIN FUNCTIONS / API CALLS'''
 
+    #<-------- Resource Groups -------->#
+
+    def list_resource_groups():
+        endpoint_url = 'https://management.azure.com/subscriptions/' + SUBSCRIPTION_ID
+        endpoint_url += '/resourcegroups?api-version=2018-05-01'
+        update_access_token()
+        response = http_request('GET', full_url=endpoint_url, codes={200})
+        return response
+
+
+    def list_resource_groups_command():
+        response = list_resource_groups()
+        # Retrieve relevant properties to return to context
+        value = response.get('value')
+        resource_groups = []
+        for resource_group in value:
+            rg = {
+                'Name': resource_group.get('name'),
+                'ID': resource_group.get('id'),
+                'Location': resource_group.get('location'),
+                'ProvisioningState': resource_group.get('properties').get('provisioningState')
+            }
+            resource_groups.append(rg)
+
+        title = "List of Resource Groups"
+        human_readable = tableToMarkdown(title, resource_groups)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['text'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': {'Azure.ResourceGroup(val.Name && val.Name === obj.Name)': resource_groups}
+        })
+
+
+    #<-------- Virtual Machines -------->#
 
     def list_vms(resource_group):
         # Construct endpoint URI
-        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines?api-version=2017-12-01'
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines?api-version=' + API_VERSION
         # Call API
         update_access_token()
         response = http_request('GET', url_endpoint, codes={200})
@@ -214,11 +341,19 @@ script:
         vms = []
         for i in range(0, num_of_vms):
             value = response.get('value')[i]
-            name = value.get('name')
+            vm_name = value.get('name')
             location = value.get('location')
-            provisioning_state = value.get('properties').get('provisioningState')
+            properties = value.get('properties')
+            provisioning_state = properties.get('provisioningState')
+            os_disk = properties.get('storageProfile').get('osDisk')
+            datadisk = os_disk.get('diskSizeGB', 'NA')
+            vm_id = properties.get('vmId')
+            os_type = os_disk.get('osType')
             vm = {
-                'Name': name,
+                'Name': vm_name,
+                'ID': vm_id,
+                'Size': datadisk,
+                'OS': os_type,
                 'Location': location,
                 'ProvisioningState': provisioning_state,
                 'ResourceGroup': resource_group,
@@ -226,7 +361,7 @@ script:
             vms.append(vm)
 
         title = 'Microsoft Azure - List of Virtual Machines in Resource Group "{}"'.format(resource_group)
-        table_headers = ['Name', 'Location', 'ProvisioningState', 'ResourceGroup']
+        table_headers = ['Name', 'ID', 'Size', 'OS', 'Location', 'ProvisioningState', 'ResourceGroup']
         human_readable = tableToMarkdown(title, vms, headers=table_headers)
         demisto.results({
             'Type': entryTypes['note'],
@@ -244,7 +379,8 @@ script:
         vm_name = args.get('virtual_machine_name')
 
         # Construct endpoint URI
-        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '?api-version=2017-12-01'
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
+        url_endpoint += vm_name + '?$expand=instanceView&api-version=' + API_VERSION
 
         # Call API
         update_access_token()
@@ -258,26 +394,33 @@ script:
         response = get_vm(args)
 
         # Retrieve relevant properties to return to context
+        vm_name = response.get('name')
         properties = response.get('properties')
         os_disk = properties.get('storageProfile').get('osDisk')
         datadisk = os_disk.get('diskSizeGB', 'NA')
-        computer_name = properties.get('osProfile').get('computerName')
         vm_id = properties.get('vmId')
         os_type = os_disk.get('osType')
         provisioning_state = properties.get('provisioningState')
         location = response.get('location')
+        statuses = properties.get('instanceView').get('statuses')
+        power_state = None
+        for status in statuses:
+            if status.get('code') in {"PowerState/running", "PowerState/stopped"}:
+                power_state = status.get('displayStatus')
 
         vm = {
-            'Name': computer_name,
+            'Name': vm_name,
             'ID': vm_id,
             'Size': datadisk,
             'OS': os_type,
             'ProvisioningState': provisioning_state,
             'Location': location,
+            'PowerState': power_state,
+            'ResourceGroup': args.get('resource_group')
         }
 
-        title = 'Microsoft Azure - Properties of requested VM'
-        table_headers = ['Name', 'ID', 'Size', 'OS', 'ProvisioningState', 'Location']
+        title = 'Properties of VM "{}"'.format(vm_name)
+        table_headers = ['Name', 'ID', 'Size', 'OS', 'ProvisioningState', 'Location', 'PowerState']
         human_readable = tableToMarkdown(title, vm, headers=table_headers)
         demisto.results({
             'Type': entryTypes['note'],
@@ -295,7 +438,8 @@ script:
         vm_name = args.get('virtual_machine_name')
 
         # Construct endpoint URI
-        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '?api-version=2017-12-01'
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
+        url_endpoint += vm_name + '?api-version=' + API_VERSION
 
         # Construct VM object utilizing parameters passed as command arguments
         payload = create_vm_parameters(args)
@@ -311,12 +455,28 @@ script:
         args = demisto.args()
         response = create_vm(args)
 
+        # Retrieve relevant properties to return to context
+        vm_name = response.get('name')
+        properties = response.get('properties')
+        os_disk = properties.get('storageProfile').get('osDisk')
+        datadisk = os_disk.get('diskSizeGB', 'NA')
+        computer_name = properties.get('osProfile').get('computerName')
+        vm_id = properties.get('vmId')
+        os_type = os_disk.get('osType')
+        provisioning_state = properties.get('provisioningState')
+        location = response.get('location')
+
         vm = {
-            'Name': response.get('name'),
+            'Name': vm_name,
+            'ID': vm_id,
+            'Size': datadisk,
+            'OS': os_type,
+            'ProvisioningState': provisioning_state,
+            'Location': location,
             'ResourceGroup': args.get('resource_group'),
         }
 
-        title = "Created Virtual Machine \"{}\"".format(response.get('name'))
+        title = "Created Virtual Machine \"{}\"".format(vm_name)
         human_readable = tableToMarkdown(title, vm)
         demisto.results({
             'Type': entryTypes['note'],
@@ -334,7 +494,8 @@ script:
         vm_name = args.get('virtual_machine_name')
 
         # Construct endpoint URI
-        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '/start?api-version=2017-12-01'
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
+        url_endpoint += vm_name + '/start?api-version=' + API_VERSION
 
         # Call API
         update_access_token()
@@ -351,6 +512,7 @@ script:
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
+            'PowerState': 'VM running'
         }
 
         title = 'Virtual Machine "{}" Started'.format(vm_name)
@@ -371,7 +533,8 @@ script:
         vm_name = args.get('virtual_machine_name')
 
         # Construct endpoint URI
-        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '/powerOff?api-version=2017-12-01'
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
+        url_endpoint += vm_name + '/powerOff?api-version=' + API_VERSION
 
         # Call API
         update_access_token()
@@ -388,6 +551,7 @@ script:
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
+            'PowerState': 'VM stopped'
         }
 
         title = 'Virtual Machine "{}" Powered Down'.format(vm_name)
@@ -402,23 +566,6 @@ script:
         })
 
 
-    def test_login():
-        login_url = 'https://login.microsoftonline.com/' + TENANT_ID + '/oauth2/token'
-        payload = {
-            "grant_type": "client_credentials",
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "resource": SERVER
-        }
-        # r = http_request('POST', full_url=login_url, data=payload)
-        r = requests.post(login_url, data=payload)
-
-        if r.status_code not in {200, 201, 202, 204}:
-            return_error('Error in Authorization {} - {}'.format(r.status_code, r.text))
-        else:
-        demisto.results('ok')
-
-
     '''COMMAND SWITCHBOARD'''
 
     commands = {
@@ -426,21 +573,22 @@ script:
         'azure-vm-get-instance-details': get_vm_command,
         'azure-vm-start-instance': start_vm_command,
         'azure-vm-poweroff-instance': poweroff_vm_command,
-        'azure-vm-create-instance': create_vm_command
+        'azure-vm-create-instance': create_vm_command,
+        'azure-list-resource-groups': list_resource_groups_command
     }
 
     '''EXECUTION'''
 
     try:
         if demisto.command() == 'test-module':
-            test_login()
+            update_access_token()
+            demisto.results('ok')
         elif demisto.command() in commands.keys():
             commands[demisto.command()]()
 
     except Exception as e:
-        log_traceback(e)
         LOG(e)
-        return_error(e)
+        return_error(e.message)
   type: python
   commands:
   - name: azure-vm-list-instances
@@ -461,6 +609,15 @@ script:
     - contextPath: Azure.Compute.ResourceGroup
       description: Resource group where the VM resides in
       type: string
+    - contextPath: Azure.Compute.ID
+      description: ID of the VM
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: Size of the deployed VM in gigabytes
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: OS running in the VM
+      type: string
     description: List the VM instances in the Resource Group specified
   - name: azure-vm-start-instance
     arguments:
@@ -477,21 +634,29 @@ script:
     - contextPath: Azure.Compute.ResourceGroup
       description: Resource group the VM resides in
       type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
     description: Start a specified VM in the Resource Group
     execution: true
   - name: azure-vm-poweroff-instance
     arguments:
     - name: resource_group
       required: true
-      description: Resource Group name where the VM resides
+      description: Resource group in which the VM belongs
     - name: virtual_machine_name
       required: true
       description: 'Name of the VM to be stopped '
     outputs:
     - contextPath: Azure.Compute.Name
       description: Name of the VM that was powered down
+      type: string
     - contextPath: Azure.Compute.ResourceGroup
       description: Resource group the VM resides in
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
     description: Stop a specified VM in the Resource Group
     execution: true
   - name: azure-vm-get-instance-details
@@ -510,8 +675,8 @@ script:
       description: 'ID of the VM '
       type: string
     - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM
-      type: string
+      description: Size of the deployed VM in gigabytes
+      type: number
     - contextPath: Azure.Compute.OS
       description: OS running in the specified VM
       type: string
@@ -519,14 +684,20 @@ script:
       description: Provisioning state of the deployed VM
       type: string
     - contextPath: Azure.Compute.Location
-      description: Location that the specified VM is running in
+      description: Region in which the VM is hosted
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group in which the VM belongs
       type: string
     description: Get the properties of a specified Virtual Machine
   - name: azure-vm-create-instance
     arguments:
     - name: resource_group
       required: true
-      description: Resource group to create the VM
+      description: Resource group to which the new VM will belong
     - name: virtual_machine_name
       required: true
       description: Name of the virtual machine to create
@@ -573,22 +744,46 @@ script:
         from the Azure Portal
     - name: vm_size
       required: true
+      auto: PREDEFINED
+      predefined:
+      - Standard_D1_v2
+      - Standard_D2_v2
+      - Standard_D2s_v3
+      - Standard_B1ms
+      - Standard_B1s
+      - Standard_B2s
+      - Standard_B4ms
+      - Standard_D4s_v3
+      - Standard_DS1_v2
+      - Standard_DS2_v2
+      - Standard_DS3_v2
+      - Promo_DS2_v2
+      - Promo_DS3_v2
       description: Size of the Virtual Machine to deploy
       defaultValue: Standard_D1_v2
+    - name: image
+      auto: PREDEFINED
+      predefined:
+      - Ubuntu Server 14.04 LTS
+      - Ubuntu Server 16.04 LTS
+      - Ubuntu Server 18.04 LTS
+      - Red Hat Enterprise Linux 7.6
+      - CentOS-based 7.5
+      - Windows Server 2012 R2 Datacenter
+      - Windows Server 2016 Datacenter
+      - Windows 10 Pro Version 1803
+      - Windows 10 Pro Version 1809
+      description: Choose the base operating system of the OS
     - name: sku
-      required: true
       description: SKU of the image to be used
       defaultValue: 2016-Datacenter
     - name: publisher
-      required: true
       description: Publisher Name of the image
       defaultValue: MicrosoftWindowsServer
     - name: version
-      required: true
       description: 'Version of the image '
       defaultValue: latest
     - name: offer
-      required: true
       description: Offering name of the image
       defaultValue: WindowsServer
     - name: admin_username
@@ -604,7 +799,38 @@ script:
     - contextPath: Azure.Compute.ResourceGroup
       description: Resource group the VM resides in
       type: string
+    - contextPath: Azure.Compute.ID
+      description: ID of the VM
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: Size of the deployed VM in gigabytes
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: OS running in the specified VM
+      type: string
+    - contextPath: Azure.Compute.ProvisioningState
+      description: Provisioning state of the deployed VM
+      type: string
+    - contextPath: Azure.Compute.Location
+      description: Region in which the VM is hosted
+      type: string
     description: Create a 2016-Datacentre Windows Server VM with DemistoUser as the
       Username
     execution: true
+  - name: azure-list-resource-groups
+    arguments: []
+    outputs:
+    - contextPath: Azure.ResourceGroup.Name
+      description: Name of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.ID
+      description: ID of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.Location
+      description: Location of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.ProvisioningState
+      description: Provisioning State of the Resource Group
+      type: string
+    description: List all Resource Groups belonging to your Azure subscription
   runonce: false
