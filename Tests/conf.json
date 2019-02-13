@@ -22,7 +22,7 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "TestUnEscapeUrl"
+            "playbookID": "UnEscapeURLs-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -394,6 +394,10 @@
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD Upload File"
         },
         {
             "playbookID": "exporttocsv_script_test"
