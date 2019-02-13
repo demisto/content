@@ -392,7 +392,7 @@ def main():
         public_ip = f.read()
     ami = AMIConnection(public_ip)
     ami.clone_mock_data()  # FUTURE: pull instead of clone
-    proxy = MITMProxy(c, public_ip, debug=True)
+    proxy = MITMProxy(c, public_ip, debug=False)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -463,7 +463,6 @@ def main():
     ami.upload_mock_files(build_name, buildNumber)
 
     if get_content_branch() == 'master':
-        # TODO: Get new/updated mock file names.
         print "Pushing new/updated mock files to mock git repo."
         # ami.upload_mock_files(build_name, buildNumber)
 
