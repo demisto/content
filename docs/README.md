@@ -55,7 +55,7 @@ Finally, you have tested your code, it's working the way you'd like, and you mad
 | [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
 | [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
 | [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
-| [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.md) | Understanding Demisto Transform Language (DT) |
+| [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
 | [Docker](https://github.com/demisto/content/blob/master/docs/docker/README.MD) | How to use Docker |
 | [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
