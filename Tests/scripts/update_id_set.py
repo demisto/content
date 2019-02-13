@@ -6,6 +6,7 @@ import json
 import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
+from bisect import bisect_left
 
 
 SCRIPT_YML_REGEX = r"scripts.*\.yml"
@@ -51,6 +52,18 @@ def run_git_command(command):
         print_error("Failed to run git command " + command)
         sys.exit(1)
     return output
+
+
+def insert(seq, keys, item, keyfunc=lambda v: v):
+    """Insert an item into a sorted list using a separate corresponding
+       sorted keys list and a keyfunc() to extract the key from each item.
+
+    Based on insert() method in SortedCollection recipe:
+    """
+    k = keyfunc(item)  # Get key.
+    i = bisect_left(keys, k)  # Determine where to insert item.
+    keys.insert(i, k)  # Insert key of item to keys list.
+    seq.insert(i, item)  # Insert the item itself in the corresponding place.
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
@@ -331,7 +344,9 @@ def add_new_object_to_id_set(obj_id, obj_data, instances_set):
             obj_in_set = True
 
     if not obj_in_set:
-        instances_set.append(obj_data)
+        # insert the correct place to keep the id_set sorted
+        keys = [r.keys()[0] for r in instances_set]  # Initialize keys list
+        insert(instances_set, keys, obj_data, keyfunc=lambda x: x.keys()[0])
 
 
 def get_code_file(package_path, script_type):
