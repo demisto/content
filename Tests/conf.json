@@ -896,7 +896,7 @@
         {
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
-          "timeout": 600
+          "timeout": 700
         },
         {
             "integrations" : "VxStream",
@@ -1042,10 +1042,11 @@
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
         "DUO Test Playbook": "DUO integration is failing",
-        "MISP V2 Test": "fails",
+        "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
         "CreatePhishingClassifierMLTest": "fails",
-        "GmailTest": "fails",
-        "cisco-ise-test-playbook": "fails"
+        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
+        "cisco-ise-test-playbook": "fails",
+        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
