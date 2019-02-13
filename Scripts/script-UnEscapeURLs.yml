@@ -3,6 +3,25 @@ commonfields:
   version: -1
 name: UnEscapeURLs
 script: |-
+  // Check if it is a Microsoft ATP Safe Link
+  var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
+  if (atp_link_re.test(args.input)) {
+      var url_params_section = args.input.split("?")[1];
+      var url_params = url_params_section.split("&");
+      var encoded_url = null;
+      for (i = 0; i < url_params.length; i++) {
+          param_name = url_params[i].split("=");
+          if (param_name[0] == "url") encoded_url = param_name[1];
+      }
+      if (encoded_url === null) {
+          error_msg = "Could not decode ATP Safe Link. Returning original URL.";
+          logInfo(error_msg);
+          return args.input;
+      }
+      decoded_url = decodeURIComponent(encoded_url);
+      return decoded_url;
+  }
+  // Check if it is a Proofpoint Protected URL
   var PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u='];
   var v = 0;
   if (args.input.indexOf(PROOFPOINT_PREFIXES[0]) === 0) {
@@ -22,7 +41,7 @@ script: |-
   // If from Proofpoint then no need to un-escape or normalize
   var re = /&.*$/;
   var reg = /%\d{2}/g;
-  var clean = args.input.substr(PROOFPOINT_PREFIXES[v-1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re,'').replace('%3F','?').replace('%3D','=').replace(reg,'@');
+  var clean = args.input.substr(PROOFPOINT_PREFIXES[v - 1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re, '').replace('%3F', '?').replace('%3D', '=').replace(reg, '@');
   try {
       clean = decodeURI(clean);
   } catch (e) {
@@ -34,8 +53,9 @@ type: javascript
 tags:
 - indicator-format
 comment: |-
-  Extract URLs redirected by security tools like Proofpoint.
+  Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
   Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+  Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
   Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
 enabled: true
 args:
@@ -45,5 +65,6 @@ args:
   description: The URL to process
 scripttarget: 0
 runonce: false
+releaseNotes: "Adding ability to handle Microsoft ATP protected URLs"
 tests:
-  - TestUnEscapeUrl
+  - UnEscapeURLs-Test
