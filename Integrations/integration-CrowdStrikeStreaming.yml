@@ -356,7 +356,7 @@ script:
     FETCH_TIME = demisto.params().get('fetch_time', '3 days')
     # Headers to be sent in requests
     HEADERS = {
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
         'Accept': 'application/json'
     }
     # Remove proxy if not set to true in params
@@ -628,7 +628,6 @@ script:
     def search_device():
         """
         Searches for devices using the argument provided by the command execution. Returns empty result of no device was found.
-        :return:
         """
         args = demisto.args()
         input_arg_dict = {
@@ -638,19 +637,20 @@ script:
             'platform_name': convert_to_str(args.get('platform_name', '')).split(','),
             'site_name': convert_to_str(args.get('site_name', '')).split(',')
         }
-        url_filter = 'filter={0}'.format(convert_to_str(demisto.get('filter', '')))
+        url_filter = ''.format(convert_to_str(args.get('filter', '')))
         for k, arg in input_arg_dict.iteritems():
             if arg:
-                if arg is list:
-                    arg_filter = ""
+                if type(arg) is list:
+                    arg_filter = ''
                     for arg_elem in arg:
-                        arg_filter = "{0}+{1}:{2}".format(arg_filter, k, arg_elem)
-                        #TODO: Check whether starting + is ok
-                    url_filter = "{0}+{1}".format(url_filter, arg_filter)
-                # All args should be a list, this is just a fallback
+                        if arg_elem:
+                            arg_filter = "{0}:'{1}'".format('{0}+{1}'.format(arg_filter, k) if arg_filter else k, arg_elem)
+                    if arg_filter:
+                        url_filter = "{0}{1}".format(url_filter + '+' if url_filter else '', arg_filter)
                 else:
+                    # All args should be a list. this is a fallback
                     url_filter = "{0}+{1}:'{2}'".format(url_filter, k, arg)
-        raw_res = http_request('GET', '/devices/queries/devices/v1', data=url_filter)
+        raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
         device_ids = raw_res.get('resources')
         if not device_ids:
             return None
