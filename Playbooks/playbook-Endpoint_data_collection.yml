@@ -20,6 +20,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -46,10 +47,13 @@ tasks:
       "yes":
       - "2"
     scriptarguments:
-      left: ${inputs.UseD2}
-      right: "True"
+      left:
+        simple: ${inputs.UseD2}
+      right:
+        simple: "True"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -64,7 +68,15 @@ tasks:
     task:
       id: 8c9dec86-a668-4e3e-8824-075fe18330ac
       version: -1
-      name: ""
+      name: D2 - Endpoint data collection
+      description: |-
+        Uses Demisto's d2 agent to collect data from an endpoint for IR purposes.
+
+        Input:
+        * Hostname (default: ${Endpoint.Hostname})
+        * OS (default: windows)
+        * Credentials (default: Admin)
+        * Path (default: None)
       playbookName: D2 - Endpoint data collection
       type: playbook
       iscommand: false
@@ -73,6 +85,19 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    scriptarguments:
+      Credentials:
+        simple: Admin
+      Host:
+        simple: ${inputs.Hostname}
+      OS:
+        simple: windows
+      Path: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -94,8 +119,9 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "5"
-      - "9"
+      - "10"
+      - "11"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -138,6 +164,7 @@ tasks:
       iscommand: false
       brand: ""
       description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -145,14 +172,16 @@ tasks:
           "y": 690
         }
       }
-  "9":
-    id: "9"
-    taskid: e70f5c75-4cb1-430c-8660-b01ad288ddec
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 3359e593-8218-4132-8a69-d48fc9aa78a7
     type: playbook
     task:
       id: e70f5c75-4cb1-430c-8660-b01ad288ddec
       version: -1
-      name: "MAR - Endpoint data collection"
+      name: MAR - Endpoint data collection
       playbookName: MAR - Endpoint data collection
       type: playbook
       iscommand: false
@@ -161,6 +190,14 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -168,6 +205,41 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 121a30fb-c5ea-41d3-86db-e9753c08ada7
+    type: playbook
+    task:
+      id: 121a30fb-c5ea-41d3-86db-e9753c08ada7
+      version: -1
+      name: Sentinel One - Endpoint data collection
+      playbookName: Sentinel One - Endpoint data collection
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
@@ -182,5 +254,13 @@ view: |-
   }
 inputs:
 - key: UseD2
-  value: "False"
+  value:
+    simple: "False"
+  required: false
   description: ""
+- key: Hostname
+  value: {}
+  required: false
+  description: ""
+outputs: []
+releaseNotes: Add hostname to playbook inputs
