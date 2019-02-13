@@ -7259,6 +7259,21 @@
     ], 
     "integrations": [
         {
+            "AAB": {
+                "name": "AAB", 
+                "commands": [
+                    "ip", 
+                    "abuseipdb-check-cidr-block", 
+                    "abuseipdb-report-ip", 
+                    "abuseipdb-get-blacklist", 
+                    "abuseipdb-get-categories"
+                ], 
+                "tests": [
+                    "AbuseIPDB Test"
+                ]
+            }
+        }, 
+        {
             "AbuseIPDB": {
                 "name": "AbuseIPDB", 
                 "commands": [
@@ -9370,6 +9385,21 @@
                     "kenna-search-fixes", 
                     "kenna-update-asset", 
                     "kenna-update-vulnerability"
+                ]
+            }
+        }, 
+        {
+            "KKB": {
+                "name": "KKB", 
+                "commands": [
+                    "ip", 
+                    "abuseipdb-check-cidr-block", 
+                    "abuseipdb-report-ip", 
+                    "abuseipdb-get-blacklist", 
+                    "abuseipdb-get-categories"
+                ], 
+                "tests": [
+                    "AbuseIPDB Test"
                 ]
             }
         }, 
