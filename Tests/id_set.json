@@ -5719,7 +5719,7 @@
                 "command_to_integration": {
                     "cylance-protect-get-devices": "Cylance Protect", 
                     "cb-sensor-info": "carbonblack", 
-                    "so-agents-query": "sentinelOne"
+                    "so-agents-query": "SentinelOne"
                 }
             }
         }, 
@@ -6274,10 +6274,10 @@
                     "Print", 
                     "Exists"
                 ], 
-                "implementing_commands": [
-                    "so-agents-query", 
-                    "so-get-agent-processes"
-                ]
+                "command_to_integration": {
+                    "so-agents-query": "SentinelOne", 
+                    "so-get-agent-processes": "SentinelOne"
+                }
             }
         }, 
         {
@@ -7687,7 +7687,15 @@
                 "commands": [
                     "mar-search", 
                     "mar-collectors-list", 
-                    "mar-search-multiple"
+                    "mar-search-multiple", 
+                    "mar-search-services", 
+                    "mar-search-processes", 
+                    "mar-search-win-registry", 
+                    "mar-search-files", 
+                    "mar-search-usb-connected-storage-devices", 
+                    "mar-search-user-profiles", 
+                    "mar-search-scheduled-tasks", 
+                    "mar-search-host-info"
                 ]
             }
         }, 
@@ -11708,7 +11716,8 @@
                     "misp-add-attribute", 
                     "misp-upload-sample", 
                     "misp-delete-event", 
-                    "misp-add-tag"
+                    "misp-add-tag", 
+                    "misp-add-sighting"
                 ], 
                 "tests": [
                     "MISP V2 Test"
@@ -15515,6 +15524,7 @@
                 "command_to_integration": {
                     "misp-search": "MISP V2", 
                     "misp-add-attribute": "MISP V2", 
+                    "misp-add-sighting": "", 
                     "misp-create-event": "MISP V2", 
                     "url": "MISP V2", 
                     "ip": "MISP V2", 
@@ -15751,6 +15761,57 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
+                ]
+            }
+        }, 
+        {
+            "Autoextract - Test": {
+                "name": "Autoextract - Test", 
+                "implementing_scripts": [
+                    "autoextract_test", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection test": {
+                "name": "MAR - Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "MAR - Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
+            "Endpoint data collection test": {
+                "name": "Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
                 ]
             }
         }
