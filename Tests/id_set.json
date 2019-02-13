@@ -11757,8 +11757,8 @@
             }
         }, 
         {
-            "Symantec Endpoint Protection old": {
-                "name": "Symantec Endpoint Protection old", 
+            "Symantec Endpoint Protection": {
+                "name": "Symantec Endpoint Protection",
                 "commands": [
                     "sep-endpoints-info", 
                     "sep-update-content", 
