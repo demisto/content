@@ -62,11 +62,11 @@ class AMIConnection:
     def call(self, command, **kwargs):
         return call(self.add_ssh_prefix(command), **kwargs)
 
-    def check_call(self, command):
-        return check_call(self.add_ssh_prefix(command))
+    def check_call(self, command, **kwargs):
+        return check_call(self.add_ssh_prefix(command), **kwargs)
 
-    def check_output(self, command):
-        return check_output(self.add_ssh_prefix(command))
+    def check_output(self, command, **kwargs):
+        return check_output(self.add_ssh_prefix(command), **kwargs)
 
     def copy_file(self, src, dst=REMOTE_HOME):
         check_call(['scp', '-o', ' StrictHostKeyChecking=no', src,
@@ -113,6 +113,7 @@ class MITMProxy:
         with open(os.devnull, 'w') as fnull:
             self.ami.call(['mkdir', '-p', tmp_folder], stderr=fnull)
 
+    # Class utility functions
     def __configure_proxy(self, proxy=""):
         http_proxy = https_proxy = proxy
         if proxy:
@@ -120,6 +121,15 @@ class MITMProxy:
             https_proxy = "https://" + proxy
         data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
         return self.demisto_client.req('POST', '/system/config', data)
+
+    # File/Folder management
+    def has_mock_file(self, playbook_id):
+        command = ["[", "-f", os.path.join(self.active_folder, id_to_mock_file(playbook_id)), "]"]
+        return self.ami.call(command) == 0
+
+    def has_mock_folder(self, playbook_id):
+        command = ["[", "-d", os.path.join(self.active_folder, id_to_folder(playbook_id)), "]"]
+        return self.ami.call(command) == 0
 
     def set_folder_primary(self):
         self.active_folder = self.primary_folder
@@ -132,7 +142,9 @@ class MITMProxy:
         src_files = os.path.join(self.tmp_folder, id_to_folder(playbook_id) + '*')
         dst_folder = os.path.join(self.primary_folder, id_to_folder(playbook_id))
 
-        if self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip() == 0:
+        if not self.has_mock_file(playbook_id):
+            print 'Mock file not created!'
+        elif self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip():
             print 'Mock file is empty, ignoring.'
             self.empty_files.append(playbook_id)
         else:
@@ -149,8 +161,11 @@ class MITMProxy:
 
         self.last_playbook_id = playbook_id
         self.record = record
-
         path = path or self.active_folder
+
+        with open(os.devnull, 'w') as FNULL:
+            self.ami.call(['mkdir', id_to_folder(playbook_id)], stderr=FNULL)
+
         actions = '--server-replay-kill-extra -S' if not record else '-w'
         command = "mitmdump -k -v -p 9997 {}".format(actions).split()
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))

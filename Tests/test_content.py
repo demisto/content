@@ -11,7 +11,7 @@ import requests
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, AMIConnection, id_to_mock_file, MOCKS_GIT_PATH
+from mock_server import MITMProxy, AMIConnection
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -83,11 +83,6 @@ def update_test_msg(integrations, test_message):
             integrations_names)
 
     return test_message
-
-
-def has_mock_file(ami, playbook_id):
-    command = ["[", "-f", os.path.join(MOCKS_GIT_PATH, id_to_mock_file(playbook_id)), "]"]
-    return ami.call(command) == 0
 
 
 # TODO: Remove before merge
@@ -166,7 +161,7 @@ def run_test(c, proxy, ami, failed_playbooks, integrations, unmockable_integrati
         return
 
     set_mock_params(integrations)
-    if not has_mock_file(ami, playbook_id):
+    if not proxy.has_mock_file(playbook_id):
         print "Mock file does not exist, running without mock."
     else:
         print "Running with playback"
