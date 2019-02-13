@@ -249,6 +249,88 @@ script:
     description: Updates a list of IoCs by IoC ID.
     execution: false
     name: crowdstrike-update-iocs
+  - arguments:
+    - default: false
+      description: Will limit retrieved devices to those who match the query.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Limit results using device ids. can be multiple values seperated
+        by comma.
+      isArray: false
+      name: ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Limit results using the status of the device.
+      isArray: false
+      name: status
+      predefined:
+      - Normal
+      - containment_pending
+      - contained
+      - lift_containment_pending
+      required: false
+      secret: false
+    - default: false
+      description: Limit results using the hostname of the device.
+      isArray: false
+      name: hostname
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Limit results using platform name of the device.
+      isArray: false
+      name: platfrom_name
+      predefined:
+      - Windows
+      - Mac
+      - Linux
+      required: false
+      secret: false
+    - default: false
+      description: Limit results using the site name of the device.
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    description: Searches for a device that matchest the query.
+    execution: false
+    name: crowdstrike-search-device
+    outputs:
+    - contextPath: CrowdStrike.Device.ID
+      description: ID of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LocalIP
+      description: Local IP of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.ExternalIP
+      description: External IP of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.Hostname
+      description: Hostname of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.OS
+      description: Operating system of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.MacAddress
+      description: Mac Address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.FirstSeen
+      description: First seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LastSeen
+      description: Last seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.PolicyType
+      description: Policy types of the device.
+      type: Unknown
   isfetch: true
   runonce: false
   script: |-
@@ -304,7 +386,6 @@ script:
     }
 
     SEARCH_IOC_KEY_MAP = {
-        #TODO: Add ID
         'type': 'Type',
         'value': 'Value',
         'policy': 'Policy',
@@ -317,6 +398,18 @@ script:
         'modified_timestamp': 'ModifiedTime',
         'modified_by': 'ModifiedBy'
     }
+
+    SEARCH_DEVICE_KEY_MAP = {
+        'device_id': 'ID',
+        'external_ip': 'ExternalIP',
+        'local_ip': 'LocalIP',
+        'hostname': 'Hostname',
+        'os_version': 'OS',
+        'mac_address': 'MacAddress',
+        'first_seen': 'FirstSeen',
+        'last_seen': 'LastSeen'
+    } #TODO: Add PolicyType via a function - key is policies
+
 
     ''' SPLIT KEY DICTIONARY '''
 
@@ -487,7 +580,7 @@ script:
         args = demisto.args()
         ids = args.get('ids')
         if not ids:
-            payload = {
+            payload = { #TODO: Handle context array args
                 'types': convert_to_str(args.get('ioc_types', '')).split(','),
                 'values': convert_to_str(args.get('ioc_values', '')).split(','),
                 'policies': convert_to_str(args.get('policy', '')),
@@ -523,14 +616,45 @@ script:
     def update_iocs():
         args = demisto.args()
         payload = {
-            'ids': args.get('ids'),
-            'policy': args.get('policy', ''),
-            'expiration_days': args.get('expiration_days', ''),
-            'source': args.get('source'),
-            'description': args.get('description')
+            'ids': convert_to_str(args.get('ids')),
+            'policy': convert_to_str(args.get('policy', '')),
+            'expiration_days': convert_to_str(args.get('expiration_days', '')),
+            'source': convert_to_str(args.get('source')),
+            'description': convert_to_str(args.get('description'))
         }
         return http_request('PATCH','/indicators/entities/iocs/v1', params=payload)
 
+
+    def search_device():
+        """
+        Searches for devices using the argument provided by the command execution. Returns empty result of no device was found.
+        :return:
+        """
+        args = demisto.args()
+        input_arg_dict = {
+            'device_id': convert_to_str(args.get('ids', '')).split(','),
+            'status': convert_to_str(args.get('status', '')).split(','),
+            'hostname': convert_to_str(args.get('hostname', '')).split(','),
+            'platform_name': convert_to_str(args.get('platform_name', '')).split(','),
+            'site_name': convert_to_str(args.get('site_name', '')).split(',')
+        }
+        url_filter = 'filter={0}'.format(convert_to_str(demisto.get('filter', '')))
+        for k, arg in input_arg_dict.iteritems():
+            if arg:
+                if arg is list:
+                    arg_filter = ""
+                    for arg_elem in arg:
+                        arg_filter = "{0}+{1}:{2}".format(arg_filter, k, arg_elem)
+                        #TODO: Check whether starting + is ok
+                    url_filter = "{0}+{1}".format(url_filter, arg_filter)
+                # All args should be a list, this is just a fallback
+                else:
+                    url_filter = "{0}+{1}:'{2}'".format(url_filter, k, arg)
+        raw_res = http_request('GET', '/devices/queries/devices/v1', data=url_filter)
+        device_ids = raw_res.get('resources')
+        if not device_ids:
+            return None
+        return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids})
 
     ''' COMMANDS FUNCTIONS '''
 
@@ -580,7 +704,7 @@ script:
     def search_iocs_command():
         raw_res = search_iocs()
         if not raw_res:
-            return create_entry_object(hr='Could not find any Indicators of Compromise')
+            return create_entry_object(hr='Could not find any Indicators of Compromise.')
         iocs = raw_res.get('resources')
         ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
         enrich_ioc_dict_with_ids(ec)
@@ -597,6 +721,15 @@ script:
         raw_res = update_iocs()
         ids = demisto.args().get('ids')
         return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
+
+
+    def search_device_command():
+        raw_res = search_device()
+        if not raw_res:
+            return create_entry_object(hr='Could not find any devices.')
+        devices = raw_res.get('resources')
+        ec = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=tableToMarkdown('Devices', ec))
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -618,4 +751,6 @@ script:
         demisto.results(delete_iocs_command())
     elif demisto.command() == 'crowdstrike-update-iocs':
         demisto.results(update_iocs_command())
+    elif demisto.command() == 'crowdstrike-search-device':
+        demisto.results(search_device_command())
   type: python
