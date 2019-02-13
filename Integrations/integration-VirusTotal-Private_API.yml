@@ -789,7 +789,7 @@ script:
                 }
             })
             dbotScore = 3
-        elif (bad_downloads_amount >= 0 or detected_urls >= 0):
+        elif (bad_downloads_amount >= 0 or len(detected_urls) >= 0):
             dbotScore = 2
         else:
             dbotScore = 1
