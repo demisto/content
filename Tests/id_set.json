@@ -1876,10 +1876,7 @@
         {
             "GenerateInvestigationSummaryReport": {
                 "name": "GenerateInvestigationSummaryReport", 
-                "fromversion": "3.5.0", 
-                "tests": [
-                    "No test - No need"
-                ]
+                "fromversion": "3.5.0"
             }
         }, 
         {
@@ -2611,9 +2608,6 @@
                 "deprecated": true, 
                 "depends_on": [
                     "okta-update-user"
-                ], 
-                "tests": [
-                    "No test - deprecated script with no test prior"
                 ]
             }
         }, 
@@ -2723,6 +2717,9 @@
                 "name": "SEPCheckOutdatedEndpoints", 
                 "depends_on": [
                     "sep-client-content"
+                ], 
+                "tests": [
+                    "No test - postpone for later"
                 ]
             }
         }, 
@@ -4551,8 +4548,12 @@
         {
             "2aa9f737-8c7c-42f5-815f-4d104bb3af06": {
                 "name": "SEPScan", 
+                "deprecated": true, 
                 "depends_on": [
                     "sep-command-status"
+                ], 
+                "tests": [
+                    "No test - deprecated"
                 ]
             }
         }, 
@@ -4927,26 +4928,6 @@
                 ], 
                 "tests": [
                     "No test - fetches indicators"
-                ]
-            }
-        }, 
-        {
-            "Cut": {
-                "name": "Cut", 
-                "tests": [
-                    "TransformersTestPlaybook"
-                ]
-            }
-        }, 
-        {
-            "PcapHTTPExtractor": {
-                "name": "PcapHTTPExtractor", 
-                "script_executions": [
-                    "getEntries", 
-                    "getFilePath"
-                ], 
-                "tests": [
-                    "PcapHTTPExtractor-Test"
                 ]
             }
         }
@@ -7888,7 +7869,7 @@
                     "email"
                 ], 
                 "tests": [
-                    "No tests"
+                    "Test - PhishMe Intelligence"
                 ]
             }
         }, 
@@ -8765,9 +8746,6 @@
                     "file", 
                     "threatstream-email-reputation", 
                     "ip"
-                ], 
-                "tests": [
-                    "Anomali_ThreatStream_Test"
                 ]
             }
         }, 
@@ -10115,20 +10093,24 @@
             }
         }, 
         {
-            "Symantec Endpoint Protection": {
-                "name": "Symantec Endpoint Protection", 
+            "Symantec Endpoint Protection V2": {
+                "name": "Symantec Endpoint Protection V2", 
                 "commands": [
                     "sep-endpoints-info", 
-                    "sep-update-content", 
-                    "sep-scan", 
                     "sep-groups-info", 
                     "sep-system-info", 
                     "sep-command-status", 
-                    "sep-quarantine", 
-                    "sep-client-content"
+                    "sep-client-content", 
+                    "sep-list-policies", 
+                    "sep-assign-policy", 
+                    "sep-list-locations", 
+                    "sep-endpoint-quarantine", 
+                    "sep-scan-endpoint", 
+                    "sep-update-endpoint-content", 
+                    "sep-move-client-to-group"
                 ], 
                 "tests": [
-                    "sep_-_test_endpoint_search"
+                    "SymantecEndpointProtection_Test"
                 ]
             }
         }, 
@@ -11775,40 +11757,20 @@
             }
         }, 
         {
-            "Freshdesk": {
-                "name": "Freshdesk", 
+            "Symantec Endpoint Protection old": {
+                "name": "Symantec Endpoint Protection old", 
                 "commands": [
-                    "fd-create-ticket", 
-                    "fd-get-ticket", 
-                    "fd-update-ticket", 
-                    "fd-list-contacts", 
-                    "fd-get-contact", 
-                    "fd-list-canned-response-folders", 
-                    "fd-get-canned-response-folder", 
-                    "fd-list-groups", 
-                    "fd-ticket-reply", 
-                    "fd-get-ticket-conversations", 
-                    "fd-list-agents", 
-                    "fd-create-ticket-note", 
-                    "fd-delete-ticket", 
-                    "fd-search-tickets"
+                    "sep-endpoints-info", 
+                    "sep-update-content", 
+                    "sep-scan", 
+                    "sep-groups-info", 
+                    "sep-system-info", 
+                    "sep-command-status", 
+                    "sep-quarantine", 
+                    "sep-client-content"
                 ], 
                 "tests": [
-                    "Freshdesk-Test"
-                ]
-            }
-        }, 
-        {
-            "Kafka V2": {
-                "name": "Kafka V2", 
-                "commands": [
-                    "kafka-print-topics", 
-                    "kafka-publish-msg", 
-                    "kafka-consume-msg", 
-                    "kafka-fetch-partitions"
-                ], 
-                "tests": [
-                    "No Test - Can not connect to instance from remote"
+                    "No test - deprecated integration"
                 ]
             }
         }
@@ -12824,7 +12786,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "whois": "Whois"
+                    "whois": "whois"
                 }
             }
         }, 
@@ -12955,7 +12917,7 @@
                 ], 
                 "command_to_integration": {
                     "joe-download-report": "Joe Security", 
-                    "joe-is-online": "", 
+                    "joe-is-online": "Joe Security", 
                     "joe-analysis-info": "Joe Security", 
                     "joe-search": "Joe Security", 
                     "joe-analysis-submit-sample": "Joe Security", 
@@ -13789,19 +13751,6 @@
                     "fortigate-create-address-group": "", 
                     "fortigate-create-policy": "", 
                     "fortigate-update-policy": ""
-                }
-            }
-        }, 
-        {
-            "sep_-_test_endpoint_search": {
-                "name": "SEP - Test endpoint search", 
-                "fromversion": "3.5.0", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoints-info": "Symantec Endpoint Protection"
                 }
             }
         }, 
@@ -15236,8 +15185,8 @@
                 "name": "Anomali ThreatStream Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "Sleep"
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
                     "ip": "Anomali ThreatStream", 
@@ -15447,25 +15396,6 @@
                     "scadafence-getAsset": "SCADAfence CNM", 
                     "scadafence-setAlertStatus": "SCADAfence CNM", 
                     "scadafence-getAlerts": "SCADAfence CNM"
-                }
-            }
-        }, 
-        {
-            "c19e328d-0cf3-4a94-88b3-df670d984602": {
-                "name": "SymantecEndpointProtection Test", 
-                "implementing_scripts": [
-                    "SEPScan", 
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-quarantine": "Symantec Endpoint Protection", 
-                    "sep-command-status": "Symantec Endpoint Protection", 
-                    "sep-update-content": "Symantec Endpoint Protection", 
-                    "sep-endpoints-info": "Symantec Endpoint Protection", 
-                    "sep-groups-info": "Symantec Endpoint Protection", 
-                    "sep-client-content": "Symantec Endpoint Protection", 
-                    "sep-system-info": "Symantec Endpoint Protection"
                 }
             }
         }, 
@@ -15732,8 +15662,7 @@
             "Alexa Test Playbook": {
                 "name": "Alexa Test Playbook", 
                 "implementing_scripts": [
-                    "DeleteContext", 
-                    "Sleep"
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
                     "domain": "Alexa Rank Indicator"
@@ -15764,7 +15693,6 @@
             "Test - PhishMe Intelligence": {
                 "name": "Test - PhishMe Intelligence", 
                 "implementing_scripts": [
-                    "CloseInvestigation", 
                     "IsGreaterThan", 
                     "DeleteContext", 
                     "AreValuesEqual"
@@ -15823,61 +15751,6 @@
                 "implementing_scripts": [
                     "VerifyHumanReadableContains", 
                     "HighlightWords"
-                ]
-            }
-        }, 
-        {
-            "TransformersTestPlaybook": {
-                "name": "TransformersTestPlaybook", 
-                "implementing_scripts": [
-                    "Set", 
-                    "DeleteContext"
-                ]
-            }
-        }, 
-        {
-            "Freshdesk-Test": {
-                "name": "Freshdesk-Test", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "fd-list-contacts": "Freshdesk", 
-                    "fd-get-ticket-conversations": "", 
-                    "fd-list-agents": "Freshdesk", 
-                    "fd-update-ticket": "Freshdesk", 
-                    "fd-get-contact": "", 
-                    "fd-search-tickets": "", 
-                    "fd-list-canned-response-folders": "", 
-                    "fd-delete-ticket": "Freshdesk", 
-                    "fd-list-groups": "Freshdesk", 
-                    "fd-ticket-reply": "Freshdesk", 
-                    "fd-create-ticket": "Freshdesk", 
-                    "fd-create-ticket-note": "", 
-                    "fd-get-ticket": "", 
-                    "fd-get-canned-response-folder": ""
-                }
-            }
-        }, 
-        {
-            "Kafka Test": {
-                "name": "Kafka Test", 
-                "command_to_integration": {
-                    "kafka-fetch-partitions": "Kafka V2", 
-                    "kafka-consume-msg": "Kafka V2", 
-                    "kafka-publish-msg": "Kafka V2", 
-                    "kafka-print-topics": "Kafka V2"
-                }
-            }
-        }, 
-        {
-            "PcapHTTPExtractor-Test": {
-                "name": "PcapHTTPExtractor-Test", 
-                "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
                 ]
             }
         }

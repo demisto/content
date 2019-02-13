@@ -1,14 +1,14 @@
 id: Test - PhishMe Intelligence
-version: 1
+version: -1
 name: Test - PhishMe Intelligence
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29e2ab29-1a86-4f09-8292-a26aaef50ea9
+    taskid: d7882acf-915e-42bf-84be-bffd8864da6c
     type: start
     task:
-      id: 29e2ab29-1a86-4f09-8292-a26aaef50ea9
+      id: d7882acf-915e-42bf-84be-bffd8864da6c
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +24,14 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: 81749d32-4f22-4112-8dd0-4db399271c60
+    taskid: 86a69e04-81ac-4792-8711-546753a99dbb
     type: regular
     task:
-      id: 81749d32-4f22-4112-8dd0-4db399271c60
+      id: 86a69e04-81ac-4792-8711-546753a99dbb
       version: -1
       name: Check IP
       script: Phishme Intelligence|||ip
@@ -39,7 +42,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      ip: 35.165.118.153
+      ip:
+        simple: 212.126.107.130
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -47,12 +52,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 262496ad-c412-4858-8eda-d389604284e3
+    taskid: 9ddab12d-b71b-4251-809a-69f2fe829d35
     type: condition
     task:
-      id: 262496ad-c412-4858-8eda-d389604284e3
+      id: 9ddab12d-b71b-4251-809a-69f2fe829d35
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -61,13 +68,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "22"
     scriptarguments:
-      key: ""
-      left: ${DBotScore.Score}
-      right: "2"
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "3"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -75,12 +85,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: 2fe18bb8-c515-411b-801a-b8255c5dfec6
+    taskid: eb973dca-d33d-45e3-8c3e-2757fc4b6113
     type: regular
     task:
-      id: 2fe18bb8-c515-411b-801a-b8255c5dfec6
+      id: eb973dca-d33d-45e3-8c3e-2757fc4b6113
       version: -1
       name: Check url
       script: Phishme Intelligence|||url
@@ -91,20 +103,24 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      url: heckwassleftran2.ru
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: f86a9321-fedd-40c0-8117-34582395f86f
+    taskid: 3ddc8cbb-f137-4823-8f60-123fab98247b
     type: condition
     task:
-      id: f86a9321-fedd-40c0-8117-34582395f86f
+      id: 3ddc8cbb-f137-4823-8f60-123fab98247b
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -113,26 +129,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "17"
     scriptarguments:
-      key: ""
-      left: ${DBotScore.Score}
-      right: "3"
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "3"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
+    note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: a076ab25-129a-43ba-8e9a-c8d07788f350
+    taskid: da30d665-7c88-439d-817b-65cfaa51a878
     type: regular
     task:
-      id: a076ab25-129a-43ba-8e9a-c8d07788f350
+      id: da30d665-7c88-439d-817b-65cfaa51a878
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -143,8 +164,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -152,12 +175,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: b146a15c-76c6-4a5c-81d3-344930ab2ce9
+    taskid: 74481eef-1f2c-4e54-8eca-73bb883899e2
     type: regular
     task:
-      id: b146a15c-76c6-4a5c-81d3-344930ab2ce9
+      id: 74481eef-1f2c-4e54-8eca-73bb883899e2
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -168,21 +193,25 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 7fde49e3-5b18-4043-8545-2b24bb3f1536
+    taskid: 2f44fa29-6533-430c-847d-f5fcc9172159
     type: regular
     task:
-      id: 7fde49e3-5b18-4043-8545-2b24bb3f1536
+      id: 2f44fa29-6533-430c-847d-f5fcc9172159
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -193,21 +222,25 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2295
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: f22d6412-023d-4f2f-88c6-8ff47f9eb990
+    taskid: 20884833-07e7-4682-8e94-82e51d8db458
     type: regular
     task:
-      id: f22d6412-023d-4f2f-88c6-8ff47f9eb990
+      id: 20884833-07e7-4682-8e94-82e51d8db458
       version: -1
       name: Check file hash
       script: Phishme Intelligence|||file
@@ -218,28 +251,33 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      destpath: ""
-      entryid: ""
-      file: 77d736dc280968d0af8c3f46e673f821
-      fileNames: ""
-      hostname: ""
-      ip: ""
-      path: ""
-      system: ""
-      url: heckwassleftran2.ru
+      destpath: {}
+      entryid: {}
+      file:
+        simple: 77d736dc280968d0af8c3f46e673f821
+      fileNames: {}
+      hostname: {}
+      ip: {}
+      path: {}
+      system: {}
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2470
         }
       }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 077a55cf-beae-4eed-8452-b549cbc34d3a
+    taskid: 62d442ba-00e7-42a2-8f71-445fc1333e76
     type: condition
     task:
-      id: 077a55cf-beae-4eed-8452-b549cbc34d3a
+      id: 62d442ba-00e7-42a2-8f71-445fc1333e76
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -250,24 +288,29 @@ tasks:
       "yes":
       - "10"
     scriptarguments:
-      key: ""
-      left: ${DBotScore.Score}
-      right: "3"
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "3"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2645
         }
       }
+    note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: 9977c874-aad6-4895-8a04-78674bf31778
+    taskid: 706c26a0-497c-43c0-852f-aefcf09a7bea
     type: regular
     task:
-      id: 9977c874-aad6-4895-8a04-78674bf31778
+      id: 706c26a0-497c-43c0-852f-aefcf09a7bea
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -278,21 +321,25 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2820
         }
       }
+    note: false
+    timertriggers: []
   "11":
     id: "11"
-    taskid: e512a4a7-78e0-486d-8193-30923cc99fa2
+    taskid: 2ba3beb4-2d3b-4d4d-8658-996933551c23
     type: regular
     task:
-      id: e512a4a7-78e0-486d-8193-30923cc99fa2
+      id: 2ba3beb4-2d3b-4d4d-8658-996933551c23
       version: -1
       name: Check email
       script: Phishme Intelligence|||email
@@ -303,29 +350,35 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      destpath: ""
-      email: forme@kanhseai.com
-      entryid: ""
-      file: 77d736dc280968d0af8c3f46e673f821
-      fileNames: ""
-      hostname: ""
-      ip: ""
-      path: ""
-      system: ""
-      url: heckwassleftran2.ru
+      destpath: {}
+      email:
+        simple: forme@kanhseai.com
+      entryid: {}
+      file:
+        simple: 77d736dc280968d0af8c3f46e673f821
+      fileNames: {}
+      hostname: {}
+      ip: {}
+      path: {}
+      system: {}
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2995
         }
       }
+    note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 5988644e-06b7-4456-83a4-bb51777de286
+    taskid: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
     type: condition
     task:
-      id: 5988644e-06b7-4456-83a4-bb51777de286
+      id: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -336,24 +389,29 @@ tasks:
       "yes":
       - "13"
     scriptarguments:
-      key: ""
-      left: ${DBotScore.Score}
-      right: "3"
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "3"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3170
         }
       }
+    note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: f3c7d03b-b9ab-4758-8402-2e7fcee447b2
+    taskid: 09c49698-3080-40ff-83e1-2db4a680fb65
     type: regular
     task:
-      id: f3c7d03b-b9ab-4758-8402-2e7fcee447b2
+      id: 09c49698-3080-40ff-83e1-2db4a680fb65
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -364,21 +422,25 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3345
         }
       }
+    note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: e1af3c19-b4a0-45fd-89b8-40a920d2e75c
+    taskid: c66b09c4-53f9-4872-8215-222e362576cc
     type: regular
     task:
-      id: e1af3c19-b4a0-45fd-89b8-40a920d2e75c
+      id: c66b09c4-53f9-4872-8215-222e362576cc
       version: -1
       name: Check PhishMe string
       script: Phishme Intelligence|||phishme-search
@@ -389,31 +451,38 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      destpath: ""
-      email: diverseconstgroup.com
-      entryid: ""
-      file: 77d736dc280968d0af8c3f46e673f821
-      fileNames: ""
-      hostname: ""
-      ip: ""
-      limit: ""
-      path: ""
-      str: sex
-      system: ""
-      url: heckwassleftran2.ru
+      destpath: {}
+      email:
+        simple: diverseconstgroup.com
+      entryid: {}
+      file:
+        simple: 77d736dc280968d0af8c3f46e673f821
+      fileNames: {}
+      hostname: {}
+      ip: {}
+      limit: {}
+      path: {}
+      str:
+        simple: sex
+      system: {}
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3520
         }
       }
+    note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: 12ba7cf6-002a-465f-81a2-3e7b1644db4d
+    taskid: c5d35d6c-799f-417b-837b-23e93f3c1bad
     type: condition
     task:
-      id: 12ba7cf6-002a-465f-81a2-3e7b1644db4d
+      id: c5d35d6c-799f-417b-837b-23e93f3c1bad
       version: -1
       name: Check number of PhishMe threats
       scriptName: IsGreaterThan
@@ -424,46 +493,234 @@ tasks:
       "yes":
       - "16"
     scriptarguments:
-      first: ${PhishMe.NumOfThreats}
-      key: ""
-      left: ${DBotScore.Score}
-      right: "0"
-      second: "9"
+      first:
+        simple: ${PhishMe.NumOfThreats}
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "0"
+      second:
+        simple: "9"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3695
         }
       }
+    note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: 048d516f-235e-4da0-85ea-69cd27cdd2d2
+    taskid: 6107aa2d-2e7b-44c5-8b87-614519ab1df7
+    type: title
+    task:
+      id: 6107aa2d-2e7b-44c5-8b87-614519ab1df7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 6a5e7da5-23c6-4647-895b-ded19085cdcd
     type: regular
     task:
-      id: 048d516f-235e-4da0-85ea-69cd27cdd2d2
+      id: 6a5e7da5-23c6-4647-895b-ded19085cdcd
       version: -1
-      name: Close investigation
-      scriptName: CloseInvestigation
+      name: Clear context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
     scriptarguments:
-      notes: ""
-      reason: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+    type: regular
+    task:
+      id: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+      version: -1
+      name: Check url
+      script: Phishme Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      url:
+        simple: heckwassleftran2.ru
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: a2d188fb-8477-4807-852f-d7cbb2e0da8e
+    type: condition
+    task:
+      id: a2d188fb-8477-4807-852f-d7cbb2e0da8e
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "3"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
+    type: regular
+    task:
+      id: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
+      version: -1
+      name: Check IP
+      script: Phishme Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Phishme Intelligence
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 4f3d79db-10dc-428a-8c62-d7ff66e00813
+    type: condition
+    task:
+      id: 4f3d79db-10dc-428a-8c62-d7ff66e00813
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: "2"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: cdb30868-d6a7-4175-807d-2e1e041244d8
+    type: regular
+    task:
+      id: cdb30868-d6a7-4175-807d-2e1e041244d8
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2865,
+        "height": 3885,
         "width": 380,
         "x": 50,
         "y": 50
@@ -471,4 +728,4 @@ view: |-
     }
   }
 inputs: []
-
+outputs: []
