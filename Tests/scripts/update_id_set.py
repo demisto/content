@@ -127,7 +127,7 @@ def get_from_version(file_path):
             return "0.0.0"
 
         if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
-            raise ValueError("{} fileversion is invalid \"{}\". "
+            raise ValueError("{} fromversion is invalid \"{}\". "
                              "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
 
         return from_version
