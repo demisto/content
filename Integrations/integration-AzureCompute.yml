@@ -1,58 +1,366 @@
+category: Analytics & SIEM
 commonfields:
   id: Azure Compute
   version: -1
-name: Azure Compute
-display: Azure Compute
-category: Analytics & SIEM
-image: data:image/png;base64,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
-description: Create and Manage Azure Virtual Machines
-detaileddescription: "To allow access and manage MS Virtual Machine, you first need
-  to go to Azure portal, open the Cloud Shell, and execute 'az ad sp create-for-rbac
-  -n YourAppName'. This will output a list of properties, you need to match them like
-  the following:\n\n1 Type in the  “tenant” in the rbac command results in the ‘The
-  tenant ID of the subscription’ section\n2 Type in the “appId” in the rback command
-  results in the ‘Application ID of the Azure Active Directory Registration’ section\n3
-  Type in the “password” in the rbac command results in the ‘Client secret of the
-  application’ section\n4 Type in your subscription id in the ‘Subscription Id for
-  the Azure subscription’ section\n \nClick the ‘Test’ button. And if it has no errors,
-  click the ‘Done’ button"
 configuration:
 - display: The tenant ID of the subscription
   name: tenant_id
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Application ID of the Azure Active Directory Registration
   name: client_id
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Client secret of the application
   name: client_secret
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Subscription ID for the Azure subscription
   name: subscription_id
-  defaultvalue: ""
+  required: false
   type: 0
-  required: false
-- display: Trust any certificate (unsecure)
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "true"
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Create and Manage Azure Virtual Machines
+detaileddescription: "To allow access and manage MS Virtual Machine, you first need\
+  \ to go to Azure portal, open the Cloud Shell, and execute 'az ad sp create-for-rbac\
+  \ -n YourAppName'. This will output a list of properties, you need to match them\
+  \ like the following:\n\n1 Type in the  “tenant” in the rbac command results in\
+  \ the ‘The tenant ID of the subscription’ section\n2 Type in the “appId” in the\
+  \ rback command results in the ‘Application ID of the Azure Active Directory Registration’\
+  \ section\n3 Type in the “password” in the rbac command results in the ‘Client secret\
+  \ of the application’ section\n4 Type in your subscription id in the ‘Subscription\
+  \ Id for the Azure subscription’ section\n \nClick the ‘Test’ button. And if it\
+  \ has no errors, click the ‘Done’ button"
+display: Azure Compute
+name: Azure Compute
 script:
-  script: |
+  commands:
+  - arguments:
+    - default: false
+      description: Resource Group of the VMs
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    description: List the VM instances in the specified Resource Group
+    execution: false
+    name: azure-vm-list-instances
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the virtual machine
+      type: string
+    - contextPath: Azure.Compute.Location
+      description: Location of the Virtual Machine
+      type: string
+    - contextPath: Azure.Compute.ProvisioningState
+      description: Provisioning State of the VM
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group where the VM resides in
+      type: string
+    - contextPath: Azure.Compute.ID
+      description: ID of the VM
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: Size of the deployed VM in gigabytes
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: OS running in the VM
+      type: string
+  - arguments:
+    - default: false
+      description: Resource Group to which the virtual machine belongs
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: Name of the virtual machine to power-on
+      isArray: false
+      name: virtual_machine_name
+      required: true
+      secret: false
+    description: Power-on a specified Virtual Machine
+    execution: true
+    name: azure-vm-start-instance
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the VM that was started
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group the VM resides in
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
+  - arguments:
+    - default: false
+      description: Resource Group to which the virtual machine belongs
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: Name of the virtual machine to power-off
+      isArray: false
+      name: virtual_machine_name
+      required: true
+      secret: false
+    description: Power-off a specified Virtual Machine
+    execution: true
+    name: azure-vm-poweroff-instance
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the VM that was powered down
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group the VM resides in
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
+  - arguments:
+    - default: false
+      description: Resource Group to which the virtual machine belongs
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: Name of the virtual machine you wish to view the details of
+      isArray: false
+      name: virtual_machine_name
+      required: true
+      secret: false
+    description: Get the properties of a specified Virtual Machine
+    execution: false
+    name: azure-vm-get-instance-details
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the VM whose details were requested
+      type: string
+    - contextPath: Azure.Compute.ID
+      description: 'ID of the VM '
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: Size of the deployed VM in gigabytes
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: OS running in the specified VM
+      type: string
+    - contextPath: Azure.Compute.ProvisioningState
+      description: Provisioning state of the deployed VM
+      type: string
+    - contextPath: Azure.Compute.Location
+      description: Region in which the VM is hosted
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group in which the VM belongs
+      type: string
+  - arguments:
+    - default: false
+      description: Resource group to which the new VM will belong
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - default: false
+      description: Name of the virtual machine to create
+      isArray: false
+      name: virtual_machine_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Location to create the VM
+      isArray: false
+      name: location
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - westus
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: Network Interface ID to link the VM with. This has to be created
+        from the Azure Portal. Note that the vm's location property must match that
+        of the Network Interface you chooe to link it to.
+      isArray: false
+      name: nic_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Standard_D1_v2
+      description: The name of a VirtualMachineSize which determines the size of the
+        deployed vm. To see more information visit https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize
+      isArray: false
+      name: vm_size
+      predefined:
+      - Standard_D1_v2
+      - Standard_D2_v2
+      - Standard_D2s_v3
+      - Standard_B1ms
+      - Standard_B1s
+      - Standard_B2s
+      - Standard_B4ms
+      - Standard_D4s_v3
+      - Standard_DS1_v2
+      - Standard_DS2_v2
+      - Standard_DS3_v2
+      - Promo_DS2_v2
+      - Promo_DS3_v2
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose the base operating system image of the vm
+      isArray: false
+      name: image
+      predefined:
+      - Ubuntu Server 14.04 LTS
+      - Ubuntu Server 16.04 LTS
+      - Ubuntu Server 18.04 LTS
+      - Red Hat Enterprise Linux 7.6
+      - CentOS-based 7.5
+      - Windows Server 2012 R2 Datacenter
+      - Windows Server 2016 Datacenter
+      - Windows 10 Pro Version 1803
+      - Windows 10 Pro Version 1809
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 2016-Datacenter
+      description: SKU of the image to be used
+      isArray: false
+      name: sku
+      required: false
+      secret: false
+    - default: false
+      defaultValue: MicrosoftWindowsServer
+      description: Name of the publisher of the image
+      isArray: false
+      name: publisher
+      required: false
+      secret: false
+    - default: false
+      defaultValue: latest
+      description: Version of the image to use. The allowed formats are Major.Minor.Build
+        or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest'
+        to use the latest version of an image available at deploy time.
+      isArray: false
+      name: version
+      required: false
+      secret: false
+    - default: false
+      defaultValue: WindowsServer
+      description: Specifies the offer of the platform image or marketplace image
+        used to create the virtual machine
+      isArray: false
+      name: offer
+      required: false
+      secret: false
+    - default: false
+      defaultValue: DemistoUser
+      description: Admin Username to be used when creating the VM
+      isArray: false
+      name: admin_username
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Passw0rd@123
+      description: Admin Password to be used when creating the VM
+      isArray: false
+      name: admin_password
+      required: false
+      secret: false
+    description: Create a virtual machine instance with the specified OS image
+    execution: true
+    name: azure-vm-create-instance
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the created VM instance
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group the VM resides in
+      type: string
+    - contextPath: Azure.Compute.ID
+      description: ID of the VM
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: Size of the deployed VM in gigabytes
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: OS running in the specified VM
+      type: string
+    - contextPath: Azure.Compute.ProvisioningState
+      description: Provisioning state of the deployed VM
+      type: string
+    - contextPath: Azure.Compute.Location
+      description: Region in which the VM is hosted
+      type: string
+  - description: List all Resource Groups belonging to your Azure subscription
+    execution: false
+    name: azure-list-resource-groups
+    outputs:
+    - contextPath: Azure.ResourceGroup.Name
+      description: Name of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.ID
+      description: ID of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.Location
+      description: Location of the Resource Group
+      type: string
+    - contextPath: Azure.ResourceGroup.ProvisioningState
+      description: Provisioning State of the Resource Group
+      type: string
+  isfetch: false
+  runonce: false
+  script: |-
     '''IMPORTS'''
 
     import requests
-    import traceback
 
     '''GLOBAL VARS'''
 
@@ -136,21 +444,8 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
+
     '''HELPER FUNCTIONS'''
-
-
-    def log_traceback(e=None):
-        _, _, ex_traceback = sys.exc_info()
-        if not ex_traceback and not e:
-            demisto.log('Could not create traceback.')
-        elif ex_traceback and not e:
-            tb_lines = ''.join(traceback.format_tb(ex_traceback))
-            demisto.log(tb_lines)
-        elif e:
-            if not ex_traceback:
-                ex_traceback = e.__traceback__
-            tb_lines = ''.join(traceback.format_exception(e.__class__, e, ex_traceback))
-            demisto.log(tb_lines)
 
 
     def update_access_token():
@@ -171,6 +466,12 @@ script:
 
 
     def assign_image_attributes(image):
+        """
+        Retrieve image properties determined by the chosen image
+
+        returns:
+            Image Properties Tuple (sku, publisher, offer, version)
+        """
         image = image.lower()
         image_properties = IMAGES.get(image)
         if not image_properties:
@@ -187,9 +488,19 @@ script:
     def create_vm_parameters(args):
         """
         Construct the VM object
+
+        Use the actual parameters passed to the 'azure-vm-create-instance' command
+        to build a vm object that will be sent in the body of the command's associated
+        API call.
+
+        parameter: (dict) args
+            Dictionary that contains the actual parameters that were passed to the
+            'azure-vm-create-instance' command
+
+        returns:
+            Virtual Machine Object
         """
         # Retrieve relevant command arguments
-        nic_id = args.get('nic_id')
         location = args.get('location')
         vm_size = args.get('vm_size')
         image = args.get('image')
@@ -201,6 +512,9 @@ script:
         resource_group = args.get('resource_group')
         admin_username = args.get('admin_username')
         admin_password = args.get('admin_password')
+        nic_id = args.get('nic_id')
+        full_nic_id = "/subscriptions/" + SUBSCRIPTION_ID + "/resourceGroups/"
+        full_nic_id += resource_group + "/providers/Microsoft.Network/networkInterfaces/" + nic_id
 
         if not image and not (sku and publisher and version and offer):
             err_msg = "You must enter a value for the 'image' argument "
@@ -241,7 +555,7 @@ script:
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "/subscriptions/" + SUBSCRIPTION_ID + "/resourceGroups/" + resource_group + "/providers/Microsoft.Network/networkInterfaces/" + nic_id,
+                            "id": full_nic_id,
                             "properties": {
                                 "primary": "true"
                             }
@@ -255,9 +569,40 @@ script:
         return vm
 
 
-    def http_request(method, url_endpoint=None, data=None, headers=HEADERS, codes=None, full_url=None, j_son=None):
+    def http_request(method, url_suffix=None, data=None, headers=HEADERS, codes=None, full_url=None, j_son=None):
+        """
+        A wrapper for requests lib to send our requests and handle requests and responses better
+
+        parameter: (string) method
+            A string denoting the http request method to use.
+            Can be 'GET', 'POST, 'PUT', 'DELETE', etc.
+
+        parameter: (string) url_suffix
+            The API endpoint that determines which data we are trying to access/create/update
+            in our call to the API
+
+        parameter: (dict) data
+            The key/value pairs to be form-encoded
+
+        parameter: (dict) headers
+            The headers to use with the request
+
+        parameter: (set) codes
+            The set of status codes against which the status code of the response should be checked
+
+        parameter: (string) full_url
+            The full url to make a request to. Only necessary in the case that you need to make
+            an API request to an endpoint which differs in its base url from the majority of
+            the API calls in the integration
+
+        parameter: (dict) j_son
+            A JSON serializable Python object to send in the body of the request
+
+        returns:
+            JSON Response Object
+        """
         try:
-            url = full_url if full_url else BASE_URL + url_endpoint
+            url = full_url if full_url else BASE_URL + url_suffix
             r = requests.request(
                 method,
                 url,
@@ -296,6 +641,12 @@ script:
 
 
     def list_resource_groups_command():
+        """
+        List all Resource Groups belonging to your Azure subscription
+
+        returns:
+            Resource-Group Objects
+        """
         response = list_resource_groups()
         # Retrieve relevant properties to return to context
         value = response.get('value')
@@ -333,6 +684,15 @@ script:
 
 
     def list_vms_command():
+        """
+        List the VM instances in the specified Resource Group
+
+        demisto parameter: (string) resource_group
+            Resource Group of the VMs
+
+        returns:
+            Virtual Machine Objects
+        """
         resource_group = demisto.args().get('resource_group')
         response = list_vms(resource_group)
 
@@ -390,6 +750,18 @@ script:
 
 
     def get_vm_command():
+        """
+        Get the properties of a specified Virtual Machine
+
+        demisto parameter: (string) resource_group
+            Resource Group to which the virtual machine belongs
+
+        demisto parameter: (string) virtual_machine_name
+            Name of the virtual machine you wish to view the details of
+
+        returns:
+            Virtual Machine Object
+        """
         args = demisto.args()
         response = get_vm(args)
 
@@ -452,6 +824,49 @@ script:
 
 
     def create_vm_command():
+        """
+        Create a virtual machine instance with the specified OS image
+
+        demisto parameter: (string) resource_group
+            Resource group to which the new VM will belong
+
+        demisto parameter: (string) virtual_machine_name
+            Name to assign to the new virtual machine
+
+        demisto parameter: (string) location
+            Region in which the vm will be hosted
+
+        demisto parameter: (string) nic_id
+            Network Interface ID to link the VM with. This has to be created from the Azure Portal
+
+        demisto parameter: (string) vm_size
+            The name of a VirtualMachineSize which determines the size of the deployed vm
+
+        demisto parameter: (string) image
+            Choose the base operating system image of the vm
+
+        demisto parameter: (string) sku
+            SKU of the image to be used
+
+        demisto parameter: (string) publisher
+            Name of the publisher of the image
+
+        demisto parameter: (string) version
+            Version of the image to use
+
+        demisto parameter: (string) offer
+            Specifies the offer of the platform image or marketplace image used
+            to create the virtual machine
+
+        demisto parameter: (string) admin_username
+            Admin Username to be used when creating the VM
+
+        demisto parameter: (string) admin_password
+            Admin Password to be used when creating the VM
+
+        returns:
+            Virtual Machine Object
+        """
         args = demisto.args()
         response = create_vm(args)
 
@@ -460,7 +875,6 @@ script:
         properties = response.get('properties')
         os_disk = properties.get('storageProfile').get('osDisk')
         datadisk = os_disk.get('diskSizeGB', 'NA')
-        computer_name = properties.get('osProfile').get('computerName')
         vm_id = properties.get('vmId')
         os_type = os_disk.get('osType')
         provisioning_state = properties.get('provisioningState')
@@ -505,6 +919,18 @@ script:
 
 
     def start_vm_command():
+        """
+        Power-on a specified Virtual Machine
+
+        demisto parameter: (string) resource_group
+            Resource Group to which the virtual machine belongs
+
+        demisto parameter: (string) virtual_machine_name
+            Name of the virtual machine to power-on
+
+        returns:
+            Virtual Machine Object
+        """
         args = demisto.args()
         vm_name = args.get('virtual_machine_name')
         response = start_vm(args)
@@ -544,6 +970,18 @@ script:
 
 
     def poweroff_vm_command():
+        """
+        Power-off a specified Virtual Machine
+
+        demisto parameter: (string) resource_group
+            Resource Group to which the virtual machine belongs
+
+        demisto parameter: (string) virtual_machine_name
+            Name of the virtual machine to power-off
+
+        returns:
+            Virtual Machine Object
+        """
         args = demisto.args()
         vm_name = args.get('virtual_machine_name')
         response = poweroff_vm(args)
@@ -590,247 +1028,4 @@ script:
         LOG(e)
         return_error(e.message)
   type: python
-  commands:
-  - name: azure-vm-list-instances
-    arguments:
-    - name: resource_group
-      required: true
-      description: Resource Group of the VMs
-    outputs:
-    - contextPath: Azure.Compute.Name
-      description: Name of the virtual machine
-      type: string
-    - contextPath: Azure.Compute.Location
-      description: Location of the Virtual Machine
-      type: string
-    - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning State of the VM
-      type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group where the VM resides in
-      type: string
-    - contextPath: Azure.Compute.ID
-      description: ID of the VM
-      type: string
-    - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
-      type: number
-    - contextPath: Azure.Compute.OS
-      description: OS running in the VM
-      type: string
-    description: List the VM instances in the Resource Group specified
-  - name: azure-vm-start-instance
-    arguments:
-    - name: resource_group
-      required: true
-      description: 'Resource Group name where the VM resides '
-    - name: virtual_machine_name
-      required: true
-      description: 'Name of the VM to start '
-    outputs:
-    - contextPath: Azure.Compute.Name
-      description: Name of the VM that was started
-      type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
-      type: string
-    - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
-      type: string
-    description: Start a specified VM in the Resource Group
-    execution: true
-  - name: azure-vm-poweroff-instance
-    arguments:
-    - name: resource_group
-      required: true
-      description: Resource group in which the VM belongs
-    - name: virtual_machine_name
-      required: true
-      description: 'Name of the VM to be stopped '
-    outputs:
-    - contextPath: Azure.Compute.Name
-      description: Name of the VM that was powered down
-      type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
-      type: string
-    - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
-      type: string
-    description: Stop a specified VM in the Resource Group
-    execution: true
-  - name: azure-vm-get-instance-details
-    arguments:
-    - name: resource_group
-      required: true
-      description: Resource group where the VM resides
-    - name: virtual_machine_name
-      required: true
-      description: Name of the virtual machine whose details are needed
-    outputs:
-    - contextPath: Azure.Compute.Name
-      description: Name of the VM whose details were requested
-      type: string
-    - contextPath: Azure.Compute.ID
-      description: 'ID of the VM '
-      type: string
-    - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
-      type: number
-    - contextPath: Azure.Compute.OS
-      description: OS running in the specified VM
-      type: string
-    - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning state of the deployed VM
-      type: string
-    - contextPath: Azure.Compute.Location
-      description: Region in which the VM is hosted
-      type: string
-    - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
-      type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group in which the VM belongs
-      type: string
-    description: Get the properties of a specified Virtual Machine
-  - name: azure-vm-create-instance
-    arguments:
-    - name: resource_group
-      required: true
-      description: Resource group to which the new VM will belong
-    - name: virtual_machine_name
-      required: true
-      description: Name of the virtual machine to create
-    - name: location
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - westus2
-      - westus
-      - westindia
-      - westeurope
-      - westcentralus
-      - uksouth
-      - ukwest
-      - southeastasia
-      - northcentralus
-      - northeurope
-      - southcentralus
-      - southindia
-      - francesouth
-      - francecentral
-      - japaneast
-      - japanwest
-      - koreacentral
-      - koreasouth
-      - brazilsouth
-      - canadacentral
-      - canadaeast
-      - centralindia
-      - eastus2
-      - eastasia
-      - westus
-      - centralus
-      - eastus
-      - australiacentral
-      - australiacentral2
-      - australiaeast
-      - australiasoutheast
-      - ""
-      description: Location to create the VM
-    - name: nic_id
-      required: true
-      description: Network Interface ID to link the VM with. This has to be created
-        from the Azure Portal
-    - name: vm_size
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - Standard_D1_v2
-      - Standard_D2_v2
-      - Standard_D2s_v3
-      - Standard_B1ms
-      - Standard_B1s
-      - Standard_B2s
-      - Standard_B4ms
-      - Standard_D4s_v3
-      - Standard_DS1_v2
-      - Standard_DS2_v2
-      - Standard_DS3_v2
-      - Promo_DS2_v2
-      - Promo_DS3_v2
-      description: Size of the Virtual Machine to deploy
-      defaultValue: Standard_D1_v2
-    - name: image
-      auto: PREDEFINED
-      predefined:
-      - Ubuntu Server 14.04 LTS
-      - Ubuntu Server 16.04 LTS
-      - Ubuntu Server 18.04 LTS
-      - Red Hat Enterprise Linux 7.6
-      - CentOS-based 7.5
-      - Windows Server 2012 R2 Datacenter
-      - Windows Server 2016 Datacenter
-      - Windows 10 Pro Version 1803
-      - Windows 10 Pro Version 1809
-      description: Choose the base operating system of the OS
-    - name: sku
-      description: SKU of the image to be used
-      defaultValue: 2016-Datacenter
-    - name: publisher
-      description: Publisher Name of the image
-      defaultValue: MicrosoftWindowsServer
-    - name: version
-      description: 'Version of the image '
-      defaultValue: latest
-    - name: offer
-      description: Offering name of the image
-      defaultValue: WindowsServer
-    - name: admin_username
-      description: Admin Username to be used when creating the VM
-      defaultValue: DemistoUser
-    - name: admin_password
-      description: Admin Password to be used when creating the VM
-      defaultValue: Passw0rd@123
-    outputs:
-    - contextPath: Azure.Compute.Name
-      description: Name of the created VM instance
-      type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
-      type: string
-    - contextPath: Azure.Compute.ID
-      description: ID of the VM
-      type: string
-    - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
-      type: number
-    - contextPath: Azure.Compute.OS
-      description: OS running in the specified VM
-      type: string
-    - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning state of the deployed VM
-      type: string
-    - contextPath: Azure.Compute.Location
-      description: Region in which the VM is hosted
-      type: string
-    description: Create a 2016-Datacentre Windows Server VM with DemistoUser as the
-      Username
-    execution: true
-  - name: azure-list-resource-groups
-    arguments: []
-    outputs:
-    - contextPath: Azure.ResourceGroup.Name
-      description: Name of the Resource Group
-      type: string
-    - contextPath: Azure.ResourceGroup.ID
-      description: ID of the Resource Group
-      type: string
-    - contextPath: Azure.ResourceGroup.Location
-      description: Location of the Resource Group
-      type: string
-    - contextPath: Azure.ResourceGroup.ProvisioningState
-      description: Provisioning State of the Resource Group
-      type: string
-    description: List all Resource Groups belonging to your Azure subscription
-  runonce: false
+image: data:image/png;base64,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
