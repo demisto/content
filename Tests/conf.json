@@ -1047,7 +1047,6 @@
         "GsuiteTest": "error was fixed only on server master and not on ",
         "DUO Test Playbook": "DUO integration is failing",
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
-        "cisco-ise-test-playbook": "Arian is fixing the crads",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
     },
