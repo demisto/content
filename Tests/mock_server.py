@@ -144,7 +144,7 @@ class MITMProxy:
 
         if not self.has_mock_file(playbook_id):
             print 'Mock file not created!'
-        elif self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip() == 0:
+        elif self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip() == '0':
             print 'Mock file is empty, ignoring.'
             self.empty_files.append(playbook_id)
         else:
