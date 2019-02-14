@@ -2192,6 +2192,14 @@
             }
         }, 
         {
+            "GenerateRandomString": {
+                "name": "GenerateRandomString", 
+                "tests": [
+                    "RandomStringGenerateTest"
+                ]
+            }
+        }, 
+        {
             "GenerateUUID": {
                 "name": "GenerateUUID"
             }
@@ -14496,6 +14504,15 @@
                     "qualys-scheduled-report-list": "Qualys", 
                     "qualys-report-list": "Qualys"
                 }
+            }
+        }, 
+        {
+            "RandomStringGenerateTest": {
+                "name": "RandomStringGenerateTest", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "GenerateRandomString"
+                ]
             }
         }, 
         {
