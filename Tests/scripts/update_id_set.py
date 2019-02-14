@@ -405,6 +405,11 @@ def re_create_id_set():
         json.dump(ids_dict, id_set_file, indent=4)
 
 
+def sort(data):
+    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    return data
+
+
 def update_id_set():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
@@ -503,10 +508,12 @@ def update_id_set():
 
     if added_files or modified_files:
         new_ids_dict = OrderedDict()
-        new_ids_dict['scripts'] = script_set
-        new_ids_dict['playbooks'] = playbook_set
-        new_ids_dict['integrations'] = integration_set
-        new_ids_dict['TestPlaybooks'] = test_playbook_set
+        # we sort each time the whole set in case someone manually changed something
+        # it shouldn't take too much time
+        new_ids_dict['scripts'] = sort(script_set)
+        new_ids_dict['playbooks'] = sort(playbook_set)
+        new_ids_dict['integrations'] = sort(integration_set)
+        new_ids_dict['TestPlaybooks'] = sort(test_playbook_set)
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(new_ids_dict, id_set_file, indent=4)
