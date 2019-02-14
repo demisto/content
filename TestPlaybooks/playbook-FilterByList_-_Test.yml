@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 6db4ebba-057f-4d51-8bb8-20b50f040e76
+    taskid: 814f2e4d-34fd-4985-8543-b9c8494bd449
     type: regular
     task:
-      id: 6db4ebba-057f-4d51-8bb8-20b50f040e76
+      id: 814f2e4d-34fd-4985-8543-b9c8494bd449
       version: -1
       name: Create white list
       script: Builtin|||createList
@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: ^demisto.com$,google.com
+        simple: ^demisto.com$,foo.google.com
       listName:
         simple: whiteList
     separatecontext: false
@@ -58,10 +58,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 082233af-185f-47a8-83de-56a1b7939806
+    taskid: c0d0ce45-0574-45c6-87df-3e6f56d7aff4
     type: regular
     task:
-      id: 082233af-185f-47a8-83de-56a1b7939806
+      id: c0d0ce45-0574-45c6-87df-3e6f56d7aff4
       version: -1
       name: Run FilterByList
       scriptName: FilterByList
@@ -75,7 +75,7 @@ tasks:
       listname:
         simple: whiteList
       values:
-        simple: demisto.com,google.com,google.co.il
+        simple: demisto.com,google.com,foo.google.com
     separatecontext: false
     view: |-
       {
@@ -88,10 +88,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: ec96af3b-98f3-411c-8892-724d5d3f8e9d
+    taskid: 60f99579-6525-40a8-87aa-d17ddcc253a7
     type: regular
     task:
-      id: ec96af3b-98f3-411c-8892-724d5d3f8e9d
+      id: 60f99579-6525-40a8-87aa-d17ddcc253a7
       version: -1
       name: Verify 'In' list context
       scriptName: VerifyContext
@@ -103,7 +103,7 @@ tasks:
       - "4"
     scriptarguments:
       expectedValue:
-        simple: '["demisto.com","google.com"]'
+        simple: '["demisto.com","foo.google.com"]'
       fields: {}
       path:
         simple: List.In
@@ -119,10 +119,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 64a840f8-51c7-4a12-87f0-4422060d23ce
+    taskid: 5aaf7027-7baf-43fc-87eb-08c4bbac8fe4
     type: regular
     task:
-      id: 64a840f8-51c7-4a12-87f0-4422060d23ce
+      id: 5aaf7027-7baf-43fc-87eb-08c4bbac8fe4
       version: -1
       name: Verify 'NotIn' list context
       scriptName: VerifyContext
@@ -134,7 +134,7 @@ tasks:
       - "5"
     scriptarguments:
       expectedValue:
-        simple: '["google.co.il"]'
+        simple: '["google.com"]'
       fields: {}
       path:
         simple: List.NotIn
