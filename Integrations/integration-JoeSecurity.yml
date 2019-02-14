@@ -48,6 +48,14 @@ script:
     USE_SSL = not demisto.params().get('insecure', False)
     MAX_POLLS = int(demisto.params().get('maxpolls', 300))
 
+    nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email (possibly all elements where whitelisted, check Input filtering in your Settings).'
+    nothing_to_analyze_output = {
+                    'Type' : entryTypes['note'],
+                    'ContentsFormat' : formats['markdown'],
+                    'Contents' : 'We found nothing to analyze in your uploaded email',
+                    'HumanReadable' : 'We found nothing to analyze in your uploaded email'
+                    }
+
     ''' HELPER FUNCTIONS '''
     def http_post(url_suffix, data=None, files=None, parse_json=True):
         data = {} if data is None else data
@@ -66,6 +74,10 @@ script:
             raise Exception('API Key is incorrect')
 
         if res.status_code != 200:
+            error_msg = res.json()['errors'][0]['message']
+            if error_msg == nothing_to_analyze_message:
+                return 'nothing_to_analyze'
+
             LOG('result is: %s' % (res.json(), ))
             error_msg = res.json()['errors'][0]['message']
             raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg, ))
@@ -283,10 +295,13 @@ script:
                 data=data,
                 files={'sample':f})
 
-            if 'errors' in res:
-                LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
-                LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
-                raise Exception('command failed to run.')
+        if(res == 'nothing_to_analyze'):
+            return nothing_to_analyze_output;
+
+        if 'errors' in res:
+            LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
 
         shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
 
@@ -310,6 +325,9 @@ script:
             data['systems[]'] = [s.strip() for s in systems.split(',')]
 
         res = http_post('v2/analysis/submit', data=data)
+
+        if(res == 'nothing_to_analyze'):
+            return nothing_to_analyze_output
 
         if 'errors' in res:
             LOG('Error! in command sample file: file url=%s' % (sample_url, ))

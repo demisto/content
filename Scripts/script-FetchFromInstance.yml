@@ -24,6 +24,7 @@ script: |-
   if not instance_name:
       raise Exception("No instance name was found")
   expect_data = False if demisto.args()["expect_data"] == 'false' else True
+  instance_name = instance_name.replace(" ","_")
   command = '!{0}-fetch'.format(instance_name)
 
   response = demisto.executeCommand(command, {})

@@ -401,6 +401,14 @@ script:
         body['data'] = {}
         data = {}
         data['data'] = {}
+        # Add missing prefix to url
+        if submitType != 0:
+            if not sample.startswith('http://') and not sample.startswith('https://'):
+                if sample.startswith('www.'):
+                    sample = "http://" + sample
+                else:
+                    sample = "http://www." + sample   # disable-secrets-detection
+
 
         data['data']['vmProfileList'] = vmProfileList
         data['data']['submitType'] = submitType
@@ -1231,5 +1239,6 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
+releaseNotes: Fixed wrong parsing of url issue - https://github.com/demisto/etc/issues/15551
 tests:
 - Test Playbook McAfee ATD
