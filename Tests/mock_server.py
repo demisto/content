@@ -186,11 +186,15 @@ class MITMProxy:
             print self.process.stdout.read()
             print self.process.stderr.read()
         else:
-            log_filepath = os.path.join(self.active_folder, id_to_log_file(self.last_playbook_id, self.record))
-            with open(log_filepath, 'wb+') as log:
+            local_log_filepath = os.path.join('/tmp', clean_filename(self.last_playbook_id) + '.log')
+            remote_log_filepath = os.path.join(self.active_folder, id_to_log_file(self.last_playbook_id, self.record))
+
+            with open(local_log_filepath, 'w+') as log:
                 log.write('STDOUT:\n')
                 log.write(self.process.stdout.read())
                 log.write('\nSTDERR:\n')
                 log.write(self.process.stdout.read())
+
+            self.ami.copy_file(local_log_filepath, remote_log_filepath)
 
         self.process = None
