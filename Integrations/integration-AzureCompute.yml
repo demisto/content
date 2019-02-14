@@ -49,7 +49,6 @@ script:
       isArray: false
       name: resource_group
       required: true
-      secret: false
     description: List the VM instances in the specified Resource Group
     execution: false
     name: azure-vm-list-instances
@@ -81,13 +80,11 @@ script:
       isArray: false
       name: resource_group
       required: true
-      secret: false
     - default: false
       description: Name of the virtual machine to power-on
       isArray: false
       name: virtual_machine_name
       required: true
-      secret: false
     description: Power-on a specified Virtual Machine
     execution: true
     name: azure-vm-start-instance
@@ -107,13 +104,11 @@ script:
       isArray: false
       name: resource_group
       required: true
-      secret: false
     - default: false
       description: Name of the virtual machine to power-off
       isArray: false
       name: virtual_machine_name
       required: true
-      secret: false
     description: Power-off a specified Virtual Machine
     execution: true
     name: azure-vm-poweroff-instance
@@ -133,13 +128,11 @@ script:
       isArray: false
       name: resource_group
       required: true
-      secret: false
     - default: false
       description: Name of the virtual machine you wish to view the details of
       isArray: false
       name: virtual_machine_name
       required: true
-      secret: false
     description: Get the properties of a specified Virtual Machine
     execution: false
     name: azure-vm-get-instance-details
@@ -174,13 +167,11 @@ script:
       isArray: false
       name: resource_group
       required: true
-      secret: false
     - default: false
       description: Name of the virtual machine to create
       isArray: false
       name: virtual_machine_name
       required: true
-      secret: false
     - auto: PREDEFINED
       default: false
       description: Location to create the VM
@@ -220,7 +211,6 @@ script:
       - australiasoutheast
       - ''
       required: true
-      secret: false
     - default: false
       description: Network Interface ID to link the VM with. This has to be created
         from the Azure Portal. Note that the vm's location property must match that
@@ -228,7 +218,6 @@ script:
       isArray: false
       name: nic_id
       required: true
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: Standard_D1_v2
@@ -251,7 +240,6 @@ script:
       - Promo_DS2_v2
       - Promo_DS3_v2
       required: true
-      secret: false
     - auto: PREDEFINED
       default: false
       description: Choose the base operating system image of the vm
@@ -268,21 +256,18 @@ script:
       - Windows 10 Pro Version 1803
       - Windows 10 Pro Version 1809
       required: false
-      secret: false
     - default: false
       defaultValue: 2016-Datacenter
       description: SKU of the image to be used
       isArray: false
       name: sku
       required: false
-      secret: false
     - default: false
       defaultValue: MicrosoftWindowsServer
       description: Name of the publisher of the image
       isArray: false
       name: publisher
       required: false
-      secret: false
     - default: false
       defaultValue: latest
       description: Version of the image to use. The allowed formats are Major.Minor.Build
@@ -291,7 +276,6 @@ script:
       isArray: false
       name: version
       required: false
-      secret: false
     - default: false
       defaultValue: WindowsServer
       description: Specifies the offer of the platform image or marketplace image
@@ -299,21 +283,18 @@ script:
       isArray: false
       name: offer
       required: false
-      secret: false
     - default: false
       defaultValue: DemistoUser
       description: Admin Username to be used when creating the VM
       isArray: false
       name: admin_username
       required: false
-      secret: false
     - default: false
       defaultValue: Passw0rd@123
       description: Admin Password to be used when creating the VM
       isArray: false
       name: admin_password
       required: false
-      secret: false
     description: Create a virtual machine instance with the specified OS image
     execution: true
     name: azure-vm-create-instance
@@ -355,6 +336,20 @@ script:
     - contextPath: Azure.ResourceGroup.ProvisioningState
       description: Provisioning State of the Resource Group
       type: string
+  - arguments:
+    - default: false
+      description: Resource Group to which the virtual machine belongs
+      isArray: false
+      name: resource_group
+      required: true
+    - default: false
+      description: Name of the virtual machine to delete
+      isArray: false
+      name: virtual_machine_name
+      required: false
+    description: Delete a specified Virtual Machine
+    execution: false
+    name: azure-vm-delete-instance
   isfetch: false
   runonce: false
   script: |-
@@ -675,7 +670,7 @@ script:
     #<-------- Virtual Machines -------->#
 
     def list_vms(resource_group):
-        # Construct endpoint URI
+        # Construct endpoint URI suffix
         url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines?api-version=' + API_VERSION
         # Call API
         update_access_token()
@@ -738,7 +733,7 @@ script:
         resource_group = args.get('resource_group')
         vm_name = args.get('virtual_machine_name')
 
-        # Construct endpoint URI
+        # Construct endpoint URI suffix
         url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
         url_endpoint += vm_name + '?$expand=instanceView&api-version=' + API_VERSION
 
@@ -809,7 +804,7 @@ script:
         resource_group = args.get('resource_group')
         vm_name = args.get('virtual_machine_name')
 
-        # Construct endpoint URI
+        # Construct endpoint URI suffix
         url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
         url_endpoint += vm_name + '?api-version=' + API_VERSION
 
@@ -902,12 +897,48 @@ script:
         })
 
 
+    def delete_vm(args):
+        # Retrieve relevant command arguments
+        resource_group = args.get('resource_group')
+        vm_name = args.get('virtual_machine_name')
+
+        # Construct endpoint URI suffix
+        url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
+        url_endpoint += vm_name + '?api-version=' + API_VERSION
+
+        # Call API
+        update_access_token()
+        response = http_request('DELETE', url_endpoint, codes={200, 202, 204})
+
+        return response
+
+
+    def delete_vm_command():
+        """
+        Delete a specified Virtual Machine
+
+        demisto parameter: (string) resource_group
+            Resource Group to which the virtual machine belongs
+
+        demisto parameter: (string) virtual_machine_name
+            Name of the virtual machine to delete
+
+        returns:
+            Success message to the war room
+        """
+        args = demisto.args()
+        response = delete_vm(args)
+        success_msg = '"{}" VM Deletion Successfully Initiated'.format(args.get('virtual_machine_name'))
+        demisto.results(success_msg)
+
+
+
     def start_vm(args):
         # Retrieve relevant command arguments
         resource_group = args.get('resource_group')
         vm_name = args.get('virtual_machine_name')
 
-        # Construct endpoint URI
+        # Construct endpoint URI suffix
         url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
         url_endpoint += vm_name + '/start?api-version=' + API_VERSION
 
@@ -958,7 +989,7 @@ script:
         resource_group = args.get('resource_group')
         vm_name = args.get('virtual_machine_name')
 
-        # Construct endpoint URI
+        # Construct endpoint URI suffix
         url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/'
         url_endpoint += vm_name + '/powerOff?api-version=' + API_VERSION
 
@@ -1012,6 +1043,7 @@ script:
         'azure-vm-start-instance': start_vm_command,
         'azure-vm-poweroff-instance': poweroff_vm_command,
         'azure-vm-create-instance': create_vm_command,
+        'azure-vm-delete-instance': delete_vm_command,
         'azure-list-resource-groups': list_resource_groups_command
     }
 
