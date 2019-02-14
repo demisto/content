@@ -6,7 +6,6 @@ import json
 import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
-from bisect import bisect_left
 
 
 SCRIPT_YML_REGEX = r"scripts.*\.yml"
