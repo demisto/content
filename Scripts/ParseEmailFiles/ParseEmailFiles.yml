@@ -2,7 +2,7 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
-script: ''
+script: file:ParseEmailFiles.yml
 type: python
 tags:
 - email
