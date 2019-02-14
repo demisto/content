@@ -54,18 +54,6 @@ def run_git_command(command):
     return output
 
 
-def insert(seq, keys, item, keyfunc=lambda v: v):
-    """Insert an item into a sorted list using a separate corresponding
-       sorted keys list and a keyfunc() to extract the key from each item.
-
-    Based on insert() method in SortedCollection recipe:
-    """
-    k = keyfunc(item)  # Get key.
-    i = bisect_left(keys, k)  # Determine where to insert item.
-    keys.insert(i, k)  # Insert key of item to keys list.
-    seq.insert(i, item)  # Insert the item itself in the corresponding place.
-
-
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
     for regex in regex_list:
         if re.match(regex, file_path, re.IGNORECASE):
