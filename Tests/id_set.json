@@ -11758,7 +11758,7 @@
         }, 
         {
             "Symantec Endpoint Protection": {
-                "name": "Symantec Endpoint Protection",
+                "name": "Symantec Endpoint Protection", 
                 "commands": [
                     "sep-endpoints-info", 
                     "sep-update-content", 
