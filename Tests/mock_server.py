@@ -16,7 +16,7 @@ VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
 REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
 
 
-def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' '):
+def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
     filename = playbook_id
 
     # replace spaces
