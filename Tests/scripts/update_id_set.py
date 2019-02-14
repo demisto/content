@@ -8,15 +8,15 @@ from subprocess import Popen, PIPE
 from collections import OrderedDict
 
 
-SCRIPT_YML_REGEX = "scripts.*.yml"
-SCRIPT_PY_REGEX = "scripts.*.py"
-SCRIPT_JS_REGEX = "scripts.*.js"
-SCRIPT_REGEX = "scripts.*script-.*.yml"
-INTEGRATION_YML_REGEX = "integrations.(?!integration)*.yml"
-PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "integrations.*integration-.*.yml"
-TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_SCRIPT_REGEX = "TestPlaybooks.*script-.*.yml"
+SCRIPT_YML_REGEX = r"scripts.*\.yml"
+SCRIPT_PY_REGEX = r"scripts.*\.py"
+SCRIPT_JS_REGEX = r"scripts.*\.js"
+SCRIPT_REGEX = r"scripts.*script-.*\.yml"
+INTEGRATION_YML_REGEX = r"integrations.(?!integration)*\.yml"
+PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
+INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
+TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
+TEST_SCRIPT_REGEX = r"TestPlaybooks.*script-.*\.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX]
@@ -79,9 +79,9 @@ def get_changed_files(files_string):
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         elif file_status.lower() == 'a' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            added_script_list.add(os.path.dirname(file_path))
+            added_script_list.add(os.path.join(os.path.dirname(file_path), ''))
         elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
-            modified_script_list.add(os.path.dirname(file_path))
+            modified_script_list.add(os.path.join(os.path.dirname(file_path), ''))
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 
@@ -122,14 +122,27 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('toversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def get_integration_commands(file_path):
@@ -242,7 +255,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -283,15 +296,22 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
 
+    updated = False
     for instance in instances_set:
         instance_id = instance.keys()[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
+
         if obj_id == instance_id:
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
                     instance[obj_id] = obj_data[obj_id]
+                    updated = True
                     break
+
+    if not updated:
+        # in case we didn't found then we need to create one
+        add_new_object_to_id_set(obj_id, obj_data, instances_set)
 
 
 def add_new_object_to_id_set(obj_id, obj_data, instances_set):
@@ -314,10 +334,30 @@ def add_new_object_to_id_set(obj_id, obj_data, instances_set):
         instances_set.append(obj_data)
 
 
+def get_code_file(package_path, script_type):
+    """Return the first code file in the specified directory path
+    TODO: COPIED from: package_creator.py. Need to refactor to use shared code
+
+    :param package_path: directory to search for code file
+    :type package_path: str
+    :param script_type: script type: .py or .js
+    :type script_type: str
+    :return: path to found code file
+    :rtype: str
+    """
+
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    script_path = list(filter(lambda x: not re.search(ignore_regex, x),
+                              glob.glob(package_path + '*' + script_type)))[0]
+    return script_path
+
+
 def get_script_package_data(package_path):
+    if package_path[-1] != os.sep:
+        package_path = os.path.join(package_path, '')
     yml_path = glob.glob(package_path + '*.yml')[0]
     code_type = get_json(yml_path).get('type')
-    code_path = glob.glob(package_path + '*' + TYPE_TO_EXTENSION[code_type])[0]
+    code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
         code = code_file.read()
 
@@ -365,6 +405,11 @@ def re_create_id_set():
         json.dump(ids_dict, id_set_file, indent=4)
 
 
+def sort(data):
+    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    return data
+
+
 def update_id_set():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
@@ -376,11 +421,22 @@ def update_id_set():
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
-    if added_files or modified_files:
+    if added_files or modified_files or added_scripts or modified_scripts:
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
-            ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
+            try:
+                ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
+            except ValueError, ex:
+                if "Expecting property name" in ex.message:
+                    # if we got this error it means we have corrupted id_set.json
+                    # usually it will happen if we merged from master and we had a conflict in id_set.json
+                    # so we checkout the id_set.json to be exact as in master and then run update_id_set
+                    run_git_command("git checkout origin/master Tests/id_set.json")
+                    with open('./Tests/id_set.json', 'r') as id_set_file_from_master:
+                        ids_dict = json.load(id_set_file_from_master, object_pairs_hook=OrderedDict)
+                else:
+                    raise ex
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
@@ -452,10 +508,12 @@ def update_id_set():
 
     if added_files or modified_files:
         new_ids_dict = OrderedDict()
-        new_ids_dict['scripts'] = script_set
-        new_ids_dict['playbooks'] = playbook_set
-        new_ids_dict['integrations'] = integration_set
-        new_ids_dict['TestPlaybooks'] = test_playbook_set
+        # we sort each time the whole set in case someone manually changed something
+        # it shouldn't take too much time
+        new_ids_dict['scripts'] = sort(script_set)
+        new_ids_dict['playbooks'] = sort(playbook_set)
+        new_ids_dict['integrations'] = sort(integration_set)
+        new_ids_dict['TestPlaybooks'] = sort(test_playbook_set)
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(new_ids_dict, id_set_file, indent=4)
