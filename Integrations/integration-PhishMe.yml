@@ -34,6 +34,30 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider
+    the URL malicious
+  name: urlThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: File Threshold (None, Minor, Moderate or Major). Minimum severity to consider
+    the file malicious
+  name: fileThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: IP Threshold (None, Minor, Moderate or Major). Minimum severity to consider
+    the IP malicious
+  name: ipThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: Email Threshold (None, Minor, Moderate or Major). Minimum severity to consider
+    the email malicious
+  name: emailThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
 script:
   script: |
     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
@@ -70,33 +94,63 @@ script:
         }
     };
 
-    var addMD = function(threats, k) {
+    var addMD = function(threat) {
         var md = "";
-        md += '### Threat ID ' + (k+1) + ': ' + threats[k].id + '\n';
+        md += '### Threat ID: ' + threat.id + '\n';
 
-        if (threats[k].label !== undefined) {
-            md += "Name of the campaign: **" + threats[0].label + "**\n";
+        if (threat.label !== undefined) {
+            md += "Name of the campaign: **" + threat.label + "**\n";
         }
-        if (threats[k].blockSet[0].ipDetail !== undefined) {
-            md += "ASN: **" + threats[k].blockSet[0].ipDetail.asn + " " + threats[k].blockSet[0].ipDetail.asnOrganization+"**\n";
+        if (threat.blockSet[0].ipDetail !== undefined) {
+            md += "ASN: **" + threat.blockSet[0].ipDetail.asn + " " + threat.blockSet[0].ipDetail.asnOrganization+"**\n";
         }
-        if (threats[k].blockSet[0].ipDetail !== undefined) {
-            md += "Country: **" + threats[k].blockSet[0].ipDetail.countryName + "**\n";
+        if (threat.blockSet[0].ipDetail !== undefined) {
+            md += "Country: **" + threat.blockSet[0].ipDetail.countryName + "**\n";
         }
-        if (threats[k].executiveSummary !== undefined) {
+        if (threat.executiveSummary !== undefined) {
             md += "#### Executive Summary: \n";
         }
-        if (threats[k].executiveSummary !== undefined) {
-            md += threats[k].executiveSummary + "\n";
+        if (threat.executiveSummary !== undefined) {
+            md += threat.executiveSummary + "\n";
         }
 
         md += "#### Threat Types:\n";
-        for (var j = 0; j < threats[k].malwareFamilySet.length; j++){
-            md += "* " + threats[k].malwareFamilySet[j].description + "\n";
+        for (var j = 0; j < threat.malwareFamilySet.length; j++){
+            md += "* " + threat.malwareFamilySet[j].description + "\n";
         }
-        md += '##### Last published: ' + new Date(threats[k].lastPublished) +'\n';
+        md += '##### Last published: ' + new Date(threat.lastPublished) +'\n';
         return md;
     };
+
+    // Returns {severityScore: 'The severity score found', md: 'The markdown for the threat', indicatorFound: 'set to true if indicator was found in threat'}
+    var checkThreat = function(threat, threshold, indicator) {
+        var severityLevel = 0;
+        var md = '';
+        var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
+        res = {}
+        for (var i = 0; i < threat.blockSet.length; i++){
+            if (threat.blockSet[i]['impact']) {
+                var threat_score = calcScore(threat.blockSet[i]['impact']);
+                var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                // if the queried indicator has a severity level, we'll take it
+                if (threat.blockSet[i]['data'] === indicator) {
+                    severityLevel = adjusted_score;
+                    res.indicatorFound = true;
+                    break;
+                }
+                severityLevel = Math.max(severityLevel, adjusted_score);
+            }
+        }
+        var threatLevel = calcVerdict(severityLevel);
+        md += 'Verdict: ' + threatLevel +'\n';
+        md += addMD(threat);
+        res.severityScore = severityLevel;
+        res.md = md;
+        return res;
+    }
 
     var searchUrl = function(url) {
         var tmpargs = {};
@@ -107,25 +161,37 @@ script:
         var md = "## PhishMe URL Reputation for: "+url+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
-            ec.URL = {
-                        Data: url,
-                        Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                      };
+        var threshold = params.urlThreshold;
+        var indicatorFnd = false;
+        if (threats.length && threats.length !== 0) {
+            ec[outputPaths.url] = {
+                Data: url
+            };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['data'].indexOf(url) !== -1) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
+                threatAnalysis = checkThreat(threats[k], threshold, url);
                 threatArray[k] = threats[k].id;
+                md += threatAnalysis['md'];
+                if (threatAnalysis.indicatorFound) {
+                    indicatorFnd = true;
+                    dbotScore = threatAnalysis['severityScore'];
+                } else if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                }
             }
-            ec.URL['PhishMe'] = {};
-            ec.URL.PhishMe['ThreatIDs'] = threatArray;
+
+            ec[outputPaths.url]['PhishMe'] = {};
+            ec[outputPaths.url].PhishMe['ThreatIDs'] = threatArray;
+            ec["PhishMe." + outputPaths.url] = {
+                Data: url,
+                ThreatIDs: threatArray
+            };
+            if (dbotScore === 3) {
+                ec[outputPaths.url].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
+            }
         } else {
             md += "No information found for this url";
         }
@@ -153,11 +219,11 @@ script:
             for(var i = 0; i < threats.length && (countThreats<limit); i++){
                 if (threats[i].hasReport === true){
                     countThreats += 1;
-                    mdBody += addMD(threats, i);
+                    mdBody += addMD(threats[i]);
                 }
             }
 
-            md += "There are {0} threats regarding your string search.\n";
+            md += "There are " + countThreats + " threats regarding your string search.\n";
             md += "### Details from the last campaign\n";
             md += mdBody;
 
@@ -182,31 +248,41 @@ script:
         var md = "## PhishMe email Reputation for: " + sender_name + "\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
-            ec.Email = {
-                'Data': sender_name,
-                'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
+        var threshold = params.emailThreshold;
+        var indicatorFnd = false;
+        var contextEmailKey = 'Email(val.Data && val.Data === obj.Data)';
+        if (threats.length && threats.length !== 0) {
+            ec[contextEmailKey] = {
+                'Data': sender_name
             };
-            ec.Account = {
-                'Account.Email(val.Address && val.Address === obj.Address)': {
-                    'Address': sender_name,
-                    'Malicious': {'Vendor': 'PhishMe', 'Description': 'Match found in PhishMe database'}
-                }
+            ec[outputPaths.email] = {
+                'Address': sender_name
             };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['data'].indexOf(sender_name) !== -1) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
-                    }
-                }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
+                threatAnalysis = checkThreat(threats[k], threshold, sender_name);
                 threatArray[k] = threats[k].id;
+                md += threatAnalysis['md'];
+                if (threatAnalysis.indicatorFound) {
+                    indicatorFnd = true;
+                    dbotScore = threatAnalysis['severityScore'];
+                } else if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                }
             }
-            ec.Email['PhishMe'] = {};
-            ec.Email.PhishMe['ThreatIDs'] = threatArray;
+            ec[contextEmailKey]['PhishMe'] = {};
+            ec[contextEmailKey].PhishMe['ThreatIDs'] = threatArray;
+            ec['PhishMe.' + contextEmailKey] = {
+                Data: sender_name,
+                ThreatIDs: threatArray
+            };
+            if (dbotScore === 3) {
+                ec[outputPaths.email].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
+            }
+
         } else {
             md += "No infomation found for this email";
         }
@@ -225,25 +301,53 @@ script:
         var md = "## PhishMe Hash Reputation for: "+str+"\n";
         var dbotScore = 0;
         var threatArray = [];
+        var threshold = params.fileThreshold;
+        var indicatorFnd = false;
+        var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
         if (threats.length !== 0) {
-            ec.File = {
-                        MD5: str,
-                        Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                        };
+            ec[outputPaths.file] = {
+                MD5: str
+            };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].executableSet.length; i++){
-                    if (threats[0].executableSet[i]['md5Hex'] === str) {
-                        var severityLevel = threats[0].executableSet[i]['severityLevel'];
-                        break;
+                var severityLevel = 0;
+                for (var i = 0; i < threats[k].blockSet.length; i++){
+                    if (threats[k].blockSet[i]['impact']) {
+                        var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                        var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                        // if the queried indicator has a severity level, we'll take it
+                        if (threats[k].executableSet[i] && threats[k].executableSet[i]['md5Hex'] === str) {
+                            severityLevel = adjusted_score;
+                            dbotScore = severityLevel;
+                            indicatorFnd = true;
+                            break;
+                        }
+                        severityLevel = Math.max(severityLevel, adjusted_score);
                     }
                 }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats, k);
+                var threatLevel = calcVerdict(severityLevel);
+                md += 'Verdict: ' + threatLevel +'\n';
+                md += addMD(threats[k]);
                 threatArray[k] = threats[k].id;
+                if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, severityLevel);
+                }
             }
-            ec.File['PhishMe'] = {};
-            ec.File.PhishMe['ThreatIDs'] = threatArray;
+            ec[outputPaths.file]['PhishMe'] = {};
+            ec[outputPaths.file]['ThreatIDs'] = threatArray;
+            ec['PhishMe.' + outputPaths.file] = {
+                    MD5: str,
+                    ThreatIDs: threatArray
+            };
+            if (dbotScore === 3) {
+                ec[outputPaths.file].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
+            }
         } else {
             md += "No information found for this hash";
         }
@@ -262,26 +366,60 @@ script:
         var md = "## PhishMe IP Reputation for: "+ip+"\n";
         var dbotScore = 0;
         var threatArray = [];
-        if (threats.length !== 0) {
-            ec.IP = {
-                      Data: ip,
-                      Malicious: {Vendor: 'PhishMe', Description: 'Match found in PhishMe database'}
-                    };
+        var threshold = params.ipThreshold;
+        var indicatorFnd = false;
+        var threshold_score = calcScore(threshold);
+        if (threshold_score === -1) {
+            throw "Phishme error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+        }
+        if (threats.length && threats.length !== 0) {
+            ec[outputPaths.ip] = {
+                Data: ip
+            };
             for (var k = 0; k < threats.length; k++) {
-                for (var i = 0; i < threats[0].blockSet.length; i++){
-                    if (threats[0].blockSet[i]['ipDetail'] && threats[0].blockSet[i]['ipDetail']['ip']===ip) {
-                        var severityLevel = threats[0].blockSet[i]['impact'];
-                        break;
+                var severityLevel = 0;
+                for (var i = 0; i < threats[k].blockSet.length; i++){
+                    if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
+                        ec[outputPaths.ip].ASN = threats[k].blockSet[i].ipDetail.asn;
+                        ec[outputPaths.ip].GEO = {
+                            "Location": (threats[k].blockSet[i].ipDetail.latitude + ', ' + threats[k].blockSet[i].ipDetail.longitude),
+                            "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
+                        };
+                    }
+                    if (threats[k].blockSet[i]['impact']) {
+                        var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                        var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                        // if the queried indicator has a severity level, we'll take it
+                        if (threats[k].blockSet[i]['ipDetail'] && threats[k].blockSet[i]['ipDetail']['ip']===ip) {
+                            severityLevel = adjusted_score;
+                            dbotScore = severityLevel;
+                            indicatorFnd = true;
+                            break;
+                        }
+                        severityLevel = Math.max(severityLevel, adjusted_score);
                     }
                 }
-                dbotScore = calcScore(severityLevel);
-                md += 'Verdict: ' + calcVerdict(dbotScore) +'\n';
-                md += addMD(threats,k);
+                var threatLevel = calcVerdict(severityLevel);
+                md += 'Verdict: ' + threatLevel +'\n';
+                md += addMD(threats[k]);
                 threatArray[k] = threats[k].id;
+                if (!indicatorFnd) {
+                    dbotScore = Math.max(dbotScore, severityLevel);
+                }
             }
-            ec.IP['PhishMe'] = {};
-            ec.IP.PhishMe['ThreatIDs'] = threatArray;
-
+            ec[outputPaths.ip]['PhishMe'] = {};
+            ec[outputPaths.ip].PhishMe['ThreatIDs'] = threatArray;
+            ec["PhishMe." + outputPaths.ip] = {
+                Data: ip,
+                ThreatIDs: threatArray
+            };
+            if (dbotScore === 3) {
+                ec[outputPaths.ip].Malicious = {
+                    Vendor: 'PhishMe',
+                    Description: 'Match found in PhishMe database'
+                };
+                ec["PhishMe." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
+            }
         } else {
             md += "No information found for this ip";
         }
@@ -312,6 +450,8 @@ script:
                 return 2;
             case 'Major':
                 return 3;
+            default:
+                return -1;
         }
     }
 
@@ -364,47 +504,62 @@ script:
     - name: url
       required: true
       default: true
-      description: Url to check
+      description: URL to get the reputation for
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check URL Reputation
+    - contextPath: PhishMe.URL.Data
+      description: Bad URLs found
+    - contextPath: PhishMe.URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: PhishMe.URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision
+    - contextPath: PhishMe.URL.PhishMe.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    description: Checks the reputation of a URL.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice
-        that you can pass comma-separated multiple values to efficiently retrieve
-        multiple responses.
+      description: Hash of the file to get the reputation of (MD5, SHA-1, or SHA-256).
+        You can pass CSV list to efficiently retrieve multiple responses.
     outputs:
     - contextPath: File.MD5
       description: File MD5
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if file MD5 is malicious
+    - contextPath: PhishMe.File.MD5
+      description: File MD5
+    - contextPath: PhishMe.File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: PhishMe.File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision
+    - contextPath: PhishMe.File.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    description: Checks the reputation of a file hash.
   - name: ip
     arguments:
     - name: ip
@@ -412,21 +567,35 @@ script:
       default: true
       description: IP address to check
     outputs:
-    - contextPath: IP.Address
+    - contextPath: IP.Data
       description: Bad IP Address found
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IPs, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check IP Reputation
+    - contextPath: PhishMe.IP.Data
+      description: Bad IP Address found
+    - contextPath: PhishMe.IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: PhishMe.IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+    - contextPath: PhishMe.IP.PhishMe.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    - contextPath: IP.ASN
+      description: Autonomous System name for the IP.
+    - contextPath: IP.GEO.Location
+      description: Location in format latitude, longitude.
+    - contextPath: IP.GEO.Country
+      description: Country of the IP.
+    description: Check the reputation of an IP address.
   - name: phishme-search
     arguments:
     - name: str
@@ -441,31 +610,42 @@ script:
       description: Number of threats
     - contextPath: PhishMe.String
       description: String to search
-    description: 'Search for extracted strings discovered within malware campaigns.'
+    description: Search for extracted strings identified within malware campaigns.
   - name: email
     arguments:
     - name: email
       required: true
       default: true
-      description: Sender address
+      description: Sender email address to get the reputation of
     outputs:
     - contextPath: Email.Data
       description: Sender address to check.
     - contextPath: Account.Email.Address
-      description: Sender address to check.
+      description: Sender email address to check
     - contextPath: Account.Email.Malicious.Vendor
-      description: For malicious emails, the vendor that made the decision.
+      description: For malicious emails, the vendor that made the decision
     - contextPath: Account.Email.Malicious.Description
-      description: For malicious emails, the reason for the vendor to make the decision.
+      description: For malicious emails, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check if sender address is malicious
+    - contextPath: PhishMe.Email.Data
+      description: Sender address to check.
+    - contextPath: PhishMe.Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision
+    - contextPath: PhishMe.Email.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision
+    - contextPath: PhishMe.Email.PhishMe.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    description: Check the reputation of an email address.
+  runonce: false
+releaseNotes: "Reimplemented the way dBot score is calculated, added 4 threshold parameters to instance
+      configuration, and added new output paths"
 hidden: false
 tests:
-  - No tests
+  - Test - PhishMe Intelligence

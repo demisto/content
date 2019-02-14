@@ -172,7 +172,7 @@ def __delete_incident(client, incident):
         'all': False
     })
 
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete incident failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False
@@ -183,7 +183,7 @@ def __delete_incident(client, incident):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
         return False

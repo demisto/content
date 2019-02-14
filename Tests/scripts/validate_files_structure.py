@@ -28,6 +28,7 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+import secrets
 
 from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
@@ -49,25 +50,25 @@ MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
 
 # file types regexes
-IMAGE_REGEX = ".*.png"
-SCRIPT_YML_REGEX = "{}.*.yml".format(SCRIPTS_DIR)
-SCRIPT_PY_REGEX = "{}.*.py".format(SCRIPTS_DIR)
-SCRIPT_JS_REGEX = "{}.*.js".format(SCRIPTS_DIR)
-INTEGRATION_YML_REGEX = "{}.*.yml".format(INTEGRATIONS_DIR)
-INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
-PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
-TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
-TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
-SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
-WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
-DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
-CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
-LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
-INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
-MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
-REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+IMAGE_REGEX = r".*\.png"
+SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
+PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+SCRIPT_REGEX = r"{}.*script-.*\.yml".format(SCRIPTS_DIR)
+WIDGETS_REGEX = r"{}.*widget-.*\.json".format(WIDGETS_DIR)
+DASHBOARD_REGEX = r"{}.*dashboard-.*\.json".format(DASHBOARDS_DIR)
+CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json".format(CONNECTIONS_DIR)
+CLASSIFIER_REGEX = r"{}.*classifier-.*\.json".format(CLASSIFIERS_DIR)
+LAYOUT_REGEX = r"{}.*layout-.*\.json".format(LAYOUTS_DIR)
+INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
+MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
+REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
@@ -83,6 +84,7 @@ REGEXES_TO_SCHEMA_DIC = {
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "test-playbook",
     SCRIPT_REGEX: "script",
+    SCRIPT_YML_REGEX: "script",
     WIDGETS_REGEX: "widget",
     DASHBOARD_REGEX: "dashboard",
     CONNECTIONS_REGEX: "canvas-context-connections",
@@ -326,19 +328,22 @@ def is_existing_image(file_path):
 
 def get_modified_and_added_files(branch_name, is_circle):
     all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    modified_files, added_files = get_modified_files(all_changed_files_string)
 
-    if is_circle:
-        modified_files, added_files = get_modified_files(all_changed_files_string)
-
-    else:
+    if not is_circle:
         files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-        modified_files, added_files = get_modified_files(files_string)
-        _, added_files_from_branch = get_modified_files(all_changed_files_string)
-        for mod_file in modified_files:
-            if mod_file in added_files_from_branch:
-                added_files.add(mod_file)
-                modified_files = modified_files - set([mod_file])
+        non_committed_modified_files, non_committed_added_files = get_modified_files(files_string)
+        all_changed_files_string = run_git_command("git diff --name-status origin/master")
+        modified_files_from_master, added_files_from_master = get_modified_files(all_changed_files_string)
+
+        for mod_file in modified_files_from_master:
+            if mod_file in non_committed_modified_files:
+                modified_files.add(mod_file)
+
+        for add_file in added_files_from_master:
+            if add_file in non_committed_added_files:
+                added_files.add(add_file)
 
     return modified_files, added_files
 
@@ -347,14 +352,27 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('fromversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def changed_command_name_or_arg(file_path):
@@ -382,15 +400,41 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
-    is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
+    file_extension = os.path.splitext(file_path)[1]
+    version_number = -1
+    reputations_valid = True
+    if file_extension == '.yml':
+        yaml_dict = get_json(file_path)
+        version_number = yaml_dict.get('commonfields', {}).get('version')
+        # some files like playbooks do not have commonfields key
+        if not version_number:
+            version_number = yaml_dict.get('version')
+    elif file_extension == '.json':
+        if checked_type(file_path):
+            file_name = os.path.basename(file_path)
+            with open(file_path) as json_file:
+                json_dict = json.load(json_file)
+                if file_name == "reputations.json":
+                    reputations_valid = validate_reputations(json_dict)
+                else:
+                    version_number = json_dict.get('version')
 
-    if is_incorrect_version or is_incorrect_version_secondary:
+    if version_number != -1 or not reputations_valid:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
         return True
-
     return False
+
+
+def validate_reputations(json_dict):
+    is_valid = True
+    reputations = json_dict.get('reputations')
+    for reputation in reputations:
+        internal_version = reputation.get('version')
+        if internal_version != -1:
+            object_id = reputation.get('id')
+            print_error("Reputation object with id {} must have version -1".format(object_id))
+            is_valid = False
+    return is_valid
 
 
 def validate_fromversion_on_modified(file_path):
@@ -464,9 +508,22 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 
 def validate_committed_files(branch_name, is_circle):
+
+    secrets_found, secrets_found_string = secrets.get_secrets(branch_name, is_circle)
+    if secrets_found_string:
+        print_error(secrets_found_string)
+
     modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
+        try:
+            id_set = json.load(id_set_file)
+        except ValueError, ex:
+            if "Expecting property name" in ex.message:
+                print_error("You probably merged from master and your id_set.json has conflicts. "
+                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                return
+            else:
+                raise ex
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
@@ -479,7 +536,7 @@ def validate_committed_files(branch_name, is_circle):
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
                                               script_set, test_playbook_set, is_circle) or has_schema_problem
 
-    if has_schema_problem:
+    if has_schema_problem or secrets_found:
         sys.exit(1)
 
 
@@ -514,7 +571,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
     has_schema_problem = False
     for file_path in added_files:
         print "Validating {}".format(file_path)
-        if not validate_schema(file_path):
+        if not validate_schema(file_path) or validate_version(file_path):
             has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):

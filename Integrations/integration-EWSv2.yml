@@ -109,7 +109,7 @@ script:
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest, \
-        AutoDiscoverFailed
+        AutoDiscoverFailed, ErrorNameResolutionNoResults
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -402,7 +402,7 @@ script:
                        repr((self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
 
             exchangelib.Folder.__repr__ = repr1
-            exchangelib.folders.Inbox.__repr__ = repr2
+            exchangelib.folders.Inbox.__repr__ = exchangelib.folders.JunkEmail.__repr__ = repr2
             exchangelib.folders.Root.__repr__ = repr3
 
         start_logging()
@@ -585,7 +585,6 @@ script:
             return result
 
         def call(self, query, mailboxes):
-            query = query.replace(".", "\\.")
             if self.protocol.version.build < EXCHANGE_2013:
                 raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
             elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
@@ -610,6 +609,46 @@ script:
             add_xml_child(element, "m:ResultType", "PreviewOnly")
 
             return element
+
+
+    class ExpandGroup(EWSService):
+        SERVICE_NAME = 'ExpandDL'
+        element_container_name = '{%s}DLExpansion' % MNS
+
+        @staticmethod
+        def parse_element(element):
+            return {
+                MAILBOX: element.find("{%s}EmailAddress" % TNS).text if element.find("{%s}EmailAddress" % TNS) is not None else None,
+                'displayName': element.find("{%s}Name" % TNS).text if element.find("{%s}Name" % TNS) is not None else None
+            }
+
+        def call(self, email_address):
+            if self.protocol.version.build < EXCHANGE_2010:
+                raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
+            try:
+                elements = self._get_elements(payload=self.get_payload(email_address))
+                return map(lambda x: self.parse_element(x), elements)
+            except ErrorNameResolutionNoResults:
+                demisto.results("No results were found.")
+                sys.exit()
+
+        def get_payload(self, email_address):
+            element = create_element('m:%s' % self.SERVICE_NAME,)
+            mailbox_element = create_element('m:Mailbox')
+            add_xml_child(mailbox_element, 't:EmailAddress', email_address)
+            element.append(mailbox_element)
+            return element
+
+
+    def get_expanded_group(protocol, email_address):
+        group_members = ExpandGroup(protocol=protocol).call(email_address)
+        group_details = {
+            "name": email_address,
+            "members": group_members
+        }
+        entry_for_object = get_entry_for_object("Expanded group", 'EWS.ExpandGroup', group_details)
+        entry_for_object['HumanReadable'] = tableToMarkdown('Group Members', group_members)
+        return entry_for_object
 
 
     def get_searchable_mailboxes(protocol):
@@ -1184,7 +1223,13 @@ script:
         return results
 
 
-    def search_items_in_mailbox(query, folder_path='', limit=100, target_mailbox=None, is_public=None):
+    def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None, is_public=None):
+        if not query and not message_id:
+            return_error("Missing required argument. Provide query or message-id")
+
+        if message_id and message_id[0] != '<' and message_id[-1] != '>' :
+            message_id = '<{}>'.format(message_id)
+
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         limit = int(limit)
         if folder_path:
@@ -1197,7 +1242,10 @@ script:
         for folder in folders:
             if Message not in folder.supported_item_models:
                 continue
-            items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            if query:
+                items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            else:
+                items_qs = folder.filter(message_id=message_id).only(*map(lambda x: x.name, Message.FIELDS))
             items += get_limited_number_of_messages_from_qs(items_qs, limit)
             if len(items) >= limit:
                 break
@@ -1389,7 +1437,6 @@ script:
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         is_public = is_default_folder(folder_path, is_public)
         folder = folder_to_context_entry(get_folder_by_path(account, folder_path, is_public))
-
         return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
 
     def folder_to_context_entry(f):
@@ -1543,6 +1590,14 @@ script:
         demisto.results('ok')
 
 
+    def get_protocol():
+        if AUTO_DISCOVERY:
+            protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
+        else:
+            protocol = config.protocol
+        return protocol
+
+
     def encode_and_submit_results(obj):
         demisto.results(str_to_unicode(obj))
 
@@ -1551,6 +1606,7 @@ script:
     args = prepare_args(demisto.args())
     fix_2010()
     try:
+        protocol = get_protocol()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
@@ -1561,16 +1617,8 @@ script:
         elif demisto.command() == 'ews-delete-attachment':
             encode_and_submit_results(delete_attachments_for_message(**args))
         elif demisto.command() == 'ews-get-searchable-mailboxes':
-            if AUTO_DISCOVERY:
-                protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
-            else:
-                protocol = config.protocol
             encode_and_submit_results(get_searchable_mailboxes(protocol))
         elif demisto.command() == 'ews-search-mailboxes':
-            if AUTO_DISCOVERY:
-                protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
-            else:
-                protocol = config.protocol
             encode_and_submit_results(search_mailboxes(protocol, **args))
         elif demisto.command() == 'ews-move-item-between-mailboxes':
             encode_and_submit_results(move_item_between_mailboxes(**args))
@@ -1610,6 +1658,8 @@ script:
             encode_and_submit_results(remove_compliance_search(**args))
         elif demisto.command() == 'ews-get-autodiscovery-config':
             encode_and_submit_results(get_autodiscovery_config())
+        elif demisto.command() == 'ews-expand-group':
+            encode_and_submit_results(get_expanded_group(protocol, **args))
 
 
     except Exception, e:
@@ -1896,7 +1946,6 @@ script:
   - name: ews-search-mailbox
     arguments:
     - name: query
-      required: true
       description: 'The search query string. Syntax here: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
     - name: folder-path
       description: The folder path to search in. If empty - search over all the folders
@@ -1912,6 +1961,8 @@ script:
       - "True"
       - "False"
       description: Is the folder a Public Folder?
+    - name: message-id
+      description: The message id of email. Will be ignored if query argument is provided.
     outputs:
     - contextPath: EWS.Items.itemId
       description: The email item id.
@@ -2341,9 +2392,16 @@ script:
     arguments: []
     description: Returns the auto-discovery information. Can be used to configurate
       Exchange server manually.
+  - name: ews-expand-group
+    arguments:
+    - name: email-address
+      required: true
+      description: Email address of the group to expand
+    description: Expands a distribution list to display all members
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "Added option to search by message-id in ews-search-mailbox"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
