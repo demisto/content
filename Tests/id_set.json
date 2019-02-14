@@ -16573,8 +16573,13 @@
             "Zscaler Test": {
                 "name": "Zscaler Test", 
                 "implementing_scripts": [
+<<<<<<< HEAD
                     "GenerateUUID", 
                     "isError"
+=======
+                    "DeleteContext", 
+                    "Sleep"
+>>>>>>> Complete playbook - May need updating once AzureCompute integration is updated
                 ], 
                 "command_to_integration": {
                     "zscaler-blacklist-url": "", 
