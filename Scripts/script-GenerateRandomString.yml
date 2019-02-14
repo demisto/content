@@ -1,6 +1,6 @@
 commonfields:
   id: GenerateRandomString
-  version: 23
+  version: -1
 name: GenerateRandomString
 comment: |-
   Generates random string
