@@ -13174,6 +13174,16 @@
             }
         }, 
         {
+            "FilterByList - Test": {
+                "name": "FilterByList - Test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "FilterByList"
+                ]
+            }
+        }, 
+        {
             "FireEye HX Test": {
                 "name": "FireEye HX Test", 
                 "implementing_scripts": [
@@ -15776,16 +15786,6 @@
                     "zscaler-get-categories": "", 
                     "zscaler-category-add-url": ""
                 }
-            }
-        }, 
-        {
-            "FilterByList - Test": {
-                "name": "FilterByList - Test", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext", 
-                    "FilterByList"
-                ]
             }
         }
     ]
