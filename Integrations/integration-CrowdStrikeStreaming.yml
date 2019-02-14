@@ -339,6 +339,7 @@ script:
 
     import json
     import requests
+    import base64
     from distutils.util import strtobool
 
     # Disable insecure warnings
@@ -348,7 +349,6 @@ script:
 
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
-    TOKEN = demisto.params().get('token')
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     # Should we use SSL
@@ -357,8 +357,9 @@ script:
     FETCH_TIME = demisto.params().get('fetch_time', '3 days')
     # Headers to be sent in requests
     HEADERS = {
-        'content-type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
     }
     # Remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
@@ -370,9 +371,11 @@ script:
     ''' KEY DICTIONARY '''
 
     DETECTIONS_BASE_KEY_MAP = {
-        'Detections.device.hostname': 'System',
-        'Detections.device.cid': 'CustomerIDString',
-        'Detections.hostinfo.domain': 'MachineDomain',
+        'device.hostname': 'System',
+        'device.cid': 'CustomerIDString',
+        'hostinfo.domain': 'MachineDomain',
+        'detection_id': 'DetectionID',
+        'created_timestamp': 'ProcessStartTime'
     }
 
     DETECTIONS_BEHAVIORS_KEY_MAP = {
@@ -429,12 +432,6 @@ script:
             'Index': 2
         },
         {
-            'Path': 'parent_details.parent_process_graph_id',
-            'NewKey': 'ProcessStartTime',
-            'Delim': ':',
-            'Index': 2
-        },
-        {
             'Path': 'triggering_process_graph_id',
             'NewKey': 'ProcessID',
             'Delim': ':',
@@ -444,21 +441,23 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS):
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, is_full_url_arg=False, safe=False):
         # A wrapper for requests lib to send our requests and handle requests and responses better
+        url = url_suffix if is_full_url_arg else SERVER + url_suffix
         res = requests.request(
             method,
-            SERVER + url_suffix,
+            url,
             verify=USE_SSL,
             params=params,
             data=data,
             headers=headers,
-            auth=(USERNAME, PASSWORD)
         )
         # Handle error responses gracefully
-        if res.status_code not in {200}:
+        if res.status_code not in {200, 201}:
+            if safe:
+                return None
             return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
-        demisto.info("#### RESULT: {}".format(str(res.json())))
+        demisto.info("#### RESULT: {}".format(json.dumps(res.json(), indent=4, sort_keys=True)))
         return res.json()
 
 
@@ -473,14 +472,13 @@ script:
         }
 
 
-    def behavior_to_incident(behavior, raw_response):
-        demisto.info("\n\n #### IN behavior_to_incident")
+    def behavior_to_incident(behavior, resource):
         raw_labels = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
         raw_labels.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
         for path, new_key in DETECTIONS_BASE_KEY_MAP.iteritems():
-            raw_labels[new_key] = demisto.get(raw_response, path)
+            raw_labels[new_key] = demisto.get(resource, path)
         labels = [{'Type': k, 'Value': v} for k, v in raw_labels.iteritems()]
-        demisto.info("\n\n #### labels value: {}".format(json.dumps(labels, indent=4, sort_keys=True)))
+        # demisto.info("\n\n #### labels value: {}".format(json.dumps(labels, indent=4, sort_keys=True)))
         incident = {
             'name': 'Behavior id: ' + str(behavior.get('behavior_id')),
             'occurred': behavior.get('timestamp'),
@@ -533,27 +531,50 @@ script:
 
     ''' COMMAND SPECIFIC FUNCTIONS '''
 
-    def get_detections(last_behavior_time):
+    def get_token():
+        body = {
+            'client_id': USERNAME,
+            'client_secret': PASSWORD
+        }
+        headers = {
+            'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
+        }
+        token_res = http_request('POST', 'https://api.crowdstrike.com/oauth2/token', data=body, headers=headers, is_full_url_arg=True, safe=True)
+        if not token_res:
+            return None
+        return token_res.get('access_token')
+
+
+    def get_detections(last_behavior_time, token):
         # The service endpoint to request from
-        endpoint_url = '/detects/queries/detects/v1'
+        endpoint_url = 'https://api.crowdstrike.com/detects/queries/detects/v1'
         # Dictionary of params for the request
         params = {
             'filter': "first_behavior:>'{0}'".format(last_behavior_time),
             'sort': 'first_behavior.asc'
         }
-        # Send a request using our http_request wrapper
-        response = http_request('GET', endpoint_url, params)
-        # Check if response contains errors
+        headers = {'Authorization': 'Bearer ' + token}
+        response = http_request('GET', endpoint_url, params, headers=headers, is_full_url_arg=True)
+        # TODO: Check if response contains errors
         if response.get('errors'):
             return_error(response.get('errors'))
         return response
 
 
-    def get_detections_entities(detections_ids):
+    def get_detections_entities(detections_ids, token):
         ids_json = {'ids': detections_ids}
         demisto.info("#### Data: {0}".format(json.dumps(ids_json)))
         if detections_ids:
-            response = http_request('POST', '/detects/entities/summaries/GET/v1', data=json.dumps(ids_json))
+            headers = {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+            response = http_request(
+                'POST',
+                'https://api.crowdstrike.com/detects/entities/summaries/GET/v1',
+                data=json.dumps(ids_json),
+                headers=headers,
+                is_full_url_arg=True)
             return response
         return detections_ids
 
@@ -572,7 +593,8 @@ script:
         input_args['source'] = args.get('source')
         input_args['description'] = args.get('description')
         payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
-        return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=None)
+        headers = {'Authorization': HEADERS['Authorization']}
+        return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
     # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
     # TODO: Check how an error response looks like
 
@@ -631,7 +653,8 @@ script:
             'description': args.get('description')
         }
         payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
-        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload, headers=None)
+        headers = {'Authorization': HEADERS['Authorization']}
+        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload, headers=headers)
     # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
 
 
@@ -687,8 +710,11 @@ script:
         last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
 
         incidents = []
-        detections_ids = demisto.get(get_detections(last_fetch), 'resources')
-        raw_res = get_detections_entities(detections_ids)
+        token = get_token()
+        if not token:
+            raise Exception('Authorization error: User has no authorization to create a token.')
+        detections_ids = demisto.get(get_detections(last_fetch, token), 'resources')
+        raw_res = get_detections_entities(detections_ids, token)
         demisto.info('\n#### Items: {}\n'.format(raw_res))
         demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
         if "resources" in raw_res:
@@ -703,7 +729,7 @@ script:
                     incidents.append(incident)
 
         demisto.setLastRun({'first_behavior_time': last_fetch})
-        demisto.incidents(incidents)
+        return incidents
 
 
     def create_ioc_command():
@@ -753,7 +779,7 @@ script:
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
         # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents()
+        demisto.incidents(fetch_incidents())
     elif demisto.command() == 'crowdstrike-create-ioc':
         demisto.results(create_ioc_command())
     elif demisto.command() == 'crowdstrike-search-iocs':
