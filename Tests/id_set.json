@@ -2192,6 +2192,14 @@
             }
         }, 
         {
+            "GenerateRandomString": {
+                "name": "GenerateRandomString", 
+                "tests": [
+                    "RandomStringGenerateTest"
+                ]
+            }
+        }, 
+        {
             "GenerateUUID": {
                 "name": "GenerateUUID"
             }
@@ -14499,6 +14507,15 @@
             }
         }, 
         {
+            "RandomStringGenerateTest": {
+                "name": "RandomStringGenerateTest", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "GenerateRandomString"
+                ]
+            }
+        }, 
+        {
             "RasterizeImageTest": {
                 "name": "RasterizeImageTest", 
                 "implementing_scripts": [
@@ -15773,15 +15790,6 @@
                     "zscaler-get-categories": "", 
                     "zscaler-category-add-url": ""
                 }
-            }
-        }, 
-        {
-            "RandomStringGenerateTest": {
-                "name": "RandomStringGenerateTest", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "GenerateRandomString"
-                ]
             }
         }
     ]
