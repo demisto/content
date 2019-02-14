@@ -1901,6 +1901,5 @@ script:
     description: Get the results of a specified group export
   dockerimage: demisto/gvault
   runonce: false
-releaseNotes: "-"
 tests:
   - Google-Vault-Generic-Test

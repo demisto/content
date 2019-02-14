@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "HighlightWords_Test"
+        },
+        {
             "playbookID": "StringContainsArray_test"
         },
         {
@@ -17,6 +20,9 @@
         {
             "integrations": "Alexa Rank Indicator",
             "playbookID": "Alexa Test Playbook"
+        },
+        {
+            "playbookID": "UnEscapeURLs-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -85,6 +91,15 @@
             "nightly" : true
         },
         {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX",
+                "VxStream"
+            ],
+            "playbookID" : "detonate_file_-_generic_test"
+        },
+        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
@@ -129,13 +144,15 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 300
+            "timeout": 1000,
+            "nightly": true
         },
         {
           "integrations": "Tenable.io",
@@ -202,7 +219,16 @@
         },
         {
             "integrations": "IntSights",
+            "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
+            "instance_names": "intsights_standard_account",
+            "nightly": true,
+            "timeout": 500
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Mssp Test",
+            "instance_names": "intsights_mssp_account",
             "nightly": true,
             "timeout": 500
         },
@@ -248,6 +274,9 @@
           "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
+        },
+        {
+            "playbookID": "TransformersTestPlaybook"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -367,6 +396,10 @@
             "timeout": 700
         },
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD Upload File"
+        },
+        {
             "playbookID": "exporttocsv_script_test"
         },
         {
@@ -443,8 +476,8 @@
             "timeout": 300
         },
         {
-            "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
+            "integrations": "Symantec Endpoint Protection V2",
+            "playbookID": "SymantecEndpointProtection_Test"
         },
         {
             "integrations": "carbonblackprotection",
@@ -808,11 +841,6 @@
             "playbookID": "Test-Detonate URL - Phish.AI"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 1000
-        },
-        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -834,12 +862,15 @@
             "nightly": true
         },
         {
-            "integrations": "whois",
             "playbookID": "whois_test"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "integrations": "Check Point Sandblast",
+            "playbookID": "Sandblast_malicious_test"
         },
         {
             "playbookID": "TestMatchRegex"
@@ -869,7 +900,12 @@
         {
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
-          "timeout": 600
+          "timeout": 700
+        },
+        {
+            "integrations" : "VxStream",
+            "playbookID" : "Test-Detonate URL - Crowdstrike",
+            "timeout" : 1200
         },
         {
            "playbookID": "Detonate File - Generic Test",
@@ -936,13 +972,13 @@
         },
         {
             "playbookID": "Phishing test - attachment",
-            "timeout": 500,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -952,8 +988,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Palo Alto Minemeld"
             ]
         },
         {
@@ -961,10 +997,17 @@
             "playbookID": "DUO Test Playbook"
         },
         {
-          "playbookID": "SLA Scripts - Test"
+            "playbookID": "SLA Scripts - Test"
+        },
+        {
+            "playbookID": "PcapHTTPExtractor-Test"
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "integrations": "mysql",
+            "playbookID": "MySQL Test"
         },
         {
             "integrations": "Phishme Intelligence",
@@ -975,35 +1018,50 @@
             "playbookID": "GoogleResourceManager-Test",
             "timeout": 500,
             "nightly": true
+        },
+        {
+            "integrations": "Freshdesk",
+            "playbookID": "Freshdesk-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "playbookID": "Autoextract - Test"
         }
     ],
     "skipped_tests": {
-        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
-        "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
-        "FireEye HX Test": "Test unstable - to be fixed by @noac",
-        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out"
+        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
+        "Tenable.io test": "Error 409 ISSUE OPENED",
+        "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
+        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
+        "RedLockTest": "RedLock has API issues - opened an issue (15493)",
+        "GsuiteTest": "error was fixed only on server master and not on ",
+        "DUO Test Playbook": "DUO integration is failing",
+        "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
+        "CreatePhishingClassifierMLTest": "fails",
+        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
+        "cisco-ise-test-playbook": "fails",
+        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
     },
     "skipped_integrations": {
-        "FortiGate": "License expired, in the process of getting new one",
-        "Whois": "Server currently has Whois by default, need to deprecate",
-        "Skyformation": "Server installed by skyformation is down, waiting on reply",
-        "icebrg": "Requires BD",
-        "Anomali ThreatStream": "Instance is down",
-        "Cylance Protect": "Under development",
+        "Jask": "Cannot access instance token not valid (issue 12900)",
+        "FortiGate": "License expired, in the process of getting new one (issue 14723)",
+        "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
+        "icebrg": "Requires BD (issue 14312)",
+        "Cylance Protect": "Under development (issue 15244)",
         "VMware": "DevOps investigation",
-        "Farsight DNSDB": "No instance",
-        "Symantec MSS": "No instance",
-        "Remedy AR": "DevOps investigation",
+        "Farsight DNSDB": "No instance (issue 15512)",
+        "Symantec MSS": "No instance (issue 15513)",
+        "Remedy AR": "DevOps investigation (issue 15514)",
         "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
@@ -1019,8 +1077,11 @@
         "carbonblackprotection": "License expired",
         "Lastline": "Out of quota",
         "Netskope": "instance is down",
-        "Joe Security": "Reached number of allowed submissions per month, untill 1/2/19",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota"
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota",
+        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
+        "WildFire": "Quota is temporarily over due to circle ci issues",
+        "Freshdesk": "Trial account expired",
+        "Tanium": "Instance is not stable (issue 15497)"
     },
     "nigthly_integrations": [
         "Lastline",

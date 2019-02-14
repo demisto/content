@@ -9,6 +9,7 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
 for that task.
 """
+import glob
 import sys
 try:
     import yaml
@@ -27,8 +28,9 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+import secrets
 
-from update_id_set import get_script_data, get_playbook_data, get_integration_data
+from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
 IMAGE_MAX_SIZE = 10 * 1024  # 10kB
@@ -48,34 +50,41 @@ MISC_DIR = "Misc"
 CONNECTIONS_DIR = "Connections"
 
 # file types regexes
-INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
-PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
-TEST_SCRIPT_REGEX = "{}.*script-.*.yml".format(TEST_PLAYBOOKS_DIR)
-TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
-SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
-WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
-DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
-CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
-LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
-INCIDENT_FIELD_REGEX = "{}.*incidentfield-.*.json".format(INCIDENT_FIELDS_DIR)
-MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
-REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
+IMAGE_REGEX = r".*\.png"
+SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
+PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+SCRIPT_REGEX = r"{}.*script-.*\.yml".format(SCRIPTS_DIR)
+WIDGETS_REGEX = r"{}.*widget-.*\.json".format(WIDGETS_DIR)
+DASHBOARD_REGEX = r"{}.*dashboard-.*\.json".format(DASHBOARDS_DIR)
+CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json".format(CONNECTIONS_DIR)
+CLASSIFIER_REGEX = r"{}.*classifier-.*\.json".format(CLASSIFIERS_DIR)
+LAYOUT_REGEX = r"{}.*layout-.*\.json".format(LAYOUTS_DIR)
+INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
+MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
+REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX,
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
+                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r100']
+KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
+    INTEGRATION_YML_REGEX: "integration",
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "test-playbook",
     SCRIPT_REGEX: "script",
+    SCRIPT_YML_REGEX: "script",
     WIDGETS_REGEX: "widget",
     DASHBOARD_REGEX: "dashboard",
     CONNECTIONS_REGEX: "canvas-context-connections",
@@ -95,29 +104,23 @@ class LOG_COLORS:
     NATIVE = '\033[m'
     RED = '\033[01;31m'
     GREEN = '\033[01;32m'
-    YELLOW = '\033[0;33m'
 
 
 # print srt in the given color
-def print_color(str, color):
-    print(color + str + LOG_COLORS.NATIVE)
+def print_color(msg, color):
+    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
 
 
-def print_warning(warning_str):
-    print_color(warning_str, LOG_COLORS.YELLOW)
-
-
-def run_bash_command(command):
+def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
     output, err = p.communicate()
     if err:
         print_error("Failed to run git command " + command)
         sys.exit(1)
-
     return output
 
 
@@ -140,11 +143,13 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
+        if file_path.endswith('.js') or file_path.endswith('.py'):
+            continue
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
-        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+        elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
-        if file_status.lower() not in KNOWN_FILE_STATUSES:
+        elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
 
@@ -204,7 +209,7 @@ def validate_schema(file_path, matching_regex=None):
 
 
 def is_release_branch():
-    diff_string_config_yml = run_bash_command("git diff origin/master .circleci/config.yml")
+    diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
     if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
         return True
 
@@ -212,7 +217,7 @@ def is_release_branch():
 
 
 def changed_id(file_path):
-    change_string = run_bash_command("git diff HEAD {}".format(file_path))
+    change_string = run_git_command("git diff HEAD {}".format(file_path))
     if re.search("[+-](  )?id: .*", change_string):
         print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
@@ -221,7 +226,7 @@ def changed_id(file_path):
 
 
 def is_added_required_fields(file_path):
-    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or \
             re.search("\+[ ]+required: true", change_string):
         print_error("You've added required fields in the integration file {}".format(file_path))
@@ -279,6 +284,13 @@ def is_test_in_conf_json(file_path):
 
 
 def oversize_image(file_path):
+    if re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+        if os.path.getsize(file_path) > IMAGE_MAX_SIZE:
+            print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
+            return True
+
+        return False
+
     data_dictionary = get_json(file_path)
     image = data_dictionary.get('image', '')
     if image == '':
@@ -291,21 +303,47 @@ def oversize_image(file_path):
     return False
 
 
+def is_existing_image(file_path):
+    is_image_in_yml = False
+    is_image_in_package = False
+    if get_json(file_path).get('image'):
+        is_image_in_yml = True
+
+    if not re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        package_path = os.path.dirname(file_path)
+        image_path = glob.glob(package_path + '/*.png')
+        if image_path:
+            if is_image_in_yml:
+                print_error("You have added an image both in the package and in the yml "
+                            "file, please update the package {}".format(package_path))
+                return False
+
+            is_image_in_package = True
+
+    if not(is_image_in_package or is_image_in_yml):
+        print_error("You have failed to add an image in the yml/package for {}".format(file_path))
+
+    return is_image_in_package or is_image_in_yml
+
+
 def get_modified_and_added_files(branch_name, is_circle):
-    all_changed_files_string = run_bash_command("git diff --name-status origin/master...{}".format(branch_name))
+    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    modified_files, added_files = get_modified_files(all_changed_files_string)
 
-    if is_circle:
-        modified_files, added_files = get_modified_files(all_changed_files_string)
+    if not is_circle:
+        files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-    else:
-        files_string = run_bash_command("git diff --name-status --no-merges")
+        non_committed_modified_files, non_committed_added_files = get_modified_files(files_string)
+        all_changed_files_string = run_git_command("git diff --name-status origin/master")
+        modified_files_from_master, added_files_from_master = get_modified_files(all_changed_files_string)
 
-        modified_files, added_files = get_modified_files(files_string)
-        _, added_files_from_branch = get_modified_files(all_changed_files_string)
-        for mod_file in modified_files:
-            if mod_file in added_files_from_branch:
-                added_files.add(mod_file)
-                modified_files = modified_files - set([mod_file])
+        for mod_file in modified_files_from_master:
+            if mod_file in non_committed_modified_files:
+                modified_files.add(mod_file)
+
+        for add_file in added_files_from_master:
+            if add_file in non_committed_added_files:
+                added_files.add(add_file)
 
     return modified_files, added_files
 
@@ -314,18 +352,31 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('fromversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def changed_command_name_or_arg(file_path):
-    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
     deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
     added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
     if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
@@ -337,7 +388,7 @@ def changed_command_name_or_arg(file_path):
 
 
 def changed_docker_image(file_path):
-    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
     is_docker_added = re.search("\+([ ]+)?dockerimage: .*", change_string)
     is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", change_string)
     if is_docker_added or is_docker_deleted:
@@ -349,19 +400,45 @@ def changed_docker_image(file_path):
 
 
 def validate_version(file_path):
-    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
-    is_incorrect_version = re.search("\+([ ]+)?version: (!-1)", change_string)
-    is_incorrect_version_secondary = re.search("\+([ ]+)?\"version\": (!-1)", change_string)
+    file_extension = os.path.splitext(file_path)[1]
+    version_number = -1
+    reputations_valid = True
+    if file_extension == '.yml':
+        yaml_dict = get_json(file_path)
+        version_number = yaml_dict.get('commonfields', {}).get('version')
+        # some files like playbooks do not have commonfields key
+        if not version_number:
+            version_number = yaml_dict.get('version')
+    elif file_extension == '.json':
+        if checked_type(file_path):
+            file_name = os.path.basename(file_path)
+            with open(file_path) as json_file:
+                json_dict = json.load(json_file)
+                if file_name == "reputations.json":
+                    reputations_valid = validate_reputations(json_dict)
+                else:
+                    version_number = json_dict.get('version')
 
-    if is_incorrect_version or is_incorrect_version_secondary:
+    if version_number != -1 or not reputations_valid:
         print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
         return True
-
     return False
 
 
+def validate_reputations(json_dict):
+    is_valid = True
+    reputations = json_dict.get('reputations')
+    for reputation in reputations:
+        internal_version = reputation.get('version')
+        if internal_version != -1:
+            object_id = reputation.get('id')
+            print_error("Reputation object with id {} must have version -1".format(object_id))
+            is_valid = False
+    return is_valid
+
+
 def validate_fromversion_on_modified(file_path):
-    change_string = run_bash_command("git diff HEAD {0}".format(file_path))
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
     is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
     is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
 
@@ -418,8 +495,10 @@ def playbook_valid_in_id_set(file_path, playbook_set):
     return is_valid_in_id_set(file_path, playbook_data, playbook_set)
 
 
-def script_valid_in_id_set(file_path, script_set):
-    script_data = get_script_data(file_path)
+def script_valid_in_id_set(file_path, script_set, script_data=None):
+    if script_data is None:
+        script_data = get_script_data(file_path)
+
     return is_valid_in_id_set(file_path, script_data, script_set)
 
 
@@ -429,10 +508,22 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 
 def validate_committed_files(branch_name, is_circle):
-    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
 
+    secrets_found, secrets_found_string = secrets.get_secrets(branch_name, is_circle)
+    if secrets_found_string:
+        print_error(secrets_found_string)
+
+    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
     with open('./Tests/id_set.json', 'r') as id_set_file:
-        id_set = json.load(id_set_file)
+        try:
+            id_set = json.load(id_set_file)
+        except ValueError, ex:
+            if "Expecting property name" in ex.message:
+                print_error("You probably merged from master and your id_set.json has conflicts. "
+                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                return
+            else:
+                raise ex
 
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
@@ -445,12 +536,17 @@ def validate_committed_files(branch_name, is_circle):
     has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
                                               script_set, test_playbook_set, is_circle) or has_schema_problem
 
-    if has_schema_problem:
+    if has_schema_problem or secrets_found:
         sys.exit(1)
 
 
-def is_valid_id(objects_set, compared_id, file_path):
-    from_version = get_from_version(file_path)
+def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
+    if compared_obj_data is None:
+        from_version = get_from_version(file_path)
+
+    else:
+        value = compared_obj_data.values()[0]
+        from_version = value.get('fromversion', '0.0.0')
 
     data_dict = get_json(file_path)
     if data_dict.get('name') != compared_id:
@@ -475,7 +571,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
     has_schema_problem = False
     for file_path in added_files:
         print "Validating {}".format(file_path)
-        if not validate_schema(file_path):
+        if not validate_schema(file_path) or validate_version(file_path):
             has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
@@ -493,7 +589,11 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
             if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
                 has_schema_problem = True
 
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path) or not is_existing_image(file_path):
+                has_schema_problem = True
+
             if is_circle and not integration_valid_in_id_set(file_path, integration_set):
                 has_schema_problem = True
 
@@ -505,6 +605,23 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
                 has_schema_problem = True
 
             if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
+                has_schema_problem = True
+
+        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
+                has_schema_problem = True
+
+            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
+                                                 yml_path, script_data):
                 has_schema_problem = True
 
     return has_schema_problem
@@ -524,34 +641,46 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
             if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
                 has_schema_problem = True
 
-        if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
             if is_circle and not script_valid_in_id_set(file_path, script_set):
                 has_schema_problem = True
 
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not script_valid_in_id_set(file_path, script_set)) or \
                     changed_docker_image(file_path):
                 has_schema_problem = True
 
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
-                    changed_docker_image(file_path):
+                    changed_docker_image(file_path) or not is_existing_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+            if oversize_image(file_path):
+                has_schema_problem = True
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if changed_command_name_or_arg(yml_path) or changed_context(yml_path) or \
+                    (is_circle and not script_valid_in_id_set(yml_path, script_set, script_data)):
                 has_schema_problem = True
 
     return has_schema_problem
 
 
 def validate_all_files():
-    id_list = []
-    found_wrong_name = False
-    duplicated_id = False
     wrong_schema = False
 
     for regex in CHECKED_TYPES_REGEXES:
@@ -568,20 +697,8 @@ def validate_all_files():
                 if not validate_schema(file_path):
                     print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
-                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX,
-                                                                                file_path, re.IGNORECASE):
-                    _id = get_script_or_integration_id(file_path)
-                    if _id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
-                        duplicated_id = True
-                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX,
-                                                                                  file_path, re.IGNORECASE):
-                    _id = collect_ids(file_path)
-                    if _id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
-                        duplicated_id = True
 
-    if wrong_schema or found_wrong_name or duplicated_id:
+    if wrong_schema:
         sys.exit(1)
 
 
@@ -629,7 +746,7 @@ def main():
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
     '''
-    branches = run_bash_command("git branch")
+    branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 

@@ -27,8 +27,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Default ticket type of commands. Can be incident, sc_request, problem or
-    change_reuquest. Commands also take ticket_type argument
+- display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   defaultvalue: incident
   type: 0
@@ -43,12 +42,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: The query to use when fetching ServiceNow incidents
+- display: The query to use when fetching incidents
   name: sysparm_query
   defaultvalue: stateNOT IN6,7
   type: 0
   required: false
-- display: How many ServiceNow incidents to fetch each time
+- display: How many incidents to fetch each time
   name: fetch_limit
   defaultvalue: "10"
   type: 0
@@ -167,22 +166,30 @@ script:
         '100': 'Missing'
     }
 
+
+    # Map SNOW severity to Demisto severity for incident creation
+    SEVERITY_MAP = {
+        '1': 3,
+        '2': 2,
+        '3': 1
+    }
+
     DEFAULTS = {
         'limit':10,
         'offset':0,
         'fetch_limit':10
     }
 
-    SNOW_ARGS = ["active", "activity_due", "short_description", "additional_assignee_list", "approval_history", "approval_set", "assigned_to", "assignment_group",
-         "business_duration", "business_service", "business_stc", "calendar_duration", "calendar_stc", "caller_id", "caused_by", "close_code", "close_notes",
-         "closed_at", "closed_by", "cmdb_ci", "comments", "comments_and_work_notes", "company", "contact_type", "correlation_display", "correlation_id",
-         "delivery_plan", "delivery_task", "description", "due_date", "expected_start", "follow_up", "group_list", "hold_reason", "impact", "incident_state",
-         "knowledge", "location", "made_sla", "notify", "order", "parent", "parent_incident", "priority", "problem_id", "resolved_at", "resolved_by", "rfc",
-         "severity", "sla_due", "state", "subcategory", "sys_tags", "time_worked", "urgency", "user_input", "watch_list", "work_end", "work_notes", "work_notes_list",
-         "work_start", "impact", "incident_state", "title", "type", "change_type", "category", "state"]
+    SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history', 'approval_set', 'assigned_to', 'assignment_group',
+         'business_duration', 'business_service', 'business_stc', 'calendar_duration', 'calendar_stc', 'caller_id', 'caused_by', 'close_code', 'close_notes',
+         'closed_at', 'closed_by', 'cmdb_ci', 'comments', 'comments_and_work_notes', 'company', 'contact_type', 'correlation_display', 'correlation_id',
+         'delivery_plan', 'delivery_task', 'description', 'due_date', 'expected_start', 'follow_up', 'group_list', 'hold_reason', 'impact', 'incident_state',
+         'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority', 'problem_id', 'resolved_at', 'resolved_by', 'rfc',
+         'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list',
+         'work_start', 'impact', 'incident_state', 'title', 'type', 'change_type', 'category', 'state']
 
 
-    # Every table in ServiceNow has those fields
+    # Every table in ServiceNow should have those fields
     DEFAULT_RECORD_FIELDS = {
         'sys_id': 'ID',
         'sys_updated_by': 'UpdatedBy',
@@ -310,16 +317,16 @@ script:
                 'Created On': ticket.get('sys_created_on'),
                 'Created By': ticket.get('sys_created_by'),
                 'Active': ticket.get('active'),
-                'Close notes': ticket.get('close_notes'),
-                'Close code': ticket.get('close_code'),
+                'Close Notes': ticket.get('close_notes'),
+                'Close Code': ticket.get('close_code'),
                 'Description': ticket.get('description'),
-                'Opened at': ticket.get('opened_at'),
-                'Due date': ticket.get('due_date'),
+                'Opened At': ticket.get('opened_at'),
+                'Due Date': ticket.get('due_date'),
                 # This field refers to a record in the database, the value is its system ID.
-                'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict) else ticket.get('closed_by'),
-                'Resolved at': ticket.get('resolved_at'),
-                'SLA due': ticket.get('sla_due'),
-                'Short description': ticket.get('short_description'),
+                'Resolved By': ticket.get('closed_by', {}).get('value') if isinstance(ticket.get('closed_by'), dict) else ticket.get('closed_by'),
+                'Resolved At': ticket.get('resolved_at'),
+                'SLA Due': ticket.get('sla_due'),
+                'Short Description': ticket.get('short_description'),
                 'Additional Comments': ticket.get('comments')
             }
 
@@ -452,8 +459,8 @@ script:
         hr = get_ticket_human_readable(ticket, ticket_type)
         context = get_ticket_context(ticket, ticket_type)
 
-        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close notes','Close code',
-                   'Description','Opened at','Due date','Resolved by','Resolved at','SLA due','Short description','Additional Comments']
+        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
+                   'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
 
 
         entry = {
@@ -652,8 +659,8 @@ script:
         hr = get_ticket_human_readable(res['result'], ticket_type)
         context = get_ticket_context(res['result'], ticket_type)
 
-        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close notes','Close code',
-                   'Description','Opened at','Due date','Resolved by','Resolved at','SLA due','Short description','Additional Comments']
+        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
+                   'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
 
         entry = {
             'Type': entryTypes['note'],
@@ -759,13 +766,16 @@ script:
         if not res or 'result' not in res:
             return_error('Unable to retrieve response')
 
+        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
+                   'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+
         hr = get_ticket_human_readable(res['result'], ticket_type)
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr, removeNull=True)
+            'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
         }
 
         return entry
@@ -789,13 +799,16 @@ script:
         if not res or 'result' not in res:
             return_error('Unable to retrieve response')
 
+        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
+                   'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
+
         hr = get_ticket_human_readable(res['result'], ticket_type)
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr, removeNull=True)
+            'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr, headers=headers, removeNull=True)
         }
 
         return entry
@@ -806,6 +819,48 @@ script:
         path = 'table/' + ticket_type + '/' + ticket_id
 
         return send_request(path, 'patch', body=body)
+
+    def get_ticket_notes_command():
+        ticket_id = demisto.args()['id']
+        limit = demisto.args().get('limit')
+        offset = demisto.args().get('offset')
+
+        comments_query = 'element_id=' + ticket_id + '^element=comments^ORelement=work_notes'
+
+        res = query('sys_journal_field', limit, offset, comments_query)
+
+        if not res or 'result' not in res:
+            return 'No results found'
+
+        headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
+
+        mapped_notes = [{
+            'Value': n.get('value'),
+            'CreatedOn': n.get('sys_created_on'),
+            'CreatedBy': n.get('sys_created_by'),
+            'Type': 'Work Note' if n.get('element', '') == 'work_notes' else 'Comment'
+        } for n in res['result']]
+
+        if not mapped_notes:
+            return 'No results found'
+
+        ticket = {
+            'ID': ticket_id,
+            'Note': mapped_notes
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow notes for ticket ' + ticket_id, mapped_notes, headers=headers, headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': {
+                  'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)
+            }
+        }
+
+        return entry
 
     def query_tickets_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
@@ -825,8 +880,8 @@ script:
         hr = get_ticket_human_readable(res['result'], ticket_type)
         context = get_ticket_context(res['result'], ticket_type)
 
-        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close notes','Close code',
-                   'Description','Opened at','Due date','Resolved by','Resolved at','SLA due','Short description','Additional Comments']
+        headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close Notes','Close Code',
+                   'Description','Opened At','Due Date','Resolved By','Resolved At','SLA Due','Short Description','Additional Comments']
 
         entry = {
             'Type': entryTypes['note'],
@@ -1056,7 +1111,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers, removeNull=True, headerTransform=pascalToSpace),
             'EntryContext': {
                   'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
             }
@@ -1106,7 +1161,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers, removeNull=True, headerTransform=pascalToSpace),
             'EntryContext': {
                   'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
             }
@@ -1156,7 +1211,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True, headerTransform=pascalToSpace),
             'EntryContext': {
                   'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
             }
@@ -1267,7 +1322,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers),
+            'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers, headerTransform=pascalToSpace),
             'EntryContext': {
                   'ServiceNow.Table(val.ID===obj.ID)': createContext(mapped_tables),
             }
@@ -1315,7 +1370,7 @@ script:
                         'value': json.dumps(v)
                     })
 
-            severity = int(result['severity']) if 'severity' in result else 0
+            severity = SEVERITY_MAP.get(result.get('severity', ''), 0)
 
             file_names = []
             if get_attachments:
@@ -1393,6 +1448,8 @@ script:
             demisto.results(list_table_fields_command())
         if demisto.command() == 'servicenow-get-table-name':
             demisto.results(get_table_name_command())
+        if demisto.command() == 'servicenow-get-ticket-notes':
+            demisto.results(get_ticket_notes_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
@@ -1750,7 +1807,7 @@ script:
     - name: reopen_count
       description: How many time the ticket has been reopened
     - name: resolved_at
-      description: 'Format: YYYY-MM-DD HH:MM:SS'
+      description: 'Resolving time, Format: YYYY-MM-DD HH:MM:SS'
     - name: resolved_by
       description: UID Format
     - name: rfc
@@ -1804,6 +1861,8 @@ script:
       defaultValue: normal
     - name: state
       description: State of the ticket, e.g., "Closed" or "7" or "7 - Closed".
+    - name: opened_at
+      description: ' Ticket opening time, Format: YYYY-MM-DD HH:MM:SS'
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
@@ -2868,8 +2927,12 @@ script:
       required: true
       description: Comment to add
     - name: post-as-comment
-      description: Publish the link as comment on the ticket, if false will publish
-        the link as WorkNote, format bool
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Specify to publish the note as comment on the ticket.
+      defaultValue: "false"
     description: Add comment to specific ticket by providing ticket id
   - name: servicenow-incident-add-comment
     deprecated: true
@@ -3385,7 +3448,7 @@ script:
       description: User sys_id
       type: string
     - contextPath: ServiceNow.User.Name
-      description: User name (first + middle + last)
+      description: User name (first + last)
       type: string
     - contextPath: ServiceNow.User.UserName
       description: User username
@@ -3421,8 +3484,37 @@ script:
       description: Table system name, e.g Asset
       type: string
     description: Get table names by a label to use in commands
+  - name: servicenow-get-ticket-notes
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Ticket System ID
+    - name: limit
+      description: Limit for the ticket notes
+      defaultValue: "10"
+    - name: offset
+      description: Offset of the ticket notes
+      defaultValue: "0"
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID
+      type: string
+    - contextPath: ServiceNow.Ticket.Note.Value
+      description: Ticket note value
+      type: unknown
+    - contextPath: ServiceNow.Ticket.Note.CreatedOn
+      description: Ticket note created on
+      type: date
+    - contextPath: ServiceNow.Ticket.Note.CreatedBy
+      description: Ticket note created by
+      type: string
+    - contextPath: ServiceNow.Ticket.Note.Type
+      description: Ticket note type
+      type: string
+    description: Get notes from the specified ServiceNow ticket - Read permissions
+      are required for the sys_journal_field table.
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - No test - Hibernating instance
