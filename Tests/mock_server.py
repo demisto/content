@@ -186,7 +186,8 @@ class MITMProxy:
             print self.process.stdout.read()
             print self.process.stderr.read()
         else:
-            local_log_filepath = os.path.join('/tmp', clean_filename(self.last_playbook_id) + '.log')
+            local_log_filepath = os.path.join(
+                '/tmp', os.path.basename(id_to_log_file(self.last_playbook_id, self.record)))
             remote_log_filepath = os.path.join(self.active_folder, id_to_log_file(self.last_playbook_id, self.record))
 
             with open(local_log_filepath, 'w+') as log:
