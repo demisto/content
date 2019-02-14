@@ -186,8 +186,8 @@ class MITMProxy:
             print self.process.stdout.read()
             print self.process.stderr.read()
         else:
-            log_filepath = os.path.join(self.primary_folder, id_to_log_file(self.last_playbook_id, self.record))
-            with open(log_filepath, 'wb') as log:
+            log_filepath = os.path.join(self.active_folder, id_to_log_file(self.last_playbook_id, self.record))
+            with open(log_filepath, 'wb+') as log:
                 log.write('STDOUT:\n')
                 log.write(self.process.stdout.read())
                 log.write('\nSTDERR:\n')
