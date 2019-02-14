@@ -1092,6 +1092,12 @@
         "FalconHost",
         "VirusTotal",
         "ipinfo",
-        "carbonblack-v2"
+        "carbonblack-v2",
+        "dnstwist",
+        "Alexa Rank Indicator",
+        "RSA NetWitness Packets",
+        "PagerDuty v2",
+        "CVE Search",
+        "okta"
     ]
 }
