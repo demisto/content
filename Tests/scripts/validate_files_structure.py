@@ -327,25 +327,23 @@ def is_existing_image(file_path):
 
 
 def get_modified_and_added_files(branch_name, is_circle):
-    if is_circle:
-        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-        modified_files, added_files = get_modified_files(all_changed_files_string)
+    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    modified_files, added_files = get_modified_files(all_changed_files_string)
 
-    else:
+    if not is_circle:
         files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-        modified_files2, added_files2 = get_modified_files(files_string)
+        non_committed_modified_files, non_committed_added_files = get_modified_files(files_string)
         all_changed_files_string = run_git_command("git diff --name-status origin/master")
-        modified_files_from_branch, added_files_from_branch = get_modified_files(all_changed_files_string)
+        modified_files_from_master, added_files_from_master = get_modified_files(all_changed_files_string)
 
-        added_files = []
-        modified_files = []
-        for mod_file in modified_files_from_branch:
-            if mod_file in modified_files2:
-                modified_files.append(mod_file)
-        for add_file in added_files_from_branch:
-            if add_file in added_files2:
-                added_files.append(add_file)
+        for mod_file in modified_files_from_master:
+            if mod_file in non_committed_modified_files:
+                modified_files.add(mod_file)
+
+        for add_file in added_files_from_master:
+            if add_file in non_committed_added_files:
+                added_files.add(add_file)
 
     return modified_files, added_files
 
@@ -354,14 +352,27 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('fromversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def changed_command_name_or_arg(file_path):
