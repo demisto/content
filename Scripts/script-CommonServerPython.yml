@@ -387,7 +387,7 @@ script: |-
 
 
   isError = is_error
-  
+
 
   def FormatADTimestamp(ts):
       """
@@ -1329,6 +1329,33 @@ script: |-
       return ''.join(x.title() for x in components)
 
 
+  def camel_case_to_underscore(s):
+      """
+         Converts a camelCase string to snake_case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. helloWorld) (required)
+
+         :return: The converted string (e.g. hello_world)
+         :rtype: ``str``
+      """
+      s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+      return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+  def snakify(src):
+      """
+          Convert all keys of a dictionary to snake_case (underscored separated)
+
+          :type src: ``dict``
+          :param src: The dictionary to convert the keys for. (required)
+
+          :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+          :rtype: ``dict``
+      """
+      return {camel_case_to_underscore(k): v for k, v in src.items()}
+
+
   def pascalToSpace(s):
       """
          Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score", "thisIsIPAddressName" -> "This Is IP Address Name").
@@ -1484,4 +1511,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "added function return_outputs() which replaces demisto.results() - more intuitive to use"
+releaseNotes: "added function return_outputs() which replaces demisto.results() - more intuitive to use, add camel_case_to_underscore and snakify functions"
