@@ -68,9 +68,9 @@ class AMIConnection:
     def check_output(self, command, **kwargs):
         return check_output(self.add_ssh_prefix(command), **kwargs)
 
-    def copy_file(self, src, dst=REMOTE_HOME):
+    def copy_file(self, src, dst=REMOTE_HOME, **kwargs):
         check_call(['scp', '-o', ' StrictHostKeyChecking=no', src,
-                    "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)])
+                    "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)], **kwargs)
         return os.path.join(dst, os.path.basename(src))
 
     def run_script(self, script, *args):
@@ -144,7 +144,7 @@ class MITMProxy:
 
         if not self.has_mock_file(playbook_id):
             print 'Mock file not created!'
-        elif self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip():
+        elif self.ami.check_output(['stat', '-c', '%s', src_filepath]).strip() == 0:
             print 'Mock file is empty, ignoring.'
             self.empty_files.append(playbook_id)
         else:
@@ -153,7 +153,7 @@ class MITMProxy:
 
     def print_empty_files(self):
         if self.empty_files:
-            print "Integrations with empty mock files:\n{}".format('\n'.join(self.empty_files))
+            print "Integrations with empty mock files:\n{}\n".format('\n'.join(self.empty_files))
 
     def start(self, playbook_id, path=None, record=False):
         if self.process:
@@ -196,6 +196,7 @@ class MITMProxy:
                 log.write('\nSTDERR:\n')
                 log.write(self.process.stdout.read())
 
-            self.ami.copy_file(local_log_filepath, remote_log_filepath)
+            with open(os.devnull, 'w') as FNULL:
+                self.ami.copy_file(local_log_filepath, remote_log_filepath, stdout=FNULL)
 
         self.process = None
