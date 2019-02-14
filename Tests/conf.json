@@ -1049,7 +1049,6 @@
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
         "CreatePhishingClassifierMLTest": "fails",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
-        "cisco-ise-test-playbook": "fails",
         "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
     },
     "skipped_integrations": {
