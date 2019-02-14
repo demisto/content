@@ -7,7 +7,8 @@ comment: |-
 script: |
   import json
   import string
-  from random import *
+  import time
+  import random
 
   def create_entry(title,data, ec):
       return {
@@ -20,7 +21,7 @@ script: |
       }
 
 
-  def raise_error(error):
+  def create_error_entry(error):
       return {
           'Type' : entryTypes['error'],
           'ContentsFormat' : formats['text'],
@@ -51,13 +52,15 @@ script: |
               characters += string.punctuation
 
       else:
-          demisto.results(raise_error("Punctuation,Digits or Letters must be True."))
-          sys.exit(1)
+          demisto.results(create_error_entry("Punctuation,Digits,Uppercase or Lowercase must be True."))
+          sys.exit(0)
   else:
-      demisto.results(raise_error("Length must be grather than 0."))
-      sys.exit(1)
+      demisto.results(create_error_entry("Length must be grather than 0."))
+      sys.exit(0)
 
-  password =  "".join(choice(characters) for x in range(0,length))
+  password = ""
+  for x in range(0,length):
+      password += random.SystemRandom(random.seed(time.time())).choice(characters)
 
   raw = {"RandomString": password}
   raw = json.loads(json.dumps(raw))
