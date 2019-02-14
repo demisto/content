@@ -12,7 +12,7 @@ detaileddescription: Use these detailed instructions in order to retrieve the AP
 configuration:
 - display: URL for WhatsMyBrowser
   name: url
-  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse
+  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse # disable-secrets-detection
   type: 0
   required: true
 - display: API Key
