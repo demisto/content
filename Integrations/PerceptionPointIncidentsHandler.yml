@@ -1,0 +1,242 @@
+commonfields:
+  id: PerceptionPointIncidentsHandler
+  version: -1
+name: PerceptionPointIncidentsHandler
+display: PerceptionPointIncidentsHandler
+category: Email Gateway
+description: Load incidents from Perception Point system and release falsely quarantined
+  emails
+detaileddescription: |-
+  Use your API token to:
+                   1. View and manage your incidents list . The list will be updated automatically in Incidents dashboard.
+                   2. Release email from quarantine and resend them to their recipients. Use the scan id as an argument.
+  If you don't have a token yet, contact us at support@perception-point.io
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Token to use Perception Point's API
+  name: pp_token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch blocked incidents
+  name: fetch_blocked
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch spam incidents
+  name: fetch_spam
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch malicious incidents
+  name: fetch_malicious
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: No. of API loops
+  name: api_loops
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |
+    ''' IMPORTS'''
+    import requests
+    import json
+    import sys
+    import urlparse
+    from collections import defaultdict
+
+    ''' INTEGRATION PARAMS '''
+    PP_TOKEN = demisto.params().get('pp_token')
+    URL = 'http://api.perception-point.io/api/v1/{endpoint}'
+    INCIDENTS_ENDPOINT = 'scans/incidents/'
+    RELEASE_ENDPOINT = 'quarantine/release/{id_}'
+    HEADER = {'Authorization': 'Token {}'.format(PP_TOKEN)}
+    API_MAX_LOOPS = demisto.params().get('api_loops', 1)
+    API_MAX_LOOPS = API_MAX_LOOPS if isinstance(API_MAX_LOOPS, int) else 1
+
+
+    ''' CONSTANTS '''
+    RELEASE = 'release'
+    LIST = 'list'
+    API_ACTIONS_DICT = {RELEASE: RELEASE_ENDPOINT,
+                        LIST: INCIDENTS_ENDPOINT}
+    SPAM = 'SPM'
+    BLOCKED = 'BLK'
+    MALICIOUS = 'MAL'
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def get_cursor_from_url(url):
+        if url:
+            parsed = urlparse.urlparse(url)
+            next_cursor = urlparse.parse_qs(parsed.query).get('_cursor')
+            return int(next_cursor[0])
+        return -1
+
+
+    def build_url_request_params(last_cursor=None):
+        ARGUMENTS_LIST = [{'demisto_param': 'fetch_malicious',
+                           'req_pname': 'verbose_verdict',
+                           'req_pval': MALICIOUS},
+                          {'demisto_param': 'fetch_blocked',
+                           'req_pname': 'verbose_verdict',
+                           'req_pval': BLOCKED},
+                          {'demisto_param': 'fetch_spam',
+                           'req_pname': 'verbose_verdict',
+                           'req_pval': SPAM}]
+        params_dict = defaultdict(list)
+        arguments_input = demisto.params()
+        arguments_input.update(demisto.args())
+        for darg in ARGUMENTS_LIST:
+            darg_input = arguments_input.get(darg['demisto_param'])
+            if darg_input:
+                params_dict[darg['req_pname']].append(darg.get('req_pval', darg_input))
+        for reqname, reqval in params_dict.iteritems():
+            params_dict[reqname] = ','.join(reqval)
+        if last_cursor:
+            params_dict['_cursor'] = last_cursor
+        return params_dict
+
+
+    def create_incident(record):
+        record.pop('Attachment', None)
+        record['RawJSON'] = json.dumps(record)
+        return record
+
+
+    def collect_incidents(last_cursor=None):
+        list_url = build_request_url(LIST)
+        api_res = get_pp_api_result(url=list_url, last_cursor=last_cursor)
+        num_of_results = api_res['count']
+        incidents = []
+        api_loops = 0
+        while num_of_results and api_loops < API_MAX_LOOPS:
+            incidents += map(create_incident, api_res['results'])
+            if api_res['next']:
+                api_res = get_pp_api_result(url=api_res['next'])
+                num_of_results = api_res['count']
+                api_loops += 1
+        return incidents
+
+
+    def report_incidents(incidents_list):
+        demisto.incidents(incidents_list)
+
+
+    def get_pp_api_result(url, last_cursor=None):
+        res = requests.get(url=url,
+                           params=build_url_request_params(last_cursor),
+                           headers=HEADER)
+        res.raise_for_status()
+        try:
+            res_content = res.json()
+        except:
+            res_content = {}
+        return res_content
+
+
+    def build_request_url(api_action):
+        return URL.format(endpoint=API_ACTIONS_DICT[api_action])
+
+
+    def command_fetch_incidents():
+        try:
+            last_run_id = int(demisto.getLastRun().get('scan_id', -1))
+            incidents_list = collect_incidents(last_run_id)
+            report_incidents(incidents_list)
+            if incidents_list:
+                last_run_id = max(last_run_id, int(incidents_list[-1]['Scan Id']))
+                demisto.setLastRun({'scan_id': int(last_run_id)})
+        except:
+            demisto.error(
+                'An error occurred while trying to fetch new incidents. Please contact us at support@perception-point.io')
+
+
+    def command_list_incidents():
+        entry = {
+            'Type': entryTypes['note'],
+            'ReadableContentsFormat': formats['markdown']
+        }
+        try:
+            incidents_list = collect_incidents()
+            entry.update({'Contents': json.dumps(incidents_list),
+                          'ContentsFormat': formats['json'],
+                          'HumanReadable': tableToMarkdown('Recent Incidents', incidents_list),
+                          'EntryContext': {'PP.Result': json.dumps(incidents_list)}})
+
+        except Exception as e:
+            err_msg = 'An error occurred while trying to list incidents. Please contact us at support@perception-point.io'
+            entry.update({'Contents': err_msg,
+                          'ContentsFormat': formats['text'],
+                          'EntryContext': {'PP.Result': err_msg}})
+        return entry
+
+
+    def command_release_email():
+        demisto.params().clear()
+        entry = {
+            'Type': entryTypes['note'],
+            'ReadableContentsFormat': formats['markdown']
+        }
+        try:
+            scan_id_to_release = demisto.args().get('scan_id')
+            release_url = build_request_url(RELEASE).format(id_=scan_id_to_release)
+            _ = get_pp_api_result(url=release_url)
+            human_readable_response = 'Email with id {} was released Successfully!'.format(scan_id_to_release)
+        except:
+            human_readable_response = 'An error occurred while trying to release email. Please contact us at support@perception-point.io'
+        entry.update({'Contents': human_readable_response,
+                      'ContentsFormat': formats['text'],
+                      'EntryContext': {'PP.Result': human_readable_response}})
+        return entry
+
+
+    ''' COMMAND CLASSIFIER'''
+    if demisto.command() == 'test-module':
+        list_url = build_request_url(LIST)
+        if get_pp_api_result(url=list_url):
+            demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'fetch-incidents':
+        demisto.results(command_fetch_incidents())
+    if demisto.command() == 'list-incidents':
+        demisto.results(command_list_incidents())
+    if demisto.command() == 'release-email':
+        demisto.results(command_release_email())
+  type: python
+  commands:
+  - name: list-incidents
+    arguments:
+    - name: fetch_malicious
+      description: include malicious scans in result
+    - name: fetch_blocked
+      description: Include blocked scans in result
+    - name: fetch_spam
+      description: Include spam scans in result
+    outputs:
+    - contextPath: PP.Result
+      description: The result of the API request
+      type: string
+    description: Get a list of last incidents occurred in your system. You can filter
+      the incident type by using an argument from the list
+  - name: release-email
+    arguments:
+    - name: scan_id
+      required: true
+      description: The PP scan id of the email
+    description: Resends an email that was falsely quarantined using the scan id
+  dockerimage: demisto/python:1.3-alpine
+  isfetch: true
+  runonce: false
