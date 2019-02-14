@@ -32,13 +32,12 @@ configuration:
 script:
   script: |-
     ''' IMPORTS '''
-
     import requests
     import json
     from collections import defaultdict
-
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+
 
     '''GLOBAL VARS'''
     API_URL = demisto.params().get('API_URL')
@@ -51,9 +50,8 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
+
     '''HELPER FUNCTIONS'''
-
-
     def http_request(json):
         headers = {
             'X-API-KEY': API_KEY,
@@ -71,8 +69,6 @@ script:
 
 
     '''MAIN FUNCTIONS'''
-
-
     def ua_parse(user_agent):
         post_data = {
             "user_agent": "{}".format(user_agent)
@@ -158,11 +154,16 @@ script:
         demisto.results('ok')
 
 
-    if demisto.command() == 'ua-parse':
-        ua_parse_command()
-    if demisto.command() == 'test-module':
-        test_command()
-        sys.exit(0)
+    '''EXECUTION BLOCK'''
+    try:
+      if demisto.command() == 'ua-parse':
+          ua_parse_command()
+      if demisto.command() == 'test-module':
+          test_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
   - name: ua-parse
