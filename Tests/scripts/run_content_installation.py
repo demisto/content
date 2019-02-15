@@ -37,7 +37,7 @@ def main():
 
     for ami_instance_name, ami_instance_id in ami_instances:
         print "running content installation for ami instance: {}".format(ami_instance_name)
-        _ = run_bash_command("./Tests/scripts/run_installer_on_instance.sh {}".format(ami_instance_id))  # noqa
+        run_bash_command("./Tests/scripts/run_installer_on_instance.sh {}".format(ami_instance_id))  # noqa
         instance_ips.append("{}:{}".format(ami_instance_name, run_bash_command("echo ${PUBLIC_IP}")))
 
     with open('./Tests/instance_ips.txt', 'w') as instance_file:
