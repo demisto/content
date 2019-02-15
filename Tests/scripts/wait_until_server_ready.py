@@ -46,12 +46,15 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
-                    print "{} is not yet ready - wait another 45 seconds".format(ami_instance_name)
                     http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
                     if http_code != 433:
+                        print "{} is read for use".format(ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
+                    else:
+                        print "{} is not yet ready - wait another 45 seconds".format(ami_instance_name)
 
-            sleep(SLEEP_TIME)
+            if len(instance_ips) > len(ready_ami_list):
+                sleep(SLEEP_TIME)
 
         else:
             break
