@@ -21,7 +21,7 @@ def print_error(error_str):
 
 
 def run_bash_command(command, is_shell=False):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, shell=is_shell)
+    p = Popen(command.split(), shell=is_shell)
     output, err = p.communicate()
     if err:
         print_error("Failed to run git command " + command)
