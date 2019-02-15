@@ -34,7 +34,7 @@ def main():
     instance_ips = []
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         ami_instances = instance_file.readlines()
-        ami_instances = [line.strip('\n').split(":") for line in ami_instances]
+        ami_instances = [line.strip('\n').split(":") for line in ami_instances if line.strip('\n').split(":") != ['']]
 
     print(ami_instances)
 
