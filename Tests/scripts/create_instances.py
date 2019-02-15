@@ -3,6 +3,9 @@ import sys
 import argparse
 from subprocess import Popen, PIPE
 
+import boto3
+
+
 SERVER_GA = "Demisto-Circle-CI-Content-GA*"
 SERVER_MASTER = "Demisto-Circle-CI-Content-Master*"
 SERVER_ONE_BEFORE_GA = "Demisto-Circle-CI-Content-OneBefore-GA*"
@@ -62,7 +65,9 @@ def is_nightly_build():
 def create_instance(ami_name):
     print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
     run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
-    instance_id = os.environ['INSTANCE_ID']
+    with open('./Tests/instance_ids.txt', 'r') as instance_file:
+        instance_id = instance_file.read()
+
     return instance_id
 
 
