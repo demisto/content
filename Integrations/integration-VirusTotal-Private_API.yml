@@ -665,7 +665,7 @@ script:
 
     def check_detected_urls_threshold(detected_urls, threshold):
         for url in detected_urls:
-            if url.get("positives") > threshold:
+            if url.get("positives") >= threshold:
                 return True
         return False
 
