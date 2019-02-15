@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 from subprocess import Popen, PIPE
@@ -61,7 +62,7 @@ def is_nightly_build():
 def create_instance(ami_name):
     print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
     run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
-    instance_id = run_bash_command("echo $INSTANCE_ID")
+    instance_id = os.environ['INSTANCE_ID']
     return instance_id
 
 
