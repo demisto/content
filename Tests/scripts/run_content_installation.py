@@ -25,6 +25,7 @@ def run_bash_command(command, is_shell=False):
     output, err = p.communicate()
     if err:
         print_error("Failed to run git command " + command)
+        print_error(err)
         sys.exit(1)
 
     return output
@@ -50,7 +51,6 @@ def main():
     print("Waiting 90 Seconds for SSH to start\n")
     sleep(90)
 
-    print(id_to_ip)
     for ami_instance_name, ami_instance_id in ami_instances:
         run_bash_command("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]))
         instance_ips.append("{}:{}".format(ami_instance_name, id_to_ip[ami_instance_id]))
