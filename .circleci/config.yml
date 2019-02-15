@@ -86,15 +86,48 @@ jobs:
                 ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
             fi
       - run:
-          name: Run Tests
+          name: Run Tests - Latest GA
           shell: /bin/bash
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh
+                ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
                 ./Tests/lastest_server_build_scripts/run_tests.sh
+            fi
+      - run:
+          name: Run Tests - One Before GA
+          shell: /bin/bash
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Two Before GA
+          shell: /bin/bash
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+
+              else
+                echo "Not AMI run, can't run on this version"
+            fi
+      - run:
+          name: Run Tests - Server Master
+          shell: /bin/bash
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                ./Tests/scripts/run_tests.sh "Server Master"
+
+              else
+                echo "Not AMI run, can't run on this version"
             fi
       - run:
           name: Slack Notifier

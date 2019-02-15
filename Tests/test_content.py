@@ -20,6 +20,8 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
                             "instance_name argument in conf.json the options are:\n{}"
 
+AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
@@ -34,6 +36,8 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
+    parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
+                                                      'tests on(Valid only when using AMI)')
     options = parser.parse_args()
 
     return options
@@ -368,10 +372,12 @@ def main():
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
+        server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
-            print_color("Running tests on {}".format(ami_instance_name), LOG_COLORS.GREEN)
-            server = SERVER_URL.format(ami_instance_ip)
-            execute_testing(server)
+            if ami_instance_name == server_version:
+                print_color("Running tests on {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                server = SERVER_URL.format(ami_instance_ip)
+                execute_testing(server)
 
     else:  # Run tests in Server build configuration
         execute_testing(server)
