@@ -36,9 +36,9 @@ jobs:
       - run:
           name: Common Server Documentation
           command: ./Documentation/commonServerDocs.sh
-      - run:
-          name: Create Content Artifacts
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+#      - run:
+#          name: Create Content Artifacts
+#          command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
