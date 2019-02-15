@@ -7,6 +7,7 @@ echo "Start create_instance script"
 aws configure set region us-west-2
 
 CONFFILE=$1
+AMI_NAME=$2
 
 #Get nightly image of the server
 IMAGE_ID=$(aws ec2 describe-images \
