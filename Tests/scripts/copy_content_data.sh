@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
 PUBLIC_IP=$1
 
 USER="ec2-user"
