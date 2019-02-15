@@ -1,5 +1,6 @@
 """Run content installation on the AMI instances"""
 import sys
+from time import sleep
 from subprocess import Popen, PIPE
 
 
@@ -37,10 +38,13 @@ def main():
 
     for ami_instance_name, ami_instance_id in ami_instances:
         print "running content installation for ami instance: {}".format(ami_instance_name)
-        run_bash_command("./Tests/scripts/run_installer_on_instance.sh {}".format(ami_instance_id))  # noqa
+        run_bash_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ip = instance_file.read()
 
+        print("Waiting 90 Seconds for SSH to start")
+        sleep(90)
+        run_bash_command("./Tests/scripts/copy_content_data.sh {}".format(instance_ip))
         instance_ips.append("{}:{}".format(ami_instance_name, instance_ip))
 
     with open('./Tests/instance_ips.txt', 'w') as instance_file:
