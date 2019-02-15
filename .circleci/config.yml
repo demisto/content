@@ -68,7 +68,7 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
+                ./Tests/scripts/create_instances.py -n f
 
               else
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
