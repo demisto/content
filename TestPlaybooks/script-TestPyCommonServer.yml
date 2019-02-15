@@ -377,6 +377,14 @@ script: |-
 
       demisto.results('ok')
 
+  def test_return_outputs():
+      return_outputs(readable_output="foo", outputs={"foo":"foo1"})
+
+      return_outputs(readable_output=None, outputs={"foo":"foo1"})
+
+      return_outputs(readable_output="foo", outputs=None)
+
+      return_outputs("foo", {"foo":"foo1"}, raw_response={"raw":"response"})
 
 
   ''' MAIN TEST RUNNER '''
@@ -391,6 +399,7 @@ script: |-
       'DATE_TO_TIMESTAMP': test_date_to_timestamp,
       'PASCAL_TO_SPACE' : test_pascalToSpace,
       'ARG_TO_LIST': test_argToList,
+      'RETURN_OUTPUTS': test_return_outputs
   }
 
 
@@ -496,6 +505,7 @@ args:
   - CAMELIZE
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
+  - RETURN_OUTPUTS
   description: one of python common server testing features
   defaultValue: DQ
 scripttarget: 0
