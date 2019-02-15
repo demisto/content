@@ -19,8 +19,8 @@ def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
 
 
-def run_bash_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+def run_bash_command(command, is_shell=False):
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, shell=is_shell)
     output, err = p.communicate()
     if err:
         print_error("Failed to run git command " + command)
@@ -37,7 +37,7 @@ def main():
 
     for ami_instance_name, ami_instance_id in ami_instances:
         print "running content installation for ami instance: {}".format(ami_instance_name)
-        run_bash_command("./Tests/scripts/run_installer_on_instance.sh {}".format(ami_instance_id))  # noqa
+        run_bash_command("./Tests/scripts/run_installer_on_instance.sh {}".format(ami_instance_id), True)  # noqa
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ip = instance_file.read()
 
