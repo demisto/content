@@ -45,7 +45,7 @@ def main():
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ip = instance_file.read()
 
-        print("The ip is {} ".format(instance_ip))
+        print("The ip is {}".format(instance_ip))
         id_to_ip[ami_instance_id] = instance_ip
 
     print("Waiting 90 Seconds for SSH to start")
