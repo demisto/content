@@ -36,6 +36,8 @@ def main():
         ami_instances = instance_file.readlines()
         ami_instances = [line.strip('\n').split(":") for line in ami_instances]
 
+    print(ami_instances)
+
     id_to_ip = {}
     for ami_instance_name, ami_instance_id in ami_instances:
         print "Validating ami instance: {}".format(ami_instance_name)
