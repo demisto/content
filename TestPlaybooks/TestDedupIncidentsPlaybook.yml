@@ -1,0 +1,351 @@
+id: TestDedupIncidentsPlaybook
+version: -1
+name: TestDedupIncidentsPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e3c5db64-4c12-4cfa-8b7e-7bd202b74a37
+    type: start
+    task:
+      id: e3c5db64-4c12-4cfa-8b7e-7bd202b74a37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 3610001c-691f-468c-81cd-823925579179
+    type: regular
+    task:
+      id: 3610001c-691f-468c-81cd-823925579179
+      version: -1
+      name: Add labels
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      1longtexttest: {}
+      aaaa: {}
+      addLabels:
+        simple: '[{"Email/subject":"This is a subject"},{"Email/from":"test@demisto.com"}]'
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bbb: {}
+      blah: {}
+      bool1: {}
+      bool2: {}
+      booleansummary: {}
+      boolfield: {}
+      booltest: {}
+      bugtraq: {}
+      ccc: {}
+      ccipaddress: {}
+      compliance: {}
+      constvalue: {}
+      customFields: {}
+      customfield: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      department: {}
+      departmentadmin: {}
+      dest: {}
+      destntdomain: {}
+      details:
+        simple: fdslkjflks sldkfj lsdfklsd flsdkfj sldkfjlsdfj lskdfj lsd flksd fsdlkfj
+          sdlfj slkdfj lsdkfjlsdf sdlkfjsldfj sldkfj sldf sdlkfjsldfjslkdf sldkfjlsdkfj
+          lsdfjlksdf jlsdfj lsdkfj dlskf jldskfjdskldlskf jsdlkfjsd lfskdf
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hjhj: {}
+      host: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      itaytestfield: {}
+      labels: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
+      malwarefamily: {}
+      multilinetext: {}
+      name: {}
+      newmarkdownfield: {}
+      newtextfield: {}
+      numberplease: {}
+      occurred: {}
+      one: {}
+      owner: {}
+      phase: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      test111: {}
+      testfield: {}
+      testhtml: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      tldr: {}
+      tttttt: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: b703c012-dea4-43ca-8fef-530330d2bde1
+    type: regular
+    task:
+      id: b703c012-dea4-43ca-8fef-530330d2bde1
+      version: -1
+      name: Create duplicate incident
+      scriptName: CreateDuplicateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: fce3305c-93e9-44d8-882a-addcd377544d
+    type: title
+    task:
+      id: fce3305c-93e9-44d8-882a-addcd377544d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: d8e9b5aa-4d75-495f-8a41-a93cb5c51ad1
+    type: regular
+    task:
+      id: d8e9b5aa-4d75-495f-8a41-a93cb5c51ad1
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 7eb366dd-cf05-4bae-8ea6-a1f5402d464e
+    type: condition
+    task:
+      id: 7eb366dd-cf05-4bae-8ea6-a1f5402d464e
+      version: -1
+      name: Check similar incident found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 831ce5bb-aa5a-4d87-8f31-1be5b96634f9
+    type: playbook
+    task:
+      id: 831ce5bb-aa5a-4d87-8f31-1be5b96634f9
+      version: -1
+      name: DeDup incidents
+      playbookName: DeDup incidents
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      hoursBack:
+        simple: "72"
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentKeys: {}
+      similarLabels:
+        simple: Email/subject
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
