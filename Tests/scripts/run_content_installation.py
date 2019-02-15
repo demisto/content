@@ -42,6 +42,7 @@ def main():
         run_bash_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ip = instance_file.read()
+            instance_ip = instance_ip.strip()
 
         print("The IP of the instance is {}".format(instance_ip))
         id_to_ip[ami_instance_id] = instance_ip
