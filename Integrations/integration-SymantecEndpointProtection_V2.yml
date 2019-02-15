@@ -163,7 +163,8 @@ script:
     - contextPath: SEPM.Groups.policySerialNumber
       description: Policy serial number
       type: number
-  - description: Get the system information (version, AV definition).
+  - arguments: []
+    description: Get the system information (version, AV definition).
     execution: false
     name: sep-system-info
     outputs:
@@ -187,7 +188,8 @@ script:
     - contextPath: SEPM.LastCommand.CommandId
       description: The ID of the command.
       type: string
-  - description: Retrieves the client content.
+  - arguments: []
+    description: Retrieves the client content.
     execution: false
     name: sep-client-content
     outputs:
@@ -197,7 +199,8 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last-updated date.
       type: string
-  - description: Retrieve a list of existing policies
+  - arguments: []
+    description: Retrieve a list of existing policies
     execution: false
     name: sep-list-policies
     outputs:

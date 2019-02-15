@@ -3,7 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RandomStringGenerateTest"
+        },
+        {
             "playbookID": "HighlightWords_Test"
+
         },
         {
             "playbookID": "StringContainsArray_test"
@@ -22,7 +26,7 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "TestUnEscapeUrl"
+            "playbookID": "UnEscapeURLs-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -394,6 +398,10 @@
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD Upload File"
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -896,7 +904,7 @@
         {
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
-          "timeout": 600
+          "timeout": 700
         },
         {
             "integrations" : "VxStream",
@@ -1041,11 +1049,9 @@
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
-        "DUO Test Playbook": "DUO integration is failing",
-        "MISP V2 Test": "fails",
-        "CreatePhishingClassifierMLTest": "fails",
-        "GmailTest": "fails",
-        "cisco-ise-test-playbook": "fails"
+        "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
+        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
+        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
