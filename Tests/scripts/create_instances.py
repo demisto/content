@@ -13,8 +13,7 @@ AMI_NAME_TO_READABLE = {
     SERVER_GA: "Demisto GA",
     SERVER_MASTER: "Server Master",
     SERVER_ONE_BEFORE_GA: "Demisto one before GA",
-    SERVER_TWO_BEFORE_GA: "Demisto two before GA"
-}
+    SERVER_TWO_BEFORE_GA: "Demisto two before GA"}
 
 
 class LOG_COLORS:
@@ -61,8 +60,8 @@ def is_nightly_build():
 
 def create_instance(ami_name):
     print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
-    _ = run_bash_command("AMI_NAME=\"{}\"".format(ami_name), is_shell=True)  # noqa
-    _ = run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
+    run_bash_command("AMI_NAME=\"{}\"".format(ami_name), is_shell=True)  # noqa
+    run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
     instance_id = run_bash_command("echo $AMI_NAME")
     return instance_id
 
