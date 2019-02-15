@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-INSTANCE_ID="$1"
+INSTANCE_ID=$1
 
 echo "Making sure instance started"
 aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
@@ -13,7 +13,6 @@ PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} \
 echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
-echo ${PUBLIC_IP} > ./Tests/instance_ips.txt
 
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
