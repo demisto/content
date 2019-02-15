@@ -1,9 +1,6 @@
-import os
 import sys
 import argparse
 from subprocess import Popen, PIPE
-
-import boto3
 
 
 SERVER_GA = "Demisto-Circle-CI-Content-GA*"

@@ -1,5 +1,4 @@
 """Run content installation on the AMI instances"""
-import os
 import sys
 from subprocess import Popen, PIPE
 
