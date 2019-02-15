@@ -36,8 +36,6 @@ def main():
         ami_instances = instance_file.readlines()
         ami_instances = [line.strip('\n').split(":") for line in ami_instances if line.strip('\n').split(":") != ['']]
 
-    print(ami_instances)
-
     id_to_ip = {}
     for ami_instance_name, ami_instance_id in ami_instances:
         print "Validating ami instance: {}".format(ami_instance_name)
@@ -51,8 +49,11 @@ def main():
     print("Waiting 90 Seconds for SSH to start")
     sleep(90)
 
+    print(id_to_ip)
     for ami_instance_name, ami_instance_id in ami_instances:
         print "Running content installation for ami instance: {}".format(ami_instance_name)
+        print id_to_ip[ami_instance_id]
+        print "./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id])
         run_bash_command("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]))
         instance_ips.append("{}:{}".format(ami_instance_name, id_to_ip[ami_instance_id]))
 
