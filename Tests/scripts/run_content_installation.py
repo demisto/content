@@ -1,7 +1,7 @@
 """Run content installation on the AMI instances"""
 import sys
 from time import sleep
-from subprocess import Popen, PIPE
+from subprocess import Popen
 
 
 class LOG_COLORS:
