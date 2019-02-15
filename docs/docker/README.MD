@@ -17,14 +17,10 @@ We cannot just choose any package to be used in our integrations and there are m
 * If so, what type of license is being used?
 These are just some of the many things we must take into consideration.
 
-## Licensing/Lawyers Need Jobs Too
-The Demisto Content repository is produced with a (Massachusetts Institute of Technology) MIT license which means that we can use only packages whose license is compatible with the MIT license. For example:
-* GNU/GPL General Public License - Generally referred to as "Open Source", we **may not** use this license
-* MIT Software Licensing - We **may** use other packages that are this type
-* Apache License 2.0 - We **may** use these packages
-* The Unlicense - We **may** use these packages
+## Licensing
+The Demisto Content repository is produced with a (Massachusetts Institute of Technology) MIT license which means that we use only packages whose license is compatible with the MIT license. As a general rule of thumb, we only use `permissive` licenses. For a complete list of OSS licenses and their types see: https://en.wikipedia.org/wiki/Comparison_of_free_and_open-source_software_licenses .
 
-**Please Note:** Other licenses may be permitted, with approval from the Demisto Legal Department. For a more complete list see: https://en.wikipedia.org/wiki/Comparison_of_free_and_open-source_software_licenses . Any license on wikipedia list which is not marked as `permissive` requires approval.
+**Please Note:** Other licenses may be permitted with specific approval.
 
 ## Security Concerns
 It is imperative that we perform due diligence on packages we choose to use. This includes verifying the package name is correct. Just in 2018 alone, a scan of PyPI resulted in the detection of 11 "typo-squatted" packages which were found to be malicious. [[1]](https://medium.com/@bertusk/detecting-cyber-attacks-in-the-python-package-index-pypi-61ab2b585c67)
