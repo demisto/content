@@ -20,12 +20,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: ""
+  defaultvalue: "True"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "True"
   type: 8
   required: false
 - display: Fetch incidents
@@ -45,7 +45,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: |
     ''' IMPORTS '''
     import json
     import shutil
@@ -72,6 +72,8 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
+
+
     def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         headers = {}
@@ -93,13 +95,22 @@ script:
         # Handle error responses gracefully
         if res.status_code not in {200, 201}:
             if res.status_code == 500:
-                error = res.json()
-                return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error['detailMessage']))
+                try:
+                    error = res.json().get('detailMessage', res.content)
+                except:
+                    error = res.content
+
+                return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
             else:
                 return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
 
         if is_json:
-            return res.json()
+            try:
+                return res.json()
+
+            except ValueError:
+                return_error('failed to parse json object from response: {}'.format(res.content))
+
         else:
             return res.content
 
@@ -114,8 +125,8 @@ script:
                 if res.get('error') is not None:
                     raise requests.HTTPError('Failed to login: {}'.format(res['error']))
                 SESSION_ID = res.get('uid')
-            except requests.exceptions.BaseHTTPError as bhe:
-                return_error('Demisto has encounter a connection error, please check the server_url parameter')
+            except requests.exceptions.RequestException as e:
+                return_error('Demisto has encounter a connection error, please check the server_url and credentials parameters')
 
 
     def logout():
@@ -186,11 +197,11 @@ script:
 
 
     ''' COMMANDS + REQUESTS FUNCTIONS '''
-    def fidelis_get_alert_command():
+    def get_alert_command():
         args = demisto.args()
         alert_id = args['alert_id']
 
-        alert = fidelis_get_alert(alert_id)
+        alert = get_alert(alert_id)
 
         ec = {
             'ID': alert['alertId'],
@@ -203,7 +214,7 @@ script:
             'Severity': alert['severity'],
             'Protocol': alert['protocol'],
             'Type': alert['alertType'],
-            'AssignedUser': alert.get('ticket', {}).get('assignedUserId'),
+            'AssignedUser': alert['ticket']['assignedUserId'] if alert['ticket'] is not None else None,
         }
 
         demisto.results({
@@ -219,15 +230,15 @@ script:
 
 
     @logger
-    def fidelis_get_alert(alert_id):
+    def get_alert(alert_id):
         return http_request('GET', '/j/rest/v1/alert/info/{}/'.format(alert_id))
 
 
-    def fidelis_delete_alert_command():
+    def delete_alert_command():
         args = demisto.args()
         alert_id = args['alert_id'].split(',')
 
-        fidelis_delete_alert(alert_id)
+        delete_alert(alert_id)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -239,7 +250,7 @@ script:
 
 
     @logger
-    def fidelis_delete_alert(alert_id):
+    def delete_alert(alert_id):
         data = {
             'type': 'byAlertID',
             'alertIds': alert_id,
@@ -249,11 +260,11 @@ script:
         return result
 
 
-    def fidelis_get_malware_data_command():
+    def get_malware_data_command():
         args = demisto.args()
         alert_id = args['alert_id']
 
-        result = fidelis_get_malware_data(alert_id)
+        result = get_malware_data(alert_id)
 
         ec = {
             'ID': alert_id,
@@ -281,17 +292,17 @@ script:
 
 
     @logger
-    def fidelis_get_malware_data(alert_id):
+    def get_malware_data(alert_id):
         result = http_request('GET', '/j/rest/v1/alert/malware/{}/'.format(alert_id))
 
         return result
 
 
-    def fidelis_get_alert_pcap_command():
+    def get_alert_pcap_command():
         args = demisto.args()
         alert_id = args['alert_id']
 
-        results = fidelis_get_alert_pcap(alert_id)
+        results = get_alert_pcap(alert_id)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -303,17 +314,17 @@ script:
 
 
     @logger
-    def fidelis_get_alert_pcap(alert_id):
+    def get_alert_pcap(alert_id):
         # result = http_request('GET', '/j/rest/v1/alert/pcap/{}/'.format(alert_id), is_json=False)
         # return result
         raise NotImplementedError()
 
 
-    def fidelis_get_alert_report_command():
+    def get_alert_report_command():
         args = demisto.args()
         alert_id = int(args['alert_id'])
 
-        pdf_content = fidelis_get_alert_report(alert_id)
+        pdf_content = get_alert_report(alert_id)
 
         demisto.results(fileResult(
             'Alert_Details_{}.pdf'.format(alert_id),
@@ -323,7 +334,7 @@ script:
 
 
     @logger
-    def fidelis_get_alert_report(alert_id):
+    def get_alert_report(alert_id):
         result = http_request(
             'GET',
             '/j/rest/v1/alert/export/alertdetails/pdf',
@@ -333,11 +344,11 @@ script:
         return result
 
 
-    def fidelis_sandbox_upload_command():
+    def sandbox_upload_command():
         args = demisto.args()
         upload_item = args['upload_item']
 
-        results = fidelis_sandbox_upload(upload_item)
+        results = sandbox_upload(upload_item)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -350,11 +361,11 @@ script:
 
 
     @logger
-    def fidelis_sandbox_upload(upload_item):
+    def sandbox_upload(upload_item):
         raise NotImplementedError()
 
 
-    def fidelis_list_alerts_command():
+    def list_alerts_command():
         args = demisto.args()
         time_frame = args.get('time_frame')
         start_time = args.get('start_time')
@@ -364,7 +375,7 @@ script:
         threat_score = args.get('threat_score')
         ioc = args.get('ioc')
 
-        results = fidelis_list_alerts(time_frame=time_frame, start_time=start_time, end_time=end_time, severity=severity, _type=_type, threat_score=threat_score, ioc=ioc)
+        results = list_alerts(time_frame=time_frame, start_time=start_time, end_time=end_time, severity=severity, _type=_type, threat_score=threat_score, ioc=ioc)
         ec = [{
             'ID': alert['ALERT_ID'],
             'Time': alert['ALERT_TIME'],
@@ -386,7 +397,7 @@ script:
 
 
     @logger
-    def fidelis_list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, _type=None, threat_score=None, ioc=None, additional_columns=None):
+    def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, _type=None, threat_score=None, ioc=None, additional_columns=None):
         columns = additional_columns if additional_columns is not None else []
 
         filters = [{'simple': {'column': 'ACTION', 'operator': '=', 'value': 'alert'}}]
@@ -416,63 +427,60 @@ script:
         return res['aaData']
 
 
-    def fidelis_upload_pcap_command():
+    def upload_pcap_command():
         args = demisto.args()
         component_ip = args['component_ip']
         entry_id = args['entry_id']
 
-        results = fidelis_upload_pcap(component_ip, entry_id)
+        upload_pcap(component_ip, entry_id)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': results,
+            'Contents': 'Pcap file uploaded successfully.',
         })
 
 
     @logger
-    def fidelis_upload_pcap(component_ip, entry_id):
+    def upload_pcap(component_ip, entry_id):
         file_info = demisto.getFilePath(entry_id)
         shutil.copy(file_info['path'], file_info['name'])
 
         try:
             with open(file_info['name'], 'rb') as f:
                 res = http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
-                                    files={'uploadFile':f}, is_json=False)
+                                   files={'uploadFile':f}, is_json=False)
         finally:
             shutil.rmtree(file_info['name'], ignore_errors=True)
 
-        return 'Pcap file uploaded successfully.'
 
-
-    def fidelis_run_pcap_command():
+    def run_pcap_command():
         args = demisto.args()
         component_ip = args['component_ip']
         file_names = args['files'].split(',')
 
-        results = fidelis_run_pcap(component_ip, file_names)
+        run_pcap(component_ip, file_names)
 
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': results,
+            'Contents': 'Pcap file run submitted.',
         })
 
 
     @logger
-    def fidelis_run_pcap(component_ip, file_names):
+    def run_pcap(component_ip, file_names):
         data = {
             'component': component_ip,
             'files': file_names
         }
         res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)
-        return 'Pcap file run submitted.'
 
 
-    def fidelis_list_pcap_components_command():
+    def list_pcap_components_command():
         args = demisto.args()
 
-        results = fidelis_list_pcap_components()
+        results = list_pcap_components()
         ec = [{
             'IP': r['ip'],
             'Name': r['name'],
@@ -489,7 +497,7 @@ script:
 
 
     @logger
-    def fidelis_list_pcap_components():
+    def list_pcap_components():
         res = http_request('GET', '/j/rest/policy/pcap/components/')
 
         return res
@@ -497,6 +505,10 @@ script:
 
     def test_integration():
         # the login is executed in the switch panel code
+        if IS_FETCH:
+            # just check the correctness of the parameter
+            parse_date_range(FETCH_TIME)
+        list_pcap_components()
         demisto.results('ok')
 
 
@@ -507,25 +519,27 @@ script:
 
         # Handle first time fetch, fetch incidents retroactively
         if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S')
 
-        latest = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+        latest = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S')
 
+        demisto.debug('getting alarms since {}'.format(last_fetch))
         incidents = []
-        items = fidelis_list_alerts(time_frame='Custom', start_time=last_fetch)
+        items = list_alerts(time_frame='Custom', start_time=last_fetch)
+        demisto.debug('got {} new alarms'.format(len(items)))
         for item in items:
             incident_date = datetime.strptime(item['ALERT_TIME'], '%Y-%m-%d %H:%M:%S')
             incident = {
                 'Type': 'Fidelis',
-                'name': item['SUMMARY'],
-                'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
+                'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%S'),
                 'rawJSON': json.dumps(item),
             }
             latest = max(latest, incident_date)
             incidents.append(incident)
 
         if latest != last_fetch:
-            last_fetch = (latest + timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+            last_fetch = (latest + timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%S')
             demisto.setLastRun({'time' : last_fetch})
 
         demisto.incidents(incidents)
@@ -542,37 +556,38 @@ script:
             fetch_incidents()
 
         elif command == 'fidelis-get-alert':
-            fidelis_get_alert_command()
+            get_alert_command()
 
         elif command == 'fidelis-delete-alert':
-            fidelis_delete_alert_command()
+            delete_alert_command()
 
         elif command == 'fidelis-get-malware-data':
-            fidelis_get_malware_data_command()
+            get_malware_data_command()
 
         elif command == 'fidelis-get-alert-pcap':
-            fidelis_get_alert_pcap_command()
+            get_alert_pcap_command()
 
         elif command == 'fidelis-get-alert-report':
-            fidelis_get_alert_report_command()
+            get_alert_report_command()
 
         elif command == 'fidelis-sandbox-upload':
-            fidelis_sandbox_upload_command()
+            sandbox_upload_command()
 
         elif command == 'fidelis-list-alerts':
-            fidelis_list_alerts_command()
+            list_alerts_command()
 
         elif command == 'fidelis-upload-pcap':
-            fidelis_upload_pcap_command()
+            upload_pcap_command()
 
         elif command == 'fidelis-run-pcap':
-            fidelis_run_pcap_command()
+            run_pcap_command()
 
         elif command == 'fidelis-list-pcap-components':
-            fidelis_list_pcap_components_command()
+            list_pcap_components_command()
 
 
     except Exception as e:
+        raise
         return_error('error has occurred: {}\n{}'.format(type(e), e.message, ))
     finally:
         logout()
@@ -603,7 +618,7 @@ script:
       description: Alert summary
       type: string
     - contextPath: Fidelis.Alert.PolicyName
-      description: Related Policy name
+      description: Related policy name
       type: string
     - contextPath: Fidelis.Alert.Severity
       description: Alert severity
@@ -617,14 +632,14 @@ script:
     - contextPath: Fidelis.Alert.AssignedUser
       description: Assigned user ID
       type: string
-    description: Get alert details from Fidelis Elevate
+    description: Gets alert details from Fidelis Elevate.
   - name: fidelis-delete-alert
     arguments:
     - name: alert_id
       required: true
-      description: Alert ID
+      description: Alert ID of the alert to delete
       isArray: true
-    description: Delete an alert from Fidelis Elevate
+    description: Deletes an alert from Fidelis Elevate.
   - name: fidelis-get-malware-data
     arguments:
     - name: alert_id
@@ -647,30 +662,29 @@ script:
       description: Malware platform
       type: string
     - contextPath: Fidelis.Alert.Malware.DetailName
-      description: Malware detail name from Fidelis
+      description: Malware detail name from Fidelis Elevate
       type: string
     - contextPath: Fidelis.Alert.Malware.Variant
       description: Malware variant
       type: string
     - contextPath: Fidelis.Alert.Malware.Description
-      description: Malware description from Fidelis
+      description: Malware description from Fidelis Elevate
       type: string
-    description: Retrieve malware data related to a "Malware" type alert
+    description: Retrieves malware data related to a "Malware" type alert.
   - name: fidelis-get-alert-pcap
     deprecated: true
     arguments:
     - name: alert_id
       required: true
       description: Alert ID
-    description: Retrieve the alert pcap from Fidelis Elevate
+    description: Retrieves the alert pcap from Fidelis Elevate.
   - name: fidelis-get-alert-report
     arguments:
     - name: alert_id
       required: true
       description: Alert ID
-    description: Download a pdf report for a specified alert
+    description: Downloads a PDF report for a specified alert.
   - name: fidelis-sandbox-upload
-    deprecated: true
     arguments:
     - name: upload_item
       required: true
@@ -679,7 +693,7 @@ script:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID generated from the upload
       type: string
-    description: Upload a file or a URL for a sandbox analysis in Fidelis Elevate
+    description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
   - name: fidelis-list-alerts
     arguments:
     - name: time_frame
@@ -693,13 +707,13 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
-      description: Filter by time frame (i.e. Last 48 Hours)
+      description: Filter by time frame, e.g., Last 48 Hours
     - name: start_time
-      description: If time_frame is Custom, specify the start time for the time range
-        (e.g. 2017-06-01T12:48:16.734Z)
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g., 2017-06-01T12:48:16.734
     - name: end_time
-      description: If time_frame is Custom, specify the end time for the time range
-        (e.g. 2017-06-01T12:48:16.734Z)
+      description: If time_frame is Custom, specify the end time for the time range,
+        e.g., 2017-06-01T12:48:16.734
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -707,7 +721,7 @@ script:
       - Medium
       - High
       - Critical
-      description: Filter by Alert's severity
+      description: Filter by the alert's severity
     - name: type
       auto: PREDEFINED
       predefined:
@@ -741,7 +755,7 @@ script:
     - contextPath: Fidelis.Alert.Type
       description: Alert type
       type: string
-    description: List open Alerts from Fidelis Elevate
+    description: Returns a list of open Alerts from Fidelis Elevate.
   - name: fidelis-upload-pcap
     arguments:
     - name: component_ip
@@ -749,29 +763,29 @@ script:
       description: Component IP
     - name: entry_id
       required: true
-      description: War Room entry id of pcap (for example, 3245@4)
-    description: Upload a pcap file for analysis in Fidelis Elevate
+      description: War Room entry ID of the PCAP file, e.g., 3245@6
+    description: Uploads a PCAP file for analysis in Fidelis Elevate.
   - name: fidelis-list-pcap-components
     arguments: []
     outputs:
     - contextPath: Fidelis.Component.Name
-      description: Component Name
+      description: Component name
       type: string
     - contextPath: Fidelis.Component.IP
       description: Component IP
       type: string
-    description: Get pcap components
+    description: Gets PCAP components.
   - name: fidelis-run-pcap
     arguments:
     - name: component_ip
       required: true
-      description: Component IP
+      description: Component IP. Use 'fidelis-list-pcap-components' to get this value
     - name: files
       required: true
-      description: comma-separated list of pcap file names in Fidelis Elevate
-    description: Run pcap file analysis in Fidelis Elevate
+      description: CSV list of PCAP file names in Fidelis Elevate
+    description: Runs PCAP file analysis in Fidelis Elevate.
   isfetch: true
   runonce: false
-releaseNotes: "add command for pcap upload and analyze Fidelis Elevate Network"
+releaseNotes: "Added a command to support PCAP upload and analyze in Fidelis Elevate Network"
 tests:
   - Fidelis-Test
