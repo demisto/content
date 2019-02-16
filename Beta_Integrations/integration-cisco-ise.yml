@@ -92,7 +92,7 @@ script:
                 elif result.status_code == 404:
                     pass
                 else:
-                    raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint. " + str(result.text))
+                    raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint. " + result.text.encode('utf8'))
             elif method == 'PUT':
                 ISE.headers.update({'Accept':'application/json', 'Content-Type':'application/json'})
                 result = ISE.put(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL, data=json.dumps(data))
