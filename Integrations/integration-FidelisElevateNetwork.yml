@@ -389,7 +389,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': results,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(ec)), output),
+            'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output),
             'EntryContext': {
                 'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
             },
