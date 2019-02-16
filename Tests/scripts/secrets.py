@@ -19,7 +19,7 @@ from validate_files_structure import run_git_command
 ENTROPY_THRESHOLD = 3.8
 
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json'}
-ACCEPTED_FILE_STATUSES = ['M', 'A']
+ACCEPTED_FILE_STATUSES = ['M', 'A', "R"]
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
@@ -107,7 +107,18 @@ def get_diff_text_files(files_string):
             continue
 
         file_status = file_data[0]
-        file_path = file_data[1]
+        if file_status.upper().startswith("R"):
+            # if filename renamed
+            # sometimes the R comes with numbers R099,
+            # so I strip it from numbers in order later file_status.upper() in ACCEPTED_FILE_STATUSES to work properly
+            # the R status file usually will look like:
+            # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
+            # that is why we set index 2 to file_path - the second index is the updated file name
+            file_status = "R"
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
         # only modified/added file, text readable, exclude white_list file
         if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path):
             if not any(skipped_file in file_path for skipped_file in SKIPPED_FILES):

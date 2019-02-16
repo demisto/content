@@ -15326,6 +15326,18 @@
             }
         }, 
         {
+            "TestDedupIncidentsPlaybook": {
+                "name": "TestDedupIncidentsPlaybook", 
+                "implementing_scripts": [
+                    "CreateDuplicateIncident", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "DeDup incidents"
+                ]
+            }
+        }, 
+        {
             "TestExtractHTMLTables": {
                 "name": "TestExtractHTMLTables", 
                 "implementing_scripts": [
