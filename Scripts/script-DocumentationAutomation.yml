@@ -26,13 +26,13 @@ script: |-
       commands = []
       errors = []
       if entry_id is None:
-          return data
+          return commands, errors
 
-      try:
+      if re.match('[\d]+@[\d]+', entry_id) is not None:
           examples_path = demisto.getFilePath(entry_id)['path']
           with open(examples_path, 'r') as examples_file:
-              data = examples_file.read().split('\n')
-      except:
+              commands = examples_file.read().split('\n')
+      else:
           commands = entry_id.split('\n')
           errors.append('failed to open command file, tried parsing as free text')
 
@@ -43,7 +43,7 @@ script: |-
       valid_examples = [example for example in command_examples
                         if example.startswith(cmd) or example.startswith('!{}'.format(cmd))]
 
-      example = valid_examples[0] if len(valid_examples) > 0 else ' '
+      example = valid_examples[0] if len(valid_examples) > 0 else ''
       if example.startswith('!'):
           return example[1:]
       else:
@@ -322,7 +322,9 @@ script: |-
           'HumanReadable': documentation_text,
       })
       demisto.results(fileResult(filename, documentation_text, file_type=entryTypes['entryInfoFile']))
-      return_error('\n'.join('* {}'.format(e) for e in errors))
+      if len(errors) != 0:
+          errors.append('Visit the documentation page for more details: https://github.com/demisto/content/tree/master/docs/integration_documentation')
+          return_error('\n'.join('* {}'.format(e) for e in errors))
 
 
   if __name__ == '__builtin__':
