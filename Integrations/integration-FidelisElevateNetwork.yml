@@ -203,7 +203,7 @@ script:
 
         alert = get_alert(alert_id)
 
-        ec = {
+        output = {
             'ID': alert['alertId'],
             'ThreatScore': alert['fidelisScore'],
             'Time': alert['time'],
@@ -222,9 +222,9 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': alert,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), ec, headerTransform=pascalToSpace),
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), output, headerTransform=pascalToSpace),
             'EntryContext': {
-                'Fidelis.Alert(val.ID && val.ID == obj.ID)': ec,
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
             },
         })
 
@@ -266,7 +266,7 @@ script:
 
         result = get_malware_data(alert_id)
 
-        ec = {
+        output = {
             'ID': alert_id,
             'Malware': {
                 'Name': result['malwareName'],
@@ -286,7 +286,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Alert {} Malware:'.format(alert_id), result, headerTransform=pascalToSpace),
             'EntryContext': {
-                'Fidelis.Alert(val.ID && val.ID == obj.ID)': ec,
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
             },
         })
 
@@ -376,7 +376,7 @@ script:
         ioc = args.get('ioc')
 
         results = list_alerts(time_frame=time_frame, start_time=start_time, end_time=end_time, severity=severity, _type=_type, threat_score=threat_score, ioc=ioc)
-        ec = [{
+        output = [{
             'ID': alert['ALERT_ID'],
             'Time': alert['ALERT_TIME'],
             'Summary': alert['SUMMARY'],
@@ -389,9 +389,9 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': results,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(ec)), ec),
+            'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(ec)), output),
             'EntryContext': {
-                'Fidelis.Alert(val.ID && val.ID == obj.ID)': ec,
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
             },
         })
 
@@ -481,7 +481,7 @@ script:
         args = demisto.args()
 
         results = list_pcap_components()
-        ec = [{
+        output = [{
             'IP': r['ip'],
             'Name': r['name'],
         } for r in results]
@@ -491,8 +491,8 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': results,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('PCAP Components', ec, headers=['Name', 'IP']),
-            'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)' : ec},
+            'HumanReadable': tableToMarkdown('PCAP Components', output, headers=['Name', 'IP']),
+            'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)' : output},
         })
 
 
