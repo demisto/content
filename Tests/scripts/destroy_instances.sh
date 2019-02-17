@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
+set -e
+
 if [ -f ./Tests/is_build_failed.txt ]; then
     echo "Run Tests has failed, not Destroying instance"
     rm -rf ./Tests/is_build_failed.txt
 else
-   set -e
+./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
+   if [ -z "$2"];
+     then
+       INSTANCE_ID=$1
+    else
+       INSTANCE_ID=$(cat instance_ids)
+   fi
 
-   INSTANCE_ID=$(cat instance_ids)
+   if [ -z "$3"];
+     then
+       PUBLIC_IP=$3
+     else
+       PUBLIC_IP=$(cat public_ip)
+   fi
    USER="ec2-user"
 
    # collect log file to artifacts
-   PUBLIC_IP=$(cat public_ip)
+
    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USER}@${PUBLIC_IP} "sudo chmod -R 755 /var/log/demisto"
    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${USER}@${PUBLIC_IP}:/var/log/demisto/server.log $1 || echo "WARN: Failed downloading server.log"
 
