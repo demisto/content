@@ -697,9 +697,11 @@ def validate_conf_json():
 
     skipped_tests_conf = conf['skipped_tests']
     skipped_integrations_conf = conf['skipped_integrations']
+    unmockable_integrations_conf = conf['unmockable_integrations']
 
     problemtic_tests = []
     problemtic_integrations = []
+    problemtic_unmockable_integrations = []
 
     for test, description in skipped_tests_conf.items():
         if description == "":
@@ -709,13 +711,21 @@ def validate_conf_json():
         if description == "":
             problemtic_integrations.append(integration)
 
+    for integration, description in unmockable_integrations_conf.items():
+        if description == "":
+            problemtic_unmockable_integrations.append(integration)
+
     if problemtic_tests:
         print("Those tests don't have description:\n{0}".format('\n'.join(problemtic_tests)))
 
     if problemtic_integrations:
-        print("Those integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
+        print("Those skipped integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
 
-    if problemtic_integrations or problemtic_tests:
+    if problemtic_unmockable_integrations:
+        print("Those unmockable integrations don't have description:\n{0}"
+              .format('\n'.join(problemtic_unmockable_integrations)))
+
+    if any([problemtic_integrations, problemtic_tests, problemtic_unmockable_integrations]):
         sys.exit(1)
 
 

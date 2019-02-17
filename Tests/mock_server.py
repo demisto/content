@@ -49,18 +49,44 @@ class AMIConnection:
     """Wrapper for AMI communication.
 
     Attributes:
-        ip (string): The IP of the AMI instance.
+        public_ip (string): The public IP of the AMI instance.
+        docker_ip (string): The IP of the AMI on the docker bridge (to direct traffic from docker to the AMI).
     """
     def __init__(self, public_ip):
-        self.ip = public_ip
+        self.public_ip = public_ip
+        self.docker_ip = self.__get_docker_ip()
+
+    def __get_docker_ip(self):
+        """Get the IP of the AMI on the docker bridge.
+        Used to configure the docker host (AMI machine, in this case) as the proxy server.
+
+        Returns:
+            string: The IP of the AMI on the docker bridge.
+        """
+        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
+        lines_of_words = map(lambda y: y.strip().split(' '), out)
+        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)
+        if len(address_lines) != 1:
+            raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
+                            .format(len(address_lines)))
+        return address_lines[0][1].split('/')[0]
 
     def add_ssh_prefix(self, command, ssh_options=""):
+        """Add necessary text before a command in order to run it on the AMI instance via SSH.
+
+        Args:
+            command (list): Command to run on the AMI machine (according to "subprocess" interface).
+            ssh_options (string): optional parameters for ssh connection to AMI.
+
+        Returns:
+            string: ssh command that will run the desired command on the AMI.
+        """
         if ssh_options and not isinstance(ssh_options, str):
             raise TypeError("options must be string")
         if not isinstance(command, list):
             raise TypeError("command must be list")
         prefix = "ssh {} -o StrictHostKeyChecking=no {}@{}".format(ssh_options,
-                                                                   REMOTE_MACHINE_USER, self.ip).split()
+                                                                   REMOTE_MACHINE_USER, self.public_ip).split()
         return prefix + command
 
     def call(self, command, **kwargs):
@@ -74,10 +100,16 @@ class AMIConnection:
 
     def copy_file(self, src, dst=REMOTE_HOME, **kwargs):
         check_call(['scp', '-o', ' StrictHostKeyChecking=no', src,
-                    "{}@{}:{}".format(REMOTE_MACHINE_USER, self.ip, dst)], **kwargs)
+                    "{}@{}:{}".format(REMOTE_MACHINE_USER, self.public_ip, dst)], **kwargs)
         return os.path.join(dst, os.path.basename(src))
 
     def run_script(self, script, *args):
+        """Copy a script to the AMI and run it.
+
+        Args:
+            script (string): Name of the script file in the LOCAL_SCRIPTS_DIR.
+            *args (tuple): arguments to be passed to the script.
+        """
         remote_script_path = self.copy_file(os.path.join(LOCAL_SCRIPTS_DIR, script))
         self.check_call(['chmod', '+x', remote_script_path])
         self.check_call([remote_script_path] + list(args))
@@ -88,15 +120,6 @@ class AMIConnection:
     def clone_mock_data(self):
         remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', MOCK_KEY_FILE))
         self.run_script(CLONE_MOCKS_SCRIPT, remote_key_filepath)
-
-    def get_docker_ip(self):
-        out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
-        lines_of_words = map(lambda y: y.strip().split(' '), out)
-        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)
-        if len(address_lines) != 1:
-            raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
-                            .format(len(address_lines)))
-        return address_lines[0][1].split('/')[0]
 
 
 class MITMProxy:
@@ -201,7 +224,7 @@ class MITMProxy:
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy(self.ami.get_docker_ip() + ':9997')
+        self.__configure_proxy(self.ami.docker_ip + ':9997')
 
     def stop(self):
         if not self.process:
