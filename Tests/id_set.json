@@ -1715,7 +1715,7 @@
             "DocumentationAutomation": {
                 "name": "DocumentationAutomation", 
                 "tests": [
-                    "No test - Test not needed"
+                    "DocumentationTest"
                 ]
             }
         }, 
@@ -12909,6 +12909,16 @@
                 "command_to_integration": {
                     "dnstwist-domain-variations": "dnstwist"
                 }
+            }
+        }, 
+        {
+            "DocumentationTest": {
+                "name": "DocumentationTest", 
+                "implementing_scripts": [
+                    "DocumentationAutomation", 
+                    "DeleteContext", 
+                    "http"
+                ]
             }
         }, 
         {
