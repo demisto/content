@@ -4,7 +4,7 @@ from time import sleep
 from subprocess import Popen, PIPE
 
 HTTP_CODE = "{http_code}"
-HTTP_CODE_REQUEST = "curl --write-out %{} --silent --output /dev/null {}/user -k"
+HTTP_CODE_REQUEST = "curl --write-out %{} --silent --output /dev/null {}/user -k -m 15"
 
 MAX_TRIES = 20
 SLEEP_TIME = 45
@@ -46,9 +46,6 @@ def main():
     for _ in range(MAX_TRIES * SLEEP_TIME):
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
-                print ami_instance_name, ami_instance_ip
-                print ready_ami_list
-                print "%%%%%%%%%%%%%%%%%%%%%%%"
                 if ami_instance_name not in ready_ami_list:
                     http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
                     if http_code != 433:
@@ -58,7 +55,6 @@ def main():
                         print "{} is not ready yet - wait another 45 seconds".format(ami_instance_name)
 
             if len(instance_ips) > len(ready_ami_list):
-                print("sleeping")
                 sleep(1)
 
         else:
