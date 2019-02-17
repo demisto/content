@@ -23,8 +23,8 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: UUID received from login
-  name: uuid
+- display: Token received from login
+  name: token
   defaultvalue: ""
   type: 4
   required: true
@@ -77,7 +77,7 @@ script:
     SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
     BASE_URL = SERVER + '/api'
     TENANT_ID = demisto.params()['tenant_id']
-    UUID = demisto.params()['uuid']
+    TOKEN = demisto.params()['token']
     USE_SSL = not demisto.params().get('unsecure', False)
     FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
     FETCH_STATUS = demisto.params().get('fetch_status').split(',')
@@ -101,7 +101,7 @@ script:
             if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
                 return ctx.get('token')
         headers = {
-             'Authorization': UUID,
+             'Authorization': TOKEN,
              'Accept': 'application/json'
         }
         r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers, params={'tenant': TENANT_ID, 'product': 'ATP'})
