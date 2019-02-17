@@ -549,7 +549,7 @@ def create_content_descriptor(version, asset_id, res):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
     release_notes = "## Demisto Content Release Notes for version " + version + " (" + asset_id + ")\n"
-    release_notes += "##### Published on %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
+    release_notes += r"##### Published on %s\n%s" % (datetime.datetime.now().strftime("%d %B %Y"), res)
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(asset_id),
