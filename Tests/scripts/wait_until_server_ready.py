@@ -43,7 +43,7 @@ def main():
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
     print instance_ips
-    for _ in range(MAX_TRIES):
+    for _ in range(MAX_TRIES*SLEEP_TIME):
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 print ami_instance_name, ami_instance_ip
@@ -58,7 +58,8 @@ def main():
                         print "{} is not ready yet - wait another 45 seconds".format(ami_instance_name)
 
             if len(instance_ips) > len(ready_ami_list):
-                sleep(SLEEP_TIME)
+                print("sleeping")
+                sleep(1)
 
         else:
             break
