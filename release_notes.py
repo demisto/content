@@ -564,6 +564,7 @@ def create_content_descriptor(version, asset_id, res):
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
 
+    print release_notes
     with open('release-notes.txt', 'w') as outfile:
         outfile.write(release_notes)
 
