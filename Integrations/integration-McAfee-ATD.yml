@@ -5,29 +5,25 @@ commonfields:
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: baseUrl
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: username
   name: username
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: password
   name: password
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Trust any certificate (unsecure)
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "true"
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 description: 'Integrated advanced threat detection: Enhancing protection from network
   edge to endpoint'
 detaileddescription: |-
@@ -718,14 +714,14 @@ script:
     }
 
     ''' HELPERS '''
-
-
+    @logger
     def get_session_credentials():
         res = http_request('php/session.php', 'get', LOGINHEADERS)
         if (res):
             return res['results']
 
 
+    @logger
     def heart_beat():
         return http_request('php/heartbeat.php', 'get', API_HEADERS, HEARTBEATHEADERS)
 
@@ -843,6 +839,7 @@ script:
         result = get_session()
 
 
+    @logger
     def get_session():
         result = http_request('php/session.php', 'get', LOGINHEADERS)
         return result
@@ -865,6 +862,7 @@ script:
         })
 
 
+    @logger
     def list_users(user_type):
         user_type = user_type if user_type else 'STAND_ALONE'
         result = http_request('php/briefUserList.php?userType=' + user_type, 'get', API_HEADERS)
@@ -894,6 +892,7 @@ script:
         })
 
 
+    @logger
     def list_profiles():
         result = http_request('php/vmprofiles.php', 'get', API_HEADERS)
         return result['results']
@@ -919,7 +918,7 @@ script:
             }
         })
 
-
+    @logger
     def check_task_status_by_taskId(task_ids):
         res = {}
         multiple_results = []
@@ -942,6 +941,7 @@ script:
         }
 
 
+    @logger
     def check_task_status_by_jobId(job_ids):
         taskIds = []
         for i in range(len(job_ids)):
@@ -985,6 +985,7 @@ script:
         })
 
 
+    @logger
     def get_taskIds(job_ids):
         results = []
         for i in range(len(job_ids)):
@@ -1023,6 +1024,7 @@ script:
         })
 
 
+    @logger
     def file_upload_raw(body, file_entry_id, filename_to_upload):
         uri = 'php/fileupload.php'
         if len(filename_to_upload) == 0:  # first priority for the file name is user's argument
@@ -1223,6 +1225,7 @@ script:
         return context
 
 
+    @logger
     def get_report(uriSuffix, filename, report_type, uploadData, status, threshold):
         jres = http_request('php/showreport.php?' + uriSuffix + '&iType=json', 'get', API_HEADERS)
         if not jres:
@@ -1339,6 +1342,7 @@ script:
                 demisto.results(res)
 
 
+    @logger
     def logout():
         http_request('/php/session.php', 'delete', API_HEADERS)
 
