@@ -372,6 +372,8 @@ def main():
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip().split(":") for line in instance_ips]
 
+        print instance_ips
+        print options.serverVersion
         server_version = options.serverVersion
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == server_version:
