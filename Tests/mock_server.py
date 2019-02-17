@@ -7,13 +7,12 @@ from subprocess import call, Popen, PIPE, check_call, check_output
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
-MOCKS_TMP_PATH = "/tmp/Mocks/"
-MOCKS_GIT_PATH = "content-test-data/"
+MOCKS_TMP_PATH = '/tmp/Mocks/'
+MOCKS_GIT_PATH = 'content-test-data/'
 MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
-REMOTE_MACHINE_USER = "ec2-user"
-VALID_FILENAME_CHARS = "-_.() %s%s" % (string.ascii_letters, string.digits)
-
-REMOTE_HOME = "/home/{}/".format(REMOTE_MACHINE_USER)
+REMOTE_MACHINE_USER = 'ec2-user'
+REMOTE_HOME = '/home/{}/'.format(REMOTE_MACHINE_USER)
+VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 
 
 def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
@@ -47,6 +46,11 @@ def id_to_folder(playbook_id):
 
 
 class AMIConnection:
+    """Wrapper for AMI communication.
+
+    Attributes:
+        ip (string): The IP of the AMI instance.
+    """
     def __init__(self, public_ip):
         self.ip = public_ip
 
@@ -96,18 +100,44 @@ class AMIConnection:
 
 
 class MITMProxy:
+    """Manager for MITM Proxy and the mock file structure.
+
+    Attributes:
+        demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+        public_ip (string): The IP of the AMI instance.
+        primary_folder (string): path to the local clone of the content-test-data git repo.
+        tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
+        active_folder (string): the current folder to use for mock/log files.
+        debug (bool): enable debug prints - redirect.
+        ami (AMIConnection): Wrapper for AMI communication.
+        process (Popen): object representation of the Proxy process (used to track the proxy process status).
+        last_playbook_id (string): ID of the currently running / most recently run playbook.
+        record (bool): Proxy mode (playback/record).
+        empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
+    """
+
     def __init__(self, demisto_client, public_ip,
                  primary_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
+        """Initialize.
+
+        Args:
+            demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+            public_ip (string): The IP of the AMI instance.
+            primary_folder (string): path to the local clone of the content-test-data git repo.
+            tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
+            debug (bool): enable debug prints - redirect.
+        """
         self.demisto_client = demisto_client
         self.public_ip = public_ip
-        self.ami = AMIConnection(self.public_ip)
-        self.docker_ip = self.ami.get_docker_ip()
-        self.process = None
-        self.last_playbook_id = None
-        self.record = None
         self.active_folder = self.primary_folder = primary_folder
         self.tmp_folder = tmp_folder
         self.debug = debug
+
+        self.ami = AMIConnection(self.public_ip)
+
+        self.process = None
+        self.last_playbook_id = None
+        self.record = None
         self.empty_files = []
 
         with open(os.devnull, 'w') as fnull:
@@ -171,7 +201,7 @@ class MITMProxy:
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy(self.docker_ip + ':9997')
+        self.__configure_proxy(self.ami.get_docker_ip() + ':9997')
 
     def stop(self):
         if not self.process:
