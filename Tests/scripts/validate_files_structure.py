@@ -353,6 +353,16 @@ def get_modified_and_added_files(branch_name, is_circle):
             modified_files = modified_files - {deleted_file}
             added_files = added_files - {deleted_file}
 
+        for non_commited_mod_file in non_committed_modified_files:
+            added_files = added_files - {non_commited_mod_file}
+
+        new_added_files = set([])
+        for added_file in added_files:
+            if added_file in non_committed_added_files:
+                new_added_files.add(added_file)
+
+        added_files = new_added_files
+
     return modified_files, added_files
 
 

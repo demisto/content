@@ -52,7 +52,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
         if res.status_code == 500:
             try:
                 error = res.json().get('detailMessage', res.content)
-            except:
+
+            except:  # noqa
                 error = res.content
 
             return_error('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
@@ -80,7 +81,7 @@ def login():
             if res.get('error') is not None:
                 raise requests.HTTPError('Failed to login: {}'.format(res['error']))
             SESSION_ID = res.get('uid')
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as e:  # noqa
             return_error('Demisto has encounter a connection error, '
                          'please check the server_url and credentials parameters')
 
@@ -92,7 +93,8 @@ def logout():
             url = '/j/rest/v1/access/logout/{}/'.format(SESSION_ID)
             http_request('GET', url)
             SESSION_ID = None
-        except:
+
+        except:  # noqa
             pass
 
 
@@ -153,6 +155,8 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
 def get_alert_command():
     args = demisto.args()
     alert_id = args['alert_id']
@@ -364,7 +368,7 @@ def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, 
     if _type is not None:
         filters.append({'simple': {'column': 'ALERT_TYPE', 'operator': 'IN', 'value': _type}})
     if threat_score is not None:
-        filters.append({'simple':{'column': 'FIDELIS_SCORE', 'operator': '>', 'value': threat_score}})
+        filters.append({'simple': {'column': 'FIDELIS_SCORE', 'operator': '>', 'value': threat_score}})
     if ioc is not None:
         filters.append({'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}})
 
@@ -406,8 +410,8 @@ def upload_pcap(component_ip, entry_id):
 
     try:
         with open(file_info['name'], 'rb') as f:
-            res = http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
-                               files={'uploadFile':f}, is_json=False)
+            http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
+                         files={'uploadFile': f}, is_json=False)
     finally:
         shutil.rmtree(file_info['name'], ignore_errors=True)
 
@@ -432,11 +436,11 @@ def run_pcap(component_ip, file_names):
         'component': component_ip,
         'files': file_names
     }
-    res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)
+    res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
 
 
 def list_pcap_components_command():
-    args = demisto.args()
+    args = demisto.args()  # noqa
 
     results = list_pcap_components()
     output = [{
@@ -450,7 +454,7 @@ def list_pcap_components_command():
         'Contents': results,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('PCAP Components', output, headers=['Name', 'IP']),
-        'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)' : output},
+        'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)': output},
     })
 
 
@@ -498,7 +502,7 @@ def fetch_incidents():
 
     if latest != last_fetch:
         last_fetch = (latest + timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%S')
-        demisto.setLastRun({'time' : last_fetch})
+        demisto.setLastRun({'time': last_fetch})
 
     demisto.incidents(incidents)
 
