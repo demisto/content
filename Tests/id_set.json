@@ -7539,6 +7539,22 @@
             }
         }, 
         {
+            "AWS - ACM": {
+                "name": "AWS - ACM", 
+                "commands": [
+                    "aws-acm-describe-certificate", 
+                    "aws-acm-list-certificates", 
+                    "aws-acm-add-tags-to-certificate", 
+                    "aws-acm-remove-tags-from-certificate", 
+                    "aws-acm-list-tags-for-certificate", 
+                    "aws-acm-get-certificate"
+                ], 
+                "tests": [
+                    "No Tests"
+                ]
+            }
+        }, 
+        {
             "AWS - CloudTrail": {
                 "name": "AWS - CloudTrail", 
                 "commands": [
