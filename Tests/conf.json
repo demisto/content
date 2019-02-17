@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
