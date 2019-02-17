@@ -154,6 +154,7 @@ script:
         }
         res = send_request(query_path, headers=headers, params=params)
         if not res.ok:
+            demisto.debug(res.text)
             return_error('Failed to login, check integration parameters.')
 
         try:
@@ -178,6 +179,7 @@ script:
         }
         res = send_request(query_path, headers=headers, params=params)
         if not res.ok:
+            demisto.debug(res.text)
             return_error('Failed to login, check integration parameters.')
 
 
@@ -195,7 +197,8 @@ script:
                 params=params,
                 json=json
             )
-        except requests.exceptions.ConnectionError as e:
+        except Exception as e:
+            demisto.debug(e.message)
             return_error('Connection Error. Please check URL')
 
 
@@ -233,6 +236,7 @@ script:
         res = send_request(query_path, params=params, method='get')
 
         if not res.ok:
+            demisto.debug(res.text)
             if 'ResourceNotFoundException' in res.text:
                 return_error('Invalid resource ID {} for Query Viewer(ResourceNotFoundException)'.format(query_viewer_id))
             else:
@@ -386,6 +390,7 @@ script:
         res = send_request(query_path, params=params, method='get')
 
         if not res.ok:
+            demisto.debug(res.text)
             if 'InvalidResourceIDException: Invalid resource ID' in res.text and 'for Case' in res.text:
                 return_error('Invalid resource ID {} for Case'.format(resource_id))
             else:
@@ -442,6 +447,7 @@ script:
         res = send_request(query_path, params=params, method='get')
 
         if not res.ok:
+            demisto.debug(res.text)
             return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
 
         all_cases = res.json().get('cas.findAllIdsResponse').get('cas.return')
@@ -509,8 +515,8 @@ script:
         res = send_request(query_path, json=json_, params=params)
 
         if not res.ok:
-            return_error(
-                'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
+            demisto.debug(res.text)
+            return_error('Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                     event_ids, BASE_URL + query_path, res.status_code, res.text))
 
         res_json = res.json()
@@ -567,6 +573,7 @@ script:
         res = send_request(query_path, json=json_, params=params)
 
         if not res.ok:
+            demisto.debug(res.text)
             return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                 case_id, BASE_URL + query_path, res.status_code, res.text))
 
@@ -588,6 +595,7 @@ script:
 
         res = send_request(query_path, params=params, method='get')
         if not res.ok:
+            demisto.debug(res.text)
             return_error("Failed to get Event IDs with:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
         res_json = res.json()
@@ -623,6 +631,7 @@ script:
         }
         res = send_request(query_path, params=params, body=req_body)
         if not res.ok:
+            demisto.debug(res.text)
             return_error("Failed to delete case:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
 
@@ -636,6 +645,7 @@ script:
         res = send_request(query_path, body=body)
 
         if not res.ok:
+            demisto.debug(res.text)
             return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                 resource_id, res.status_code, body, res.text))
 
@@ -674,8 +684,8 @@ script:
         res = send_request(query_path, body=body)
 
         if not res.ok:
-            return_error(
-                "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+            demisto.debug(res.text)
+            return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                     resource_id, res.status_code, body, res.text))
 
         demisto.results("Success")
@@ -699,6 +709,7 @@ script:
         res = send_request(query_path, body=body)
 
         if not res.ok:
+            demisto.debug(res.text)
             return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                 resource_id, res.status_code, body, res.text))
 
@@ -717,6 +728,7 @@ script:
         }
         res = send_request(query_path, headers=headers, params=params)
         if not res.ok:
+            demisto.debug(res.text)
             return_error("Failed to get query viewers:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
 
         res_json = res.json()
