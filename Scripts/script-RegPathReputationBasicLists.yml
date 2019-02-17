@@ -21,8 +21,7 @@ script: |-
   r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Provider Filters",
   r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers",
   r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\PLAP Providers",
-  r"HKLM\SOFTWARE\Microsoft\Windows\CurrentV
-  ersion\Explorer\ShellServiceObjects",
+  r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ShellServiceObjects",
   r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
   r"HKLM\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components",
   r"HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Windows\Appinit_Dlls",

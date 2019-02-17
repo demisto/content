@@ -35,10 +35,10 @@ tasks:
     task:
       id: fcf89708-1c0b-4bd2-83a7-1011fc01ae95
       version: -1
-      name: RegPathReputationBasicLists_fix2
+      name: RegPathReputationBasicLists
       description: Check the given registry path against a small blacklist and whitelist.
         If the key matches neither, returns an answer of 2 meaning "Unknown".
-      scriptName: RegPathReputationBasicLists_fix2
+      scriptName: RegPathReputationBasicLists
       type: regular
       iscommand: false
       brand: ""
