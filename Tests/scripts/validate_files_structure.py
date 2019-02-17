@@ -210,7 +210,7 @@ def validate_schema(file_path, matching_regex=None):
             print_error(err)
             return False
 
-    print_error(file_path + " doesn't match any of the known supported file prefix/suffix," \
+    print_error(file_path + " doesn't match any of the known supported file prefix/suffix,"
                 " please make sure that its naming is correct.\nValid file name formats:\n{}"
                 .format("\n".join(CHECKED_TYPES_REGEXES)))
     return False
@@ -559,7 +559,7 @@ def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
 
     data_dict = get_json(file_path)
     if data_dict.get('name') != compared_id:
-        print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
+        print_error("The ID is not equal to the name, the convention is for them to be identical, please fix that,"
                     " the file is {}".format(file_path))
         return False
 
@@ -640,8 +640,7 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
     has_schema_problem = False
     for file_path in modified_files:
         print "Validating {}".format(file_path)
-        if "conf.json" in file_path:
-            continue
+
         if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
                 validate_fromversion_on_modified(file_path):
             has_schema_problem = True
