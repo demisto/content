@@ -14628,7 +14628,7 @@
             "RegPathReputationBasicLists_test": {
                 "name": "RegPathReputationBasicLists_test", 
                 "implementing_scripts": [
-                    "RegPathReputationBasicLists_fix2"
+                    "RegPathReputationBasicLists"
                 ]
             }
         }, 
