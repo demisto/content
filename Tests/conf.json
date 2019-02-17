@@ -1046,6 +1046,12 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+                {
+            "playbookID": "Endpoint data collection test"
+        },
+                {
+            "playbookID": "MAR - Endpoint data collection test"
         }
     ],
     "skipped_tests": {
