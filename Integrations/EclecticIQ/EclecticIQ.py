@@ -54,13 +54,16 @@ def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
     if res.status_code not in {200}:
         if res.status_code == 405:
             return_error(
-                'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid URL.'
+                'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid '
+                'URL. '
             )
         try:  # Parse the error message
             errors = json.loads(res.text).get('errors', {})[0]
             title = errors.get('title', '')
             detail = errors.get('detail', '')
-            return_error('Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail))
+            return_error(
+                'Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail)
+            )
         except Exception:  # In case error message is not in expected format
             return_error(res.content)
 
