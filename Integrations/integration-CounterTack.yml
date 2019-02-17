@@ -1689,3 +1689,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: fixing issues
+tests:
+  - No tests
