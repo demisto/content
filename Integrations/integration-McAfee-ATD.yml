@@ -1,17 +1,7 @@
+category: Forensics & Malware Analysis
 commonfields:
   id: McAfee Advanced Threat Defense
   version: -1
-name: McAfee Advanced Threat Defense
-display: McAfee Advanced Threat Defense
-fromversion: 3.5.0
-category: Forensics & Malware Analysis
-image: data:image/png;base64,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
-description: 'Integrated advanced threat detection: Enhancing protection from network
-  edge to endpoint'
-detaileddescription: |
-  Users must to have the "Allow Multiple Logins" capability.
-  Go to Manage -> ATD Configuration -> ATD Users -> User Configuration
-  Enable the "Allow Multiple Logins" checkbox for the relevant user.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: baseUrl
@@ -38,746 +28,127 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+description: 'Integrated advanced threat detection: Enhancing protection from network
+  edge to endpoint'
+detaileddescription: |-
+  Users must to have the "Allow Multiple Logins" capability.
+  Go to Manage -> ATD Configuration -> ATD Users -> User Configuration
+  Enable the "Allow Multiple Logins" checkbox for the relevant user.
+display: McAfee Advanced Threat Defense
+name: McAfee Advanced Threat Defense
 script:
-  script: |-
-    ''' IMPORTS '''
-    import string
-    import requests
-    import json
-    import re
-    import base64
-    import shutil
-    import time
-
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    if not demisto.params().get("proxy", False):
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
-
-    ''' PREREQUISITES '''
-    def load_server_url():
-        ''' Cleans and loads the server url from the configuration '''
-        url = demisto.params()['baseUrl']
-        url = re.sub('/[\/]+$/', '', url)
-        url = re.sub('\/$', '', url)
-        return url
-
-    ''' GLOBALS '''
-    USERNAME = demisto.params()['username']
-    PASSWORD = demisto.params()['password']
-    USE_SSL = not demisto.params()['unsecure']
-    BASE_URL = load_server_url()
-    LOGINHEADERS = {
-        'Accept': 'application/vnd.ve.v1.0+json',
-        'Content-Type': 'application/json',
-        'VE-SDK-API': base64.b64encode(USERNAME + ':' + PASSWORD)
-    }
-    HEARTBEATHEADERS = {
-        'Accept': 'application/vnd.ve.v1.0+json',
-        'Content-Type': 'application/json'
-    }
-
-    ''' HELPERS '''
-    def get_session_credentials():
-        res = http_request('php/session.php','get', LOGINHEADERS)
-        if (res):
-            return res['results']
-
-    def heart_beat():
-        return http_request('php/heartbeat.php','get', API_HEADERS, HEARTBEATHEADERS)
-
-    def get_headers():
-        sess = get_session_credentials()
-        return {
-            'Accept': 'application/vnd.ve.v1.0+json',
-            'VE-SDK-API': base64.b64encode(sess['session'] + ':' + sess['userId'])
-        }
-
-    def http_request(uri, method, headers ={}, body ={}, params={}, files={}):
-        ''' Makes an API call with the supplied uri, method, headers, body '''
-        url = '%s/%s' % (BASE_URL, uri)
-        res = requests.request(
-            method,
-            url,
-            headers=headers,
-            data=body,
-            verify=USE_SSL,
-            params=params,
-            files=files
-        )
-        if res.status_code < 200 or res.status_code >= 300:
-                return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
-        result = res.content
-
-        if not uri.startswith('php/showreport.php?'):
-            # parsing the int as string is vital for long taskId/jobId that round up by json.loads
-            result = json.loads(result, parse_int = str)
-            if 'success' in result:
-                if (result['success'] == 'false'):
-                    return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
-        return result
-
-    def prettify_current_user_res(current_user):
-        pretty_current_user = {
-            'APIVersion': current_user['apiVersion'],
-            'IsAdmin': 'True' if current_user['isAdmin'] == '1' else 'False',
-            'SessionId': current_user['session'],
-            'UserId': current_user['userId']
-        }
-        return pretty_current_user
-
-    def prettify_list_users_res(users):
-        pretty_users = [] if len(users) > 0 else ''
-
-        for i in range(len(users)):
-            user = users[i]
-            pretty_users.append({
-                'FullName': user['fullName'],
-                'UserId': user['idx'],
-                'LoginId': user['loginId'],
-                'UserType': user['userType']
-            })
-
-        return pretty_users
-
-    def prettify_list_profiles_res(profiles):
-        pretty_profiles = []
-        for i in range(len(profiles)):
-            pretty_profiles.append({
-                'Name': profiles[i]['name'],
-                'AnalyzerProfileId': profiles[i]['vmProfileid'],
-                'Description': profiles[i]['vmDesc'],
-                'Sandbox': 'True' if profiles[i]['sandbox'] == 1 else 'False',
-                'Internet': 'True' if profiles[i]['internet'] == 1 else 'False',
-                'LocalBlackList': 'True' if profiles[i]['locBlackList'] == 1 else 'False'
-            })
-        return pretty_profiles
-
-    def prettify_task_status_by_taskId_res(task_status):
-        pretty_task_status = {
-            'taskId': task_status['taskid'],
-            'jobId': task_status['jobid'],
-            'status': task_status['status'],
-            'filename': task_status['filename'],
-            'MD5': task_status['md5'],
-            'submitTime': task_status['submitTime']
-        }
-        return pretty_task_status
-
-    def prettify_file_upload_res(file_upload_res):
-        pretty_file_upload = {
-            'taskId': file_upload_res['results'][0]['taskId'],
-            'jobId': file_upload_res['subId'],
-            'messageId': file_upload_res['results'][0]['messageId'],
-            'url': file_upload_res['results'][0]['url'],
-            'srcIp': file_upload_res['results'][0]['srcIp'],
-            'destIp': file_upload_res['results'][0]['destIp'],
-            'MD5': file_upload_res['results'][0]['md5'],
-            'SHA1': file_upload_res['results'][0]['sha1'],
-            'SHA256': file_upload_res['results'][0]['sha256'],
-        }
-        return pretty_file_upload
-
-    ''' FUNCTIONS '''
-    def test_get_session():
-        result = get_session()
-
-    def get_session():
-        result = http_request('php/session.php','get', LOGINHEADERS)
-        return result
-
-    def get_session_command():
-        result = get_session()
-        result = result['results']
-        md = tableToMarkdown('ATD Current User',prettify_current_user_res(result),
-                                ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.Session(val.SessionId == obj.SessionId)': prettify_current_user_res(result)
-            }
-        })
-
-    def list_users(userType):
-        userType = userType if userType else 'STAND_ALONE'
-        result = http_request('php/briefUserList.php?userType='+userType,'get', API_HEADERS)
-        users = result['results']
-        return users
-
-    def list_users_command():
-        users = list_users(demisto.args()['userType'])
-
-        pretty_users = prettify_list_users_res(users)
-        md = tableToMarkdown(
-            'ATD User List',
-            pretty_users,
-            ['FullName', 'UserId', 'LoginId', 'UserType']
-            )
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': users,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.Users(val.UserId == obj.UserId)': pretty_users,
-            }
-        })
-
-    def list_profiles():
-        result =  http_request('php/vmprofiles.php','get', API_HEADERS)
-        return result['results']
-
-    def list_profiles_command():
-        result = list_profiles()
-
-        md = tableToMarkdown(
-            'ATD Analyzers Profile List',prettify_list_profiles_res(result),
-            ['Name','AnalyzerProfileId','Description',
-            'Sandbox','Internet','LocalBlackList']);
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.ListAnalyzerProfiles(val.AnalyzerProfileId == obj.AnalyzerProfileId)': prettify_list_profiles_res(result)
-            }
-        })
-
-    def check_task_status_by_taskId(taskIds):
-        res = {}
-        multipleResults = []
-        tasks = []
-        requestSuffix = ''
-
-        for i in range(len(taskIds)):
-            requestSuffix = 'iTaskId=' + str(taskIds[i])
-            res = http_request('php/samplestatus.php?' + requestSuffix ,'get', API_HEADERS)
-
-            # when you use TaskID, you get results in res.results
-            tasks.append(prettify_task_status_by_taskId_res(res['results']))
-            multipleResults.append(res['results'])
-
-        status = res['results']['status'] #backward compatability
-        return {
-            'status': status,
-            'tasks': tasks,
-            'multipleResults': multipleResults
-        }
-
-    def check_task_status_by_jobId(jobIds):
-        taskIds = []
-        for i in range(len(jobIds)):
-            result = http_request('php/getTaskIdList.php?jobId='+jobIds[i],'get', API_HEADERS)
-            task_id = result['result']['taskIdList']
-            taskIds.append(task_id)
-        return check_task_status_by_taskId(taskIds)
-
-    def check_task_status_command():
-        ids = []
-        result = {}
-        args = demisto.args()
-
-        if ( ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args) ):
-            return_error('You must specify one (and only one) of the following: jobId, taskId.')
-
-        if 'jobId' in args:
-            ids = argToList(args['jobId'])
-            result = check_task_status_by_jobId(ids)
-
-        elif 'taskId' in args:
-            ids = argToList(args['taskId'])
-            result = check_task_status_by_taskId(ids)
-
-        md = tableToMarkdown(
-            'ATD Sandbox Task Status',
-            result['tasks'],
-            (result['tasks'][0]).keys()
-        )
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result['multipleResults'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.status': result['status'], #backward compatability
-                  'ATD.Task(val.taskId == obj.taskId)': result['tasks']
-            }
-        })
-
-    def get_taskIds(jobIds):
-        results = []
-        result = {}
-        for i in range(len(jobIds)):
-            result = http_request('php/getTaskIdList.php?jobId=' + str(jobIds[i]),'get', API_HEADERS)
-            results.append(result)
-        return results
-
-    def get_taskIds_command():
-        jobIds = argToList(demisto.args()['jobId'])
-        results = get_taskIds(jobIds)
-
-        multipleMd = []
-        ec = []
-        for i in range(len(results)):
-            multipleMd.append({
-                'taskId': results[i]['result']['taskIdList'],
-                'jobId': jobIds[i]
-            })
-            ec.append({
-                'taskId': results[i]['result']['taskIdList'],
-                'jobId': jobIds[i]
-            })
-
-        md = tableToMarkdown('ATD TaskIds and JobIds List', multipleMd, ['taskId', 'jobId'])
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': results,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                  'ATD.Task(val.jobId == obj.jobId)': ec
-            }
-        })
-
-    def file_upload_raw(body, fileEntryId, filenameToUpload):
-        uri = 'php/fileupload.php'
-        if len(filenameToUpload) == 0: # first priority for the file name is user's argument
-            #second priority for the file name is the file name in the context
-            filenameDq = demisto.dt(demisto.context(), 'File(val=val.EntryID=="' + fileEntryId +'")=val.Name')
-            if (filenameDq and filenameDq[0]):
-                filenameToUpload = filenameDq
-            else:
-                filenameToUpload = fileEntryId # last priority for the file name is demisto's entryID
-
-        with open(demisto.getFilePath(fileEntryId)['path'], 'rb') as f:
-            file_up = {'amas_filename': f}
-            res = http_request(
-                uri,
-                'post',
-                API_HEADERS,
-                body,
-                '',
-                files=file_up,
-            )
-
-        if (not res['success']):
-            return_error('Failed to upload sample due to: ' + res['errorMessage'])
-        return res
-
-    def url_upload_raw(body):
-        uri = 'php/fileupload.php'
-        res = http_request(
-            uri,
-            'post',
-            API_HEADERS,
-            body
-            )
-
-        if (res['success'] == False):
-            return_error('Failed to upload sample due to: ' + res['errorMessage'])
-        return res
-
-    def file_upload(submitType, sample, vmProfileList,
-                                skipTaskId = None, analyzeAgain = None, xMode = None, messageId = None,
-                                filePriorityQ = None, srcIp = None, destIp = None, fileName = None):
-        body = {}
-        body['data'] = {}
-        data = {}
-        data['data'] = {}
-        # Add missing prefix to url
-        if submitType != 0:
-            if not sample.startswith('http://') and not sample.startswith('https://'):
-                if sample.startswith('www.'):
-                    sample = "http://" + sample
-                else:
-                    sample = "http://www." + sample   # disable-secrets-detection
-
-
-        data['data']['vmProfileList'] = vmProfileList
-        data['data']['submitType'] = submitType
-        data['data']['messageId'] = messageId
-        data['data']['srcIp'] = srcIp
-        data['data']['destIp'] = destIp
-        data['data']['url'] = '' if submitType == 0 else sample
-        data['data']['skipTaskId'] = int(skipTaskId) if skipTaskId else None
-        data['data']['analyzeAgain'] = analyzeAgain
-        data['data']['xMode'] = xMode
-        data['data']['filePriorityQ'] = filePriorityQ if filePriorityQ else 'run_now'
-
-        body['data'] = json.dumps(data)
-        file = sample if submitType == 0 else ''
-        filenameToUpload = fileName if (submitType == 0 and fileName) else ''
-        if (submitType == 0):
-            resultObj = file_upload_raw(body, file, filenameToUpload)
-        elif (submitType == 1):
-            resultObj = url_upload_raw(body)
-        return{
-            'taskId': resultObj['results'][0]['taskId'],
-            'resultObj': resultObj
-        }
-
-    def file_upload_command():
-        args = demisto.args()
-
-        if (('entryID' in args and 'url' in args) or ('entryID' not in args and 'url' not in args)):
-            return_error('You must submit one and only one of the following: url, entryID')
-        if (('entryID' in args and args['submitType'] != '0') or ('url' in args and args['submitType'] != '1')):
-            return_error('In order to detonate a file submitType must be 0 and an entryID of a file must be given.\n' +
-                'In order to detonate a url submitType must be 1 and a url must be given.')
-
-        sample = args['entryID'] if 'entryID' in args else args['url']
-        vmProfileList = int(args['vmProfileList']) if 'vmProfileList' in args else None
-        analyzeAgain = int(args['analyzeAgain']) if 'analyzeAgain' in args else None
-        skipTaskId = int(args['skipTaskId']) if 'skipTaskId' in args else None
-        xMode = int(args['xMode']) if 'xMode' in args else None
-        messageId = args['messageId'] if 'messageId' in args else None
-        filePriorityQ = args['filePriorityQ'] if 'filePriorityQ' in args else None
-        srcIp = args['srcIp'] if 'srcIp' in args else None
-        destIp = args['destIp'] if 'destIp' in args else None
-        fileName = args['fileName'] if 'fileName' in args else None
-
-        result = file_upload(int(args['submitType']), sample, vmProfileList,
-                            skipTaskId, analyzeAgain, xMode, messageId, filePriorityQ,
-                            srcIp, destIp, fileName)
-        md = tableToMarkdown('ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
-                                ['taskId', 'jobId', 'messageId', 'url', 'destIp', 'srcIp', 'MD5', 'SHA1', 'SHA256'])
-
-        upload_file_output = {
-            'ATD.Task(val.taskId == obj.taskId)': prettify_file_upload_res(result['resultObj']),
-            'ATD.taskId': result['taskId'] # backward compatabillity
-        }
-        if 'url' in args:
-            upload_file_output[outputPaths['url']] = sample
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result['resultObj'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': upload_file_output
-        })
-
-    def build_report_context(reportSummary, uploadData, status, threshold):
-        context = {}
-        if reportSummary and reportSummary['Subject']:
-            subject = reportSummary['Subject']
-            context = {
-                'DBotScore': {
-                    'Vendor': 'McAfee Advanced Threat Defense',
-                    'Score': 0
-                }
-            }
-            if ('FileType' in subject):
-                context['DBotScore']['Indicator'] = subject['md5']
-                context['DBotScore']['Type'] = 'hash'
-                # default threshold for McAfee ATD is 3
-                if (reportSummary['Verdict']['Severity'] > threshold):
-                    context['DBotScore']['Score'] = 3
-                    if subject['Type'] == 'application/url':
-                        context['URL(val.Name == obj.Data)'] = {
-                            'Type' : subject['Type'],
-                            'MD5' : subject['md5'],
-                            'SHA1' : subject['sha-1'],
-                            'SHA256' : subject['sha-256'],
-                            'Size' : subject['size'],
-                            'Name' : subject['Name'],
-                            'Malicious': {
-                                'Vendor': 'McAfee Advanced Threat Defense',
-                                'Description': 'Severity: ' + reportSummary['Verdict']['Severity']
-                            }
-                        }
-                    else:
-                        context['File(val.MD5 == obj.MD5)'] = {
-                            'Type' : subject['Type'],
-                            'MD5' : subject['md5'],
-                            'SHA1' : subject['sha-1'],
-                            'SHA256' : subject['sha-256'],
-                            'Size' : subject['size'],
-                            'Name' : subject['Name'],
-                            'Malicious': {
-                                'Vendor': 'McAfee Advanced Threat Defense',
-                                'Description': 'Severity: ' + reportSummary['Verdict']['Severity']
-                            }
-                        }
-                else:
-                    context['DBotScore']['Score'] = 1
-
-            context['IP'] = {}
-            if ('Ips' in reportSummary):
-                ip_addresses = []
-                for i in range(len(reportSummary['Ips'])):
-                    ip_addresses.append(reportSummary['Ips'][i]['Ipv4'])
-                context['IP']['Address'] = ip_addresses
-
-            if (uploadData):
-                context['ATD'] = {}
-                context['ATD']['Task(val.taskId == obj.taskId)'] = {
-                    'status': status,
-                    'taskId': uploadData['taskId'],
-                    'jobId': uploadData['subId'] if 'subId' in uploadData else None,
-                    'messageId': uploadData['messageId'],
-                    'url': uploadData['url'],
-                    'srcIp': uploadData['srcIp'],
-                    'destIp': uploadData['destIp'],
-                    'MD5': uploadData['md5'],
-                    'SHA1': uploadData['sha1'],
-                    'SHA256': uploadData['sha256'],
-                    'Report':
-                        {
-                        'Attachments': reportSummary['Attachments'] if 'Attachment' in reportSummary else None,
-                        'Environment': reportSummary['Environment'] if 'Environment' in reportSummary else None,
-                        'Ips': reportSummary['Ips'] if 'Ips' in reportSummary else None,
-                        'Verdict':reportSummary['Verdict'] if 'Verdict' in reportSummary else None,
-                        'Data': reportSummary['Data'] if 'Data' in reportSummary else None,
-                        'Selectors': reportSummary['Selectors'] if 'Selectors' in reportSummary else None,
-                        }
-                    }
-        return context
-
-    def get_report(uriSuffix, filename, report_type, uploadData, status, threshold):
-        jres = http_request('php/showreport.php?' + uriSuffix + '&iType=json', 'get', API_HEADERS)
-        if (not jres):
-            return_error('You cannot download this report because you do not have the same permissions as the user that uploaded the submission to McAfee ATD.\nMake sure you have the same permissions as the user that uploaded the submissions. Admin users have full permissions.')
-        jres = json.loads(jres)
-        summary = jres['Summary']
-        summary['VerdictDescription'] = summary['Verdict']['Description']
-        summary['VerdictSeverity'] = summary['Verdict']['Severity']
-        ec = build_report_context(summary, uploadData, status, threshold)
-        jresString = json.dumps(jres)
-        if (report_type == 'json'):
-            md = tableToMarkdown('McAfee ATD Sandbox Report', summary, summary.keys(), None, True)
-            return {
-                'content': jresString,
-                'md': md,
-                'ec': ec
-            }
-
-        res = http_request('php/showreport.php?' + uriSuffix + '&iType=' + report_type, 'get', API_HEADERS)
-
-        if (report_type == 'pdf' or report_type == 'zip'):
-            filename = str(filename) + '.' + report_type
-            return {
-                'content': res,
-                'filename': filename,
-                'ec': ec
-            }
-
-        if (report_type == 'sample'):
-            return {
-                'content': res,
-                'filename': filename + '.zip',
-                'ec': ec
-            }
-        return res
-
-    def get_report_command():
-        uriSuffix = job_or_taskId();
-        args = demisto.args()
-        report_type = args['type'] if 'type' in args else 'pdf'
-        threshold = args['threshold']
-
-        filename = args['jobId'] if 'jobId' in args else args['taskId']
-
-        return_report(uriSuffix, filename, report_type, '', '', threshold)
-
-    def job_or_taskId():
-        uriSuffix = ''
-        args = demisto.args()
-        if ( ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args) ):
-            return_error('You must specify one (and only one) of the following: jobId, taskId.')
-
-        if 'jobId' in args:
-            uriSuffix = 'jobId=' + str(args['jobId'])
-        else:
-            uriSuffix = 'iTaskId=' + str(args['taskId'])
-
-        return uriSuffix;
-
-    def detonate(submitType ,sample, timeout, report_type, threshold, fileName):
-        result = file_upload(submitType, sample, fileName)
-        taskId = result['taskId']
-        uploadData = result['resultObj']['results'][0]
-
-        status = ''
-        timeout = int(timeout)
-        while (0 < timeout):
-            status = str(check_task_status_by_taskId([taskId])['status'])
-            if (status == 'Completed'):
-                uriSuffix = 'iTaskId=' + str(taskId)
-                return_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
-                sys.exit(0)
-            time.sleep(1)
-            timeout -= 1
-
-        return_error("Timeout due to no answer after " + demisto.args()['timeout'] +
-                " seconds. Check the status using '!atd-check-status' in a while and if 'completed' execute '!atd-get-report'.")
-
-    def return_report(uriSuffix, taskId, report_type, uploadData, status, threshold):
-        current_status = check_task_status_by_taskId([taskId])['status']
-        if (current_status != 'Completed'):
-            demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
-        else:
-            res = get_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
-
-            if report_type == 'json':
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': res['content'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': res['md'],
-                    'EntryContext': res['ec']
-                })
-
-            elif report_type == 'pdf' or report_type == 'zip':
-                file_type = entryTypes['entryInfoFile']
-                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'InfoFile' in the context.
-                result['EntryContext'] = res['ec']
-                demisto.results(result)
-
-
-            elif report_type == 'sample':
-                # used to retrieve a sample from McAfee ATD to demisto
-                file_type = entryTypes['file']
-                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'File' in the context, can be farther investigated.
-                demisto.results(result)
-
-            else:
-                demisto.results(res)
-
-    def logout():
-        res = http_request('/php/session.php','delete', API_HEADERS)
-
-    ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(), ))
-    API_HEADERS = get_headers()
-
-    try:
-        if demisto.command() == 'test-module':
-            test_get_session()
-            demisto.results('ok')
-
-        if demisto.command() == 'atd-login':
-            get_session_command()
-
-        elif demisto.command() == 'atd-list-analyzer-profiles':
-            list_profiles_command()
-
-        elif demisto.command() == 'atd-list-user':
-            list_users_command()
-
-        elif demisto.command() == 'atd-check-status':
-            check_task_status_command()
-
-        elif demisto.command() == 'atd-get-task-ids':
-            get_taskIds_command()
-
-        elif demisto.command() == 'atd-file-upload':
-            file_upload_command()
-
-        elif demisto.command() == 'atd-get-report':
-            get_report_command()
-
-        elif demisto.command() == 'detonate-file': #deprecated, please use 'ATD - Detonate File' playbook
-            detonate(0, demisto.args().get('upload'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), demisto.args().get('fileName'))
-            # submit type for regular file is 0
-
-        elif demisto.command() == 'detonate-url': #deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
-            detonate(1, demisto.args().get('url'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), demisto.args().get('fileName'))
-            # submit type for url submission is 1
-
-        # elif demisto.command() == 'detonate-file-remote':
-            # return detonate(3, args.url, args.timeout, args.format, args.threshold);
-            # submit type for url-download is 3
-
-    except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
-        return_error(e.message)
-
-    finally:
-        logout()
-  type: python
   commands:
-  - name: atd-file-upload
-    arguments:
-    - name: vmProfileList
+  - arguments:
+    - default: false
       description: Analyzer profile ID. The profile ID number can be found in the
         UI Policy/Analyzer Profile page, OR using command atd-list-analyzer-profiles,
         under vmProfileid key result
-    - name: submitType
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
+      isArray: false
+      name: vmProfileList
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: This parameter accepts four values — '0', '1', '2' and '3'. • 0
         — Regular file upload • 1 — URL submission — URL link is processed inside
         analyzer VM • 2 — Submit file with URL • 3 — URL Download — File from URL
         is firstly downloaded and then analyzed
-    - name: url
+      isArray: false
+      name: submitType
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      required: true
+      secret: false
+    - default: false
       description: Any valid web URL.
-    - name: messageId
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
       description: Maximum 128-character string.
-    - name: srcIp
+      isArray: false
+      name: messageId
+      required: false
+      secret: false
+    - default: false
       description: ' IPv4 address of the source system or gateway from where the file
         is downloaded.'
-    - name: dstIp
+      isArray: false
+      name: srcIp
+      required: false
+      secret: false
+    - default: false
       description: ' IPv4 address of the target endpoint.'
-    - name: skipTaskId
-      auto: PREDEFINED
-      predefined:
-      - "0"
-      - "1"
+      isArray: false
+      name: dstIp
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Value '0' indicates corresponding taskid in API response. Value
         '1' indicates -1 as taskid in API response.
-    - name: analyzeAgain
-      auto: PREDEFINED
+      isArray: false
+      name: skipTaskId
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Value '0' indicates skip sample analysis if it is analyzed previously
         . Value '1' indicates do not skip sample analysis if it is not analyzed previously.
-    - name: xMode
-      auto: PREDEFINED
+      isArray: false
+      name: analyzeAgain
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Value '0' indicates no user interaction is needed during sample
         analysis. Value '1' indicates user interaction is needed during sample analysis.
-    - name: filePriorityQ
-      auto: PREDEFINED
+      isArray: false
+      name: xMode
       predefined:
-      - run_now
-      - add_to_q
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: ' This parameter indicates priority of sample analysis. run_now
         assigns highest priority (i.e., sample is analyzed right away), add_to_q puts
         sample in waiting state if there is a waiting queue of samples, default is
         run_now'
-    - name: entryID
+      isArray: false
+      name: filePriorityQ
+      predefined:
+      - run_now
+      - add_to_q
+      required: false
+      secret: false
+    - default: false
       description: entry ID f the file to upload
-    - name: fileName
+      isArray: false
+      name: entryID
+      required: false
+      secret: false
+    - default: false
       description: The name of the file
+      isArray: false
+      name: fileName
+      required: false
+      secret: false
+    description: upload a file/web URL for dynamic analysis by using the provided
+      Analyzer Profile. Only single file/web URL can be submitted at a time.
+    execution: false
+    name: atd-file-upload
     outputs:
     - contextPath: ATD.Task.taskId
       description: The task ID of the sample uploaded
@@ -812,14 +183,16 @@ script:
     - contextPath: URL.Data
       description: In case of a url upload, the url uploaded
       type: string
-    description: upload a file/web URL for dynamic analysis by using the provided
-      Analyzer Profile. Only single file/web URL can be submitted at a time.
-  - name: atd-get-task-ids
-    arguments:
-    - name: jobId
-      required: true
+  - arguments:
+    - default: false
       description: Serves as an identifier for the previously submitted file.
       isArray: true
+      name: jobId
+      required: true
+      secret: false
+    description: fetches the list of task id's associated with a job id
+    execution: false
+    name: atd-get-task-ids
     outputs:
     - contextPath: ATD.Task.taskId
       description: The corresponding taskId of the jobId sent
@@ -827,17 +200,32 @@ script:
     - contextPath: ATD.Task.jobId
       description: The jobId sent
       type: number
-    description: fetches the list of task id's associated with a job id
-  - name: atd-get-report
-    arguments:
-    - name: taskId
+  - arguments:
+    - default: false
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
-    - name: jobId
+      isArray: false
+      name: taskId
+      required: false
+      secret: false
+    - default: false
       description: Job id
-    - name: type
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: jobId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: 'Type can be one of the following types: • html — HTML report •
+        txt — Text report • xml — XML report • zip — All files packaged in a single
+        zip file • json — Same as xml but in the JSON format • ioc - Indicators of
+        Compromise format • stix - Structured Threat Information expression. Stix
+        generation is disabled, by default. Use set stixreportstatus enable to enable
+        it. • pdf - Portable Document Format • sample - Download sample from McAfee
+        Advanced Threat Defense'
+      isArray: false
+      name: type
       predefined:
       - html
       - txt
@@ -848,25 +236,26 @@ script:
       - stix
       - pdf
       - sample
-      description: 'Type can be one of the following types: • html — HTML report •
-        txt — Text report • xml — XML report • zip — All files packaged in a single
-        zip file • json — Same as xml but in the JSON format • ioc - Indicators of
-        Compromise format • stix - Structured Threat Information expression. Stix
-        generation is disabled, by default. Use set stixreportstatus enable to enable
-        it. • pdf - Portable Document Format • sample - Download sample from McAfee
-        Advanced Threat Defense'
-      defaultValue: pdf
-    - name: threshold
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
       description: If ATD severity is bigger than the threshold we will consider it
         malicious
-      defaultValue: "3"
+      isArray: false
+      name: threshold
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
+      secret: false
+    description: download the analysis report files
+    execution: false
+    name: atd-get-report
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
@@ -934,9 +323,10 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious urls, the reason for the vendor to make the decision
       type: string
-    description: ' download the analysis report files'
-  - name: atd-list-analyzer-profiles
-    arguments: []
+  - description: display the analyzer profiles. Only the analyzer profiles to which
+      the user has access are displayed.
+    execution: false
+    name: atd-list-analyzer-profiles
     outputs:
     - contextPath: ATD.ListAnalyzerProfiles.Name
       description: The Analyzer's profile name
@@ -956,21 +346,24 @@ script:
     - contextPath: ATD.ListAnalyzerProfiles.LocalBlackList
       description: If the Analyzer's profile has access to the local black list
       type: boolean
-    description: ' display the analyzer profiles. Only the analyzer profiles to which
-      the user has access are displayed.'
-  - name: atd-list-user
-    arguments:
-    - name: userType
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
+      defaultValue: STAND_ALONE
+      description: This is the user type associated with a user profile. For example
+        NSP, MWG, STAND_ALONE (default) and so on.
+      isArray: true
+      name: userType
       predefined:
       - STAND_ALONE
       - MWG
       - NSP
-      description: This is the user type associated with a user profile. For example
-        NSP, MWG, STAND_ALONE (default) and so on.
-      isArray: true
-      defaultValue: STAND_ALONE
+      required: false
+      secret: false
+    description: displays the user profile information present on the McAfee Advanced
+      Threat Defense.
+    execution: false
+    name: atd-list-user
     outputs:
     - contextPath: ATD.Users.FullName
       description: The user's fullname
@@ -984,10 +377,9 @@ script:
     - contextPath: ATD.Users.UserType
       description: The user type
       type: string
-    description: ' displays the user profile information present on the McAfee Advanced
-      Threat Defense.'
-  - name: atd-login
-    arguments: []
+  - description: Returns the current session details
+    execution: false
+    name: atd-login
     outputs:
     - contextPath: ATD.Session.APIVersion
       description: The API version used in the session
@@ -1001,119 +393,26 @@ script:
     - contextPath: ATD.Session.UserId
       description: The UserId of the User logged in in the session
       type: number
-    description: Returns the current session details
-  - name: detonate-file
-    arguments:
-    - name: upload
-      required: true
+  - arguments:
+    - default: false
       description: ID of the entry containing the file to detonate
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "210"
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - html
-      - txt
-      - xml
-      - zip
-      - json
-      - ioc
-      - stix
-      - pdf
-      - sample
-      description: Optional - request the format of the report
-      defaultValue: json
-    - name: threshold
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      description: If ATD severity is bigger than the threshold we will consider it
-        malicious
-      defaultValue: "3"
-    - name: fileName
-      description: The name of the file
-    outputs:
-    - contextPath: InfoFile.Name
-      description: Filename (only in case of report type=json)
-      type: string
-    - contextPath: InfoFile.Type
-      description: File type e.g. "PE" (only in case of report type=json)
-      type: string
-    - contextPath: InfoFile.Size
-      description: File size (only in case of report type=json)
-      type: number
-    - contextPath: InfoFile.MD5
-      description: MD5 hash of the file (only in case of report type=json)
-      type: string
-    - contextPath: InfoFile.SHA1
-      description: SHA1 hash of the file (only in case of report type=json)
-      type: string
-    - contextPath: InfoFile.SHA256
-      description: SHA256 hash of the file (only in case of report type=json)
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested (only in case of report type=json)
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator (only in case of report type=json)
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score (only in case of report type=json)
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score (only in case of report type=json)
-      type: number
-    - contextPath: ATD.Task.taskId
-      description: This is the returned TaskId value in the submission step, previously
-        returned value in the File/URL submission step
-      type: number
-    - contextPath: ATD.Task.jobId
-      description: This is the returned JobId value in the submission step, previously
-        returned value in the File/URL submission step
-      type: number
-    - contextPath: ATD.Task.status
-      description: The task ID status (Completed or Analyzing)
-      type: string
-    - contextPath: ATD.Task.messageId
-      description: The message Id relevant to the sample uploaded
-      type: string
-    - contextPath: ATD.Task.url
-      description: The URL detonated
-      type: string
-    - contextPath: ATD.Task.srcIp
-      description: Source IPv4 address
-      type: string
-    - contextPath: ATD.Task.destIp
-      description: Destination IPv4 address
-      type: string
-    - contextPath: ATD.Task.MD5
-      description: MD5 of the sample uploaded
-      type: string
-    - contextPath: ATD.Task.SHA256
-      description: SHA256 of the sample uploaded
-      type: string
-    - contextPath: ATD.Task.SHA1
-      description: SHA1 of the sample uploaded
-      type: string
-    - contextPath: IP.Address
-      description: IP's relevant to the sample
-      type: string
-    description: Deprecated, use detonate playbook instead.
-  - name: detonate-url
-    arguments:
-    - name: url
+      isArray: false
+      name: upload
       required: true
-      description: URL to detonate
-    - name: timeout
+      secret: false
+    - default: false
+      defaultValue: '210'
       description: Total wait time (in seconds)
-      defaultValue: "200"
-    - name: format
-      auto: PREDEFINED
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Optional - request the format of the report
+      isArray: false
+      name: format
       predefined:
       - html
       - txt
@@ -1124,19 +423,32 @@ script:
       - stix
       - pdf
       - sample
-      description: Optional - request the format of the report
-      defaultValue: json
-    - name: threshold
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
       description: If ATD severity is bigger than the threshold we will consider it
         malicious
-      defaultValue: "3"
+      isArray: false
+      name: threshold
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
+      secret: false
+    - default: false
+      description: The name of the file
+      isArray: false
+      name: fileName
+      required: false
+      secret: false
+    description: Deprecated, use detonate playbook instead.
+    execution: false
+    name: detonate-file
     outputs:
     - contextPath: InfoFile.Name
       description: Filename (only in case of report type=json)
@@ -1203,16 +515,139 @@ script:
     - contextPath: IP.Address
       description: IP's relevant to the sample
       type: string
+  - arguments:
+    - default: false
+      description: URL to detonate
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '200'
+      description: Total wait time (in seconds)
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Optional - request the format of the report
+      isArray: false
+      name: format
+      predefined:
+      - html
+      - txt
+      - xml
+      - zip
+      - json
+      - ioc
+      - stix
+      - pdf
+      - sample
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
+      isArray: false
+      name: threshold
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
+      secret: false
     description: Deprecated, use detonate playbook instead.
-  - name: atd-check-status
-    arguments:
-    - name: taskId
+    execution: false
+    name: detonate-url
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename (only in case of report type=json)
+      type: string
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE" (only in case of report type=json)
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size (only in case of report type=json)
+      type: number
+    - contextPath: InfoFile.MD5
+      description: MD5 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: InfoFile.SHA1
+      description: SHA1 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: InfoFile.SHA256
+      description: SHA256 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score (only in case of report type=json)
+      type: number
+    - contextPath: ATD.Task.taskId
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.status
+      description: The task ID status (Completed or Analyzing)
+      type: string
+    - contextPath: ATD.Task.messageId
+      description: The message Id relevant to the sample uploaded
+      type: string
+    - contextPath: ATD.Task.url
+      description: The URL detonated
+      type: string
+    - contextPath: ATD.Task.srcIp
+      description: Source IPv4 address
+      type: string
+    - contextPath: ATD.Task.destIp
+      description: Destination IPv4 address
+      type: string
+    - contextPath: ATD.Task.MD5
+      description: MD5 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA256
+      description: SHA256 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA1
+      description: SHA1 of the sample uploaded
+      type: string
+    - contextPath: IP.Address
+      description: IP's relevant to the sample
+      type: string
+  - arguments:
+    - default: false
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
       isArray: true
-    - name: jobId
+      name: taskId
+      required: false
+      secret: false
+    - default: false
       description: Job Id
       isArray: true
+      name: jobId
+      required: false
+      secret: false
+    description: Checks the analysis status of up to 100 jobIDs/taskIDs
+    execution: false
+    name: atd-check-status
     outputs:
     - contextPath: ATD.status
       description: The task ID status (Completed or Analyzing)
@@ -1237,8 +672,731 @@ script:
     - contextPath: ATD.Task.submitTime
       description: Submission time of the sample
       type: string
-    description: Checks the analysis status of up to 100 jobIDs/taskIDs
+  isfetch: false
   runonce: false
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    import json
+    import re
+    import base64
+    import time
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get("proxy", False):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
+    ''' PREREQUISITES '''
+
+
+    def load_server_url():
+        ''' Cleans and loads the server url from the configuration '''
+        url = demisto.params()['baseUrl']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+
+    ''' GLOBALS '''
+    USERNAME = demisto.params()['username']
+    PASSWORD = demisto.params()['password']
+    USE_SSL = not demisto.params()['unsecure']
+    BASE_URL = load_server_url()
+    LOGINHEADERS = {
+        'Accept': 'application/vnd.ve.v1.0+json',
+        'Content-Type': 'application/json',
+        'VE-SDK-API': base64.b64encode(USERNAME + ':' + PASSWORD)
+    }
+    HEARTBEATHEADERS = {
+        'Accept': 'application/vnd.ve.v1.0+json',
+        'Content-Type': 'application/json'
+    }
+
+    ''' HELPERS '''
+
+
+    def get_session_credentials():
+        res = http_request('php/session.php', 'get', LOGINHEADERS)
+        if (res):
+            return res['results']
+
+
+    def heart_beat():
+        return http_request('php/heartbeat.php', 'get', API_HEADERS, HEARTBEATHEADERS)
+
+
+    def get_headers():
+        sess = get_session_credentials()
+        return {
+            'Accept': 'application/vnd.ve.v1.0+json',
+            'VE-SDK-API': base64.b64encode(sess['session'] + ':' + sess['userId'])
+        }
+
+
+    def http_request(uri, method, headers={}, body={}, params={}, files={}):
+        """
+        Makes an API call with the supplied uri, method, headers, body
+        """
+        LOG('running request with url=%s' % uri)
+        url = '%s/%s' % (BASE_URL, uri)
+        res = requests.request(
+            method,
+            url,
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files
+        )
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
+        result = res.content
+
+        if not uri.startswith('php/showreport.php?'):
+            # parsing the int as string is vital for long taskId/jobId that round up by json.loads
+            try:
+                result = json.loads(result, parse_int=str)
+            except json.JSONDecodeError:
+                LOG('result is: %s' % result)
+                return_error('Response Parsing failed')
+            if 'success' in result:
+                if (result['success'] == 'false'):
+                    return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
+        return result
+
+
+    def prettify_current_user_res(current_user):
+        pretty_current_user = {
+            'APIVersion': current_user['apiVersion'],
+            'IsAdmin': 'True' if current_user['isAdmin'] == '1' else 'False',
+            'SessionId': current_user['session'],
+            'UserId': current_user['userId']
+        }
+        return pretty_current_user
+
+
+    def prettify_list_users_res(users):
+        pretty_users = [] if len(users) > 0 else ''
+
+        for i in range(len(users)):
+            user = users[i]
+            pretty_users.append({
+                'FullName': user['fullName'],
+                'UserId': user['idx'],
+                'LoginId': user['loginId'],
+                'UserType': user['userType']
+            })
+
+        return pretty_users
+
+
+    def prettify_list_profiles_res(profiles):
+        pretty_profiles = []
+        for i in range(len(profiles)):
+            pretty_profiles.append({
+                'Name': profiles[i]['name'],
+                'AnalyzerProfileId': profiles[i]['vmProfileid'],
+                'Description': profiles[i]['vmDesc'],
+                'Sandbox': 'True' if profiles[i]['sandbox'] == 1 else 'False',
+                'Internet': 'True' if profiles[i]['internet'] == 1 else 'False',
+                'LocalBlackList': 'True' if profiles[i]['locBlackList'] == 1 else 'False'
+            })
+        return pretty_profiles
+
+
+    def prettify_task_status_by_taskId_res(task_status):
+        pretty_task_status = {
+            'taskId': task_status['taskid'],
+            'jobId': task_status['jobid'],
+            'status': task_status['status'],
+            'filename': task_status['filename'],
+            'MD5': task_status['md5'],
+            'submitTime': task_status['submitTime']
+        }
+        return pretty_task_status
+
+
+    def prettify_file_upload_res(file_upload_res):
+        pretty_file_upload = {
+            'taskId': file_upload_res['results'][0]['taskId'],
+            'jobId': file_upload_res['subId'],
+            'messageId': file_upload_res['results'][0]['messageId'],
+            'url': file_upload_res['results'][0]['url'],
+            'srcIp': file_upload_res['results'][0]['srcIp'],
+            'destIp': file_upload_res['results'][0]['destIp'],
+            'MD5': file_upload_res['results'][0]['md5'],
+            'SHA1': file_upload_res['results'][0]['sha1'],
+            'SHA256': file_upload_res['results'][0]['sha256'],
+        }
+        return pretty_file_upload
+
+
+    ''' FUNCTIONS '''
+
+
+    def test_get_session():
+        result = get_session()
+
+
+    def get_session():
+        result = http_request('php/session.php', 'get', LOGINHEADERS)
+        return result
+
+
+    def get_session_command():
+        result = get_session()
+        result = result['results']
+        md = tableToMarkdown('ATD Current User', prettify_current_user_res(result),
+                             ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'ATD.Session(val.SessionId == obj.SessionId)': prettify_current_user_res(result)
+            }
+        })
+
+
+    def list_users(user_type):
+        user_type = user_type if user_type else 'STAND_ALONE'
+        result = http_request('php/briefUserList.php?userType=' + user_type, 'get', API_HEADERS)
+        users = result['results']
+        return users
+
+
+    def list_users_command():
+        users = list_users(demisto.args()['userType'])
+
+        pretty_users = prettify_list_users_res(users)
+        md = tableToMarkdown(
+            'ATD User List',
+            pretty_users,
+            ['FullName', 'UserId', 'LoginId', 'UserType']
+        )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': users,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'ATD.Users(val.UserId == obj.UserId)': pretty_users,
+            }
+        })
+
+
+    def list_profiles():
+        result = http_request('php/vmprofiles.php', 'get', API_HEADERS)
+        return result['results']
+
+
+    def list_profiles_command():
+        result = list_profiles()
+
+        md = tableToMarkdown(
+            'ATD Analyzers Profile List', prettify_list_profiles_res(result),
+            ['Name', 'AnalyzerProfileId', 'Description',
+             'Sandbox', 'Internet', 'LocalBlackList']);
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'ATD.ListAnalyzerProfiles(val.AnalyzerProfileId == obj.AnalyzerProfileId)': prettify_list_profiles_res(
+                    result)
+            }
+        })
+
+
+    def check_task_status_by_taskId(task_ids):
+        res = {}
+        multiple_results = []
+        tasks = []
+        requestSuffix = ''
+
+        for i in range(len(task_ids)):
+            requestSuffix = 'iTaskId=' + str(task_ids[i])
+            res = http_request('php/samplestatus.php?' + requestSuffix, 'get', API_HEADERS)
+
+            # when you use TaskID, you get results in res.results
+            tasks.append(prettify_task_status_by_taskId_res(res['results']))
+            multiple_results.append(res['results'])
+
+        status = res['results']['status']  # backward compatibility
+        return {
+            'status': status,
+            'tasks': tasks,
+            'multipleResults': multiple_results
+        }
+
+
+    def check_task_status_by_jobId(job_ids):
+        taskIds = []
+        for i in range(len(job_ids)):
+            result = http_request('php/getTaskIdList.php?jobId=' + job_ids[i], 'get', API_HEADERS)
+            task_id = result['result']['taskIdList']
+            taskIds.append(task_id)
+        return check_task_status_by_taskId(taskIds)
+
+
+    def check_task_status_command():
+        result = {}
+        args = demisto.args()
+
+        if ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args):
+            return_error('You must specify one (and only one) of the following: jobId, taskId.')
+
+        if 'jobId' in args:
+            ids = argToList(args['jobId'])
+            result = check_task_status_by_jobId(ids)
+
+        elif 'taskId' in args:
+            ids = argToList(args['taskId'])
+            result = check_task_status_by_taskId(ids)
+
+        md = tableToMarkdown(
+            'ATD Sandbox Task Status',
+            result['tasks'],
+            (result['tasks'][0]).keys()
+        )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result['multipleResults'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'ATD.status': result['status'],  # backward compatability
+                'ATD.Task(val.taskId == obj.taskId)': result['tasks']
+            }
+        })
+
+
+    def get_taskIds(job_ids):
+        results = []
+        for i in range(len(job_ids)):
+            result = http_request('php/getTaskIdList.php?jobId=' + str(job_ids[i]), 'get', API_HEADERS)
+            results.append(result)
+        return results
+
+
+    def get_taskIds_command():
+        job_ids = argToList(demisto.args()['jobId'])
+        results = get_taskIds(job_ids)
+
+        multiple_md = []
+        ec = []
+        for i in range(len(results)):
+            multiple_md.append({
+                'taskId': results[i]['result']['taskIdList'],
+                'jobId': job_ids[i]
+            })
+            ec.append({
+                'taskId': results[i]['result']['taskIdList'],
+                'jobId': job_ids[i]
+            })
+
+        md = tableToMarkdown('ATD TaskIds and JobIds List', multiple_md, ['taskId', 'jobId'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'ATD.Task(val.jobId == obj.jobId)': ec
+            }
+        })
+
+
+    def file_upload_raw(body, file_entry_id, filename_to_upload):
+        uri = 'php/fileupload.php'
+        if len(filename_to_upload) == 0:  # first priority for the file name is user's argument
+            # second priority for the file name is the file name in the context
+            filenameDq = demisto.dt(demisto.context(), 'File(val=val.EntryID=="' + file_entry_id + '")=val.Name')
+            if filenameDq and filenameDq[0]:
+                filename_to_upload = filenameDq
+            else:
+                filename_to_upload = file_entry_id  # last priority for the file name is demisto's entryID
+
+        with open(demisto.getFilePath(file_entry_id)['path'], 'rb') as f:
+            file_up = {'amas_filename': f}
+            res = http_request(
+                uri,
+                'post',
+                API_HEADERS,
+                body,
+                '',
+                files=file_up,
+            )
+
+        if (not res['success']):
+            return_error('Failed to upload sample due to: ' + res['errorMessage'])
+        return res
+
+
+    def url_upload_raw(body):
+        uri = 'php/fileupload.php'
+        res = http_request(
+            uri,
+            'post',
+            API_HEADERS,
+            body
+        )
+
+        if not res['success']:
+            return_error('Failed to upload sample due to: ' + res['errorMessage'])
+        return res
+
+
+    def file_upload(submit_type, sample, vm_profile_list,
+                    skip_task_id=None, analyze_again=None, x_mode=None, message_id=None,
+                    file_priority_q=None, src_ip=None, dest_ip=None, file_name=None):
+        body = {}
+        body['data'] = {}
+        data = {}
+        data['data'] = {}
+        # Add missing prefix to url
+        if submit_type != 0:
+            if not sample.startswith('http://') and not sample.startswith('https://'):
+                if sample.startswith('www.'):
+                    sample = "http://" + sample
+                else:
+                    sample = "http://www." + sample  # disable-secrets-detection
+
+        data['data']['vmProfileList'] = vm_profile_list
+        data['data']['submitType'] = submit_type
+        data['data']['messageId'] = message_id
+        data['data']['srcIp'] = src_ip
+        data['data']['destIp'] = dest_ip
+        data['data']['url'] = '' if submit_type == 0 else sample
+        data['data']['skipTaskId'] = int(skip_task_id) if skip_task_id else None
+        data['data']['analyzeAgain'] = analyze_again
+        data['data']['xMode'] = x_mode
+        data['data']['filePriorityQ'] = file_priority_q if file_priority_q else 'run_now'
+
+        body['data'] = json.dumps(data)
+        file = sample if submit_type == 0 else ''
+        filename_to_upload = file_name if (submit_type == 0 and file_name) else ''
+        if submit_type == 0:
+            result_obj = file_upload_raw(body, file, filename_to_upload)
+        elif submit_type == 1:
+            result_obj = url_upload_raw(body)
+        return {
+            'taskId': result_obj['results'][0]['taskId'],
+            'resultObj': result_obj
+        }
+
+
+    def file_upload_command():
+        args = demisto.args()
+
+        if ('entryID' in args and 'url' in args) or ('entryID' not in args and 'url' not in args):
+            return_error('You must submit one and only one of the following: url, entryID')
+        if ('entryID' in args and args['submitType'] != '0') or ('url' in args and args['submitType'] != '1'):
+            return_error('In order to detonate a file submitType must be 0 and an entryID of a file must be given.\n' +
+                         'In order to detonate a url submitType must be 1 and a url must be given.')
+
+        sample = args['entryID'] if 'entryID' in args else args['url']
+        vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
+        analyze_again = int(args['analyze_again']) if 'analyze_again' in args else None
+        skip_task_id = int(args['skip_task_id']) if 'skip_task_id' in args else None
+        x_mode = int(args['x_mode']) if 'x_mode' in args else None
+        message_id = args['messageId'] if 'messageId' in args else None
+        file_priority_q = args['file_priority_q'] if 'file_priority_q' in args else None
+        src_ip = args['src_ip'] if 'src_ip' in args else None
+        dest_ip = args['dest_ip'] if 'dest_ip' in args else None
+        file_name = args['file_name'] if 'file_name' in args else None
+
+        result = file_upload(int(args['submitType']), sample, vm_profile_list,
+                             skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
+                             src_ip, dest_ip, file_name)
+        md = tableToMarkdown('ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
+                             ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'])
+
+        upload_file_output = {
+            'ATD.Task(val.taskId == obj.taskId)': prettify_file_upload_res(result['resultObj']),
+            'ATD.taskId': result['taskId']  # backward compatibility
+        }
+        if 'url' in args:
+            upload_file_output[outputPaths['url']] = sample
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result['resultObj'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': upload_file_output
+        })
+
+
+    def build_report_context(report_summary, upload_data, status, threshold):
+        context = {}
+        if report_summary and report_summary['Subject']:
+            subject = report_summary['Subject']
+            context = {
+                'DBotScore': {
+                    'Vendor': 'McAfee Advanced Threat Defense',
+                    'Score': 0
+                }
+            }
+            if 'FileType' in subject:
+                context['DBotScore']['Indicator'] = subject['md5']
+                context['DBotScore']['Type'] = 'hash'
+                # default threshold for McAfee ATD is 3
+                if report_summary['Verdict']['Severity'] > threshold:
+                    context['DBotScore']['Score'] = 3
+                    if subject['Type'] == 'application/url':
+                        context['URL(val.Name == obj.Data)'] = {
+                            'Type': subject['Type'],
+                            'MD5': subject['md5'],
+                            'SHA1': subject['sha-1'],
+                            'SHA256': subject['sha-256'],
+                            'Size': subject['size'],
+                            'Name': subject['Name'],
+                            'Malicious': {
+                                'Vendor': 'McAfee Advanced Threat Defense',
+                                'Description': 'Severity: ' + report_summary['Verdict']['Severity']
+                            }
+                        }
+                    else:
+                        context['File(val.MD5 == obj.MD5)'] = {
+                            'Type': subject['Type'],
+                            'MD5': subject['md5'],
+                            'SHA1': subject['sha-1'],
+                            'SHA256': subject['sha-256'],
+                            'Size': subject['size'],
+                            'Name': subject['Name'],
+                            'Malicious': {
+                                'Vendor': 'McAfee Advanced Threat Defense',
+                                'Description': 'Severity: ' + report_summary['Verdict']['Severity']
+                            }
+                        }
+                else:
+                    context['DBotScore']['Score'] = 1
+
+            context['IP'] = {}
+            if 'Ips' in report_summary:
+                ip_addresses = []
+                for i in range(len(report_summary['Ips'])):
+                    ip_addresses.append(report_summary['Ips'][i]['Ipv4'])
+                context['IP']['Address'] = ip_addresses
+
+            if upload_data:
+                context['ATD'] = {}
+                context['ATD']['Task(val.taskId == obj.taskId)'] = {
+                    'status': status,
+                    'taskId': upload_data['taskId'],
+                    'jobId': upload_data['subId'] if 'subId' in upload_data else None,
+                    'messageId': upload_data['messageId'],
+                    'url': upload_data['url'],
+                    'srcIp': upload_data['srcIp'],
+                    'destIp': upload_data['destIp'],
+                    'MD5': upload_data['md5'],
+                    'SHA1': upload_data['sha1'],
+                    'SHA256': upload_data['sha256'],
+                    'Report':
+                        {
+                            'Attachments': report_summary['Attachments'] if 'Attachment' in report_summary else None,
+                            'Environment': report_summary['Environment'] if 'Environment' in report_summary else None,
+                            'Ips': report_summary['Ips'] if 'Ips' in report_summary else None,
+                            'Verdict': report_summary['Verdict'] if 'Verdict' in report_summary else None,
+                            'Data': report_summary['Data'] if 'Data' in report_summary else None,
+                            'Selectors': report_summary['Selectors'] if 'Selectors' in report_summary else None,
+                        }
+                }
+        return context
+
+
+    def get_report(uriSuffix, filename, report_type, uploadData, status, threshold):
+        jres = http_request('php/showreport.php?' + uriSuffix + '&iType=json', 'get', API_HEADERS)
+        if not jres:
+            return_error(
+                'You cannot download this report because you do not have the same permissions as the user that uploaded the submission to McAfee ATD.\nMake sure you have the same permissions as the user that uploaded the submissions. Admin users have full permissions.')
+        jres = json.loads(jres)
+        summary = jres['Summary']
+        summary['VerdictDescription'] = summary['Verdict']['Description']
+        summary['VerdictSeverity'] = summary['Verdict']['Severity']
+        ec = build_report_context(summary, uploadData, status, threshold)
+        jres_string = json.dumps(jres)
+        if (report_type == 'json'):
+            md = tableToMarkdown('McAfee ATD Sandbox Report', summary, summary.keys(), None, True)
+            return {
+                'content': jres_string,
+                'md': md,
+                'ec': ec
+            }
+
+        res = http_request('php/showreport.php?' + uriSuffix + '&iType=' + report_type, 'get', API_HEADERS)
+
+        if report_type == 'pdf' or report_type == 'zip':
+            filename = str(filename) + '.' + report_type
+            return {
+                'content': res,
+                'filename': filename,
+                'ec': ec
+            }
+
+        if report_type == 'sample':
+            return {
+                'content': res,
+                'filename': filename + '.zip',
+                'ec': ec
+            }
+        return res
+
+
+    def get_report_command():
+        uri_suffix = job_or_taskId()
+        args = demisto.args()
+        report_type = args['type'] if 'type' in args else 'pdf'
+        threshold = args['threshold']
+
+        filename = args['jobId'] if 'jobId' in args else args['taskId']
+
+        return_report(uri_suffix, filename, report_type, '', '', threshold)
+
+
+    def job_or_taskId():
+        args = demisto.args()
+        if ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args):
+            return_error('You must specify one (and only one) of the following: jobId, taskId.')
+
+        if 'jobId' in args:
+            uri_suffix = 'jobId=' + str(args['jobId'])
+        else:
+            uri_suffix = 'iTaskId=' + str(args['taskId'])
+
+        return uri_suffix
+
+
+    def detonate(submit_type, sample, timeout, report_type, threshold, fileName):
+        result = file_upload(submit_type, sample, fileName)
+        taskId = result['taskId']
+        upload_data = result['resultObj']['results'][0]
+
+        timeout = int(timeout)
+        while 0 < timeout:
+            status = str(check_task_status_by_taskId([taskId])['status'])
+            if status == 'Completed':
+                uri_suffix = 'iTaskId=' + str(taskId)
+                return_report(uri_suffix, taskId, report_type, upload_data, status, threshold)
+                sys.exit(0)
+            time.sleep(1)
+            timeout -= 1
+
+        return_error("Timeout due to no answer after " + demisto.args()['timeout'] +
+                     " seconds. Check the status using '!atd-check-status' in a while and if 'completed' execute '!atd-get-report'.")
+
+
+    def return_report(uri_suffix, taskId, report_type, upload_data, status, threshold):
+        current_status = check_task_status_by_taskId([taskId])['status']
+        if current_status != 'Completed':
+            demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
+        else:
+            res = get_report(uri_suffix, taskId, report_type, upload_data, status, threshold)
+
+            if report_type == 'json':
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': res['content'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': res['md'],
+                    'EntryContext': res['ec']
+                })
+
+            elif report_type == 'pdf' or report_type == 'zip':
+                file_type = entryTypes['entryInfoFile']
+                result = fileResult(res['filename'], res['content'],
+                                    file_type)  # will be saved under 'InfoFile' in the context.
+                result['EntryContext'] = res['ec']
+                demisto.results(result)
+
+            elif report_type == 'sample':
+                # used to retrieve a sample from McAfee ATD to demisto
+                file_type = entryTypes['file']
+                result = fileResult(res['filename'], res['content'],
+                                    file_type)  # will be saved under 'File' in the context, can be farther investigated.
+                demisto.results(result)
+
+            else:
+                demisto.results(res)
+
+
+    def logout():
+        http_request('/php/session.php', 'delete', API_HEADERS)
+
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(),))
+    API_HEADERS = get_headers()
+
+    try:
+        if demisto.command() == 'test-module':
+            test_get_session()
+            demisto.results('ok')
+
+        if demisto.command() == 'atd-login':
+            get_session_command()
+
+        elif demisto.command() == 'atd-list-analyzer-profiles':
+            list_profiles_command()
+
+        elif demisto.command() == 'atd-list-user':
+            list_users_command()
+
+        elif demisto.command() == 'atd-check-status':
+            check_task_status_command()
+
+        elif demisto.command() == 'atd-get-task-ids':
+            get_taskIds_command()
+
+        elif demisto.command() == 'atd-file-upload':
+            file_upload_command()
+
+        elif demisto.command() == 'atd-get-report':
+            get_report_command()
+
+        elif demisto.command() == 'detonate-file':  # deprecated, please use 'ATD - Detonate File' playbook
+            detonate(0, demisto.args().get('upload'), demisto.args().get('timeout'), demisto.args().get('format'),
+                     demisto.args().get('threshold'), demisto.args().get('fileName'))
+            # submit type for regular file is 0
+
+        elif demisto.command() == 'detonate-url':  # deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
+            detonate(1, demisto.args().get('url'), demisto.args().get('timeout'), demisto.args().get('format'),
+                     demisto.args().get('threshold'), demisto.args().get('fileName'))
+            # submit type for url submission is 1
+
+        # elif demisto.command() == 'detonate-file-remote':
+        # return detonate(3, args.url, args.timeout, args.format, args.threshold);
+        # submit type for url-download is 3
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+
+    finally:
+        logout()
+  type: python
+image: data:image/png;base64,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
 releaseNotes: Fixed wrong parsing of url issue - https://github.com/demisto/etc/issues/15551
 tests:
 - Test Playbook McAfee ATD
+fromversion: 3.5.0
