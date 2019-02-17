@@ -383,6 +383,5 @@ script:
       type: string
     description: Gets a list of alerts
   runonce: false
-releaseNotes: "-"
 tests:
   - Netskope Test

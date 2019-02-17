@@ -94,7 +94,7 @@ outputs:
 - contextPath: DBotPredictTextLabel.Label
   description: The suggested label
   type: string
-- contextPath: DBotPredictTextLabel.Pobability
+- contextPath: DBotPredictTextLabel.Probability
   description: 'The prediction probability '
   type: number
 - contextPath: DBotPredictTextLabel.InputTextNumberOfTokens

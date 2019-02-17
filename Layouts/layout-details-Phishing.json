@@ -4,7 +4,7 @@
 	"layout": {
 		"id": "Phishing",
 		"version": -1,
-		"modified": "2018-09-09T10:43:29.758272+03:00",
+		"modified": "2018-12-18T09:26:45.523902097Z",
 		"name": "",
 		"sections": [
 			{
@@ -133,6 +133,20 @@
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_detectionsla",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_remediationsla",
 						"isVisible": true
 					},
 					{

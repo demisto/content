@@ -6,6 +6,8 @@ import glob
 import shutil
 import zipfile
 
+from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml
+
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
@@ -38,7 +40,8 @@ def is_ge_version(ver1, ver2):
 
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
-        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w',
+                               zipfile.ZIP_DEFLATED)
         zipf.comment = '{ "system": true }'
         for root, _, files in os.walk(d):
             for file in files:
@@ -126,6 +129,11 @@ def main(circle_artifacts):
         add_tools_to_bundle(b)
 
     convert_incident_fields_to_array()
+
+    for d in DIR_TO_PREFIX.keys():
+        scanned_packages = glob.glob(os.path.join(d, '*/'))
+        for package in scanned_packages:
+            merge_script_package_to_yml(package, d)
 
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)

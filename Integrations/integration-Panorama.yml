@@ -32,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Port
+- display: Port (e.g 443)
   name: port
   defaultvalue: ""
   type: 0
@@ -57,7 +57,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Vsys - Only for Firewall instance (default is 'vsys1')
+- display: Vsys - Only for Firewall instance
   name: vsys
   defaultvalue: ""
   type: 0
@@ -82,6 +82,8 @@ script:
         del os.environ["http_proxy"]
         del os.environ["https_proxy"]
 
+    if not demisto.params().get('port'):
+        return_error('Set a port for the instance')
 
     ''' GLOBALS '''
     URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
@@ -91,8 +93,11 @@ script:
     # determine a vsys or a device-group
     VSYS = demisto.params().get('vsys')
     DEVICE_GROUP = demisto.params().get('device_group')
+    # configuration check
     if DEVICE_GROUP and VSYS:
-        return_error('Can not configure both vsys and Device Group. Set vsys for Firewall, set Device Group for Panorama')
+        return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama')
+    if not DEVICE_GROUP and not VSYS:
+        return_error('Set vsys for firewall or Device group for Panorama')
 
     # setting security xpath relevant to FW or panorama managment
     XPATH_SECURITY_RULES = None
@@ -143,11 +148,13 @@ script:
             return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
         jresult = json.loads(xml2json(result.text))
+
         if jresult['response']['@status'] != 'success':
+            if 'msg' in jresult['response'] and 'line' in jresult['response']['msg']:
+                if jresult['response']['msg']['line'] == 'No such node':
+                    return_error('Object was not found, verify that the name is correct and that the instnace was committed.')
             if '@code' in jresult['response']:
                 return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
-            elif '@status' in jresult['response']:
-                return_error('Request Failed.\nStatus: ' + jresult['response']['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
             else:
                 return_error('Request Failed.\n' + jresult['response'])
 
@@ -211,8 +218,7 @@ script:
                     disable = None, application = None, source_user = None, category = None,
                     fromm = None, to = None, disable_server_response_inspection = None,
                     description = None, target = None):
-
-        rulename = rulename if rulename else ('demisto-' + uuid.uuid4()[:8])
+        rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
         params = {
             'type': 'config',
             'action': api_action,
@@ -356,8 +362,9 @@ script:
                 commit_status_output['Status'] = 'Failed'
             commit_status_output['Details'] = result['response']['result']['job']['details']['line']
 
-        if (result['response']['result']['job']['status'] == 'PEND'):
-            push_status_output['Status'] = 'Pending'
+        if (result['response']['result']['job']['status'] == 'ACT'):
+            if (result['response']['result']['job']['result'] == 'PEND'):
+                commit_status_output['Status'] = 'Pending'
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -684,7 +691,7 @@ script:
 
             pretty_address_groups_arr.append(pretty_address_group)
 
-        return pretty_address_groups_arr;
+        return pretty_address_groups_arr
 
 
     @logger
@@ -953,6 +960,443 @@ script:
             'HumanReadable': 'Address Group was edited successfully',
             'EntryContext': {
                   "Panorama.AddressGroups(val.Name == obj.Name)": address_group_output
+            }
+        })
+
+
+    ''' Services Commands '''
+    def prettify_services_arr(services_arr):
+        pretty_services_arr = []
+        for service in services_arr:
+            pretty_service = {
+                'Name': service['@name'],
+            }
+            if 'description' in service:
+                pretty_service['Description'] = service['description']
+
+            protocol = ''
+            if 'protocol' in service:
+                if 'tcp' in service['protocol']:
+                    protocol = 'tcp'
+                elif 'udp' in service['protocol']:
+                    protocol = 'udp'
+                else:
+                    protocol = 'sctp'
+            pretty_service['Protocol'] = protocol
+
+            if 'port' in service['protocol'][protocol]:
+                pretty_service['DestinationPort'] = service['protocol'][protocol]['port']
+            if 'source-port' in service['protocol'][protocol]:
+                pretty_service['SourcePort'] = service['protocol'][protocol]['source-port']
+
+            pretty_services_arr.append(pretty_service)
+
+        return pretty_services_arr
+
+
+    @logger
+    def panorama_list_services():
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_list_services_command():
+        ''' Get all Services '''
+        services_arr = panorama_list_services()
+        services_output = prettify_services_arr(services_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': services_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Services:', services_output, ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.Services(val.Name == obj.Name)": services_output
+            }
+        })
+
+
+    def prettify_service(service):
+        pretty_service = {
+                'Name': service['@name'],
+        }
+        if 'description' in service:
+            pretty_service['Description'] = service['description']
+
+        protocol = ''
+        if 'protocol' in service:
+            if 'tcp' in service['protocol']:
+                protocol = 'tcp'
+            elif 'udp' in service['protocol']:
+                protocol = 'udp'
+            else:
+                protocol = 'sctp'
+        pretty_service['Protocol'] = protocol
+
+        if 'port' in service['protocol'][protocol]:
+            pretty_service['DestinationPort'] = service['protocol'][protocol]['port']
+        if 'source-port' in service['protocol'][protocol]:
+            pretty_service['SourcePort'] = service['protocol'][protocol]['source-port']
+
+        return pretty_service
+
+
+    @logger
+    def panorama_get_service(service_name):
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service/entry[@name='" + service_name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_service_command():
+        ''' Get a service '''
+        service_name = demisto.args()['name']
+
+        service = panorama_get_service(service_name)
+        service_output = prettify_service(service)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': service,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address:', service_output, ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description'], None, True),
+            'EntryContext': {
+                  "Panorama.Services(val.Name == obj.Name)": service_output
+            }
+        })
+
+
+    @logger
+    def panorama_create_service(service_name, protocol, destination_port, source_port = None, description = None):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service/entry[@name='" + service_name + "']",
+            'key': API_KEY
+        }
+        params['element'] = '<protocol>' + '<' + protocol + '>' + add_argument(destination_port, 'port', False) + add_argument(source_port, 'source-port', False) + '</' + protocol + '>' + '</protocol>' + add_argument(description, 'description', False)
+
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_create_service_command():
+        ''' Create a service object '''
+        service_name = demisto.args()['name']
+        protocol = demisto.args()['protocol']
+        destination_port = demisto.args()['destination_port']
+        source_port = demisto.args().get('source_port')
+        description = demisto.args().get('description')
+
+        service = panorama_create_service(service_name, protocol, destination_port, source_port, description)
+
+        service_output = {
+            'Name': service_name,
+            'Protocol': protocol,
+            'DestinationPort': destination_port
+        }
+        if source_port:
+            service_output['SourcePort'] = source_port
+        if description:
+            service_output['Description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': service,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Service was added successfully',
+            'EntryContext': {
+                  "Panorama.Services(val.Name == obj.Name)": service_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_service(service_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service/entry[@name='" + service_name + "']",
+            'element': "<entry name='" + service_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_service_command():
+        ''' Delete a service '''
+        service_name = demisto.args()['name']
+
+        service = panorama_delete_service(service_name)
+        service_output = {'Name': service_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': service,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Service was deleted successfully',
+            'EntryContext': {
+                  "Panorama.Services(val.Name == obj.Name)": service_output
+            }
+        })
+
+
+    ''' Service Group Commands '''
+    def prettify_service_groups_arr(service_groups_arr):
+        pretty_service_groups_arr = []
+        for service_group in service_groups_arr:
+            pretty_service_group = {
+                'Name': service_group['@name'],
+                'Services': service_group['members']['member']
+            }
+            pretty_service_groups_arr.append(pretty_service_group)
+
+        return pretty_service_groups_arr
+
+
+    @logger
+    def panorama_list_service_groups():
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service-group/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_list_service_groups_command():
+        ''' Get all address groups '''
+        service_groups_arr = panorama_list_service_groups()
+        service_groups_output = prettify_service_groups_arr(service_groups_arr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': service_groups_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Service groups:', service_groups_output, ['Name', 'Services'], None, True),
+            'EntryContext': {
+                  "Panorama.ServiceGroups(val.Name == obj.Name)": service_groups_output
+            }
+        })
+
+
+    def prettify_service_group(service_group):
+        pretty_service_group = {
+            'Name': service_group['@name'],
+            'Services': service_group['members']['member']
+        }
+        return pretty_service_group
+
+
+    @logger
+    def panorama_get_service_group(service_group_name):
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'GET',
+            params = params,
+        )
+
+        return result['response']['result']['entry']
+
+
+    def panorama_get_service_group_command():
+        ''' Get an address group '''
+        service_group_name = demisto.args()['name']
+
+        result = panorama_get_service_group(service_group_name)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Service group:', prettify_service_group(result), ['Name', 'Services'], None, True),
+            'EntryContext': {
+                  "Panorama.ServiceGroups(val.Name == obj.Name)": prettify_service_group(result)
+            }
+        })
+
+
+    def panorama_create_service_group(service_group_name, services):
+        params = {
+            'action': 'set',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']",
+            'element': '<members>' + add_argument_list(services, 'member', True) + '</members>',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_create_service_group_command():
+        ''' Create a service group '''
+        service_group_name = demisto.args()['name']
+        services = argToList(demisto.args()['services'])
+
+        result = panorama_create_service_group(service_group_name, services)
+
+        service_group_output = {
+            'Name': service_group_name,
+            'Services': services
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Service group was created successfully',
+            'EntryContext': {
+                  "Panorama.ServiceGroups(val.Name == obj.Name)": service_group_output
+            }
+        })
+
+
+    @logger
+    def panorama_delete_service_group(service_group_name):
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']",
+            'element': "<entry name='" + service_group_name + "'></entry>",
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+        )
+
+        return result
+
+
+    def panorama_delete_service_group_command():
+        ''' Delete a service group '''
+        service_group_name = demisto.args()['name']
+
+        service_group = panorama_delete_service_group(service_group_name)
+        service_group_output = {'Name': service_group_name}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': service_group,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Service group was deleted successfully',
+            'EntryContext': {
+                  "Panorama.ServiceGroups(val.Name == obj.Name)": service_group_output
+            }
+        })
+
+
+    @logger
+    def panorama_edit_service_group(service_group_name, services):
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'xpath': XPATH_OBJECTS + "service-group/entry[@name='" + service_group_name + "']/members",
+            'element': '<members>' + add_argument_list(services, 'member', False) + '</members>',
+            'key': API_KEY,
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+        )
+
+        return result
+
+
+    def panorama_edit_service_group_command():
+        ''' Edit a service group '''
+        service_group_name = demisto.args()['name']
+        services_to_add = argToList(demisto.args()['services_to_add']) if 'services_to_add' in demisto.args() else None
+        services_to_remove = argToList(demisto.args()['services_to_remove']) if 'services_to_remove' in demisto.args() else None
+
+        if (services_to_add and services_to_remove) or (not services_to_add and not services_to_remove):
+            return_error('Specify exactly one of the following arguments: services_to_add, services_to_remove')
+
+        service_group_prev = panorama_get_service_group(service_group_name)
+        service_group_list = argToList(service_group_prev['members']['member'])
+
+        if (services_to_add):
+            services = list(set(services_to_add + service_group_list))
+        else:
+            services = [item for item in service_group_list if item not in services_to_remove]
+
+        if (len(services) == 0):
+            return_error ('A Service group must have at least one service')
+        result = panorama_edit_service_group(service_group_name, services)
+
+        service_group_output = {
+            'Name': service_group_name,
+            'Services': services
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Service group was edited successfully',
+            'EntryContext': {
+                  "Panorama.ServiceGroups(val.Name == obj.Name)": service_group_output
             }
         })
 
@@ -1511,7 +1955,7 @@ script:
     @logger
     def panorama_create_rule_command():
         ''' Create a security rule '''
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
         source =  demisto.args().get('source')
         destination =  demisto.args().get('destination')
         negate_source = demisto.args().get('negate_source')
@@ -1539,6 +1983,7 @@ script:
         )
 
         rule_output = {SECURITY_RULE_ARGS[key] : value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
+        rule_output['Name'] = rulename
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1647,11 +2092,11 @@ script:
         object_type = demisto.args()['object_type']
         object_value = demisto.args()['object_value']
         direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
-        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + uuid.uuid4()[:8])
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
         block_destination = False if direction == 'from' else True
         block_source =  False if direction == 'to' else True
         target = demisto.args().get('target')
-        if not DEVICE_GROUP:
+        if target and not DEVICE_GROUP:
             return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
 
         custom_block_output = {
@@ -1842,6 +2287,35 @@ script:
 
         elif demisto.command() == 'panorama-edit-address-group':
             panorama_edit_address_group_command()
+
+        # Services commands
+        elif demisto.command() == 'panorama-list-services':
+            panorama_list_services_command()
+
+        elif demisto.command() == 'panorama-get-service':
+            panorama_get_service_command()
+
+        elif demisto.command() == 'panorama-create-service':
+            panorama_create_service_command()
+
+        elif demisto.command() == 'panorama-delete-service':
+            panorama_delete_service_command()
+
+        # Service groups commands
+        elif demisto.command() == 'panorama-list-service-groups':
+            panorama_list_service_groups_command()
+
+        elif demisto.command() == 'panorama-get-service-group':
+            panorama_get_service_group_command()
+
+        elif demisto.command() == 'panorama-create-service-group':
+            panorama_create_service_group_command()
+
+        elif demisto.command() == 'panorama-delete-service-group':
+            panorama_delete_service_group_command()
+
+        elif demisto.command() == 'panorama-edit-service-group':
+            panorama_edit_service_group_command()
 
         # Custom Url Category commands
         elif demisto.command() == 'panorama-get-custom-url-category':
@@ -2051,7 +2525,7 @@ script:
     - name: ip_range
       description: IP range of the new address, e.g., 10.10.10.0-10.10.10.255
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Address name
       type: string
     - contextPath: Panorama.Addresses.Description
@@ -2073,7 +2547,7 @@ script:
       required: true
       description: Name of the address to delete
     outputs:
-    - contextPath: ' Panorama.Addresses.Name'
+    - contextPath: Panorama.Addresses.Name
       description: Name of the address that was deleted
       type: string
     description: Delete an address object
@@ -2157,6 +2631,7 @@ script:
   - name: panorama-delete-address-group
     arguments:
     - name: name
+      required: true
       description: Name of address group to delete
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -2182,7 +2657,7 @@ script:
         Address objects can be added
     - name: element_to_remove
       description: Element to remove to the list of the static address group. only
-        existing Address objects can be added
+        existing Address objects can be removed
     - name: description
       description: Address group new description
     outputs:
@@ -2202,6 +2677,163 @@ script:
       description: Static Address group addresses
       type: string
     description: Edit an address group; "static" or "dynamic"
+  - name: panorama-list-services
+    arguments: []
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+    description: Returns a list of addresses
+  - name: panorama-get-service
+    arguments:
+    - name: name
+      description: Service name
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+    description: Returns service details for the supplied service name
+  - name: panorama-create-service
+    arguments:
+    - name: name
+      required: true
+      description: Name for the new service
+    - name: protocol
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - sctp
+      description: Protocol for the new service
+    - name: destination_port
+      required: true
+      description: Destination port  for the new service
+    - name: source_port
+      description: Source port  for the new service
+    - name: description
+      description: Description for the new service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Descritpion
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+    description: Creates a service object
+  - name: panorama-delete-service
+    arguments:
+    - name: name
+      required: true
+      description: Name of the service to delete
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Name of the service that was deleted
+      type: string
+    description: Deletes a service object
+  - name: panorama-list-service-groups
+    arguments: []
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+    description: Returns a list of service groups
+  - name: panorama-get-service-group
+    arguments:
+    - name: name
+      required: true
+      description: Service group name
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+    description: Get details for the specified service group
+  - name: panorama-create-service-group
+    arguments:
+    - name: name
+      required: true
+      description: Service group name
+    - name: services
+      required: true
+      description: Service group related services
+      isArray: true
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+    description: Creates a service group
+  - name: panorama-delete-service-group
+    arguments:
+    - name: name
+      required: true
+      description: Name of service group to delete
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Name of service group that was deleted
+      type: string
+    description: Deletes a service group
+  - name: panorama-edit-service-group
+    arguments:
+    - name: name
+      required: true
+      description: Name of the service group to edit
+    - name: services_to_add
+      description: Services to add to the service group. only existing Services objects
+        can be added
+      isArray: true
+    - name: services_to_remove
+      description: Services to remove from the service group. only existing Services
+        objects can be removed
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+    description: Edit a service group
   - name: panorama-get-custom-url-category
     arguments:
     - name: name
@@ -2366,7 +2998,7 @@ script:
     arguments:
     - name: name
       required: true
-      description: URL Filter to edit
+      description: Name of the URL filter to edit
     - name: element_to_change
       required: true
       auto: PREDEFINED
@@ -2405,7 +3037,7 @@ script:
     - contextPath: Panorama.URLFilter.OverrideBlockList
       description: Block Overrides for the url category
       type: string
-    description: Name of the URL filter to edit
+    description: Edit a URL filtering rule
   - name: panorama-delete-url-filter
     arguments:
     - name: name

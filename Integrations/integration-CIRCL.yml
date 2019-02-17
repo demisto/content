@@ -382,6 +382,5 @@ script:
       type: number
     description: Get the raw certificate and related information.
   runonce: false
-releaseNotes: "-"
 tests:
   - CirclIntegrationTest

@@ -199,16 +199,28 @@ script:
         return output
 
     def get_pylum_id(machine):
-        cmd_url='/rest/sensors/query'
-        json = {
-            'filters': [{
-                'fieldName': 'machineName',
-                'operator': 'Equals',
-                'values': [machine]
-            }]
-        }
+
+        query_fields = ['pylumId']
+        path = [
+            {
+                'requestedType': 'Machine',
+                'filters': [
+                    {'facetName': 'elementDisplayName', 'values': [machine]}
+                ],
+                'isResult': True
+            }
+        ]
+        json = build_query(query_fields, path)
+        cmd_url = '/rest/visualsearch/query/simple'
         response = http_request('POST', cmd_url, json=json).json()
-        pylum_id = response['sensors'][0]['pylumId']
+        data = response['data'].get('resultIdToElementDataMap')
+
+        if not data:
+            return_error('Could not find machine')
+
+        guid = data.keys()[0]
+        simple_values = data[guid]['simpleValues']
+        pylum_id = simple_values['pylumId']['values'][0]
         return pylum_id
 
     def get_machine_guid(machine_name):
@@ -518,6 +530,11 @@ script:
                 machine_name = machine.get('name', '')
                 affected_machines.append(machine_name)
 
+            involved_hashes = []
+            if 'rootCauseElementHashes' in malop['simpleValues']:
+                if malop['simpleValues']['rootCauseElementHashes']['totalValues'] != 0:
+                   involved_hashes.extend(malop['simpleValues']['rootCauseElementHashes']['values'])
+
             malop_output = {
                 'GUID': malop_id,
                 'Link': SERVER + '/#/malop/' + malop_id,
@@ -526,7 +543,8 @@ script:
                 'Suspects':suspects_string,
                 'LastUpdateTime': malop_last_update_time,
                 'Status': management_status,
-                'AffectedMachines': affected_machines
+                'AffectedMachine': affected_machines,
+                'InvolvedHash': involved_hashes
             }
             outputs.append(malop_output)
         ec = {
@@ -538,7 +556,7 @@ script:
             'Contents': data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachines']),
+            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']),
             'EntryContext': ec
         })
 
@@ -964,7 +982,7 @@ script:
 
         if data:
             cybereason_outputs = []
-            file_outsputs = []
+            file_outputs = []
             endpoint_outputs = []
             files = data.get('resultIdToElementDataMap')
             for file in files.keys():
@@ -1019,7 +1037,7 @@ script:
                     'Company': company_name
                 })
 
-                file_outsputs.append({
+                file_outputs.append({
                     'Name': file_name,
                     'MD5': md5,
                     'SHA1': sha1,
@@ -1035,7 +1053,7 @@ script:
                     'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
                     'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
                 }
-                ec[outputPaths['file']] = file_outsputs
+                ec[outputPaths['file']] = file_outputs
 
                 demisto.results({
                     'ContentsFormat': formats['json'],
@@ -1663,6 +1681,15 @@ script:
     - contextPath: Cybereason.Malops.LastUpdatedTime
       description: Last updated time of malop
       type: string
+    - contextPath: Cybereason.Malops.AffectedMachine
+      description: List of machines affected by this Malop
+      type: string
+    - contextPath: Cybereason.Malops.InvolvedHash
+      description: List of file hashes involved in this Malop
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: Malop managemant status
+      type: string
     description: Returns a list of all Malops and details on the Malops.
   - name: cybereason-malop-processes
     arguments:
@@ -1908,4 +1935,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "1. Improved malop fetching as incidents implementation. 2. Added commands to prevent and unprevent file "
+releaseNotes: "-"

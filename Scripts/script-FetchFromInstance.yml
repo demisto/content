@@ -17,13 +17,14 @@ script: |-
       context_modules = demisto.getModules()
       for module_name, module in context_modules.iteritems():
           if module.get("brand") == brand_name:
-              instance_name = module_name
+              instance_name = module_name.replace(' ', '_')
               break
   elif demisto.args().get("instance_name"):
       instance_name = demisto.args()["instance_name"]
   if not instance_name:
       raise Exception("No instance name was found")
   expect_data = False if demisto.args()["expect_data"] == 'false' else True
+  instance_name = instance_name.replace(" ","_")
   command = '!{0}-fetch'.format(instance_name)
 
   response = demisto.executeCommand(command, {})
@@ -84,5 +85,6 @@ outputs:
 scripttarget: 0
 runonce: false
 deprecated: true
+releaseNotes: "-"
 tests:
   - No test - cannot create a dummy integration inorder to test that

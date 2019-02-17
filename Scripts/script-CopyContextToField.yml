@@ -45,6 +45,5 @@ args:
   defaultValue: "1000"
 scripttarget: 0
 runonce: false
-releaseNotes: "New script - copy context key to an incident field, for a group of incidents"
 tests:
   - CopyContextToFieldTest

@@ -1,7 +1,7 @@
 id: Phishing Investigation - Generic
 version: -1
+fromversion: 4.1.0
 name: Phishing Investigation - Generic
-fromversion: 4.0
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 32d25ab2-8fa5-46cd-82df-78dc402c0150
+    taskid: 44927568-9dcf-4acb-84c2-1466eb224729
     type: start
     task:
-      id: 32d25ab2-8fa5-46cd-82df-78dc402c0150
+      id: 44927568-9dcf-4acb-84c2-1466eb224729
       version: -1
       name: ""
       description: ""
@@ -21,23 +21,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "18"
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 50
+          "y": -130
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 17b50e98-fd3e-4410-80c7-a6095629096c
+    taskid: c4e87e26-a8fc-473a-8f84-e63335a552e8
     type: regular
     task:
-      id: 17b50e98-fd3e-4410-80c7-a6095629096c
+      id: c4e87e26-a8fc-473a-8f84-e63335a552e8
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -66,12 +66,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 5882f2a4-7949-4121-8dc6-09a44bc78a48
+    taskid: c3cd10bc-d79e-4471-8b28-82613ac05418
     type: playbook
     task:
-      id: 5882f2a4-7949-4121-8dc6-09a44bc78a48
+      id: c3cd10bc-d79e-4471-8b28-82613ac05418
       version: -1
       name: ""
       description: ""
@@ -91,12 +92,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 96f4ce72-93d9-45b9-8831-0cbda3396066
+    taskid: 89d7dd49-06a3-4397-8b72-f4428bf24805
     type: regular
     task:
-      id: 96f4ce72-93d9-45b9-8831-0cbda3396066
+      id: 89d7dd49-06a3-4397-8b72-f4428bf24805
       version: -1
       name: Manually review the incident
       description: Review the incident to determine if the email that the user reported
@@ -116,12 +118,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 0cead84c-7626-4cc0-839f-d1b8d5260b9c
+    taskid: 104d08e2-78ad-496f-81f6-f3ebe77f3b5a
     type: regular
     task:
-      id: 0cead84c-7626-4cc0-839f-d1b8d5260b9c
+      id: 104d08e2-78ad-496f-81f6-f3ebe77f3b5a
       version: -1
       name: Close investigation
       description: Close the investigation.
@@ -145,17 +148,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2700
+          "x": 685,
+          "y": 3290
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
-    taskid: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
+    taskid: f90db644-38c8-4d31-840c-4b5b16069a33
     type: title
     task:
-      id: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
+      id: f90db644-38c8-4d31-840c-4b5b16069a33
       version: -1
       name: Triage
       description: ""
@@ -174,12 +178,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
-    taskid: 40a1c30b-92a4-41fc-84f3-c8474693f931
+    taskid: 1a99d7e1-2c84-4d57-80be-0ec42482d952
     type: regular
     task:
-      id: 40a1c30b-92a4-41fc-84f3-c8474693f931
+      id: 1a99d7e1-2c84-4d57-80be-0ec42482d952
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -209,12 +214,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
-    taskid: 4aafb18b-b981-470e-864c-5caedb033ce0
+    taskid: 0f0f8a66-8f89-43fe-8e23-33d1d476c175
     type: regular
     task:
-      id: 4aafb18b-b981-470e-864c-5caedb033ce0
+      id: 0f0f8a66-8f89-43fe-8e23-33d1d476c175
       version: -1
       name: Acknowledge incident was received
       description: |
@@ -254,12 +260,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
-    taskid: 849b0463-ea4a-4860-86b5-825e5cda8a08
+    taskid: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
     type: playbook
     task:
-      id: 849b0463-ea4a-4860-86b5-825e5cda8a08
+      id: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
       version: -1
       name: Email Address Enrichment - Generic
       description: ""
@@ -279,12 +286,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "15":
     id: "15"
-    taskid: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
+    taskid: bd6e25bf-75cc-41b0-8f27-12b96b0f5ca4
     type: condition
     task:
-      id: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
+      id: bd6e25bf-75cc-41b0-8f27-12b96b0f5ca4
       version: -1
       name: Is the email malicious?
       description: Determine if the email is malicious based on the calculated severity.
@@ -295,7 +303,7 @@ tasks:
       '#default#':
       - "31"
       'Malicious ':
-      - "30"
+      - "41"
     separatecontext: false
     conditions:
     - label: 'Malicious '
@@ -316,12 +324,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "16":
     id: "16"
-    taskid: 79084bbf-1187-4b31-82f2-8b153a093a49
+    taskid: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
     type: regular
     task:
-      id: 79084bbf-1187-4b31-82f2-8b153a093a49
+      id: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
       version: -1
       name: Update  the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
@@ -357,17 +366,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 2525
+          "x": 40,
+          "y": 2865
         }
       }
     note: false
+    timertriggers: []
   "17":
     id: "17"
-    taskid: f7788586-5020-4246-8946-2021c76dc722
+    taskid: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
     type: regular
     task:
-      id: f7788586-5020-4246-8946-2021c76dc722
+      id: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
       version: -1
       name: Update  the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
@@ -401,17 +411,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2030
+          "x": 797.5,
+          "y": 2200
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
-    taskid: 916bc6c8-6d46-4f04-8bd2-1152736b7984
+    taskid: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
     type: title
     task:
-      id: 916bc6c8-6d46-4f04-8bd2-1152736b7984
+      id: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
       version: -1
       name: Engage with User
       description: ""
@@ -430,12 +441,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
-    taskid: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+    taskid: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
     type: playbook
     task:
-      id: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+      id: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
       version: -1
       name: Detonate File - Generic
       description: ""
@@ -455,12 +467,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "25":
     id: "25"
-    taskid: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
+    taskid: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
     type: playbook
     task:
-      id: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
+      id: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
       version: -1
       name: Entity Enrichment - Generic
       description: ""
@@ -480,12 +493,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "26":
     id: "26"
-    taskid: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+    taskid: 87a23c95-84b5-4343-8a01-d70c6f97702a
     type: playbook
     task:
-      id: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+      id: 87a23c95-84b5-4343-8a01-d70c6f97702a
       version: -1
       name: Process Email - Generic
       description: ""
@@ -506,12 +520,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "27":
     id: "27"
-    taskid: d73d68a4-dff2-4cae-8645-972f9c328444
+    taskid: 1b402b79-641b-4ac1-8124-80e939ae3bd4
     type: title
     task:
-      id: d73d68a4-dff2-4cae-8645-972f9c328444
+      id: 1b402b79-641b-4ac1-8124-80e939ae3bd4
       version: -1
       name: Remediate
       description: ""
@@ -520,24 +535,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
-      - "36"
-      - "37"
+      - "42"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2205
+          "x": 797.5,
+          "y": 2375
         }
       }
     note: false
+    timertriggers: []
   "28":
     id: "28"
-    taskid: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
+    taskid: 2f89f21c-0088-460a-81b2-b0c3f021b89c
     type: playbook
     task:
-      id: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
+      id: 2f89f21c-0088-460a-81b2-b0c3f021b89c
       version: -1
       name: Search And Delete Emails - Generic
       description: ""
@@ -547,22 +561,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "43"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2525
+          "x": 890,
+          "y": 2865
         }
       }
     note: false
+    timertriggers: []
   "29":
     id: "29"
-    taskid: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
+    taskid: 8f9afe19-c4b2-4f86-8544-4fee8d8455d1
     type: title
     task:
-      id: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
+      id: 8f9afe19-c4b2-4f86-8544-4fee8d8455d1
       version: -1
       name: Done
       description: ""
@@ -573,17 +588,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2875
+          "x": 685,
+          "y": 3465
         }
       }
     note: false
+    timertriggers: []
   "30":
     id: "30"
-    taskid: 824c86e1-14a5-42cf-8516-e5f893558f09
+    taskid: 50789baf-1476-467a-8386-0be463a4a460
     type: title
     task:
-      id: 824c86e1-14a5-42cf-8516-e5f893558f09
+      id: 50789baf-1476-467a-8386-0be463a4a460
       version: -1
       name: Malicious
       description: ""
@@ -597,17 +613,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1885
+          "x": 797.5,
+          "y": 2055
         }
       }
     note: false
+    timertriggers: []
   "31":
     id: "31"
-    taskid: 717e858d-5696-441b-8ff2-30f798cea618
+    taskid: 7d784d78-4fc1-4465-8a32-4c13aff74e60
     type: title
     task:
-      id: 717e858d-5696-441b-8ff2-30f798cea618
+      id: 7d784d78-4fc1-4465-8a32-4c13aff74e60
       version: -1
       name: Undetermined
       description: ""
@@ -626,12 +643,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "33":
     id: "33"
-    taskid: f59a91ed-b686-4133-8f23-13338cff2d6e
+    taskid: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
     type: condition
     task:
-      id: f59a91ed-b686-4133-8f23-13338cff2d6e
+      id: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
       version: -1
       name: Is the email malicious?
       description: Is the email that the user reported malicious?
@@ -640,9 +658,9 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "16"
-      "yes":
-      - "30"
+      - "40"
+      "Yes":
+      - "41"
     separatecontext: false
     view: |-
       {
@@ -652,12 +670,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "34":
     id: "34"
-    taskid: 17f0be59-6aff-4f12-829a-395597295427
+    taskid: 536ca1cd-adbe-4db2-89c1-318be024fc3e
     type: regular
     task:
-      id: 17f0be59-6aff-4f12-829a-395597295427
+      id: 536ca1cd-adbe-4db2-89c1-318be024fc3e
       version: -1
       name: Manually remediate  the incident
       description: "Consider the following:\n1. Search for and delete similar emails\n2.
@@ -669,22 +688,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "43"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 2360
+          "x": 440,
+          "y": 2700
         }
       }
     note: false
+    timertriggers: []
   "35":
     id: "35"
-    taskid: 524a2856-34ef-4752-862d-90daa98875ee
+    taskid: cd577642-8baf-4aba-87d9-29f0366aa173
     type: playbook
     task:
-      id: 524a2856-34ef-4752-862d-90daa98875ee
+      id: cd577642-8baf-4aba-87d9-29f0366aa173
       version: -1
       name: Extract Indicators From File - Generic
       description: ""
@@ -704,12 +724,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "36":
     id: "36"
-    taskid: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+    taskid: eebcf7b0-41c8-4185-8fad-977de983ab65
     type: condition
     task:
-      id: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+      id: eebcf7b0-41c8-4185-8fad-977de983ab65
       version: -1
       name: Execute the "Search and Delete" sub-playbook?
       description: Verify that the "Search and Delete" parameter is set to "True"?
@@ -718,7 +739,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "43"
       "yes":
       - "28"
     separatecontext: false
@@ -744,17 +765,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2360
+          "x": 890,
+          "y": 2700
         }
       }
     note: false
+    timertriggers: []
   "37":
     id: "37"
-    taskid: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+    taskid: f6b138df-f341-4cc0-8b9a-7f4ba4a06c71
     type: condition
     task:
-      id: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+      id: f6b138df-f341-4cc0-8b9a-7f4ba4a06c71
       version: -1
       name: Execute the "Block Indicators" sub-playbook?
       description: Verify that the "Block indicators" parameter is set to "True"?
@@ -763,7 +785,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "43"
       "yes":
       - "38"
     separatecontext: false
@@ -789,17 +811,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 2360
+          "x": 1330,
+          "y": 2700
         }
       }
     note: false
+    timertriggers: []
   "38":
     id: "38"
-    taskid: 2198ea9b-926d-4f25-829e-39c390771dfb
+    taskid: cfb76a8d-e926-41a3-8036-6d4d54abf96d
     type: playbook
     task:
-      id: 2198ea9b-926d-4f25-829e-39c390771dfb
+      id: cfb76a8d-e926-41a3-8036-6d4d54abf96d
       version: -1
       name: Block Indicators - Generic
       description: ""
@@ -809,25 +832,164 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "43"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 2525
+          "x": 1330,
+          "y": 2865
         }
       }
     note: false
+    timertriggers: []
+  "39":
+    id: "39"
+    taskid: 5ff2d707-a036-4db0-8851-ed3ec61802db
+    type: title
+    task:
+      id: 5ff2d707-a036-4db0-8851-ed3ec61802db
+      version: -1
+      name: Start Detection Timer
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: start
+  "40":
+    id: "40"
+    taskid: 83e23120-b009-4565-8ab7-880b247aee16
+    type: title
+    task:
+      id: 83e23120-b009-4565-8ab7-880b247aee16
+      version: -1
+      name: Stop Detection Timer
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+  "41":
+    id: "41"
+    taskid: 88612884-d640-4dd1-85f4-0daa684ecf99
+    type: title
+    task:
+      id: 88612884-d640-4dd1-85f4-0daa684ecf99
+      version: -1
+      name: Stop Detection Timer
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+  "42":
+    id: "42"
+    taskid: b7d4e2cb-4d75-4c0d-8d87-732af590173e
+    type: title
+    task:
+      id: b7d4e2cb-4d75-4c0d-8d87-732af590173e
+      version: -1
+      name: Start Remediation Timer
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+      - "37"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+  "43":
+    id: "43"
+    taskid: f863f789-c46a-44e2-8d8b-02174df5010b
+    type: title
+    task:
+      id: f863f789-c46a-44e2-8d8b-02174df5010b
+      version: -1
+      name: Stop Remediation Timer
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2890,
+        "height": 3660,
         "width": 1670,
-        "x": 60,
-        "y": 50
+        "x": 40,
+        "y": -130
       }
     }
   }

@@ -106,4 +106,3 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
-releaseNotes: "Make script compatible as indicator reputation script"
