@@ -554,4 +554,5 @@ script:
     description: Fetch Canary Token file from the Canary Tools server
   isfetch: true
   runonce: false
-tests:- CanaryTools Test
+tests:
+  - CanaryTools Test
