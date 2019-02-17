@@ -353,7 +353,6 @@ def execute_testing(server):
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
-    os.remove(FILTER_CONF)
 
     if len(failed_playbooks):
         with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
