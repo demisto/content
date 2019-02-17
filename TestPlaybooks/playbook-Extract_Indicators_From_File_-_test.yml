@@ -389,8 +389,8 @@ tasks:
     task:
       id: be1c63ab-e412-432a-8379-3c343ea501f8
       version: -1
-      name: Extract Indicators From File - Generic_dev
-      playbookName: Extract Indicators From File - Generic_dev
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
       type: playbook
       iscommand: false
       brand: ""
