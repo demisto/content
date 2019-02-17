@@ -12231,7 +12231,7 @@
                     "http"
                 ], 
                 "implementing_playbooks": [
-                    "Extract Indicators From File - Generic"
+                    "Extract Indicators From File - Generic_dev"
                 ]
             }
         }, 
