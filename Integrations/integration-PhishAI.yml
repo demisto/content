@@ -19,7 +19,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2
+  script: |
     var DONT_CHECK_CERTIFICATE = false;
 
     function checkStatus(url, apiKey){
@@ -169,7 +169,61 @@ script:
 
         var report = JSON.parse(res.Body);
 
-        return analayzeResult(report, url)
+        return analayzeResult(report, url);
+    }
+
+
+    function phishAiDispute(url, apiKey) {
+        var initialRes = http(
+            'https://app.phish.ai/api/url/scan',
+            {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                },
+                Body: JSON.stringify({'url': url})
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
+
+        // check status code is valid
+        if (initialRes.StatusCode !== 200 && initialRes.StatusCode !== 201) {
+            throw 'Failed to send url ' + url + ' for scan. Response error: ' + initialRes.Body;
+        }
+
+        var scanId = JSON.parse(initialRes.Body).scan_id;
+        var res = http(
+            'https://app.phish.ai/api/url/dispute?scan_id=' + scanId,
+            {
+                Method: 'GET',
+                Headers: {
+                    'Accept': ['application/json'],
+                    'Authorization': [apiKey]
+                }
+            },
+            DONT_CHECK_CERTIFICATE,
+            params.proxy
+        );
+
+        if (res.StatusCode !== 200) {
+            throw 'Failed to get scan results for ' + url + '. scan_id: ' + scanId + '. Response error: ' + res.Body;
+        }
+
+        textRes = JSON.parse(res.Body);
+        if (textRes == 'OK') {
+            return {
+                Type: entryTypes.note,
+                Contents: textRes,
+                ContentsFormat: formats.text,
+                HumanReadable: 'URL ' + url + ' was disputed'
+            };
+        }
+        else {
+            throw 'Failed to dispute url ' + url + '. Response error: ' + textRes;
+        }
     }
 
     switch (command) {
@@ -181,10 +235,16 @@ script:
                 return 'error';
             }
             break;
+
         case 'phish-ai-scan-url':
             return phishAiScan(args.url, params.apiKey);
+
         case 'phish-ai-check-status':
             return checkStatus(args.url, params.apiKey);
+
+        case 'phish-ai-dispute-url':
+            return phishAiDispute(args.url, params.apiKey);
+
         default:
             break;
     }
@@ -232,6 +292,13 @@ script:
     - contextPath: URL.Status
       description: URL's Status
     description: Checks on url's status, e.g. completed/in progress
+  - name: phish-ai-dispute-url
+    arguments:
+    - name: url
+      required: true
+      description: url to dispute
+    description: Dispute the result of the scan
   runonce: false
+releaseNotes: "Add dispute url command"
 tests:
-  - PhishAi-Test
+- PhishAi-Test

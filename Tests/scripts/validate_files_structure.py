@@ -230,8 +230,7 @@ def changed_id(file_path):
 
 def is_added_required_fields(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or \
-            re.search("\+[ ]+required: true", change_string):
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string):
         print_error("You've added required fields in the integration file {}".format(file_path))
         return True
 
