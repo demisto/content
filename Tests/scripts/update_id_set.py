@@ -62,6 +62,7 @@ def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
 
 def get_changed_files(files_string):
     all_files = files_string.split('\n')
+    deleted_files = set([])
     added_files_list = set([])
     added_script_list = set([])
     modified_script_list = set([])
@@ -81,6 +82,16 @@ def get_changed_files(files_string):
             added_script_list.add(os.path.join(os.path.dirname(file_path), ''))
         elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
             modified_script_list.add(os.path.join(os.path.dirname(file_path), ''))
+        elif file_status.lower() == 'd' and checked_type(file_path, SCRIPTS_REGEX_LIST):
+            deleted_files.add(os.path.join(os.path.dirname(file_path), ''))
+        elif file_status.lower() == 'd' and checked_type(file_path):
+            deleted_files.add(file_path)
+
+    for deleted_file in deleted_files:
+        added_files_list = added_files_list - {deleted_file}
+        modified_files_list = modified_files_list - {deleted_file}
+        added_script_list = added_script_list - {deleted_file}
+        modified_script_list = modified_script_list - {deleted_file}
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 

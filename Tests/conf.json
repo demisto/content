@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
@@ -11,6 +14,10 @@
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Fidelis Elevate Network",
+            "playbookID": "Fidelis-Test"
         },
         {
             "integrations": "ThreatMiner",
