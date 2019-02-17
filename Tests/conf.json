@@ -3,10 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "EclecticIQ Test",
-            "integrations": "EclecticIQ Platform"
-        },
-        {
             "playbookID": "HighlightWords_Test"
         },
         {

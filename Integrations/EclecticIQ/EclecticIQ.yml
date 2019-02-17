@@ -352,3 +352,5 @@ script:
       type: String
     description: Get reputation of domain observable
   runonce: false
+tests:
+  - No test - instance issues

@@ -11684,6 +11684,9 @@
                     "eclecticiq-get-observable-related-entity", 
                     "email", 
                     "domain"
+                ], 
+                "tests": [
+                    "No test - instance issues"
                 ]
             }
         }
