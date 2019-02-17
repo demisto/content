@@ -53,18 +53,20 @@ def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
 
     if res.status_code not in {200}:
         if res.status_code == 405:
-            return_error('Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid URL.')
-        try: # Parse the error message
+            return_error(
+                'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid URL.'
+            )
+        try:  # Parse the error message
             errors = json.loads(res.text).get('errors', {})[0]
             title = errors.get('title', '')
             detail = errors.get('detail', '')
             return_error('Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail))
-        except Exception: # In case error message is not in expected format
+        except Exception:  # In case error message is not in expected format
             return_error(res.content)
 
-    try: # Verify we can generate json from the response
+    try:  # Verify we can generate json from the response
         return res.json()
-    except ValueError as e:
+    except ValueError:
         return_error(res)
 
 
@@ -104,6 +106,7 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
 
 def test_module():
     """
@@ -736,6 +739,7 @@ def processed_extract(observable_id):
     cmd_url = '/private/entities/processed-extract/{}'.format(observable_id)
     response = http_request('GET', cmd_url)
     return response
+
 
 def original_extract(observable_id):
 
