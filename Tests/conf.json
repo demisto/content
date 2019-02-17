@@ -287,6 +287,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
+        },
+        {
 
             "integrations": "BigFix",
             "playbookID": "BigFixTest"
@@ -1052,6 +1056,7 @@
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
+
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
@@ -1082,7 +1087,8 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)"
+        "Tanium": "Instance is not stable (issue 15497)",
+        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
     },
     "nigthly_integrations": [
         "Lastline",
