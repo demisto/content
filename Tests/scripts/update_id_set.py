@@ -121,14 +121,27 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('toversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def get_integration_commands(file_path):
@@ -282,15 +295,22 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
 
+    updated = False
     for instance in instances_set:
         instance_id = instance.keys()[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
+
         if obj_id == instance_id:
             if is_added_from_version or (not is_added_from_version and file_from_version == integration_from_version):
                 if is_added_to_version or (not is_added_to_version and file_to_version == integration_to_version):
                     instance[obj_id] = obj_data[obj_id]
+                    updated = True
                     break
+
+    if not updated:
+        # in case we didn't found then we need to create one
+        add_new_object_to_id_set(obj_id, obj_data, instances_set)
 
 
 def add_new_object_to_id_set(obj_id, obj_data, instances_set):
@@ -382,6 +402,11 @@ def re_create_id_set():
     print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(ids_dict, id_set_file, indent=4)
+
+
+def sort(data):
+    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    return data
 
 
 def update_id_set():
@@ -482,10 +507,12 @@ def update_id_set():
 
     if added_files or modified_files:
         new_ids_dict = OrderedDict()
-        new_ids_dict['scripts'] = script_set
-        new_ids_dict['playbooks'] = playbook_set
-        new_ids_dict['integrations'] = integration_set
-        new_ids_dict['TestPlaybooks'] = test_playbook_set
+        # we sort each time the whole set in case someone manually changed something
+        # it shouldn't take too much time
+        new_ids_dict['scripts'] = sort(script_set)
+        new_ids_dict['playbooks'] = sort(playbook_set)
+        new_ids_dict['integrations'] = sort(integration_set)
+        new_ids_dict['TestPlaybooks'] = sort(test_playbook_set)
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(new_ids_dict, id_set_file, indent=4)
