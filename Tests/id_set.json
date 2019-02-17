@@ -11607,6 +11607,17 @@
             }
         }, 
         {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
+        }, 
+        {
             "Where is the egg?": {
                 "name": "Where is the egg?", 
                 "fromversion": "3.6.0", 
@@ -11779,17 +11790,6 @@
                 ], 
                 "tests": [
                     "Zscaler Test"
-                ]
-            }
-        }, 
-        {
-            "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser", 
-                "commands": [
-                    "ua-parse"
-                ], 
-                "tests": [
-                    "WhatsMyBrowser-Test"
                 ]
             }
         }
@@ -14972,6 +14972,29 @@
             }
         }, 
         {
+            "SymantecEndpointProtection_Test": {
+                "name": "SymantecEndpointProtection_Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "sep-endpoint-quarantine": "", 
+                    "sep-list-policies": "", 
+                    "sep-list-locations": "", 
+                    "sep-update-endpoint-content": "", 
+                    "sep-endpoints-info": "", 
+                    "sep-groups-info": "", 
+                    "sep-client-content": "", 
+                    "sep-system-info": "", 
+                    "sep-scan-endpoint": ""
+                }, 
+                "tests": [
+                    "No test - test playbook"
+                ]
+            }
+        }, 
+        {
             "SymantecMSSTest": {
                 "name": "SymantecMSSTest", 
                 "implementing_scripts": [
@@ -15140,6 +15163,17 @@
                     "atd-list-analyzer-profiles": "", 
                     "atd-login": "", 
                     "atd-list-user": ""
+                }
+            }
+        }, 
+        {
+            "Test Playbook McAfee ATD Upload File": {
+                "name": "Test Playbook McAfee ATD Upload File", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "atd-file-upload": ""
                 }
             }
         }, 
@@ -15704,6 +15738,18 @@
             }
         }, 
         {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
+                }
+            }
+        }, 
+        {
             "whois_test": {
                 "name": "whois_test", 
                 "implementing_scripts": [
@@ -15801,52 +15847,6 @@
                     "zscaler-get-categories": "", 
                     "zscaler-category-add-url": ""
                 }
-            }
-        }, 
-        {
-            "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "Set"
-                ], 
-                "command_to_integration": {
-                    "ua-parse": "WhatsMyBrowser"
-                }
-            }
-        }, 
-        {
-            "Test Playbook McAfee ATD Upload File": {
-                "name": "Test Playbook McAfee ATD Upload File", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "atd-file-upload": ""
-                }
-            }
-        }, 
-        {
-            "SymantecEndpointProtection_Test": {
-                "name": "SymantecEndpointProtection_Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "PrintErrorEntry"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoint-quarantine": "", 
-                    "sep-list-policies": "", 
-                    "sep-list-locations": "", 
-                    "sep-update-endpoint-content": "", 
-                    "sep-endpoints-info": "", 
-                    "sep-groups-info": "", 
-                    "sep-client-content": "", 
-                    "sep-system-info": "", 
-                    "sep-scan-endpoint": ""
-                }, 
-                "tests": [
-                    "No test - test playbook"
-                ]
             }
         }
     ]
