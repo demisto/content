@@ -7717,6 +7717,20 @@
             }
         }, 
         {
+            "AWS - Lambda": {
+                "name": "AWS - Lambda", 
+                "commands": [
+                    "aws-lambda-get-function", 
+                    "aws-lambda-list-functions", 
+                    "aws-lambda-list-aliases", 
+                    "aws-lambda-invoke"
+                ], 
+                "tests": [
+                    "No Tests"
+                ]
+            }
+        }, 
+        {
             "AWS - Route53": {
                 "name": "AWS - Route53", 
                 "commands": [
