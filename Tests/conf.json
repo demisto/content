@@ -9,6 +9,10 @@
             "playbookID": "RandomStringGenerateTest"
         },
         {
+            "playbookID": "DocumentationTest",
+            "integrations": "ipinfo"
+        },
+        {
             "playbookID": "HighlightWords_Test"
 
         },
