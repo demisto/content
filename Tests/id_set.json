@@ -12527,7 +12527,7 @@
                     "azure-vm-delete-instance"
                 ], 
                 "tests": [
-                    "AzureCompute-Test"
+                    "No test"
                 ]
             }
         }
