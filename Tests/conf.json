@@ -1064,7 +1064,7 @@
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
         "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation",
+        "VMware": "DevOps investigation (issue 10742)",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
