@@ -22,13 +22,13 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Fetch Events as incidents via Query Viewer ID. Mandatory fields for query
+- display: Fetch events as incidents via Query Viewer ID. Mandatory fields for query
     are "Start Time" and "Event ID".
   name: events_query_viewer_id
   defaultvalue: ""
   type: 0
   required: false
-- display: Fetch Cases as incidents via Query Viewer ID. Mandatory fields for query
+- display: Fetch cases as incidents via Query Viewer ID. Mandatory fields for query
     are "Create Time" and "ID".
   name: cases_query_viewer_id
   defaultvalue: ""
@@ -43,6 +43,16 @@ configuration:
   name: incidentType
   defaultvalue: ""
   type: 13
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
@@ -658,7 +668,7 @@ script:
             entries = [dict(zip(keys, values)) for values in entry_list]
             filtered = entries
             # if the user wants only entries that contain certain 'field:value' sets (filters)
-            # e.g. "name:myName,eventId:0,:ValueInUnknownField"
+            # e.g., "name:myName,eventId:0,:ValueInUnknownField"
             # if the key is empty, search in every key
             if entry_filter:
                 for f in entry_filter.split(','):
@@ -808,21 +818,21 @@ script:
     arguments: []
     outputs:
     - contextPath: ArcSightESM.AllCaseIDs
-      description: All cases resource ids
+      description: All case resource IDs
       type: Unknown
-    description: (Deprecated) Retrieve all case resource ids
+    description: (Deprecated) Retrieves all case resource IDs.
   - name: as-get-case
     arguments:
     - name: resourceId
       required: true
       default: true
-      description: commands.server.arcsight.arguments.caseid.description
+      description: Resource ID of the case to get information for
     - name: withBaseEvents
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If passed true, then will return case and base events of that case.
+      description: If "true", then will return case and base events of that case
       defaultValue: "false"
     outputs:
     - contextPath: ArcSightESM.Cases.resourceid
@@ -838,69 +848,69 @@ script:
       description: Time the case was created (in milliseconds)
       type: number
     - contextPath: ArcSightESM.Cases.createdTime
-      description: Created Time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      description: Created time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
       type: string
     - contextPath: ArcSightESM.Cases.modifiedTimestamp
-      description: Modified Timestamp (in milliseconds)
+      description: Modified timestamp (in milliseconds)
       type: number
     - contextPath: ArcSightESM.Cases.modifiedTime
-      description: Modified Time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      description: Modified time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
       type: date
     - contextPath: ArcSightESM.Cases.action
-      description: Action (e.g BLOCK_OR_SHUTDOWN)
+      description: Action (e.g., BLOCK_OR_SHUTDOWN)
       type: string
     - contextPath: ArcSightESM.Cases.associatedImpact
-      description: Associated Impact (e.g AVAILABILITY)
+      description: Associated impact (e.g., AVAILABILITY)
       type: string
     - contextPath: ArcSightESM.Cases.attackAgent
-      description: Attack Agent (e.g INSIDER)
+      description: Attack agent (e.g., INSIDER)
       type: string
     - contextPath: ArcSightESM.Cases.attackMechanism
-      description: AttackMechanism (e.g PHYSICAL)
+      description: Attack mechanism (e.g., PHYSICAL)
       type: string
     - contextPath: ArcSightESM.Cases.consequenceSeverity
-      description: Consequence Severity (e.g NONE)
+      description: Consequence severity (e.g., NONE)
       type: string
     - contextPath: ArcSightESM.Cases.detectionTime
-      description: Detection Time (e.g dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      description: Detection time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
       type: date
     - contextPath: ArcSightESM.Cases.displayID
       description: Display ID
       type: number
     - contextPath: ArcSightESM.Cases.estimatedStartTime
-      description: Estimated Start Time (e.g dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      description: Estimated start time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
       type: date
     - contextPath: ArcSightESM.Cases.eventIDs
       description: Base event IDs
       type: unknown
     - contextPath: ArcSightESM.Cases.frequency
-      description: Frequency (e.g NEVER_OR_ONCE)
+      description: Frequency (e.g., NEVER_OR_ONCE)
       type: string
     - contextPath: ArcSightESM.Cases.history
-      description: History (e.g KNOWN_OCCURENCE)
+      description: History (e.g., KNOWN_OCCURENCE)
       type: Unknown
     - contextPath: ArcSightESM.Cases.numberOfOccurences
       description: Number Of Occurences
       type: number
     - contextPath: ArcSightESM.Cases.resistance
-      description: Resistance (e.g HIGH)
+      description: Resistance (e.g., HIGH)
       type: string
     - contextPath: ArcSightESM.Cases.securityClassification
-      description: Security Classification (e.g UNCLASSIFIED)
+      description: Security Classification (e.g., UNCLASSIFIED)
       type: string
     - contextPath: ArcSightESM.Cases.sensitivity
-      description: Sensitivity (e.g UNCLASSIFIED)
+      description: Sensitivity (e.g., UNCLASSIFIED)
       type: string
     - contextPath: ArcSightESM.Cases.stage
-      description: Stage (e.g QUEUED,INITIAL,FOLLOW_UP,FINAL,CLOSED)
+      description: Stage (e.g., QUEUED,INITIAL,FOLLOW_UP,FINAL,CLOSED)
       type: string
     - contextPath: ArcSightESM.Cases.ticketType
-      description: Ticket type (e.g INTERNAL,CLIENT,INCIDENT)
+      description: Ticket type (e.g., INTERNAL,CLIENT,INCIDENT)
       type: string
     - contextPath: ArcSightESM.Cases.vulnerability
-      description: Vulnerability (e.g DESIGN)
+      description: Vulnerability (e.g., DESIGN)
       type: string
-    description: commands.server.arcsight.getspecificcase.description
+    description: Gets information about a single case.
   - name: as-get-matrix-data
     arguments:
     - name: id
@@ -908,19 +918,19 @@ script:
       default: true
       description: Resource ID of a query viewer
     - name: onlyColumns
-      description: If true, will return only the columns of the query. If false, will return the column headers and all query results.
+      description: If "true", will return only the columns of the query. If "false", will return the column headers and all query results.
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       defaultValue: "true"
-    description: Retrieve query viewer results (query viewer must be configured to
+    description: Retrieves query viewer results (query viewer must be configured to
       be refreshed every minute, see documentation)
   - name: as-add-entries
     arguments:
     - name: resourceId
       required: true
-      description: Resource ID of the Active list
+      description: Resource ID of the Active List
     - name: entries
       required: true
       description: 'Entries are in JSON format. JSON must be an array of entries. Each entry
@@ -962,8 +972,7 @@ script:
       required: true
       isArray: true
     - name: lastDateRange
-      description: 'Query last events. Must be of format ''number date_range_unit''
-        Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)'
+      description: 'Query last events. Format follows ''number date_range_unit'', e.g., 2 hours, 4 minutes, 6 month, 1 day'
     outputs:
     - contextPath: ArcSightESM.SecurityEvents
       description: List of security events
@@ -981,10 +990,10 @@ script:
       description: Base event IDs
       type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.source.address
-      description: Event Source address
+      description: Event source address
       type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.destination.address
-      description: Event Destination address
+      description: Event destination address
       type: Unknown
     - contextPath: ArcSightESM.SecurityEvents.startTime
       description: Start time in milliseconds
@@ -1002,7 +1011,7 @@ script:
     - contextPath: ArcSightESM.CaseEvents.LatestResult
       description: Event IDs of the last execution of this command
       type: Unknown
-    description: Returns all case event IDs
+    description: Returns all case event IDs.
   - name: as-update-case
     arguments:
     - name: caseId
@@ -1016,7 +1025,7 @@ script:
       - FINAL
       - FOLLOW_UP
       - INITIAL
-      description: The stage of case
+      description: Stage the case is in
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -1025,40 +1034,40 @@ script:
       - MARGINAL
       - CRITICAL
       - CATASTROPHIC
-      description: Ticket Consequence Severity
+      description: Ticket consequence Severity
     outputs:
     - contextPath: ArcSightESM.Cases
       description: List of cases
       type: unknown
     - contextPath: ArcSightESM.Cases.resourceid
-      description: Case resource id
+      description: Case resource ID
       type: string
     - contextPath: ArcSightESM.Cases.stage
-      description: 'Case Stage '
+      description: 'Case stage '
       type: string
     - contextPath: ArcSightESM.Cases.consequenceSeverity
-      description: Case Severity
+      description: Case severity
       type: string
-    description: Updates a case.
+    description: Updates a specific case.
     execution: true
   - name: as-get-all-query-viewers
     arguments: []
     outputs:
     - contextPath: ArcSightESM.AllQueryViewers
-      description: List of all query viewer ids
+      description: List of all query viewer IDs
       type: Unknown
-    description: Returns all the query viewer ids
+    description: Returns all the query viewer IDs.
   - name: as-case-delete
     arguments:
     - name: caseId
       required: true
-      description: The resource id of the case
+      description: Resource ID of the case
     outputs:
     - contextPath: ArcSightESM.Cases.resourceid
-      description: Resource id of case
+      description: Resource ID of case
       type: string
     - contextPath: ArcSightESM.Cases.Deleted
-      description: Boolean flag. True if deleted.
+      description: Boolean flag. "True" if deleted.
       type: boolean
     description: Deletes a case
     execution: true
@@ -1066,20 +1075,20 @@ script:
     arguments:
     - name: id
       required: true
-      description: Resource id of query viewer
+      description: Resource ID of the query viewer
     outputs:
     - contextPath: ArcSight.QueryViewerResults
       type: Unknown
       description: Query viewer results
-    description: Retrieve query viewer results (query viewer must be configured to
+    description: Retrieves query viewer results (query viewer must be configured to
       be refreshed every minute, see documentation)
   - name: as-fetch-incidents
     arguments:
     - name: last_run
-      description: last run to start from
-    description: arcsight
+      description: Last run to start fetching incidents from
+    description: Fetches incidents
   isfetch: true
   runonce: false
 tests:
   - ArcSight ESM Test
-releaseNotes: "The integration was rewritten in python. major issues were fixed"
+releaseNotes: "Rewrote the integration in Python and fixed sever issues."
