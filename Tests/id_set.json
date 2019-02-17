@@ -11827,6 +11827,33 @@
                     "Zscaler Test"
                 ]
             }
+        },
+        {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser",
+                "commands": [
+                    "ua-parse"
+                ],
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
+        },
+        {
+            "EclecticIQ Platform": {
+                "name": "EclecticIQ Platform",
+                "commands": [
+                    "ip",
+                    "url",
+                    "file",
+                    "eclecticiq-get-observable-related-entity",
+                    "email",
+                    "domain"
+                ],
+                "tests": [
+                    "No test - instance issues"
+                ]
+            }
         }
     ], 
     "TestPlaybooks": [
@@ -15959,6 +15986,69 @@
                     "zscaler-category-add-url": ""
                 }
             }
+        },
+        {
+            "EclecticIQ Test": {
+                "name": "EclecticIQ Test",
+                "implementing_scripts": [
+                    "PrintErrorEntry"
+                ],
+                "command_to_integration": {
+                    "domain": "EclecticIQ Platform",
+                    "url": "EclecticIQ Platform",
+                    "ip": "EclecticIQ Platform",
+                    "file": "EclecticIQ Platform",
+                    "eclecticiq-get-observable-related-entity": "",
+                    "email": "EclecticIQ Platform"
+                }
+            }
+        },
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test",
+                "implementing_scripts": [
+                    "DeleteContext",
+                    "Set"
+                ],
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
+                }
+            }
+        },
+        {
+            "Test Playbook McAfee ATD Upload File": {
+                "name": "Test Playbook McAfee ATD Upload File",
+                "implementing_scripts": [
+                    "DeleteContext"
+                ],
+                "command_to_integration": {
+                    "atd-file-upload": ""
+                }
+            }
+        },
+        {
+            "SymantecEndpointProtection_Test": {
+                "name": "SymantecEndpointProtection_Test",
+                "implementing_scripts": [
+                    "DeleteContext",
+                    "PrintErrorEntry"
+                ],
+                "command_to_integration": {
+                    "sep-endpoint-quarantine": "",
+                    "sep-list-policies": "",
+                    "sep-list-locations": "",
+                    "sep-update-endpoint-content": "",
+                    "sep-endpoints-info": "",
+                    "sep-groups-info": "",
+                    "sep-client-content": "",
+                    "sep-system-info": "",
+                    "sep-scan-endpoint": ""
+                },
+                "tests": [
+                    "No test - test playbook"
+                ]
+            }
+
         }
     ]
 }
