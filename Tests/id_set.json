@@ -2106,6 +2106,9 @@
                 "name": "FilterByList", 
                 "script_executions": [
                     "getList"
+                ], 
+                "tests": [
+                    "FilterByList - Test"
                 ]
             }
         }, 
@@ -13251,6 +13254,16 @@
                 ], 
                 "implementing_playbooks": [
                     "File Enrichment - Generic"
+                ]
+            }
+        }, 
+        {
+            "FilterByList - Test": {
+                "name": "FilterByList - Test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "FilterByList"
                 ]
             }
         }, 
