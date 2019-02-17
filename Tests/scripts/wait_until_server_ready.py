@@ -43,7 +43,7 @@ def main():
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
     print instance_ips
-    for _ in range(MAX_TRIES*SLEEP_TIME):
+    for _ in range(MAX_TRIES * SLEEP_TIME):
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 print ami_instance_name, ami_instance_ip
