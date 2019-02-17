@@ -9,8 +9,8 @@ description: Windows Defender Advanced Threat Protection (ATP) is a unified plat
   for preventative protection, post-breach detection, automated investigation, and
   response.
 detaileddescription: |-
-  To allow us access to the windows defender app, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fatp&client_id=d4e3905e-b159-4f53-8588-3785a2140c0b).
-  After authorising Demisto app, you will get a tenant ID, which should be inserted in the integration instance settings.
+  To allow us access to the Windows Defender app, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fatp&client_id=d4e3905e-b159-4f53-8588-3785a2140c0b).
+  After authorising Demisto app, you will get a tenant ID and a token, which should be inserted in the integration instance settings.
 configuration:
 - display: Host URL (e.g. https://api.securitycenter.windows.com)
   name: url
@@ -23,7 +23,8 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Token received from login
+- display: Token (as received from the admin consent - see detailed instructions
+    (?))
   name: token
   defaultvalue: ""
   type: 4
@@ -104,7 +105,7 @@ script:
              'Authorization': TOKEN,
              'Accept': 'application/json'
         }
-        r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers, params={'tenant': TENANT_ID, 'product': 'ATP'})
+        r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers, params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
         data = r.json()
         if r.status_code != requests.codes.ok:
             error_object = json.loads(data.get('detail'))
