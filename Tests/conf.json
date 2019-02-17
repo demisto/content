@@ -3,7 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
+        },
+        {
+            "playbookID": "DocumentationTest",
+            "integrations": "ipinfo"
         },
         {
             "playbookID": "HighlightWords_Test"
@@ -11,6 +18,10 @@
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Fidelis Elevate Network",
+            "playbookID": "Fidelis-Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -285,6 +296,10 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
         },
         {
 
@@ -1034,6 +1049,9 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "FilterByList - Test"
         }
     ],
     "skipped_tests": {
@@ -1055,6 +1073,7 @@
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
+
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
@@ -1062,11 +1081,10 @@
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
         "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation",
+        "VMware": "DevOps investigation (issue 10742)",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Active Response": "DevOps investigation",
         "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
@@ -1085,7 +1103,8 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)"
+        "Tanium": "Instance is not stable (issue 15497)",
+        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
     },
     "nigthly_integrations": [
         "Lastline",
