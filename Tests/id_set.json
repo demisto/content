@@ -8245,7 +8245,7 @@
                     "countertack-delete-extracted-file"
                 ], 
                 "tests": [
-                    "No tests"
+                    "no tests"
                 ]
             }
         }, 
