@@ -106,6 +106,8 @@ script:
              'Accept': 'application/json'
         }
         r = requests.get('https://demistobot.demisto.com/atp-token', headers=headers, params={'tenant': TENANT_ID, 'product': 'ATP'}, verify=USE_SSL)
+        if r.status_code not in {200, 201}:
+            return_error('Error in authentication with the application. Please check the credentials.')
         data = r.json()
         if r.status_code != requests.codes.ok:
             error_object = json.loads(data.get('detail'))
@@ -130,7 +132,6 @@ script:
             }
         )
         if r.status_code not in {200, 201}:
-
             return_error('Error in API call to ATP [%d] - %s' % (r.status_code, r.reason))
         if not r.text:
             return {}
@@ -756,7 +757,7 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
+        return_error(e.message)
   type: python
   commands:
   - name: microsoft-atp-isolate-machine
