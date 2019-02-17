@@ -101,7 +101,7 @@ script:
             msg = res.get('message')
             if res.get('details') is not None and res.get('details')[0].get('message') is not None:
                 msg = msg + "\n"+json.dumps(res.get('details')[0])
-        except Exception as e:
+        except:
             return response.text
         return msg
 
@@ -179,6 +179,8 @@ script:
         suffix_url = 'endpoints/' + endpoint_id
 
         response = http_request('GET', suffix_url)
+        if not isinstance(response.json(), dict):
+            return {}
         return response.json()
 
 
@@ -194,6 +196,7 @@ script:
         """
         headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
         endpoint_id = demisto.args().get('endpoint_id')
+
         response = get_endpoint_request(endpoint_id)
 
         content = {
@@ -249,7 +252,6 @@ script:
         demisto parameter: (string) endpoint_id
             The unique ID of the endpoint
         """
-        tags_context = []
         endpoint_id = demisto.args().get('endpoint_id')
         response = endpoint_tags_request(endpoint_id)
 
@@ -257,10 +259,10 @@ script:
             'tags': response
         }
 
-        tags_context.append({
+        tags_context = {
             'endpoint_ID': endpoint_id,
             'tags': response
-        })
+        }
 
         context = {
             'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': tags_context
@@ -286,7 +288,7 @@ script:
         suffix_url = 'endpoints/' + endpoint_id + '/tags'
 
         response = http_request('POST', suffix_url, body=json.dumps(body))
-        return response
+        return response.json()
 
 
     def add_tags():
@@ -302,8 +304,7 @@ script:
 
         endpoint_id = demisto.args().get('endpoint_id')
         body = argToList(demisto.args().get('tags'))
-        if not isinstance(body, list):
-            body = [body]
+
         response = add_tags_request(endpoint_id, body)
         endpoint_tags = endpoint_tags_request(endpoint_id)
 
@@ -356,8 +357,7 @@ script:
 
         endpoint_id = demisto.args().get('endpoint_id')
         body = argToList(demisto.args().get('tags'))
-        if not isinstance(body, list):
-            body = [body]
+
         response = delete_tags_request(endpoint_id, body)
         response = endpoint_tags_request(endpoint_id)
 
@@ -506,7 +506,7 @@ script:
         suffix_url = 'endpoints/' + endpoint_id + '/commands'
 
         response = http_request('POST', suffix_url, body=json.dumps(body))
-        return response
+        return response.json()
 
 
     def extract_file():
@@ -519,27 +519,29 @@ script:
         demisto parameter: (string) body
             The type of the command: extract file and the file path
         """
-        headers = ['ID', 'UserName', 'request time', 'endpoint ID', 'command name', 'command arguments', 'status']
+        headers = ['ID', 'User Name', 'Request Time', 'Endpoint ID', 'Command Name', 'Command Arguments', 'Status']
 
         endpoint_id = demisto.args().get('endpoint_id')
+        paths = argToList(demisto.args().get('file_path'))
         body = {
             'type': 'extract_files',
-            'file_paths': argToList(demisto.args().get('paths'))
+            'paths': paths
         }
+
         response = file_extract_request(endpoint_id, body)
 
         data = {
             'ID': response.get('id'),
-            'UserName': response.get('username'),
-            'request time': response.get('request_time'),
-            'endpoint ID': response.get('endpoint_ids'),
-            'command name': response.get('command_name'),
-            'command arguments': response.get('command_arg'),
-            'status': response.get('status'),
+            'User Name': response.get('username'),
+            'Request Time': response.get('request_time'),
+            'Endpoint ID': response.get('endpoint_ids'),
+            'Command Name': response.get('command_name'),
+            'Command Arguments': response.get('command_arg'),
+            'Status': response.get('status'),
         }
 
         context = {
-            'CounterTack.Endpoint(val.id && val.id === obj.id)': response
+            'CounterTack.Files(val.id && val.id === obj.id)': response
         }
 
         entry = {
@@ -613,7 +615,7 @@ script:
         suffix_url = 'endpoints/' + endpoint_id + '/files'
 
         response = http_request('GET', suffix_url)
-        return response
+        return response.json()
 
 
     def get_endpoint_files():
@@ -668,7 +670,8 @@ script:
             'Contents': data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('The extracted files from the endpoint:', data, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown(
+                'The extracted files from the endpoint:', data, headers, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -680,7 +683,7 @@ script:
         """
         suffix_url = 'endpoints/files/' + file_id
         response = http_request('GET', suffix_url)
-        return response
+        return response.json()
 
 
     def get_file_information():
@@ -793,12 +796,12 @@ script:
         retrieve information on a collection of behaviors.
         """
         data = []
-        headers = ['name', 'ID', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'Last_reported']
+        headers = ['Name', 'ID', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'Last_reported']
         behaviors = get_behaviors_request()
         for behavior in behaviors:
             data.append({
                 'ID': behavior.get('id'),
-                'name': behavior.get('name'),
+                'Name': behavior.get('name'),
                 'Type': behavior.get('type'),
                 'Impact_Level': behavior.get('impact_level'),
                 'Last_reported': behavior.get('last_reported'),
@@ -838,19 +841,19 @@ script:
             The unique ID of the behvior
 
         """
-        headers = ['name', 'ID', 'impact_level', 'max_impact', 'event_count', 'type', 'endpoint_id', 'last_active']
+        headers = ['Name', 'ID', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
         behavior_id = demisto.args().get('behavior_id')
         response = get_behavior_request(behavior_id)
 
         data = {
             'ID': response.get('id'),
-            'name': response.get('name'),
-            'impact_level': response.get('impact_level'),
-            'last_active': response.get('last_active'),
-            'event_count': response.get('event_count'),
-            'max_impact': response.get('max_impact'),
-            'endpoint_id': response.get('endpoint_id'),
-            'type': response.get('type'),
+            'Name': response.get('name'),
+            'Impact Level': response.get('impact_level'),
+            'Last Active': response.get('last_active'),
+            'Event Count': response.get('event_count'),
+            'MaxImpact': response.get('max_impact'),
+            'Endpoint ID': response.get('endpoint_id'),
+            'Type': response.get('type'),
         }
 
         context = {
@@ -894,8 +897,7 @@ script:
         """
         behaviour_id = demisto.args().get('behaviour_id')
         body = argToList(demisto.args().get('tags'))
-        if not isinstance(body, list):
-            body = [body]
+
         response = behaviour_add_tags_request(behaviour_id, body)
         behavior_tags = get_behavior_request(behaviour_id)
 
@@ -940,8 +942,7 @@ script:
         """
         behaviour_id = demisto.args().get('behaviour_id')
         body = argToList(demisto.args().get('tags'))
-        if not isinstance(body, list):
-            body = [body]
+
         response = delete_tags_behavior_request(behaviour_id, body)
         response = get_behavior_request(behaviour_id)
 
@@ -959,7 +960,7 @@ script:
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Endpoint tags were deleted successfully',
-            response),
+            response, removeNull=True),
             'EntryContext': context
         }
         demisto.results(entry)
@@ -1367,6 +1368,7 @@ script:
           required: true
           description: Tags to add to endpoint. To add more then one, separate the tags
             with a comma. (e.g test1,test2)
+          isArray: true
       outputs:
         - contextPath: CounterTack.Endpoint.endpoint_ID
           description: The ID of the endpoint
@@ -1459,7 +1461,7 @@ script:
         - name: endpoint_id
           required: true
           description: The ID of the endpoint
-        - name: file_paths
+        - name: file_path
           required: true
           description: The path of the file. (e.g C:\\test1.txt)
           isArray: true
@@ -1688,6 +1690,6 @@ script:
       description: 'Delete an extracted file from the endpoint.'
   isfetch: true
   runonce: false
-releaseNotes: fixing issues
+releaseNotes: "fix issues"
 tests:
-  - No tests
+  - no tests
