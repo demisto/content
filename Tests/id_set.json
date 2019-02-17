@@ -3824,7 +3824,10 @@
         }, 
         {
             "RegPathReputationBasicLists": {
-                "name": "RegPathReputationBasicLists"
+                "name": "RegPathReputationBasicLists", 
+                "tests": [
+                    "RegPathReputationBasicLists_test"
+                ]
             }
         }, 
         {
@@ -8748,6 +8751,26 @@
             }
         }, 
         {
+            "Fidelis Elevate Network": {
+                "name": "Fidelis Elevate Network", 
+                "commands": [
+                    "fidelis-get-alert", 
+                    "fidelis-delete-alert", 
+                    "fidelis-get-malware-data", 
+                    "fidelis-get-alert-pcap", 
+                    "fidelis-get-alert-report", 
+                    "fidelis-sandbox-upload", 
+                    "fidelis-list-alerts", 
+                    "fidelis-upload-pcap", 
+                    "fidelis-list-pcap-components", 
+                    "fidelis-run-pcap"
+                ], 
+                "tests": [
+                    "Fidelis-Test"
+                ]
+            }
+        }, 
+        {
             "fireeye": {
                 "name": "fireeye", 
                 "toversion": "3.1.0", 
@@ -11612,6 +11635,17 @@
             }
         }, 
         {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
+        }, 
+        {
             "Where is the egg?": {
                 "name": "Where is the egg?", 
                 "fromversion": "3.6.0", 
@@ -13192,6 +13226,19 @@
             }
         }, 
         {
+            "Fidelis-Test": {
+                "name": "Fidelis-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "fidelis-list-alerts": "", 
+                    "fidelis-get-alert": ""
+                }
+            }
+        }, 
+        {
             "File Enrichment - Generic Test": {
                 "name": "File Enrichment - Generic Test", 
                 "implementing_scripts": [
@@ -14660,6 +14707,14 @@
             }
         }, 
         {
+            "RegPathReputationBasicLists_test": {
+                "name": "RegPathReputationBasicLists_test", 
+                "implementing_scripts": [
+                    "RegPathReputationBasicLists"
+                ]
+            }
+        }, 
+        {
             "Remedy AR Test": {
                 "name": "Remedy AR Test", 
                 "implementing_scripts": [
@@ -15772,6 +15827,18 @@
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream", 
                     "crowdstrike-search": "VxStream"
+                }
+            }
+        }, 
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
