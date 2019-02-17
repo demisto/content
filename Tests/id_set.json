@@ -13973,7 +13973,8 @@
             "McAfee-MAR_Test": {
                 "name": "McAfee-MAR_Test", 
                 "implementing_scripts": [
-                    "VerifyContext"
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
                     "mar-collectors-list": "McAfee Active Response", 
