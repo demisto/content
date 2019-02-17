@@ -66,10 +66,10 @@ script:
     - name: ip
       required: true
       default: true
-      description: IPv4 to get reputation of
+      description: IPv4 to get the reputation of
     outputs:
     - contextPath: EclecticIQ.IP.Address
-      description: IP address which was tested
+      description: IP address that was tested
       type: String
     - contextPath: EclecticIQ.IP.Created
       description: Observable creation date
@@ -84,16 +84,16 @@ script:
       description: Maliciousness confidence level
       type: String
     - contextPath: IP.Address
-      description: IP address which was tested
+      description: IP address that was tested
       type: String
     - contextPath: IP.Malcious.Vendor
-      description: For malicious IPs
+      description: For malicious IPs, the vendor that made the decision
       type: String
     - contextPath: IP.Malcious.Description
-      description: For malicious IPs
+      description: For malicious IPs, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
       type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
@@ -102,7 +102,7 @@ script:
       description: The actual score
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator which was tested
+      description: The indicator that was tested
       type: String
     description: Get reputation of IP address observable
   - name: url
@@ -110,10 +110,10 @@ script:
     - name: url
       required: true
       default: true
-      description: URL observable to get reputation of
+      description: URL observable to get the reputation of
     outputs:
     - contextPath: EclecticIQ.URL.Data
-      description: URL which was tested
+      description: URL that was tested
       type: String
     - contextPath: EclecticIQ.URL.Created
       description: Observable creation date
@@ -128,16 +128,16 @@ script:
       description: Maliciousness confidence level
       type: String
     - contextPath: URL.Data
-      description: URL which was tested
+      description: URL that was tested
       type: String
     - contextPath: URL.Malcious.Vendor
-      description: For URLs
+      description: For malicious URLs, the vendor that made the decision
       type: String
     - contextPath: URL.Malcious.Description
-      description: For URLs
+      description: For malicious URLs, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
       type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
@@ -146,27 +146,27 @@ script:
       description: The actual score
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator which was tested
+      description: The indicator that was tested
       type: String
-    description: Get reputation of URL observable
+    description: Gets the reputation of a URL observable.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: File hash observable to get reputation of
+      description: File hash observable to get the reputation of
     outputs:
     - contextPath: EclecticIQ.File.MD5
-      description: File MD5 hash which was tested
+      description: File MD5 hash that was tested
       type: String
     - contextPath: EclecticIQ.File.SHA1
-      description: File SHA-1 hash which was tested
+      description: File SHA-1 hash that was tested
       type: String
     - contextPath: EclecticIQ.File.SHA256
-      description: File SHA-256 hash which was tested
+      description: File SHA-256 hash that was tested
       type: String
     - contextPath: EclecticIQ.File.SHA512
-      description: File SHA-512 hash which was tested
+      description: File SHA-512 hash that was tested
       type: String
     - contextPath: EclecticIQ.File.Created
       description: Observable creation date
@@ -181,25 +181,25 @@ script:
       description: Maliciousness confidence level
       type: String
     - contextPath: File.MD5
-      description: File MD5 hash which was tested
+      description: File MD5 hash that was tested
       type: String
     - contextPath: File.SHA1
-      description: File SHA-1 hash which was tested
+      description: File SHA-1 hash that was tested
       type: String
     - contextPath: File.SHA256
-      description: File SHA-256 hash which was tested
+      description: File SHA-256 hash that was tested
       type: String
     - contextPath: File.SHA512
-      description: File SHA-512 hash which was tested
+      description: File SHA-512 hash that was tested
       type: String
     - contextPath: File.Malcious.Vendor
-      description: For malicious files
+      description: For malicious files, the vendor that made the decision
       type: String
     - contextPath: File.Malcious.Description
-      description: For malicious files
+      description: For malicious files, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
       type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
@@ -208,15 +208,15 @@ script:
       description: The actual score
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator which was tested
+      description: The indicator that was tested
       type: String
-    description: Get reputation of file hash observable
+    description: Gets the reputation of a file hash observable.
   - name: eclecticiq-get-observable-related-entity
     arguments:
     - name: observable_id
       required: true
       default: true
-      description: Observable ID to get entity of (can be retrieved from one of the
+      description: Observable ID to get entity information for (can be retrieved from one of the
         IOCs commands)
     outputs:
     - contextPath: EclecticIQ.Entity.Analysis
@@ -245,7 +245,7 @@ script:
       type: Boolean
     - contextPath: EclecticIQ.Entity.HalfLife
       description: The time it takes an entity to decay in intelligence value, expressed
-        in the number of days until a 50% decay.
+        in the number of days until a 50% decay
       type: String
     - contextPath: EclecticIQ.Entity.ID
       description: Entity ID
@@ -262,16 +262,15 @@ script:
     - contextPath: EclecticIQ.Entity.Source.Type
       description: Entity source type
       type: string
-    description: Get related entities to an observable
   - name: email
     arguments:
     - name: email
       required: true
       default: true
-      description: Email address observable to get reputation of
+      description: Email address observable to get the reputation of
     outputs:
     - contextPath: EclecticIQ.Email.Address
-      description: Email which was tested
+      description: Email that was tested
       type: String
     - contextPath: EclecticIQ.Email.Created
       description: Observable creation date
@@ -286,16 +285,16 @@ script:
       description: Maliciousness confidence level
       type: String
     - contextPath: Account.Email.Address
-      description: Email which was tested
+      description: Email that was tested
       type: String
     - contextPath: Account.Email.Malcious.Vendor
-      description: For malicious email addresses
+      description: For malicious email addresses, the vendor that made the decision
       type: String
     - contextPath: Account.Email.Malcious.Description
-      description: For malicious email addresses
+      description: For malicious email addresses, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
       type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
@@ -304,18 +303,18 @@ script:
       description: The actual score
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator which was tested
+      description: The indicator that was tested
       type: String
-    description: Get reputation of email address observable
+    description: Gets the reputation of an email address observable.
   - name: domain
     arguments:
     - name: domain
       required: true
       default: true
-      description: Domain observable to get reputation of
+      description: Domain observable to get the reputation of
     outputs:
     - contextPath: EclecticIQ.Domain.Name
-      description: Domain name which was tested
+      description: Domain name that was tested
       type: String
     - contextPath: EclecticIQ.Domain.Created
       description: Observable creation date
@@ -330,16 +329,16 @@ script:
       description: Maliciousness confidence level
       type: String
     - contextPath: Domain.Name
-      description: Domain name which was tested
+      description: Domain name that was tested
       type: String
     - contextPath: Domain.Malcious.Vendor
-      description: For malicious domains
+      description: For malicious domains, the vendor that made the decision
       type: String
     - contextPath: Domain.Malcious.Description
-      description: For malicious domains
+      description: For malicious domains, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type
       type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
@@ -348,9 +347,9 @@ script:
       description: The actual score
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator which was tested
+      description: The indicator that was tested
       type: String
-    description: Get reputation of domain observable
+    description: Gets the reputation of a domain observable.
   runonce: false
 tests:
   - No test - instance issues
