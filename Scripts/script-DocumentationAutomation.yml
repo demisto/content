@@ -33,15 +33,15 @@ script: |-
           with open(examples_path, 'r') as examples_file:
               commands = examples_file.read().split('\n')
       else:
+          demisto.debug('failed to open command file, tried parsing as free text')
           commands = entry_id.split('\n')
-          errors.append('failed to open command file, tried parsing as free text')
 
       return commands, errors
 
 
   def find_cmd_example(command_examples, cmd):
-      valid_examples = [example for example in command_examples
-                        if example.startswith(cmd) or example.startswith('!{}'.format(cmd))]
+      regex = re.compile('!?{} .*'.format(cmd))
+      valid_examples = [example for example in command_examples if regex.match(example) is not None]
 
       example = valid_examples[0] if len(valid_examples) > 0 else ''
       if example.startswith('!'):
@@ -74,10 +74,18 @@ script: |-
                       raise RuntimeError('something went wrong with your command: {}'.format(cmd_example))
 
                   raw_context = entry.get('EntryContext', {})
-                  context = {k.split('(')[0]: v for k, v in raw_context.items()}
-
-                  context_example += json.dumps(context, indent=4)
-                  md_example += entry.get('HumanReadable', json.dumps(entry.get('Contents', '')))
+                  if raw_context is not None:
+                      context = {k.split('(')[0]: v for k, v in raw_context.items()}
+                      context_example += json.dumps(context, indent=4)
+                  if entry.get('HumanReadable') is None:
+                      if entry.get('Contents') is not None:
+                          content = entry.get('Contents')
+                          if isinstance(content, STRING_TYPES):
+                              md_example += content
+                          else:
+                              md_example += json.dumps(content)
+                  else:
+                      md_example += entry.get('HumanReadable')
 
           except RuntimeError:
               errors.append('The provided example for cmd {} has failed...'.format(cmd['name']))
@@ -368,4 +376,4 @@ scripttarget: 0
 runonce: false
 releaseNotes: added auto-generated examples
 tests:
-  - No test - Test not needed
+  - DocumentationTest
