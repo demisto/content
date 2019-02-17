@@ -432,7 +432,6 @@ def update_id_set():
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
-    print get_changed_files(files_string + '\n' + second_files_string)
     if added_files or modified_files or added_scripts or modified_scripts:
         print("Updating id_set.json")
 
