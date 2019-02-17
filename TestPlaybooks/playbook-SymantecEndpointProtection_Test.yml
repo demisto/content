@@ -1,15 +1,15 @@
-id: c19e328d-0cf3-4a94-88b3-df670d984602
-version: 56
-name: SymantecEndpointProtection Test
+id: SymantecEndpointProtection_Test
+version: -1
+name: SymantecEndpointProtection_Test
 description: This playbook tests the SEPM integration commands.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d9b6ca2-70ae-4914-8ade-354a98f8785e
+    taskid: b9078895-6e1f-490a-81ca-4a3147d3e17f
     type: start
     task:
-      id: 9d9b6ca2-70ae-4914-8ade-354a98f8785e
+      id: b9078895-6e1f-490a-81ca-4a3147d3e17f
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +17,7 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,22 +25,25 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: c421b8e9-3503-47e5-8a29-56891c476e6c
+    taskid: daacb2b0-567d-4ef4-80a1-4fdbe982d9c0
     type: regular
     task:
-      id: c421b8e9-3503-47e5-8a29-56891c476e6c
+      id: daacb2b0-567d-4ef4-80a1-4fdbe982d9c0
       version: -1
       name: sep-system-info
       description: Get the system information (version, AV definition).
-      script: Symantec Endpoint Protection|||sep-system-info
+      script: '|||sep-system-info'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection
+      brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "60"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -47,23 +51,26 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 2c224b3d-4cac-46d0-8d63-10271a40bbef
+    taskid: 82f6c9c9-ad4a-4c02-8045-d81927caba5a
     type: regular
     task:
-      id: 2c224b3d-4cac-46d0-8d63-10271a40bbef
+      id: 82f6c9c9-ad4a-4c02-8045-d81927caba5a
       version: -1
       name: sep-client-content
       description: Retrieves the client content.
-      script: Symantec Endpoint Protection|||sep-client-content
+      script: '|||sep-client-content'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection
+      brand: ""
     nexttasks:
       '#none#':
-      - "23"
-      - "24"
+      - "61"
+      - "62"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -71,25 +78,28 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
   "10":
     id: "10"
-    taskid: bd0f15d8-0be1-4c5f-89cf-1e51dc93b9cc
+    taskid: 3fded136-ebc2-4c6f-8927-754074bd5131
     type: regular
     task:
-      id: bd0f15d8-0be1-4c5f-89cf-1e51dc93b9cc
+      id: 3fded136-ebc2-4c6f-8927-754074bd5131
       version: -1
       name: sep-groups-info
       description: Get information about groups.
-      script: Symantec Endpoint Protection|||sep-groups-info
+      script: '|||sep-groups-info'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection
+      brand: ""
     nexttasks:
       '#none#':
-      - "25"
-      - "26"
+      - "63"
+      - "64"
     scriptarguments:
-      columns: ""
+      columns: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -97,40 +107,14 @@ tasks:
           "y": 1010
         }
       }
-  "16":
-    id: "16"
-    taskid: 6cc0747c-d9a2-4a26-878e-5a754872c442
-    type: regular
-    task:
-      id: 6cc0747c-d9a2-4a26-878e-5a754872c442
-      version: -1
-      name: SEPScan (by hostname, timeout =5 seconds)
-      scriptName: SEPScan
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      hostname: ${SEPM.Endpoint.Hostname}
-      interval: ""
-      ip: ""
-      scanType: ScanNow_Quick
-      timeout: "5"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2205
-        }
-      }
+    note: false
+    timertriggers: []
   "21":
     id: "21"
-    taskid: b47851fd-aa3f-488c-8fd2-6dd0910279e9
+    taskid: e582bba2-13d0-4a4d-8442-2c45f647172d
     type: regular
     task:
-      id: b47851fd-aa3f-488c-8fd2-6dd0910279e9
+      id: e582bba2-13d0-4a4d-8442-2c45f647172d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -142,8 +126,10 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -151,185 +137,33 @@ tasks:
           "y": 195
         }
       }
-  "22":
-    id: "22"
-    taskid: bf044a02-1526-4442-80be-1ff034e044a6
-    type: regular
-    task:
-      id: bf044a02-1526-4442-80be-1ff034e044a6
-      version: -1
-      name: VerifyContext (SEPM.ServerAVDefVersion)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: SEPM.ServerAVDefVersion
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
-        }
-      }
-  "23":
-    id: "23"
-    taskid: 5717721d-b8ac-421c-8352-95e72ea481aa
-    type: regular
-    task:
-      id: 5717721d-b8ac-421c-8352-95e72ea481aa
-      version: -1
-      name: VerifyContext (SEPM.LastUpdated)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: SEPM.LastUpdated
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 690
-        }
-      }
-  "24":
-    id: "24"
-    taskid: 2ae6bc97-5df7-4da1-8b8f-ddac44c0b4f7
-    type: regular
-    task:
-      id: 2ae6bc97-5df7-4da1-8b8f-ddac44c0b4f7
-      version: -1
-      name: VerifyContext (SEPM.ClientContentVersions)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: SEPM.ClientContentVersions
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 690
-        }
-      }
-  "25":
-    id: "25"
-    taskid: 818eab44-6644-4f82-854f-ce9ba40f044d
-    type: regular
-    task:
-      id: 818eab44-6644-4f82-854f-ce9ba40f044d
-      version: -1
-      name: VerifyContext (SEPM.Groups.[0].fullPathName)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      expectedValue: My Company\Default Group
-      fields: ""
-      path: SEPM.Groups.[0].fullPathName
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1185
-        }
-      }
-  "26":
-    id: "26"
-    taskid: 89dd28e5-9b06-4e02-8dda-416edfb07dc3
-    type: regular
-    task:
-      id: 89dd28e5-9b06-4e02-8dda-416edfb07dc3
-      version: -1
-      name: VerifyContext (SEPM.Groups.[1].fullPathName)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      expectedValue: My Company
-      fields: ""
-      path: SEPM.Groups.[1].fullPathName
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1185
-        }
-      }
+    note: false
+    timertriggers: []
   "27":
     id: "27"
-    taskid: d1dcadb8-3c2b-47ae-8de6-904a38e77204
+    taskid: 832aeaa8-ef6e-438e-8897-b378b14a78e8
     type: regular
     task:
-      id: d1dcadb8-3c2b-47ae-8de6-904a38e77204
+      id: 832aeaa8-ef6e-438e-8897-b378b14a78e8
       version: -1
-      name: sep-endpoints-info (hostname = WIN-EE8OQ1NRFR0)
+      name: sep-endpoints-info
       description: Get information about groups.
-      script: Symantec Endpoint Protection|||sep-endpoints-info
+      script: '|||sep-endpoints-info'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection
+      brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "65"
     scriptarguments:
-      columns: ""
-      hostname: WIN-EE8OQ1NRFR0
+      columns: {}
+      computerName:
+        simple: demisto-PC
+      computerNamed: {}
+      lastUpdate: {}
+      os: {}
+      pageSize: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -337,44 +171,14 @@ tasks:
           "y": 1010
         }
       }
-  "30":
-    id: "30"
-    taskid: 621915af-1413-443b-8202-1fa667f73a4a
-    type: regular
-    task:
-      id: 621915af-1413-443b-8202-1fa667f73a4a
-      version: -1
-      name: VerifyContext (SEPM.Endpoint.IPAddresses)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      expectedValue: 172.31.7.250
-      fields: ""
-      path: SEPM.Endpoint.IPAddresses.[0]
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1185
-        }
-      }
+    note: false
+    timertriggers: []
   "31":
     id: "31"
-    taskid: d07cf49a-a6c5-4b6e-870b-5a15723b6f7d
+    taskid: 5ebb3993-1754-482e-835e-f51b53d0b31c
     type: title
     task:
-      id: d07cf49a-a6c5-4b6e-870b-5a15723b6f7d
+      id: 5ebb3993-1754-482e-835e-f51b53d0b31c
       version: -1
       name: Endpoint and Group Info
       type: title
@@ -384,6 +188,7 @@ tasks:
       '#none#':
       - "27"
       - "10"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -391,12 +196,14 @@ tasks:
           "y": 865
         }
       }
+    note: false
+    timertriggers: []
   "32":
     id: "32"
-    taskid: d64f8b31-1489-4269-843a-9167d7dbe9df
+    taskid: 3797ab4f-f1b9-4f50-8a57-a03509bfcc01
     type: title
     task:
-      id: d64f8b31-1489-4269-843a-9167d7dbe9df
+      id: 3797ab4f-f1b9-4f50-8a57-a03509bfcc01
       version: -1
       name: General Information
       type: title
@@ -406,6 +213,7 @@ tasks:
       '#none#':
       - "8"
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -413,12 +221,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "33":
     id: "33"
-    taskid: fbc7c68b-b68c-4b8b-81a7-100d293c3114
+    taskid: d56e8c93-52da-478d-8b49-129030155e19
     type: title
     task:
-      id: fbc7c68b-b68c-4b8b-81a7-100d293c3114
+      id: d56e8c93-52da-478d-8b49-129030155e19
       version: -1
       name: Update Content & Quarantine
       type: title
@@ -427,6 +237,7 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -434,28 +245,29 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
   "34":
     id: "34"
-    taskid: b07e7395-61db-46c2-8013-294b6c69d03f
+    taskid: d1ed7e8a-d039-4386-81b4-22d3124be294
     type: regular
     task:
-      id: b07e7395-61db-46c2-8013-294b6c69d03f
+      id: d1ed7e8a-d039-4386-81b4-22d3124be294
       version: -1
-      name: sep-update-content (by IP)
+      name: sep-update-endpoint-content (by IP)
       description: Updates the content of the given client.
-      script: Symantec Endpoint Protection|||sep-update-content
+      script: '|||sep-update-endpoint-content'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection
+      brand: ""
     nexttasks:
       '#none#':
-      - "36"
-      - "42"
+      - "66"
+      - "67"
     scriptarguments:
-      hostname: ""
-      interval: ""
-      ip: ${SEPM.Endpoint.IPAddresses}
-      timeout: ""
+      endpoint:
+        simple: ${SEPM.Endpoint.IPAddresses.[0]}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -463,61 +275,32 @@ tasks:
           "y": 1505
         }
       }
-  "36":
-    id: "36"
-    taskid: cd411d8e-df72-43cc-8cbf-527fc974caf1
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 21d8fe31-e468-4dd5-8e1d-1e4986ad8919
     type: regular
     task:
-      id: cd411d8e-df72-43cc-8cbf-527fc974caf1
+      id: 21d8fe31-e468-4dd5-8e1d-1e4986ad8919
       version: -1
-      name: VerifyContext (SEPM.LastCommand.CommandDetails.computerIp)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      name: sep-endpoint-quarantine (by hostname)
+      description: Updates the content of the given client.
+      script: '|||sep-endpoint-quarantine'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "68"
+      - "69"
+      - "70"
     scriptarguments:
-      expectedValue: ${SEPM.Endpoint.IPAddresses.[0]}
-      fields: ""
-      path: SEPM.LastCommand.CommandDetails.computerIp
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1680
-        }
-      }
-  "37":
-    id: "37"
-    taskid: 0bd44b6e-a424-4fd1-8ac9-6e0529bef7d1
-    type: regular
-    task:
-      id: 0bd44b6e-a424-4fd1-8ac9-6e0529bef7d1
-      version: -1
-      name: sep-quarantine (by hostname)
-      description: Updates the content of the given client.
-      script: Symantec Endpoint Protection|||sep-quarantine
-      type: regular
-      iscommand: true
-      brand: Symantec Endpoint Protection
-    nexttasks:
-      '#none#':
-      - "38"
-      - "43"
-    scriptarguments:
-      actionType: Quarantine
-      hostname: ${SEPM.Endpoint.Hostname}
-      interval: ""
-      ip: ""
-      timeout: ""
+      actionType:
+        simple: Add
+      endpoint:
+        simple: ${SEPM.Endpoint.Hostname}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -525,197 +308,903 @@ tasks:
           "y": 1855
         }
       }
-  "38":
-    id: "38"
-    taskid: 9dfb80ab-5a02-40a6-8ed2-6748f49784ae
+    note: false
+    timertriggers: []
+  "45":
+    id: "45"
+    taskid: a948e8ab-c11a-4c6c-85f7-c5665e6698a1
     type: regular
     task:
-      id: 9dfb80ab-5a02-40a6-8ed2-6748f49784ae
+      id: a948e8ab-c11a-4c6c-85f7-c5665e6698a1
       version: -1
-      name: VerifyContext (SEPM.LastCommand.[1].CommandDetails.computerName)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      name: sep-endpoint-quarantine (remove by ip)
+      description: Updates the content of the given client.
+      script: '|||sep-endpoint-quarantine'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "71"
+      - "72"
+      - "73"
     scriptarguments:
-      expectedValue: ${SEPM.Endpoint.Hostname}
-      fields: ""
-      path: SEPM.LastCommand.[1].CommandDetails.computerName
+      actionType:
+        simple: Remove
+      endpoint:
+        simple: ${SEPM.Endpoint.IPAddresses.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+  "49":
+    id: "49"
+    taskid: bf60bb31-2674-47da-8602-0c6667921b12
+    type: regular
+    task:
+      id: bf60bb31-2674-47da-8602-0c6667921b12
+      version: -1
+      name: sep-scan-endpoint (by hostname)
+      script: '|||sep-scan-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+      - "75"
+      - "76"
+    scriptarguments:
+      endpoint:
+        simple: ${SEPM.Endpoint.Hostname}
+      scanType:
+        simple: ScanNow_Quick
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+  "53":
+    id: "53"
+    taskid: 782a05ae-424a-4c16-8642-fa2d33b09581
+    type: regular
+    task:
+      id: 782a05ae-424a-4c16-8642-fa2d33b09581
+      version: -1
+      name: sep-list-locations
+      script: '|||sep-list-locations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      groupID:
+        simple: ${SEPM.Groups.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+  "55":
+    id: "55"
+    taskid: 964ecae9-cbb2-46cf-8ef6-b0592752067b
+    type: regular
+    task:
+      id: 964ecae9-cbb2-46cf-8ef6-b0592752067b
+      version: -1
+      name: sep-list-policies
+      script: '|||sep-list-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+  "56":
+    id: "56"
+    taskid: f76a1f60-74b2-4c23-8069-687b5da2396b
+    type: condition
+    task:
+      id: f76a1f60-74b2-4c23-8069-687b5da2396b
+      version: -1
+      name: Check policies
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: PoliciesList
+            iscontext: true
+          right:
+            value:
+              simple: "20"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+  "58":
+    id: "58"
+    taskid: a25813ed-6c2b-4682-8d46-4bbb96efd103
+    type: regular
+    task:
+      id: a25813ed-6c2b-4682-8d46-4bbb96efd103
+      version: -1
+      name: Policies Fail
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Expected `SEPM.PoliciesList.AssignedLocations` to have length of 20
+          but got ${SEPM.PoliciesList.AssignedLocations}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3650
+        }
+      }
+    note: false
+    timertriggers: []
+  "59":
+    id: "59"
+    taskid: 4af27494-3c48-4fa9-8a82-0e9f4c6cdc64
+    type: title
+    task:
+      id: 4af27494-3c48-4fa9-8a82-0e9f4c6cdc64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+  "60":
+    id: "60"
+    taskid: d2d30f66-8f3b-4e88-8e68-ca20e57465af
+    type: condition
+    task:
+      id: d2d30f66-8f3b-4e88-8e68-ca20e57465af
+      version: -1
+      name: Verify SEPM.ServerAVDefVersion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: ServerAVDefVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "61":
+    id: "61"
+    taskid: e6b82a1e-d62c-411d-822d-111a465958a0
+    type: condition
+    task:
+      id: e6b82a1e-d62c-411d-822d-111a465958a0
+      version: -1
+      name: Verify SEPM.LastUpdated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: LastUpdated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "62":
+    id: "62"
+    taskid: 70a72ed6-e3ab-4a96-8553-8ffade52bd50
+    type: condition
+    task:
+      id: 70a72ed6-e3ab-4a96-8553-8ffade52bd50
+      version: -1
+      name: Verify SEPM.ClientContentVersions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: ClientContentVersions
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "63":
+    id: "63"
+    taskid: bf45fe4d-401d-4373-891d-b03edeb05a3b
+    type: condition
+    task:
+      id: bf45fe4d-401d-4373-891d-b03edeb05a3b
+      version: -1
+      name: Verify SEPM.Groups.fullPathName
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Groups.[0].fullPathName
+            iscontext: true
+          right:
+            value:
+              simple: My Company\Default Group
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+  "64":
+    id: "64"
+    taskid: c6709603-b666-4a44-8547-1f9dad8aa2e2
+    type: condition
+    task:
+      id: c6709603-b666-4a44-8547-1f9dad8aa2e2
+      version: -1
+      name: Verify SEPM.Groups.fullPathName
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Groups.[1].fullPathName
+            iscontext: true
+          right:
+            value:
+              simple: My Company
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+  "65":
+    id: "65"
+    taskid: 52e67973-aff5-4e6a-8983-b02a04ec015a
+    type: condition
+    task:
+      id: 52e67973-aff5-4e6a-8983-b02a04ec015a
+      version: -1
+      name: Verify SEPM.Endpoint.IPAddresses
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses.[0]
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.17
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+  "66":
+    id: "66"
+    taskid: c95cfc66-cb03-4636-8026-ec60558f883e
+    type: condition
+    task:
+      id: c95cfc66-cb03-4636-8026-ec60558f883e
+      version: -1
+      name: Verify SEPM.Update.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Update.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2030
-        }
-      }
-  "39":
-    id: "39"
-    taskid: f7d0d6d9-8f30-4fd7-8f1d-51ecc80bd8d6
-    type: regular
-    task:
-      id: f7d0d6d9-8f30-4fd7-8f1d-51ecc80bd8d6
-      version: -1
-      name: VerifyContext (SEPM.LastCommand.[2])
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: SEPM.LastCommand.[2]
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2380
-        }
-      }
-  "40":
-    id: "40"
-    taskid: c7f3d792-f65d-449e-8975-3b5f048b96d5
-    type: regular
-    task:
-      id: c7f3d792-f65d-449e-8975-3b5f048b96d5
-      version: -1
-      name: sep-command-status (SEPM.LastCommand.[2].CommandId)
-      script: Symantec Endpoint Protection|||sep-command-status
-      type: regular
-      iscommand: true
-      brand: Symantec Endpoint Protection
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      commandId: ${SEPM.LastCommand.[2].CommandId}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2555
-        }
-      }
-  "41":
-    id: "41"
-    taskid: 37522f28-ff01-4711-84f4-f11101d93686
-    type: regular
-    task:
-      id: 37522f28-ff01-4711-84f4-f11101d93686
-      version: -1
-      name: VerifyContext (SEPM.LastCommand.[2].CommandDetails.stateId == 0)
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: '"0"'
-      fields: ""
-      path: SEPM.LastCommand.[2].CommandDetails.stateId
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2730
-        }
-      }
-  "42":
-    id: "42"
-    taskid: 28ccf0ab-5ddc-4f86-8a95-ffa72954bab8
-    type: regular
-    task:
-      id: 28ccf0ab-5ddc-4f86-8a95-ffa72954bab8
-      version: -1
-      name: VerifyContext (SEPM.LastCommand.CommandDetails.stateId == "3")
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      expectedValue: '"3"'
-      fields: ""
-      path: SEPM.LastCommand.CommandDetails.stateId
-    view: |-
-      {
-        "position": {
-          "x": 695,
           "y": 1680
         }
       }
-  "43":
-    id: "43"
-    taskid: 81192ae1-efce-4103-86de-b3fe90a82a3d
-    type: regular
+    note: false
+    timertriggers: []
+  "67":
+    id: "67"
+    taskid: 2d3e219f-bcfe-4474-84e9-a5dc31e1b831
+    type: condition
     task:
-      id: 81192ae1-efce-4103-86de-b3fe90a82a3d
+      id: 2d3e219f-bcfe-4474-84e9-a5dc31e1b831
       version: -1
-      name: VerifyContext (SEPM.LastCommand.[1].CommandDetails.stateId == "3")
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: Verify SEPM.Update.commandID
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      expectedValue: '"3"'
-      fields: ""
-      path: SEPM.LastCommand.[1].CommandDetails.stateId
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Update.CommandID
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2030
+          "x": 705,
+          "y": 1680
         }
       }
+    note: false
+    timertriggers: []
+  "68":
+    id: "68"
+    taskid: 931b4a11-a425-478f-8c46-4f7e452d1756
+    type: condition
+    task:
+      id: 931b4a11-a425-478f-8c46-4f7e452d1756
+      version: -1
+      name: Verify SEPM.Quarantine.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.Hostname
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+  "69":
+    id: "69"
+    taskid: 6a5efa26-5827-4849-836f-b5e75f74b6d5
+    type: condition
+    task:
+      id: 6a5efa26-5827-4849-836f-b5e75f74b6d5
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+  "70":
+    id: "70"
+    taskid: 7062c14c-6467-4ec9-82cb-fc9e4fa2f98a
+    type: condition
+    task:
+      id: 7062c14c-6467-4ec9-82cb-fc9e4fa2f98a
+      version: -1
+      name: Verify SEPM.Quarantine.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.Action
+            iscontext: true
+          right:
+            value:
+              simple: Add
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+  "71":
+    id: "71"
+    taskid: f367e24f-7fed-49ff-83d9-724ef053ab0f
+    type: condition
+    task:
+      id: f367e24f-7fed-49ff-83d9-724ef053ab0f
+      version: -1
+      name: Verify SEPM.Quarantine.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses.[0]
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+  "72":
+    id: "72"
+    taskid: 22fe11f7-3bea-4fb5-83d8-c8aa378333fb
+    type: condition
+    task:
+      id: 22fe11f7-3bea-4fb5-83d8-c8aa378333fb
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+  "73":
+    id: "73"
+    taskid: d03f677f-22ea-476f-8096-afb782f105ae
+    type: condition
+    task:
+      id: d03f677f-22ea-476f-8096-afb782f105ae
+      version: -1
+      name: Verify SEPM.Quarantine.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].Action
+            iscontext: true
+          right:
+            value:
+              simple: Remove
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+  "74":
+    id: "74"
+    taskid: 511667ec-3410-46d7-8eef-5b2fce7cbe4d
+    type: condition
+    task:
+      id: 511667ec-3410-46d7-8eef-5b2fce7cbe4d
+      version: -1
+      name: Verify SEPM.Scan.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.Hostname
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+  "75":
+    id: "75"
+    taskid: fac4b707-d529-4208-80c1-a87e2ba2099d
+    type: condition
+    task:
+      id: fac4b707-d529-4208-80c1-a87e2ba2099d
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+  "76":
+    id: "76"
+    taskid: 5db21b2b-75f5-414e-8c0f-746e8a608c1e
+    type: condition
+    task:
+      id: 5db21b2b-75f5-414e-8c0f-746e8a608c1e
+      version: -1
+      name: Verify SEPM.Scan.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.Type
+            iscontext: true
+          right:
+            value:
+              simple: ScanNow_Quick
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+  "77":
+    id: "77"
+    taskid: ae743c55-ff70-4eae-8ae2-fda1c01c4bdf
+    type: condition
+    task:
+      id: ae743c55-ff70-4eae-8ae2-fda1c01c4bdf
+      version: -1
+      name: Verify SEPM.Locations.ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Locations.[0].ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2775,
-        "width": 1240,
-        "x": 50,
+        "height": 3875,
+        "width": 1300,
+        "x": 20,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []
+tests:
+  - No test - test playbook
