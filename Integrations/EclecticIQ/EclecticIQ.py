@@ -41,6 +41,7 @@ else:
 
 
 def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
+
     res = requests.request(
         method,
         SERVER + url_suffix,
@@ -49,23 +50,26 @@ def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
         proxies=PROXIES,
         verify=USE_SSL
     )
+
     if res.status_code not in {200}:
         if res.status_code == 405:
-            return_error(
-                'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid '
-                'URL.')
-        return_error(res.content)
-        errors = json.loads(res.text).get('errors', {})[0]
-        title = errors.get('title', '')
-        detail = errors.get('detail', '')
-        return_error('Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail))
-    try:  # Verify we can get json from the response
+            return_error('Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid URL.')
+        try: # Parse the error message
+            errors = json.loads(res.text).get('errors', {})[0]
+            title = errors.get('title', '')
+            detail = errors.get('detail', '')
+            return_error('Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail))
+        except Exception: # In case error message is not in expected format
+            return_error(res.content)
+
+    try: # Verify we can generate json from the response
         return res.json()
-    except ValueError:
+    except ValueError as e:
         return_error(res)
 
 
 def maliciousness_to_dbotscore(maliciousness, threshold):
+
     """
 
     Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
@@ -101,7 +105,6 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-
 def test_module():
     """
 
@@ -120,6 +123,7 @@ def test_module():
 
 
 def login():
+
     """
 
     Logins to EclecticIQ API with given credentials and sets the returned token in the headers
@@ -140,6 +144,7 @@ def login():
 
 
 def ip_command():
+
     """
 
     Gets reputation of an EclecticIQ IPv4 observable
@@ -152,7 +157,7 @@ def ip_command():
     Returns
     -------
     entry
-        Translated DBot Score
+        Reputation of given IPv4
 
     """
 
@@ -208,7 +213,7 @@ def ip_command():
     if observables:
         human_readable_title = 'EclecticIQ IP reputation - {}'.format(ip)
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
-        context['EclecticIQ.IP(val.ID===obj.ID)'] = integration_outputs
+        context['EclecticIQ.IP'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['ip']] = standard_ip_outputs
 
     demisto.results({
@@ -222,6 +227,23 @@ def ip_command():
 
 
 def url_command():
+
+    """
+
+    Gets reputation of an EclecticIQ URI observable
+
+    Parameters
+    ----------
+    url : str
+        URL to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given URL
+
+    """
+
     url = demisto.args()['url']
 
     response = get_observable(url)
@@ -274,7 +296,7 @@ def url_command():
     if observables:
         human_readable_title = 'EclecticIQ URL reputation - {}'.format(url)
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
-        context['EclecticIQ.URL(val.ID===obj.ID)'] = integration_outputs
+        context['EclecticIQ.URL'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['url']] = standard_url_outputs
 
     demisto.results({
@@ -288,6 +310,23 @@ def url_command():
 
 
 def file_command():
+
+    """
+
+    Gets reputation of an EclecticIQ hash observable
+
+    Parameters
+    ----------
+    file : str
+        File hash to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given file hash
+
+    """
+
     file = demisto.args()['file']
 
     hash_type = get_hash_type(file).upper()
@@ -342,7 +381,7 @@ def file_command():
     if observables:
         human_readable_title = 'EclecticIQ File reputation - {}'.format(file)
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
-        context['EclecticIQ.File(val.ID===obj.ID)'] = integration_outputs
+        context['EclecticIQ.File'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['file']] = standard_file_outputs
 
     demisto.results({
@@ -356,6 +395,23 @@ def file_command():
 
 
 def email_command():
+
+    """
+
+    Gets reputation of an EclecticIQ email address observable
+
+    Parameters
+    ----------
+    email : str
+        Email address to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given email address
+
+    """
+
     email = demisto.args()['email']
 
     response = get_observable(email)
@@ -408,7 +464,7 @@ def email_command():
     if observables:
         human_readable_title = 'EclecticIQ Email reputation - {}'.format(email)
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
-        context['EclecticIQ.Email(val.ID===obj.ID)'] = integration_outputs
+        context['EclecticIQ.Email'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['email']] = standard_email_outputs
 
     demisto.results({
@@ -422,6 +478,23 @@ def email_command():
 
 
 def domain_command():
+
+    """
+
+    Gets reputation of an EclecticIQ domain observable
+
+    Parameters
+    ----------
+    domain : str
+        Domain address to get reputation of
+
+    Returns
+    -------
+    entry
+        Reputation of given domain address
+
+    """
+
     domain = demisto.args()['domain']
 
     response = get_observable(domain)
@@ -474,7 +547,7 @@ def domain_command():
     if observables:
         human_readable_title = 'EclecticIQ Domain reputation - {}'.format(domain)
         human_readable = tableToMarkdown(human_readable_title, integration_outputs)
-        context['EclecticIQ.Domain(val.ID===obj.ID)'] = integration_outputs
+        context['EclecticIQ.Domain'] = createContext(data=integration_outputs, id='ID', removeNull=True)
         context[outputPaths['domain']] = standard_domain_outputs
 
     demisto.results({
@@ -488,12 +561,46 @@ def domain_command():
 
 
 def get_observable(ioc):
+
+    """
+
+    Send API query to EclecticIQ to get reputation of an observable
+
+    Parameters
+    ----------
+    ioc : str
+        IOC to get reputation of
+
+    Returns
+    -------
+    response
+        Python requests response object
+
+    """
+
     cmd_url = '/api/observables?filter[value]={}'.format(ioc)
     response = http_request('GET', cmd_url)
     return response
 
 
 def get_observable_related_entity_command():
+
+    """
+
+    Get EclecticIQ related entities to an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get related entites of
+
+    Returns
+    -------
+    entry
+        Observable related entities data
+
+    """
+
     observable_id = demisto.args()['observable_id']
 
     processed_extract_response = processed_extract(observable_id)
@@ -551,6 +658,7 @@ def get_observable_related_entity_command():
             mechanism_rules_outputs = []
 
             for rule in mechanism_rules:
+
                 mechanism_rules_outputs.append(rule.get('value'))
 
             mechanism_output['Rule'] = mechanism_rules_outputs
@@ -558,6 +666,7 @@ def get_observable_related_entity_command():
             test_mechanisms_output.append(mechanism_output)
 
         if test_mechanisms_output:
+
             context_output['TestMechanism'] = test_mechanisms_output
             human_readable += tableToMarkdown('Test mechanisms', test_mechanisms_output, removeNull=True)
 
@@ -566,6 +675,7 @@ def get_observable_related_entity_command():
         sources_output = []
 
         for source in sources:
+
             sources_output.append({
                 'Name': source.get('name'),
                 'Type': source.get('source_type'),
@@ -592,7 +702,7 @@ def get_observable_related_entity_command():
         context_outputs.append(context_output)
 
     context = {
-        'EclecticIQ.Entity(val.ID===obj.ID)': context_outputs
+        'EclecticIQ.Entity': createContext(data=context_outputs, id='ID', removeNull=True)
     }
 
     demisto.results({
@@ -606,12 +716,45 @@ def get_observable_related_entity_command():
 
 
 def processed_extract(observable_id):
+
+    """
+
+    Send API query to EclecticIQ to get extracted processed data of an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get extracted processed data of of
+
+    Returns
+    -------
+    response
+        Python requests response object
+
+    """
+
     cmd_url = '/private/entities/processed-extract/{}'.format(observable_id)
     response = http_request('GET', cmd_url)
     return response
 
-
 def original_extract(observable_id):
+
+    """
+
+    Send API query to EclecticIQ to get extracted orginial data of an observable
+
+    Parameters
+    ----------
+    observable_id : str
+        EclecticIQ observable ID to get extracted orginial data of of
+
+    Returns
+    -------
+    response
+        Python requests response object
+
+    """
+
     cmd_url = '/private/entities/original-extract/{}'.format(observable_id)
     response = http_request('GET', cmd_url)
     return response
