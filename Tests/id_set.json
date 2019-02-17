@@ -5661,7 +5661,10 @@
                 "command_to_integration": {
                     "wildfire-upload-file-remote": "WildFire", 
                     "wildfire-report": "WildFire"
-                }
+                }, 
+                "tests": [
+                    "Wildfire Test"
+                ]
             }
         }, 
         {
@@ -5878,8 +5881,11 @@
                 "implementing_playbooks": [
                     "WildFire - Detonate file"
                 ], 
-                "implementing_commands": [
-                    "dxl-send-event"
+                "command_to_integration": {
+                    "dxl-send-event": "McAfee DXL"
+                }, 
+                "tests": [
+                    "Wildfire Test"
                 ]
             }
         }, 
