@@ -10148,7 +10148,8 @@
                 "fromversion": "4.0.0", 
                 "commands": [
                     "phish-ai-scan-url", 
-                    "phish-ai-check-status"
+                    "phish-ai-check-status", 
+                    "phish-ai-dispute-url"
                 ], 
                 "tests": [
                     "PhishAi-Test"
