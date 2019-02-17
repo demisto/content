@@ -262,6 +262,7 @@ script:
     - contextPath: EclecticIQ.Entity.Source.Type
       description: Entity source type
       type: string
+    description: Returns related entities of a single observable.
   - name: email
     arguments:
     - name: email
