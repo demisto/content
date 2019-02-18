@@ -231,14 +231,93 @@ script:
         var file_info = reportResponse.info;
         var hash = reportResponse.hash;
 
+        udp_ip = [];
+        udp_port = [];
+        tcp_ip = [];
+        tcp_port = [];
+        dns_query = [];
+        dns_response = [];
+        evidence_md5 = [];
+        evidence_text = [];
+
+        for (var i = 0; i < report.length; i++) {
+            if ('network' in report[i]) {
+                if ('UDP' in report[i].network) {
+                    if ('-ip' in report[i].network.UDP) {
+                        udp_ip.push(report[i].network.UDP['-ip']);
+                    }
+                    if ('-port' in report[i].network.UDP) {
+                        udp_port.push(report[i].network.UDP['-port']);
+                    }
+                }
+                if ('TCP' in report[i].network) {
+                    if ('-ip' in report[i].network.TCP) {
+                        tcp_ip.push(report[i].network.TCP['-ip']);
+                    }
+                    if ('-port' in report[i].network.TCP) {
+                        tcp_port.push(report[i].network.TCP['-port']);
+                    }
+                }
+                if ('dns' in report[i].network) {
+                    for (var j = 0; j < report[i].network.dns.length; j++) {
+                        if ('-query' in report[i].network.dns[j]) {
+                            dns_query.push(report[i].network.dns[j]['-query']);
+                        }
+                        if ('-response' in report[i].network.dns[j]) {
+                            dns_response.push(report[i].network.dns[j]['-response']);
+                        }
+                    }
+                }
+            }
+            if ('evidence' in report[i]) {
+                if ('file' in report[i].evidence) {
+                    if (typeof report[i].evidence.file == 'object' && 'entry' in report[i].evidence.file) {
+                        if ('-md5' in report[i].evidence.file.entry) {
+                            evidence_md5.push(report[i].evidence.file.entry['-md5']);
+                        }
+                        if (typeof report[i].evidence.file == 'object' && '-text' in report[i].evidence.file.entry) {
+                            evidence_text.push(report[i].evidence.file.entry['-text']);
+                        }
+                    }
+                }
+            }
+        }
+
         var context = {
             DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }
         };
 
-        context["WildFire.Report(val.SHA256===obj.SHA256)"] = {
+        var outputs = {
             'Status': 'Success',
             'SHA256': reportResponse.info.sha256,
+        };
+
+        if (udp_ip.length) {
+            outputs.Network = {"UDP": {"IP": udp_ip}};
         }
+        if (udp_port.length) {
+            outputs.Network.UDP.Port = udp_port;
+        }
+        if (tcp_ip.length) {
+            outputs.Network.TCP.IP = tcp_ip;
+        }
+        if (tcp_port.length) {
+            outputs.Network.TCP.Port = tcp_port;
+        }
+        if (dns_query.length) {
+            outputs.Network.DNS = {Query: dns_query};
+        }
+        if (dns_response.length) {
+            outputs.Network.DNS.Response = dns_response;
+        }
+        if (evidence_md5.length) {
+            outputs.Evidence = {md5: evidence_md5};
+        }
+        if (evidence_text.length) {
+            outputs.Evidence.Text = evidence_text;
+        }
+
+        context["WildFire.Report(val.SHA256===obj.SHA256)"] = outputs;
 
         if (file_info) {
             if (file_info.malware === 'yes') {
@@ -434,6 +513,30 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the report file
       type: string
+    - contextPath: WildFire.Report.Network.UDP.IP
+      description: Submission related IPs in UDP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Port
+      description: Submission related ports in UDP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.IP
+      description: Submission related IPs in TCP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Port
+      description: Submission related ports in TCP protocol
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Query
+      description: Submission DNS queries
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Response
+      description: Submission DNS responses
+      type: string
+    - contextPath: WildFire.Report.Evidence.md5
+      description: Submission evidence md5
+      type: string
+    - contextPath: WildFire.Report.Evidence.Text
+      description: Submission evidence text
+      type: string
     description: Retrieve results for a file hash using WildFire
   - name: file
     arguments:
@@ -605,5 +708,6 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
+releaseNotes: "Add data from repoort to outputs"
 tests:
 - Wildfire Test

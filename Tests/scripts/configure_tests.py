@@ -206,12 +206,12 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     :param catched_playbooks: The names of the scripts we already v a test for.
     :param tests_set: The names of the tests we alredy identified.
 
-    :return: (test_names, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
+    :return: (test_ids, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
     """
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_names = get_test_names()
+    test_ids = get_test_ids()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -222,18 +222,19 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     for test_playbook in test_playbooks_set:
         detected_usage = False
+        test_playbook_id = test_playbook.keys()[0]
         test_playbook_data = test_playbook.values()[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
                 detected_usage = True
-                tests_set.add(test_playbook_name)
+                tests_set.add(test_playbook_id)
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
                 detected_usage = True
-                tests_set.add(test_playbook_name)
+                tests_set.add(test_playbook_id)
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
@@ -245,10 +246,10 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                                 command_to_integration.get(command) == integration_id:
 
                             detected_usage = True
-                            tests_set.add(test_playbook_name)
+                            tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
 
-        if detected_usage and test_playbook_name not in test_names:
+        if detected_usage and test_playbook_id not in test_ids:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
                         "pleae update the conf.json file accordingly".format(test_playbook_name))
@@ -256,7 +257,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
 
-    return test_names, missing_ids, caught_missing_test
+    return test_ids, missing_ids, caught_missing_test
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -268,17 +269,17 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_names():
-    test_names = []
+def get_test_ids():
+    test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
         playbook_id = t['playbookID']
-        test_names.append(playbook_id)
+        test_ids.append(playbook_id)
 
-    return test_names
+    return test_ids
 
 
 def get_integration_commands(integration_ids, integration_set):
@@ -299,9 +300,9 @@ def find_tests_for_modified_files(modified_files):
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
                                                                         script_names, modified_files)
-    test_names, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
-                                                                 catched_scripts, catched_playbooks, tests_set)
-    missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests_set)
+    test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
+                                                               catched_scripts, catched_playbooks, tests_set)
+    missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
@@ -314,13 +315,13 @@ def find_tests_for_modified_files(modified_files):
     return tests_set
 
 
-def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
-    test_names.append(RUN_ALL_TESTS_FORMAT)
+def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
+    test_ids.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_names or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
+            if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)

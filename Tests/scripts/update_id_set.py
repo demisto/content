@@ -12,7 +12,7 @@ SCRIPT_YML_REGEX = r"scripts.*\.yml"
 SCRIPT_PY_REGEX = r"scripts.*\.py"
 SCRIPT_JS_REGEX = r"scripts.*\.js"
 SCRIPT_REGEX = r"scripts.*script-.*\.yml"
-INTEGRATION_YML_REGEX = r"integrations.(?!integration)*\.yml"
+INTEGRATION_YML_REGEX = r"integrations.*\.yml"
 PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
 INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
 TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
@@ -62,6 +62,7 @@ def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
 
 def get_changed_files(files_string):
     all_files = files_string.split('\n')
+    deleted_files = set([])
     added_files_list = set([])
     added_script_list = set([])
     modified_script_list = set([])
@@ -73,7 +74,6 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
@@ -82,6 +82,16 @@ def get_changed_files(files_string):
             added_script_list.add(os.path.join(os.path.dirname(file_path), ''))
         elif file_status.lower() == 'm' and checked_type(file_path, SCRIPTS_REGEX_LIST):
             modified_script_list.add(os.path.join(os.path.dirname(file_path), ''))
+        elif file_status.lower() == 'd' and checked_type(file_path, SCRIPTS_REGEX_LIST):
+            deleted_files.add(os.path.join(os.path.dirname(file_path), ''))
+        elif file_status.lower() == 'd' and checked_type(file_path):
+            deleted_files.add(file_path)
+
+    for deleted_file in deleted_files:
+        added_files_list = added_files_list - {deleted_file}
+        modified_files_list = modified_files_list - {deleted_file}
+        added_script_list = added_script_list - {deleted_file}
+        modified_script_list = modified_script_list - {deleted_file}
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 
@@ -405,6 +415,11 @@ def re_create_id_set():
         json.dump(ids_dict, id_set_file, indent=4)
 
 
+def sort(data):
+    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    return data
+
+
 def update_id_set():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
@@ -503,10 +518,12 @@ def update_id_set():
 
     if added_files or modified_files:
         new_ids_dict = OrderedDict()
-        new_ids_dict['scripts'] = script_set
-        new_ids_dict['playbooks'] = playbook_set
-        new_ids_dict['integrations'] = integration_set
-        new_ids_dict['TestPlaybooks'] = test_playbook_set
+        # we sort each time the whole set in case someone manually changed something
+        # it shouldn't take too much time
+        new_ids_dict['scripts'] = sort(script_set)
+        new_ids_dict['playbooks'] = sort(playbook_set)
+        new_ids_dict['integrations'] = sort(integration_set)
+        new_ids_dict['TestPlaybooks'] = sort(test_playbook_set)
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(new_ids_dict, id_set_file, indent=4)
