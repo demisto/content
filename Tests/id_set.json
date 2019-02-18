@@ -8231,6 +8231,34 @@
             }
         }, 
         {
+            "CounterTack": {
+                "name": "CounterTack", 
+                "commands": [
+                    "countertack-get-endpoints", 
+                    "countertack-get-behaviors", 
+                    "countertack-get-endpoint", 
+                    "countertack-get-behavior", 
+                    "countertack-get-endpoint-tags", 
+                    "countertack-add-tags", 
+                    "countertack-delete-tags", 
+                    "countertack-add-behavior-tags", 
+                    "countertack-delete-behavior-tags", 
+                    "countertack-endpoint-quarantine", 
+                    "countertack-disable-quarantine", 
+                    "countertack-extract-file", 
+                    "counterTack-delete-file", 
+                    "countertack-get-all-files", 
+                    "countertack-get-endpoint-files", 
+                    "countertack-get-file-information", 
+                    "countertack-download-file", 
+                    "countertack-delete-extracted-file"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
+        }, 
+        {
             "Cuckoo Sandbox": {
                 "name": "Cuckoo Sandbox", 
                 "toversion": "3.1.0", 
