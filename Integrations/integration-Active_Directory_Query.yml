@@ -1035,7 +1035,7 @@ script:
     arguments:
     - name: filter
       required: true
-      description: 'Query Active Directory in Active Directory syntax, e.g., this query will find all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
+      description: 'Query Active Directory in Active Directory syntax, e.g., this query will find all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"'
     - name: base-dn
       description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
         will be used.
