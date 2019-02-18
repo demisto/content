@@ -129,7 +129,7 @@ script:
                     return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls)
                 return Server(SERVER_IP, use_ssl=True, tls=tls)
             if PORT:
-                return Server(SERVER_IP, port=port, use_ssl=True)
+                return Server(SERVER_IP, port=PORT, use_ssl=True)
             return Server(SERVER_IP, use_ssl=True)
         demisto.debug("initializing server without secure connection. port: {}". format(PORT or 'default(389)'))
         if PORT:
