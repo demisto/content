@@ -257,5 +257,5 @@ inputs:
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
 tests:
-  - No test - no instance
+  - No test
 releaseNotes: "-"

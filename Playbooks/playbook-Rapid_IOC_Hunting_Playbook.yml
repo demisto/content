@@ -321,5 +321,5 @@ view: |-
   }
 inputs: []
 tests:
-  - No test - no instance
+  - No test
 releaseNotes: "-"

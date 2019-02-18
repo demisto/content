@@ -419,5 +419,5 @@ script:
   dockerimage: demisto/dxl
   runonce: false
 tests:
-  - No test - no instance
+  - McAfee-TIE Test
 releaseNotes: "Dbot score for indicator with reputation of less than 30 is now set to bad"
