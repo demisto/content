@@ -425,3 +425,5 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
+tests:
+  - No test
