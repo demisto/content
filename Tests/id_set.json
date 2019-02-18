@@ -5903,7 +5903,7 @@
                     "FindSimilarIncidents"
                 ], 
                 "tests": [
-                    "Dedup - Generic - Test"
+                    "dedup_-_generic_-_test"
                 ]
             }
         }, 

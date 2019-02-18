@@ -354,5 +354,5 @@ outputs:
   description: Similar incident.
   type: unknown
 tests:
-  - Dedup - Generic - Test
+  - dedup_-_generic_-_test
 releaseNotes: "-"
