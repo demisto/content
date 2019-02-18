@@ -133,7 +133,7 @@ script:
             return Server(SERVER_IP, use_ssl=True)
         demisto.debug("initializing server without secure connection. port: {}". format(PORT or 'default(389)'))
         if PORT:
-            return Server(SERVER_IP, port=port)
+            return Server(SERVER_IP, port=PORT)
         return Server(SERVER_IP)
 
     def account_entry(person_object, custome_attributes):
