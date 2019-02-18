@@ -8021,7 +8021,8 @@
                     "checkpoint-delete-rule"
                 ], 
                 "tests": [
-                    "blockip_test_playbook"
+                    "blockip_test_playbook", 
+                    "CheckpointFW-test"
                 ]
             }
         }, 

@@ -883,3 +883,4 @@ script:
 releaseNotes: "Improve entries and outputs"
 tests:
 - blockip_test_playbook
+- CheckpointFW-test
