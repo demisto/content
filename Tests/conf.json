@@ -413,6 +413,9 @@
             "playbookID": "TestDedupIncidentsPlaybook"
         },
         {
+            "playbookID": "TestDedupIncidentsByName"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
@@ -1072,7 +1075,8 @@
         "GsuiteTest": "error was fixed only on server master and not on ",
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
-        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
+        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)",
+        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test"
 
     },
     "skipped_integrations": {

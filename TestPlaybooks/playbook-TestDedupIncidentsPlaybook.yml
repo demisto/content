@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -232,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 2120
         }
       }
     note: false
@@ -266,20 +266,223 @@ tasks:
       }
     note: false
     timertriggers: []
-  "10":
-    id: "10"
-    taskid: 7eb366dd-cf05-4bae-8ea6-a1f5402d464e
+  "11":
+    id: "11"
+    taskid: 02406255-50d6-4081-8aab-a6cd322b56ac
+    type: regular
+    task:
+      id: 02406255-50d6-4081-8aab-a6cd322b56ac
+      version: -1
+      name: FindSimilarIncidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: name
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 75cff374-ae9b-4ab3-8887-764d4f9ff34f
+    type: regular
+    task:
+      id: 75cff374-ae9b-4ab3-8887-764d4f9ff34f
+      version: -1
+      name: set dedup playbook to the similar incident
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      incidentId:
+        simple: ${similarIncident.rawId}
+      name:
+        simple: TestDedupIncidentsByName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: b6475090-5acd-4f0d-8aff-b0e09e0f4998
+    type: regular
+    task:
+      id: b6475090-5acd-4f0d-8aff-b0e09e0f4998
+      version: -1
+      name: Wait so the playbook of the similar incident get executed and close
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 8c8f4b9a-3bae-4963-8956-1f742887e7aa
+    type: regular
+    task:
+      id: 8c8f4b9a-3bae-4963-8956-1f742887e7aa
+      version: -1
+      name: FindSimilarIncidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: name
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 91d03c01-34fe-4b8c-88e2-3014b90fedc2
+    type: regular
+    task:
+      id: 91d03c01-34fe-4b8c-88e2-3014b90fedc2
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 7c35460b-47d2-4359-8ac8-c6bc27d3dcb5
     type: condition
     task:
-      id: 7eb366dd-cf05-4bae-8ea6-a1f5402d464e
+      id: 7c35460b-47d2-4359-8ac8-c6bc27d3dcb5
       version: -1
-      name: Check similar incident found
+      name: Ensure there are no similar incident, similar incidents should be closed
+        (dedup)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
       - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 9aa41975-86fa-49a4-86cf-98fa148bb7e3
+    type: condition
+    task:
+      id: 9aa41975-86fa-49a4-86cf-98fa148bb7e3
+      version: -1
+      name: make sure we found similar incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -293,39 +496,30 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
-  "13":
-    id: "13"
-    taskid: 831ce5bb-aa5a-4d87-8f31-1be5b96634f9
-    type: playbook
+  "18":
+    id: "18"
+    taskid: 25f40783-e095-4e0f-867f-04a7bc262cdd
+    type: regular
     task:
-      id: 831ce5bb-aa5a-4d87-8f31-1be5b96634f9
+      id: 25f40783-e095-4e0f-867f-04a7bc262cdd
       version: -1
-      name: DeDup incidents
-      playbookName: DeDup incidents
-      type: playbook
+      name: Wait till the incident will be created
+      scriptName: Sleep
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "11"
     scriptarguments:
-      hoursBack:
-        simple: "72"
-      similarContextKeys: {}
-      similarCustomFields: {}
-      similarIncidentKeys: {}
-      similarLabels:
-        simple: Email/subject
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
+      seconds:
+        simple: "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -340,7 +534,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50
@@ -349,4 +543,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"
