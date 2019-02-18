@@ -8,42 +8,48 @@ script: |-
   from pdfminer.psparser import PSEOF
   import sys
   reload(sys)
-  sys.setdefaultencoding('utf-8')
+  sys.setdefaultencoding("utf-8")
 
-  entryID = demisto.args()['entryID']
+  entry_id = demisto.args()["entryID"]
 
   def mark_suspicious():
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
-          'DBotScore':
+          "DBotScore":
           {
-              'Indicator': entryID,
-              'Type': 'file',
-              'Vendor': 'PDFx',
-              'Score': 2
+              "Indicator": entry_id,
+              "Type": "file",
+              "Vendor": "PDFx",
+              "Score": 2
           }
       }
       demisto.results({
-          'EntryContext': dbot,
-          'Type': entryTypes["error"],
-          'ContentsFormat': formats["text"],
-          'Contents': "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entryID),
+          "EntryContext": dbot,
+          "Type": entryTypes["error"],
+          "ContentsFormat": formats["text"],
+          "Contents": "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entry_id),
           })
+
+
+  #File entity
+  pdf_file = {
+      "EntryID" : entry_id
+  }
 
   #URLS
   URLs = []
 
-  maxFileSize = demisto.get(demisto.args(), 'maxFileSize')
+  maxFileSize = demisto.get(demisto.args(), "maxFileSize")
   if maxFileSize:
       maxFileSize = int(maxFileSize)
   else:
       maxFileSize = 1024**2
-  res = demisto.executeCommand('getFilePath', {'id': entryID})
+  res = demisto.executeCommand("getFilePath", {"id": entry_id})
   if isError(res[0]):
       demisto.results(res)
   else:
-      path = demisto.get(res[0],'Contents.path')
+      path = demisto.get(res[0],"Contents.path")
       if path:
           try:
               pdf = pdfx.PDFx(path)
@@ -55,20 +61,29 @@ script: |-
               demisto.results({
                   "Type": entryTypes["error"],
                   "ContentsFormat": formats["text"],
-                  "Contents" : "Could not load pdf file in EntryID {0}".format(entryID)
+                  "Contents" : "Could not load pdf file in EntryID {0}".format(entry_id)
               })
               sys.exit(0)
 
 
           # Get metadata:
           metadata = pdf.get_metadata()
+
           # Get text:
           text = pdf.get_text()
+
           # Get URLs:
           references_dict = pdf.get_references_as_dict()
           if "url" in references_dict.keys():
-              for url in references_dict['url']:
-                  URLs.append({'Data':url})
+              for url in references_dict["url"]:
+                  URLs.append({"Data":url})
+
+          #Add Text to file entity
+          pdf_file["Text"] = text
+
+          #Add Metadata to file entity
+          for k in metadata.keys():
+              pdf_file[k] = metadata[k]
 
           md = "### Metadata\n"
           md += "* " if metadata else ""
@@ -84,7 +99,8 @@ script: |-
           demisto.results({"Type" : entryTypes["note"],
                           "ContentsFormat" : formats["markdown"],
                           "Contents" : md,
-                          "HumanReadable": md
+                          "HumanReadable": md,
+                          "EntryContext": {"File(val.EntryID == obj.EntryID)" : pdf_file, "URL" : URLs}
                           })
 
           all_pdf_data = ""
@@ -100,16 +116,20 @@ script: |-
 
           # Extract indicators (omitting context output, letting auto-extract work)
           indicators_hr = demisto.executeCommand("extractIndicators", {
-              'text': all_pdf_data})[0][u'Contents']
-          demisto.results( {
-              'Type': entryTypes['note'],
-              'ContentsFormat': formats['text'],
-              'Contents': indicators_hr,
-              'HumanReadable': indicators_hr
-                           })
+              "text": all_pdf_data})[0][u"Contents"]
+          demisto.results({
+              "Type": entryTypes["note"],
+              "ContentsFormat": formats["json"],
+              "Contents": indicators_hr,
+              "HumanReadable": indicators_hr
+               })
 
       else:
-          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "EntryID {0} path could not be found".format(entryID) } )
+          demisto.results({
+              "Type" : entryTypes["error"],
+              "ContentsFormat" : formats["text"],
+              "Contents" : "EntryID {0} path could not be found".format(entry_id)
+               })
 type: python
 tags:
 - Utility
@@ -150,5 +170,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
+releaseNotes: "Fixed script outputs. Script should now output everything again while also extracting indicators."
 tests:
   - Extract Indicators From File - test
