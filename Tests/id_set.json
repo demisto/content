@@ -6292,6 +6292,9 @@
                     "Carbon Black Rapid IOC Hunting", 
                     "TIE - IOC Hunt", 
                     "Carbon black Protection Rapid IOC Hunting"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -6613,6 +6616,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Hunt for bad IOCs"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -7105,7 +7111,10 @@
                 ], 
                 "command_to_integration": {
                     "tie-file-references": "McAfee Threat Intelligence Exchange"
-                }
+                }, 
+                "tests": [
+                    "No test - no instance"
+                ]
             }
         }, 
         {
