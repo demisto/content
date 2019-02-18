@@ -671,6 +671,7 @@ def add_entries_command():
         try:
             entries = json.loads(entries)
         except ValueError as e:
+            demisto.debug(e.message.message)
             return_error('Entries must be in JSON format. Must be array of objects.')
         if not all([entry.keys() == entries[0].keys() for entry in entries[1:]]):
             return_error('All entries must have the same fields')
