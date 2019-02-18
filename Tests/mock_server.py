@@ -212,12 +212,19 @@ class MITMProxy:
         return self.ami.call(command) == 0
 
     def set_folder_primary(self):
+        """Set the primary folder as the active folder (the one used to store mock and log files)."""
         self.active_folder = self.primary_folder
 
     def set_folder_tmp(self):
+        """Set the temp folder as the active folder (the one used to store mock and log files)."""
         self.active_folder = self.tmp_folder
 
     def move_to_primary(self, playbook_id):
+        """Move the mock and log files of a (successful) test playbook run from the temp folder to the primary folder
+
+        Args:
+            playbook_id (string): ID of the test playbook of which the files should be moved.
+        """
         src_filepath = os.path.join(self.tmp_folder, id_to_mock_file(playbook_id))
         src_files = os.path.join(self.tmp_folder, id_to_folder(playbook_id) + '*')
         dst_folder = os.path.join(self.primary_folder, id_to_folder(playbook_id))
