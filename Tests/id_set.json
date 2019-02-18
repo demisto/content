@@ -2128,7 +2128,7 @@
                     "getIncidents"
                 ], 
                 "tests": [
-                    "Test Similar Incidents"
+                    "test_similar_incidents"
                 ]
             }
         }, 

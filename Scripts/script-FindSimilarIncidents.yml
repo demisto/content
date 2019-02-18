@@ -423,4 +423,4 @@ runonce: false
 dockerimage: demisto/dateutil
 releaseNotes: "Remove embedded lib and use dateutil docker image."
 tests:
-  - Test Similar Incidents
+  - test_similar_incidents
