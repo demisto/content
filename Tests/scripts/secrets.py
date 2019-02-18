@@ -12,7 +12,7 @@ except ImportError:
     pip.main(['install', 'PyPDF2'])
     import PyPDF2
 
-from validate_files_structure import run_git_command
+from Tests.test_utils import run_git_command
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
