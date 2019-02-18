@@ -8019,6 +8019,9 @@
                     "checkpoint-block-ip", 
                     "checkpoint", 
                     "checkpoint-delete-rule"
+                ], 
+                "tests": [
+                    "blockip_test_playbook"
                 ]
             }
         }, 
