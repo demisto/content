@@ -1047,10 +1047,12 @@
         {
             "playbookID": "Autoextract - Test"
         },
-                {
+        {
+            "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test"
         },
-                {
+        {
+            "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test"
         }
     ],
