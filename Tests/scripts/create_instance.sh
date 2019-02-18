@@ -10,7 +10,7 @@ CONFFILE=$1
 
 #Get nightly image of the server
 IMAGE_ID=$(aws ec2 describe-images \
-    --filters Name=name,Values=Demisto-Circle-CI-Content-GA* \
+    --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
     --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
 
 echo $IMAGE_ID > image_id.txt

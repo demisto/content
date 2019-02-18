@@ -133,7 +133,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message):
     configure_proxy_unsecure(integrations)
     if not proxy.has_mock_file(playbook_id):
-        print start_message + '(Mock: Recording)'
+        print start_message + ' (Mock: Recording)'
     else:
         print start_message + ' (Mock: Playback)'
         proxy.start(playbook_id)
