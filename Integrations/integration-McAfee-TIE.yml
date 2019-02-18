@@ -154,10 +154,12 @@ script:
             return 1
         elif (trust_level == 30):
             return 2
+        elif (trust_level == 0 or trust_level == 50):
+            return 0
         elif (trust_level < 30):
             return 3
         else:
-            # If reached here, then the value is either 0 or 50, as the API doesn't support 31-69 values except for 50)
+            # Shouldn't reach here, as the API doesn't support 31-69 values except for 50)
             return 0
 
     def get_thrust_level_and_score(reputations):
