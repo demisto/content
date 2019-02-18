@@ -6618,7 +6618,7 @@
                     "Hunt for bad IOCs"
                 ], 
                 "tests": [
-                    "No test - no instance"
+                    "No test"
                 ]
             }
         }, 
@@ -7113,7 +7113,7 @@
                     "tie-file-references": "McAfee Threat Intelligence Exchange"
                 }, 
                 "tests": [
-                    "No test - no instance"
+                    "No test"
                 ]
             }
         }, 
@@ -9705,7 +9705,7 @@
                     "tie-file-references"
                 ], 
                 "tests": [
-                    "No test - no instance"
+                    "McAfee-TIE Test"
                 ]
             }
         }, 
