@@ -649,7 +649,7 @@ script:
         demisto_entry = {
             'ContentsFormat': formats['text'],
             'Type': entryTypes['note'],
-            'Contents': "Updated user's {} to ".format(attribute_name, attribute_value)
+            'Contents': "Updated user's {} to {} ".format(attribute_name, attribute_value)
         }
         demisto.results(demisto_entry)
 
