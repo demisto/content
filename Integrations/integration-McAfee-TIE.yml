@@ -418,4 +418,4 @@ script:
   runonce: false
 tests:
   - No test - no instance
-releaseNotes: "Dbot score for indicator with reputation of 30 is now set to suspicious"
+releaseNotes: "Dbot score for indicator with reputation of less than 30 is now set to bad"
