@@ -43,15 +43,11 @@ def silence_output(cmd_method, *args, **kwargs):
     Returns:
         output of cmd_method
     """
-
-    print kwargs
-
     with open(os.devnull, 'w') as fnull:
         for k in ('stdout', 'stderr'):
             if kwargs.get(k) == 'null':
                 kwargs[k] = fnull
 
-        print kwargs
         return cmd_method(*args, **kwargs)
 
 
@@ -262,7 +258,7 @@ class MITMProxy:
         self.record = record
         path = path or self.active_folder
 
-        silence_output(self.ami.call(['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr='null'))
+        silence_output(self.ami.call, ['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr='null')
 
         actions = '--server-replay-kill-extra --server-replay' if not record else '--save-stream-file'
         command = "mitmdump --ssl-insecure --verbose --listen-port {} {}".format(PROXY_PORT, actions).split()
@@ -294,6 +290,6 @@ class MITMProxy:
                 log.write('\nSTDERR:\n')
                 log.write(self.process.stderr.read())
 
-            silence_output(self.ami.copy_file(local_log_filepath, remote_log_filepath, stdout='null'))
+            silence_output(self.ami.copy_file, local_log_filepath, remote_log_filepath, stdout='null')
 
         self.process = None
