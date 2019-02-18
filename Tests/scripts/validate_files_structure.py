@@ -758,12 +758,12 @@ def str2bool(v):
 
 
 def main():
-    '''
+    """
     This script runs both in a local and a remote environment. In a local environment we don't have any
     logger assigned, and then pykwalify raises an error, since it is logging the validation results.
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
-    '''
+    """
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
