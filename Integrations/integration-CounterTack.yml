@@ -128,6 +128,7 @@ script:
         Returns the information on existing endpoints
         """
         data = []
+        endpoint_standards = []
         context = {}
         headers = ['OS', 'Name', 'Threat', 'Status', 'ID', 'IP']
         endpoints = get_endpoints_request()
@@ -140,7 +141,7 @@ script:
                 'Status': endpoint.get('status'),
                 'Threat': endpoint.get('threat')
             })
-            endpoint_standards = {
+            endpoint_standards.append({
                 'ID': endpoint.get('id'),
                 'IPAddress': endpoint.get('ips'),
                 'Domain': endpoint.get('domain'),
@@ -150,7 +151,7 @@ script:
                 'Model': endpoint.get('current_profile'),
                 'Memory': endpoint.get('memory'),
                 'Processors': endpoint.get('num_cpus')
-            }
+            })
 
         context['CounterTack.Endpoint'] = createContext(endpoints, id='id', keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
@@ -190,6 +191,7 @@ script:
         returns:
             The information about the specified endpoint
         """
+        context = {}
         headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
         endpoint_id = demisto.args().get('endpoint_id')
 
@@ -209,9 +211,21 @@ script:
             'Tags': response.get('tags')
         }
 
-        context = {
-            'CounterTack.Endpoint': createContext(response, id='TenantID', keyTransform=underscoreToCamelCase)
+        endpoint_standards = {
+            'ID': response.get('id'),
+            'IPAddress': response.get('ips'),
+            'Domain': response.get('domain'),
+            'MACAddress': response.get('mac'),
+            'OS': response.get('product_name'),
+            'OSVersion': response.get('driver_version'),
+            'Model': response.get('current_profile'),
+            'Memory': response.get('memory'),
+            'Processors': response.get('num_cpus')
         }
+
+        context['CounterTack.Endpoint'] = createContext(response, id='TenantID', keyTransform=underscoreToCamelCase)
+        context['Endpoint'] = endpoint_standards
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -576,9 +590,10 @@ script:
 
     def get_all_files():
 
+        context = {}
         headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
         data = []
-        file_context = []
+        files_standards = []
 
         files = file_request()
         for file in files:
@@ -591,9 +606,15 @@ script:
                 'Status': file.get('status')
             })
 
-        context = {
-            'CounterTack.Files': createContext(files, id='id', keyTransform=underscoreToCamelCase)
-        }
+            files_standards.append({
+                'Size': file.get('size'),
+                'MD5': file.get('md5'),
+                'SHA256': file.get('sha256'),
+                'SSDeep': file.get('ssdeep'),
+                'Path': file.get('path')
+            })
+        context['CounterTack.Files'] = createContext(files, id='id', keyTransform=underscoreToCamelCase)
+        context['Files'] = files_standards
 
         entry = {
             'Type': entryTypes['note'],
@@ -1316,6 +1337,33 @@ script:
         - contextPath: CounterTack.Endpoint.IsQuarantined
           description: Whether the endpoint is currently quarantined.
           type: boolean
+        - contextPath: Endpoint.Memory
+          description: Endpoint RAM (megabytes)
+          type: number
+        - contextPath: Endpoint.Processors
+          description: Number of CPUs.
+          type: number
+        - contextPath: Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: Endpoint.Os
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.Macaddress
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: Endpoint.Model
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: Endpoint.Ipaddress
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: Endpoint.Osversion
+          description: Endpoint Sensor version.
+          type: string
+        - contextPath: Endpoint.Id
+          description: The endpoint ID
+          type: string
       description: Get information on specific endpoint
     - name: countertack-get-behavior
       arguments:
@@ -1589,6 +1637,22 @@ script:
         - contextPath: CounterTack.Files.VtReportLocation
           description: 'VirusTot al report location path.'
           type: string
+        - contextPath: Files.MD5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: Files.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint
+          type: string
+        - contextPath: Files.SHA256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: Files.SSDeep
+          description: The SSDEEP digest of the file contents.
+          type: string
+        - contextPath: Files.Size
+          description: The size of the extracted file (bytes).
+          type: number
       description: Get all extracted files for all endpoints
     - name: countertack-get-endpoint-files
       arguments:
@@ -1713,6 +1777,6 @@ script:
       description: 'Delete an extracted file from the endpoint.'
   isfetch: true
   runonce: false
-releaseNotes: "added context"
+releaseNotes: "added context standard"
 tests:
   - no tests
