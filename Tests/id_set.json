@@ -5664,7 +5664,10 @@
                 "command_to_integration": {
                     "wildfire-upload-file-remote": "WildFire", 
                     "wildfire-report": "WildFire"
-                }
+                }, 
+                "tests": [
+                    "Wildfire Test"
+                ]
             }
         }, 
         {
@@ -5881,8 +5884,11 @@
                 "implementing_playbooks": [
                     "WildFire - Detonate file"
                 ], 
-                "implementing_commands": [
-                    "dxl-send-event"
+                "command_to_integration": {
+                    "dxl-send-event": "McAfee DXL"
+                }, 
+                "tests": [
+                    "Wildfire Test"
                 ]
             }
         }, 
@@ -8234,6 +8240,34 @@
             }
         }, 
         {
+            "CounterTack": {
+                "name": "CounterTack", 
+                "commands": [
+                    "countertack-get-endpoints", 
+                    "countertack-get-behaviors", 
+                    "countertack-get-endpoint", 
+                    "countertack-get-behavior", 
+                    "countertack-get-endpoint-tags", 
+                    "countertack-add-tags", 
+                    "countertack-delete-tags", 
+                    "countertack-add-behavior-tags", 
+                    "countertack-delete-behavior-tags", 
+                    "countertack-endpoint-quarantine", 
+                    "countertack-disable-quarantine", 
+                    "countertack-extract-file", 
+                    "counterTack-delete-file", 
+                    "countertack-get-all-files", 
+                    "countertack-get-endpoint-files", 
+                    "countertack-get-file-information", 
+                    "countertack-download-file", 
+                    "countertack-delete-extracted-file"
+                ], 
+                "tests": [
+                    "no tests"
+                ]
+            }
+        }, 
+        {
             "Cuckoo Sandbox": {
                 "name": "Cuckoo Sandbox", 
                 "toversion": "3.1.0", 
@@ -8917,6 +8951,30 @@
                 ], 
                 "tests": [
                     "Fortigate Test"
+                ]
+            }
+        }, 
+        {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-get-ticket", 
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-get-canned-response-folder", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-ticket-conversations", 
+                    "fd-list-agents", 
+                    "fd-create-ticket-note", 
+                    "fd-delete-ticket", 
+                    "fd-search-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
                 ]
             }
         }, 
@@ -11774,7 +11832,7 @@
                     "microsoft-atp-update-alert"
                 ], 
                 "tests": [
-                    "No test"
+                    "No test - TBD"
                 ]
             }
         }, 
