@@ -14122,8 +14122,7 @@
                 ], 
                 "command_to_integration": {
                     "tie-file-references": "McAfee Threat Intelligence Exchange", 
-                    "file": "McAfee Threat Intelligence Exchange", 
-                    "tie-set-file-reputation": "McAfee Threat Intelligence Exchange"
+                    "file": "McAfee Threat Intelligence Exchange"
                 }
             }
         }, 
