@@ -614,7 +614,7 @@ script:
                 'Path': file.get('path')
             })
         context['CounterTack.Files'] = createContext(files, id='id', keyTransform=underscoreToCamelCase)
-        context['File'] = files_standards
+        context[outputPaths['file']] = files_standards
 
         entry = {
             'Type': entryTypes['note'],
