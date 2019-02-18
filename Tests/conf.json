@@ -236,7 +236,6 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "instance_names": "intsights_standard_account",
             "nightly": true,
             "timeout": 500
         },
@@ -1090,7 +1089,6 @@
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
