@@ -142,3 +142,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "add tests section"
+tests:
+- Wildfire Test
