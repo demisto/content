@@ -12476,18 +12476,12 @@
             "CheckpointFW-test": {
                 "name": "CheckpointFW-test", 
                 "implementing_scripts": [
-                    "VerifyContextFields", 
-                    "CheckpointFWBackupStatus", 
-                    "DeleteContext", 
-                    "Sleep", 
-                    "CheckpointFWCreateBackup"
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "checkpoint-delete-rule": "Check Point", 
-                    "checkpoint-block-ip": "Check Point", 
-                    "checkpoint-set-rule": "Check Point", 
-                    "checkpoint-show-access-rule-base": "Check Point", 
-                    "checkpoint-show-hosts": "Check Point"
+                    "checkpoint-set-rule": "", 
+                    "checkpoint-show-access-rule-base": "", 
+                    "checkpoint-show-hosts": ""
                 }
             }
         }, 
