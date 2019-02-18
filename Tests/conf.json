@@ -1046,6 +1046,9 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "FilterByList - Test"
         }
     ],
     "skipped_tests": {

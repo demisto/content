@@ -74,7 +74,6 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
