@@ -6645,7 +6645,10 @@
                     "epo-update-repository": "epo", 
                     "epo-get-latest-dat": "epo", 
                     "epo-get-current-dat": "epo"
-                }
+                }, 
+                "tests": [
+                    "Test Playbook McAfee ePO"
+                ]
             }
         }, 
         {
@@ -6665,7 +6668,7 @@
                     "servicenow-incident-create": "ServiceNow"
                 }, 
                 "tests": [
-                    "No test"
+                    "Test Playbook McAfee ePO"
                 ]
             }
         }, 
