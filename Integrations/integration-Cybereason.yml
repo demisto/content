@@ -81,7 +81,9 @@ script:
     PASSWORD = demisto.params().get('credentials').get('password')
     USE_SSL = not demisto.params().get('unsecure', False)
     CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_TIME_DEFAULT = '3 days'
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
     FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
 
     STATUS_MAP = {
@@ -1935,4 +1937,4 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: "-"
+releaseNotes: validate FETCH_TIME param and set default value
