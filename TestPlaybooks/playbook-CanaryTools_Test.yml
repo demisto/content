@@ -540,7 +540,7 @@ tasks:
       id: 3126d80e-37f1-4556-8c2b-4da1274f4671
       version: -1
       name: Test Fetch
-      scriptName: FetchFromInstance_copy
+      scriptName: FetchFromInstance
       type: regular
       iscommand: false
       brand: ""
