@@ -427,7 +427,7 @@ def update_id_set():
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status HEAD")
+    files_string = run_git_command("git diff --name-status --no-merges HEAD")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
