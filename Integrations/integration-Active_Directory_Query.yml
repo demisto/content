@@ -122,7 +122,7 @@ script:
             # intialize server with ssl
             # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
             demisto.debug("initializing sever with ssl. port: {}". format(PORT or 'default(636)'))
-            if UNSECURE:
+            if not UNSECURE:
                 demisto.debug("will require server certificate.")
                 tls = Tls(validate=ssl.CERT_REQUIRED)
                 if PORT:
