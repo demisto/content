@@ -29,7 +29,7 @@ import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
-from secrets import get_secrets
+# from secrets import get_secrets
 from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
@@ -526,38 +526,6 @@ def integration_valid_in_id_set(file_path, integration_set):
     return is_valid_in_id_set(file_path, integration_data, integration_set)
 
 
-def validate_committed_files(branch_name, is_circle):
-    secrets_found, secrets_found_string = get_secrets(branch_name, is_circle)
-    if secrets_found_string:
-        print_error(secrets_found_string)
-
-    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
-    with open('./Tests/id_set.json', 'r') as id_set_file:
-        try:
-            id_set = json.load(id_set_file)
-        except ValueError, ex:
-            if "Expecting property name" in ex.message:
-                print_error("You probably merged from master and your id_set.json has conflicts. "
-                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
-                return
-            else:
-                raise ex
-
-    script_set = id_set['scripts']
-    playbook_set = id_set['playbooks']
-    integration_set = id_set['integrations']
-    test_playbook_set = id_set['TestPlaybooks']
-
-    has_schema_problem = validate_modified_files(integration_set, modified_files,
-                                                 playbook_set, script_set, test_playbook_set, is_circle)
-
-    has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
-                                              script_set, test_playbook_set, is_circle) or has_schema_problem
-
-    if has_schema_problem or secrets_found:
-        sys.exit(1)
-
-
 def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
     if compared_obj_data is None:
         from_version = get_from_version(file_path)
@@ -585,119 +553,6 @@ def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
     return True
 
 
-def validate_added_files(added_files, integration_set, playbook_set, script_set, test_playbook_set, is_circle):
-    has_schema_problem = False
-    for file_path in added_files:
-        print "Validating {}".format(file_path)
-        if not validate_schema(file_path) or validate_version(file_path):
-            has_schema_problem = True
-
-        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if not is_test_in_conf_json(file_path) or \
-                    (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)):
-                has_schema_problem = True
-
-            if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
-                has_schema_problem = True
-
-        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if is_circle and not script_valid_in_id_set(file_path, script_set):
-                has_schema_problem = True
-
-            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
-                has_schema_problem = True
-
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            if oversize_image(file_path) or not is_existing_image(file_path):
-                has_schema_problem = True
-
-            if is_circle and not integration_valid_in_id_set(file_path, integration_set):
-                has_schema_problem = True
-
-            if not is_circle and not is_valid_id(integration_set, get_script_or_integration_id(file_path), file_path):
-                has_schema_problem = True
-
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
-                has_schema_problem = True
-
-            if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
-                has_schema_problem = True
-
-        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
-            if oversize_image(file_path):
-                has_schema_problem = True
-
-        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path))
-            script_data = get_script_data(yml_path, script_code=code)
-
-            if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
-                has_schema_problem = True
-
-            if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
-                                                 yml_path, script_data):
-                has_schema_problem = True
-
-    return has_schema_problem
-
-
-def validate_modified_files(integration_set, modified_files, playbook_set, script_set, test_playbook_set, is_circle):
-    has_schema_problem = False
-    for file_path in modified_files:
-        print "Validating {}".format(file_path)
-        if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
-                validate_fromversion_on_modified(file_path):
-            has_schema_problem = True
-        if not is_release_branch() and not validate_file_release_notes(file_path):
-            has_schema_problem = True
-
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
-                has_schema_problem = True
-
-        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set):
-                has_schema_problem = True
-
-        elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if is_circle and not script_valid_in_id_set(file_path, script_set):
-                has_schema_problem = True
-
-        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                    (is_circle and not script_valid_in_id_set(file_path, script_set)) or \
-                    changed_docker_image(file_path):
-                has_schema_problem = True
-
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            if oversize_image(file_path) or is_added_required_fields(file_path) or \
-                    changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                    (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
-                    changed_docker_image(file_path) or not is_existing_image(file_path):
-                has_schema_problem = True
-
-        elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
-            if oversize_image(file_path):
-                has_schema_problem = True
-
-        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            yml_path, code = get_script_package_data(os.path.dirname(file_path))
-            script_data = get_script_data(yml_path, script_code=code)
-
-            if changed_command_name_or_arg(yml_path) or changed_context(yml_path) or \
-                    (is_circle and not script_valid_in_id_set(yml_path, script_set, script_data)):
-                has_schema_problem = True
-
-    return has_schema_problem
-
-
 def validate_all_files():
     wrong_schema = False
 
@@ -720,7 +575,53 @@ def validate_all_files():
         sys.exit(1)
 
 
-class Validator(object):
+class IDSetValidator(object):
+    ID_SET_PATH = "./Tests/id_set.json"
+
+    def __init__(self, is_circle):
+        self.is_circle = is_circle
+        self.id_set = self.load_conf_file()
+
+        self.script_set = self.id_set['scripts']
+        self.playbook_set = self.id_set['playbooks']
+        self.integration_set = self.id_set['integrations']
+        self.test_playbook_set = self.id_set['TestPlaybooks']
+
+    def load_conf_file(self):
+        with open(self.ID_SET_PATH) as data_file:
+            return json.load(data_file)
+
+    def validate(self, file_path):
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if self.is_circle and not playbook_valid_in_id_set(file_path, self.playbook_set):
+                return False
+
+        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if self.is_circle and not playbook_valid_in_id_set(file_path, self.test_playbook_set):
+                return False
+
+        elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if self.is_circle and not script_valid_in_id_set(file_path, self.script_set):
+                return False
+
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+
+            if self.is_circle and not integration_valid_in_id_set(file_path, self.integration_set):
+                return False
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+
+            if self.is_circle and not script_valid_in_id_set(yml_path, self.script_set, script_data):
+                return False
+
+
+class StructureValidator(object):
     CONF_PATH = "./Tests/conf.json"
 
     def __init__(self):
@@ -735,29 +636,169 @@ class Validator(object):
         with open(self.CONF_PATH) as data_file:
             return json.load(data_file)
 
+    def validate_description_in_conf_dict(self, checked_dict):
+        """Validate that the checked_dict as description for all it's fields.
+
+        Args:
+            checked_dict (dict): Dictionary from conf.json file.
+        """
+        problematic_instances = []
+        for instance, description in checked_dict.items():
+            if description == "":
+                problematic_instances.append(instance)
+
+        if problematic_instances:
+            self._is_valid = False
+            print("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances)))
+
     def validate_conf_json(self):
+        """Validate the fields skipped_tests and skipped_integrations in conf.json file."""
         skipped_tests_conf = self.conf_data['skipped_tests']
         skipped_integrations_conf = self.conf_data['skipped_integrations']
 
-        problemtic_tests = []
-        problemtic_integrations = []
+        self.validate_description_in_conf_dict(skipped_tests_conf)
+        self.validate_description_in_conf_dict(skipped_integrations_conf)
+        # TODO: add Ben's section once he merges the mock issue.
 
-        for test, description in skipped_tests_conf.items():
-            if description == "":
-                problemtic_tests.append(test)
+    def validate_modified_files(self, modified_files, is_circle):
+        id_validator = IDSetValidator(is_circle)
 
-        for integration, description in skipped_integrations_conf.items():
-            if description == "":
-                problemtic_integrations.append(integration)
+        for file_path in modified_files:
+            print "Validating {}".format(file_path)
+            if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
+                    validate_fromversion_on_modified(file_path):
+                self._is_valid = False
+            if not is_release_branch() and not validate_file_release_notes(file_path):
+                self._is_valid = False
 
-        if problemtic_tests:
-            print("Those tests don't have description:\n{0}".format('\n'.join(problemtic_tests)))
+            if not id_validator.validate(file_path):
+                self._is_valid = False
 
-        if problemtic_integrations:
-            print("Those integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+                if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
+                        changed_docker_image(file_path):
+                    self._is_valid = False
 
-        if problemtic_integrations or problemtic_tests:
+            elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                if oversize_image(file_path) or is_added_required_fields(file_path) or \
+                        changed_command_name_or_arg(file_path) or changed_context(file_path) or \
+                        changed_docker_image(file_path) or not is_existing_image(file_path):
+                    self._is_valid = False
+
+            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+                if oversize_image(file_path):
+                    self._is_valid = False
+
+            elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+                yml_path, code = get_script_package_data(os.path.dirname(file_path))
+
+                if changed_command_name_or_arg(yml_path) or changed_context(yml_path):
+                    self._is_valid = False
+
+    def validate_added_files(self, added_files, integration_set, playbook_set, script_set, test_playbook_set, is_circle):
+        for file_path in added_files:
+            print "Validating {}".format(file_path)
+            if not validate_schema(file_path) or validate_version(file_path):
+                self._is_valid = False
+
+            if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                if not is_test_in_conf_json(file_path) or \
+                        (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)):
+                    self._is_valid = False
+
+                if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
+                    self._is_valid = False
+
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path,
+                                                                              re.IGNORECASE):
+                if is_circle and not script_valid_in_id_set(file_path, script_set):
+                    self._is_valid = False
+
+                if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
+                    self._is_valid = False
+
+            elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                if oversize_image(file_path) or not is_existing_image(file_path):
+                    self._is_valid = False
+
+                if is_circle and not integration_valid_in_id_set(file_path, integration_set):
+                    self._is_valid = False
+
+                if not is_circle and not is_valid_id(integration_set, get_script_or_integration_id(file_path),
+                                                     file_path):
+                    self._is_valid = False
+
+            elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
+                    self._is_valid = False
+
+                if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
+                    self._is_valid = False
+
+            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+                if oversize_image(file_path):
+                    self._is_valid = False
+
+            elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+                yml_path, code = get_script_package_data(os.path.dirname(file_path))
+                script_data = get_script_data(yml_path, script_code=code)
+
+                if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
+                    self._is_valid = False
+
+                if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
+                                                     yml_path, script_data):
+                    self._is_valid = False
+
+    def check_secrets(self, branch_name, is_circle):
+        """Check if any secrets are found in your changeset.
+
+        Args:
+            branch_name (string): The name of the branch you are working on.
+            is_circle (bool): Whether we are running on Circle or Local env.
+        """
+        secrets_found, secrets_found_string = get_secrets(branch_name, is_circle)
+        if secrets_found_string:
             self._is_valid = False
+            print_error(secrets_found_string)
+
+    def validate_committed_files(self, branch_name, is_circle):
+        self.check_secrets(branch_name, is_circle)
+
+        modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
+        with open('./Tests/id_set.json', 'r') as id_set_file:
+            try:
+                id_set = json.load(id_set_file)
+            except ValueError, ex:
+                if "Expecting property name" in ex.message:
+                    print_error("You probably merged from master and your id_set.json has conflicts. "
+                                "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                    return
+                else:
+                    raise ex
+
+        script_set = id_set['scripts']
+        playbook_set = id_set['playbooks']
+        integration_set = id_set['integrations']
+        test_playbook_set = id_set['TestPlaybooks']
+
+        has_schema_problem = validate_modified_files(integration_set, modified_files,
+                                                     playbook_set, script_set, test_playbook_set, is_circle)
+
+        has_schema_problem = validate_added_files(added_files, integration_set, playbook_set,
+                                                  script_set, test_playbook_set, is_circle) or has_schema_problem
+
+        if has_schema_problem or secrets_found:
+            sys.exit(1)
+
+
+
 
 
 def str2bool(v):
@@ -781,7 +822,7 @@ def main():
     branch_name = branch_name_reg.group(1)
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
-    parser.add_argument('-c', '--c ircle', type=str2bool, help='Is CircleCi or not')
+    parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
     if is_circle is None:

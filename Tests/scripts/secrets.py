@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import io
 import os
 import re
@@ -71,6 +73,7 @@ def get_secrets(branch_name, is_circle):
                                         ' remove the files asap and report it.\n'
             secrets_found_string += 'For more information about whitelisting please visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
+
     return secrets_found, secrets_found_string
 
 
