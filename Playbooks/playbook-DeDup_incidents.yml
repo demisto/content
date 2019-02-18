@@ -196,3 +196,4 @@ outputs:
   description: Is similar incident found? (true\false)
 tests:
   - No test
+releaseNotes: "-"

@@ -355,3 +355,4 @@ outputs:
   type: unknown
 tests:
   - Dedup - Generic - Test
+releaseNotes: "-"

@@ -5839,6 +5839,9 @@
                 "implementing_scripts": [
                     "FindSimilarIncidents", 
                     "CloseInvestigationAsDuplicate"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5898,6 +5901,9 @@
                     "GetDuplicatesMlv2", 
                     "CloseInvestigationAsDuplicate", 
                     "FindSimilarIncidents"
+                ], 
+                "tests": [
+                    "Dedup - Generic - Test"
                 ]
             }
         }, 
