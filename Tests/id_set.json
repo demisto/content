@@ -8918,6 +8918,30 @@
             }
         }, 
         {
+            "Freshdesk": {
+                "name": "Freshdesk", 
+                "commands": [
+                    "fd-create-ticket", 
+                    "fd-get-ticket", 
+                    "fd-update-ticket", 
+                    "fd-list-contacts", 
+                    "fd-get-contact", 
+                    "fd-list-canned-response-folders", 
+                    "fd-get-canned-response-folder", 
+                    "fd-list-groups", 
+                    "fd-ticket-reply", 
+                    "fd-get-ticket-conversations", 
+                    "fd-list-agents", 
+                    "fd-create-ticket-note", 
+                    "fd-delete-ticket", 
+                    "fd-search-tickets"
+                ], 
+                "tests": [
+                    "Freshdesk-Test"
+                ]
+            }
+        }, 
+        {
             "Giphy": {
                 "name": "Giphy", 
                 "commands": [
