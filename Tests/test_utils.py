@@ -1,3 +1,7 @@
+import sys
+from subprocess import Popen, PIPE
+
+
 class LOG_COLORS:
     NATIVE = '\033[m'
     RED = '\033[01;31m'
@@ -16,3 +20,13 @@ def print_error(error_str):
 
 def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
+
+
+def run_git_command(command):
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    output, err = p.communicate()
+    if err:
+        print_error("Failed to run git command " + command)
+        sys.exit(1)
+    return output
+

@@ -28,8 +28,8 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
-import secrets
 
+from secrets import get_secrets
 from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
@@ -95,6 +95,7 @@ REGEXES_TO_SCHEMA_DIC = {
 }
 
 SCHEMAS_PATH = "Tests/schemas/"
+
 
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
@@ -273,7 +274,7 @@ def collect_ids(file_path):
 def is_test_in_conf_json(file_path):
     file_id = collect_ids(file_path)
 
-    with open("./Tests/conf.json") as data_file:
+    with open(CONF_PATH) as data_file:
         conf = json.load(data_file)
 
     conf_tests = conf['tests']
@@ -526,8 +527,7 @@ def integration_valid_in_id_set(file_path, integration_set):
 
 
 def validate_committed_files(branch_name, is_circle):
-
-    secrets_found, secrets_found_string = secrets.get_secrets(branch_name, is_circle)
+    secrets_found, secrets_found_string = get_secrets(branch_name, is_circle)
     if secrets_found_string:
         print_error(secrets_found_string)
 
@@ -720,32 +720,44 @@ def validate_all_files():
         sys.exit(1)
 
 
-def validate_conf_json():
-    with open("./Tests/conf.json") as data_file:
-        conf = json.load(data_file)
+class Validator(object):
+    CONF_PATH = "./Tests/conf.json"
 
-    skipped_tests_conf = conf['skipped_tests']
-    skipped_integrations_conf = conf['skipped_integrations']
+    def __init__(self):
+        self._is_valid = True
 
-    problemtic_tests = []
-    problemtic_integrations = []
+        self.conf_data = self.load_conf_file()
 
-    for test, description in skipped_tests_conf.items():
-        if description == "":
-            problemtic_tests.append(test)
+    def get_is_valid(self):
+        return self._is_valid
 
-    for integration, description in skipped_integrations_conf.items():
-        if description == "":
-            problemtic_integrations.append(integration)
+    def load_conf_file(self):
+        with open(self.CONF_PATH) as data_file:
+            return json.load(data_file)
 
-    if problemtic_tests:
-        print("Those tests don't have description:\n{0}".format('\n'.join(problemtic_tests)))
+    def validate_conf_json(self):
+        skipped_tests_conf = self.conf_data['skipped_tests']
+        skipped_integrations_conf = self.conf_data['skipped_integrations']
 
-    if problemtic_integrations:
-        print("Those integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
+        problemtic_tests = []
+        problemtic_integrations = []
 
-    if problemtic_integrations or problemtic_tests:
-        sys.exit(1)
+        for test, description in skipped_tests_conf.items():
+            if description == "":
+                problemtic_tests.append(test)
+
+        for integration, description in skipped_integrations_conf.items():
+            if description == "":
+                problemtic_integrations.append(integration)
+
+        if problemtic_tests:
+            print("Those tests don't have description:\n{0}".format('\n'.join(problemtic_tests)))
+
+        if problemtic_integrations:
+            print("Those integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
+
+        if problemtic_integrations or problemtic_tests:
+            self._is_valid = False
 
 
 def str2bool(v):
@@ -769,7 +781,7 @@ def main():
     branch_name = branch_name_reg.group(1)
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
-    parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
+    parser.add_argument('-c', '--c ircle', type=str2bool, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
     if is_circle is None:
