@@ -152,11 +152,12 @@ script:
     def trust_level_to_score(trust_level):
         if (trust_level >= 70):
             return 1
-        elif (trust_level >= 30):
+        elif (trust_level == 30):
             return 2
-        elif (trust_level >= 30):
+        elif (trust_level < 30):
             return 3
         else:
+            # If reached here, then the value is either 0 or 50, as the API doesn't support 31-69 values except for 50)
             return 0
 
     def get_thrust_level_and_score(reputations):
@@ -415,3 +416,6 @@ script:
       the specified file
   dockerimage: demisto/dxl
   runonce: false
+tests:
+  - No test - no instance
+releaseNotes: "Dbot score for indicator with reputation of 30 is now set to suspicious"
