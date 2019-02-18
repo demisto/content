@@ -129,29 +129,8 @@ tasks:
           "y": 370
         }
       }
-  "5":
-    id: "5"
-    taskid: 1cef358f-2bf2-47fc-8cfc-26f7c8655b2e
-    type: playbook
-    task:
-      id: 1cef358f-2bf2-47fc-8cfc-26f7c8655b2e
-      version: -1
-      name: ""
-      playbookName: Sentinel One - Endpoint data collection
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 515
-        }
-      }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
     taskid: a726afff-a81d-4588-865c-f8085a6f41c2
@@ -246,7 +225,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 705,
-        "width": 1240,
+        "width": 1290,
         "x": 50,
         "y": 50
       }
@@ -263,4 +242,4 @@ inputs:
   required: false
   description: ""
 outputs: []
-releaseNotes: Add hostname to playbook inputs
+releaseNotes: "remove duplicate task in playbook"
