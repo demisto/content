@@ -614,7 +614,7 @@ script:
                 'Path': file.get('path')
             })
         context['CounterTack.Files'] = createContext(files, id='id', keyTransform=underscoreToCamelCase)
-        context['Files'] = files_standards
+        context['File'] = files_standards
 
         entry = {
             'Type': entryTypes['note'],
@@ -1346,23 +1346,20 @@ script:
         - contextPath: Endpoint.Domain
           description: DNS suffix for the endpoint.
           type: string
-        - contextPath: Endpoint.Os
+        - contextPath: Endpoint.OS
           description: Product name of the endpoint OS.
           type: string
-        - contextPath: Endpoint.Macaddress
+        - contextPath: Endpoint.MACAddress
           description: The endpoint MAC address.
           type: string
         - contextPath: Endpoint.Model
           description: Currently active analysis profile.
           type: string
-        - contextPath: Endpoint.Ipaddress
+        - contextPath: Endpoint.IPAddress
           description: IP addresses associated with endpoint.
           type: string
-        - contextPath: Endpoint.Osversion
+        - contextPath: Endpoint.OSVersion
           description: Endpoint Sensor version.
-          type: string
-        - contextPath: Endpoint.Id
-          description: The endpoint ID
           type: string
       description: Get information on specific endpoint
     - name: countertack-get-behavior
@@ -1637,20 +1634,20 @@ script:
         - contextPath: CounterTack.Files.VtReportLocation
           description: 'VirusTot al report location path.'
           type: string
-        - contextPath: Files.MD5
+        - contextPath: File.MD5
           description: The MD5 digest of the file contents.
           type: string
-        - contextPath: Files.Path
+        - contextPath: File.Path
           description: Full file system path of the extracted file, including the filename,
             as seen on the endpoint
           type: string
-        - contextPath: Files.SHA256
+        - contextPath: File.SHA256
           description: The SHA256 digest of the file contents.
           type: string
-        - contextPath: Files.SSDeep
+        - contextPath: File.SSDeep
           description: The SSDEEP digest of the file contents.
           type: string
-        - contextPath: Files.Size
+        - contextPath: File.Size
           description: The size of the extracted file (bytes).
           type: number
       description: Get all extracted files for all endpoints
