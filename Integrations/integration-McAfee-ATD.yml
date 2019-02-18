@@ -714,7 +714,6 @@ script:
     }
 
     ''' HELPERS '''
-    @logger
     def get_session_credentials():
         res = http_request('php/session.php', 'get', LOGINHEADERS)
         if (res):
