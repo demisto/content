@@ -124,8 +124,8 @@ script:
       defaultValue: ''
       description: Additional, optional ticket fields. Format - "field=value" where
         field value pairs are delimited from subsequent pairs by a semicolon symbol
-        ';' and where values that are lists are delimited by commas ',', e.g., "name=Jeffrey
-        Collins;email=jeffrey.collings@gmail.com;tags=new,attention needed,billing
+        ';' and where values that are lists are delimited by commas ',', e.g., "name=Example
+        Example;email=example@example.com;tags=new,attention needed,billing
         related"
       isArray: true
       name: additional_fields
@@ -302,7 +302,7 @@ script:
       description: Fields not included in the default command arguments that you wish
         to enter the value for. Format - "field=value" where field value pairs are
         delimited from subsequent pairs by a semicolon symbol ';' and where values
-        that are lists are delimited by commas ','. E.g. - "name=Jeffrey Collins;email=jeffrey.collings@gmail.com;tags=new,attention
+        that are lists are delimited by commas ','. E.g. - "name=Example Example;email=example@example.com;tags=new,attention
         needed,billing related"
       isArray: true
       name: additional_fields
@@ -1064,10 +1064,8 @@ script:
 
     AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
 
-    FETCH_TIME_DEFAULT = '24 hours'
     # How much time before the first fetch to retrieve incidents
-    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
-    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
+    FETCH_TIME = demisto.params().get('fetch_time', '24 hours')
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     # Should we use SSL
