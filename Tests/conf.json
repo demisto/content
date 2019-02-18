@@ -807,6 +807,14 @@
             "playbookID": "ArcSight Logger test"
         },
         {
+            "integrations": "ArcSight ESM",
+            "playbookID": "ArcSight ESM Test"
+        },
+        {
+            "integrations": "ArcSight ESM",
+            "playbookID": "test Arcsight - Get events related to the Case"
+        },
+        {
             "integrations": "XFE",
             "playbookID": "XFE Test",
             "timeout": 140,
