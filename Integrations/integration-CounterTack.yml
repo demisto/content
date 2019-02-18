@@ -1,0 +1,1779 @@
+commonfields:
+  id: CounterTack
+  version: -1
+name: CounterTack
+display: CounterTack
+category: Endpoint
+image: data:image/png;base64,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
+description: CounterTack empowers endpoint security teams to assure endpoint protection
+  for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
+configuration:
+  - display: Server URL (e.g. https://democloud.countertack.com)
+    name: server
+    defaultvalue: https://democloud.countertack.com
+    type: 0
+    required: true
+  - display: User Name
+    name: credentials
+    defaultvalue: ""
+    type: 9
+    required: true
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Trust any certificate (unsecure)
+    name: unsecure
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    defaultvalue: ""
+    type: 13
+    required: false
+script:
+  script: |
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    import os
+    import base64
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    SERVER_URL = demisto.params().get('server')[:-1] if demisto.params().get('server').endswith('/') else demisto.params().get('server')
+
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    # Service base URL
+    BASE_PATH = '{}/api/v2/'.format(SERVER_URL)
+    # Headers to be sent in requests
+    DEFAULT_HEADERS = {
+        'Content-Type': 'application/json'
+    }
+
+
+    def http_request(method, suffix_url, headers=DEFAULT_HEADERS, body=None):
+        """
+        returns the http request
+
+        """
+        url = BASE_PATH + suffix_url
+        response = requests.request(
+            method,
+            url,
+            auth=(USERNAME, PASSWORD),
+            headers=headers,
+            verify=USE_SSL,
+            data=body
+        )
+        # handle request failure
+        if response.status_code not in {200}:
+            message = parse_error_response(response)
+            return_error('Error in API call to CounterTack with status code {}\n{}'.format(response.status_code, message))
+
+        return response
+
+
+    def parse_error_response(response):
+        try:
+            res = response.json()
+            msg = res.get('message')
+            if res.get('details') is not None and res.get('details')[0].get('message') is not None:
+                msg = msg + "\n"+json.dumps(res.get('details')[0])
+        except:
+            return response.text
+        return msg
+
+
+    """
+
+    ENDPOINTS
+
+    """
+
+
+    def get_endpoints_request():
+        """
+        This request returns a collection of endpoints.
+        """
+        suffix_url = 'endpoints'
+        response = http_request('GET', suffix_url)
+        return response.json()
+
+
+    def get_endpoints():
+
+        """
+        Returns the information on existing endpoints
+        """
+        data = []
+        endpoint_standards = []
+        context = {}
+        headers = ['OS', 'Name', 'Threat', 'Status', 'ID', 'IP']
+        endpoints = get_endpoints_request()
+        for endpoint in endpoints:
+            data.append({
+                'ID': endpoint.get('id'),
+                'Name': endpoint.get('name'),
+                'OS': endpoint.get('product_name'),
+                'IP': endpoint.get('ips'),
+                'Status': endpoint.get('status'),
+                'Threat': endpoint.get('threat')
+            })
+            endpoint_standards.append({
+                'ID': endpoint.get('id'),
+                'IPAddress': endpoint.get('ips'),
+                'Domain': endpoint.get('domain'),
+                'MACAddress': endpoint.get('mac'),
+                'OS': endpoint.get('product_name'),
+                'OSVersion': endpoint.get('driver_version'),
+                'Model': endpoint.get('current_profile'),
+                'Memory': endpoint.get('memory'),
+                'Processors': endpoint.get('num_cpus')
+            })
+
+        context['CounterTack.Endpoint'] = createContext(endpoints, id='id', keyTransform=underscoreToCamelCase)
+        context['Endpoint'] = endpoint_standards
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': endpoints,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'CounterTack Endpoints', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def get_endpoint_request(endpoint_id):
+
+        """
+        Request for a specific endpoint
+        """
+        suffix_url = 'endpoints/' + endpoint_id
+
+        response = http_request('GET', suffix_url)
+        if not isinstance(response.json(), dict):
+            return {}
+        return response.json()
+
+
+    def get_endpoint():
+        """
+        Get the information for the requested endpoint
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+
+        returns:
+            The information about the specified endpoint
+        """
+        context = {}
+        headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
+        endpoint_id = demisto.args().get('endpoint_id')
+
+        response = get_endpoint_request(endpoint_id)
+
+        content = {
+            'OS': response.get('product_name'),
+            'Domain': response.get('domain'),
+            'IP': response.get('ip'),
+            'Threat': response.get('threat'),
+            'MaxImpact': response.get('max_impact'),
+            'TenantID': response.get('tenant'),
+            'IsQuarantined': response.get('is_quarantined'),
+            'Profile': response.get('current_profile'),
+            'Cluster_hosts': response.get('cluster_hosts'),
+            'Status': response.get('status'),
+            'Tags': response.get('tags')
+        }
+
+        endpoint_standards = {
+            'ID': response.get('id'),
+            'IPAddress': response.get('ips'),
+            'Domain': response.get('domain'),
+            'MACAddress': response.get('mac'),
+            'OS': response.get('product_name'),
+            'OSVersion': response.get('driver_version'),
+            'Model': response.get('current_profile'),
+            'Memory': response.get('memory'),
+            'Processors': response.get('num_cpus')
+        }
+
+        context['CounterTack.Endpoint'] = createContext(response, id='TenantID', keyTransform=underscoreToCamelCase)
+        context['Endpoint'] = endpoint_standards
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'CounterTack Endpoint information:', content, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+    ENDPOINTS TAGS
+    """
+
+
+    def endpoint_tags_request(endpoint_id):
+        """
+        This request retrieves tags from specified endpoint
+        """
+
+        suffix_url = 'endpoints/' + endpoint_id + '/tags'
+
+        response = http_request('GET', suffix_url)
+        return response.json()
+
+
+    def get_endpoint_tags():
+
+        """
+        Get the tags for the specified endpoint
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        """
+        endpoint_id = demisto.args().get('endpoint_id')
+        response = endpoint_tags_request(endpoint_id)
+
+        response = {
+            'tags': response
+        }
+
+        tags_context = {
+            'endpoint_id': endpoint_id,
+            'tags': response
+        }
+
+        context = {
+            'CounterTack.Endpoint': createContext(tags_context, id='endpoint_id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('CounterTack tags for the specified endpoint:', response, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def add_tags_request(endpoint_id, body):
+        """
+        The request adds tags to specified endpoint
+
+        The request gets the endpoint ID and the tags the user wants to add.
+        """
+        suffix_url = 'endpoints/' + endpoint_id + '/tags'
+
+        response = http_request('POST', suffix_url, body=json.dumps(body))
+        return response.json()
+
+
+    def add_tags():
+
+        """
+        The command add tags for the specified endpoint.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (array) body
+            The tags to add to the endpoint
+        """
+
+        endpoint_id = demisto.args().get('endpoint_id')
+        body = argToList(demisto.args().get('tags'))
+
+        response = add_tags_request(endpoint_id, body)
+        response = endpoint_tags_request(endpoint_id)
+
+        response = {
+            'tags': response,
+            'endpoint_id': endpoint_id
+        }
+
+        context = {
+            'CounterTack.Endpoint': createContext(response, id='endpoint_id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Endpoint tags were added successfully", response),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def delete_tags_request(endpoint_id, body):
+
+        """
+        This request deletes specific tags from specified endpoint.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (array) body
+            The tags to delete from the endpoint
+        """
+
+        suffix_url = 'endpoints/' + endpoint_id + '/tags'
+
+        response = http_request('DELETE', suffix_url, body=json.dumps(body))
+        return response
+
+
+    def delete_tags():
+        """
+        The command deletes tags for the specified endpoint.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (array) body
+            The tags to delete from the endpoint
+        """
+
+        endpoint_id = demisto.args().get('endpoint_id')
+        body = argToList(demisto.args().get('tags'))
+
+        response = delete_tags_request(endpoint_id, body)
+        response = endpoint_tags_request(endpoint_id)
+
+        response = {
+            'tags': response,
+            'Endpoint_Id': endpoint_id
+        }
+
+        context = {
+            'CounterTack.Endpoint': createContext(response, id='Endpoint_Id', keyTransform=underscoreToCamelCase)
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'Endpoint tags were deleted successfully', response),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+    ENDPOINTS COMMANDS
+    """
+
+
+    def endpoint_quarantine_request(endpoint_id, body):
+
+        """
+        Request to quarantine a specified endpoint
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (string) type
+            The type of the command: quarantine
+        """
+
+        suffix_url = 'endpoints/' + endpoint_id + '/commands'
+
+        response = http_request('POST', suffix_url, body=json.dumps(body))
+
+        if not isinstance (response.json(), dict):
+            return {}
+        return response.json()
+
+
+    def endpoint_quarantine():
+
+        """
+        Prevents an endpoint(s) from any network communication, but maintains a connection to the Sentinel Cluster and addresses defined in the Global Whitelist.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (string) type
+            The type of the command: quarantine
+        """
+
+        endpoint_id = demisto.args().get('endpoint_id')
+        body = {
+            'type': 'quarantine'
+        }
+        response = endpoint_quarantine_request(endpoint_id, body)
+        quarantine_response = get_endpoint_request(endpoint_id)
+
+        quarantine_context = {
+            'endpoint_ID': endpoint_id,
+            'is_quarantine': quarantine_response.get('is_quarantined')
+        }
+
+        context = {
+            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
+        }
+
+        data = {
+            'ID': response.get('id'),
+            'user name': response.get('username'),
+            'request time': response.get('request_time'),
+            'endpoint ID': response.get('endpoint_ids'),
+            'command name': response.get('command_name'),
+            'status': response.get('status'),
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': quarantine_context,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The command has been applied successfully:', data, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def disable_quarantine():
+
+        """
+        Allows a previously quarantined endpoint to communicate with the network.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (string) type
+            The type of the command: lift_quarantine
+
+        """
+
+        endpoint_id = demisto.args().get('endpoint_id')
+        body = {
+            'type': 'lift_quarantine'
+        }
+        response = endpoint_quarantine_request(endpoint_id, body)
+        quarantine_response = get_endpoint_request(endpoint_id)
+
+        quarantine_context = {
+            'endpoint_ID': endpoint_id,
+            'is_quarantine': quarantine_response.get('is_quarantined')
+        }
+
+        data = {
+            'ID': response.get('id'),
+            'user name': response.get('username'),
+            'request time': response.get('request_time'),
+            'endpoint ID': response.get('endpoint_ids'),
+            'command name': response.get('command_name'),
+            'status': response.get('status'),
+        }
+
+        context = {
+            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': quarantine_context,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('The command has been applied successfully:', data, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def file_extract_request(endpoint_id, body):
+
+        """
+        Request for extracting file from specified endpoint
+        """
+
+        suffix_url = 'endpoints/' + endpoint_id + '/commands'
+
+        response = http_request('POST', suffix_url, body=json.dumps(body))
+        if not isinstance(response.json(), dict):
+            return
+        return response.json()
+
+
+    def extract_file():
+
+        """
+        Enables an API consumer to extract the file in addition to some file metadata.
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        demisto parameter: (string) body
+            The type of the command: extract file and the file path
+        """
+        headers = ['ID', 'User Name', 'Request Time', 'Endpoint ID', 'Command Name', 'Command Arguments', 'Status']
+
+        endpoint_id = demisto.args().get('endpoint_id')
+        paths = argToList(demisto.args().get('file_path'))
+        body = {
+            'type': 'extract_files',
+            'paths': paths
+        }
+
+        response = file_extract_request(endpoint_id, body)
+
+        data = {
+            'ID': response.get('id'),
+            'User Name': response.get('username'),
+            'Request Time': response.get('request_time'),
+            'Endpoint ID': response.get('endpoint_ids'),
+            'Command Name': response.get('command_name'),
+            'Command Arguments': response.get('command_arg'),
+            'Status': response.get('status'),
+        }
+
+        context = {
+            'CounterTack.Files': createContext(response, id='id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'The file has been extracted successfully:', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+    ENDPOINT FILES
+
+    """
+
+
+    def file_request():
+        """
+        This request retrieves all extracted files for all endpoints on the cluster
+        """
+
+        suffix_url = 'endpoints/files'
+
+        response = http_request('GET', suffix_url)
+        return response.json()
+
+
+    def get_all_files():
+
+        context = {}
+        headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
+        data = []
+        files_standards = []
+
+        files = file_request()
+        for file in files:
+            data.append({
+                'ID': file.get('id'),
+                'user': file.get('user'),
+                'endpoint_id': file.get('endpoint_id'),
+                'path': file.get('path'),
+                'extraction_time': file.get('extraction_time'),
+                'Status': file.get('status')
+            })
+
+            files_standards.append({
+                'Size': file.get('size'),
+                'MD5': file.get('md5'),
+                'SHA256': file.get('sha256'),
+                'SSDeep': file.get('ssdeep'),
+                'Path': file.get('path')
+            })
+        context['CounterTack.Files'] = createContext(files, id='id', keyTransform=underscoreToCamelCase)
+        context[outputPaths['file']] = files_standards
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': files,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'CounterTack Endpoints Files', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def endpoint_files_request(endpoint_id):
+
+        """
+        This request returns all extracted files from specified endpoint
+        """
+
+        suffix_url = 'endpoints/' + endpoint_id + '/files'
+
+        response = http_request('GET', suffix_url)
+        return response.json()
+
+
+    def get_endpoint_files():
+
+        """
+        Returns extracted files from specific endpoint
+
+        demisto parameter: (string) endpoint_id
+            The unique ID of the endpoint
+        """
+
+        headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
+        endpoint_id = demisto.args().get('endpoint_id')
+        data = []
+
+        files = endpoint_files_request(endpoint_id)
+        for file in files:
+            data.append({
+                'ID': file.get('id'),
+                'User': file.get('user'),
+                'EndpointId': file.get('endpoint_id'),
+                'Path': file.get('path'),
+                'ExtractionTime': file.get('extraction_time'),
+                'Status': file.get('status')
+            })
+
+        context = {
+            'CounterTack.Files': createContext(files, id='id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(
+                'The extracted files from the endpoint:', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def file_information_request(file_id):
+        """
+        request specific file information
+        """
+        suffix_url = 'endpoints/files/' + file_id
+        response = http_request('GET', suffix_url)
+
+        if not isinstance(response.json(), dict):
+            return
+        return response.json()
+
+
+    def get_file_information():
+
+        """
+        Get the information of a specific file
+        """
+
+        headers = ['endpoint_name', 'path', 'size', 'status', 'extraction_time']
+        file_id = demisto.args().get('file_id')
+        response = file_information_request(file_id)
+
+        data = {
+            'endpoint_name': response.get('endpoint_name'),
+            'path': response.get('path'),
+            'size': response.get('size'),
+            'extraction_time': response.get('extraction_time'),
+            'status': response.get('status'),
+        }
+        context = {
+            'CounterTack.Files': createContext(response, id='file_id', keyTransform=underscoreToCamelCase)
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('CounterTack File Information:', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+    def download_file_request(file_id):
+
+
+        #This request downloads an extracted file.
+
+
+        url = '{}/downloads/extractedfiles/{}'.format(BASE_PATH,file_id)
+        response = http_request(
+            'GET',
+            url,
+        )
+        return response
+
+    def download_file():
+
+        file_id = demisto.args().get('file_id')
+        response = download_file_request(file_id)
+
+        return response.json()
+
+    def delete_extractedfile_request(file_id):
+
+        url = '{}/downloads/extractedfiles/{}'.format(BASE_PATH,file_id)
+        response = http_request(
+            'DELETE',
+            url,
+        )
+        return response
+
+    def delete_extracted_file():
+
+        file_id = demisto.args().get('file_id')
+        response = delete_extractedfile_request(file_id)
+
+        data = {
+            'id': response.get('id'),
+            'user': response.get('user'),
+            'endpoint_id': response.get('endpoint_id'),
+            'extraction_time': response.get('extraction_time'),
+            'status': response.get('status'),
+            'path': response.get('path')
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Endpoint information:', data),
+            'EntryContext': {
+                "CounterTack.Files(obj.ID===val.ID)": response
+            }
+        }
+        demisto.results(entry)
+    """
+
+
+    """
+
+    BEHAVIORS
+
+    """
+
+
+    def get_behaviors_request():
+        """
+        This request retrieves information on a collection of behaviors.
+        """
+        suffix_url = 'behaviors'
+
+        response = http_request('GET', suffix_url)
+        return response.json()
+
+
+    def get_behaviors():
+        """
+        retrieve information on a collection of behaviors.
+        """
+        data = []
+        headers = ['Name', 'ID', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'Last_reported']
+        behaviors = get_behaviors_request()
+        for behavior in behaviors:
+            data.append({
+                'ID': behavior.get('id'),
+                'Name': behavior.get('name'),
+                'Type': behavior.get('type'),
+                'Impact_Level': behavior.get('impact_level'),
+                'Last_reported': behavior.get('last_reported'),
+                'Endpoint_ID': behavior.get('endpoint_id')
+            })
+
+        context = {
+            'CounterTack.Behavior': createContext(behaviors, id='id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': behaviors,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('CounterTack Endpoints Behaviors:', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def get_behavior_request(behavior_id):
+        """
+        Request for getting specified behvior
+        """
+        suffix_url = 'behaviors/' + behavior_id
+
+        response = http_request('GET', suffix_url)
+        if not isinstance(response.json(), dict):
+            return
+        return response.json()
+
+
+    def get_behavior():
+        """
+        Get behavior information
+
+        demisto parameter: behavior_id(string)
+            The unique ID of the behvior
+
+        """
+        headers = ['Name', 'ID', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
+        behavior_id = demisto.args().get('behavior_id')
+        response = get_behavior_request(behavior_id)
+
+        data = {
+            'ID': response.get('id'),
+            'Name': response.get('name'),
+            'ImpactLevel': response.get('impact_level'),
+            'LastActive': response.get('last_active'),
+            'EventCount': response.get('event_count'),
+            'MaxImpact': response.get('max_impact'),
+            'EndpointId': response.get('endpoint_id'),
+            'Type': response.get('type'),
+        }
+
+        context = {
+            'CounterTack.Behavior': createContext(response, id='id', keyTransform=underscoreToCamelCase)
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('CounterTack Behavior information:', data, headers, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+    BEHAVIORS TAGS
+    """
+
+
+    def behaviour_add_tags_request(behaviour_id, body):
+        """
+        The request adds tags to specified behaviour
+        """
+        suffix_url = 'behaviors/' + behaviour_id + '/tags'
+        response = http_request('POST', suffix_url, body=json.dumps(body))
+        return response
+
+
+    def add_behavior_tags():
+
+        """
+        Add specific tags to specified behavior
+
+        demisto parameter: (string) behavior_id
+            The unique ID of the behavior
+
+        demisto parameter: (Array) Body.
+            The tags to add to the behavior. seperate the tags with comma
+        """
+        behaviour_id = demisto.args().get('behaviour_id')
+        body = argToList(demisto.args().get('tags'))
+
+        response = behaviour_add_tags_request(behaviour_id, body)
+        behavior_tags = get_behavior_request(behaviour_id)
+
+        response = {
+            'tags': behavior_tags.get('tags'),
+            'behaviour_id': behaviour_id
+        }
+
+        context = {
+            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Behavior tags were added successfully', response),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    def delete_tags_behavior_request(behaviour_id, body):
+
+        suffix_url = 'behaviors/' + behaviour_id + '/tags'
+        response = http_request('DELETE', suffix_url, body=json.dumps(body))
+        return response
+
+
+    def delete_behavior_tags():
+
+        """
+        Delete specific tags from behavior
+
+        demisto parameter: (string) behavior_id
+            The unique ID of the behavior
+
+        demisto parameter: (Array) Body.
+            The tags to delete from the behavior. seperate the tags with comma
+
+        """
+        behaviour_id = demisto.args().get('behaviour_id')
+        body = argToList(demisto.args().get('tags'))
+
+        response = delete_tags_behavior_request(behaviour_id, body)
+        response = get_behavior_request(behaviour_id)
+
+        response = {
+            'tags': response.get('tags'),
+            'behaviour_id': behaviour_id
+        }
+
+        context = {
+            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
+        }
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Endpoint tags were deleted successfully',
+            response, removeNull=True),
+            'EntryContext': context
+        }
+        demisto.results(entry)
+
+
+    """
+
+    FETCH INCIDENTS
+
+    """
+    """
+    def fetch_incidents():
+        now = datetime.utcnow()
+        last_run = demisto.getLastRun().get('time')
+        if last_run is None:
+            now = now - timedelta(days=3)
+            last_run = now
+        else:
+            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') #Converts string to datetime object
+        current_run = last_run
+        behaviors = get_behavior_request()
+
+        incidents = []
+        for behavior in behaviors:
+            last_found = datetime.strptime(behavior['last_found'], '%Y-%m-%dT%H:%M:%S')
+            if last_found > last_run:
+                incident = behavior_to_incident(behavior)
+                incidents.append(incident)
+            if last_found > current_run:
+                current_run = last_found
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({ 'time': current_run.isoformat().split('.')[0] })
+    """
+
+
+    """
+
+    EXECUTION
+
+    """
+
+    command = demisto.command()
+    LOG('Running command "{}"'.format(command))
+    try:
+        if command == 'test-module':
+            get_endpoints_request()
+            demisto.results('ok')
+        elif command == 'fetch-incidents':
+            fetch_incidents()
+        elif command == 'countertack-get-endpoints':
+            get_endpoints()
+        elif command == 'countertack-get-endpoint':
+            get_endpoint()
+        elif command == 'countertack-get-endpoint-tags':
+            get_endpoint_tags()
+        elif command == 'countertack-add-tags':
+            add_tags()
+        elif command == 'countertack-delete-tags':
+            delete_tags()
+        elif command == 'countertack-endpoint-quarantine':
+            endpoint_quarantine()
+        elif command == 'countertack-disable-quarantine':
+            disable_quarantine()
+        elif command == 'countertack-extract-file':
+            extract_file()
+        elif command == 'countertack-delete-file':
+            delete_file()
+        elif command == 'countertack-get-all-files':
+            get_all_files()
+        elif command == 'countertack-get-endpoint-files':
+            get_endpoint_files()
+        elif command == 'countertack-get-file-information':
+            get_file_information()
+        elif command == 'countertack-download-file':
+            download_file()
+        elif command == 'countertack-delete-extracted-file':
+            delete_extracted_file()
+        elif command == 'countertack-get-behaviors':
+            get_behaviors()
+        elif command == 'countertack-get-behavior':
+            get_behavior()
+        elif command == 'countertack-add-behavior-tags':
+            add_behavior_tags()
+        elif command == 'countertack-delete-behavior-tags':
+            delete_behavior_tags()
+    except Exception as e:
+        return_error(e.message)
+  type: python
+  commands:
+    - name: countertack-get-endpoints
+      arguments: []
+      outputs:
+        - contextPath: CounterTack.Endpoint.IsQuarantined
+          description: Whether the endpoint is currently quarantined.
+          type: boolean
+        - contextPath: CounterTack.Endpoint.MaxImpact
+          description: Impact of the highest scoring behavior.
+          type: number
+        - contextPath: CounterTack.Endpoint.Memory
+          description: Endpoint RAM (megabytes).
+          type: number
+        - contextPath: CounterTack.Endpoint.DriverVersion
+          description: Endpoint Sensor version.
+          type: string
+        - contextPath: CounterTack.Endpoint.profile_versionCounterTack.Endpoint.ProfileVersion
+          description: Version of the current profile used for collection.
+          type: string
+        - contextPath: CounterTack.Endpoint.BehaviorCount
+          description: Number of behaviors detected.
+          type: number
+        - contextPath: CounterTack.Endpoint.CurrentProfile
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: CounterTack.Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.NumCpus
+          description: Number of CPUs.
+          type: number
+        - contextPath: CounterTack.Endpoint.Macs
+          description: MAC addresses associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.WinRdpPort
+          description: RDP port used by the endpoint.
+          type: number
+        - contextPath: CounterTack.Endpoint.Ip
+          description: IP address used to connect to analysis cluster.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterHosts
+          description: List of hosts the endpoint tries to connect through in order.
+          type: string
+        - contextPath: CounterTack.Endpoint.Vendor
+          description: OS vendor.
+          type: string
+        - contextPath: CounterTack.Endpoint.SensorMode
+          description: 'Specifies the sensor mode of the driver.'
+          type: string
+        - contextPath: CounterTack.Endpoint.Identifier
+          description: OS Identifier.
+          type: string
+        - contextPath: CounterTack.Endpoint.CurrentResponsePolicy
+          description: Currently active Response Policy.
+          type: string
+        - contextPath: CounterTack.Endpoint.Tenant
+          description: Tenant ID set at the time of KM installation.
+          type: string
+        - contextPath: CounterTack.Endpoint.Name
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: CounterTack.Endpoint.ImpactLevel
+          description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL)
+          type: string
+        - contextPath: CounterTack.Endpoint.Ips
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterConnectionRoute
+          description: List of hosts the endpoint is currently connected through.
+          type: string
+        - contextPath: CounterTack.Endpoint.LastActive
+          description: Time of last event captured on the endpoint.
+          type: date
+        - contextPath: CounterTack.Endpoint.TimeStarted
+          description: Time kernel module collection last engaged.
+          type: date
+        - contextPath: CounterTack.Endpoint.Mac
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: CounterTack.Endpoint.EventStartTime
+          description: The time that the event was captured.
+          type: date
+        - contextPath: CounterTack.Endpoint.CpuType
+          description: Bit length of the CPU architecture.
+          type: string
+        - contextPath: CounterTack.Endpoint.Status
+          description: Collection status of the endpoint. (ON, PAUSE, OFF, INIT)
+          type: string
+        - contextPath: CounterTack.Endpoint.OsType
+          description: OS type.
+          type: number
+        - contextPath: CounterTack.Endpoint.Version
+          description: OS version.
+          type: string
+        - contextPath: CounterTack.Endpoint.Tags
+          description: List of user assigned tags.
+          type: string
+        - contextPath: CounterTack.Endpoint.Threat
+          description: Threat level associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Id
+          description: Endpoints ID.
+          type: string
+        - contextPath: CounterTack.Endpoint.ProductName
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.Memory
+          description: Endpoint RAM (megabytes).
+          type: number
+        - contextPath: Endpoint.Processors
+          description: Number of CPUs.
+          type: number
+        - contextPath: Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: Endpoint.OS
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.MACAddress
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: Endpoint.Model
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: Endpoint.IPAddress
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: Endpoint.OSVersion
+          description: Endpoint Sensor version.
+          type: string
+        - contextPath: Endpoint.ID
+          description: Endpoints ID.
+          type: string
+      description: Get endpoints information
+    - name: countertack-get-behaviors
+      arguments: []
+      outputs:
+        - contextPath: CounterTack.Behavior.MaxImpact
+          description: Impact of the highest scoring event (0-100).
+          type: number
+        - contextPath: CounterTack.Behavior.EndpointId
+          description: Endpoint ID, based on the UUID of the Endpoint Sensor last installed.
+          type: string
+        - contextPath: CounterTack.Behavior.Tenant
+          description: The tenant of the behavior
+          type: string
+        - contextPath: CounterTack.Behavior.EventCount
+          description: Number of events detected.
+          type: number
+        - contextPath: CounterTack.Behavior.Name
+          description: Name of condition that triggered the behavior.
+          type: string
+        - contextPath: CounterTack.Behavior.ImpactLevel
+          description: Threat level for the behavior. (LOW, MEDIUM, HIGH, CRITICAL)
+          type: string
+        - contextPath: CounterTack.Behavior.LastActive
+          description: Time the behavior was last active.
+          type: date
+        - contextPath: CounterTack.Behavior.FirstEventId
+          description: First event ID
+          type: date
+        - contextPath: CounterTack.Behavior.TimeStamp
+          description: Start time for the behavior.
+          type: date
+        - contextPath: CounterTack.Behavior.Type
+          description: Type of behavior. (CLASSIFICATION, TRACE)
+          type: string
+        - contextPath: CounterTack.Behavior.Id
+          description: Behaviors ID.
+          type: string
+        - contextPath: CounterTack.Behavior.LastReported
+          description: Time the behavior was last seen
+          type: date
+      description: Get behaviors information
+    - name: countertack-get-endpoint
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint. Get the ID from the "get-endpoints" command
+      outputs:
+        - contextPath: CounterTack.Endpoint.MaxImpact
+          description: 'Impact of the highest scoring behavior. '
+          type: number
+        - contextPath: CounterTack.Endpoint.Memory
+          description: Endpoint RAM (megabytes)
+          type: number
+        - contextPath: CounterTack.Endpoint.DriverVersion
+          description: Endpoint Sensor version.
+          type: string
+        - contextPath: CounterTack.Endpoint.ProfileVersion
+          description: 'Version of the current profile used for collection.'
+          type: string
+        - contextPath: CounterTack.Endpoint.BehaviorCount
+          description: Number of behaviors detected.
+          type: number
+        - contextPath: CounterTack.Endpoint.CurrentProfile
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: CounterTack.Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.NumCpus
+          description: Number of CPUs.
+          type: number
+        - contextPath: CounterTack.Endpoint.WinRdpPort
+          description: RDP port used by the endpoint.
+          type: number
+        - contextPath: CounterTack.Endpoint.Macs
+          description: MAC addresses associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Ip
+          description: IP address used to connect to analysis cluster.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterHosts
+          description: List of hosts the endpoint tries to connect through in order.
+          type: string
+        - contextPath: CounterTack.Endpoint.Vendor
+          description: OS vendor.
+          type: string
+        - contextPath: CounterTack.Endpoint.SensorMode
+          description: 'Specifies the sensor mode of the driver.'
+          type: string
+        - contextPath: CounterTack.Endpoint.Identifier
+          description: 'OS Identifier. '
+          type: string
+        - contextPath: CounterTack.Endpoint.Tenant
+          description: 'Tenant ID set at the time of KM installation'
+          type: string
+        - contextPath: CounterTack.Endpoint.Name
+          description: Endpoint machine name.
+          type: string
+        - contextPath: CounterTack.Endpoint.ImpactLevel
+          description: Threat level of the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Ips
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterConnectionRoute
+          description: List of hosts the endpoint is currently connected through.
+          type: string
+        - contextPath: CounterTack.Endpoint.LastActive
+          description: Time of last event captured on the endpoint
+          type: date
+        - contextPath: CounterTack.Endpoint.TimeStarted
+          description: First time the endpoint started to work
+          type: date
+        - contextPath: CounterTack.Endpoint.Mac
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: CounterTack.Endpoint.EventStartTime
+          description: The time that the event was captured.
+          type: date
+        - contextPath: CounterTack.Endpoint.CpuType
+          description: Bit length of the CPU architecture
+          type: number
+        - contextPath: CounterTack.Endpoint.Status
+          description: Collection status of the endpoint. (ON, PAUSE, OFF, INIT)
+          type: string
+        - contextPath: CounterTack.Endpoint.OsType
+          description: OS type
+          type: number
+        - contextPath: CounterTack.Endpoint.Version
+          description: Version of the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.Threat
+          description: Threat level associated with endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Id
+          description: The endpoint ID
+          type: string
+        - contextPath: CounterTack.Endpoint.ProductName
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: CounterTack.Endpoint.Tags
+          description: List of user assigned tags.
+          type: string
+        - contextPath: CounterTack.Endpoint.IsQuarantined
+          description: Whether the endpoint is currently quarantined.
+          type: boolean
+        - contextPath: Endpoint.Memory
+          description: Endpoint RAM (megabytes)
+          type: number
+        - contextPath: Endpoint.Processors
+          description: Number of CPUs.
+          type: number
+        - contextPath: Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: Endpoint.OS
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.MACAddress
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: Endpoint.Model
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: Endpoint.IPAddress
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: Endpoint.OSVersion
+          description: Endpoint Sensor version.
+          type: string
+      description: Get information on specific endpoint
+    - name: countertack-get-behavior
+      arguments:
+        - name: behavior_id
+          required: true
+          description: Behaviour ID
+      outputs:
+        - contextPath: CounterTack.Behavior.MaxImpact
+          description: Max Impact of the behavior
+          type: number
+        - contextPath: CounterTack.Behavior.EndpointId
+          description: The endpoint ID
+          type: string
+        - contextPath: CounterTack.Behavior.Tenant
+          description: 'The tenant of the behavior '
+          type: string
+        - contextPath: CounterTack.Behavior.EventCount
+          description: Event count of the behavior
+          type: number
+        - contextPath: CounterTack.Behavior.ReportedOn
+          description: When the behavior first seen
+          type: date
+        - contextPath: CounterTack.Behavior.Name
+          description: Name of behavior
+          type: string
+        - contextPath: CounterTack.Behavior.ImpactLevel
+          description: 'Impact level of the behavior '
+          type: string
+        - contextPath: CounterTack.Behavior.LastActive
+          description: The last time the behavior was active
+          type: date
+        - contextPath: CounterTack.Behavior.TimeStamp
+          description: Time stamp of the behavior
+          type: date
+        - contextPath: CounterTack.Behavior.FirstEventId
+          description: First event ID
+          type: string
+        - contextPath: CounterTack.Behavior.Type
+          description: 'Type of behaviour '
+          type: string
+        - contextPath: CounterTack.Behavior.Id
+          description: Behaviour ID
+          type: string
+        - contextPath: CounterTack.Behavior.LastReported
+          description: When the behaviour  last seen
+          type: date
+      description: Get information on specific behavior
+    - name: countertack-get-endpoint-tags
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The id of an endpoint
+      outputs:
+        - contextPath: CounterTack.Endpoint.Tags
+          description: List of user assigned tags.
+          type: string
+        - contextPath: CounterTack.Endpoint.EndpointId
+          description: Endpoints ID.
+          type: string
+      description: Get the tags for a specific endpoint
+    - name: countertack-add-tags
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint. Get the ID from the "get-endpoints" command
+        - name: tags
+          required: true
+          description: Tags to add to endpoint. To add more then one, separate the tags
+            with a comma. (e.g test1,test2)
+          isArray: true
+      outputs:
+        - contextPath: CounterTack.Endpoint.EndpointId
+          description: The ID of the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.Tags
+          description: The tags that were added to the endpoint
+          type: string
+      description: Add tags for specified endpoint
+    - name: countertack-delete-tags
+      arguments:
+        - name: tags
+          required: true
+          description: The tags to be deleted from specified endpoint. To delete more
+            then one, separate the tags with a comma. (e.g test1,test2)
+          isArray: true
+        - name: endpoint_id
+          required: true
+          description: The endpoint ID. Get the ID from the "get-endpoints" command
+      outputs:
+        - contextPath: CounterTack.Endpoint.EndpointId
+          description: The ID of the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.Tags
+          description: The tags of the specified endpoint
+          type: string
+      description: Delete specific tags from a specified endpoint
+    - name: countertack-add-behavior-tags
+      arguments:
+        - name: behaviour_id
+          required: true
+          description: The behaviour ID
+        - name: tags
+          required: true
+          description: Tags to add to a behavior. To add more then one, separate the tags
+            with a comma. (e.g test1,test2)
+          isArray: true
+      outputs:
+        - contextPath: CounterTack.Behavior.BehaviourId
+          description: The ID of the behvior
+          type: string
+        - contextPath: CounterTack.Behavior.Tags
+          description: The tags of the behavior
+          type: string
+      description: Add tags to a specified behavior. Separate the tags with a comma
+    - name: countertack-delete-behavior-tags
+      arguments:
+        - name: behaviour_id
+          required: true
+          description: The behaviour ID
+        - name: tags
+          required: true
+          description: Tags to delete from a behavior. To delete more then one, separate
+            the tags with a comma. (e.g test1,test2)
+          isArray: true
+      outputs:
+        - contextPath: CounterTack.Behavior.BehaviourId
+          description: The ID of the behavior
+          type: string
+        - contextPath: CounterTack.Behavior.Tags
+          description: The tags of the behavior
+      description: 'Delete specific tags from specified behavior '
+    - name: countertack-endpoint-quarantine
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The Id of the endpoint
+      outputs:
+        - contextPath: CounterTack.Endpoint.EndpointId
+          description: The ID of the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.IsQuarantine
+          description: Whether the endpoint is currently quarantined.
+          type: boolean
+      description: Quarantine a specified endpoint
+    - name: countertack-disable-quarantine
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint
+      outputs:
+        - contextPath: CounterTack.Endpoint.EndpointId
+          description: The ID of the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.IsQuarantine
+          description: Whether the endpoint is currently quarantined.
+          type: string
+      description: Disable quarantine from endpoint
+    - name: countertack-extract-file
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint
+        - name: file_path
+          required: true
+          description: The path of the file. (e.g C:\\test1.txt)
+          isArray: true
+      outputs:
+        - contextPath: CounterTack.Files.CommandArg.contents
+          description: File contents
+          type: boolean
+        - contextPath: CounterTack.Files.CommandArg.extracted_ids
+          description: File extracted ids
+          type: string
+        - contextPath: CounterTack.Files.CommandArg.md5
+          description: File MD5
+          type: boolean
+        - contextPath: CounterTack.Files.CommandArg.paths
+          description: The path of the extracted file
+          type: string
+        - contextPath: CounterTack.Files.CommandArg.sha256
+          description: File SHA256
+          type: boolean
+        - contextPath: CounterTack.Files.CommandArg.ssdeep
+          description: File ssdeep
+          type: boolean
+        - contextPath: CounterTack.Files.CommandArg
+          description: The command arguments
+        - contextPath: CounterTack.Files.CommandName
+          description: 'The name of the command that is sent.'
+          type: string
+        - contextPath: CounterTack.Files.Username
+          description: The username of the user that requested the command.
+          type: string
+        - contextPath: CounterTack.Files.TargetType
+          description: The type of resource or collection this command is being sent to.
+          type: string
+        - contextPath: CounterTack.Files.Status
+          description: The status of the command, from (initial, pending, complete, error).
+          type: string
+        - contextPath: CounterTack.Files.RequestTime
+          description: The time at which the client requested the command.
+          type: date
+        - contextPath: CounterTack.Files.Id
+          description: Commands ID.
+          type: string
+        - contextPath: CounterTack.Files.EndpointIds
+          description: The ID of the source this command is being sent to.
+          type: string
+      description: Extract file from specified endpoint
+    - name: counterTack-delete-file
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: 'The ID of the endpoint '
+        - name: type
+          required: true
+          description: 'Type of the command: delete_file'
+        - name: path
+          required: true
+          description: The path of  the file
+      description: Delete a file from the specified endpoint.
+    - name: countertack-get-all-files
+      arguments: []
+      outputs:
+        - contextPath: CounterTack.Files.Size
+          description: The size of the extracted file (bytes).
+          type: number
+        - contextPath: CounterTack.Files.EndpointId
+          description: ID of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.ExtractionTime
+          description: The time of extraction of the file.
+          type: date
+        - contextPath: CounterTack.Files.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint
+          type: string
+        - contextPath: CounterTack.Files.Sha256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.Tenant
+          description: Tenant ID for endpoint.
+          type: string
+        - contextPath: CounterTack.Files.User
+          description: 'Name of the user requesting the file.'
+          type: string
+        - contextPath: CounterTack.Files.Ssdeep
+          description: The SSDEEP digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.EndpointIp
+          description: IP address of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.AvCoverage
+          description: Percentage of AV engines that determined the Hash is malicious.
+          type: number
+        - contextPath: CounterTack.Files.Status
+          description: Contents status.
+          type: string
+        - contextPath: CounterTack.Files.VtStatus
+          description: VirusTot al report status.
+          type: string
+        - contextPath: CounterTack.Files.EndpointName
+          description: Name of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.Id
+          description: Extracte d file ID.
+          type: string
+        - contextPath: CounterTack.Files.Md5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.VtReportLocation
+          description: 'VirusTot al report location path.'
+          type: string
+        - contextPath: File.MD5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: File.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint
+          type: string
+        - contextPath: File.SHA256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: File.SSDeep
+          description: The SSDEEP digest of the file contents.
+          type: string
+        - contextPath: File.Size
+          description: The size of the extracted file (bytes).
+          type: number
+      description: Get all extracted files for all endpoints
+    - name: countertack-get-endpoint-files
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint. Get the ID from "get-endpoints" command
+      outputs:
+        - contextPath: CounterTack.Files.Id
+          description: Extracte d file ID.
+          type: string
+        - contextPath: CounterTack.Files.Status
+          description: Contents status.
+          type: string
+        - contextPath: CounterTack.Files.EndpointId
+          description: ID of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.ExtractionTime
+          description: The time of extraction of the file.
+          type: date
+        - contextPath: CounterTack.Files.Tenant
+          description: Tenant ID for endpoint.
+          type: string
+        - contextPath: CounterTack.Files.User
+          description: Name of the user requesting the file.
+          type: string
+        - contextPath: CounterTack.Files.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
+          type: string
+        - contextPath: CounterTack.Files.Sha256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.Ssdeep
+          description: The SSDEEP digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.EndpointIp
+          description: IP address of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.VtStatus
+          description: VirusTotal report status.
+          type: string
+        - contextPath: CounterTack.Files.VtReportLocation
+          description: VirusTot al report location path.
+          type: string
+        - contextPath: CounterTack.Files.Size
+          description: The size of the extracted file (bytes).
+          type: number
+        - contextPath: CounterTack.Files.EndpointName
+          description: Name of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.Md5
+          description: The MD5 digest of the file contents.
+          type: string
+      description: Returns all extracted files from specified endpoint
+    - name: countertack-get-file-information
+      arguments:
+        - name: file_id
+          required: true
+          description: The ID of the requested file. Get the ID from "gat-all-files" command
+      outputs:
+        - contextPath: CounterTack.Files.Size
+          description: The size of the extracted file (bytes).
+          type: number
+        - contextPath: CounterTack.Files.EndpointId
+          description: ID of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.ExtractionTime
+          description: The time of extraction of the file.
+          type: date
+        - contextPath: CounterTack.Files.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
+          type: string
+        - contextPath: CounterTack.Files.Sha256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.Tenant
+          description: Tenant ID for endpoint.
+          type: string
+        - contextPath: CounterTack.Files.User
+          description: Name of the user requesting the file.
+          type: string
+        - contextPath: CounterTack.Files.Ssdeep
+          description: The SSDEEP digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.EndpointIp
+          description: IP address of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.AvCoverage
+          description: Percentage of AV engines that determined the Hash is malicious.
+          type: number
+        - contextPath: CounterTack.Files.Status
+          description: Contents status.
+          type: string
+        - contextPath: CounterTack.Files.VtStatus
+          description: VirusTot al report status.
+          type: string
+        - contextPath: CounterTack.Files.EndpointName
+          description: Name of the endpoint with the extracted file.
+          type: string
+        - contextPath: CounterTack.Files.Id
+          description: Extracte d file ID.
+          type: string
+        - contextPath: CounterTack.Files.Md5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: CounterTack.Files.VtReportLocation
+          description: VirusTot al report location path.
+          type: string
+      description: Get the information of a specific file
+    - name: countertack-download-file
+      arguments:
+        - name: file_id
+          required: true
+          description: The ID of the extracted file
+      description: Download an extracted file
+    - name: countertack-delete-extracted-file
+      arguments:
+        - name: file_id
+          required: true
+          description: The ID of the extracted file
+      description: 'Delete an extracted file from the endpoint.'
+  isfetch: true
+  runonce: false
+releaseNotes: "added context standard"
+tests:
+  - no tests
