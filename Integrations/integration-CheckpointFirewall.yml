@@ -187,6 +187,21 @@ script:
         return pretty_rule_data;
     }
 
+    function prettify_rule_base(rule_base) {
+        var pretty_rule_base = [];
+        for (i = 0; i < rule_base.length; i++) {
+            pretty_rule_base[i] = {
+                'Rule Number': rule_base[i]['rule-number'],
+                'Name':  rule_base[i].name,
+                'UID':  rule_base[i].uid,
+                'Action':  rule_base[i].action,
+                'Enabled':  rule_base[i].enabled,
+                'Content': rule_base[i]['content-direction'],
+            };
+        }
+        return pretty_rule_base;
+    }
+
 
     function sendRequest(cmdURL, body, cmdHeaders) {
         var headers = cmdHeaders? cmdHeaders : {'content-type': ['application/json'], 'X-chkp-sid' : [SESSION_ID]};
@@ -390,13 +405,13 @@ script:
     function show_access_rule_base() {
         var result = sendRequest('show-access-rulebase', JSON.stringify({name:args.name}));
         var res = JSON.parse(result.Body);
-        var md = tableToMarkdown('Access rulebase table', res.rulebase);
+        var md = tableToMarkdown('Access rulebase table', prettify_rule_base(res.rulebase), ['Rule Number', 'Name', 'UID', 'Action', 'Enabled', 'Content'])
         var context = {CheckpointFWRule : jsonToEntity(res.rulebase, entityDict.CheckpointFWRule)};
         return {
             Type: entryTypes.note,
-            Contents: result,
+            Contents: res,
             ContentsFormat: formats.json,
-            HumanReadable: res,//md,
+            HumanReadable: md,
             EntryContext: context
         };
     }
