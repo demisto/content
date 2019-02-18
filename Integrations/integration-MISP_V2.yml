@@ -27,15 +27,31 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Show warnings
+  name: show_warnings
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     import base64
     import requests
     import time
+    import warnings
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
 
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
+    if not demisto.params().get('show_warnings'):
+        def warn(*args, **kwargs):
+            """
+            Do nothing with warnings
+            """
+            pass
+
+        # Disable requests warnings
+        requests.packages.urllib3.disable_warnings()
+        # Disable python warnings
+        warnings.warn = warn
+
 
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
