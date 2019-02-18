@@ -152,7 +152,7 @@ script:
                 'Processors': endpoint.get('num_cpus')
             }
 
-        context['CounterTack.Endpoint(val.id && val.id === obj.id)'] = createContext(endpoints, keyTransform=underscoreToCamelCase)
+        context['CounterTack.Endpoint'] = createContext(endpoints, id='id', keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
 
         entry = {
@@ -210,7 +210,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.TenantID && val.TenantID === obj.TenantID)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(response, id='TenantID', keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -261,7 +261,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(tags_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(tags_context, id='endpoint_id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -306,11 +306,11 @@ script:
 
         response = {
             'tags': response,
-            'Endpoint_Id': endpoint_id
+            'endpoint_id': endpoint_id
         }
 
         context = {
-            'CounterTack.Endpoint(val.Endpoint_Id && val.Endpoint_Id === obj.Endpoint_Id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(response, id='endpoint_id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -363,7 +363,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.Endpoint_Id && val.Endpoint_Id === obj.Endpoint_Id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(response, id='Endpoint_Id', keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -426,7 +426,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
         }
 
         data = {
@@ -482,7 +482,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -542,7 +542,7 @@ script:
         }
 
         context = {
-            'CounterTack.Files(val.id && val.id === obj.id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Files': createContext(response, id='id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -592,7 +592,7 @@ script:
             })
 
         context = {
-            'CounterTack.Files(val.id && val.id == obj.id)': createContext(files, keyTransform=underscoreToCamelCase)
+            'CounterTack.Files': createContext(files, id='id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -644,7 +644,7 @@ script:
             })
 
         context = {
-            'CounterTack.Files(val.id && val.id == obj.id)': createContext(files, keyTransform=underscoreToCamelCase)
+            'CounterTack.Files': createContext(files, id='id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -689,7 +689,7 @@ script:
             'status': response.get('status'),
         }
         context = {
-            'CounterTack.Files(val.file_id && val.file_id == obj.file_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Files': createContext(response, id='file_id', keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -794,7 +794,7 @@ script:
             })
 
         context = {
-            'CounterTack.Behavior(val.id && val.id === obj.id)': createContext(behaviors, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior': createContext(behaviors, id='id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -844,7 +844,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior(val.id && val.id === obj.id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior': createContext(response, id='id', keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -894,7 +894,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -939,7 +939,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -1142,6 +1142,33 @@ script:
           type: string
         - contextPath: CounterTack.Endpoint.ProductName
           description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.Memory
+          description: Endpoint RAM (megabytes).
+          type: number
+        - contextPath: Endpoint.Processors
+          description: Number of CPUs.
+          type: number
+        - contextPath: Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: Endpoint.OS
+          description: Product name of the endpoint OS.
+          type: string
+        - contextPath: Endpoint.MACAddress
+          description: The endpoint MAC address.
+          type: string
+        - contextPath: Endpoint.Model
+          description: Currently active analysis profile.
+          type: string
+        - contextPath: Endpoint.IPAddress
+          description: IP addresses associated with endpoint.
+          type: string
+        - contextPath: Endpoint.OSVersion
+          description: Endpoint Sensor version.
+          type: string
+        - contextPath: Endpoint.ID
+          description: Endpoints ID.
           type: string
       description: Get endpoints information
     - name: countertack-get-behaviors
@@ -1686,6 +1713,6 @@ script:
       description: 'Delete an extracted file from the endpoint.'
   isfetch: true
   runonce: false
-releaseNotes: "Fixed context"
+releaseNotes: "added context"
 tests:
   - no tests
