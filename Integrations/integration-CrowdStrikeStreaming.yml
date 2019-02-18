@@ -337,6 +337,8 @@ script:
   script: |-
     ''' IMPORTS '''
 
+    #TODO: ADD CROWDSTRIKE-GET-BEHAVIOR command
+
     import json
     import requests
     import base64
@@ -483,7 +485,7 @@ script:
             'name': 'Behavior id: ' + str(behavior.get('behavior_id')),
             'occurred': behavior.get('timestamp'),
             'rawJSON': json.dumps(behavior),
-            'labels': labels
+            # 'severity': TODO: ADD
         }
         # demisto.info("\n\n #### Incident value: {}".format(json.dumps(incident, indent=4, sort_keys=True)))
         return incident
@@ -712,13 +714,14 @@ script:
         incidents = []
         token = get_token()
         if not token:
-            raise Exception('Authorization error: User has no authorization to create a token.')
+            raise Exception('Authorization Error: User has no authorization to create a token.')
         detections_ids = demisto.get(get_detections(last_fetch, token), 'resources')
         raw_res = get_detections_entities(detections_ids, token)
         demisto.info('\n#### Items: {}\n'.format(raw_res))
         demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
         if "resources" in raw_res:
             for resource in demisto.get(raw_res, "resources"):
+                #TODO Return incident as raw-detection only
                 for behavior in demisto.get(resource, 'behaviors'):
                     incident = behavior_to_incident(behavior, resource)
                     incident_date = incident['occurred']
