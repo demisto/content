@@ -594,7 +594,7 @@ script:
     - default: false
       defaultValue: ''
       description: CSV list of email addresses to add to the 'cc' field of the outgoing
-        ticket email, e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
+        ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: cc_emails
       predefined: []
@@ -602,7 +602,7 @@ script:
     - default: false
       defaultValue: ''
       description: CSV list of email addresses to add to the 'bcc' field of the outgoing
-        ticket email, e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
+        ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: bcc_emails
       predefined: []
@@ -821,7 +821,7 @@ script:
     - default: false
       defaultValue: ''
       description: CSV list of agent email addresses to be notify about this note,
-        e.g., "example1@gmail.com,example2@gmail.com,example3@gmail.com"
+        e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: notify_emails
       predefined: []
