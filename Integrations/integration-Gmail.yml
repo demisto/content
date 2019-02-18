@@ -336,12 +336,12 @@ script:
         for user_data in response:
             context.append({
                 'Type': 'Google',
-                'ID': user_data['id'],
-                'UserName': user_data['name']['givenName'],
-                'DisplayName': user_data['name']['fullName'],
-                'Email': {'Address': user_data['primaryEmail']},
-                'Group': user_data['kind'],
-                'CustomerId': user_data['customerId'],
+                'ID': user_data.get('id'),
+                'UserName': user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get('name') else None,
+                'DisplayName': user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get('name') else None,
+                'Email': {'Address': user_data.get('primaryEmail')},
+                'Group': user_data.get('kind'),
+                'CustomerId': user_data.get('customerId'),
             })
         headers = ['Type', 'ID', 'UserName',
                    'DisplayName', 'Email', 'Group', 'CustomerId']
@@ -1818,7 +1818,7 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+releaseNotes: '-'
 tests:
   - Gmail Convert Html Test
   - GmailTest
-releaseNotes: "Fixed gmail-revoke-user-role command"
