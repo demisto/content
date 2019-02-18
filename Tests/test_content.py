@@ -88,7 +88,12 @@ def has_unmockable_integration(integrations, unmockable_integrations):
 
 
 # Configure integrations to work with mock
-def set_mock_params(integrations):
+def configure_proxy_unsecure(integrations):
+    """Set proxy and unscure integration parameters to true.
+
+    Args:
+        integrations: list of integrations to configure.
+    """
     for elem in integrations:
         for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
             if param in elem['params']:
@@ -96,8 +101,8 @@ def set_mock_params(integrations):
 
 
 # run the test without mocking mechanism.
-def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                 test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
@@ -115,8 +120,8 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     proxy.set_folder_tmp()
     proxy.start(playbook_id, record=True)
-    succeed = mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                           test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+    succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     proxy.stop()
     if succeed:
         proxy.move_to_primary(playbook_id)
@@ -124,27 +129,9 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
     return succeed
 
 
-def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    start_message = '------ Test %s start ------' % (test_message,)
-
-    if not integrations:
-        print start_message + ' (Mock: Bypass)'
-        mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                     test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
-        print '------ Test %s end ------' % (test_message,)
-
-        return
-
-    if has_unmockable_integration(integrations, unmockable_integrations):
-        print start_message + ' (Mock: Bypass)'
-        mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                     test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
-        print '------ Test %s end ------' % (test_message,)
-
-        return
-
-    set_mock_params(integrations)
+def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message):
+    configure_proxy_unsecure(integrations)
     if not proxy.has_mock_file(playbook_id):
         print start_message + '(Mock: Recording)'
     else:
@@ -165,6 +152,22 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
     run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     print '------ Test %s end ------' % (test_message,)
+
+
+def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    start_message = '------ Test %s start ------' % (test_message,)
+
+    if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
+        print start_message + ' (Mock: Bypass)'
+        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                       test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+        print '------ Test %s end ------' % (test_message,)
+
+        return
+
+    mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message)
 
 
 def http_request(url, params_dict=None):
