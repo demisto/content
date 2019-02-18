@@ -41,6 +41,8 @@ def main():
     for ami_instance_name, ami_instance_id in ami_instances:
         print "Validating ami instance: {}".format(ami_instance_name)
         run_bash_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
+        # get_instance_ip.sh script is writing the ip to instance_ips.txt because we couldn't get the ip
+        # from the output of the aws script
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ip = instance_file.read()
             instance_ip = instance_ip.strip()
@@ -53,6 +55,7 @@ def main():
 
     for ami_instance_name, ami_instance_id in ami_instances:
         run_bash_command("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]))
+        # copy_content_data.sh also starts the server
         instance_ips.append("{}:{}".format(ami_instance_name, id_to_ip[ami_instance_id]))
 
     with open('./Tests/instance_ips.txt', 'w') as instance_file:

@@ -88,6 +88,7 @@ jobs:
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -99,6 +100,7 @@ jobs:
       - run:
           name: Run Tests - One Before GA
           shell: /bin/bash
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -110,6 +112,7 @@ jobs:
       - run:
           name: Run Tests - Two Before GA
           shell: /bin/bash
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -121,6 +124,7 @@ jobs:
       - run:
           name: Run Tests - Server Master
           shell: /bin/bash
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
