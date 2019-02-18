@@ -1051,7 +1051,7 @@
         {
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
-            "timeout": 2000
+            "timeout": 500
         },
         {
             "integrations": "McAfee Active Response",
