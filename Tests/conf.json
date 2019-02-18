@@ -236,7 +236,6 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "instance_names": "intsights_standard_account",
             "nightly": true,
             "timeout": 500
         },
@@ -807,6 +806,14 @@
             "playbookID": "ArcSight Logger test"
         },
         {
+            "integrations": "ArcSight ESM",
+            "playbookID": "ArcSight ESM Test"
+        },
+        {
+            "integrations": "ArcSight ESM",
+            "playbookID": "test Arcsight - Get events related to the Case"
+        },
+        {
             "integrations": "XFE",
             "playbookID": "XFE Test",
             "timeout": 140,
@@ -1078,11 +1085,10 @@
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
         "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation (issue 10742)",
+        "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
