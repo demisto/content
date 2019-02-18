@@ -1,0 +1,71 @@
+id: RegPathReputationBasicLists_test
+version: -1
+name: RegPathReputationBasicLists_test
+description: Test the script - RegPathReputationBasicLists
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac5e3c1c-cf1b-47f4-8692-39ea5bb1c64b
+    type: start
+    task:
+      id: ac5e3c1c-cf1b-47f4-8692-39ea5bb1c64b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: fcf89708-1c0b-4bd2-83a7-1011fc01ae95
+    type: regular
+    task:
+      id: fcf89708-1c0b-4bd2-83a7-1011fc01ae95
+      version: -1
+      name: RegPathReputationBasicLists
+      description: Check the given registry path against a small blacklist and whitelist.
+        If the key matches neither, returns an answer of 2 meaning "Unknown".
+      scriptName: RegPathReputationBasicLists
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      input:
+        simple: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
