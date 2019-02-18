@@ -547,7 +547,7 @@ script:
             try:
                 custome_attributes = json.loads(custome_attributes)
             except Exception as e:
-                demisto.info(e.message)
+                demisto.info(str(e))
                 raise Exception("Failed to parse custom attributes argument. Please see an example of this argument in the argument description.")
             for attribute_name, attribute_value in custome_attributes.items():
                 # can run default attribute stting
