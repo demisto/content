@@ -1,3 +1,7 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 """ IMPORTS """
 from collections import deque
 from datetime import datetime
