@@ -1211,7 +1211,7 @@ script:
     - contextPath: 'ActiveDirectory.Users.dn'
       description: The user's distinguished name
       type: string
-    - contextPath: ActiveDirectory.Users.displayName
+    - contextPath: 'ActiveDirectory.Users.displayName'
       description: The user's display name
       type: string
     - contextPath: 'ActiveDirectory.Users.name'
@@ -1232,22 +1232,22 @@ script:
     - contextPath: 'ActiveDirectory.Users.memberOf'
       description: Groups the user is member of
       type: string
-    - contextPath: Account.DisplayName
+    - contextPath: 'Account.DisplayName'
       description: The user's display name
       type: string
-    - contextPath: Account.Groups
+    - contextPath: 'Account.Groups'
       description: Groups the user is member of
       type: string
-    - contextPath: Account.Manager
-      description: 'The user's manager '
+    - contextPath: 'Account.Manager'
+      description: "The user's manager"
       type: string
-    - contextPath: Account.ID
+    - contextPath: 'Account.ID'
       description: The user's distinguished name
       type: string
-    - contextPath: Account.Username
+    - contextPath: 'Account.Username'
       description: The user's samAccountName
       type: string
-    - contextPath: Account.Email
+    - contextPath: 'Account.Email'
       description: The user's email address
       type: string
     description: Retrieves detailed information about a user account. The user can
@@ -1268,17 +1268,17 @@ script:
     - name: custom-field-type
       description: Search computer by this custom field type
     outputs:
-    - contextPath: ActiveDirectory.Computers.dn
+    - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name
-    - contextPath: ActiveDirectory.Computers.memberOf
+    - contextPath: 'ActiveDirectory.Computers.memberOf'
       description: Groups the computer is listed as a member
-    - contextPath: ActiveDirectory.Computers.name
+    - contextPath: 'ActiveDirectory.Computers.name'
       description: The computer name
-    - contextPath: Endpoint.ID
+    - contextPath: 'Endpoint.ID'
       description: The computer DN
-    - contextPath: Endpoint.Hostname
+    - contextPath: 'Endpoint.Hostname'
       description: The computer name
-    - contextPath: Endpoint.Groups
+    - contextPath: 'Endpoint.Groups'
       description: Groups the computer is listed as a member of
     description: 'Retrieves detailed information about a computer account. The computer
       can be specified by name, email address, or as an Active Directory Distinguished Name
@@ -1287,7 +1287,7 @@ script:
     arguments:
     - name: group-dn
       required: true
-      description: ' Group's Active Directory Distinguished Name'
+      description: "Group's Active Directory Distinguished Name"
     - name: member-type
       required: true
       auto: PREDEFINED
@@ -1300,13 +1300,13 @@ script:
       description: CSV list of attributes to include in the results, in addition to the
         default attributes
     outputs:
-    - contextPath: ActiveDirectory.Groups.dn
+    - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN
       type: string
-    - contextPath: ActiveDirectory.Groups.members.dn
+    - contextPath: 'ActiveDirectory.Groups.members.dn'
       description: The group member DN
       type: string
-    - contextPath: ActiveDirectory.Groups.members.category
+    - contextPath: 'ActiveDirectory.Groups.members.category'
       description: Person/computer
       type: string
     description: Retrieves the list of users or computers that are members of the
