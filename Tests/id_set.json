@@ -1060,7 +1060,10 @@
         }, 
         {
             "CopyFileD2": {
-                "name": "CopyFileD2"
+                "name": "CopyFileD2", 
+                "tests": [
+                    "No test - D2 test are not supported yet in content tests"
+                ]
             }
         }, 
         {
@@ -1355,7 +1358,10 @@
         }, 
         {
             "D2Drop": {
-                "name": "D2Drop"
+                "name": "D2Drop", 
+                "tests": [
+                    "No test - D2 tests are not supported yet in content tests"
+                ]
             }
         }, 
         {
@@ -1708,11 +1714,8 @@
         {
             "DocumentationAutomation": {
                 "name": "DocumentationAutomation", 
-                "script_executions": [
-                    "getFilePath"
-                ], 
                 "tests": [
-                    "No test - Test not needed"
+                    "DocumentationTest"
                 ]
             }
         }, 
@@ -2103,6 +2106,9 @@
                 "name": "FilterByList", 
                 "script_executions": [
                     "getList"
+                ], 
+                "tests": [
+                    "FilterByList - Test"
                 ]
             }
         }, 
@@ -3821,7 +3827,10 @@
         }, 
         {
             "RegPathReputationBasicLists": {
-                "name": "RegPathReputationBasicLists"
+                "name": "RegPathReputationBasicLists", 
+                "tests": [
+                    "RegPathReputationBasicLists_test"
+                ]
             }
         }, 
         {
@@ -5655,7 +5664,10 @@
                 "command_to_integration": {
                     "wildfire-upload-file-remote": "WildFire", 
                     "wildfire-report": "WildFire"
-                }
+                }, 
+                "tests": [
+                    "Wildfire Test"
+                ]
             }
         }, 
         {
@@ -5872,8 +5884,11 @@
                 "implementing_playbooks": [
                     "WildFire - Detonate file"
                 ], 
-                "implementing_commands": [
-                    "dxl-send-event"
+                "command_to_integration": {
+                    "dxl-send-event": "McAfee DXL"
+                }, 
+                "tests": [
+                    "Wildfire Test"
                 ]
             }
         }, 
@@ -8548,6 +8563,22 @@
             }
         }, 
         {
+            "EclecticIQ Platform": {
+                "name": "EclecticIQ Platform", 
+                "commands": [
+                    "ip", 
+                    "url", 
+                    "file", 
+                    "eclecticiq-get-observable-related-entity", 
+                    "email", 
+                    "domain"
+                ], 
+                "tests": [
+                    "No test - instance issues"
+                ]
+            }
+        }, 
+        {
             "Endgame": {
                 "name": "Endgame", 
                 "commands": [
@@ -8741,6 +8772,26 @@
                 "commands": [
                     "dnsdb-rdata", 
                     "dnsdb-rrset"
+                ]
+            }
+        }, 
+        {
+            "Fidelis Elevate Network": {
+                "name": "Fidelis Elevate Network", 
+                "commands": [
+                    "fidelis-get-alert", 
+                    "fidelis-delete-alert", 
+                    "fidelis-get-malware-data", 
+                    "fidelis-get-alert-pcap", 
+                    "fidelis-get-alert-report", 
+                    "fidelis-sandbox-upload", 
+                    "fidelis-list-alerts", 
+                    "fidelis-upload-pcap", 
+                    "fidelis-list-pcap-components", 
+                    "fidelis-run-pcap"
+                ], 
+                "tests": [
+                    "Fidelis-Test"
                 ]
             }
         }, 
@@ -9264,7 +9315,8 @@
                     "intsights-get-alert-takedown-status", 
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
-                    "intsights-close-alert"
+                    "intsights-close-alert", 
+                    "intsights-mssp-get-sub-accounts"
                 ], 
                 "tests": [
                     "IntSights Test"
@@ -9770,7 +9822,8 @@
                     "misp-add-attribute", 
                     "misp-upload-sample", 
                     "misp-delete-event", 
-                    "misp-add-tag"
+                    "misp-add-tag", 
+                    "misp-add-sighting"
                 ], 
                 "tests": [
                     "MISP V2 Test"
@@ -10534,7 +10587,11 @@
                     "archer-get-file", 
                     "archer-upload-file", 
                     "archer-add-to-detailed-analysis", 
-                    "archer-get-user-id"
+                    "archer-get-user-id", 
+                    "archer-get-valuelist"
+                ], 
+                "tests": [
+                    "Archer-Test-Playbook"
                 ]
             }
         }, 
@@ -11618,6 +11675,17 @@
             }
         }, 
         {
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser", 
+                "commands": [
+                    "ua-parse"
+                ], 
+                "tests": [
+                    "WhatsMyBrowser-Test"
+                ]
+            }
+        }, 
+        {
             "Where is the egg?": {
                 "name": "Where is the egg?", 
                 "fromversion": "3.6.0", 
@@ -12165,6 +12233,16 @@
                     "attivo-deploy-decoy": "", 
                     "attivo-list-playbooks": ""
                 }
+            }
+        }, 
+        {
+            "Autoextract - Test": {
+                "name": "Autoextract - Test", 
+                "implementing_scripts": [
+                    "autoextract_test", 
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ]
             }
         }, 
         {
@@ -12908,6 +12986,16 @@
             }
         }, 
         {
+            "DocumentationTest": {
+                "name": "DocumentationTest", 
+                "implementing_scripts": [
+                    "DocumentationAutomation", 
+                    "DeleteContext", 
+                    "http"
+                ]
+            }
+        }, 
+        {
             "domain_enrichment_generic_test": {
                 "name": "Domain Enrichment Generic - Test", 
                 "fromversion": "3.5.0", 
@@ -12952,6 +13040,22 @@
                 ], 
                 "command_to_integration": {
                     "duo-preauth": ""
+                }
+            }
+        }, 
+        {
+            "EclecticIQ Test": {
+                "name": "EclecticIQ Test", 
+                "implementing_scripts": [
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "domain": "EclecticIQ Platform", 
+                    "url": "EclecticIQ Platform", 
+                    "ip": "EclecticIQ Platform", 
+                    "file": "EclecticIQ Platform", 
+                    "eclecticiq-get-observable-related-entity": "", 
+                    "email": "EclecticIQ Platform"
                 }
             }
         }, 
@@ -13178,6 +13282,19 @@
             }
         }, 
         {
+            "Fidelis-Test": {
+                "name": "Fidelis-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "fidelis-list-alerts": "", 
+                    "fidelis-get-alert": ""
+                }
+            }
+        }, 
+        {
             "File Enrichment - Generic Test": {
                 "name": "File Enrichment - Generic Test", 
                 "implementing_scripts": [
@@ -13186,6 +13303,16 @@
                 ], 
                 "implementing_playbooks": [
                     "File Enrichment - Generic"
+                ]
+            }
+        }, 
+        {
+            "FilterByList - Test": {
+                "name": "FilterByList - Test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "FilterByList"
                 ]
             }
         }, 
@@ -13639,6 +13766,18 @@
             }
         }, 
         {
+            "IntSights Mssp Test": {
+                "name": "IntSights Mssp Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ], 
+                "command_to_integration": {
+                    "intsights-mssp-get-sub-accounts": ""
+                }
+            }
+        }, 
+        {
             "IntSights Test": {
                 "name": "IntSights Test", 
                 "implementing_scripts": [
@@ -13900,7 +14039,8 @@
             "McAfee-MAR_Test": {
                 "name": "McAfee-MAR_Test", 
                 "implementing_scripts": [
-                    "VerifyContext"
+                    "VerifyContext", 
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
                     "mar-collectors-list": "McAfee Active Response", 
@@ -14048,6 +14188,7 @@
                 "command_to_integration": {
                     "misp-search": "MISP V2", 
                     "misp-add-attribute": "MISP V2", 
+                    "misp-add-sighting": "", 
                     "misp-create-event": "MISP V2", 
                     "url": "MISP V2", 
                     "ip": "MISP V2", 
@@ -14317,6 +14458,17 @@
                     "ParseExcel", 
                     "DeleteContext", 
                     "http"
+                ]
+            }
+        }, 
+        {
+            "PcapHTTPExtractor-Test": {
+                "name": "PcapHTTPExtractor-Test", 
+                "implementing_scripts": [
+                    "PcapHTTPExtractor", 
+                    "DeleteContext", 
+                    "http", 
+                    "AreValuesEqual"
                 ]
             }
         }, 
@@ -14618,6 +14770,14 @@
                     "VerifyContext", 
                     "Set", 
                     "DeleteContext"
+                ]
+            }
+        }, 
+        {
+            "RegPathReputationBasicLists_test": {
+                "name": "RegPathReputationBasicLists_test", 
+                "implementing_scripts": [
+                    "RegPathReputationBasicLists"
                 ]
             }
         }, 
@@ -14969,6 +15129,29 @@
                     "smg-block-email": "Symantec Messaging Gateway", 
                     "smg-unblock-email": "Symantec Messaging Gateway"
                 }
+            }
+        }, 
+        {
+            "SymantecEndpointProtection_Test": {
+                "name": "SymantecEndpointProtection_Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "PrintErrorEntry"
+                ], 
+                "command_to_integration": {
+                    "sep-endpoint-quarantine": "", 
+                    "sep-list-policies": "", 
+                    "sep-list-locations": "", 
+                    "sep-update-endpoint-content": "", 
+                    "sep-endpoints-info": "", 
+                    "sep-groups-info": "", 
+                    "sep-client-content": "", 
+                    "sep-system-info": "", 
+                    "sep-scan-endpoint": ""
+                }, 
+                "tests": [
+                    "No test - test playbook"
+                ]
             }
         }, 
         {
@@ -15745,6 +15928,18 @@
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream", 
                     "crowdstrike-search": "VxStream"
+                }
+            }
+        }, 
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
