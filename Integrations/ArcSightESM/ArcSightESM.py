@@ -477,8 +477,9 @@ def get_security_events(event_ids, last_date_range=None):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
-            event_ids, BASE_URL + query_path, res.status_code, res.text))
+        return_error(
+            'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
+                event_ids, BASE_URL + query_path, res.status_code, res.text))
 
     res_json = res.json()
     if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
@@ -573,7 +574,8 @@ def get_case_event_ids_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), headers='Event ID', t=event_ids, removeNull=True),
+            'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), headers='Event ID', t=event_ids,
+                                             removeNull=True),
             'EntryContext': {'ArcSightESM.CaseEvents': event_ids}
         })
     else:
@@ -618,7 +620,8 @@ def get_entries_command():
     res_json = json.loads(xml2json(res.text))
     raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
     if 'entryList' in raw_entries:
-        entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [raw_entries['entryList']]
+        entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [
+            raw_entries['entryList']]
         entry_list = [d['entry'] for d in entry_list if 'entry' in d]
         keys = raw_entries.get('columns')
         entries = [dict(zip(keys, values)) for values in entry_list]
@@ -652,8 +655,9 @@ def clear_entries_command():
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-            resource_id, res.status_code, body, res.text))
+        return_error(
+            "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                resource_id, res.status_code, body, res.text))
 
     demisto.results("Success")
 
@@ -678,8 +682,9 @@ def add_entries_command():
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-            resource_id, res.status_code, body, res.text))
+        return_error(
+            "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                resource_id, res.status_code, body, res.text))
 
     demisto.results("Success")
 
@@ -709,7 +714,8 @@ def get_all_query_viewers_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Query Viewers', t=query_viewers, headers='Query Viewers ID', removeNull=True),
+            'HumanReadable': tableToMarkdown(name='Query Viewers', t=query_viewers, headers='Query Viewers ID',
+                                             removeNull=True),
             'EntryContext': {'ArcSightESM.AllQueryViewers': entry_context}
         })
     else:
