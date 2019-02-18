@@ -320,3 +320,6 @@ view: |-
     }
   }
 inputs: []
+tests:
+  - No test
+releaseNotes: "-"
