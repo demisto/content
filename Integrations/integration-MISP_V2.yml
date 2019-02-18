@@ -184,7 +184,9 @@ script:
             'Galaxy',
             'Tag'
         ]
-
+        # Sometimes, the pymisp will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
+        if isinstance(response, str):
+            response = json.loads(json.dumps(response))
         # Remove 'Event' keyword
         events = [event.get('Event') for event in response]
         for i in range(0, len(events)):
