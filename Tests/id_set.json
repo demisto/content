@@ -9367,8 +9367,7 @@
                     "intsights-get-alert-takedown-status", 
                     "intsights-update-ioc-blocklist-status", 
                     "intsights-get-ioc-blocklist-status", 
-                    "intsights-close-alert", 
-                    "intsights-mssp-get-sub-accounts"
+                    "intsights-close-alert"
                 ], 
                 "tests": [
                     "IntSights Test"
@@ -12288,16 +12287,6 @@
             }
         }, 
         {
-            "Autoextract - Test": {
-                "name": "Autoextract - Test", 
-                "implementing_scripts": [
-                    "autoextract_test", 
-                    "DeleteContext", 
-                    "PrintErrorEntry"
-                ]
-            }
-        }, 
-        {
             "awake_security_test_pb": {
                 "name": "awake_security_test_pb", 
                 "implementing_scripts": [
@@ -14514,17 +14503,6 @@
             }
         }, 
         {
-            "PcapHTTPExtractor-Test": {
-                "name": "PcapHTTPExtractor-Test", 
-                "implementing_scripts": [
-                    "PcapHTTPExtractor", 
-                    "DeleteContext", 
-                    "http", 
-                    "AreValuesEqual"
-                ]
-            }
-        }, 
-        {
             "PhishAi-Test": {
                 "name": "PhishAi-Test", 
                 "implementing_scripts": [
@@ -15980,30 +15958,6 @@
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream", 
                     "crowdstrike-search": "VxStream"
-                }
-            }
-        }, 
-        {
-            "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "Set"
-                ], 
-                "command_to_integration": {
-                    "ua-parse": "WhatsMyBrowser"
-                }
-            }
-        }, 
-        {
-            "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "Set"
-                ], 
-                "command_to_integration": {
-                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
