@@ -44,11 +44,14 @@ def silence_output(cmd_method, *args, **kwargs):
         output of cmd_method
     """
 
+    print kwargs
+
     with open(os.devnull, 'w') as fnull:
         for k in ('stdout', 'stderr'):
             if kwargs.get(k) == 'null':
                 kwargs[k] = fnull
 
+        print kwargs
         return cmd_method(*args, **kwargs)
 
 
