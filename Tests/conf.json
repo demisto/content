@@ -796,7 +796,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
+            "playbookID": "McAfee-MAR_Test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
@@ -1049,7 +1050,8 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "Endpoint data collection test"
+            "playbookID": "Endpoint data collection test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Active Response",
