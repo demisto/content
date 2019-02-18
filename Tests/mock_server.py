@@ -30,6 +30,27 @@ def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
     return cleaned_filename
 
 
+def silence_output(cmd_method, *args, **kwargs):
+    """Redirect linux command output(s) to /dev/null
+    To redirect to /dev/null: pass 'null' string in 'stdout' or 'stderr' keyword args
+
+    Args:
+        cmd_method (PyFunctionObject): the "subprocess" (or wrapper) method to run
+        *args: additional parameters for cmd_method
+        **kwargs: additional parameters for cmd_method
+
+    Returns:
+        output of cmd_method
+    """
+
+    with open(os.devnull, 'w') as fnull:
+        for k in ('stdout', 'stderr'):
+            if kwargs.get(k) == 'null':
+                kwargs[k] = fnull
+
+        return cmd_method(*args, **kwargs)
+
+
 def id_to_mock_file(playbook_id):
     clean = clean_filename(playbook_id)
     return os.path.join(clean + '/', clean + '.mock')
@@ -64,12 +85,12 @@ class AMIConnection:
             string: The IP of the AMI on the docker bridge.
         """
         out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
-        lines_of_words = map(lambda y: y.strip().split(' '), out)
-        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)
+        lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
+        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines that begin with 'inet'
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
                             .format(len(address_lines)))
-        return address_lines[0][1].split('/')[0]
+        return address_lines[0][1].split('/')[0]  # Return only the IP Address (without mask)
 
     def add_ssh_prefix(self, command, ssh_options=""):
         """Add necessary text before a command in order to run it on the AMI instance via SSH.
@@ -108,7 +129,7 @@ class AMIConnection:
 
         Args:
             script (string): Name of the script file in the LOCAL_SCRIPTS_DIR.
-            *args (tuple): arguments to be passed to the script.
+            *args: arguments to be passed to the script.
         """
         remote_script_path = self.copy_file(os.path.join(LOCAL_SCRIPTS_DIR, script))
         self.check_call(['chmod', '+x', remote_script_path])
@@ -163,19 +184,25 @@ class MITMProxy:
         self.record = None
         self.empty_files = []
 
-        with open(os.devnull, 'w') as fnull:
-            self.ami.call(['mkdir', '-p', tmp_folder], stderr=fnull)
+        silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    # Class utility functions
-    def __configure_proxy(self, proxy=""):
+    """Class utility functions"""
+    def __configure_proxy_in_demisto(self, proxy=''):
         http_proxy = https_proxy = proxy
         if proxy:
-            http_proxy = "http://" + proxy
-            https_proxy = "https://" + proxy
-        data = {"data": {"http_proxy": http_proxy, "https_proxy": https_proxy}, "version": -1}
+            http_proxy = 'http://' + proxy
+            https_proxy = 'https://' + proxy
+        data = {
+            'data':
+                {
+                    'http_proxy': http_proxy,
+                    'https_proxy': https_proxy
+                },
+            'version': -1
+        }
         return self.demisto_client.req('POST', '/system/config', data)
 
-    # File/Folder management
+    """File/Folder management"""
     def has_mock_file(self, playbook_id):
         command = ["[", "-f", os.path.join(self.active_folder, id_to_mock_file(playbook_id)), "]"]
         return self.ami.call(command) == 0
@@ -216,21 +243,20 @@ class MITMProxy:
         self.record = record
         path = path or self.active_folder
 
-        with open(os.devnull, 'w') as FNULL:
-            self.ami.call(['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr=FNULL)
+        silence_output(self.ami.call(['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr='null'))
 
         actions = '--server-replay-kill-extra -S' if not record else '-w'
         command = "mitmdump -k -v -p 9997 {}".format(actions).split()
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy(self.ami.docker_ip + ':9997')
+        self.__configure_proxy_in_demisto(self.ami.docker_ip + ':9997')
 
     def stop(self):
         if not self.process:
             raise Exception("Cannot start proxy - already running.")
 
-        self.__configure_proxy('')
+        self.__configure_proxy_in_demisto('')
         self.process.send_signal(signal.SIGINT)
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])
 
@@ -249,7 +275,6 @@ class MITMProxy:
                 log.write('\nSTDERR:\n')
                 log.write(self.process.stdout.read())
 
-            with open(os.devnull, 'w') as FNULL:
-                self.ami.copy_file(local_log_filepath, remote_log_filepath, stdout=FNULL)
+            silence_output(self.ami.copy_file(local_log_filepath, remote_log_filepath, stdout='null'))
 
         self.process = None
