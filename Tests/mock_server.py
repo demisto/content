@@ -4,6 +4,7 @@ import string
 import unicodedata
 from subprocess import call, Popen, PIPE, check_call, check_output
 
+PROXY_PORT = '9997'
 LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
 CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
@@ -235,6 +236,7 @@ class MITMProxy:
             print 'Mock file is empty, ignoring.'
             self.empty_files.append(playbook_id)
         else:
+            # Move to primary folder
             self.ami.call(['mkdir', '--parents', dst_folder])
             self.ami.call(['mv', src_files, dst_folder])
 
@@ -243,6 +245,13 @@ class MITMProxy:
             print "Integrations with empty mock files:\n{}\n".format('\n'.join(self.empty_files))
 
     def start(self, playbook_id, path=None, record=False):
+        """Start the proxy process and direct traffic through it.
+
+        Args:
+            playbook_id (string): ID of the test playbook to run.
+            path (string): path override for the mock/log files.
+            record (bool): Select proxy mode (record/playback)
+        """
         if self.process:
             raise Exception("Cannot start proxy - already running.")
 
@@ -252,16 +261,16 @@ class MITMProxy:
 
         silence_output(self.ami.call(['mkdir', os.path.join(path, id_to_folder(playbook_id))], stderr='null'))
 
-        actions = '--server-replay-kill-extra -S' if not record else '-w'
-        command = "mitmdump -k -v -p 9997 {}".format(actions).split()
+        actions = '--server-replay-kill-extra --server-replay' if not record else '--save-stream-file'
+        command = "mitmdump --ssl-insecure --verbose --listen-port {} {}".format(PROXY_PORT, actions).split()
         command.append(os.path.join(path, id_to_mock_file(playbook_id)))
 
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.__configure_proxy_in_demisto(self.ami.docker_ip + ':9997')
+        self.__configure_proxy_in_demisto(self.ami.docker_ip + ':' + PROXY_PORT)
 
     def stop(self):
         if not self.process:
-            raise Exception("Cannot start proxy - already running.")
+            raise Exception("Cannot stop proxy - not running.")
 
         self.__configure_proxy_in_demisto('')
         self.process.send_signal(signal.SIGINT)
@@ -280,7 +289,7 @@ class MITMProxy:
                 log.write('STDOUT:\n')
                 log.write(self.process.stdout.read())
                 log.write('\nSTDERR:\n')
-                log.write(self.process.stdout.read())
+                log.write(self.process.stderr.read())
 
             silence_output(self.ami.copy_file(local_log_filepath, remote_log_filepath, stdout='null'))
 
