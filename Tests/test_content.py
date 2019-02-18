@@ -126,10 +126,10 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    print '------ Test %s start ------' % (test_message,)
+    start_message = '------ Test %s start ------' % (test_message,)
 
     if not integrations:
-        print "No integrations, bypassing mock."
+        print start_message + ' (Mock: Bypass)'
         mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                      test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
         print '------ Test %s end ------' % (test_message,)
@@ -137,7 +137,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
         return
 
     if has_unmockable_integration(integrations, unmockable_integrations):
-        print "Unmockable integrations, bypassing mock."
+        print start_message + ' (Mock: Bypass)'
         mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                      test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
         print '------ Test %s end ------' % (test_message,)
@@ -146,9 +146,9 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
 
     set_mock_params(integrations)
     if not proxy.has_mock_file(playbook_id):
-        print "Mock file does not exist, running without mock."
+        print start_message + '(Mock: Recording)'
     else:
-        print "Running with playback"
+        print start_message + ' (Mock: Playback)'
         proxy.start(playbook_id)
         # run test
         succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
@@ -161,7 +161,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
 
             return
 
-        print "Test failed with mock, rerunning without mock."
+        print "Test failed with mock, recording new mock file."
     run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     print '------ Test %s end ------' % (test_message,)
