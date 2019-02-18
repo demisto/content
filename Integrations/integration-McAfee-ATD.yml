@@ -1392,8 +1392,6 @@ script:
         # submit type for url-download is 3
 
     except Exception, e:
-        LOG(e.message)
-        LOG.print_log()
         return_error(e.message)
 
     finally:
