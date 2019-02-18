@@ -4,8 +4,6 @@ import json
 import string
 import random
 import argparse
-from subprocess import check_output
-
 import requests
 
 import demisto
@@ -85,19 +83,6 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-# TODO: Remove before merge
-# def demo_playback_test(c, proxy, public_ip, integrations, playbook_id, test_options, proxy_proc):
-#     print "FOR DEMO: Verifying test passes with playback."
-#     if not has_mock_file(public_ip, playbook_id):
-#         print "ERROR: Mocks/{}.mock - file does not exist".format(playbook_id)
-#         return False, proxy_proc
-#     proxy.stop()
-#     proxy.start(playbook_id)
-#     succeed, _ = test_integration(c, integrations, playbook_id, test_options)
-#     print "DEMO: Test {} with playback".format("succeeded" if succeed else "failed")
-#     return succeed, proxy_proc
-
-
 def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.iterkeys()))
 
@@ -117,7 +102,6 @@ def mockless_run(c, failed_playbooks, integrations, playbook_id, succeed_playboo
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
-        # succeed = demo_playback_test(c, proxy, public_ip, integrations, playbook_id, test_options)
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
@@ -334,15 +318,6 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def get_content_branch():
-    git_branch = check_output(["git", "branch"])
-    branches = [x.strip() for x in git_branch.split('\n')]
-    active_branch_candidates = filter(lambda x: x.find('* ') != -1, branches)
-    if len(active_branch_candidates) != 1:
-        raise Exception("Could not find active branch in branch list:\n{}".format(git_branch))
-    return active_branch_candidates[0][1:].strip()
-
-
 def main():
     options = options_handler()
     username = options.user
@@ -390,6 +365,7 @@ def main():
 
     with open('public_ip', 'rb') as f:
         public_ip = f.read()
+
     ami = AMIConnection(public_ip)
     ami.clone_mock_data()  # FUTURE: pull instead of clone
     proxy = MITMProxy(c, public_ip, debug=False)
@@ -460,9 +436,12 @@ def main():
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
     proxy.print_empty_files()
+
+    print "Pushing new/updated mock files to mock git repo."
+    print "### BUILD NAME: {}".format(build_name)
     ami.upload_mock_files(build_name, buildNumber)
 
-    if get_content_branch() == 'master':
+    if build_name == 'master':
         print "Pushing new/updated mock files to mock git repo."
         # ami.upload_mock_files(build_name, buildNumber)
 
