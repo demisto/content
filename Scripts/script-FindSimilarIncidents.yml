@@ -433,3 +433,4 @@ timeout: 300ns
 runonce: false
 tests:
   - No test
+releaseNotes: "Fix - special characters escaping"
