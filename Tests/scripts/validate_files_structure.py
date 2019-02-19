@@ -133,6 +133,7 @@ def checked_type(file_path):
 
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
+    deleted_files = set([])
     added_files_list = set([])
     modified_files_list = set([])
     for f in all_files:
@@ -143,17 +144,19 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
-        if file_path.endswith('.js') or file_path.endswith('.py'):
+        if file_path.endswith('.js') or file_path.endswith('.py') or file_path.endswith('.png'):
             continue
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
+        elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
+            deleted_files.add(file_path)
         elif file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, "
                                     "please check. File status was: " + file_status)
 
-    return modified_files_list, added_files_list
+    return modified_files_list, added_files_list, deleted_files
 
 
 def validate_file_release_notes(file_path):
@@ -327,25 +330,38 @@ def is_existing_image(file_path):
 
 
 def get_modified_and_added_files(branch_name, is_circle):
-    if is_circle:
-        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-        modified_files, added_files = get_modified_files(all_changed_files_string)
+    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    modified_files, added_files, _ = get_modified_files(all_changed_files_string)
 
-    else:
+    if not is_circle:
         files_string = run_git_command("git diff --name-status --no-merges HEAD")
 
-        modified_files2, added_files2 = get_modified_files(files_string)
+        non_committed_modified_files, non_committed_added_files, non_committed_deleted_files = \
+            get_modified_files(files_string)
         all_changed_files_string = run_git_command("git diff --name-status origin/master")
-        modified_files_from_branch, added_files_from_branch = get_modified_files(all_changed_files_string)
+        modified_files_from_master, added_files_from_master, _ = get_modified_files(all_changed_files_string)
 
-        added_files = []
-        modified_files = []
-        for mod_file in modified_files_from_branch:
-            if mod_file in modified_files2:
-                modified_files.append(mod_file)
-        for add_file in added_files_from_branch:
-            if add_file in added_files2:
-                added_files.append(add_file)
+        for mod_file in modified_files_from_master:
+            if mod_file in non_committed_modified_files:
+                modified_files.add(mod_file)
+
+        for add_file in added_files_from_master:
+            if add_file in non_committed_added_files:
+                added_files.add(add_file)
+
+        for deleted_file in non_committed_deleted_files:
+            modified_files = modified_files - {deleted_file}
+            added_files = added_files - {deleted_file}
+
+        for non_commited_mod_file in non_committed_modified_files:
+            added_files = added_files - {non_commited_mod_file}
+
+        new_added_files = set([])
+        for added_file in added_files:
+            if added_file in non_committed_added_files:
+                new_added_files.add(added_file)
+
+        added_files = new_added_files
 
     return modified_files, added_files
 
@@ -354,14 +370,27 @@ def get_from_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
 
 
 def get_to_version(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
+        to_version = data_dictionary.get('fromversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
 
 
 def changed_command_name_or_arg(file_path):
@@ -469,12 +498,14 @@ def is_valid_in_id_set(file_path, obj_data, obj_set):
             is_found = True
             if checked_instance_data != obj_data[file_id]:
                 print_error("You have failed to update id_set.json with the data of {} "
-                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                            "please run `python Tests/scripts/update_id_set.py -r` it will recreate the id_set so "
+                            "it will take ~40 seconds".format(file_path))
                 return False
 
     if not is_found:
         print_error("You have failed to update id_set.json with the data of {} "
-                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                    "please run `python Tests/scripts/update_id_set.py -r` it will "
+                    "recreate the id_set so it will take ~40 seconds".format(file_path))
 
     return is_found
 
@@ -509,7 +540,7 @@ def validate_committed_files(branch_name, is_circle):
         except ValueError, ex:
             if "Expecting property name" in ex.message:
                 print_error("You probably merged from master and your id_set.json has conflicts. "
-                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                            "Run `python Tests/scripts/update_id_set.py -r`, it should reindex your id_set.json")
                 return
             else:
                 raise ex
