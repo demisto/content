@@ -5040,14 +5040,16 @@
             "Arcsight - Get events related to the Case": {
                 "name": "Arcsight - Get events related to the Case", 
                 "implementing_scripts": [
-                    "IncidentSet", 
                     "Set", 
                     "Exists"
                 ], 
-                "implementing_commands": [
-                    "as-get-security-events", 
-                    "as-get-case", 
-                    "as-get-case-event-ids"
+                "command_to_integration": {
+                    "as-get-security-events": "ArcSight ESM", 
+                    "as-get-case": "ArcSight ESM", 
+                    "as-get-case-event-ids": "ArcSight ESM"
+                }, 
+                "tests": [
+                    "test Arcsight - Get events related to the Case"
                 ]
             }
         }, 
@@ -6298,6 +6300,9 @@
                     "Carbon Black Rapid IOC Hunting", 
                     "TIE - IOC Hunt", 
                     "Carbon black Protection Rapid IOC Hunting"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -6619,6 +6624,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Hunt for bad IOCs"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7111,7 +7119,10 @@
                 ], 
                 "command_to_integration": {
                     "tie-file-references": "McAfee Threat Intelligence Exchange"
-                }
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -7463,10 +7474,12 @@
                     "as-get-case-event-ids", 
                     "as-update-case", 
                     "as-get-all-query-viewers", 
-                    "as-case-delete"
+                    "as-case-delete", 
+                    "as-get-query-viewer-results", 
+                    "as-fetch-incidents"
                 ], 
                 "tests": [
-                    "No test"
+                    "ArcSight ESM Test"
                 ]
             }
         }, 
@@ -9751,6 +9764,9 @@
                     "file", 
                     "tie-set-file-reputation", 
                     "tie-file-references"
+                ], 
+                "tests": [
+                    "McAfee-TIE Test"
                 ]
             }
         }, 
@@ -12252,6 +12268,24 @@
             }
         }, 
         {
+            "ArcSight ESM Test": {
+                "name": "ArcSight ESM Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "as-get-case": "", 
+                    "as-get-all-query-viewers": "", 
+                    "as-clear-entries": "", 
+                    "as-get-all-cases": "", 
+                    "as-get-entries": "", 
+                    "as-add-entries": "", 
+                    "as-update-case": "", 
+                    "as-get-case-event-ids": ""
+                }
+            }
+        }, 
+        {
             "ArcSight Logger test": {
                 "name": "ArcSight Logger test", 
                 "implementing_scripts": [
@@ -14099,8 +14133,7 @@
                 ], 
                 "command_to_integration": {
                     "tie-file-references": "McAfee Threat Intelligence Exchange", 
-                    "file": "McAfee Threat Intelligence Exchange", 
-                    "tie-set-file-reputation": "McAfee Threat Intelligence Exchange"
+                    "file": "McAfee Threat Intelligence Exchange"
                 }
             }
         }, 
@@ -15331,6 +15364,17 @@
             }
         }, 
         {
+            "test Arcsight - Get events related to the Case": {
+                "name": "test Arcsight - Get events related to the Case", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Arcsight - Get events related to the Case"
+                ]
+            }
+        }, 
+        {
             "Test CommonServer": {
                 "name": "Test CommonServer", 
                 "implementing_scripts": [
@@ -15958,6 +16002,18 @@
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream", 
                     "crowdstrike-search": "VxStream"
+                }
+            }
+        }, 
+        {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
