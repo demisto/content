@@ -9,17 +9,17 @@ description: Retrieve and analyze network access controls across Tufin-managed f
   SDN, and public cloud to identify vulnerable access paths of an attack
 detaileddescription: Learn more about Tufin at [https://www.tufin.com/](https://www.tufin.com/)
 configuration:
+- display: SecureTrack IP or FQDN
+  name: SecureTrack-Server
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: SecureTrack User Credentials
   name: SecureTrack-User
   defaultvalue: ""
   type: 9
   required: true
-- display: SecureTrack IP or FQDN
-  name: SecureTrack-Server
-  defaultvalue: 127.0.0.1
-  type: 0
-  required: true
-- display: Do not verify SSL Cert
+- display: Trust any certificate (unsecure)
   name: unsecure
   defaultvalue: "true"
   type: 8
@@ -29,8 +29,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Maximum number of rules returned from device durring a policy search
+  name: MaxRules
+  defaultvalue: "100"
+  type: 0
+  required: false
 script:
-  script: |
+  script: |-
     import json
     import requests
 
@@ -43,15 +48,13 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-
-    # Request something from TOS
     def tos_request(path, params=None, headers=None):
         """ Function to access TOS via REST API """
         if headers is None:
             headers = {
-                'accept': "application/json",
-                'content-type': "application/json",
-                'cache-control': "no-cache"
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                'cache-control': 'no-cache'
             }
 
         # Get Configuration
@@ -79,18 +82,7 @@ script:
             except:
                 return res.content
 
-
-    def path_finder():
-        """ Sample query: querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:22","includeIncompletePaths":"true"} """
-
-        # Build the query from user input
-        querystring = {
-            "src": demisto.args()['Source'],
-            "dst": demisto.args()['Destination'],
-            "service": demisto.args().get('Service', 'Any'),
-            "includeIncompletePaths": "true"
-        }
-
+    def path_finder(querystring):
         # Define the basic output for the function, augmenting later with TOS data
         entry = {
             'Type': entryTypes['note'],
@@ -102,36 +94,36 @@ script:
         }
 
         # Ask TOS for the path
-        o = tos_request("/securetrack/api/topology/path", querystring)
+        o = tos_request('/securetrack/api/topology/path', querystring)
 
         # Verify the data and return
         try:
-            entry['EntryContext']['Tufin.TrafficAllowed'] = o['path_calc_results']['traffic_allowed']
-            entry['EntryContext']['Tufin.TrafficRawJSON'] = o['path_calc_results']['device_info']
-            entry['EntryContext']['Tufin.TrafficDevices'] = [d['name'] for d in o['path_calc_results']['device_info']]
+            entry['EntryContext']['Tufin.Topology.TrafficAllowed'] = o['path_calc_results']['traffic_allowed']
+            # entry['EntryContext']['Tufin.TrafficRawJSON'] = o['path_calc_results']['device_info']
+            entry['EntryContext']['Tufin.Topology.TrafficDevices'] = [d['name'] for d in o['path_calc_results']['device_info']]
             entry['Contents'] = o['path_calc_results']['device_info']
-            entry['HumanReadable'] = tableToMarkdown('Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'], querystring['dst'], querystring['service'], ('**Denied**', '**Allowed**')[o['path_calc_results']['traffic_allowed']]),
-            {'Start': querystring['src'], 'Devices in Path' : "-->".join(['**' + d['name'] + '**' + ' ({})'.format(d['vendor']) for d in o['path_calc_results']['device_info']]), 'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
+            entry['HumanReadable'] = tableToMarkdown('Tufin Topology Search for {} to {} via Service {}. Traffic is {}'.format(querystring['src'],
+                                                    querystring['dst'], querystring['service'], ('**Denied**', '**Allowed**')[o['path_calc_results']['traffic_allowed']]),
+                                                    {'Start': querystring['src'], 'Devices in Path' : '-->'.join(['**' + d['name'] + '**' + ' ({})'.format(d['vendor']) for d in o['path_calc_results']['device_info']]),
+                                                    'End': querystring['dst']}, ['Start', 'Devices in Path', 'End'])
         except KeyError:
-            entry['HumanReadable'] = 'Unknown Output Returned'
-            entry['Contents'] = 'Unknown Output Returned'
-            entry['ContentsFormat'] = formats['text']
-            entry['Type'] = entryTypes['error']
-            return entry
-
+            return_error('Unknown Output Returned')
+        # Send back to Demisto inside function
         return entry
 
-
-    def path_finder_image():
-        """ Sample query: querystring = {"src":"10.80.80.0","dst":"172.16.200.80","service":"tcp:80","includeIncompletePaths":"true","displayBlockedStatus":"true"} """
+    def path_finder_command():
+        """ Sample query: querystring = {'src':'10.80.80.0','dst':'172.16.200.80','service':'tcp:22','includeIncompletePaths':'true'} """
+        # Build the query from user input
         querystring = {
-            "src": demisto.args()['Source'],
-            "dst": demisto.args()['Destination'],
-            "service": demisto.args().get('Service', 'Any'),
-            "includeIncompletePaths": "true",
-            "displayBlockedStatus": "true"
+            'src': demisto.args()['source'],
+            'dst': demisto.args()['destination'],
+            'service': demisto.args().get('service', 'Any'),
+            'includeIncompletePaths': 'true'
         }
+        e = path_finder(querystring)
+        demisto.results(e)
 
+    def path_finder_image(querystring):
         entry = {
             'Type': entryTypes['note'],
             'Contents': '',
@@ -141,32 +133,36 @@ script:
         }
 
         try:
-            img = tos_request("/securetrack/api/topology/path_image", querystring, {'accept': "image/png",'content-type': "application/json",'cache-control': "no-cache"})
+            headers = {'accept': 'image/png','content-type': 'application/json','cache-control': 'no-cache'}
+            img = tos_request('/securetrack/api/topology/path_image', querystring, headers)
+            # simple check if we have an image or error message.
             if len(img) > 100:
+                # Send back to Demisto inside function
                 return fileResult('topo.png', img, entryTypes['image'])
             else:
                 entry['HumanReadable'] = 'No Valid Path Found'
                 entry['Contents'] = 'No Valid Path Found'
+                # Send back to Demisto inside function
                 return entry
         except:
-            entry['HumanReadable'] = 'Error Running Query'
-            entry['Contents'] = 'Error Running Query'
-            entry['Type'] = entryTypes['error']
-            return entry
+            return_error('Error Running Query')
 
+    def path_finder_image_command():
+        """ Sample query: querystring = {'src':'10.80.80.0','dst':'172.16.200.80','service':'tcp:80','includeIncompletePaths':'true','displayBlockedStatus':'true'} """
+        querystring = {
+            'src': demisto.args()['source'],
+            'dst': demisto.args()['destination'],
+            'service': demisto.args().get('service', 'Any'),
+            'includeIncompletePaths': 'true',
+            'displayBlockedStatus': 'true'
+        }
+        e = path_finder_image(querystring)
+        demisto.results(e)
 
     def device_name(devices, device_id):
         return [e['name'] + ' ({} {})'.format(e['vendor'], e['model']) for e in devices if int(e['id']) == int(device_id)][0]
 
-
-    def object_lookup():
-        """ Sample query: querystring = {"filter":"subnet","count":"50","exact_subnet":"1.1.1.1"} """
-        querystring = {
-            "filter":"subnet",
-            "count":"50",
-            "exact_subnet": demisto.args()['IP']
-        }
-
+    def object_lookup(querystring):
         entry = {
             'Type': entryTypes['note'],
             'Contents': '',
@@ -175,33 +171,47 @@ script:
             'HumanReadable': ''
         }
 
-        return_json = {"objects": []}
+        return_json = {'objects': []}
 
-        o = tos_request("/securetrack/api/network_objects/search", querystring)
+        o = tos_request('/securetrack/api/network_objects/search', querystring)
 
-        if o['network_objects']['count'] > 0:
+        # Validate result
+        try:
+            total = int(o['network_objects']['count'])
+        except KeyError:
+            total = 0
+
+        if total > 0:
             device_json = tos_request('/securetrack/api/devices')['devices']['device']
             objs = o['network_objects']['network_object']
             if not isinstance(o['network_objects']['network_object'], list):
                 objs = [objs]
             for obj in objs:
                 # display_name device_id
-                return_json['objects'].append({"object_name": obj['display_name'], "device": device_name(device_json, obj['device_id']), "comment": obj['comment']})
+                return_json['objects'].append({'object_name': obj['display_name'], 'device': device_name(device_json, obj['device_id']), 'comment': obj['comment']})
         else:
-            return('Nothing Found')
+            entry['HumanReadable'] = 'No Results'
+            return entry
 
         # Return to Demisto
         entry['Contents'] = json.dumps(return_json)
         entry['HumanReadable'] = tableToMarkdown('Object Lookup for {}'.format(querystring['exact_subnet']), return_json['objects'], ['object_name', 'device', 'comment'], underscoreToCamelCase, removeNull=True)
+        # Send back to Demisto inside function
         return entry
 
+    def object_lookup_command():
+        """ Sample query: querystring = {'filter':'subnet','count':'50','exact_subnet':'1.1.1.1'} """
+        querystring = {
+            'filter': 'subnet',
+            'count': '50',
+            'exact_subnet': demisto.args()['ip']
+        }
+        e = object_lookup(querystring)
+        demisto.results(e)
 
-    def policy_search():
+    def policy_search(querystring, max_rules_per_device=100):
         """ Search policy across all devices.  See docs for syntax """
         u = '/securetrack/api/rule_search'
-        max_rules_per_device = 100
-        querystring = {"search_text": demisto.args()['search']}
-
         entry = {
             'Type': entryTypes['note'],
             'Contents': '',
@@ -212,8 +222,10 @@ script:
 
         matches = tos_request(u, querystring)
         search_devices = [e['device_id'] for e in matches['device_list']['device'] if int(e['rule_count']) > 0]
+
         if not len(search_devices):
             entry['HumanReadable'] = 'No Results Found'
+            # Send back to Demisto inside function
             return entry
         else:
             querystring['count'] = max_rules_per_device
@@ -227,9 +239,6 @@ script:
                     break
 
                 current_device = device_name(device_json, d)
-                # except Exception as e:
-                #     entry['HumanReadable'] = str(e)
-                #     return entry
 
                 for rule in rules['rules']['rule']:
                     rule_return.append({
@@ -243,70 +252,74 @@ script:
             # Send back to Demisto
             entry['Contents'] = json.dumps(rule_return)
             entry['HumanReadable'] = tableToMarkdown('Policy Search Results for: {}'.format(querystring['search_text']), rule_return, ['Device', 'Source', 'Source Service', 'Destination', 'Destination Service', 'Action'], removeNull=True)
+            # Send back to Demisto inside function
             return entry
 
+    def policy_search_command():
+        max_rules_per_device = demisto.params()['MaxRules']
+        querystring = {'search_text': demisto.args()['search']}
+        e = policy_search(querystring, max_rules_per_device)
+        demisto.results(e)
+
+    def test_command():
+        tos_request('/securetrack/api/devices')
+        demisto.results('ok')
 
     # Demisto Command Routing
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            tos_request('/securetrack/api/devices')
-            demisto.results('ok')
+            test_command()
         elif demisto.command() == 'tufin-search-topology':
-            demisto.results(path_finder())
+            path_finder_command()
         elif demisto.command() == 'tufin-object-resolve':
-            demisto.results(object_lookup())
+            object_lookup_command()
         elif demisto.command() == 'tufin-search-topology-image':
-            demisto.results(path_finder_image())
+            path_finder_image_command()
         elif demisto.command() == 'tufin-policy-search':
-            demisto.results(policy_search())
+            policy_search_command()
     except Exception as e:
-        LOG(e)
-        LOG.print_log(False)
         return_error(e)
   type: python
   commands:
   - name: tufin-search-topology
     arguments:
-    - name: Source
+    - name: source
       required: true
       description: Source address/addresses (may contain multiple, comma separated
         values)
-    - name: Destination
+    - name: destination
       required: true
       description: Destination address/addresses (may contain multiple, comma separated
         values)
-    - name: Service
+    - name: service
       description: Service parameter can be a port (for example, “tcp:80”, “any”)
         or an application (for example, “Skype”, “Facebook”).
     outputs:
-    - contextPath: Tufin.TrafficAllowed
+    - contextPath: Tufin.Topology.TrafficAllowed
       description: Traffic Permitted
       type: boolean
-    - contextPath: Tufin.TrafficRawJSON
-      description: JSON of Traffic Path
-      type: string
-    - contextPath: Tufin.TrafficDevices
+    - contextPath: Tufin.Tppology.TrafficDevices
       description: List of devices in path
       type: string
     description: Search the Tufin Topology Map
   - name: tufin-search-topology-image
     arguments:
-    - name: Source
+    - name: source
       required: true
       description: Source address/addresses (may contain multiple, comma separated
         values)
-    - name: Destination
+    - name: destination
       required: true
       description: Destination address/addresses (may contain multiple, comma separated
         values)
-    - name: Service
+    - name: service
       description: Service parameter can be a port (for example, “tcp:80”, “any”)
         or an application (for example, “Skype”, “Facebook”).
     description: Search the Tufin Topology Map, returning an image
   - name: tufin-object-resolve
     arguments:
-    - name: IP
+    - name: ip
       required: true
       description: IP Address
     description: Resolve IP address to Network Object
