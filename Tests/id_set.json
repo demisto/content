@@ -12167,39 +12167,6 @@
             }
         }, 
         {
-            "7ab45104-22aa-4e1b-8062-cadcbb28d87f": {
-                "name": "Test - urlscan", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "urlscan.io", 
-                    "ip": "urlscan.io", 
-                    "urlscan-submit": "urlscan.io"
-                }
-            }
-        }, 
-        {
-            "8984405a-4274-470a-8a34-a437d8e2e1c5": {
-                "name": "Test - PhishMe", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IsGreaterThan", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "Phishme Intelligence", 
-                    "phishme-search": "Phishme Intelligence", 
-                    "email": "Phishme Intelligence", 
-                    "file": "Phishme Intelligence", 
-                    "ip": "Phishme Intelligence"
-                }
-            }
-        }, 
-        {
             "97393cfc-2fc4-4dfe-8b6e-af64067fc436": {
                 "name": "AWS - S3 Test Playbook", 
                 "implementing_scripts": [
@@ -15172,19 +15139,6 @@
                     "secure-works-get-ticket-count": "Dell Secureworks", 
                     "secure-works-close-ticket": "Dell Secureworks", 
                     "secure-works-get-tickets-updates": "Dell Secureworks"
-                }
-            }
-        }, 
-        {
-            "sep_-_test_endpoint_search": {
-                "name": "SEP - Test endpoint search", 
-                "fromversion": "3.5.0", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoints-info": "Symantec Endpoint Protection"
                 }
             }
         }, 
