@@ -580,18 +580,18 @@ class IDSetValidator(object):
 
     def __init__(self, is_circle):
         self.is_circle = is_circle
-        self.id_set = self.load_conf_file()
+        self.id_set = self.load_id_set()
 
         self.script_set = self.id_set['scripts']
         self.playbook_set = self.id_set['playbooks']
         self.integration_set = self.id_set['integrations']
         self.test_playbook_set = self.id_set['TestPlaybooks']
 
-    def load_conf_file(self):
+    def load_id_set(self):
         with open(self.ID_SET_PATH) as data_file:
             return json.load(data_file)
 
-    def validate(self, file_path):
+    def validate_file_in_set(self, file_path):
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if self.is_circle and not playbook_valid_in_id_set(file_path, self.playbook_set):
                 return False
@@ -620,14 +620,50 @@ class IDSetValidator(object):
             if self.is_circle and not script_valid_in_id_set(yml_path, self.script_set, script_data):
                 return False
 
+    def check_if_there_is_id_duplicates(self, file_path):
+        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if not self.is_circle and not is_valid_id(self.test_playbook_set, collect_ids(file_path), file_path):
+                return False
+
+        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path,
+                                                                          re.IGNORECASE):
+
+            if not self.is_circle and not is_valid_id(self.script_set,
+                                                      get_script_or_integration_id(file_path), file_path):
+                return False
+
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+
+            if not self.is_circle and not is_valid_id(self.integration_set, get_script_or_integration_id(file_path),
+                                                      file_path):
+                return False
+
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if not self.is_circle and not is_valid_id(self.playbook_set, collect_ids(file_path), file_path):
+                return False
+
+        elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+
+            yml_path, code = get_script_package_data(os.path.dirname(file_path))
+            script_data = get_script_data(yml_path, script_code=code)
+            if not self.is_circle and not is_valid_id(self.script_set, get_script_or_integration_id(yml_path),
+                                                 yml_path, script_data):
+                return False
+
+
+
 
 class StructureValidator(object):
     CONF_PATH = "./Tests/conf.json"
 
-    def __init__(self):
+    def __init__(self, is_circle):
         self._is_valid = True
 
         self.conf_data = self.load_conf_file()
+        self.id_set_validator = IDSetValidator(is_circle)
 
     def get_is_valid(self):
         return self._is_valid
@@ -660,31 +696,74 @@ class StructureValidator(object):
         self.validate_description_in_conf_dict(skipped_integrations_conf)
         # TODO: add Ben's section once he merges the mock issue.
 
-    def validate_modified_files(self, modified_files, is_circle):
-        id_validator = IDSetValidator(is_circle)
+    def validate_script_backward_compatibility(self, file_path):
+        if changed_command_name_or_arg(file_path) or \
+            changed_context(file_path) or \
+                changed_docker_image(file_path):
 
+            self._is_valid = False
+
+    def validate_integration_backward_compatibility(self, file_path):
+        if is_added_required_fields(file_path) or \
+                changed_command_name_or_arg(file_path) or \
+                changed_context(file_path) or \
+                changed_docker_image(file_path):
+
+            self._is_valid = False
+
+    def check_integration_image(self, file_path):
+        if oversize_image(file_path) or \
+                not is_existing_image(file_path):
+            self._is_valid = False
+
+################################################
+    def validate_scheme(self, file_path, matching_regex=None):
+        if matching_regex is None:
+            for regex in CHECKED_TYPES_REGEXES:
+                if re.match(regex, file_path, re.IGNORECASE):
+                    matching_regex = regex
+                    break
+
+        if matching_regex not in SKIPPED_SCHEMAS or os.path.isfile(file_path):
+            if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
+                c = Core(source_file=file_path,
+                         schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
+                try:
+                    c.validate(raise_exception=True)
+                except Exception as err:
+                    print_error('Failed: %s failed' % (file_path,))
+                    print_error(err)
+                    self._is_valid = False
+            else:
+                print file_path + " doesn't match any of the known supported file prefix/suffix," \
+                                  " please make sure that its naming is correct."
+                self._is_valid = False
+
+##############################
+
+    def validate_modified_files(self, modified_files):
         for file_path in modified_files:
             print "Validating {}".format(file_path)
-            if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
+            self.validate_scheme(file_path)
+            if changed_id(file_path) or \
+                    validate_version(file_path) or \
                     validate_fromversion_on_modified(file_path):
                 self._is_valid = False
+
             if not is_release_branch() and not validate_file_release_notes(file_path):
                 self._is_valid = False
 
-            if not id_validator.validate(file_path):
+            if not self.id_set_validator.validate_file_in_set(file_path):
                 self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                if changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                        changed_docker_image(file_path):
-                    self._is_valid = False
+                self.validate_script_backward_compatibility(file_path)
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                if oversize_image(file_path) or is_added_required_fields(file_path) or \
-                        changed_command_name_or_arg(file_path) or changed_context(file_path) or \
-                        changed_docker_image(file_path) or not is_existing_image(file_path):
-                    self._is_valid = False
+
+                self.check_integration_image(file_path)
+                self.validate_integration_backward_compatibility(file_path)
 
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 if oversize_image(file_path):
@@ -693,31 +772,25 @@ class StructureValidator(object):
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-                yml_path, code = get_script_package_data(os.path.dirname(file_path))
 
-                if changed_command_name_or_arg(yml_path) or changed_context(yml_path):
-                    self._is_valid = False
+                yml_path, _ = get_script_package_data(os.path.dirname(file_path))
+                self.validate_script_backward_compatibility(yml_path)
 
-    def validate_added_files(self, added_files, integration_set, playbook_set, script_set, test_playbook_set, is_circle):
+    def validate_added_files(self, added_files):
         for file_path in added_files:
             print "Validating {}".format(file_path)
-            if not validate_schema(file_path) or validate_version(file_path):
+            self.validate_scheme(file_path)
+            if validate_version(file_path):
+                self._is_valid = False
+
+            if not self.id_set_validator.validate_file_in_set(file_path):
+                self._is_valid = False
+
+            if not self.id_set_validator.check_if_there_is_id_duplicates(file_path):
                 self._is_valid = False
 
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                if not is_test_in_conf_json(file_path) or \
-                        (is_circle and not playbook_valid_in_id_set(file_path, test_playbook_set)):
-                    self._is_valid = False
-
-                if not is_circle and not is_valid_id(test_playbook_set, collect_ids(file_path), file_path):
-                    self._is_valid = False
-
-            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX, file_path,
-                                                                              re.IGNORECASE):
-                if is_circle and not script_valid_in_id_set(file_path, script_set):
-                    self._is_valid = False
-
-                if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(file_path), file_path):
+                if not is_test_in_conf_json(file_path):
                     self._is_valid = False
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
@@ -725,35 +798,8 @@ class StructureValidator(object):
                 if oversize_image(file_path) or not is_existing_image(file_path):
                     self._is_valid = False
 
-                if is_circle and not integration_valid_in_id_set(file_path, integration_set):
-                    self._is_valid = False
-
-                if not is_circle and not is_valid_id(integration_set, get_script_or_integration_id(file_path),
-                                                     file_path):
-                    self._is_valid = False
-
-            elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                if is_circle and not playbook_valid_in_id_set(file_path, playbook_set):
-                    self._is_valid = False
-
-                if not is_circle and not is_valid_id(playbook_set, collect_ids(file_path), file_path):
-                    self._is_valid = False
-
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 if oversize_image(file_path):
-                    self._is_valid = False
-
-            elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-                yml_path, code = get_script_package_data(os.path.dirname(file_path))
-                script_data = get_script_data(yml_path, script_code=code)
-
-                if is_circle and not script_valid_in_id_set(yml_path, script_set, script_data):
-                    self._is_valid = False
-
-                if not is_circle and not is_valid_id(script_set, get_script_or_integration_id(yml_path),
-                                                     yml_path, script_data):
                     self._is_valid = False
 
     def check_secrets(self, branch_name, is_circle):
