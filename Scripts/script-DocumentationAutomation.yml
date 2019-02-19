@@ -374,6 +374,5 @@ args:
     be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
 scripttarget: 0
 runonce: false
-releaseNotes: added auto-generated examples
 tests:
   - DocumentationTest
