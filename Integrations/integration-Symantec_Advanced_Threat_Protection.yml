@@ -217,6 +217,12 @@ script:
             p.hash_type = 'md5';
         }
         var res = doReq('GET', 'files/' + hash, p);
+
+        // If ATP has not seen the file hash before, then the API will return a blank response with HTTP 200 code.
+        if(res.body === '{}'){
+            throw 'ATP has not seen the file ' + hash + ' before';
+        }
+
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown('Symantec ATP Files', res.obj.file_list) + '\nTotal: ' + res.obj.total,
             EntryContext: {'File(val.MD5 == obj.MD5 || val.SHA256 == obj.SHA256)': res.obj.file_list.map(function(f) {
@@ -836,3 +842,4 @@ script:
     - contextPath: ATPIncidents.Result.uuid
       description: The GUID assigned for this incident
     description: Query incidents from ATP
+releaseNotes: "Fix satp-files command output when ATP has not seen the file before"
