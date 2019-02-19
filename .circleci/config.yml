@@ -2,24 +2,24 @@ version: 2
 jobs:
   build:
     docker:
-      - image: ronykoz/content-build-node911:latest
+      - image: devdemisto/content-build:1.0.0.132 # disable-secrets-detection
     environment:
       CONTENT_VERSION: "19.2.0"
-      GIT_SHA1: "e5acb69410069b750fad3d01bc683fecfb967843" # guardrails-disable-line
+      GIT_SHA1: "e5acb69410069b750fad3d01bc683fecfb967843" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
           name: Prepare Environment
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              sudo pip install flake8
       - add_ssh_keys:
           fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
+              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
       - run:
           name: Validate Files and Yaml
           command: |
