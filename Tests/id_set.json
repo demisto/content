@@ -16009,6 +16009,18 @@
             }
         }, 
         {
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test", 
+                "implementing_scripts": [
+                    "DeleteContext", 
+                    "Set"
+                ], 
+                "command_to_integration": {
+                    "ua-parse": "WhatsMyBrowser"
+                }
+            }
+        }, 
+        {
             "whois_test": {
                 "name": "whois_test", 
                 "implementing_scripts": [
