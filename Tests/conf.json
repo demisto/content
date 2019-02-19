@@ -1061,6 +1061,10 @@
         },
         {
             "playbookID": "FilterByList - Test"
+        },
+        {
+            "integrations": "Kafka V2",
+            "playbookID": "Kafka Test"
         }
     ],
     "skipped_tests": {
@@ -1111,7 +1115,8 @@
         "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
+        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)",
+        "Kafka V2": "Can not connect to instance from remote"
     },
     "nigthly_integrations": [
         "Lastline",
