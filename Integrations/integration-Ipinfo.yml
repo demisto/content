@@ -11,7 +11,7 @@ defaultEnabled: true
 configuration:
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: API Token (optional)
@@ -103,6 +103,3 @@ script:
       description: Name of the field to retrieve. Can be org, city, geo, etc.
     description: Retrieve value for a specific field from the IP address information
   runonce: false
-releaseNotes: "-"
-tests:
-  - IPInfoTest

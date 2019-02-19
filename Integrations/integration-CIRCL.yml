@@ -45,7 +45,7 @@ script:
     USERNAME = demisto.getParam('credentials')['identifier']
     PASSWORD = demisto.getParam('credentials')['password']
     AUTH = (USERNAME, PASSWORD)
-    USE_SSL = not demisto.params().get('insecure', False)
+    USE_SSL = True if demisto.params().get('insecure') else False
     IS_USING_PROXY = True if demisto.params().get('proxy') else False
     LAST_TIME_KEY = 'time_last'
 
@@ -59,8 +59,7 @@ script:
         response = requests.request(
             method,
             url,
-            auth=AUTH,
-            verify=USE_SSL
+            auth=AUTH
         )
 
         if response.status_code != 200:
@@ -109,7 +108,7 @@ script:
                 }
             }
         })
-
+    
     def http_dns_get(url):
         query_url = BASE_URL + '/pdns/query/' + url
 
@@ -160,7 +159,7 @@ script:
         }
 
         demisto.results(result)
-
+    
     def http_list_certificates(queryValue):
         query_url = BASE_URL + '/v2pssl/query/' + queryValue
 
@@ -233,7 +232,7 @@ script:
         }
 
         demisto.results(result)
-
+   
     def http_get_certificate_details(sha1):
         query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
 
@@ -245,7 +244,7 @@ script:
         distribution = ''
 
         extension = info.get('extension', {})
-
+        
         usage = extension.get('keyUsage', usage)
         usage = extension.get('extendedKeyUsage', usage)
         distribution = extension.get('crlDistributionPoints', distribution)
@@ -289,7 +288,7 @@ script:
 
         elif command == 'circl-ssl-get-certificate':
             get_certificate_details(args.get('certificate'))
-
+        
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -383,6 +382,5 @@ script:
       type: number
     description: Get the raw certificate and related information.
   runonce: false
-releaseNotes: "Fixed SSL verification parameter"
 tests:
   - CirclIntegrationTest

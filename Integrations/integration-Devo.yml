@@ -25,12 +25,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -240,6 +240,5 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "-"
 tests:
     - devo_test_playbook

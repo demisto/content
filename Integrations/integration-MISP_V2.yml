@@ -37,15 +37,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    proxies = {
-      "http": os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
-      "https": os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-    }
     if not demisto.params().get('proxy'):
-        proxies = {
-          "http": None,
-          "https": None
-        }
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
@@ -791,7 +783,7 @@ script:
 
     LOG(f'command is {demisto.command()}')
     try:
-        MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL, proxies=proxies)
+        MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)
         if command == 'test-module':
             #  This is the call made when pressing the integration test button.
             test()
@@ -1731,6 +1723,6 @@ script:
     description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
-releaseNotes: "Fixed connection through proxy. Added add_sighting command and test connection"
 tests:
 - MISP V2 Test
+releaseNotes: add_sighting command and test connection

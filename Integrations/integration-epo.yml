@@ -21,12 +21,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -946,6 +946,5 @@ script:
       type: string
     description: Gets the ePO version. This requires global admin permissions.
   runonce: false
-releaseNotes: "-"
 tests:
 - Test Playbook McAfee ePO

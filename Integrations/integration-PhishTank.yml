@@ -11,7 +11,7 @@ defaultEnabled: true
 configuration:
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Database refresh interval (hours)
@@ -181,6 +181,3 @@ script:
     arguments: []
     description: Show PhishTank database status
   runonce: false
-releaseNotes: "-"
-tests:
-  - PhishTank Testing

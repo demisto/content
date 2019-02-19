@@ -15,12 +15,12 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -793,6 +793,5 @@ script:
         DestPort, DestCidr & Comment
     description: update rule to L3 firewall rules of an SSID
 hidden: false
-releaseNotes: "-"
 tests:
 - Cisco-Meraki-Test

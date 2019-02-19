@@ -17,12 +17,12 @@ configuration:
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 script:

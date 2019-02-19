@@ -22,12 +22,12 @@ configuration:
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -1193,7 +1193,6 @@ script:
     - contextPath: NetWitness.Blacklist.Domains
       description: Domains blacklisted successfully
     description: 'Add a list of domains to blacklist '
-releaseNotes: "-"
 tests:
   - NetWitness Endpoint Test
 

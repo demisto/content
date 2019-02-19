@@ -3,10 +3,25 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
+            "playbookID": "RandomStringGenerateTest"
+        },
+        {
+            "playbookID": "DocumentationTest",
+            "integrations": "ipinfo"
+        },
+        {
             "playbookID": "HighlightWords_Test"
+
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Fidelis Elevate Network",
+            "playbookID": "Fidelis-Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -22,7 +37,7 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "TestUnEscapeUrl"
+            "playbookID": "UnEscapeURLs-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -282,6 +297,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
+        },
+        {
 
             "integrations": "BigFix",
             "playbookID": "BigFixTest"
@@ -395,6 +414,10 @@
             "timeout": 700
         },
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD Upload File"
+        },
+        {
             "playbookID": "exporttocsv_script_test"
         },
         {
@@ -471,8 +494,8 @@
             "timeout": 300
         },
         {
-            "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
+            "integrations": "Symantec Endpoint Protection V2",
+            "playbookID": "SymantecEndpointProtection_Test"
         },
         {
             "integrations": "carbonblackprotection",
@@ -783,6 +806,14 @@
             "playbookID": "ArcSight Logger test"
         },
         {
+            "integrations": "ArcSight ESM",
+            "playbookID": "ArcSight ESM Test"
+        },
+        {
+            "integrations": "ArcSight ESM",
+            "playbookID": "test Arcsight - Get events related to the Case"
+        },
+        {
             "integrations": "XFE",
             "playbookID": "XFE Test",
             "timeout": 140,
@@ -895,7 +926,7 @@
         {
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
-          "timeout": 600
+          "timeout": 700
         },
         {
             "integrations" : "VxStream",
@@ -1022,6 +1053,9 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "FilterByList - Test"
         }
     ],
     "skipped_tests": {
@@ -1040,12 +1074,10 @@
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
-        "DUO Test Playbook": "DUO integration is failing",
         "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
-        "CreatePhishingClassifierMLTest": "fails",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
-        "cisco-ise-test-playbook": "fails",
         "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
+
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
@@ -1053,12 +1085,10 @@
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
         "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation",
+        "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Active Response": "DevOps investigation",
-        "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
@@ -1076,7 +1106,8 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)"
+        "Tanium": "Instance is not stable (issue 15497)",
+        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
     },
     "nigthly_integrations": [
         "Lastline",

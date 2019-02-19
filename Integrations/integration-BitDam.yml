@@ -23,7 +23,7 @@ configuration:
   required: true
 - display: Trust any certificate
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use proxy settings
@@ -281,6 +281,5 @@ script:
       type: string
     description: Get verdict for a scanned file
   runonce: false
-releaseNotes: "-"
 tests:
   - Detonate File - BitDam Test

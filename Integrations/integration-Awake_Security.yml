@@ -20,6 +20,7 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
+  defaultvalue: "True"
   type: 8
   required: false
 - display: Fetch incidents
@@ -34,8 +35,9 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
+  defaultvalue: "False"
   type: 8
-  required: false
+  required: true
 - display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
     "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement:
     Unix-based PSEXEC, C2: Possible ICMP tunnel"'
@@ -73,7 +75,7 @@ script:
     params = demisto.params()
     server = params["server"]
     prefix = server + "/awakeapi/v1"
-    verify = not params.get('unsecure', False)
+    verify = params.get('unsecure', False)
     if not params.get("proxy", False):
         del os.environ["HTTP_PROXY"]
         del os.environ["HTTPS_PROXY"]
@@ -1096,6 +1098,5 @@ script:
     description: Lookup and enrich a device
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
 - awake_security_test_pb

@@ -34,12 +34,12 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Allow self-signed SSL certificates
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Support indicator API V2
@@ -824,6 +824,5 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
-releaseNotes: "-"
 tests:
 - CrowdStrike Falcon Intel v2
