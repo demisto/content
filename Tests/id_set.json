@@ -6097,7 +6097,10 @@
                 "command_to_integration": {
                     "vt-private-check-file-behaviour": "VirusTotal - Private API", 
                     "vt-private-get-file-report": "VirusTotal - Private API"
-                }
+                }, 
+                "tests": [
+                    "No test - need to add test"
+                ]
             }
         }, 
         {
