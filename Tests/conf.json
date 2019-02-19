@@ -490,6 +490,10 @@
             "playbookID": "EWSv2_empty_attachment_test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWS Public Folders Test"
+        },
+        {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
