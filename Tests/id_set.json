@@ -11658,7 +11658,8 @@
                     "url"
                 ], 
                 "tests": [
-                    "urlscan_malicious_Test"
+                    "urlscan_malicious_Test", 
+                    "Test - urlscan"
                 ]
             }
         }, 

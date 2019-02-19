@@ -676,6 +676,10 @@
             "playbookID": "urlscan_malicious_Test"
         },
         {
+            "integrations": "urlscan.io",
+            "playbookID": "Test - urlscan"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
