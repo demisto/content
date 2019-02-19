@@ -32,10 +32,20 @@ script:
     import base64
     import requests
     import time
+    import warnings
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
 
-    # disable insecure warnings
+    def warn(*args, **kwargs):
+        """
+        Do nothing with warnings
+        """
+        pass
+
+    # Disable requests warnings
     requests.packages.urllib3.disable_warnings()
+
+    # Disable python warnings
+    warnings.warn = warn
 
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -128,12 +138,21 @@ script:
         'completed': 2
     }
 
+    DISTRIBUTION_NUMBERS = {
+        'Your_organisation_only': 0,
+        'This_community_only': 1,
+        'Connected_communities': 2,
+        'All_communities': 3
+    }
     ''' HELPER FUNCTIONS '''
+
+
     def convert_timestamp(timestamp):
         """
         Gets a timestamp from MISP response (1546713469) and converts it to human readable format
         """
         return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+
 
     def replace_keys(obj_to_build):
         """
@@ -144,6 +163,7 @@ script:
         if isinstance(obj_to_build, dict):
             return {(ENTITIESDICT[k] if k in ENTITIESDICT else k): replace_keys(v) for k, v in obj_to_build.items()}
         return obj_to_build
+
 
     def build_context(response):
         """
@@ -174,7 +194,9 @@ script:
             'Galaxy',
             'Tag'
         ]
-
+        # Sometimes, the pymisp will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
+        if isinstance(response, str):
+            response = json.loads(json.dumps(response))
         # Remove 'Event' keyword
         events = [event.get('Event') for event in response]
         for i in range(0, len(events)):
@@ -397,7 +419,7 @@ script:
         # Creating dict with demisto's arguments
         args = ['distribution', 'to_ids', 'category', 'info', 'analysis', 'comment', 'threat_level_id']
         args = {k:demisto.args().get(k) for k in args if demisto.args().get(k)}
-        args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demiso.args().get('threat_level_id')
+        args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get('threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
         args['analysis'] = ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get('analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis')
         event_id = demisto.args().get('event_id')
 
@@ -430,7 +452,8 @@ script:
 
     def get_time_now():
         """
-        :return time in year--month--day format:
+        :return: time in year--month--day format
+        :rtype: str
         """
         time_now = time.gmtime(time.time())
         return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
@@ -439,6 +462,10 @@ script:
     def create_event(ret_only_event_id=False):
         """
         Creating event in MISP with the given attriubute attribute
+        :param ret_only_event_id: returning event ID if set to True
+        :type ret_only_event_id: bool
+        :return event_id:
+        :rtype: int
         """
         d_args = demisto.args()
         # new_event in the old integration gets some args that belongs to attribute, so after creating the basic event, we will add attribute
@@ -456,6 +483,10 @@ script:
 
         event = MISP.new_event(**event_dic)
         event_id = event.get('id')
+        if isinstance(event_id, str) and event_id.isdigit():
+                event_id = int(event_id)
+        elif not isinstance(event_id, int):
+            return_error('EventID must be a number')
 
         if ret_only_event_id:
             return event_id
@@ -482,9 +513,10 @@ script:
 
     def add_attribute(eventid=None, internal=None):
         """
-        :param args_list: arguments created by 'takeArgs' func
-        :type args_list: list
-        :return Demisto's object:
+        :param eventid: Event ID to add attribute to
+        :type eventid: int
+        :param internal: if set to True, will not post results to Demisto
+        :type internal: bool
         """
         d_args = demisto.args()
         args = {
@@ -498,6 +530,18 @@ script:
         }
         if eventid:
             args['id'] = eventid
+        if isinstance(args.get('id'), str) and args.get('id').isdigit():
+            args['id'] = int(args['id'])
+        elif not isinstance(args.get('id'), int):
+            return_error('Invalid MISP event ID, must be a number')
+        if args.get('distribution') is not None:
+            if not isinstance(args.get('distribution'), int):
+                if isinstance(args.get('distribution'), str) and args.get('distribution').isdigit():
+                    args['distribution'] = int(args['distribution'])
+                elif isinstance(args.get('distribution'), str) and args['distribution'] in DISTRIBUTION_NUMBERS:
+                    args['distribution'] = DISTRIBUTION_NUMBERS.get(args['distribution'])
+                else:
+                    return_error("Distribution can be 'Your_organisation_only', 'This_community_only', 'Connected_communities' or 'All_communities'")
 
         event = MISP.get_event(args.get('id'))
 
@@ -507,7 +551,6 @@ script:
         if internal:
             return
         event = MISP.search(eventid=args.get('id'))
-        demisto.info(f"\n\n{json.dumps(event, indent=4)}\n\n")
         md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
         ec = {
             MISP_PATH: build_context(event)
@@ -545,7 +588,7 @@ script:
         else:
             if unzip:
                 files = list()
-                for f in resonse:
+                for f in response:
                     # Check if it's tuple. if so, f = (EventID, hash, fileContent)
                     if isinstance(f, tuple) and len(f) == 3:
                         filename = f[1]
@@ -622,11 +665,11 @@ script:
         search_args = ['event_id', 'value', 'type', 'category', 'org', 'tags', 'from', 'to', 'last', 'eventid', 'uuid', 'to_ids']
 
         args = dict()
-        # create dict to pass into the search
+        # Create dict to pass into the search
         for k in search_args:
             if k in d_args:
                 args[k] = d_args.get(k)
-        #replacing keys and values from Demisto to Misp's keys
+        # Replacing keys and values from Demisto to Misp's keys
         if 'type' in args:
             args['type_attribute'] = d_args.pop('type')
         # search function 'to_ids' parameter gets 0 or 1 instead of bool.
@@ -670,6 +713,7 @@ script:
         else:
             demisto.results(f"No events found in MISP for {args}")
 
+
     def delete_event():
         """
         Gets an event id and deletes it.
@@ -687,6 +731,7 @@ script:
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md
             })
+
 
     def add_tag():
         """
@@ -710,6 +755,40 @@ script:
             'EntryContext': ec
         })
 
+
+    def add_sighting():
+        """
+        Add sighting to MISP attribute
+
+        """
+        sighting = {
+            'sighting': 0,
+            'false_positive': 1,
+            'expiration': 2
+        }
+        kargs = {
+            'id': demisto.args().get('id'),
+            'uuid': demisto.args().get('uuid'),
+            'type': sighting.get(demisto.args().get('type'))
+        }
+        att_id = demisto.args().get('id', demisto.args().get('uuid'))
+        if att_id:
+            MISP.set_sightings(kargs)
+            demisto.results(f'Sighting \'{demisto.args().get("type")}\' has been successfully added to attribute {att_id}')
+        else:
+            return_error('ID or UUID not specified')
+
+
+    def test():
+        """
+        Test module.
+        """
+        if MISP.test_connection():
+            demisto.results('ok')
+        else:
+            return_error('MISP has not connected.')
+
+
     command = demisto.command()
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -719,8 +798,7 @@ script:
         MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)
         if command == 'test-module':
             #  This is the call made when pressing the integration test button.
-            # if MISP havn't encountered an error, will return ok
-            demisto.results('ok')
+            test()
         elif command == 'misp-upload-sample':
             upload_sample()
         elif command == 'misp-download-sample':
@@ -733,6 +811,8 @@ script:
             search()
         elif command == 'misp-delete-event':
             delete_event()
+        elif command == 'misp-add-sighting':
+            add_sighting()
         elif command == 'misp-add-tag':
             add_tag()
         elif command == 'file':
@@ -742,12 +822,8 @@ script:
         elif command == 'ip':
             check_ip()
     except PyMISPError as e:
-        LOG(e.message)
-        LOG.print_log()
         return_error(e.message)
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
         return_error(e)
   type: python
   commands:
@@ -1642,7 +1718,23 @@ script:
       description: All tag names in the event
       type: string
     description: Adds a tag to the given UUID event or attribute.
+  - name: misp-add-sighting
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sighting
+      - false_positive
+      - expiration
+      description: Type of sighting to add
+    - name: id
+      description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retreived from misp-search
+    - name: uuid
+      description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retreived from misp-search
+    description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
 tests:
 - MISP V2 Test
+releaseNotes: add_sighting command and test connection
