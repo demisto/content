@@ -2124,7 +2124,11 @@
             "FindSimilarIncidents": {
                 "name": "FindSimilarIncidents", 
                 "script_executions": [
-                    "getContext"
+                    "getContext", 
+                    "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
