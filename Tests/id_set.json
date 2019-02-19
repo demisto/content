@@ -5282,6 +5282,9 @@
                 "implementing_scripts": [
                     "FindSimilarIncidents", 
                     "CloseInvestigationAsDuplicate"
+                ], 
+                "tests": [
+                    "test_similar_incidents"
                 ]
             }
         }, 
