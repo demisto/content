@@ -565,6 +565,7 @@ script:
       type: string
     description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
+    deprecated: true
     arguments:
     - name: url
       required: true
@@ -647,7 +648,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
-    description: Submit a url to scan
+    description: "Deprecated: replaced with url command"
   - name: url
     arguments:
     - name: url
