@@ -3396,9 +3396,6 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
-                ], 
-                "tests": [
-                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -11820,17 +11817,6 @@
             }
         }, 
         {
-            "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser", 
-                "commands": [
-                    "ua-parse"
-                ], 
-                "tests": [
-                    "WhatsMyBrowser-Test"
-                ]
-            }
-        }, 
-        {
             "Where is the egg?": {
                 "name": "Where is the egg?", 
                 "fromversion": "3.6.0", 
@@ -15355,29 +15341,6 @@
             }
         }, 
         {
-            "SymantecEndpointProtection_Test": {
-                "name": "SymantecEndpointProtection_Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "PrintErrorEntry"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoint-quarantine": "", 
-                    "sep-list-policies": "", 
-                    "sep-list-locations": "", 
-                    "sep-update-endpoint-content": "", 
-                    "sep-endpoints-info": "", 
-                    "sep-groups-info": "", 
-                    "sep-client-content": "", 
-                    "sep-system-info": "", 
-                    "sep-scan-endpoint": ""
-                }, 
-                "tests": [
-                    "No test - test playbook"
-                ]
-            }
-        }, 
-        {
             "SymantecMSSTest": {
                 "name": "SymantecMSSTest", 
                 "implementing_scripts": [
@@ -15546,17 +15509,6 @@
                     "atd-list-analyzer-profiles": "", 
                     "atd-login": "", 
                     "atd-list-user": ""
-                }
-            }
-        }, 
-        {
-            "Test Playbook McAfee ATD Upload File": {
-                "name": "Test Playbook McAfee ATD Upload File", 
-                "implementing_scripts": [
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "atd-file-upload": ""
                 }
             }
         }, 
@@ -15765,14 +15717,21 @@
             }
         }, 
         {
+            "TestDedupIncidentsByName": {
+                "name": "TestDedupIncidentsByName", 
+                "implementing_playbooks": [
+                    "DeDup incidents"
+                ]
+            }
+        }, 
+        {
             "TestDedupIncidentsPlaybook": {
                 "name": "TestDedupIncidentsPlaybook", 
                 "implementing_scripts": [
+                    "FindSimilarIncidents", 
                     "CreateDuplicateIncident", 
-                    "DeleteContext"
-                ], 
-                "implementing_playbooks": [
-                    "DeDup incidents"
+                    "DeleteContext", 
+                    "Sleep"
                 ]
             }
         }, 
@@ -16147,18 +16106,6 @@
                     "crowdstrike-submit-url": "VxStream", 
                     "crowdstrike-scan": "VxStream", 
                     "crowdstrike-search": "VxStream"
-                }
-            }
-        }, 
-        {
-            "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
-                "implementing_scripts": [
-                    "DeleteContext", 
-                    "Set"
-                ], 
-                "command_to_integration": {
-                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
