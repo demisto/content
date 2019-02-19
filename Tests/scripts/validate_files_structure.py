@@ -498,12 +498,14 @@ def is_valid_in_id_set(file_path, obj_data, obj_set):
             is_found = True
             if checked_instance_data != obj_data[file_id]:
                 print_error("You have failed to update id_set.json with the data of {} "
-                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                            "please run `python Tests/scripts/update_id_set.py -r` it will recreate the id_set so "
+                            "it will take ~40 seconds".format(file_path))
                 return False
 
     if not is_found:
         print_error("You have failed to update id_set.json with the data of {} "
-                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                    "please run `python Tests/scripts/update_id_set.py -r` it will "
+                    "recreate the id_set so it will take ~40 seconds".format(file_path))
 
     return is_found
 
@@ -538,7 +540,7 @@ def validate_committed_files(branch_name, is_circle):
         except ValueError, ex:
             if "Expecting property name" in ex.message:
                 print_error("You probably merged from master and your id_set.json has conflicts. "
-                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                            "Run `python Tests/scripts/update_id_set.py -r`, it should reindex your id_set.json")
                 return
             else:
                 raise ex
