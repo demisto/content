@@ -799,7 +799,8 @@
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
+            "playbookID": "McAfee-TIE Test",
+            "timeout": 200
         },
         {
             "integrations": "ArcSight Logger",
