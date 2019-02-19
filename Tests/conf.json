@@ -1106,7 +1106,6 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
         "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
