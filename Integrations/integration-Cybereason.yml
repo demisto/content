@@ -1937,4 +1937,3 @@ script:
   runonce: false
 tests:
   - Cybereason Test
-releaseNotes: validate FETCH_TIME param and set default value

@@ -2401,7 +2401,6 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added option to search by message-id in ews-search-mailbox"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'
