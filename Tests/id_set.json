@@ -5920,7 +5920,7 @@
                 "command_to_integration": {
                     "cylance-protect-get-devices": "Cylance Protect", 
                     "cb-sensor-info": "carbonblack", 
-                    "so-agents-query": "sentinelOne"
+                    "so-agents-query": "SentinelOne"
                 }
             }
         }, 
@@ -7143,9 +7143,12 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "so-agents-query": "sentinelOne", 
-                    "so-get-agent-processes": "sentinelOne"
-                }
+                    "so-agents-query": "SentinelOne", 
+                    "so-get-agent-processes": "SentinelOne"
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -9770,7 +9773,15 @@
                 "commands": [
                     "mar-search", 
                     "mar-collectors-list", 
-                    "mar-search-multiple"
+                    "mar-search-multiple", 
+                    "mar-search-services", 
+                    "mar-search-processes", 
+                    "mar-search-win-registry", 
+                    "mar-search-files", 
+                    "mar-search-usb-connected-storage-devices", 
+                    "mar-search-user-profiles", 
+                    "mar-search-scheduled-tasks", 
+                    "mar-search-host-info"
                 ]
             }
         }, 
@@ -13209,6 +13220,21 @@
             }
         }, 
         {
+            "Endpoint data collection test": {
+                "name": "Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
             "endpoint_enrichment_-_generic_test": {
                 "name": "Endpoint Enrichment - Generic Test", 
                 "fromversion": "3.5.0", 
@@ -14161,6 +14187,21 @@
                     "googleapps-gmail-get-mail": "google", 
                     "googleapps-gmail-search": "google", 
                     "send-mail": "Mail Sender (New)"
+                }
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection test": {
+                "name": "MAR - Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "MAR - Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
                 }
             }
         }, 
