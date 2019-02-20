@@ -734,6 +734,6 @@ script:
     description: Submit a url to scan
   runonce: false
 fromversion: 3.5.0
-releaseNotes: "Fixed issue where insecure setting was ignored during polling, deprecate urlscan-submit - please  !url instead"
+releaseNotes: "Deprecated urlscan-submit - please use !url instead"
 tests:
   - urlscan_malicious_Test
