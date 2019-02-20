@@ -30,6 +30,8 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 
 # from secrets import get_secrets
+from Tests.scripts.hook_validations.script import ScriptValidator
+from Tests.scripts.hook_validations.integration import IntegrationValidator
 from update_id_set import get_script_data, get_playbook_data, get_integration_data, get_script_package_data
 
 # Magic Numbers
@@ -115,14 +117,14 @@ def print_color(msg, color):
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
 
-class GitCommunicator(object):
-    def run_git_command(self, command):
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-        output, err = p.communicate()
-        if err:
-            print_error("Failed to run git command " + command)
-            sys.exit(1)
-        return output
+
+def run_git_command(command):
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    output, err = p.communicate()
+    if err:
+        print_error("Failed to run git command " + command)
+        sys.exit(1)
+    return output
 
 
 def checked_type(file_path):
@@ -308,109 +310,6 @@ class ImageValidator(object):
         return is_image_in_package or is_image_in_yml
 
 
-class ScriptValidator(object):
-    def __init__(self, file_path, initiate_check=True):
-        self.file_path = file_path
-        self._is_valid = True
-
-        self.git = None
-        if initiate_check:
-            self.validate_backward_compatibility()
-            self.git = GitCommunicator()
-
-    def is_invalid(self):
-        return not self._is_valid
-
-    def validate_backward_compatibility(self):
-        self.changed_context()
-        self.validate_docker_image()
-        self.changed_command_name_or_arg()
-
-    def changed_command_name_or_arg(self):
-        change_string = self.git.run_git_command("git diff HEAD {0}".format(self.file_path))
-        deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
-        added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
-        if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
-            print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
-                        " the file {0} please undo, the line was:\n{1}".format(self.file_path,
-                                                                               deleted_groups.group(0)[1:]))
-            self._is_valid = False
-
-    def changed_context(self):
-        change_string = self.git.run_git_command("git diff HEAD {0}".format(self.file_path))
-
-        deleted_groups = re.search("-([ ]+)?- contextPath: (.*)", change_string)
-        added_groups = re.search("\+([ ]+)?- contextPath: (.*)", change_string)
-        if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
-            print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
-                        "undo, the line was:\n{1}".format(self.file_path, deleted_groups.group(0)[1:]))
-            self._is_valid = False
-
-    def validate_docker_image(self):
-        change_string = self.git.run_git_command("git diff HEAD {0}".format(self.file_path))
-        is_docker_added = re.search("\+([ ]+)?dockerimage: .*", change_string)
-        is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", change_string)
-        if is_docker_added or is_docker_deleted:
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-
-
-class IntegrationValidator(object):
-
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self._is_valid = True
-
-        self.validate_backward_compatibility()
-
-    def is_invalid(self):
-        return not self._is_valid
-
-    def validate_backward_compatibility(self):
-        self.changed_context()
-        self.changed_docker_image()
-        self.is_added_required_fields()
-        self.changed_command_name_or_arg()
-
-    def changed_command_name_or_arg(self):
-        change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
-        deleted_groups = re.search("-([ ]+)?- name: (.*)", change_string)
-        added_groups = re.search("\+([ ]+)?- name: (.*)", change_string)
-        if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
-            print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
-                        " the file {0} please undo, the line was:\n{1}".format(self.file_path,
-                                                                               deleted_groups.group(0)[1:]))
-            self._is_valid = False
-
-    def changed_context(self):
-        with open(self.file_path, 'r') as file_data:
-            change_string = file_data.read()
-
-        deleted_groups = re.search("-([ ]+)?- contextPath: (.*)", change_string)
-        added_groups = re.search("\+([ ]+)?- contextPath: (.*)", change_string)
-        if deleted_groups and (not added_groups or (added_groups and deleted_groups.group(2) != added_groups.group(2))):
-            print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
-                        "undo, the line was:\n{1}".format(self.file_path, deleted_groups.group(0)[1:]))
-            self._is_valid = False
-
-    def changed_docker_image(self):
-        change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
-        is_docker_added = re.search("\+([ ]+)?dockerimage: .*", change_string)
-        is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", change_string)
-        if is_docker_added or is_docker_deleted:
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-
-    def is_added_required_fields(self):
-        change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
-        if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or \
-                re.search("\+[ ]+required: true", change_string):
-            print_error("You've added required fields in the integration file {}".format(self.file_path))
-            self._is_valid = False
-
-
 class IDSetValidator(object):
     ID_SET_PATH = "./Tests/id_set.json"
 
@@ -484,43 +383,46 @@ class IDSetValidator(object):
                 if checked_instance_data != obj_data[file_id]:
                     print_error("You have failed to update id_set.json with the data of {} "
                                 "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-                    self._valid_id = False
+                    return False
 
         if not is_found:
             print_error("You have failed to update id_set.json with the data of {} "
                         "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-            self._valid_id = False
+            return False
+
+        return True
 
     def validate_playbook_in_set(self, file_path, playbook_set):
         playbook_data = get_playbook_data(file_path)
-        self.is_valid_in_id_set(file_path, playbook_data, playbook_set)
+        return self.is_valid_in_id_set(file_path, playbook_data, playbook_set)
 
     def validate_script_in_set(self, file_path, script_set, script_data=None):
         if script_data is None:
             script_data = get_script_data(file_path)
 
-        self.is_valid_in_id_set(file_path, script_data, script_set)
+        return self.is_valid_in_id_set(file_path, script_data, script_set)
 
     def validate_integration_in_set(self, file_path, integration_set):
         integration_data = get_integration_data(file_path)
-        self.is_valid_in_id_set(file_path, integration_data, integration_set)
+        return self.is_valid_in_id_set(file_path, integration_data, integration_set)
 
-    def validate_file_in_set(self, file_path):
+    def is_file_valid_in_set(self, file_path):
+        is_valid = True
         if self.is_circle:  # No need to check on local env because the id_set will contain this info after the commit
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                self.validate_playbook_in_set(file_path, self.playbook_set)
+                is_valid = self.validate_playbook_in_set(file_path, self.playbook_set)
 
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                self.validate_playbook_in_set(file_path, self.test_playbook_set)
+                is_valid = self.validate_playbook_in_set(file_path, self.test_playbook_set)
 
             elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                self.validate_script_in_set(file_path, self.script_set)
+                is_valid = self.validate_script_in_set(file_path, self.script_set)
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
-                self.validate_integration_in_set(file_path, self.integration_set)
+                is_valid = self.validate_integration_in_set(file_path, self.integration_set)
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
@@ -529,7 +431,9 @@ class IDSetValidator(object):
                 yml_path, code = get_script_package_data(os.path.dirname(file_path))
                 script_data = get_script_data(yml_path, script_code=code)
 
-                self.validate_script_in_set(yml_path, self.script_set, script_data)
+                is_valid = self.validate_script_in_set(yml_path, self.script_set, script_data)
+
+        return is_valid
 
     def check_if_there_is_id_duplicates(self, file_path):
         if not self.is_circle:
@@ -591,7 +495,7 @@ class StructureValidator(object):
             self._is_valid = False
             print("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances)))
 
-    def validate_conf_json(self):
+    def is_valid_conf_json(self):
         """Validate the fields skipped_tests and skipped_integrations in conf.json file."""
         skipped_tests_conf = self.conf_data['skipped_tests']
         skipped_integrations_conf = self.conf_data['skipped_integrations']
@@ -599,6 +503,8 @@ class StructureValidator(object):
         self.validate_description_in_conf_dict(skipped_tests_conf)
         self.validate_description_in_conf_dict(skipped_integrations_conf)
         # TODO: add Ben's section once he merges the mock issue.
+
+        return self._is_valid
 
     def validate_scheme(self, file_path, matching_regex=None):
         if matching_regex is None:
@@ -724,14 +630,8 @@ class StructureValidator(object):
             if not self.is_release_branch():
                 self.validate_file_release_notes(file_path)
 
-            self.id_set_validator.validate_file_in_set(file_path)
-            if self.id_set_validator.is_invalid_id():
+            if self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
-
-            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_validator = ScriptValidator(file_path)
-                if script_validator.is_invalid():
-                    self._is_valid = False
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
@@ -741,12 +641,12 @@ class StructureValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
-                if integration_validator.is_invalid():
+                if not integration_validator.is_backward_compatible():
                     self._is_valid = False
 
-            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
-                image_validator = ImageValidator(file_path)
-                if image_validator.is_invalid_image():
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+                script_validator = ScriptValidator(file_path)
+                if not script_validator.is_backward_compatible():
                     self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
@@ -755,7 +655,12 @@ class StructureValidator(object):
 
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
                 script_validator = ScriptValidator(yml_path)
-                if script_validator.is_invalid():
+                if not script_validator.is_backward_compatible():
+                    self._is_valid = False
+
+            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+                image_validator = ImageValidator(file_path)
+                if image_validator.is_invalid_image():
                     self._is_valid = False
 
     def validate_added_files(self, added_files):
@@ -764,8 +669,7 @@ class StructureValidator(object):
             self.validate_scheme(file_path)
             self.validate_version(file_path)
 
-            self.id_set_validator.validate_file_in_set(file_path)
-            if self.id_set_validator.is_invalid_id():
+            if self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
             self.id_set_validator.check_if_there_is_id_duplicates(file_path)
@@ -849,7 +753,7 @@ def main():
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     structure_validator = StructureValidator(is_circle)
-    structure_validator.validate_conf_json()
+    structure_validator.is_valid_conf_json()
     if branch_name != 'master':
         import logging
         logging.basicConfig(level=logging.CRITICAL)
@@ -868,4 +772,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
