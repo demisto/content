@@ -2551,4 +2551,3 @@ script:
   isfetch: true
 tests:
   - tenable-sc-test
-releaseNotes: validate FETCH_TIME param and set default value
