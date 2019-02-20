@@ -305,7 +305,7 @@ def fetch():
         # convert case or event to demisto incident
         r_id = result.get('ID') or result.get('Event ID')
         create_time = int(result.get('Start Time') or result.get('Create Time'))
-        if create_time >= last_create_time or r_id not in already_fetched:
+        if create_time > last_create_time or r_id not in already_fetched:
             # check if case/event already was fetched before
             latest_created_time = create_time if create_time > latest_created_time else latest_created_time
 
