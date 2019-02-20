@@ -370,7 +370,7 @@ def main():
         return
 
     with open('public_ip', 'rb') as f:
-        public_ip = f.read()
+        public_ip = f.read().strip()
 
     ami = AMIConnection(public_ip)
     ami.clone_mock_data()
