@@ -1160,6 +1160,5 @@ script:
     description: Update the properties of an alert entity
   isfetch: true
   runonce: false
-releaseNotes: "Implemented OAuth2 authentication"
 tests:
 - No test - TBD

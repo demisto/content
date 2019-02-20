@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "CheckpointFW-test",
+            "integrations": "Check Point"
+        },
+        {
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
@@ -803,12 +810,12 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
+            "playbookID": "McAfee-MAR_Test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test",
-            "timeout": 200
+            "playbookID": "McAfee-TIE Test"
         },
         {
             "integrations": "ArcSight Logger",
@@ -1065,10 +1072,22 @@
         },
         {
             "playbookID": "FilterByList - Test"
+        },
+        {
+            "integrations": "Kafka V2",
+            "playbookID": "Kafka Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test"
         }
     ],
     "skipped_tests": {
-        "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1110,7 +1129,8 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)"
+        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)",
+        "Kafka V2": "Can not connect to instance from remote"
     },
     "nigthly_integrations": [
         "Lastline",
