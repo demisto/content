@@ -1774,6 +1774,5 @@ script:
       description: 'Delete an extracted file from the endpoint.'
   isfetch: true
   runonce: false
-releaseNotes: "added context standard"
 tests:
   - no tests
