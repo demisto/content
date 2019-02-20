@@ -3,14 +3,14 @@ import sys
 import json
 import string
 import random
-import argparse
 import requests
+import argparse
 
 import demisto
 from slackclient import SlackClient
 
-from mock_server import MITMProxy, AMIConnection
 from test_integration import test_integration
+from mock_server import MITMProxy, AMIConnection
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
 
@@ -100,7 +100,6 @@ def configure_proxy_unsecure(integrations):
                 elem['params'][param] = True
 
 
-# run the test without mocking mechanism.
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
@@ -118,23 +117,22 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
 # run the test using a real instance, record traffic.
 def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    proxy.set_folder_tmp()
+    proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True)
     succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     proxy.stop()
     if succeed:
-        proxy.move_to_primary(playbook_id)
-    proxy.set_folder_primary()
+        proxy.move_mock_file_to_repo(playbook_id)
+
+    proxy.set_repo_folder()
     return succeed
 
 
 def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message):
     configure_proxy_unsecure(integrations)
-    if not proxy.has_mock_file(playbook_id):
-        print start_message + ' (Mock: Recording)'
-    else:
+    if proxy.has_mock_file(playbook_id):
         print start_message + ' (Mock: Playback)'
         proxy.start(playbook_id)
         # run test
@@ -148,7 +146,12 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
             return
 
-        print "Test failed with mock, recording new mock file."
+        else:
+            print "Test failed with mock, recording new mock file."
+    else:
+        print start_message + ' (Mock: Recording)'
+
+    # Mock recording - no mock file or playback failure.
     run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
     print '------ Test %s end ------' % (test_message,)
@@ -159,7 +162,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
     start_message = '------ Test %s start ------' % (test_message,)
 
     if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
-        print start_message + ' (Mock: Bypass)'
+        print start_message + ' (Mock: Disabled)'
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                        test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
         print '------ Test %s end ------' % (test_message,)
@@ -370,8 +373,8 @@ def main():
         public_ip = f.read()
 
     ami = AMIConnection(public_ip)
-    ami.clone_mock_data()  # FUTURE: pull instead of clone
-    proxy = MITMProxy(c, public_ip, debug=False)
+    ami.clone_mock_data()
+    proxy = MITMProxy(c, public_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
