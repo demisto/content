@@ -496,7 +496,5 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.98
-releaseNotes: Adding a new script that allows to extract http flows from pcap/pcapng
-  files.
 tests:
 - PcapHTTPExtractor-Test
