@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "test_similar_incidents"
+        },
+        {
             "playbookID": "CheckpointFW-test",
             "integrations": "Check Point"
         },
