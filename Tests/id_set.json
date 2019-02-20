@@ -8678,6 +8678,24 @@
             }
         }, 
         {
+            "DUO Admin": {
+                "name": "DUO Admin", 
+                "commands": [
+                    "duoadmin-get-authentication-logs-by-user", 
+                    "duoadmin-dissociate-device-from-user", 
+                    "duoadmin-delete-u2f-token", 
+                    "duoadmin-get-users", 
+                    "duoadmin-get-devices-by-user", 
+                    "duoadmin-get-u2f-tokens-by-user", 
+                    "duoadmin-get-devices", 
+                    "duoadmin-associate-device-to-user"
+                ], 
+                "tests": [
+                    "DuoAdmin API test playbook"
+                ]
+            }
+        }, 
+        {
             "EasyVista": {
                 "name": "EasyVista", 
                 "commands": [
@@ -13167,6 +13185,24 @@
                 ], 
                 "command_to_integration": {
                     "duo-preauth": ""
+                }
+            }
+        }, 
+        {
+            "DuoAdmin API test playbook": {
+                "name": "DuoAdmin API test playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "duoadmin-dissociate-device-from-user": "", 
+                    "duoadmin-delete-u2f-token": "", 
+                    "duoadmin-get-devices": "", 
+                    "duoadmin-get-users": "", 
+                    "duoadmin-get-u2f-tokens-by-user": "", 
+                    "duoadmin-associate-device-to-user": "", 
+                    "duoadmin-get-devices-by-user": "", 
+                    "duoadmin-get-authentication-logs-by-user": ""
                 }
             }
         }, 
