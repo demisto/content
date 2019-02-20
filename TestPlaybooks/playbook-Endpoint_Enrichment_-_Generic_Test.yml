@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 966b661f-9af1-4f84-86b0-3db66c2c9292
+    taskid: 97e95410-6018-42db-8242-ec5981bf295e
     type: start
     task:
-      id: 966b661f-9af1-4f84-86b0-3db66c2c9292
+      id: 97e95410-6018-42db-8242-ec5981bf295e
       version: -1
       description: ""
       name: ""
@@ -27,12 +27,14 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
+    taskid: 648353ca-132d-4e01-89fd-77e1eafed259
     type: playbook
     task:
-      id: 8c9debbc-199c-41b6-8ef4-ad46f5ec39c2
+      id: 648353ca-132d-4e01-89fd-77e1eafed259
       version: -1
       name: Endpoint Enrichment - Generic
       description: Enrich an Endpoint Hostname using one or more integrations
@@ -42,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "10"
     scriptarguments:
       Hostname:
         simple: ${exampleEndpoint.Hostname}
@@ -58,39 +60,14 @@ tasks:
           "y": 895
         }
       }
-  "5":
-    id: "5"
-    taskid: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
-    type: regular
-    task:
-      id: fafc50c3-b8f7-46ad-89a7-6267fa3d9c61
-      version: -1
-      description: ""
-      name: Verify context endpoint key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Hostname
-      path:
-        simple: Endpoint
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
+    note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
+    taskid: e170b9b4-ba24-4cf6-8011-d19b99bb465d
     type: regular
     task:
-      id: 89a85ea1-c7e3-4ff3-8703-2edb35ff7a03
+      id: e170b9b4-ba24-4cf6-8011-d19b99bb465d
       version: -1
       description: ""
       name: Delete context (all)
@@ -113,12 +90,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
-    taskid: 91cb1640-cc0c-4f32-8632-5297dc122894
+    taskid: 94ccb393-b47f-45a8-8a9e-cd8e5c7ccac9
     type: regular
     task:
-      id: 91cb1640-cc0c-4f32-8632-5297dc122894
+      id: 94ccb393-b47f-45a8-8a9e-cd8e5c7ccac9
       version: -1
       description: ""
       name: 'add hostname #1'
@@ -144,12 +123,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
   "8":
     id: "8"
-    taskid: 08d6b69d-6a76-4363-8030-5241a624f53b
+    taskid: 940e8ed4-cd53-41cc-8aeb-50ee2a1667ea
     type: regular
     task:
-      id: 08d6b69d-6a76-4363-8030-5241a624f53b
+      id: 940e8ed4-cd53-41cc-8aeb-50ee2a1667ea
       version: -1
       description: ""
       name: 'add hostname #2'
@@ -175,12 +156,14 @@ tasks:
           "y": 544
         }
       }
+    note: false
+    timertriggers: []
   "9":
     id: "9"
-    taskid: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+    taskid: 76c0d5fc-f2fd-4714-8cbb-2b80d4ff0c71
     type: regular
     task:
-      id: 1bd84dc8-5063-4c31-8d3d-9e078460c2a8
+      id: 76c0d5fc-f2fd-4714-8cbb-2b80d4ff0c71
       version: -1
       description: ""
       name: 'add hostname #3'
@@ -206,12 +189,74 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 1e36a541-2c7f-4b1b-854c-b757ee71af3f
+    type: condition
+    task:
+      id: 1e36a541-2c7f-4b1b-854c-b757ee71af3f
+      version: -1
+      name: Check Endpoint.Hostname
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: ${Endpoint.HostName}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: bd400add-4326-4416-86ca-f08d0dcced60
+    type: title
+    task:
+      id: bd400add-4326-4416-86ca-f08d0dcced60
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1285,
         "width": 380,
         "x": 50,
         "y": 50
