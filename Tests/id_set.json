@@ -15717,21 +15717,6 @@
             }
         }, 
         {
-            "Test_urlscan": {
-                "name": "Test_urlscan", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "urlscan.io", 
-                    "ip": "urlscan.io", 
-                    "urlscan-submit": "urlscan.io"
-                }
-            }
-        }, 
-        {
             "TestCommonPython": {
                 "name": "TestCommonPython", 
                 "implementing_scripts": [
