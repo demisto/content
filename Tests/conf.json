@@ -806,12 +806,12 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
+            "playbookID": "McAfee-MAR_Test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test",
-            "timeout": 200
+            "playbookID": "McAfee-TIE Test"
         },
         {
             "integrations": "ArcSight Logger",
@@ -1072,6 +1072,15 @@
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test"
         }
     ],
     "skipped_tests": {
