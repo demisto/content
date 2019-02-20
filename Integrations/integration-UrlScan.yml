@@ -207,7 +207,7 @@ script:
         if 'urls' in scan_lists:
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
-        human_readable['Effective URL'] = url_query
+        human_readable['Effective URL'] = response['page']['url'] # effective url of the submitted url
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
         if 'ips' in scan_lists:
