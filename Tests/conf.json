@@ -1083,7 +1083,7 @@
             "playbookID": "MAR - Endpoint data collection test"
         },
         {
-            "integrations": "Duo Admin",
+            "integrations": "DUO Admin",
             "playbookID": "DuoAdmin API test playbook"
         }
     ],
