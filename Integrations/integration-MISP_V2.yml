@@ -1737,4 +1737,3 @@ script:
   runonce: false
 tests:
 - MISP V2 Test
-releaseNotes: add_sighting command and test connection
