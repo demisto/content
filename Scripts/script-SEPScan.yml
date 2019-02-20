@@ -67,4 +67,3 @@ tests:
 dependson:
   must:
   - sep-command-status
-releaseNotes: deprecated script
