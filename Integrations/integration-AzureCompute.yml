@@ -491,8 +491,10 @@ script:
         else:
             updated_error_message = error_message
 
+        LOG("Type of 'args': {}".format(type(args)))
         for argument in args:
-            if argument in updated_error_message:
+            LOG("argument is '{}'".format(argument))
+            if argument != '' and argument in updated_error_message:
                 length = len(argument)
                 placeholder = '<' + 'x' * length + '>'
                 updated_error_message = updated_error_message.replace(argument, placeholder)
@@ -1043,13 +1045,38 @@ script:
             Virtual Machine Object
         """
         args = demisto.args()
-        vm_name = args.get('virtual_machine_name')
         response = start_vm(args)
+        response = get_vm(args)
+
+        # Retrieve relevant properties to return to context and check provisioning state
+        vm_name = response.get('name')
+        properties = response.get('properties')
+        provisioning_state = properties.get('provisioningState')
+        statuses = properties.get('instanceView').get('statuses')
+        power_state = None
+
+        # Even if the API call to power-on the vm returned with no errors, need to
+        # check the provisioning state of the vm is such that it is responsive to the
+        # power-on API call - and if not raise an error
+        if provisioning_state.lower() == "failed":
+            for status in statuses:
+                status_code = status.get('code')
+                if "provisioningstate/failed" in status_code.lower():
+                    message = status.get('message')
+                    err_msg = "Unable to power-on or power-off '{}' virtual machine because the "
+                    err_msg += "following provisioning failure occurred during the "
+                    err_msg += 'vm\'s creation.\ncode: "{}"\nmessage: "{}"\nVisit the Azure'
+                    err_msg += " Web Portal to take care of this issue."
+                    raise Exception(err_msg.format(vm_name, status_code, message))
+        else:
+            for status in statuses:
+                if status.get('code') in {"PowerState/running", "PowerState/stopped"}:
+                    power_state = status.get('displayStatus')
 
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
-            'PowerState': 'VM running'
+            'PowerState': power_state
         }
 
         title = 'Virtual Machine "{}" Started'.format(vm_name)
@@ -1094,13 +1121,38 @@ script:
             Virtual Machine Object
         """
         args = demisto.args()
-        vm_name = args.get('virtual_machine_name')
         response = poweroff_vm(args)
+        response = get_vm(args)
+
+        # Retrieve relevant properties to return to context and check provisioning state
+        vm_name = response.get('name')
+        properties = response.get('properties')
+        provisioning_state = properties.get('provisioningState')
+        statuses = properties.get('instanceView').get('statuses')
+        power_state = None
+
+        # Even if the API call to poweroff the vm returned with no errors, need to
+        # check the provisioning state of the vm is such that it is responsive to the
+        # poweroff API call - and if not raise an error
+        if provisioning_state.lower() == "failed":
+            for status in statuses:
+                status_code = status.get('code')
+                if "provisioningstate/failed" in status_code.lower():
+                    message = status.get('message')
+                    err_msg = "Unable to power-off or power-on '{}' virtual machine because the "
+                    err_msg += "following provisioning failure occurred during the "
+                    err_msg += 'vm\'s creation.\ncode: "{}"\nmessage: "{}"\nVisit the Azure'
+                    err_msg += " Web Portal to take care of this issue."
+                    raise Exception(err_msg.format(vm_name, status_code, message))
+        else:
+            for status in statuses:
+                if status.get('code') in {"PowerState/running", "PowerState/stopped"}:
+                    power_state = status.get('displayStatus')
 
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
-            'PowerState': 'VM stopped'
+            'PowerState': power_state
         }
 
         title = 'Virtual Machine "{}" Powered Down'.format(vm_name)
