@@ -110,7 +110,9 @@ def login():
     try:
         res_json = res.json()
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
-            return res_json.get('log.loginResponse').get('log.return')
+            auth_token = res_json.get('log.loginResponse').get('log.return')
+            demisto.setIntegrationContext({'auth_token': auth_token})
+            return auth_token
 
         return_error('Failed to login. Have not received token after login')
     except ValueError:
@@ -140,7 +142,7 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         headers = HEADERS
     full_url = BASE_URL + query_path
     try:
-        return requests.request(
+        res = requests.request(
             method,
             full_url,
             headers=headers,
@@ -149,6 +151,20 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
             params=params,
             json=json
         )
+
+        if not res.ok:
+            params['authToken'] = login()
+            return requests.request(
+                method,
+                full_url,
+                headers=headers,
+                verify=VERIFY_CERTIFICATE,
+                data=body,
+                params=params,
+                json=json
+            )
+        return res
+
     except Exception as e:
         demisto.debug(e.message.message)
         return_error('Connection Error. Please check URL')
@@ -723,7 +739,32 @@ def get_all_query_viewers_command():
         demisto.results('No Query Viewers were found')
 
 
-AUTH_TOKEN = login()
+def validate_auth_token():
+    """
+    checks if the authentication token is up do date. if not, gets a new one.
+    :return: valid authentication token
+    """
+    if 'auth_token' not in demisto.getIntegrationContext():
+        return login()
+
+    query_path = 'www/manager-service/rest/CaseService/findAllIds'
+    params = {
+        'authToken': demisto.getIntegrationContext().get('auth_token'),
+        'alt': 'json'
+    }
+    res = send_request(query_path, params=params, method='get')
+
+    if not res.ok:
+        return login()
+
+    return demisto.getIntegrationContext().get('auth_token')
+
+
+if 'auth_token' not in demisto.getIntegrationContext():
+    AUTH_TOKEN = login()
+else:
+    AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token')
+AUTH_TOKEN = validate_auth_token()
 try:
     if demisto.command() == 'test-module':
         test()
