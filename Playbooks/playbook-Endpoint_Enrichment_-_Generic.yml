@@ -215,7 +215,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: sentinelOne
+                  simple: SentinelOne
           - - operator: string.isEqual
               left:
                 value:
@@ -241,7 +241,7 @@ tasks:
       version: -1
       name: Get host information from SentinelOne
       description: 'SentinelOne: Get host information'
-      script: sentinelOne|||so-agents-query
+      script: SentinelOne|||so-agents-query
       type: regular
       iscommand: true
       brand: sentinelOne
@@ -835,3 +835,4 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+releaseNotes: "-"
