@@ -1,6 +1,6 @@
-id: Test - urlscan
+id: Test_urlscan
 version: -1
-name: Test - urlscan
+name: Test_urlscan
 starttaskid: "0"
 tasks:
   "0":

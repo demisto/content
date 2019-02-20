@@ -677,7 +677,7 @@
         },
         {
             "integrations": "urlscan.io",
-            "playbookID": "Test - urlscan"
+            "playbookID": "Test_urlscan"
         },
         {
             "integrations": "EWS v2",
