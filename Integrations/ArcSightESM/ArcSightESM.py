@@ -291,8 +291,8 @@ def fetch():
     and converts them to Demisto incidents. We can query Cases or Events. If Cases are fetched then the
     query viewer query must return fields ID and Create Time. If Events are fetched then Event ID and Start Time.
     """
-    events_query_viewer_id = demisto.params().get('events_query_viewer_id')
-    cases_query_viewer_id = demisto.params().get('cases_query_viewer_id')
+    events_query_viewer_id = demisto.params().get('viewerId')
+    cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
 
     last_run = demisto.getLastRun()
     last_create_time = last_run.get('last_create_time', 0)
