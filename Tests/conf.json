@@ -1081,6 +1081,10 @@
         {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+            "integrations": "Duo Admin",
+            "playbookID": "DuoAdmin API test playbook"
         }
     ],
     "skipped_tests": {
