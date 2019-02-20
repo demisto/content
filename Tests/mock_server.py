@@ -279,7 +279,8 @@ class MITMProxy:
         else:
             local_log_filepath = os.path.join(
                 '/tmp', os.path.basename(get_log_file_path(self.last_playbook_id, self.record)))
-            remote_log_filepath = os.path.join(self.current_folder, get_log_file_path(self.last_playbook_id, self.record))
+            remote_log_filepath = os.path.join(
+                self.current_folder, get_log_file_path(self.last_playbook_id, self.record))
 
             with open(local_log_filepath, 'w+') as log:
                 log.write('STDOUT:\n')
