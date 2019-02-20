@@ -739,32 +739,10 @@ def get_all_query_viewers_command():
         demisto.results('No Query Viewers were found')
 
 
-def validate_auth_token():
-    """
-    checks if the authentication token is up do date. if not, gets a new one.
-    :return: valid authentication token
-    """
-    if 'auth_token' not in demisto.getIntegrationContext():
-        return login()
-
-    query_path = 'www/manager-service/rest/CaseService/findAllIds'
-    params = {
-        'authToken': demisto.getIntegrationContext().get('auth_token'),
-        'alt': 'json'
-    }
-    res = send_request(query_path, params=params, method='get')
-
-    if not res.ok:
-        return login()
-
-    return demisto.getIntegrationContext().get('auth_token')
-
-
 if 'auth_token' not in demisto.getIntegrationContext():
     AUTH_TOKEN = login()
 else:
     AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token')
-AUTH_TOKEN = validate_auth_token()
 try:
     if demisto.command() == 'test-module':
         test()
