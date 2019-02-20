@@ -2863,4 +2863,3 @@ script:
   runonce: false
 tests:
   - Recorded Future Test
-releaseNotes: "-"
