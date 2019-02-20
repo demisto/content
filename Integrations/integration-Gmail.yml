@@ -900,7 +900,7 @@ script:
         args = demisto.args()
 
         user_id = args.get('user-id', ADMIN_EMAIL)
-        _from = args.get('email-address')
+        _from = args.get('from')
         to = args.get('to')
         subject = args.get('subject')
         query = args.get('query')
@@ -1818,6 +1818,7 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+releaseNotes: 'Fixed gmail-add-filter from argument not working properly'
 tests:
   - Gmail Convert Html Test
   - GmailTest
