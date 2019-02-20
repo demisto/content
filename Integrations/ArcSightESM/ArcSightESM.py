@@ -161,8 +161,8 @@ def test():
     Test if fetch query viewers are valid.
     Run query viewer if fetch defined.
     """
-    events_query_viewer_id = demisto.params().get('events_query_viewer_id')
-    cases_query_viewer_id = demisto.params().get('cases_query_viewer_id')
+    events_query_viewer_id = demisto.params().get('viewerId')
+    cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
     is_fetch = demisto.params().get('isFetch')
 
     if is_fetch and not events_query_viewer_id and not cases_query_viewer_id:
