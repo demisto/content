@@ -119,7 +119,6 @@ def login():
         return_error('Failed to login. Please check URL and Credentials')
 
 
-
 @logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post'):
     if headers is None:
