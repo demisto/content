@@ -119,22 +119,6 @@ def login():
         return_error('Failed to login. Please check URL and Credentials')
 
 
-@logger
-def logout():
-    query_path = 'www/core-service/rest/LoginService/logout'
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-    }
-    params = {
-        'authToken': AUTH_TOKEN,
-        'alt': 'json'
-    }
-    res = send_request(query_path, headers=headers, params=params)
-    if not res.ok:
-        demisto.debug(res.text)
-        return_error('Failed to login, check integration parameters.')
-
 
 @logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post'):
@@ -792,5 +776,3 @@ except Exception, e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
-finally:
-    logout()
