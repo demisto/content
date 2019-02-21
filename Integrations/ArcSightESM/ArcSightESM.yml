@@ -334,4 +334,3 @@ script:
   runonce: false
 tests:
   - ArcSight ESM Test
-releaseNotes: "Rewrote the integration in Python and fixed sever issues."
