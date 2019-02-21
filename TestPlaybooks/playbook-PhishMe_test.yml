@@ -673,7 +673,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "2"
+        simple: "0"
     results:
     - AreValuesEqual
     separatecontext: false
