@@ -6546,7 +6546,7 @@
         }, 
         {
             "Phishing Investigation - Generic": {
-                "name": "Phishing Investigation - Generic", 
+                "name": "Phishing Investigation - Generic test", 
                 "fromversion": "4.1.0", 
                 "implementing_scripts": [
                     "AssignAnalystToIncident", 

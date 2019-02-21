@@ -1,7 +1,7 @@
 id: Phishing Investigation - Generic
 version: -1
 fromversion: 4.1.0
-name: Phishing Investigation - Generic
+name: Phishing Investigation - Generic test
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -1014,6 +1014,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+releaseNotes: "bla bla"
 tests:
 - Phishing test - attachment
 - Phishing test - Inline
