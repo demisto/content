@@ -444,7 +444,6 @@ def main():
     proxy.print_empty_files()
 
     print "Pushing new/updated mock files to mock git repo."
-    print "### BUILD NAME: {}".format(build_name)
     ami.upload_mock_files(build_name, buildNumber)
 
     if build_name == 'master':
