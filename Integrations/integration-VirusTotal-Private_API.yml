@@ -657,7 +657,7 @@ script:
 
         if len(completed_responses) == 1:
             # This is done for backward compatibility
-            completed_responses[0]
+            completed_responses = completed_responses[0]
 
         return {
             'Type': entryTypes['note'],
