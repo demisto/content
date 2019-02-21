@@ -149,7 +149,6 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         return res
 
     except Exception as e:
-        x = str(e)
         demisto.debug(e.message.message)
         return_error('Connection Error. Please check URL')
 
