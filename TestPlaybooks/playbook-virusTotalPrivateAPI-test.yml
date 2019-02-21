@@ -255,7 +255,7 @@ tasks:
       allInfo: {}
       fullResponse: {}
       resource:
-        simple: http://En-us.secureconnection.moneytransaction.kb4.io
+        simple: http://En-us.secureconnection.moneytransaction.kb4.io,https://ctgold.in.net/G5?POP!=junk.name@avbaa.com
       shortFormat: {}
       threshold: {}
     separatecontext: false
