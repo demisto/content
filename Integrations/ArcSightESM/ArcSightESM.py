@@ -310,8 +310,9 @@ def fetch():
             latest_created_time = create_time if create_time > latest_created_time else latest_created_time
 
             result['Create Time'] = parse_timestamp_to_datestring(create_time)
+            incident_name = result.get('Name') or 'ArcSight ESM incidents at {}'.format(datetime.now())
             incident = {
-                'name': 'ArcSight Case #{}'.format(r_id),
+                'name': incident_name,
                 'occurred': result['Create Time'],
                 'labels': [{'type': key, 'value': str(value)} for key, value in result.items()],
                 'rawJSON': json.dumps(result)
