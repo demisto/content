@@ -1,0 +1,63 @@
+id: 7b208ad9-bbc5-4d38-8ae0-bcd770bfe7cf
+version: 1
+name: palo alto corp
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 17ceca9a-fe81-46da-89f3-600a715acf97
+    type: start
+    task:
+      id: 17ceca9a-fe81-46da-89f3-600a715acf97
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1d464caa-3250-43ab-8a2b-b8ef9c134bc2
+    type: title
+    task:
+      id: 1d464caa-3250-43ab-8a2b-b8ef9c134bc2
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 255,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
