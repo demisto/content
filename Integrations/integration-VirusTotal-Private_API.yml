@@ -1466,4 +1466,3 @@ script:
   runonce: false
 tests:
     - virusTotalPrivateAPI-test-playbook
-releaseNotes: "-"
