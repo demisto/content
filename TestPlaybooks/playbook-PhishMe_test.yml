@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       ip:
-        simple: 212.126.107.130
+        simple: 185.141.27.177
     separatecontext: false
     view: |-
       {
