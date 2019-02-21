@@ -147,7 +147,7 @@ tasks:
       key:
         simple: exampleEndpoint.Hostname
       value:
-        simple: acAir2
+        simple: DESKTOP-M7E991U
     separatecontext: false
     view: |-
       {
