@@ -23,13 +23,13 @@ configuration:
   required: true
 - display: Fetch events as incidents via Query Viewer ID. Mandatory fields for query
     are "Start Time" and "Event ID".
-  name: events_query_viewer_id
+  name: viewerId
   defaultvalue: ""
   type: 0
   required: false
 - display: Fetch cases as incidents via Query Viewer ID. Mandatory fields for query
     are "Create Time" and "ID".
-  name: cases_query_viewer_id
+  name: casesQueryViewerId
   defaultvalue: ""
   type: 0
   required: false
@@ -42,16 +42,6 @@ configuration:
   name: incidentType
   defaultvalue: ""
   type: 13
-  required: false
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
