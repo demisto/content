@@ -832,12 +832,6 @@
             "nightly": true
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
@@ -1081,6 +1075,12 @@
         {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+            "integrations": [
+                "VirusTotal"
+            ],
+            "playbookID": "File Enrichment - Generic Test"
         }
     ],
     "skipped_tests": {
