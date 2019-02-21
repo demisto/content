@@ -655,6 +655,10 @@ script:
 
             ec[outputPaths['url']].append(ec_url)
 
+        if len(completed_responses) == 1:
+            # This is done for backward compatibility
+            completed_responses[0]
+
         return {
             'Type': entryTypes['note'],
             'Contents': completed_responses,
