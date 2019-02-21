@@ -13240,7 +13240,6 @@
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
                     "DeleteContext", 
-                    "VerifyContext", 
                     "Set"
                 ], 
                 "implementing_playbooks": [
