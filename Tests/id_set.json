@@ -12192,7 +12192,10 @@
         }, 
         {
             "7b208ad9-bbc5-4d38-8ae0-bcd770bfe7cf": {
-                "name": "palo alto corp"
+                "name": "palo alto corp", 
+                "command_to_integration": {
+                    "ad-add-to-group": ""
+                }
             }
         }, 
         {
