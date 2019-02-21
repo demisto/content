@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: IT Services
 commonfields:
   id: Azure Compute
   version: -1
@@ -449,6 +449,25 @@ script:
         }
     }
 
+    # Error messages for different provisioning states
+    CREATING_OR_UPDATING_ERR = "Please wait for the VM to finish being" \
+                               " {} before executing this command. To retrieve the " \
+                               "last known state of the VM, execute the " \
+                               "`azure-vm-get-instance-details` command. "
+    DELETING_ERR = "You cannot execute this command because the VM is being deleted."
+    FAILED_ERR = 'Unable to power-off or power-on \'{}\' virtual machine ' \
+                 'because the following provisioning failure occurred during ' \
+                 'the vm\'s creation.\ncode: "{}"\nmessage: "{}"\nVisit the ' \
+                 'Azure Web Portal to take care of this issue.'
+
+    # Error messages determined by the provisioning state of the VM
+    PROVISIONING_STATE_TO_ERRORS = {
+        "creating": CREATING_OR_UPDATING_ERR.format("created"),
+        "updating": CREATING_OR_UPDATING_ERR.format("updated"),
+        "deleting": DELETING_ERR,
+        "failed": FAILED_ERR
+    }
+
     '''SETUP'''
 
     # Disable insecure warnings
@@ -463,18 +482,27 @@ script:
 
     '''HELPER FUNCTIONS'''
 
-    def screen_errors(error_message, *args):
+    def screen_errors(error_message, *args, **kwargs):
         """
-        Make sure that the values passed after error_message do not appear in error messages
+        Make sure that the values passed as args and the keys in kwargs do not appear in error messages
 
         parameter: (string) error_message
-            The error message that needs to be screened for the Tenant ID
+            The error message that needs to be screened for the values in args and the keys
+            in kwargs
 
-        parameter: (list) args
-            Arguments that need to be screened from error outputs
+        parameter: (list) *args
+            Arguments that need to be screened from error outputs and that will be replaced
+            by x's enclosed by a '<' symbol on the left, and a '>' symbol on the right
+
+        parameter: (dict) **kwargs
+            Key-value pairs for each of which the user wishes to screen the key identifier string
+            from the error_message and replace it with its assigned value string. Useful for
+            when the user wishes to replace sensitive data with a value of their choosing
+            instead of the default x's enclosed by '<', and '>' symbols on the left and right respectively
 
         returns:
-            The error message with the values passed to args replaced by x's
+            The error message free of sensitive information as determined by the values of
+            args and the keys of kwargs
         """
         if isinstance(error_message, Exception):
             # Format Exception object as String
@@ -491,19 +519,68 @@ script:
         else:
             updated_error_message = error_message
 
-        LOG("Type of 'args': {}".format(type(args)))
         for argument in args:
-            LOG("argument is '{}'".format(argument))
             if argument != '' and argument in updated_error_message:
                 length = len(argument)
                 placeholder = '<' + 'x' * length + '>'
                 updated_error_message = updated_error_message.replace(argument, placeholder)
+
+        for key, value in kwargs.items():
+            if key != '' and key in updated_error_message:
+                updated_error_message = updated_error_message.replace(key, value)
+
         return updated_error_message
+
+
+    def validate_provisioning_state(args):
+        """
+        Ensure that the provisioning state of a VM is 'Succeeded'
+
+        For all provisioning states other than 'Succeeded', this method will raise an
+        exception with an informative error message.
+
+        parameter: (dict) args
+            The command arguments passed to either the `azure-vm-start-instance` or
+            `azure-vm-poweroff-instance` commands
+
+        returns:
+            None
+        """
+        response = get_vm(args)
+        # Retrieve relevant properties for checking provisioning state and returning
+        # informative error messages if necessary
+        vm_name = response.get('name')
+        properties = response.get('properties')
+        provisioning_state = properties.get('provisioningState')
+        statuses = properties.get('instanceView').get('statuses')
+
+        # Check if the current ProvisioningState of the VM allows for executing this command
+        if provisioning_state.lower() == "failed":
+            for status in statuses:
+                status_code = status.get('code')
+                if "provisioningstate/failed" in status_code.lower():
+                    message = status.get('message')
+                    err_msg = PROVISIONING_STATE_TO_ERRORS.get('failed')
+                    raise Exception(err_msg.format(vm_name, status_code, message))
+            # In the case that the microsoft API changes and the status code is no longer
+            # relevant, preventing the above exception with its detailed error message from
+            # being raised, then raise the below exception with a more general error message
+            err_msg = "Cannot execute this command because the ProvisioningState of the VM is 'Failed'."
+            raise Exception(err_msg)
+        elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS.keys():
+            err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
+            raise Exception(err_msg)
 
 
     def epoch_seconds(d=None):
         """
         Return the number of seconds for given date. If no date, return current.
+
+        parameter: (date) d
+            The date to convert to seconds
+
+        returns:
+            The date in seconds
         """
         if not d:
             d = datetime.utcnow()
@@ -1045,41 +1122,20 @@ script:
             Virtual Machine Object
         """
         args = demisto.args()
+        vm_name = args.get('virtual_machine_name')
+
+        # Raise an exception if the VM isn't in the proper provisioning state
+        validate_provisioning_state(args)
+
         response = start_vm(args)
-        response = get_vm(args)
-
-        # Retrieve relevant properties to return to context and check provisioning state
-        vm_name = response.get('name')
-        properties = response.get('properties')
-        provisioning_state = properties.get('provisioningState')
-        statuses = properties.get('instanceView').get('statuses')
-        power_state = None
-
-        # Even if the API call to power-on the vm returned with no errors, need to
-        # check the provisioning state of the vm is such that it is responsive to the
-        # power-on API call - and if not raise an error
-        if provisioning_state.lower() == "failed":
-            for status in statuses:
-                status_code = status.get('code')
-                if "provisioningstate/failed" in status_code.lower():
-                    message = status.get('message')
-                    err_msg = "Unable to power-on or power-off '{}' virtual machine because the "
-                    err_msg += "following provisioning failure occurred during the "
-                    err_msg += 'vm\'s creation.\ncode: "{}"\nmessage: "{}"\nVisit the Azure'
-                    err_msg += " Web Portal to take care of this issue."
-                    raise Exception(err_msg.format(vm_name, status_code, message))
-        else:
-            for status in statuses:
-                if status.get('code') in {"PowerState/running", "PowerState/stopped"}:
-                    power_state = status.get('displayStatus')
 
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
-            'PowerState': power_state
+            'PowerState': "VM starting"
         }
 
-        title = 'Virtual Machine "{}" Started'.format(vm_name)
+        title = 'Power-on of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
         human_readable = tableToMarkdown(title, vm)
         demisto.results({
             'Type': entryTypes['note'],
@@ -1121,41 +1177,20 @@ script:
             Virtual Machine Object
         """
         args = demisto.args()
+        vm_name = args.get('virtual_machine_name')
+
+        # Raise an exception if the VM isn't in the proper provisioning state
+        validate_provisioning_state(args)
+
         response = poweroff_vm(args)
-        response = get_vm(args)
-
-        # Retrieve relevant properties to return to context and check provisioning state
-        vm_name = response.get('name')
-        properties = response.get('properties')
-        provisioning_state = properties.get('provisioningState')
-        statuses = properties.get('instanceView').get('statuses')
-        power_state = None
-
-        # Even if the API call to poweroff the vm returned with no errors, need to
-        # check the provisioning state of the vm is such that it is responsive to the
-        # poweroff API call - and if not raise an error
-        if provisioning_state.lower() == "failed":
-            for status in statuses:
-                status_code = status.get('code')
-                if "provisioningstate/failed" in status_code.lower():
-                    message = status.get('message')
-                    err_msg = "Unable to power-off or power-on '{}' virtual machine because the "
-                    err_msg += "following provisioning failure occurred during the "
-                    err_msg += 'vm\'s creation.\ncode: "{}"\nmessage: "{}"\nVisit the Azure'
-                    err_msg += " Web Portal to take care of this issue."
-                    raise Exception(err_msg.format(vm_name, status_code, message))
-        else:
-            for status in statuses:
-                if status.get('code') in {"PowerState/running", "PowerState/stopped"}:
-                    power_state = status.get('displayStatus')
 
         vm = {
             'Name': vm_name,
             'ResourceGroup': args.get('resource_group'),
-            'PowerState': power_state
+            'PowerState': "VM stopping"
         }
 
-        title = 'Virtual Machine "{}" Powered Down'.format(vm_name)
+        title = 'Power-off of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
         human_readable = tableToMarkdown(title, vm)
         demisto.results({
             'Type': entryTypes['note'],
