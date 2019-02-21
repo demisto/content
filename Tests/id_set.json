@@ -2151,6 +2151,9 @@
                 "script_executions": [
                     "getContext", 
                     "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -5335,6 +5338,9 @@
                 "implementing_scripts": [
                     "FindSimilarIncidents", 
                     "CloseInvestigationAsDuplicate"
+                ], 
+                "tests": [
+                    "test_similar_incidents"
                 ]
             }
         }, 
@@ -5911,7 +5917,7 @@
                 "command_to_integration": {
                     "cylance-protect-get-devices": "Cylance Protect", 
                     "cb-sensor-info": "carbonblack", 
-                    "so-agents-query": "sentinelOne"
+                    "so-agents-query": "SentinelOne"
                 }
             }
         }, 
@@ -6094,7 +6100,10 @@
                 "command_to_integration": {
                     "vt-private-check-file-behaviour": "VirusTotal - Private API", 
                     "vt-private-get-file-report": "VirusTotal - Private API"
-                }
+                }, 
+                "tests": [
+                    "No test - need to add test"
+                ]
             }
         }, 
         {
@@ -6702,7 +6711,10 @@
                     "epo-update-repository": "epo", 
                     "epo-get-latest-dat": "epo", 
                     "epo-get-current-dat": "epo"
-                }
+                }, 
+                "tests": [
+                    "Test Playbook McAfee ePO"
+                ]
             }
         }, 
         {
@@ -6722,7 +6734,7 @@
                     "servicenow-incident-create": "ServiceNow"
                 }, 
                 "tests": [
-                    "No test"
+                    "Test Playbook McAfee ePO"
                 ]
             }
         }, 
@@ -7128,9 +7140,12 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "so-agents-query": "sentinelOne", 
-                    "so-get-agent-processes": "sentinelOne"
-                }
+                    "so-agents-query": "SentinelOne", 
+                    "so-get-agent-processes": "SentinelOne"
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -8092,6 +8107,10 @@
                     "checkpoint-block-ip", 
                     "checkpoint", 
                     "checkpoint-delete-rule"
+                ], 
+                "tests": [
+                    "blockip_test_playbook", 
+                    "CheckpointFW-test"
                 ]
             }
         }, 
@@ -9751,7 +9770,15 @@
                 "commands": [
                     "mar-search", 
                     "mar-collectors-list", 
-                    "mar-search-multiple"
+                    "mar-search-multiple", 
+                    "mar-search-services", 
+                    "mar-search-processes", 
+                    "mar-search-win-registry", 
+                    "mar-search-files", 
+                    "mar-search-usb-connected-storage-devices", 
+                    "mar-search-user-profiles", 
+                    "mar-search-scheduled-tasks", 
+                    "mar-search-host-info"
                 ]
             }
         }, 
@@ -12161,39 +12188,6 @@
             }
         }, 
         {
-            "7ab45104-22aa-4e1b-8062-cadcbb28d87f": {
-                "name": "Test - urlscan", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "urlscan.io", 
-                    "ip": "urlscan.io", 
-                    "urlscan-submit": "urlscan.io"
-                }
-            }
-        }, 
-        {
-            "8984405a-4274-470a-8a34-a437d8e2e1c5": {
-                "name": "Test - PhishMe", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IsGreaterThan", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "Phishme Intelligence", 
-                    "phishme-search": "Phishme Intelligence", 
-                    "email": "Phishme Intelligence", 
-                    "file": "Phishme Intelligence", 
-                    "ip": "Phishme Intelligence"
-                }
-            }
-        }, 
-        {
             "97393cfc-2fc4-4dfe-8b6e-af64067fc436": {
                 "name": "AWS - S3 Test Playbook", 
                 "implementing_scripts": [
@@ -12570,18 +12564,12 @@
             "CheckpointFW-test": {
                 "name": "CheckpointFW-test", 
                 "implementing_scripts": [
-                    "VerifyContextFields", 
-                    "CheckpointFWBackupStatus", 
-                    "DeleteContext", 
-                    "Sleep", 
-                    "CheckpointFWCreateBackup"
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "checkpoint-delete-rule": "Check Point", 
-                    "checkpoint-block-ip": "Check Point", 
-                    "checkpoint-set-rule": "Check Point", 
-                    "checkpoint-show-access-rule-base": "Check Point", 
-                    "checkpoint-show-hosts": "Check Point"
+                    "checkpoint-set-rule": "", 
+                    "checkpoint-show-access-rule-base": "", 
+                    "checkpoint-show-hosts": ""
                 }
             }
         }, 
@@ -13229,12 +13217,26 @@
             }
         }, 
         {
+            "Endpoint data collection test": {
+                "name": "Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
             "endpoint_enrichment_-_generic_test": {
                 "name": "Endpoint Enrichment - Generic Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
                     "DeleteContext", 
-                    "VerifyContext", 
                     "Set"
                 ], 
                 "implementing_playbooks": [
@@ -14181,6 +14183,21 @@
                     "googleapps-gmail-get-mail": "google", 
                     "googleapps-gmail-search": "google", 
                     "send-mail": "Mail Sender (New)"
+                }
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection test": {
+                "name": "MAR - Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "MAR - Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
                 }
             }
         }, 
@@ -15166,19 +15183,6 @@
                     "secure-works-get-ticket-count": "Dell Secureworks", 
                     "secure-works-close-ticket": "Dell Secureworks", 
                     "secure-works-get-tickets-updates": "Dell Secureworks"
-                }
-            }
-        }, 
-        {
-            "sep_-_test_endpoint_search": {
-                "name": "SEP - Test endpoint search", 
-                "fromversion": "3.5.0", 
-                "implementing_scripts": [
-                    "VerifyContext", 
-                    "DeleteContext"
-                ], 
-                "command_to_integration": {
-                    "sep-endpoints-info": "Symantec Endpoint Protection"
                 }
             }
         }, 

@@ -200,4 +200,6 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
-releaseNotes: '-'
+releaseNotes: "-"
+tests:
+  - test_similar_incidents

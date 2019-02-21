@@ -85,6 +85,5 @@ outputs:
 scripttarget: 0
 runonce: false
 deprecated: true
-releaseNotes: "-"
 tests:
   - No test - cannot create a dummy integration inorder to test that
