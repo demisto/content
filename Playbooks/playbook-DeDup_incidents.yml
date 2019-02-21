@@ -28,8 +28,6 @@ tasks:
           "y": 51
         }
       }
-    note: false
-    timertriggers: []
   "2":
     id: "2"
     taskid: 6c68450d-d32f-4a07-8978-8df36190ada6
@@ -73,8 +71,6 @@ tasks:
           "y": 194
         }
       }
-    note: false
-    timertriggers: []
   "3":
     id: "3"
     taskid: bced6173-64c6-457c-85bd-2adf6be16c4c
@@ -102,8 +98,6 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
   "4":
     id: "4"
     taskid: e1952276-e1b2-4748-8198-9bc500d5c504
@@ -137,8 +131,6 @@ tasks:
           "y": 369
         }
       }
-    note: false
-    timertriggers: []
   "5":
     id: "5"
     taskid: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
@@ -159,8 +151,6 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
