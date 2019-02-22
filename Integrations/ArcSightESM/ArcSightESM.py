@@ -273,7 +273,7 @@ def get_query_viewer_results(query_viewer_id):
 
 @logger
 def get_query_viewer_results_command():
-    resource_id = demisto.args().get('ids')
+    resource_id = demisto.args().get('id')
     columns, query_results = get_query_viewer_results(query_viewer_id=resource_id)
 
     demisto.results({
