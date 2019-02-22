@@ -292,6 +292,7 @@ def fetch():
     """
     events_query_viewer_id = demisto.params().get('viewerId')
     cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
+    type_of_incident = 'case' if events_query_viewer_id else 'event'
 
     last_run = demisto.getLastRun()
     last_create_time = last_run.get('last_create_time', 0)
@@ -307,9 +308,8 @@ def fetch():
         if create_time > last_create_time or r_id not in already_fetched:
             # check if case/event already was fetched before
             latest_created_time = create_time if create_time > latest_created_time else latest_created_time
-
             result['Create Time'] = parse_timestamp_to_datestring(create_time)
-            incident_name = result.get('Name') or 'ArcSight ESM incidents at {}'.format(datetime.now())
+            incident_name = result.get('Name') or 'New {} from arcsight at {}'.format(type_of_incident, datetime.now())
             incident = {
                 'name': incident_name,
                 'occurred': result['Create Time'],
