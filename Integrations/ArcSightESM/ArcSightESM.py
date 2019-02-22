@@ -293,9 +293,8 @@ def fetch():
     events_query_viewer_id = demisto.params().get('viewerId')
     cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
     type_of_incident = 'case' if events_query_viewer_id else 'event'
-
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
-    last_create_time = last_run.get('last_create_time', 0)
+    last_create_time = last_run.get('caseLastEventTime' if type_of_incident == 'case' else 'lastEventTime', 0)
     already_fetched = last_run.get('already_fetched', [])
     latest_created_time = last_create_time
 
@@ -326,7 +325,6 @@ def fetch():
         'caseLastEventTime' if type_of_incident == 'case' else 'lastEventTime': latest_created_time
     }
     demisto.setLastRun({'value': json.dumps(last_run)})
-
     beautifully_json(incidents)
 
     if demisto.command() == 'as-fetch-incidents':
