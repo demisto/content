@@ -101,7 +101,7 @@ def login():
         'password': demisto.get(demisto.params(), 'credentials.password'),
         'alt': 'json'
     }
-    res = send_request(query_path, headers=headers, params=params)
+    res = send_request(query_path, headers=headers, params=params, is_login=True)
     if not res.ok:
         demisto.debug(res.text)
         return_error('Failed to login, check integration parameters.')
@@ -119,7 +119,7 @@ def login():
 
 
 @logger
-def send_request(query_path, body=None, params=None, json=None, headers=None, method='post'):
+def send_request(query_path, body=None, params=None, json=None, headers=None, method='post', is_login=False):
     if headers is None:
         headers = HEADERS
     full_url = BASE_URL + query_path
@@ -134,7 +134,7 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
             json=json
         )
 
-        if not res.ok:
+        if not res.ok and not is_login:
             params['authToken'] = login()
             return requests.request(
                 method,
