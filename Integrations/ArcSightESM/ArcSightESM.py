@@ -321,10 +321,11 @@ def fetch():
                 already_fetched.pop(0)
             already_fetched.append(r_id)
 
-    demisto.setLastRun({
+    last_run = {
         'already_fetched': already_fetched,
         'caseLastEventTime' if type_of_incident == 'case' else 'lastEventTime': latest_created_time
-    })
+    }
+    demisto.setLastRun({'value': json.loads(last_run)})
 
     beautifully_json(incidents)
 
