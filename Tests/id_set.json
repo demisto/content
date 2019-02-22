@@ -12339,9 +12339,10 @@
                     "as-get-case": "", 
                     "as-get-all-query-viewers": "", 
                     "as-clear-entries": "", 
-                    "as-get-all-cases": "", 
+                    "as-get-query-viewer-results": "", 
                     "as-get-entries": "", 
                     "as-add-entries": "", 
+                    "as-get-all-cases": "", 
                     "as-update-case": "", 
                     "as-get-case-event-ids": ""
                 }
