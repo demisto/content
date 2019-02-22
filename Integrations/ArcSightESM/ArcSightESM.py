@@ -274,13 +274,25 @@ def get_query_viewer_results(query_viewer_id):
 @logger
 def get_query_viewer_results_command():
     resource_id = demisto.args().get('id')
+    only_columns = demisto.args().get('onlyColumns')
     columns, query_results = get_query_viewer_results(query_viewer_id=resource_id)
 
+    demisto.debug('printing Query Viewer column headers')
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': {'results': query_results}
+        'Contents': columns,
+        'HumanReadable': tableToMarkdown(name='', headers='Column Headers', t=columns, removeNull=True)
     })
+    if only_columns == 'false':
+        demisto.debug('printing Query Viewer results')
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': query_results,
+            'HumanReadable': tableToMarkdown(name='Query Viewer Results: {}'.format(resource_id), t=query_results,
+                                             removeNull=True)
+        })
 
 
 @logger
