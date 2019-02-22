@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from collections import deque
 from datetime import datetime
 import requests
 
@@ -296,7 +295,7 @@ def fetch():
 
     last_run = demisto.getLastRun()
     last_create_time = last_run.get('last_create_time', 0)
-    already_fetched = deque(last_run.get('already_fetched', []), maxlen=1000)
+    already_fetched = last_run.get('already_fetched', [])
     latest_created_time = last_create_time
 
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
@@ -318,11 +317,15 @@ def fetch():
                 'rawJSON': json.dumps(result)
             }
             incidents.append(incident)
+            if len(already_fetched) > 1000:
+                already_fetched.pop(0)
             already_fetched.append(r_id)
 
-    last_run['last_create_time'] = latest_created_time
-    last_run['already_fetched'] = list(already_fetched)
-    demisto.setLastRun(last_run)
+    demisto.setLastRun({
+        'already_fetched': already_fetched,
+        'last_create_time': latest_created_time
+    })
+
     beautifully_json(incidents)
 
     if demisto.command() == 'as-fetch-incidents':
@@ -330,11 +333,15 @@ def fetch():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': {
+                'last_run': last_run,
+                'last_run_updated': demisto.getLastRun(),
                 'incidents': incidents,
                 'last_create_time': latest_created_time,
-                'already_fetched': list(already_fetched)}
+                'already_fetched': already_fetched}
         })
-    demisto.incidents(incidents)
+
+    else:
+        demisto.incidents(incidents)
 
 
 @logger
@@ -730,9 +737,9 @@ try:
         demisto.results('ok')
 
     elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
-        if demisto.args().get('lastRun'):
-            last_run = json.loads(demisto.args().get('lastRun'))
-            demisto.setLastRun(last_run)
+        # if demisto.args().get('lastRun'):
+        #     last_run = json.loads(demisto.args().get('lastRun'))
+        #     demisto.setLastRun(last_run)
 
         fetch()
 
