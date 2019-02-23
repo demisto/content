@@ -1,4 +1,3 @@
-import re
 import glob
 from Tests.test_utils import *
 

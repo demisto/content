@@ -1,6 +1,8 @@
+import re
 import os
 import sys
 import yaml
+import argparse
 from subprocess import Popen, PIPE
 
 
@@ -128,3 +130,12 @@ def get_to_version(file_path):
                              "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
 
         return to_version
+
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')

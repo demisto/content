@@ -13,6 +13,7 @@ jobs:
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV
+              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
