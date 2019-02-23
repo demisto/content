@@ -21,7 +21,6 @@ except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
 
-import re
 import json
 import argparse
 
@@ -31,6 +30,7 @@ from Tests.scripts.hook_validations.secrets import get_secrets
 from Tests.scripts.hook_validations.image import ImageValidator
 from Tests.scripts.update_id_set import get_script_package_data
 from Tests.scripts.hook_validations.script import ScriptValidator
+from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 
@@ -140,47 +140,16 @@ def get_modified_and_added_files(branch_name, is_circle):
 
 
 class StructureValidator(object):
-    CONF_PATH = "./Tests/conf.json"
 
     def __init__(self, is_circle=False):
         self._is_valid = True
         self.is_circle = is_circle
 
-        self.conf_data = self.load_conf_file()
+        self.conf_json_validator = ConfJsonValidator()
         self.id_set_validator = IDSetValidator(is_circle)
 
     def is_invalid(self):
         return not self._is_valid
-
-    def load_conf_file(self):
-        with open(self.CONF_PATH) as data_file:
-            return json.load(data_file)
-
-    def validate_description_in_conf_dict(self, checked_dict):
-        """Validate that the checked_dict as description for all it's fields.
-
-        Args:
-            checked_dict (dict): Dictionary from conf.json file.
-        """
-        problematic_instances = []
-        for instance, description in checked_dict.items():
-            if description == "":
-                problematic_instances.append(instance)
-
-        if problematic_instances:
-            self._is_valid = False
-            print("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances)))
-
-    def is_valid_conf_json(self):
-        """Validate the fields skipped_tests and skipped_integrations in conf.json file."""
-        skipped_tests_conf = self.conf_data['skipped_tests']
-        skipped_integrations_conf = self.conf_data['skipped_integrations']
-
-        self.validate_description_in_conf_dict(skipped_tests_conf)
-        self.validate_description_in_conf_dict(skipped_integrations_conf)
-        # TODO: add Ben's section once he merges the mock issue.
-
-        return self._is_valid
 
     def validate_scheme(self, file_path, matching_regex=None):
         if matching_regex is None:
@@ -232,7 +201,7 @@ class StructureValidator(object):
                 with open(file_path) as json_file:
                     json_dict = json.load(json_file)
                     if file_name == "reputations.json":
-                        reputations_valid = validate_reputations(json_dict)
+                        reputations_valid = self.validate_reputations(json_dict)
                     else:
                         version_number = json_dict.get('version')
 
@@ -279,21 +248,6 @@ class StructureValidator(object):
             if data_dictionary and data_dictionary.get('releaseNotes') is None:
                 print_error("File " + file_path + " is missing releaseNotes, please add.")
                 self._is_valid = False
-
-    def is_test_in_conf_json(self, file_path):
-        file_id = collect_ids(file_path)
-
-        with open(self.CONF_PATH) as data_file:
-            conf = json.load(data_file)
-
-        conf_tests = conf['tests']
-        for test in conf_tests:
-            playbook_id = test['playbookID']
-            if file_id == playbook_id:
-                return True
-
-        print_error("You've failed to add the {0} to conf.json".format(file_path))
-        return False
 
     def validate_modified_files(self, modified_files):
         for file_path in modified_files:
@@ -398,14 +352,21 @@ class StructureValidator(object):
                     print "Validating " + file_name
                     self.validate_scheme(file_path)
 
+    def is_valid_structure(self, branch_name):
+        if not self.conf_json_validator.is_valid_conf_json():
+            self._is_valid = False
 
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+        if branch_name != 'master':
+            import logging
+            logging.basicConfig(level=logging.CRITICAL)
+
+            # validates only committed files
+            self.validate_committed_files(branch_name)
+        else:
+            # validates all of Content repo directories according to their schemas
+            self.validate_all_files()
+
+        return self._is_valid
 
 
 def main():
@@ -428,18 +389,7 @@ def main():
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     structure_validator = StructureValidator(is_circle)
-    structure_validator.is_valid_conf_json()
-    if branch_name != 'master':
-        import logging
-        logging.basicConfig(level=logging.CRITICAL)
-
-        # validates only committed files
-        structure_validator.validate_committed_files(branch_name)
-    else:
-        # validates all of Content repo directories according to their schemas
-        structure_validator.validate_all_files()
-
-    if structure_validator.is_invalid():
+    if not structure_validator.is_valid_structure(branch_name):
         sys.exit(1)
 
     print_color("Finished validating files structure", LOG_COLORS.GREEN)

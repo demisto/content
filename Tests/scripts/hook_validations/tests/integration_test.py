@@ -295,37 +295,6 @@ def test_added_new_command_context_path_in_integration():
         "issue although the context path has not changed"
 
 
-def test_not_changed_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
-    }
-    validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert validator.is_changed_command_name_or_arg() is False, "The script validator found a backward compatibility " \
-        "issue although the commands haven't changed"
-
-
 def test_changed_required_arg_for_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
