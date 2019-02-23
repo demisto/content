@@ -103,8 +103,8 @@ def test_changed_arg_in_script():
     validator = ScriptValidator("temp_file", check_git=False)
     validator.change_string = "+   - name: old_name\n-   - name: new_name\n+   - name: new_name"
 
-    assert validator.is_arg_changed() is False, "The script validator didn't found the arg list has breaking backward " \
-        "compatability although an arg was renamed"
+    assert validator.is_arg_changed() is False, "The script validator didn't found the arg list has breaking " \
+        "backward compatability although an arg was renamed"
 
 
 def test_duplicate_arg_in_script():

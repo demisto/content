@@ -1,5 +1,3 @@
-import pytest
-
 from validate_files_structure import StructureValidator
 
 
