@@ -6,6 +6,41 @@ from subprocess import Popen, PIPE
 
 CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
+# dirs
+INTEGRATIONS_DIR = "Integrations"
+SCRIPTS_DIR = "Scripts"
+PLAYBOOKS_DIR = "Playbooks"
+TEST_PLAYBOOKS_DIR = "TestPlaybooks"
+REPORTS_DIR = "Reports"
+DASHBOARDS_DIR = "Dashboards"
+WIDGETS_DIR = "Widgets"
+INCIDENT_FIELDS_DIR = "IncidentFields"
+LAYOUTS_DIR = "Layouts"
+CLASSIFIERS_DIR = "Classifiers"
+MISC_DIR = "Misc"
+CONNECTIONS_DIR = "Connections"
+
+# file types regexes
+IMAGE_REGEX = r".*\.png"
+SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
+PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
+TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(TEST_PLAYBOOKS_DIR)
+SCRIPT_REGEX = r"{}.*script-.*\.yml".format(SCRIPTS_DIR)
+WIDGETS_REGEX = r"{}.*widget-.*\.json".format(WIDGETS_DIR)
+DASHBOARD_REGEX = r"{}.*dashboard-.*\.json".format(DASHBOARDS_DIR)
+CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json".format(CONNECTIONS_DIR)
+CLASSIFIER_REGEX = r"{}.*classifier-.*\.json".format(CLASSIFIERS_DIR)
+LAYOUT_REGEX = r"{}.*layout-.*\.json".format(LAYOUTS_DIR)
+INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
+MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
+REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
+
 
 class LOG_COLORS:
     NATIVE = '\033[m'
@@ -50,3 +85,46 @@ def get_json(file_path):
         return data_dictionary
     else:
         return {}
+
+
+def get_script_or_integration_id(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        commonfields = data_dictionary.get('commonfields', {})
+        return commonfields.get('id', ['-', ])
+
+
+def collect_ids(file_path):
+    """Collect id mentioned in file_path"""
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('id', '-')
+
+
+def get_from_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        from_version = data_dictionary.get('fromversion', '0.0.0')
+        if from_version == "":
+            return "0.0.0"
+
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
+            raise ValueError("{} fromversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+
+        return from_version
+
+
+def get_to_version(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        to_version = data_dictionary.get('fromversion', '99.99.99')
+        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
+            raise ValueError("{} toversion is invalid \"{}\". "
+                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+
+        return to_version
