@@ -218,7 +218,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: https://lm.ddiworld.com?Username=yasmine.hafez@danaher.com
+        simple: https://lm.ddiworld.com?Username=test@this.com
     separatecontext: false
     view: |-
       {
