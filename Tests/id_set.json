@@ -2637,7 +2637,10 @@
         {
             "InviteUser": {
                 "name": "InviteUser", 
-                "deprecated": true
+                "deprecated": true, 
+                "tests": [
+                    "No tests"
+                ]
             }
         }, 
         {
