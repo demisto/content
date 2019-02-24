@@ -246,7 +246,7 @@ def assign_image_attributes(image):
     image = image.lower()
     image_properties = IMAGES.get(image)
     if not image_properties:
-        err_msg = 'Invalid value entered for the \'image\' argument. '
+        err_msg = 'Invalid value entered for the \'os_image\' argument. '
         err_msg += 'Only values from the provided options are accepted.'
         raise Exception(err_msg)
     sku = image_properties.get('sku')
