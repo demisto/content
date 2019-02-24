@@ -40,7 +40,8 @@ script: |
 type: javascript
 tags:
 - Utility
-comment: Extract Emails from the given text and place them both as output and in the
+comment: Deprecated - We recommend using extractIndicators command instead.
+  Extract Emails from the given text and place them both as output and in the
   context of a playbook. If given an object, will convert to JSON.
 enabled: true
 args:
@@ -52,3 +53,4 @@ outputs:
 - contextPath: Account.Email.Address
   description: Extracted emails
 scripttarget: 0
+releaseNotes: Deprecated this script
