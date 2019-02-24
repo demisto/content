@@ -16,7 +16,7 @@ TOKEN = PARAMS.get('token')
 HOST = PARAMS.get('host', 'https://management.azure.com')
 SERVER = HOST[:-1] if HOST.endswith('/') else HOST
 BASE_URL = SERVER + '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
-API_VERSION = PARAMS.get('api_version', '2018-06-01')
+API_VERSION = '2018-06-01'
 HEADERS = {}
 
 # Image options to be used in the create_vm_command
@@ -109,6 +109,7 @@ if not PARAMS.get('proxy'):
 
 
 '''HELPER FUNCTIONS'''
+
 
 def screen_errors(error_message, *args, **kwargs):
     """
@@ -228,7 +229,7 @@ def update_access_token():
         'Authorization': TOKEN,
         'Accept': 'application/json'
     }
-    token_retrieval_url = 'https://ec2-63-35-139-229.eu-west-1.compute.amazonaws.com/azurecompute-token' # disable-secrets-detection
+    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
     parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
     response = http_request('GET', full_url=token_retrieval_url, headers=headers, params=parameters)
     demisto.setIntegrationContext({'token': response.get('token'), 'stored': epoch_seconds()})
@@ -394,7 +395,7 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS, params=Non
                 err_msg += err_msg1
             raise Exception(err_msg)
         response = json.loads(r.content)
-    except ValueError as e:
+    except ValueError:
         response = r.content
 
     return response
@@ -402,7 +403,8 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS, params=Non
 
 '''MAIN FUNCTIONS / API CALLS'''
 
-#<-------- Resource Groups -------->#
+# <-------- Resource Groups --------> #
+
 
 def list_resource_groups():
     endpoint_url = 'https://management.azure.com/subscriptions/' + SUBSCRIPTION_ID + '/resourcegroups'
@@ -445,7 +447,7 @@ def list_resource_groups_command():
     })
 
 
-#<-------- Virtual Machines -------->#
+# <-------- Virtual Machines --------> #
 
 def list_vms(resource_group):
     # Construct endpoint URI suffix
@@ -718,7 +720,7 @@ def delete_vm_command():
         Success message to the war room
     """
     args = demisto.args()
-    response = delete_vm(args)
+    _ = delete_vm(args)
     success_msg = '"{}" VM Deletion Successfully Initiated'.format(args.get('virtual_machine_name'))
     demisto.results(success_msg)
 
@@ -858,6 +860,4 @@ try:
 
 except Exception as e:
     screened_error_message = screen_errors(e.message, TENANT_ID)
-    LOG(screened_error_message)
-    LOG.print_log()
     return_error(screened_error_message)
