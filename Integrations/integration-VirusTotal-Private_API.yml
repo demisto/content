@@ -641,16 +641,16 @@ script:
             md += scans_table_md
 
         dropped_files = response.get('filescan_id', None)
-            if dropped_files is not None:
-                if (ec.get(outputPaths['url'], False)):
-                        ec[outputPaths['url']]['VirusTotal'] = {
-                            'DroppedFiles': dropped_files
-                        }
-                else:
-                    ec.update({
-                    outputPaths['url']: {
-                        'VirusTotal': {'DroppedFiles': dropped_files}
-                    }})
+        if dropped_files is not None:
+            if (ec.get(outputPaths['url'], False)):
+                    ec[outputPaths['url']]['VirusTotal'] = {
+                        'DroppedFiles': dropped_files
+                    }
+            else:
+                ec.update({
+                outputPaths['url']: {
+                    'VirusTotal': {'DroppedFiles': dropped_files}
+                }})
 
         return {
             'Type': entryTypes['note'],
