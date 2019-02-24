@@ -96,8 +96,7 @@ def configure_proxy_unsecure(integrations):
     """
     for elem in integrations:
         for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
-            if param in elem['params']:
-                elem['params'][param] = True
+            elem['params'][param] = True
 
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
