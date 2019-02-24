@@ -88,6 +88,10 @@ script:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
     VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 
