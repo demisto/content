@@ -741,6 +741,7 @@ def get_all_query_viewers_command():
     else:
         demisto.results('No Query Viewers were found')
 
+
 AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 try:
     if demisto.command() == 'test-module':
