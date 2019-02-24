@@ -202,39 +202,45 @@ def retrieve_related_yml(file_path_temp):
     return matching_yml_file_contents
 
 
-def regex_for_secrets(file_contents):
+def regex_for_secrets(line):
     """Scans for IOCs with potentially low entropy score
-    :param file_contents: file to test as string representation (string)
+    :param line: line to test as string representation (string)
     :return  potential_secrets (list) IOCs found via regex, false_positives (list) Non secrets with high entropy
     """
     potential_secrets = []
     false_positives = []
 
     # Dates REGEX for false positive preventing since they have high entropy
-    dates = re.findall(DATES_REGEX, file_contents)
+    dates = re.findall(DATES_REGEX, line)
     if dates:
         false_positives += [date[0].lower() for date in dates]
     # UUID REGEX
-    uuids = re.findall(UUID_REGEX, file_contents)
+    uuids = re.findall(UUID_REGEX, line)
     if uuids:
         false_positives += uuids
-
+    # docker images version are detected as ips. so we ignore and whitelist them
+    # example: dockerimage: demisto/duoadmin:1.0.0.147
+    re_res = re.search(r'dockerimage:\s*\w*demisto/\w+:(\d+.\d+.\d+.\d+)', line)
+    if re_res:
+        docker_version = re_res.group(1)
+        false_positives.append(docker_version)
+        line = line.replace(docker_version, '')
     # URL REGEX
-    urls = re.findall(URLS_REGEX, file_contents)
+    urls = re.findall(URLS_REGEX, line)
     if urls:
         potential_secrets += urls
     # EMAIL REGEX
-    emails = re.findall(EMAIL_REGEX, file_contents)
+    emails = re.findall(EMAIL_REGEX, line)
     if emails:
         potential_secrets += emails
     # IPV6 REGEX
-    ipv6_list = re.findall(IPV6_REGEX, file_contents)
+    ipv6_list = re.findall(IPV6_REGEX, line)
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::' and len(ipv6) > 4:
                 potential_secrets.append(ipv6)
     # IPV4 REGEX
-    ipv4_list = re.findall(IPV4_REGEX, file_contents)
+    ipv4_list = re.findall(IPV4_REGEX, line)
     if ipv4_list:
         potential_secrets += ipv4_list
 
