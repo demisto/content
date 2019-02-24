@@ -110,7 +110,8 @@ def login():
         res_json = res.json()
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
             auth_token = res_json.get('log.loginResponse').get('log.return')
-            demisto.setIntegrationContext({'auth_token': auth_token})
+            if demisto.command() != 'test-module':
+                demisto.setIntegrationContext({'auth_token': auth_token})
             return auth_token
 
         return_error('Failed to login. Have not received token after login')
@@ -739,7 +740,6 @@ def get_all_query_viewers_command():
         })
     else:
         demisto.results('No Query Viewers were found')
-
 
 AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 try:
