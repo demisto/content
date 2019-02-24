@@ -340,7 +340,8 @@ def create_vm_parameters(args):
     return vm
 
 
-def http_request(method, url_suffix=None, data=None, headers=HEADERS, params=None, codes=None, full_url=None, j_son=None):
+def http_request(method, url_suffix=None, data=None, headers=HEADERS,
+                 params=None, codes=None, full_url=None, j_son=None):
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
 

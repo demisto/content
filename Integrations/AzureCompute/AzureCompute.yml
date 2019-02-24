@@ -418,4 +418,4 @@ script:
   isfetch: false
   runonce: false
 tests:
-  - No test
+- No test
