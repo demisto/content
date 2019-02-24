@@ -1,6 +1,6 @@
-id: WhatIsMyBrowser-Test
+id: WhatsMyBrowser-Test
 version: -1
-name: WhatIsMyBrowser-Test
+name: WhatsMyBrowser-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -68,10 +68,10 @@ tasks:
       version: -1
       name: ua-parse
       description: Parses a User Agent string
-      script: WhatIsMyBrowser|||ua-parse
+      script: WhatsMyBrowser|||ua-parse
       type: regular
       iscommand: true
-      brand: WhatIsMyBrowser
+      brand: WhatsMyBrowser
     nexttasks:
       '#none#':
       - "3"
