@@ -27,6 +27,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: e4cf7074-5ca6-447f-80f2-871f2c1c87c5
@@ -57,6 +58,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 8fb4668b-4196-4e1e-8d00-8c53a1f402d3
@@ -157,6 +159,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 0e178ea6-2533-488b-8345-a81a641f15c9
@@ -201,6 +204,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 2c4a7fda-caac-4330-87ee-70e5fd0c564d
@@ -299,6 +303,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 1bbb9b98-f352-4c3f-82f7-ca7253102ff9
@@ -339,6 +344,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: 9ab8db5a-1401-415b-80e7-cf80e80a03ae
@@ -363,6 +369,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: 2b515f81-454c-4b3b-8ef4-305131e91ac6
@@ -387,6 +394,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
     taskid: 06db001e-f19f-411e-8f88-6927db015eed
@@ -417,6 +425,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
     taskid: 81747ebd-c3b2-4014-82ca-283528f8bf4a
@@ -448,12 +457,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
-    taskid: e0eac337-258d-4a55-8c25-ae716a884f8e
+    taskid: 4ec921f1-c24e-4538-86b2-458bbbdf41b5
     type: regular
     task:
-      id: e0eac337-258d-4a55-8c25-ae716a884f8e
+      id: 4ec921f1-c24e-4538-86b2-458bbbdf41b5
       version: -1
       name: 'servicenow-update-ticket Ticket #0, Summary: "Goodbye Please", Assignee:
         "New Assignee", State: "2 - In Progress"'
@@ -492,7 +502,8 @@ tasks:
       contact_type: {}
       correlation_display: {}
       correlation_id: {}
-      custom_fields: {}
+      custom_fields:
+        simple: u_test=test
       delivery_plan: {}
       description: {}
       display: {}
@@ -547,12 +558,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
-    taskid: d94f8291-da61-4efa-8375-a4e9660ed752
+    taskid: bca333dd-7fb8-41b8-87ff-87a10101d541
     type: regular
     task:
-      id: d94f8291-da61-4efa-8375-a4e9660ed752
+      id: bca333dd-7fb8-41b8-87ff-87a10101d541
       version: -1
       name: 'servicenow-query Ticket #0'
       script: '|||servicenow-query-tickets'
@@ -561,10 +573,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
-      - "29"
+      - "73"
     scriptarguments:
+      extend-context:
+        simple: Test=result.u_test
       limit: {}
+      offset: {}
       query:
         simple: sys_id=${Ticket.[0].ID}
       ticket_type: {}
@@ -578,6 +592,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
     taskid: 238638f4-ce11-4ab9-81d4-b66d06ad2ac3
@@ -592,7 +607,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "75"
     scriptarguments:
       field1:
         simple: ServiceNow.Ticket.[0].Summary
@@ -616,12 +631,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2410
+          "x": 480,
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
     taskid: 4bacfd76-8543-4688-8472-e4c9a29904f1
@@ -649,11 +665,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 3285
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
     taskid: 3af59a17-048e-4add-832f-66e7a82db497
@@ -682,11 +699,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3285
+          "y": 3985
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "33":
     id: "33"
     taskid: a7441576-fe85-42ba-813a-3817d04328fb
@@ -713,11 +731,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3635
+          "y": 4335
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
     taskid: f29d8f80-11bc-49d0-8001-1b7d1735d152
@@ -748,6 +767,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
     taskid: 429c41e2-2e31-4b49-8574-e36bbb0e92f1
@@ -779,6 +799,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
     taskid: 8731b501-3ed2-4b85-8990-85c47d3b3909
@@ -809,6 +830,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "40":
     id: "40"
     taskid: 5dd73c84-717c-453a-80f7-3924ecd7ab6f
@@ -823,7 +845,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "75"
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries.[0]}
@@ -833,12 +855,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2410
+          "x": 50,
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "41":
     id: "41"
     taskid: c9d60ebe-6679-40a4-899a-f7cc7a75cca3
@@ -869,6 +892,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "42":
     id: "42"
     taskid: a5096468-c159-410a-84e8-adb53dbd9e29
@@ -894,11 +918,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2760
+          "y": 3460
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "43":
     id: "43"
     taskid: 7f16d184-469f-4a5e-8d02-89a78372ebcd
@@ -924,11 +949,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3460
+          "y": 4160
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "44":
     id: "44"
     taskid: 5e71c269-a994-42d5-8d27-42d0b5038cd9
@@ -954,11 +980,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4160
+          "y": 4860
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "45":
     id: "45"
     taskid: 6d89db12-23ab-4479-868b-b67ee16abaec
@@ -986,11 +1013,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3985
+          "y": 4685
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "46":
     id: "46"
     taskid: 2c36082d-f34a-41a9-8c30-6ea354e492c8
@@ -1024,11 +1052,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3810
+          "y": 4510
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "48":
     id: "48"
     taskid: 19e81dd6-f048-4923-8280-2de176e07e07
@@ -1056,11 +1085,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4860
+          "y": 5560
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "49":
     id: "49"
     taskid: 0414babb-a3ea-4988-82cf-3344a243b4d7
@@ -1092,11 +1122,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5035
+          "y": 5735
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "50":
     id: "50"
     taskid: aec752e6-4cfa-4bf4-8abb-cd19a21b7fc7
@@ -1125,11 +1156,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4510
+          "y": 5210
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "51":
     id: "51"
     taskid: de062445-617b-4390-85e6-1203ec383471
@@ -1161,11 +1193,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4685
+          "y": 5385
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "52":
     id: "52"
     taskid: 67595765-d025-4ec0-8117-e8cc912b2040
@@ -1194,11 +1227,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4335
+          "y": 5035
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "53":
     id: "53"
     taskid: 7de15e9f-560a-4f99-8957-d28f659a95f1
@@ -1228,11 +1262,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5210
+          "y": 5910
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "54":
     id: "54"
     taskid: 492c23f9-1827-41c4-8619-be59d7880b8d
@@ -1265,11 +1300,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5385
+          "y": 6085
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "55":
     id: "55"
     taskid: 44b759e7-d9c2-4ee5-8e3c-fe975ae31c80
@@ -1295,11 +1331,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5560
+          "y": 6260
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "56":
     id: "56"
     taskid: 74e33654-6335-4645-8348-08c25fcba964
@@ -1328,11 +1365,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5910
+          "y": 6610
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "57":
     id: "57"
     taskid: bec4fe1f-a267-42d8-80d4-d75487fe433d
@@ -1361,11 +1399,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6085
+          "y": 6785
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "58":
     id: "58"
     taskid: 4190775a-2e84-43ce-8332-2a6541abdecd
@@ -1401,11 +1440,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6260
+          "y": 6960
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "59":
     id: "59"
     taskid: fbdbdcdd-1873-45e5-8d67-82c42ee400aa
@@ -1435,11 +1475,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6435
+          "y": 7135
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "60":
     id: "60"
     taskid: aae8a7b6-4fda-4298-832c-e502e24f54f7
@@ -1468,11 +1509,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6610
+          "y": 7310
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "61":
     id: "61"
     taskid: f7f99006-af28-4c7f-8825-65423704daa0
@@ -1508,11 +1550,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6785
+          "y": 7485
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "62":
     id: "62"
     taskid: fa2a9588-bde3-43f4-8810-b4dd1cb87685
@@ -1539,11 +1582,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6960
+          "y": 7660
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "63":
     id: "63"
     taskid: d586feb5-3732-4866-8a5a-f24abbc49cef
@@ -1568,11 +1612,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7135
+          "y": 7835
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "64":
     id: "64"
     taskid: 424ff6cd-0fde-46bb-8a92-a5d85fcabbaf
@@ -1601,11 +1646,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7310
+          "y": 8010
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "65":
     id: "65"
     taskid: d73acaf0-0990-4779-8c14-b4a1fa6434b3
@@ -1633,11 +1679,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7485
+          "y": 8185
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "67":
     id: "67"
     taskid: ff09193c-d114-46c6-8cac-475aa4d3caba
@@ -1667,11 +1714,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8010
+          "y": 8710
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "68":
     id: "68"
     taskid: 47f70a86-3e7b-4c04-88e9-38b0059ebdbe
@@ -1700,11 +1748,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7660
+          "y": 8360
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "69":
     id: "69"
     taskid: 349bf092-3bcf-47b3-8a40-0b0087afbba4
@@ -1733,11 +1782,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5735
+          "y": 6435
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "70":
     id: "70"
     taskid: 8feb65dd-c4be-407b-8535-6128ca00d8fd
@@ -1762,11 +1812,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7835
+          "y": 8535
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "71":
     id: "71"
     taskid: f46b9667-65e1-4dc9-8a92-1565d2dd3406
@@ -1794,11 +1845,12 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2935
+          "y": 3635
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "72":
     id: "72"
     taskid: 87c5af5a-b23d-41b5-8eb4-ce82ed5f40b4
@@ -1831,17 +1883,234 @@ tasks:
       {
         "position": {
           "x": 265,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "73":
+    id: "73"
+    taskid: 05a25a09-da1d-49d5-8287-dc7107dbdfdd
+    type: condition
+    task:
+      id: 05a25a09-da1d-49d5-8287-dc7107dbdfdd
+      version: -1
+      name: Verify Custom Field
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Test}
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: b0da656c-7303-460b-88c8-7dddc6325485
+    type: regular
+    task:
+      id: b0da656c-7303-460b-88c8-7dddc6325485
+      version: -1
+      name: Update custom field without u_
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields:
+        simple: test=test2
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      id:
+        simple: ${Ticket.[0].ID}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description: {}
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: 3cbeb51d-93a2-4a69-88cf-2aab4bc90295
+    type: condition
+    task:
+      id: 3cbeb51d-93a2-4a69-88cf-2aab4bc90295
+      version: -1
+      name: Verify Custom Field
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Test}
+            iscontext: true
+          right:
+            value:
+              simple: test2
+    view: |-
+      {
+        "position": {
+          "x": 265,
           "y": 3110
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: 821b65eb-91ef-4747-8a27-e7f2856a8729
+    type: regular
+    task:
+      id: 821b65eb-91ef-4747-8a27-e7f2856a8729
+      version: -1
+      name: 'servicenow-query Ticket #0'
+      script: '|||servicenow-query-tickets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: Test=result.u_test
+      limit: {}
+      offset: {}
+      query:
+        simple: sys_id=${Ticket.[0].ID}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8055,
+        "height": 8755,
         "width": 810,
         "x": 50,
         "y": 50
