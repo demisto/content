@@ -2636,7 +2636,8 @@
         }, 
         {
             "InviteUser": {
-                "name": "InviteUser"
+                "name": "InviteUser", 
+                "deprecated": true
             }
         }, 
         {

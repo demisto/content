@@ -18,3 +18,5 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+deprecated: true
+releaseNotes: Deprecated, use the new builtin command "invite" - support Role-based access control
