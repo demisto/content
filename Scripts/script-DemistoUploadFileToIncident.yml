@@ -2,16 +2,23 @@ commonfields:
   id: DemistoUploadFileToIncident
   version: -1
 name: DemistoUploadFileToIncident
-script: |
-  incident_id = demisto.args()["incident_id"]
-  entry_id = demisto.args()["entryID"]
-  response = demisto.executeCommand("demisto-api-multipart", {"uri":"incident/upload/{}".format(incident_id),"entryID":entry_id})[0]
+script: |-
+  args = demisto.args()
+  incident_id = args.get('incident_id')
+  entry_id = args.get('entryID')
+  body = args.get('body', None)
+
+  response = demisto.executeCommand("demisto-api-multipart", {"uri":"incident/upload/{}".format(incident_id),"entryID":entry_id,"body":body})[0]
   if isError(response):
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "There was an issue uploading file.  Check API key and input arguments."})
   else:
-      demisto.results("Successfully uploaded file to incident")
+      if body:
+          demisto.results("Successfully uploaded file to incident. Comment is:" + body)
+      else:
+          demisto.results("Successfully uploaded file to incident")
 type: python
-tags: [DemistoAPI]
+tags:
+- DemistoAPI
 comment: Upload file to specified incident using EntryID
 enabled: true
 args:
@@ -20,10 +27,12 @@ args:
   description: ID of incident to upload to
 - name: entryID
   description: Entry ID of file to upload
+- name: body
+  description: Request body
 scripttarget: 0
-runonce: false
-tests:
-- DemistoUploadFileToIncident Test
 dependson:
   must:
   - demisto-api-multipart
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Add body argument"

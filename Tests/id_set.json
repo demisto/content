@@ -1712,6 +1712,9 @@
                 "name": "DemistoUploadFile", 
                 "depends_on": [
                     "demisto-api-multipart"
+                ], 
+                "tests": [
+                    "DemistoUploadFileToIncident Test"
                 ]
             }
         }, 
@@ -1720,9 +1723,6 @@
                 "name": "DemistoUploadFileToIncident", 
                 "depends_on": [
                     "demisto-api-multipart"
-                ], 
-                "tests": [
-                    "DemistoUploadFileToIncident Test"
                 ]
             }
         }, 
