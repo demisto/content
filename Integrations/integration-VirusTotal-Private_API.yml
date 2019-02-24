@@ -640,6 +640,18 @@ script:
                     }})
             md += scans_table_md
 
+        dropped_files = response.get('filescan_id', None)
+            if dropped_files is not None:
+                if (ec.get(outputPaths['url'], False)):
+                        ec[outputPaths['url']]['VirusTotal'] = {
+                            'DroppedFiles': dropped_files
+                        }
+                else:
+                    ec.update({
+                    outputPaths['url']: {
+                        'VirusTotal': {'DroppedFiles': dropped_files}
+                    }})
+
         return {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -1464,5 +1476,6 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
+releaseNotes: "add Dropped Files to the vt-get-url-report command"
 tests:
     - virusTotalPrivateAPI-test-playbook
