@@ -304,8 +304,8 @@
             "playbookID": "SCADAfence_test"
         },
         {
-            "integrations": "WhatIsMyBrowser",
-            "playbookID": "WhatIsMyBrowser-Test"
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
         },
         {
 

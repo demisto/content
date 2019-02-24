@@ -11839,13 +11839,13 @@
             }
         }, 
         {
-            "WhatIsMyBrowser": {
-                "name": "WhatIsMyBrowser",
+            "WhatsMyBrowser": {
+                "name": "WhatsMyBrowser",
                 "commands": [
                     "ua-parse"
                 ], 
                 "tests": [
-                    "WhatIsMyBrowser-Test"
+                    "WhatsMyBrowser-Test"
                 ]
             }
         }, 
@@ -16101,14 +16101,14 @@
             }
         }, 
         {
-            "WhatIsMyBrowser-Test": {
-                "name": "WhatIsMyBrowser-Test",
+            "WhatsMyBrowser-Test": {
+                "name": "WhatsMyBrowser-Test",
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
                 ], 
                 "command_to_integration": {
-                    "ua-parse": "WhatIsMyBrowser"
+                    "ua-parse": "WhatsMyBrowser"
                 }
             }
         }, 
