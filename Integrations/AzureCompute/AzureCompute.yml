@@ -32,7 +32,7 @@ configuration:
   type: 8
 description: Create and Manage Azure Virtual Machines
 detaileddescription: |-
-  To allow access to Microsoft Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fec2-63-35-139-229.eu-west-1.compute.amazonaws.com%2Fazurecompute&client_id=9ead7552-8ee2-47e1-b435-fcff173735a5).
+  To allow access to Microsoft Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?state=1q2w3e4r&redirect_uri=https%3A%2F%2Fdemistobot.demisto.com%2Fazurecompute&client_id=2fc22ce4-26fb-4532-9529-5f42664c0161).
   After authorising the Demisto app, you will get a tenant ID and authentication token, both of which should be inserted into their respective fields for the integration instance settings.
 display: Azure Compute
 name: Azure Compute
@@ -418,4 +418,4 @@ script:
   isfetch: false
   runonce: false
 tests:
-- No test
+  - No test
