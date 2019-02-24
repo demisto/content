@@ -88,11 +88,6 @@ script:
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    # Define utf8 as default encoding
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-
-
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
     VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 
@@ -142,10 +137,7 @@ script:
     def convert_to_str(obj):
         if isinstance(obj, unicode):
             return obj.encode('utf-8')
-        try:
-            return str(obj)
-        except:
-            return obj
+        return str(obj)
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
         """
