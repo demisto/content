@@ -53,4 +53,5 @@ outputs:
 - contextPath: Account.Email.Address
   description: Extracted emails
 scripttarget: 0
+deprecated: true
 releaseNotes: Deprecated this script
