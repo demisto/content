@@ -90,7 +90,7 @@ script:
     - contextPath: CanaryTools.token.CreatedTime
       description: Token Created time
       type: date
-    - contextPath: CanaryTools.token.Status
+    - contextPath: CanaryTools.token.Enabled
       description: Token status - Enabled (True / False)
       type: boolean
     - contextPath: CanaryTools.token.Kind
