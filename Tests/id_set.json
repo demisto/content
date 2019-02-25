@@ -2003,7 +2003,8 @@
         }, 
         {
             "ExtractDomain": {
-                "name": "ExtractDomain"
+                "name": "ExtractDomain", 
+                "deprecated": true
             }
         }, 
         {
@@ -2019,12 +2020,14 @@
         }, 
         {
             "ExtractEmail": {
-                "name": "ExtractEmail"
+                "name": "ExtractEmail", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractHash": {
-                "name": "ExtractHash"
+                "name": "ExtractHash", 
+                "deprecated": true
             }
         }, 
         {
@@ -2078,12 +2081,14 @@
         }, 
         {
             "ExtractIP": {
-                "name": "ExtractIP"
+                "name": "ExtractIP", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractURL": {
-                "name": "ExtractURL"
+                "name": "ExtractURL", 
+                "deprecated": true
             }
         }, 
         {
@@ -6018,6 +6023,9 @@
                     "ExtractURL", 
                     "ExtractEmail", 
                     "ExtractIP"
+                ], 
+                "tests": [
+                    "No tests - Deprecated"
                 ]
             }
         }, 
@@ -6874,6 +6882,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - deprecated"
                 ]
             }
         }, 
@@ -11843,7 +11854,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser",
+                "name": "WhatsMyBrowser", 
                 "commands": [
                     "ua-parse"
                 ], 
@@ -16109,7 +16120,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test",
+                "name": "WhatsMyBrowser-Test", 
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
