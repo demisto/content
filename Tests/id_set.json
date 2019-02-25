@@ -6399,7 +6399,7 @@
                     "Enrichment Playbook"
                 ], 
                 "tests": [
-                    "No tests"
+                    "No tests - Deprecated"
                 ]
             }
         }, 
