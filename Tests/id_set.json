@@ -9720,6 +9720,9 @@
                     "lr-get-alarm-history-by-id", 
                     "lr-update-alarm-status", 
                     "lr-get-alarms"
+                ], 
+                "tests": [
+                    "LogRhythm-Test-Playbook"
                 ]
             }
         }, 
