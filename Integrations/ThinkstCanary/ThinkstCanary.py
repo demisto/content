@@ -215,7 +215,7 @@ def get_token_command():
             'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
     }
 
-    if demisto.get(res,'token.doc'):
+    if demisto.get(res, 'token.doc'):
         name = demisto.get(res, 'token.doc_name')
         content = demisto.get(res, 'token.doc')
         token_file = fileResult(name, content)
