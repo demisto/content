@@ -15022,8 +15022,12 @@
         {
             "RSA NetWitness Test": {
                 "name": "RSA NetWitness Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "command_to_integration": {
                     "netwitness-get-incident": "RSA NetWitness v11.1", 
+                    "netwitness-update-incident": "RSA NetWitness v11.1", 
                     "netwitness-get-incidents": "RSA NetWitness v11.1"
                 }
             }

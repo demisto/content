@@ -621,7 +621,7 @@ script:
             else:
                 dbotScore = 1
 
-            ec_url.update({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+            ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
             if (dbotScore < 3):
                 ec_url.update({'Data': url})
 
