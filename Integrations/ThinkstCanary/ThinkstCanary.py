@@ -36,7 +36,7 @@ RELEVANT_DEVICE_ENTRIES = {
 RELEVANT_TOKEN_ENTRIES = {
     'canarytoken': 'CanaryToken',
     'created_printable': 'CreatedTime',
-    'enabled': 'Status',
+    'enabled': 'Enabled',
     'kind': 'Kind',
     'triggered_count': 'Triggered',
     'doc_name': 'DocName',
@@ -204,9 +204,8 @@ def get_token_command():
         'auth_token': AUTH_TOKEN,
         'canarytoken': token
     }
-
     res = http_request('GET', SERVER + 'canarytoken/fetch', params=params)
-    context = createContext(res.get('token').get('canarytoken'), removeNull=True)
+    context = res.get('token').get('canarytoken')
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
