@@ -45,6 +45,9 @@ script:
     ''' HELPER FUNCTIONS '''
 
     def check_if_datetime(v):
+        """
+        Parses datetime object into string
+        """
         if isinstance(v, datetime.datetime):
             return v.strftime("%Y-%m-%dT%H:%M:%S")
         return v
