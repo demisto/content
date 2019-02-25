@@ -22,6 +22,10 @@ jobs:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
       - run:
+          name: Create ID Set
+          command: |
+            python ./Tests/scripts/update_id_set.py -r
+      - run:
           name: Validate Files and Yaml
           command: |
               ./Tests/scripts/pyflake.sh

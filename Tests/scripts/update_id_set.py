@@ -7,6 +7,7 @@ import yaml
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 
+from Tests.test_utils import get_modified_and_added_files
 
 SCRIPT_YML_REGEX = r"scripts.*\.yml"
 SCRIPT_PY_REGEX = r"scripts.*\.py"
@@ -381,24 +382,38 @@ def re_create_id_set():
     integration_list = []
     testplaybooks_list = []
 
+    branches = run_git_command("git branch")
+    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name = branch_name_reg.group(1)
+
+    added_files, _ = get_modified_and_added_files(branch_name, is_circle=True)
+
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Integrations', '*')):
+        if file in added_files:
+            continue
         print("adding {0} to id_set".format(file))
         integration_list.append(get_integration_data(file))
 
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Playbooks', '*')):
+        if file in added_files:
+            continue
         print("adding {0} to id_set".format(file))
         playbooks_list.append(get_playbook_data(file))
 
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Scripts', '*')):
+        if file in added_files:
+            continue
         print("adding {0} to id_set".format(file))
         scripts_list.append(get_script_data(file))
 
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('TestPlaybooks', '*')):
+        if file in added_files:
+            continue
         print("adding {0}".format(file))
         if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
             scripts_list.append(get_script_data(file))
