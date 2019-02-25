@@ -3,7 +3,6 @@ version: -1
 name: WildFire - Detonate file
 fromversion: 4.0.0
 description: |-
-  Deprecated - We recommend using Detonate File - WildFire playbook instead.
   Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
@@ -502,6 +501,6 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
+releaseNotes: "-"
 tests:
-  - No tests - The playbook was deprecated (used to be Wildfire Test)
-releaseNotes: "Deprecated playbook"
+  - Wildfire Test
