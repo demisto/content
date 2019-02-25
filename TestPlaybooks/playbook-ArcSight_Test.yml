@@ -1,0 +1,466 @@
+id: ArcSight ESM Test
+version: -1
+name: ArcSight ESM Test
+fromversion: ""
+description: |-
+  Arcsight ESM Test.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fcd61641-99c3-4272-8f3e-8e245dac6047
+    type: start
+    task:
+      id: fcd61641-99c3-4272-8f3e-8e245dac6047
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: c11d0ce7-9b93-4118-82a8-dae91de27cae
+    type: regular
+    task:
+      id: c11d0ce7-9b93-4118-82a8-dae91de27cae
+      version: -1
+      name: get all cases
+      description: ""
+      script: '|||as-get-all-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 85560c35-9e15-4952-8398-993c411d4360
+    type: regular
+    task:
+      id: 85560c35-9e15-4952-8398-993c411d4360
+      version: -1
+      name: get case event ids
+      description: ""
+      script: '|||as-get-case-event-ids'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      caseId:
+        simple: ${ArcSightESM.Cases.resourceid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 417f817f-f392-4b79-8c54-3f49835daf96
+    type: regular
+    task:
+      id: 417f817f-f392-4b79-8c54-3f49835daf96
+      version: -1
+      name: delete context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 719da377-2589-4214-8128-dd8b710c5c44
+    type: regular
+    task:
+      id: 719da377-2589-4214-8128-dd8b710c5c44
+      version: -1
+      name: get pre-existing case
+      description: ""
+      script: '|||as-get-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      resourceId:
+        simple: 77ax-uGgBABCWb2puJdY8ZA==
+      withBaseEvents: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 452e60ff-32f4-4f97-8f71-3e9b2c7ce194
+    type: regular
+    task:
+      id: 452e60ff-32f4-4f97-8f71-3e9b2c7ce194
+      version: -1
+      name: update case
+      description: ""
+      script: '|||as-update-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseId:
+        simple: ${ArcSightESM.Cases.resourceid}
+      severity:
+        simple: INSIGNIFICANT
+      stage:
+        simple: QUEUED
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 3b7b186a-fa09-4905-86a4-a0dc6f9a98fd
+    type: regular
+    task:
+      id: 3b7b186a-fa09-4905-86a4-a0dc6f9a98fd
+      version: -1
+      description: ""
+      name: get entries
+      script: '|||as-get-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryFilter:
+        simple: name:do not delete
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 06d69f69-8f61-4b0b-8b43-ac055597446c
+    type: condition
+    task:
+      id: 06d69f69-8f61-4b0b-8b43-ac055597446c
+      version: -1
+      name: check case name
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ArcSightESM.Cases.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 4ef121cd-e1bd-4cd7-8131-01941308047d
+    type: condition
+    task:
+      id: 4ef121cd-e1bd-4cd7-8131-01941308047d
+      version: -1
+      name: check for events
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ArcSightESM.CaseEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: e3edc266-7b69-4b33-873e-f105b2e47541
+    type: condition
+    task:
+      id: e3edc266-7b69-4b33-873e-f105b2e47541
+      version: -1
+      name: 'check severity '
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ArcSightESM
+                accessor: Cases.consequenceSeverity
+            iscontext: true
+          right:
+            value:
+              simple: INSIGNIFICANT
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: fc13a703-fd60-4d46-84c1-3db0896c84bb
+    type: regular
+    task:
+      id: fc13a703-fd60-4d46-84c1-3db0896c84bb
+      version: -1
+      name: add entries
+      description: ""
+      script: '|||as-add-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entries:
+        simple: '[{"name": "t3", "EventID": "9"},{"name": "t4", "EventID": "9"}]'
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 340d21e5-303f-409a-8e2d-17b2adbd1850
+    type: regular
+    task:
+      id: 340d21e5-303f-409a-8e2d-17b2adbd1850
+      version: -1
+      name: get all query viewers
+      description: ""
+      script: '|||as-get-all-query-viewers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: c15d4bc1-6af7-4886-83ed-0c311d0a5c89
+    type: regular
+    task:
+      id: c15d4bc1-6af7-4886-83ed-0c311d0a5c89
+      version: -1
+      name: clear entries
+      description: ""
+      script: '|||as-clear-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      resourceId:
+        simple: H0LvlmWgBABCA5+HbRyHZoQ==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 47f51ce9-b55c-44f6-82f4-335f61d31c31
+    type: title
+    task:
+      id: 47f51ce9-b55c-44f6-82f4-335f61d31c31
+      version: -1
+      description: ""
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 34eb1a66-9283-44bb-843c-ea13c22e54b0
+    type: title
+    task:
+      id: 34eb1a66-9283-44bb-843c-ea13c22e54b0
+      version: -1
+      name: good luck
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2455,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

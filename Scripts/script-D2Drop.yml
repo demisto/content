@@ -48,6 +48,5 @@ args:
 scripttarget: 1
 runonce: false
 runas: DBotWeakRole
-releaseNotes: added overwrite support to D2Drop
 tests:
   - No test - D2 tests are not supported yet in content tests
