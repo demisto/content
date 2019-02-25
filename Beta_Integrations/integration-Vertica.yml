@@ -94,7 +94,7 @@ script:
         # Get arguments from user
         query = demisto.args().get('query')
         limit = int(demisto.args().get('limit', 50))
-        # Query and get raw response (list of tuples)
+        # Query and get raw response (list of ordered dicts)
         rows = query_request(query)
         # Parse response into context & content entries
         if rows:
@@ -124,7 +124,7 @@ script:
     def query_request(query):
         try:
             CURSOR.execute(query)
-        except vertica_python.errors.MissingRelation as err:
+        except vertica_python.errors.MissingRelation:
             return_error('Error while executing query.')
         rows = CURSOR.fetchall()
         if CURSOR.rowcount in {0, -1}:
