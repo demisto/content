@@ -138,5 +138,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: ""
 tests:
   - No tests
