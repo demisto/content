@@ -2162,6 +2162,9 @@
                 "name": "FindSimilarIncidentsByText", 
                 "script_executions": [
                     "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -13240,7 +13243,6 @@
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
                     "DeleteContext", 
-                    "VerifyContext", 
                     "Set"
                 ], 
                 "implementing_playbooks": [
