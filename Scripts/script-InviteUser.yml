@@ -13,7 +13,7 @@ args:
 - name: user
   required: true
   default: true
-  description: Deprecated, use the invite script instead
+  description: Deprecated, use the **invite** script instead
 scripttarget: 0
 dependson: {}
 timeout: 0s
