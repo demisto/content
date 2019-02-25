@@ -60,6 +60,9 @@ def parse_timestamp_to_datestring(timestamp):
             return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         except (ValueError, TypeError) as e:
             LOG(e.message)
+            if timestamp == '31 Dec 1969 19:00:00 EST':
+                # Unix epoch 00:00:00 UTC
+                return 'None'
             return timestamp
 
 
@@ -382,7 +385,7 @@ def get_case_command():
         'Stage': raw_case.get('stage'),
         'CaseID': raw_case.get('resourceid'),
         'Severity': raw_case.get('consequenceSeverity'),
-        'CreatedTime': FormatADTimestamp(raw_case.get('createdTimestamp'))
+        'CreatedTime': epochToTimestamp(raw_case.get('createdTimestamp'))
     }
     if with_base_events:
         case['events'] = raw_case.get('events')
@@ -446,7 +449,7 @@ def get_security_events_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown('Security Event: {}'.format(str(ids)[1:-1]), events, removeNull=True),
+            'HumanReadable': tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True),
             'EntryContext': {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': entry_context}
         })
     else:
@@ -504,7 +507,7 @@ def update_case_command():
         'Stage': raw_updated_case.get('stage'),
         'CaseID': raw_updated_case.get('resourceid'),
         'Severity': raw_updated_case.get('consequenceSeverity'),
-        'CreatedTime': FormatADTimestamp(raw_updated_case.get('createdTimestamp'))
+        'CreatedTime': epochToTimestamp(raw_updated_case.get('createdTimestamp'))
     }
     entry_context = beautifully_json(raw_updated_case)
     demisto.results({
@@ -574,12 +577,12 @@ def get_case_event_ids_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), headers='Event ID', t=event_ids,
+            'HumanReadable': tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
                                              removeNull=True),
             'EntryContext': {'ArcSightESM.CaseEvents': event_ids}
         })
     else:
-        demisto.results('No IDs were found')
+        demisto.results('No result returned')
 
 
 @logger
@@ -619,16 +622,30 @@ def get_entries_command():
 
     res_json = json.loads(xml2json(res.text))
     raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
+
+    # retrieve columns
+    cols = demisto.get(raw_entries, 'columns')
+    if cols:
+        hr_columns = tableToMarkdown(name='', headers=['Columns'], t=cols,
+                                     removeNull=True) if cols else 'Active list has no columns'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': cols,
+            'HumanReadable': hr_columns,
+        })
+
     if 'entryList' in raw_entries:
         entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [
             raw_entries['entryList']]
         entry_list = [d['entry'] for d in entry_list if 'entry' in d]
         keys = raw_entries.get('columns')
         entries = [dict(zip(keys, values)) for values in entry_list]
-        filtered = entries
+
         # if the user wants only entries that contain certain 'field:value' sets (filters)
         # e.g., "name:myName,eventId:0,:ValueInUnknownField"
         # if the key is empty, search in every key
+        filtered = entries
         if entry_filter:
             for f in entry_filter.split(','):
                 k, v = f.split(':')
@@ -639,11 +656,12 @@ def get_entries_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Active List entries', t=filtered, removeNull=True),
+            'HumanReadable': tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
+                                             removeNull=True),
             'EntryContext': {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): entry_context}
         })
     else:
-        demisto.results('No Entries were found for this Active List.')
+        demisto.results('Active List has no entries')
 
 
 @logger
@@ -715,7 +733,7 @@ def get_all_query_viewers_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Query Viewers', t=query_viewers, headers='Query Viewers ID',
+            'HumanReadable': tableToMarkdown(name='', t=query_viewers, headers='Query Viewers',
                                              removeNull=True),
             'EntryContext': {'ArcSightESM.AllQueryViewers': entry_context}
         })
