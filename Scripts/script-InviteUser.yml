@@ -13,12 +13,11 @@ args:
 - name: user
   required: true
   default: true
-  description: Specify the user name which can also include team (to send to all members
-    if investigation) or here (to send to everyone currently online)
+  description: Deprecated, use the invite script instead
 scripttarget: 0
 dependson: {}
 timeout: 0s
 deprecated: true
-releaseNotes: Deprecated, use the new builtin command "invite" - support Role-based access control
+releaseNotes: Deprecated, use the invite script instead
 tests:
   - No tests
