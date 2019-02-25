@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from demistomock import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
@@ -21,7 +21,7 @@ if not demisto.params().get('proxy', False):
 SERVER = demisto.params().get('server').rstrip('/') + '/api/v1/'
 AUTH_TOKEN = demisto.params().get('auth_token')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-FETCH_DELTA = 24
+FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 RELEVANT_DEVICE_ENTRIES = {
     'description': 'Description',
     'id': 'ID',
@@ -142,6 +142,7 @@ def list_canaries_command():
     Retrieve all Canaries available in Canary Tools
     """
     res_json, new_devices = list_canaries()
+    context = createContext(new_devices, removeNull=True)
     headers = [
         'ID',
         'Name',
@@ -159,7 +160,7 @@ def list_canaries_command():
         'Contents': res_json,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Canary Devices', new_devices, headers=headers),
-        'EntryContext': {'CanaryTools.Device(val.ID && val.ID == obj.ID)': new_devices}
+        'EntryContext': {'CanaryTools.Device(val.ID && val.ID === obj.ID)': context}
     })
 
 
@@ -182,13 +183,14 @@ def list_tokens_command():
     """
     res_json, new_tokens = list_tokens()
     headers = sorted(new_tokens[0].keys())
+    context = createContext(new_tokens, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': res_json,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers),
-        'EntryContext': {'CanaryTools.Token(val.CanaryToken && val.CanaryToken == obj.CanaryToken)': new_tokens}
+        'EntryContext': {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
     })
 
 
@@ -204,6 +206,7 @@ def get_token_command():
     }
 
     res = http_request('GET', SERVER + 'canarytoken/fetch', params=params)
+    context = createContext(res.get('token').get('canarytoken'), removeNull=True)
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -211,8 +214,7 @@ def get_token_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'File Fetched Successfully',
         'EntryContext': {
-            'CanaryTools.Token(val.CanaryToken && val.CanaryToken == obj.CanaryToken)': res.get('token').get(
-                'canarytoken')}
+            'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
     }
 
     if res.get('token').get('doc'):
@@ -261,6 +263,7 @@ def check_whitelist_command():
         'Whitelisted': str(res.get('is_ip_whitelisted'))
     }
     if res.get('is_ip_whitelisted'):
+        context = createContext(context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -268,9 +271,10 @@ def check_whitelist_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'The IP address {}:{} is Whitelisted'.format(ip, port),
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         })
     else:
+        context = createContext(context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -278,7 +282,7 @@ def check_whitelist_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'The IP address {}:{} is not Whitelisted'.format(ip, port),
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         })
 
 
@@ -315,6 +319,7 @@ def whitelist_ip_command():
             'Port': str(port),
             'Whitelisted': 'True'
         }
+        context = createContext(context, removeNull=True)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -323,7 +328,7 @@ def whitelist_ip_command():
             'HumanReadable': 'The IP address ' + str(ip) + ':' + str(
                 port) + ' was added to the Whitelist',
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         })
     elif result_status == 'failure':
         demisto.results({
@@ -348,6 +353,7 @@ def alert_status_command():
         'ID': str(alert),
         'Status': str(status),
     }
+    context = createContext(context, removeNull=True)
     params = {
         'auth_token': AUTH_TOKEN,
         'incident': alert
@@ -361,7 +367,7 @@ def alert_status_command():
                 'Contents': res,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': 'The Alert {} was '.format(alert) + res.get('action'),
-                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID == obj.ID)': context}
+                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             })
     elif status == 'Unacknowledge':
         res = http_request('POST', SERVER + 'incident/unacknowledge', params=params)
@@ -372,7 +378,7 @@ def alert_status_command():
                 'Contents': res,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': 'The Alert {} was '.format(alert) + res.get('action'),
-                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID == obj.ID)': context}
+                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             })
         else:
             return_error('Unsupported command')
