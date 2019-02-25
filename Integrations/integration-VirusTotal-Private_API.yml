@@ -58,14 +58,21 @@ script:
     import requests
     import json
     import os
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    ''' GLOBAL VARS '''
-    SERVER_URL='https://www.virustotal.com/vtapi/v2/'
-    API_KEY=demisto.params()['APIKey']
+    if not demisto.params().get('useProxy', False):
+      del os.environ['HTTP_PROXY']
+      del os.environ['HTTPS_PROXY']
+      del os.environ['http_proxy']
+      del os.environ['https_proxy']
 
-    USE_SSL = True if demisto.params().get('insecure') else False
+    ''' GLOBAL VARS '''
+    SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
+    API_KEY = demisto.params()['APIKey']
+
+    USE_SSL = False if demisto.params().get('insecure') else True
 
     DEFAULT_HEADERS = {
       "Accept-Encoding": "gzip, deflate",
@@ -73,16 +80,6 @@ script:
     }
 
     ''' HELPER FUNCTIONS '''
-
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
 
     def http_request(method, url_suffix, params_dict, headers):
         req_params = {
@@ -101,11 +98,14 @@ script:
                 verify=USE_SSL,
                 params=req_params,
                 headers=headers,
-                proxies=PROXY
             )
             res.raise_for_status()
 
-            return res.json()
+            if res.status_code == 200:
+                return res.json()
+                # 204 HTTP status code is returned when api rate limit has been exceeded
+            elif res.status_code == 204:
+                return_error("You've reached your API call quota. Contact your VirusTotal representative.")
 
         except Exception, e:
             LOG(e)
@@ -266,7 +266,7 @@ script:
                 'Contents': response,
                 'ContentsFormat': formats['json'],
                 'EntryContext': {
-                    "DBotScore" : {
+                    "DBotScore": {
                         'Indicator': file_hash,
                         'Type': 'hash',
                         'Vendor': 'VirusTotal - Private API',
@@ -350,15 +350,15 @@ script:
         hashtype_dic = None
         if (hash_length == 32):
             hashtype_dic = {
-                "MD5" : file_hash
+                "MD5": file_hash
             }
         elif (hash_length == 40):
             hashtype_dic = {
-                "SHA1" : file_hash
+                "SHA1": file_hash
             }
         else:
             hashtype_dic = {
-                "SHA256" : file_hash
+                "SHA256": file_hash
             }
 
         hash_ec = {
@@ -698,7 +698,7 @@ script:
 
         args = demisto.args()
         ip = args['ip']
-        threshold = int(args.get('threshold', None) or demisto.params().get('ipThreshold', None) or 10);
+        threshold = int(args.get('threshold', None) or demisto.params().get('ipThreshold', None) or 10)
         full_response = args.get('fullResponse', None) == 'true'
         if (full_response):
             max_len = 1000
