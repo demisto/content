@@ -5072,7 +5072,7 @@
                     "Exists"
                 ], 
                 "tests": [
-                    "No tets"
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
