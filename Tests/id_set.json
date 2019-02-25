@@ -11843,7 +11843,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser", 
+                "name": "WhatsMyBrowser",
                 "commands": [
                     "ua-parse"
                 ], 
@@ -16109,7 +16109,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
+                "name": "WhatsMyBrowser-Test",
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
