@@ -31,7 +31,7 @@ configuration:
 - display: File Threshold. Minimum number of positive results from VT scanners to
     consider the file malicious.
   name: fileThreshold
-  defaultvalue: "10"
+  defaultvalue: "20"
   type: 0
   required: false
 - display: IP Threshold. Minimum number of positive results from VT scanners to consider
@@ -76,7 +76,7 @@ script:
 
     DEFAULT_HEADERS = {
       "Accept-Encoding": "gzip, deflate",
-      "User-Agent" : "gzip,  My Python requests library example client or username"
+      "User-Agent": "gzip,  My Python requests library example client or username"
     }
 
     ''' HELPER FUNCTIONS '''
@@ -97,13 +97,13 @@ script:
                 url,
                 verify=USE_SSL,
                 params=req_params,
-                headers=headers,
+                headers=headers
             )
             res.raise_for_status()
 
             if res.status_code == 200:
                 return res.json()
-                # 204 HTTP status code is returned when api rate limit has been exceeded
+            # 204 HTTP status code is returned when api rate limit has been exceeded
             elif res.status_code == 204:
                 return_error("You've reached your API call quota. Contact your VirusTotal representative.")
 
@@ -189,7 +189,7 @@ script:
             scans_table_md = tableToMarkdown('Scans', scans_table)
             md += scans_table_md
             md += '\n'
-            if(ec.get(outputPaths['file'], False)):
+            if (ec.get(outputPaths['file'], False)):
                 ec[outputPaths['file']]['VirusTotal'] = {
                     'Scans': scans_table
                 }
