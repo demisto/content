@@ -19,14 +19,22 @@ script: |
   notwhitelisted = []
   hr = ""
 
+  # fill whitlisted array with all the the values that match the regex items in listname argument
   for item in items:
-      if item in lst:
-          hr = hr + item + " is in the list\n"
-          whitlisted.append(item)
-      else:
+      found = ''
+      for list_item in lst:
+          if re.search(list_item, item):
+              found = item
+              break
+      if found != '':
+          hr = hr + found + " is in the list\n"
+          whitlisted.append(found)
+
+  # fill notwhitelisted array with all the the values that not in whitlisted
+  for item in items:
+      if item not in whitlisted:
           hr = hr + item + " is not part of the list\n"
           notwhitelisted.append(item)
-
 
   ec = {"List.In":whitlisted,"List.NotIn":notwhitelisted }
   contents = {"inList":whitlisted, "notInList" : notwhitelisted}
@@ -59,3 +67,5 @@ outputs:
   description: List of items not in the list
 scripttarget: 0
 runonce: false
+tests:
+  - FilterByList - Test

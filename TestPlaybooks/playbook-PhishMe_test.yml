@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       ip:
-        simple: 212.126.107.130
+        simple: 185.141.27.177
     separatecontext: false
     view: |-
       {
@@ -89,10 +89,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: eb973dca-d33d-45e3-8c3e-2757fc4b6113
+    taskid: b8b8fec9-e63c-4cec-818d-eaae16956aa2
     type: regular
     task:
-      id: eb973dca-d33d-45e3-8c3e-2757fc4b6113
+      id: b8b8fec9-e63c-4cec-818d-eaae16956aa2
       version: -1
       name: Check url
       script: Phishme Intelligence|||url
@@ -104,7 +104,7 @@ tasks:
       - "4"
     scriptarguments:
       url:
-        simple: heckwassleftran2.ru
+        simple: exmops.ml
     separatecontext: false
     view: |-
       {
@@ -117,10 +117,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 3ddc8cbb-f137-4823-8f60-123fab98247b
+    taskid: cd8ba1c2-78da-4ec2-89f2-4fc73622bce9
     type: condition
     task:
-      id: 3ddc8cbb-f137-4823-8f60-123fab98247b
+      id: cd8ba1c2-78da-4ec2-89f2-4fc73622bce9
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -135,7 +135,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "3"
+        simple: "2"
     results:
     - AreValuesEqual
     separatecontext: false
@@ -237,10 +237,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 20884833-07e7-4682-8e94-82e51d8db458
+    taskid: f85942b7-0cd0-4eb2-83de-21f9e03623b0
     type: regular
     task:
-      id: 20884833-07e7-4682-8e94-82e51d8db458
+      id: f85942b7-0cd0-4eb2-83de-21f9e03623b0
       version: -1
       name: Check file hash
       script: Phishme Intelligence|||file
@@ -254,7 +254,7 @@ tasks:
       destpath: {}
       entryid: {}
       file:
-        simple: 77d736dc280968d0af8c3f46e673f821
+        simple: c4642984a12e561ada2248953a63ef91
       fileNames: {}
       hostname: {}
       ip: {}
@@ -375,10 +375,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
+    taskid: 1aa6a763-9028-42e2-86c7-dbc7222e4ca0
     type: condition
     task:
-      id: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
+      id: 1aa6a763-9028-42e2-86c7-dbc7222e4ca0
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -393,7 +393,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "3"
+        simple: "0"
     results:
     - AreValuesEqual
     separatecontext: false
@@ -479,10 +479,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: c5d35d6c-799f-417b-837b-23e93f3c1bad
+    taskid: 1b08986e-b15a-4771-86c8-0d51333f769b
     type: condition
     task:
-      id: c5d35d6c-799f-417b-837b-23e93f3c1bad
+      id: 1b08986e-b15a-4771-86c8-0d51333f769b
       version: -1
       name: Check number of PhishMe threats
       scriptName: IsGreaterThan
@@ -501,7 +501,7 @@ tasks:
       right:
         simple: "0"
       second:
-        simple: "9"
+        simple: "4"
     separatecontext: false
     view: |-
       {
@@ -564,10 +564,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+    taskid: 9ee4d929-ea8e-4f82-80a1-04737e0aafb5
     type: regular
     task:
-      id: 7676a5d8-b6bd-461b-82da-c919fd7208d9
+      id: 9ee4d929-ea8e-4f82-80a1-04737e0aafb5
       version: -1
       name: Check url
       script: Phishme Intelligence|||url
@@ -579,7 +579,7 @@ tasks:
       - "19"
     scriptarguments:
       url:
-        simple: heckwassleftran2.ru
+        simple: www.google.com
     separatecontext: false
     view: |-
       {
@@ -592,10 +592,10 @@ tasks:
     timertriggers: []
   "19":
     id: "19"
-    taskid: a2d188fb-8477-4807-852f-d7cbb2e0da8e
+    taskid: a3ff470e-efe9-4f02-85c6-660f9905bf9c
     type: condition
     task:
-      id: a2d188fb-8477-4807-852f-d7cbb2e0da8e
+      id: a3ff470e-efe9-4f02-85c6-660f9905bf9c
       version: -1
       name: Check DBotScore
       scriptName: AreValuesEqual
@@ -673,7 +673,7 @@ tasks:
       left:
         simple: ${DBotScore.Score}
       right:
-        simple: "2"
+        simple: "0"
     results:
     - AreValuesEqual
     separatecontext: false

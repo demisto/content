@@ -626,6 +626,5 @@ script:
         with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
   runonce: false
-releaseNotes: "Added push indicator command, fixed DbotScore"
 tests:
   - Anomali_ThreatStream_Test
