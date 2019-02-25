@@ -12701,6 +12701,20 @@
             }
         }, 
         {
+            "ContextGetters-Test": {
+                "name": "ContextGetters-Test", 
+                "implementing_scripts": [
+                    "ExtractHash", 
+                    "IsTrue", 
+                    "ContextGetEmails", 
+                    "ExtractIP", 
+                    "ContextGetHashes", 
+                    "ContextGetIps", 
+                    "ExtractEmail"
+                ]
+            }
+        }, 
+        {
             "ConvertKeysToTableFieldFormat_Test": {
                 "name": "ConvertKeysToTableFieldFormat Test", 
                 "implementing_scripts": [
