@@ -133,7 +133,7 @@ class IDSetValidator(object):
         return is_valid
 
     def check_if_there_is_id_duplicates(self, file_path):
-        if not self.is_circle:
+        if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 self.check_if_the_id_is_valid_one(self.test_playbook_set, collect_ids(file_path), file_path)
 
