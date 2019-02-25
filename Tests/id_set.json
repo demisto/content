@@ -12133,20 +12133,6 @@
             }
         }, 
         {
-            "3010a07c-0a85-480c-87db-cf3f09fcbd7c": {
-                "name": "ContextGetters-Test", 
-                "implementing_scripts": [
-                    "ExtractHash", 
-                    "IsTrue", 
-                    "ContextGetEmails", 
-                    "ExtractIP", 
-                    "ContextGetHashes", 
-                    "ContextGetIps", 
-                    "ExtractEmail"
-                ]
-            }
-        }, 
-        {
             "3da2e31b-f114-4d7f-8702-117f3b498de9": {
                 "name": "AWS - CloudTrail Test Playbook", 
                 "implementing_scripts": [
