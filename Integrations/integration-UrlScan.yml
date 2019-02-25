@@ -101,7 +101,7 @@ script:
         uri = BASE_URL+'result/{}'.format(uuid)
 
         ready = poll(
-            lambda: requests.get(uri).status_code == 200,
+            lambda: requests.get(uri, verify=INSECURE).status_code == 200,
             step=5,
             ignore_exceptions=(requests.exceptions.ConnectionError),
             timeout=int(TIMEOUT)
@@ -207,7 +207,7 @@ script:
         if 'urls' in scan_lists:
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
-        human_readable['Effective URL'] = url_query
+        human_readable['Effective URL'] = response['page']['url'] # effective url of the submitted url
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
         if 'ips' in scan_lists:
@@ -565,6 +565,7 @@ script:
       type: string
     description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
+    deprecated: true
     arguments:
     - name: url
       required: true
@@ -647,7 +648,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
-    description: Submit a url to scan
+    description: "Deprecated: replaced with url command"
   - name: url
     arguments:
     - name: url
@@ -733,5 +734,6 @@ script:
     description: Submit a url to scan
   runonce: false
 fromversion: 3.5.0
+releaseNotes: "Deprecated urlscan-submit - please use !url instead"
 tests:
   - urlscan_malicious_Test

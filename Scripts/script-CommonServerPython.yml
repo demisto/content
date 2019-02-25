@@ -337,17 +337,56 @@ script: |-
       return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-  def isError(entry):
+  def get_error(execute_command_result):
       """
-         Check if the given entry is an error entry
+          execute_command_result must contain error entry - check the result first with is_error function
+          if there is no error entry in the result then it will raise an Exception
 
-         :type entry: ``dict``
-         :param entry: Demisto entry (required)
+          :type execute_command_result: ``dict`` or  ``list``
+          :param execute_command_result: result of demisto.executeCommand()
 
-         :return: True if the entry is an error entry, false otherwise
-         :rtype: ``bool``
+          :return: Error message extracted from the demisto.executeCommand() result
+          :rtype: ``string``
       """
-      return type(entry) == dict and entry['Type'] == entryTypes['error']
+
+      if not is_error(execute_command_result):
+          raise ValueError("execute_command_result has no error entry. before using get_error use is_error")
+
+      if isinstance(execute_command_result, dict):
+          return execute_command_result['Contents']
+
+      error_messages = []
+      for entry in execute_command_result:
+          is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
+          if is_error_entry:
+              error_messages.append(entry['Contents'])
+
+      return '\n'.join(error_messages)
+
+
+  def is_error(execute_command_result):
+      """
+          Check if the given execute_command_result has an error entry
+
+          :type execute_command_result: ``dict`` or ``list``
+          :param execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
+
+          :return: True if the execute_command_result has an error entry, false otherwise
+          :rtype: ``bool``
+      """
+      if execute_command_result is None:
+          return False
+
+      if isinstance(execute_command_result, list):
+          if len(execute_command_result) > 0:
+              for entry in execute_command_result:
+                  if type(entry) == dict and entry['Type'] == entryTypes['error']:
+                      return True
+
+      return type(execute_command_result) == dict and execute_command_result['Type'] == entryTypes['error']
+
+
+  isError = is_error
 
 
   def FormatADTimestamp(ts):
@@ -561,12 +600,15 @@ script: |-
       return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-  def argToList(arg):
+  def argToList(arg, separator=','):
       """
          Converts a string representation of args to a python list
 
          :type arg: ``str`` or ``list``
          :param arg: Args to be converted (required)
+
+         :type separator: ``str``
+         :param separator: A string separator to separate the strings, the default is a comma.
 
          :return: A python list of args
          :rtype: ``list``
@@ -578,7 +620,7 @@ script: |-
       if isinstance(arg, STRING_TYPES):
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return [s.strip() for s in arg.split(',')]
+          return [s.strip() for s in arg.split(separator)]
       return arg
 
 
@@ -1161,6 +1203,38 @@ script: |-
       return True
 
 
+  def return_outputs(readable_output, outputs, raw_response=None):
+      """
+      This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
+
+      :type readable_output: ``str``
+      :param readable_output: markdown string that will be presented in the warroom, should be human readable - (HumanReadable)
+
+      :type outputs: ``dict``
+      :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+
+      :type raw_response: ``dict``
+      :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
+      raw response from the 3rd party service (originally Contents)
+
+      :return: None
+      :rtype: ``None``
+      """
+      return_entry = {
+          "Type": entryTypes["note"],
+          "HumanReadable": readable_output,
+          "ContentsFormat": formats["json"],
+          "Contents": raw_response,
+          "EntryContext": outputs
+      }
+
+      if outputs and raw_response is None:
+          # if raw_response was not provided but outputs were provided then set Contents as outputs
+          return_entry["Contents"] = outputs
+
+      demisto.results(return_entry)
+
+
   def return_error(message, error=''):
       """
           Returns error entry with given message and exits the script
@@ -1181,7 +1255,7 @@ script: |-
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
-          'Contents': message
+          'Contents': str(message)
       })
       sys.exit(0)
 
@@ -1253,6 +1327,33 @@ script: |-
 
       components = s.split('_')
       return ''.join(x.title() for x in components)
+
+
+  def camel_case_to_underscore(s):
+      """
+         Converts a camelCase string to snake_case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. helloWorld) (required)
+
+         :return: The converted string (e.g. hello_world)
+         :rtype: ``str``
+      """
+      s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+      return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+  def snakify(src):
+      """
+          Convert all keys of a dictionary to snake_case (underscored separated)
+
+          :type src: ``dict``
+          :param src: The dictionary to convert the keys for. (required)
+
+          :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+          :rtype: ``dict``
+      """
+      return {camel_case_to_underscore(k): v for k, v in src.items()}
 
 
   def pascalToSpace(s):

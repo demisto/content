@@ -66,21 +66,79 @@ script:
     import base64
     import datetime
     from distutils.util import strtobool
+    import sys
+    from HTMLParser import HTMLParser, HTMLParseError
+    from htmlentitydefs import name2codepoint
 
-    import html2text
     from apiclient import discovery
-    from oauth2client import client, service_account
+    from oauth2client import service_account
 
 
     ''' GLOBAL VARS '''
-    ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
-    PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
-    GAPPS_ID = demisto.params().get('gappsID')
+    ADMIN_EMAIL = None
+    PRIVATE_KEY_CONTENT = None
+    GAPPS_ID = None
     SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 
 
     ''' HELPER FUNCTIONS '''
-    def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
+
+
+    class TextExtractHtmlParser(HTMLParser):
+        def __init__(self):
+            HTMLParser.__init__(self)
+            self._texts = []
+            self._ignore = False
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ('p', 'br') and not self._ignore:
+                self._texts.append('\n')
+            elif tag in ('script', 'style'):
+                self._ignore = True
+
+        def handle_startendtag(self, tag, attrs):
+            if tag in ('br', 'tr') and not self._ignore:
+                self._texts.append('\n')
+
+        def handle_endtag(self, tag):
+            if tag in ('p', 'tr'):
+                self._texts.append('\n')
+            elif tag in ('script', 'style'):
+                self._ignore = False
+
+        def handle_data(self, data):
+            if data and not self._ignore:
+                stripped = data.strip()
+                if stripped:
+                    self._texts.append(re.sub(r'\s+', ' ', stripped))
+
+        def handle_entityref(self, name):
+            if not self._ignore and name in name2codepoint:
+                self._texts.append(unichr(name2codepoint[name]))
+
+        def handle_charref(self, name):
+            if not self._ignore:
+                if name.startswith('x'):
+                    c = unichr(int(name[1:], 16))
+                else:
+                    c = unichr(int(name))
+                self._texts.append(c)
+
+        def get_text(self):
+            return "".join(self._texts)
+
+
+    def html_to_text(html):
+        parser = TextExtractHtmlParser()
+        try:
+            parser.feed(html)
+            parser.close()
+        except HTMLParseError:
+            pass
+        return parser.get_text()
+
+
+    def get_credentials(additional_scopes=None, delegated_user=None):
         """Gets valid user credentials from storage.
 
         If nothing has been stored, or if the stored credentials are invalid,
@@ -89,14 +147,14 @@ script:
         Returns:
             Credentials, the obtained credential.
         """
-        if delegated_user == 'me':
+        if not delegated_user or delegated_user == 'me':
             delegated_user = ADMIN_EMAIL
         scopes = SCOPES
         if additional_scopes is not None:
             scopes += additional_scopes
 
         cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
-            scopes=scopes)
+                                                                                scopes=scopes)
 
         return cred.create_delegated(delegated_user)
 
@@ -107,12 +165,14 @@ script:
         attachments = []
         for part in parts:
             if 'multipart' in part['mimeType']:
-                part_body, part_html, part_attachments = parse_mail_parts(part['parts'])
+                part_body, part_html, part_attachments = parse_mail_parts(
+                    part['parts'])
                 body += part_body
                 html += part_html
                 attachments.extend(part_attachments)
             elif len(part['filename']) == 0:
-                text = unicode(base64.urlsafe_b64decode(part['body'].get('data', '').encode('ascii')), 'utf-8')
+                text = unicode(base64.urlsafe_b64decode(
+                    part['body'].get('data', '').encode('ascii')), 'utf-8')
                 if 'text/html' in part['mimeType']:
                     html += text
                 else:
@@ -120,8 +180,8 @@ script:
 
             else:
                 attachments.append({
-                    'ID' : part['body']['attachmentId'],
-                    'Name' : part['filename']
+                    'ID': part['body']['attachmentId'],
+                    'Name': part['filename']
                 })
 
         return body, html, attachments
@@ -129,44 +189,47 @@ script:
 
     def get_email_context(email_data, mailbox):
         context_headers = email_data.get('payload', {}).get('headers', [])
-        context_headers = [{'Name' : v['name'], 'Value':v['value']} for v in context_headers]
+        context_headers = [{'Name': v['name'], 'Value':v['value']}
+                           for v in context_headers]
         headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
         body = demisto.get(email_data, 'payload.body.data')
         body = body.encode('ascii') if body is not None else ''
         parsed_body = base64.urlsafe_b64decode(body)
 
         context = {
-            'Type' : 'Gmail',
-            'Mailbox' : ADMIN_EMAIL if mailbox == 'me' else mailbox,
-            'ID' : email_data['id'],
-            'ThreadId' : email_data['threadId'],
-            'Labels' : ', '.join(email_data['labelIds']),
-            'Headers' : context_headers,
-            'Attachments' : email_data.get('payload', {}).get('filename', ''),
+            'Type': 'Gmail',
+            'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
+            'ID': email_data['id'],
+            'ThreadId': email_data['threadId'],
+            'Labels': ', '.join(email_data['labelIds']),
+            'Headers': context_headers,
+            'Attachments': email_data.get('payload', {}).get('filename', ''),
             # only for format 'raw'
-            'RawData' : email_data.get('raw'),
+            'RawData': email_data.get('raw'),
             # only for format 'full' and 'metadata'
-            'Format' : headers.get('content-type', '').split(';')[0],
-            'Subject' : headers.get('subject'),
-            'From' : headers.get('from'),
-            'To' : headers.get('to'),
+            'Format': headers.get('content-type', '').split(';')[0],
+            'Subject': headers.get('subject'),
+            'From': headers.get('from'),
+            'To': headers.get('to'),
             # only for format 'full'
-            'Body' : unicode(parsed_body, 'utf-8'),
+            'Body': unicode(parsed_body, 'utf-8'),
 
             # only for incident
-            'Cc' : headers.get('cc', []),
-            'Bcc' : headers.get('bcc', []),
-            'Date' : headers.get('date', ''),
-            'Html' : None,
+            'Cc': headers.get('cc', []),
+            'Bcc': headers.get('bcc', []),
+            'Date': headers.get('date', ''),
+            'Html': None,
         }
 
         if 'text/html' in context['Format']:
             context['Html'] = context['Body']
-            context['Body'] = html2text.html2text(context['Body'])
+            context['Body'] = html_to_text(context['Body'])
 
         if 'multipart' in context['Format']:
-            context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(email_data.get('payload', {}).get('parts', []))
-            context['Attachment Names'] = ', '.join([attachment['Name'] for attachment in context['Attachments']])
+            context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(
+                email_data.get('payload', {}).get('parts', []))
+            context['Attachment Names'] = ', '.join(
+                [attachment['Name'] for attachment in context['Attachments']])
 
         return context, headers
 
@@ -178,23 +241,27 @@ script:
         else:
             base_time, sign, hours, minutes = m.groups()
             seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
-            parsed_time = datetime.datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
+            parsed_time = datetime.datetime.strptime(
+                base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
             return parsed_time.isoformat() + 'Z'
 
 
     def create_incident_labels(parsed_msg, headers):
         labels = [
-            {'type' : 'Email/ID', 'value' : parsed_msg['ID']},
-            {'type' : 'Email/subject', 'value' : parsed_msg['Subject']},
-            {'type' : 'Email/text', 'value' : parsed_msg['Body']},
-            {'type' : 'Email/from', 'value' : parsed_msg['From']},
-            {'type' : 'Email/html', 'value' : parsed_msg['Html']},
+            {'type': 'Email/ID', 'value': parsed_msg['ID']},
+            {'type': 'Email/subject', 'value': parsed_msg['Subject']},
+            {'type': 'Email/text', 'value': parsed_msg['Body']},
+            {'type': 'Email/from', 'value': parsed_msg['From']},
+            {'type': 'Email/html', 'value': parsed_msg['Html']},
         ]
-        labels.extend([{'type' : 'Email/to', 'value' : to} for to in headers.get('To', '').split(',')])
-        labels.extend([{'type' : 'Email/cc', 'value' : cc} for cc in headers.get('Cc', '').split(',')])
-        labels.extend([{'type' : 'Email/bcc', 'value' : bcc} for bcc in headers.get('Bcc', '').split(',')])
+        labels.extend([{'type': 'Email/to', 'value': to}
+                       for to in headers.get('To', '').split(',')])
+        labels.extend([{'type': 'Email/cc', 'value': cc}
+                       for cc in headers.get('Cc', '').split(',')])
+        labels.extend([{'type': 'Email/bcc', 'value': bcc}
+                       for bcc in headers.get('Bcc', '').split(',')])
         for key, val in headers.items():
-            labels.append({'type' : 'Email/Header/' + key, 'value' : val})
+            labels.append({'type': 'Email/Header/' + key, 'value': val})
 
         return labels
 
@@ -206,10 +273,10 @@ script:
             emails.append(context)
 
         headers = {
-            'minimal' : ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
-            'raw' : ['MailBox', 'ID', 'Labels', 'Attachment Names', 'RawData'],
-            'metadata' : ['MailBox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format'],
-            'full' : ['Mailbox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format', 'Body'],
+            'minimal': ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
+            'raw': ['MailBox', 'ID', 'Labels', 'Attachment Names', 'RawData'],
+            'metadata': ['MailBox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format'],
+            'full': ['Mailbox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format', 'Body'],
         }
 
         return {
@@ -218,7 +285,7 @@ script:
             'Contents': emails,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, emails, headers[format_data]),
-            'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)' : emails}
+            'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': emails}
         }
 
 
@@ -227,8 +294,8 @@ script:
 
         file_names = []
         command_args = {
-            'messageId' : parsed_msg['ID'],
-            'userId' : user_key,
+            'messageId': parsed_msg['ID'],
+            'userId': user_key,
         }
 
         for attachment in parsed_msg['Attachments']:
@@ -254,13 +321,13 @@ script:
             })
 
         return {
-            'type' : 'Gmail',
-            'name' : parsed_msg['Subject'],
-            'details' : parsed_msg['Body'],
-            'labels' : create_incident_labels(parsed_msg, headers),
-            'occurred' : parse_time(parsed_msg['Date']),
-            'attachment' : file_names,
-            'rawJSON' : json.dumps(parsed_msg),
+            'type': 'Gmail',
+            'name': parsed_msg['Subject'],
+            'details': parsed_msg['Body'],
+            'labels': create_incident_labels(parsed_msg, headers),
+            'occurred': parse_time(parsed_msg['Date']),
+            'attachment': file_names,
+            'rawJSON': json.dumps(parsed_msg),
         }
 
 
@@ -268,15 +335,16 @@ script:
         context = []
         for user_data in response:
             context.append({
-                'Type' : 'Google',
-                'ID' : user_data['id'],
-                'UserName' : user_data['name']['givenName'],
-                'DisplayName' : user_data['name']['fullName'],
-                'Email' : {'Address' : user_data['primaryEmail']},
-                'Group' : user_data['kind'],
-                'CustomerId' : user_data['customerId'],
+                'Type': 'Google',
+                'ID': user_data.get('id'),
+                'UserName': user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get('name') else None,
+                'DisplayName': user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get('name') else None,
+                'Email': {'Address': user_data.get('primaryEmail')},
+                'Group': user_data.get('kind'),
+                'CustomerId': user_data.get('customerId'),
             })
-        headers = ['Type', 'ID', 'UserName', 'DisplayName', 'Email', 'Group', 'CustomerId']
+        headers = ['Type', 'ID', 'UserName',
+                   'DisplayName', 'Email', 'Group', 'CustomerId']
 
         return {
             'ContentsFormat': formats['json'],
@@ -284,7 +352,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)' : context}
+            'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
         }
 
 
@@ -292,14 +360,15 @@ script:
         context = []
         for role_data in response:
             context.append({
-                'ID' : role_data['roleId'],
-                'AssignedTo' : role_data['assignedTo'],
-                'RoleAssignmentId' : role_data['roleAssignmentId'],
-                'ScopeType' : role_data['scopeType'],
-                'Kind' : role_data['kind'],
-                'OrgUnitId' : role_data.get('orgUnitId', ''),
+                'ID': role_data['roleId'],
+                'AssignedTo': role_data['assignedTo'],
+                'RoleAssignmentId': role_data['roleAssignmentId'],
+                'ScopeType': role_data['scopeType'],
+                'Kind': role_data['kind'],
+                'OrgUnitId': role_data.get('orgUnitId', ''),
             })
-        headers = ['ID', 'AssignedTo', 'RoleAssignmentId', 'ScopeType', 'Kind', 'OrgUnitId']
+        headers = ['ID', 'AssignedTo', 'RoleAssignmentId',
+                   'ScopeType', 'Kind', 'OrgUnitId']
 
         return {
             'ContentsFormat': formats['json'],
@@ -307,7 +376,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)' : context}
+            'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
         }
 
 
@@ -315,11 +384,11 @@ script:
         context = []
         for token_data in response:
             context.append({
-                'DisplayText' : token_data.get('displayText'),
-                'ClientId' : token_data.get('clientId'),
-                'Kind' : token_data.get('kind'),
-                'Scopes' : ''.join(token_data.get('scopes',[])),
-                'UserKey' : token_data.get('userKey'),
+                'DisplayText': token_data.get('displayText'),
+                'ClientId': token_data.get('clientId'),
+                'Kind': token_data.get('kind'),
+                'Scopes': ''.join(token_data.get('scopes', [])),
+                'UserKey': token_data.get('userKey'),
             })
 
         headers = ['DisplayText', 'ClientId', 'Kind', 'Scopes', 'UserKey']
@@ -330,7 +399,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)' : context}
+            'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)': context}
         }
 
 
@@ -338,9 +407,9 @@ script:
         context = []
         for filter_data in response:
             context.append({
-                'ID' : filter_data.get('id'),
-                'Criteria' : filter_data.get('criteria'),
-                'Action' : filter_data.get('action'),
+                'ID': filter_data.get('id'),
+                'Criteria': filter_data.get('criteria'),
+                'Action': filter_data.get('action'),
             })
 
         headers = ['ID', 'Criteria', 'Action', ]
@@ -355,6 +424,8 @@ script:
 
 
     ''' FUNCTIONS '''
+
+
     def list_users_command():
         args = demisto.args()
         domain = args.get('domain', ADMIN_EMAIL.split('@')[1])
@@ -366,22 +437,25 @@ script:
         max_results = args.get('max-results', 100)
         show_deleted = bool(strtobool(args.get('show-deleted', 'false')))
         projection = args.get('projection', 'basic')
-        custom_field_mask = args.get('custom_field_mask') if projection == 'custom' else None
+        custom_field_mask = args.get(
+            'custom_field_mask') if projection == 'custom' else None
 
-        users = list_users(domain, customer, event, query, sort_order, view_type, show_deleted, max_results, projection, custom_field_mask)
+        users = list_users(domain, customer, event, query, sort_order, view_type,
+                           show_deleted, max_results, projection, custom_field_mask)
         return users_to_entry('Users:', users)
+
 
     def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view', show_deleted=False, max_results=100, projection='basic', custom_field_mask=None):
         command_args = {
-            'domain' : domain,
-            'customer' : customer,
-            'event' : event,
-            'viewType' : view_type,
-            'query' : query,
-            'sortOrder' : sort_order,
-            'projection' : projection,
-            'showDeleted' : show_deleted,
-            'maxResults' : max_results,
+            'domain': domain,
+            'customer': customer,
+            'event': event,
+            'viewType': view_type,
+            'query': query,
+            'sortOrder': sort_order,
+            'projection': projection,
+            'showDeleted': show_deleted,
+            'maxResults': max_results,
         }
         if projection == 'custom':
             command_args['customFieldMask'] = custom_field_mask
@@ -391,6 +465,7 @@ script:
         result = service.users().list(**command_args).execute()
 
         return result['users']
+
 
     def get_user_command():
         args = demisto.args()
@@ -405,12 +480,12 @@ script:
 
     def get_user(user_key, view_type, projection, customer_field_mask=None):
         command_args = {
-            'userKey' : user_key if user_key != 'me' else ADMIN_EMAIL,
-            'projection' : projection,
-            'viewType' : view_type,
+            'userKey': user_key if user_key != 'me' else ADMIN_EMAIL,
+            'projection': projection,
+            'viewType': view_type,
         }
         if projection == 'custom':
-            command_args['customFieldMask'] = custom_field_mask
+            command_args['customFieldMask'] = customer_field_mask
 
         credentials = get_credentials()
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
@@ -435,16 +510,17 @@ script:
 
     def create_user(primary_email, first_name, family_name, password):
         command_args = {
-            'primaryEmail' : primary_email,
-            'name' : {
-                'givenName' : first_name,
-                'familyName' : family_name,
-                'fullName' : '%s %s' % (first_name, family_name, ),
+            'primaryEmail': primary_email,
+            'name': {
+                'givenName': first_name,
+                'familyName': family_name,
+                'fullName': '%s %s' % (first_name, family_name, ),
             },
-            'password' : password
+            'password': password
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/admin.directory.user'])
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
         result = service.users().insert(body=command_args).execute()
 
@@ -460,10 +536,11 @@ script:
 
     def delete_user(user_key):
         command_args = {
-            'userKey' : user_key,
+            'userKey': user_key,
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/admin.directory.user'])
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
         service.users().delete(**command_args).execute()
 
@@ -484,12 +561,12 @@ script:
 
     def get_user_role(user_key, customer):
         command_args = {
-            'customer' : customer,
-            'maxResults' : 100,
+            'customer': customer,
+            'maxResults': 100,
         }
 
         credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
-            'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
+                                       'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
         result = service.roleAssignments().list(**command_args).execute()
 
@@ -505,21 +582,23 @@ script:
         user_key = args.get('user-id')
         role_assignment_id = args['role-assignment-id']
 
+        revoke_user_roles(user_key, role_assignment_id)
         return 'Role has been deleted.'
 
 
     def revoke_user_roles(user_id, role_assignment_id):
         command_args = {
-            'customer' : GAPPS_ID,
-            'roleAssignmentId' : role_assignment_id,
+            'customer': GAPPS_ID,
+            'roleAssignmentId': role_assignment_id,
         }
 
         if GAPPS_ID is None:
             raise ValueError('Must provide Immutable GoogleApps Id')
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.rolemanagement'], user_id)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/admin.directory.rolemanagement'])
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
-        result = service.roleAssignments().delete(**command_args).execute()
+        return service.roleAssignments().delete(**command_args).execute()
 
 
     def get_user_tokens_command():
@@ -534,10 +613,11 @@ script:
 
     def get_user_tokens(user_id):
         command_args = {
-            'userKey' : user_id,
+            'userKey': user_id,
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user.security'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/admin.directory.user.security'])
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
         result = service.tokens().list(**command_args).execute()
 
@@ -546,15 +626,16 @@ script:
 
     def search_all_mailboxes():
         command_args = {
-            'maxResults' : 100,
-            'domain' : ADMIN_EMAIL.split('@')[1],
+            'maxResults': 100,
+            'domain': ADMIN_EMAIL.split('@')[1],
         }
 
         credentials = get_credentials()
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
         result = service.users().list(**command_args).execute()
 
-        entries = [search_command(user['primaryEmail']) for user in result['users']]
+        entries = [search_command(user['primaryEmail'])
+                   for user in result['users']]
         return entries
 
 
@@ -572,48 +653,53 @@ script:
         _in = args.get('in', '')
 
         query = args.get('query', '')
-        fields = args.get('fields') #TODO
+        fields = args.get('fields')  # TODO
         label_ids = [l for l in args.get('labels-ids', '').split(',') if l != '']
         max_results = int(args.get('max-results', 100))
         page_token = args.get('page-token')
         include_spam_trash = args.get('include-spam-trash', False)
         has_attachments = args.get('has-attachments')
-        has_attachments = None if has_attachments is None else bool(strtobool(has_attachments))
+        has_attachments = None if has_attachments is None else bool(
+            strtobool(has_attachments))
 
         if max_results > 500:
-            raise ValueError('maxResults must be lower than 500, got %s' % (max_results, ))
+            raise ValueError(
+                'maxResults must be lower than 500, got %s' % (max_results, ))
 
-        mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query, fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
+        mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
+                          fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
         return emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
 
 
     def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
-            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False, has_attachments=None):
+               fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False, has_attachments=None):
         QUERY_VALUES = {
-            'subject' : subject,
-            'from' : _from,
-            'to' : to,
-            'before' : before,
-            'after' : after,
-            'filename' : filename,
-            'in' : _in,
-            'has' : 'attachment' if has_attachments else ''
+            'subject': subject,
+            'from': _from,
+            'to': to,
+            'before': before,
+            'after': after,
+            'filename': filename,
+            'in': _in,
+            'has': 'attachment' if has_attachments else ''
         }
-        q = ' '.join('%s:%s ' % (name, value, ) for name, value in QUERY_VALUES.iteritems() if value != '')
+        q = ' '.join('%s:%s ' % (name, value, )
+                     for name, value in QUERY_VALUES.iteritems() if value != '')
         q = ('%s %s' % (q, query, )).strip()
 
         command_args = {
-            'userId' : user_id,
-            'q' : q,
-            'maxResults' : max_results,
-            'fields' : fields,
-            'labelIds' : label_ids,
-            'pageToken' : page_token,
-            'includeSpamTrash' : include_spam_trash,
+            'userId': user_id,
+            'q': q,
+            'maxResults': max_results,
+            'fields': fields,
+            'labelIds': label_ids,
+            'pageToken': page_token,
+            'includeSpamTrash': include_spam_trash,
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], command_args['userId'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.readonly', ], command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().list(**command_args).execute()
 
@@ -632,12 +718,13 @@ script:
 
     def get_mail(user_id, _id, _format):
         command_args = {
-            'userId' : user_id,
-            'id' : _id,
-            'format' : _format,
+            'userId': user_id,
+            'id': _id,
+            'format': _format,
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], delegated_user=command_args['userId'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().get(**command_args).execute()
 
@@ -656,18 +743,19 @@ script:
 
     def get_attachments(user_id, _id):
         mail_args = {
-            'userId' : user_id,
-            'id' : _id,
-            'format' : 'full',
+            'userId': user_id,
+            'id': _id,
+            'format': 'full',
         }
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], delegated_user=mail_args['userId'])
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=mail_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().get(**mail_args).execute()
         result = get_email_context(result, user_id)[0]
 
         command_args = {
-            'userId' : user_id,
-            'messageId' : _id,
+            'userId': user_id,
+            'messageId': _id,
         }
         files = []
         for attachment in result['Attachments']:
@@ -684,7 +772,8 @@ script:
         user_id = args.get('user-id')
         _id = args.get('message-id')
         add_labels = [l for l in args.get('add-labels', '').split(',') if l != '']
-        remove_labels = [l for l in args.get('remove-labels', '').split(',') if l != '']
+        remove_labels = [l for l in args.get(
+            'remove-labels', '').split(',') if l != '']
 
         mail = move_mail(user_id, _id, add_labels, remove_labels)
         return emails_to_entry('Email:', [mail], 'full', user_id)
@@ -692,15 +781,16 @@ script:
 
     def move_mail(user_id, _id, add_labels, remove_labels):
         command_args = {
-            'userId' : user_id,
-            'id' : _id,
-            'body' : {
-            'addLabelIds' : add_labels,
-            'removeLabelIds' : remove_labels,
+            'userId': user_id,
+            'id': _id,
+            'body': {
+                'addLabelIds': add_labels,
+                'removeLabelIds': remove_labels,
             }
 
         }
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.modify',], delegated_user=user_id)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.modify', ], delegated_user=user_id)
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().modify(**command_args).execute()
 
@@ -725,12 +815,13 @@ script:
 
         # import the mail to the destination mailbox
         command_args = {
-            'userId' : dst_mailbox,
-            'body' : {
-                'raw' : mail['raw'],
+            'userId': dst_mailbox,
+            'body': {
+                'raw': mail['raw'],
             }
         }
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.modify',], delegated_user=dst_mailbox)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.modify', ], delegated_user=dst_mailbox)
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().import_(**command_args).execute()
 
@@ -742,19 +833,22 @@ script:
 
     def delete_mail_command():
         args = demisto.args()
-        permanent =bool(strtobool(args.get('permanent', 'false')))
+
+        user_id = args['user-id']
+        _id = args['message-id']
+        permanent = bool(strtobool(args.get('permanent', 'false')))
 
         return delete_mail(user_id, _id, permanent)
 
 
     def delete_mail(user_id, _id, permanent):
         command_args = {
-            'userId' : user_id,
-            'id' : _id,
+            'userId': user_id,
+            'id': _id,
         }
 
         credentials = get_credentials(['https://mail.google.com',
-            'https://www.googleapis.com/auth/gmail.modify',], delegated_user=command_args['userId'])
+                                       'https://www.googleapis.com/auth/gmail.modify', ], delegated_user=command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         if permanent:
             result = service.users().messages().delete(**command_args).execute()
@@ -783,7 +877,8 @@ script:
             'format': _format
         }
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], delegated_user=user_id)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=user_id)
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().threads().get(**command_args).execute()
 
@@ -805,7 +900,7 @@ script:
         args = demisto.args()
 
         user_id = args.get('user-id', ADMIN_EMAIL)
-        _from = args.get('email-address')
+        _from = args.get('from')
         to = args.get('to')
         subject = args.get('subject')
         query = args.get('query')
@@ -819,17 +914,17 @@ script:
         remove_labels = remove_labels if any(remove_labels) else None
 
         _filter = add_filter(user_id,
-            _from=_from,
-            to=to,
-            subject=subject,
-            query=query,
-            has_attachments=has_attachments,
-            size=size,
-            size_comparison=size_comparison,
-            forward=forward,
-            add_labels=add_labels,
-            remove_labels=remove_labels,
-        )
+                             _from=_from,
+                             to=to,
+                             subject=subject,
+                             query=query,
+                             has_attachments=has_attachments,
+                             size=size,
+                             size_comparison=size_comparison,
+                             forward=forward,
+                             add_labels=add_labels,
+                             remove_labels=remove_labels,
+                             )
 
         return filters_to_entry('New filter:', [_filter])
 
@@ -837,7 +932,7 @@ script:
     def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attachments=None, size=None, size_comparison=None, forward=None, add_labels=None, remove_labels=None):
         command_args = {
             'userId': user_id,
-            'body' : {
+            'body': {
                 'criteria': {},
                 'action': {},
             }
@@ -864,7 +959,8 @@ script:
         if forward is not None:
             command_args['body']['action']['forward'] = forward
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.settings.basic',], delegated_user=user_id)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().settings().filters().create(**command_args).execute()
 
@@ -883,23 +979,29 @@ script:
         if last_fetch is None:
             last_fetch = datetime.datetime.now() - datetime.timedelta(days=1)
         else:
-            last_fetch = datetime.datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+            last_fetch = datetime.datetime.strptime(
+                last_fetch, '%Y-%m-%dT%H:%M:%SZ')
         current_fetch = last_fetch
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], user_key)
+        credentials = get_credentials(
+            ['https://www.googleapis.com/auth/gmail.readonly', ], user_key)
         service = discovery.build('gmail', 'v1', credentials=credentials)
 
         query += last_fetch.strftime(' after:%Y/%m/%d')
-        LOG('fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' % (user_key, query, last_fetch, ))
-        result = service.users().messages().list(userId=user_key, maxResults=100, q=query).execute()
+        LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
+            (user_key, query, last_fetch, ))
+        result = service.users().messages().list(
+            userId=user_key, maxResults=100, q=query).execute()
 
         incidents = []
         # so far, so good
-        LOG('possible new incidents are %s' % (result, ))
+        LOG('GMAIL: possible new incidents are %s' % (result, ))
         for msg in result.get('messages', []):
-            msg_result = service.users().messages().get(id=msg['id'], userId=user_key).execute()
+            msg_result = service.users().messages().get(
+                id=msg['id'], userId=user_key).execute()
             incident = mail_to_incident(msg_result, service, user_key)
-            temp_date = datetime.datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            temp_date = datetime.datetime.strptime(
+                incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
@@ -909,57 +1011,67 @@ script:
             if temp_date > current_fetch:
                 incidents.append(incident)
 
-        demisto.setLastRun({'time' : last_fetch.isoformat().split('.')[0] + 'Z'})
+        demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
         return incidents
 
 
-    ''' EXECUTION CODE '''
-    COMMANDS = {
-        'gmail-list-users' : list_users_command,
-        'gmail-get-user' : get_user_command,
-        'gmail-create-user' : create_user_command,
-        'gmail-delete-user' : delete_user_command,
-        'gmail-get-user-roles' : get_user_role_command,
-        'gmail-revoke-user-role' : revoke_user_roles_command,
-        'gmail-get-tokens-for-user' : get_user_tokens_command,
-        'gmail-search-all-mailboxes' : search_all_mailboxes,
-        'gmail-search' : search_command,
-        'gmail-get-mail' : get_mail_command,
-        'gmail-get-attachments' : get_attachments_command,
-        'gmail-move-mail' : move_mail_command,
-        'gmail-move-mail-to-mailbox' : move_mail_to_mailbox_command,
-        'gmail-delete-mail' : delete_mail_command,
-        'gmail-get-thread' : get_thread_command,
-        'gmail-add-filter' : add_filter_command,
-        'gmail-add-delete-filter' : add_delete_filter_command,
-    }
-    command = demisto.command()
-    LOG('command is %s' % (command, ))
-    try:
-        if command == 'test-module':
-            list_users(ADMIN_EMAIL.split('@')[1])
-            demisto.results('ok')
-            sys.exit(0)
+    def main():
+        global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
+        ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
+        PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
+        GAPPS_ID = demisto.params().get('gappsID')
+        ''' EXECUTION CODE '''
+        COMMANDS = {
+            'gmail-list-users': list_users_command,
+            'gmail-get-user': get_user_command,
+            'gmail-create-user': create_user_command,
+            'gmail-delete-user': delete_user_command,
+            'gmail-get-user-roles': get_user_role_command,
+            'gmail-revoke-user-role': revoke_user_roles_command,
+            'gmail-get-tokens-for-user': get_user_tokens_command,
+            'gmail-search-all-mailboxes': search_all_mailboxes,
+            'gmail-search': search_command,
+            'gmail-get-mail': get_mail_command,
+            'gmail-get-attachments': get_attachments_command,
+            'gmail-move-mail': move_mail_command,
+            'gmail-move-mail-to-mailbox': move_mail_to_mailbox_command,
+            'gmail-delete-mail': delete_mail_command,
+            'gmail-get-thread': get_thread_command,
+            'gmail-add-filter': add_filter_command,
+            'gmail-add-delete-filter': add_delete_filter_command,
+        }
+        command = demisto.command()
+        LOG('GMAIL: command is %s' % (command, ))
+        try:
+            if command == 'test-module':
+                list_users(ADMIN_EMAIL.split('@')[1])
+                demisto.results('ok')
+                sys.exit(0)
 
-        if command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents())
-            sys.exit(0)
+            if command == 'fetch-incidents':
+                demisto.incidents(fetch_incidents())
+                sys.exit(0)
 
-        cmd_func = COMMANDS.get(command)
-        if cmd_func is None:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(command))
-        else:
-            demisto.results(cmd_func())
+            cmd_func = COMMANDS.get(command)
+            if cmd_func is None:
+                raise NotImplementedError(
+                    'Command "{}" is not implemented.'.format(command))
+            else:
+                demisto.results(cmd_func())
+        except Exception as e:
+            LOG('GMAIL: %s: %s' % (type(e), str(e), ))
+            LOG.print_log()
 
-    except Exception, e:
-        LOG('%s: %s' % (type(e), e.message, ))
-        LOG.print_log()
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': 'error has occured: %s' % (str(e), ),
+            })
 
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'error has occured: %s' % (e.message, ),
-        })
+
+
+    if __name__ == "__builtin__":
+        main()
   type: python
   commands:
   - name: gmail-delete-user
@@ -1706,5 +1818,7 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+releaseNotes: 'Fixed gmail-add-filter from argument not working properly'
 tests:
-- GmailTest
+  - Gmail Convert Html Test
+  - GmailTest

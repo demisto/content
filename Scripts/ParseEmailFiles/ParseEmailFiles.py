@@ -3429,8 +3429,8 @@ def main():
             return_error("Unknown file format: " + file_type)
 
     except Exception, ex:
-        raise
-        # return_error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
+        return_error(ex.message)
 
 
 if __name__ == "__builtin__":

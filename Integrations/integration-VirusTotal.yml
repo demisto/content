@@ -37,25 +37,25 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: File Threshold. Minimun number of positive results from VT scanners to
+- display: File Threshold. Minimum number of positive results from VT scanners to
     consider the file malicious.
   name: fileThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: IP Threshold. Minimun number of positive results from VT scanners to consider
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider
     the IP malicious.
   name: ipThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: URL Threshold. Minimun number of positive results from VT scanners to consider
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider
     the URL malicious.
   name: urlThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: Domain Threshold. Minimun number of positive results from VT scanners to
+- display: Domain Threshold. Minimum number of positive results from VT scanners to
     consider the domain malicious.
   name: domainThreshold
   defaultvalue: "10"

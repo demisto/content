@@ -1,7 +1,13 @@
 .DS_Store
 .idea
+.vscode
 _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
+.pytest_cache
 
+CommonServerPython.py
+CommonServerUserPython.py
+demistomock.py
+Tests/filter_file.txt
