@@ -1,0 +1,83 @@
+commonfields:
+  id: ParseEmailFiles
+  version: -1
+name: ParseEmailFiles
+script: ""
+type: python
+tags:
+- email
+- phishing
+- enhancement
+- file
+comment: Parse an email from an eml or msg file and populate all relevant context
+  data to investigate the email. Also extracts inner attachments and returns them
+  to the war room. The incident labels themselves are preserved and not modified -
+  only the "Label/x" context items that originated from the labels, and the best practice
+  is to rely on these for the remainder of the playbook.
+enabled: true
+args:
+- name: entryid
+  required: true
+  default: true
+  description: Entry ID with the Email as a file in msg or eml format
+outputs:
+- contextPath: Email.To
+  description: Email 'to' addresses
+  type: string
+- contextPath: Email.CC
+  description: Email 'cc' addresses
+  type: string
+- contextPath: Email.From
+  description: Email 'from' sender
+  type: string
+- contextPath: Email.Subject
+  description: Email subject
+  type: string
+- contextPath: Email.HTML
+  description: Email 'html' body if exists
+  type: string
+- contextPath: Email.Text
+  description: Email 'text' body if exists
+  type: string
+- contextPath: Email.Headers
+  description: The full email headers as a single string
+  type: string
+- contextPath: Email.HeadersMap
+  description: The full email headers json
+  type: Unknown
+- contextPath: Email.AttachedEmails
+  description: Array of attached .msg files
+  type: string
+- contextPath: Email.AttachedEmails.From
+  description: Email 'from' sender
+  type: string
+- contextPath: Email.AttachedEmails.To
+  description: Email 'to' addresses
+  type: string
+- contextPath: Email.AttachedEmails.CC
+  description: Email 'cc' addresses
+  type: string
+- contextPath: Email.AttachedEmails.Subject
+  description: Attached email subject
+  type: string
+- contextPath: Email.AttachedEmails.Text
+  description: Email 'text' body if exists
+  type: string
+- contextPath: Email.AttachedEmails.HTML
+  description: Email 'html' body if exists
+  type: string
+- contextPath: Email.AttachedEmails.AttachedEmails
+  description: Array of attached .msg files of the attached .msg file (it is recursive)
+  type: string
+- contextPath: Email.AttachedEmails.Attachments
+  description: The list of attachment names in the email
+  type: string
+- contextPath: Email.Attachments
+  description: The list of attachment names in the email
+  type: string
+- contextPath: Email.Format
+  description: The format of the email if available
+  type: string
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
