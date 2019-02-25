@@ -2020,7 +2020,8 @@
         }, 
         {
             "ExtractEmail": {
-                "name": "ExtractEmail"
+                "name": "ExtractEmail", 
+                "deprecated": true
             }
         }, 
         {
