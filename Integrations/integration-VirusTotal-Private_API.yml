@@ -79,6 +79,8 @@ script:
         "User-Agent": "gzip,  My Python requests library example client or username"
     }
 
+    SCAN_FINISH_TIME_IN_SECONDS = 6
+
     ''' HELPER FUNCTIONS '''
 
 
@@ -580,7 +582,8 @@ script:
                 completed_responses.append(response)
 
         if non_completed_urls:
-            time.sleep(6)
+            # In case there were url scans that have not finished: try again after giving them enough time to finish
+            time.sleep(SCAN_FINISH_TIME_IN_SECONDS)
             for url in non_completed_urls:
                 response = get_url_report(url, all_info)
                 completed_responses_dict.append({
