@@ -4,8 +4,7 @@ from demistomock import *
 
 ''' IMPORTS '''
 import requests
-import yaml
-import time
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -269,7 +268,7 @@ def check_whitelist_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'The IP address {}:{} is Whitelisted'.format(ip, port),
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address == obj.Address && val.Port && val.Port == obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
         })
     else:
         demisto.results({
@@ -279,7 +278,7 @@ def check_whitelist_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'The IP address {}:{} is not Whitelisted'.format(ip, port),
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address == obj.Address && val.Port && val.Port == obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
         })
 
 
@@ -324,7 +323,7 @@ def whitelist_ip_command():
             'HumanReadable': 'The IP address ' + str(ip) + ':' + str(
                 port) + ' was added to the Whitelist',
             'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address == obj.Address && val.Port && val.Port == obj.Port)': context}
+                'CanaryTools.IP(val.Address && val.Address==obj.Address && val.Port && val.Port==obj.Port)': context}
         })
     elif result_status == 'failure':
         demisto.results({
