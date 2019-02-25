@@ -7384,7 +7384,7 @@
                     "wildfire-report": ""
                 }, 
                 "tests": [
-                    "Wildfire Test"
+                    "No tests - The playbook was deprecated (used to be Wildfire Test)"
                 ]
             }
         }
