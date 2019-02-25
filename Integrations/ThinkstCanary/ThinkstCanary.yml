@@ -36,6 +36,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Hours before first fetch to retrieve incidents
+  name: fetchDelta
+  defaultvalue: "24"
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
