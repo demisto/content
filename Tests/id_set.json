@@ -11863,7 +11863,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser",
+                "name": "WhatsMyBrowser", 
                 "commands": [
                     "ua-parse"
                 ], 
@@ -12537,16 +12537,18 @@
             "CanaryTools Test": {
                 "name": "CanaryTools Test", 
                 "implementing_scripts": [
+                    "FetchFromInstance", 
                     "DeleteContext", 
-                    "FetchFromInstance_copy", 
+                    "isError", 
                     "IsTrue"
                 ], 
                 "command_to_integration": {
                     "canarytools-list-canaries": "Thinkst Canary", 
-                    "canarytools-list-tokens": "Thinkst Canary", 
                     "canarytools-edit-alert-status": "Thinkst Canary", 
-                    "canarytools-check-whitelist": "Thinkst Canary", 
-                    "canarytools-get-token": "Thinkst Canary"
+                    "canarytools-whitelist-ip": "Thinkst Canary", 
+                    "canarytools-list-tokens": "Thinkst Canary", 
+                    "canarytools-get-token": "Thinkst Canary", 
+                    "canarytools-check-whitelist": "Thinkst Canary"
                 }
             }
         }, 
@@ -16146,7 +16148,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test",
+                "name": "WhatsMyBrowser-Test", 
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
