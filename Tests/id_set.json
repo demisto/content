@@ -6937,6 +6937,9 @@
                     "Set", 
                     "Exists", 
                     "ParseEmailFiles"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
