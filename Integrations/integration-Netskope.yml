@@ -256,7 +256,7 @@ script:
   - name: netskope-events
     arguments:
     - name: query
-      description: filter query (e.g. user eq user1@domain.com)
+      description: filter query (e.g. user eq jtesarz@netskope.com)
     - name: timeperiod
       auto: PREDEFINED
       predefined:
@@ -385,4 +385,3 @@ script:
   runonce: false
 tests:
   - Netskope Test
-releaseNotes: "-"
