@@ -746,6 +746,9 @@
             "nightly": true
         },
         {
+             "playbookID": "010a07c-0a85-480c-87db-cf3f09fcbd7c"
+        },
+        {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
         },
