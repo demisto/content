@@ -139,8 +139,8 @@ script:
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-      connection = connect_db()
-      cursor = connection.cursor('dict')
+        connection = connect_db()
+        cursor = connection.cursor('dict')
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'vertica-query':
@@ -151,7 +151,8 @@ script:
         LOG.print_log()
         raise
     finally:
-        connection.close()
+        if 'connection' in globals():
+            connection.close()
   type: python
   commands:
   - name: vertica-query
