@@ -197,6 +197,7 @@ script:
         return res;
     };
     var url;
+    // includes server URL that starts with http or https
     if (params.Host.startsWith('http')) {
         url = fixUrl(params.Host) + 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
     }
