@@ -90,7 +90,6 @@ script:
         # Init main vars
         contents = []
         context = {}
-        context_entries = []
         title = 'Vertica Query'
         # Get arguments from user
         query = demisto.args().get('query')
