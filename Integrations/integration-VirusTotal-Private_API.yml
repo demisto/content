@@ -166,6 +166,12 @@ script:
                     },
                 }
             })
+            if vt_response.get('ssdeep', False):
+                ec[outputPaths['file']].update({'SSDeep': vt_response.get('ssdeep')})
+            if vt_response.get('type', False):
+                ec[outputPaths['file']].update({'Type': vt_response.get('type')})
+            if vt_response.get('size', False):
+                ec[outputPaths['file']].update({'Size': vt_response.get('size')})
             dbotScore = 3
         elif (positives >= threshold / 2):
             dbotScore = 2
@@ -196,6 +202,20 @@ script:
                         },
                     }
                 })
+        if vt_response.get('tags', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'Tags': vt_response.get('tags')})
+        if vt_response.get('magic', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'MagicLiteral': vt_response.get('magic')})
+        if vt_response.get('first_seen', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'FirstSeen': vt_response.get('first_seen')})
+        if vt_response.get('community_reputation', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'CommunityReputation': vt_response.get('community_reputation')})
+        if vt_response.get('community_comments', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'CommunityComments': vt_response.get('community_comments')})
+        if vt_response.get('authentihash', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'AuthentiHash': vt_response.get('authentihash')})
+        if vt_response.get('imphash', False):
+            ec[outputPaths['file']]['VirusTotal'].update({'ImpHash': vt_response.get('imphash')})
 
         entry = {
             'Type': entryTypes['note'],
@@ -205,6 +225,7 @@ script:
             'HumanReadable': md,
             'EntryContext': ec
         }
+
         return entry
 
     ''' COMMANDS FUNCTIONS '''
@@ -1212,10 +1233,43 @@ script:
       type: number
     - contextPath: File.VirusTotal.Scans.Source
       description: Scan vendor for this hash
+      type: string
     - contextPath: File.VirusTotal.Scans.Detected
       description: Scan detection for this hash (True,False)
+      type: boolean
     - contextPath: File.VirusTotal.Scans.Result
       description: Scan result for this hash - signature, etc.
+      type: string
+    - contextPath: File.SSDeep
+      description: The ssdeep value for the file
+      type: string
+    - contextPath: File.Type
+      description: File type as determined by Virus Total
+      type: string
+    - contextPath: File.Size
+      description: Size of File in bytes
+      type: number
+    - contextPath: File.VirusTotal.Tags
+      description: File tags
+      type: string
+    - contextPath: File.VirusTotal.MagicLiteral
+      description: File Magic literals
+      type: string
+    - contextPath: File.VirusTotal.FirstSeen
+      description: Time where the File was first seen
+      type: string
+    - contextPath: File.VirusTotal.CommunityReputation
+      description: Community Reputation of the File
+      type: number
+    - contextPath: File.VirusTotal.CommunityComments
+      description: Community Comments about the File
+      type: string
+    - contextPath: File.VirusTotal.AuthentiHash
+      description: AuthentiHash of the File
+      type: string
+    - contextPath: File.VirusTotal.ImpHash
+      description: ImpHash of the File
+      type: string
     description: Retrieves a concluded file scan report for a given file.
   - name: vt-private-get-url-report
     arguments:
@@ -1428,6 +1482,6 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "add Dropped Files to the vt-get-url-report, categories to the vt-get-domain-report"
+releaseNotes: "add outputs to vt-get-url-report, vt-get-domain-report and vt-get-file-report commands"
 tests:
-    - virusTotalPrivateAPI-test-playbook
+  - virusTotalPrivateAPI-test-playbook
