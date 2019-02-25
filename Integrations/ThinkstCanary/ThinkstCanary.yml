@@ -205,8 +205,5 @@ script:
     description: Fetches a Canary Token file from the Canary Tools server.
   isfetch: true
   runonce: false
-releaseNotes: "By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of
-  unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible
-  parties so that action can be taken before valubale systems in your network are compromised."
 tests:
   - CanaryTools Test
