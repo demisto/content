@@ -1,0 +1,173 @@
+commonfields:
+  id: Vertica
+  version: -1
+name: Vertica
+display: Vertica
+category: Database
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAACOpJREFUeAHtmAusHVUVQNsCpbalCFpB7ecVAgUKKqDSVKktpQRFQqQBBU1VtAWiYIUIQigURBBRBMJHDaigVKMiakCCUEWhpEIQRERRMNRPAcvHlo9aEV2rzjbnjnPnztz3XsTk7GS989t7z5l9ztln7hsxIkuOQI5AjkCOQI5AjkCOQI5AjkCOQI5AjkCOQI5AjkCOQI5AjkCOQI5AjkCOQI7AICOw6SDtX8jmm7xAJrcZ8xgLo/ucz7bY7dyP7UiM3gInwvOFg3spj4V/Fu1+ioMwWtKPYWHzXsopcHoLH/9Adw3cCNfA0+A8joN4N6p9yRewuh6Wg4ulXAZXbaxV/3kV3W+FWTAVXOC/gXO8A66DldAkzuejtwfMBd+zlYxH+x7wQcGBrTx0Kk+geX/iK3y2KXfF/pBB+LgL25kwClyINs+u0l2Gj0klP0tpV4kn7avwF6jyFX1uuptgNtSJC/ssaLewTrFubB6Df4V4uAv+4jqDLmNmhGUQfiyf6wMXeEHJjzu3l6/0uWvRfz2Mg7srbPWX6tf5PxXdV0Iao5Nop2L6fT88BmW/G+jz9Fr6Dum4Ps8A51mWMXT8EEJ/NfXJZaW6dty/K1C6Gg4vlHejXAzngs6byo4oHpMor6N+e9JuWn0KRU9fKp7Kx8FNVBbnaICnwzag7UvhU7APfBwWQYj6U2Cn6KB0nuuhyv8D9EesqP6XeNcfCZ+BuPfdMC7er+A+eALGg3M0vi6oPjeHU8Csl6Z85/EemAMhzvlk+CDov5WYWtLd9zDtaS08+GJXQuw2J+DO71fcbOHLcl4PRwZkBqyCsHMOs6BKDFLoPU/dVFgnbt5uJ/jNjKUp2dN6E9jv3ZvKZjT2AhczbNxAkyEVF/N3EHOMUps50JeciZUvG84upR47spfDOSj4YmHrzt0K+pXyAu/b0NF+6KXv4AdjlZhpYq7q71mllPR1W2Df0SstfP2d+kVQlXLp7pDjaJmtFnb0/jvmn6UvfLpRn0vat1Jv4h+1TplI8zcQjp+hPrNTpbLlXXEzhJ2TeScMRvpd4F146AaIuZzcZRJDtcCLk2f5zK+DqbepHIzii0rKc2mn2cIUfxvEO1k6f7NWazkCi3S3fI+2aaVO3s1g+vAVtHvZ1PlzrLzApuhRPfA+OwHSubyLdpUMxQIb4FsgnreW+vZVD2vR58lcCeHTjOAmeDV42qN/DfVpUCtVO8274TCIlLg/9XfAV0DnZZlEx9Kkcz3102Br6GuHYRffAlT/I6+hZirtJm6oN8CHE4U/UXcBhkM8BC8BAx/yHSoPRqOPchNsPgCzClvj/S3Qr2na1P8RUO/l8DF4H3g1VkrVAqt8Jpiax4OL9FG4AQxYKjGh7YtOJ/RlMKV8GzxR/chhGBnAVM6mUbfAziV9H1Pc52A1DIcY8AHYInH+o6TeT3U6Rscnhsb7DPBZynlwIMywgRwKXgnftdFWLsfAgLposhQMYiruXj//Q+f31KeCpzq9B2O8abkr9gugqX6q55zXwXKYAN1ksCl6CY73hfTZ87s9rEG/h8HsGf5MzVXfD2+nP76+1f0p+JOwUrzTusk5DDyaDPqzYoek7YQ82VsVfZ44U4gnxpPkAoe4A80MTXHiZfH+ebILntYQdT4JR4LXxXBK+o4+x5j0K/6k8r93If5z5pJoJOXV1K+HiNHu1I+G8uGjqzOlbexI/vyaug84DTR+GZj/jwJ311w4GEJ+QeXz0SiV+rq31FfXdGHKEzbd/rKL0QH0vw1GghvhsqKkGDZxfo+Amzfmuhv1a6GteAJPBb8jFE/o6fBnGyXxIDn2RphYjB1LaZr+WdFuXPhgF8bdIs/CbBgLt0L0e4IOhZABKk9DjJ8VAy3KwxN7/exdY2tmMdjxvE9Qj6B3Mxtsij4Rx2PgIYjn3lL0UTQW5+nihg+vmCuhLrsyPGIZeNDC7hvUnU9r8WR4KsLRD6h7H0fb0rsjdh/VEQOQLvDZdraU8gJ739XJ8QxuAOfjzveLuk4Gu8AnFc4voIxYeLqOgtHFWK/CRZwPXivh4z7q06CXbImCaxF2Pnsx9NoYqHSKk3V3pI7SxXuYsT06Tf4nC2y6ujOZ5zepjyvNK20O1QK/Fqd+7UZ8VlPfH+qezfDGTbA75SoI22eoL4Km4uZ4HMLeq3CH1LjJansqzgVfQjGlxOS9f74EfsnVyUgG/fBqSp2vbmNrGTgfvL+UA2CfjbXh/eO7XwF+QCpTwFO9ALaDLcCYGQPj7fU2GfaDC2EvUEzN34flNhqKJ/hroK3i4nofj7GhGPAmcjtKV8GHIN0U7phLoZdMQ6FNsG9D313ZVq7BYCGYzn1J07b3YtXHCt1DIgb307AL+Fwz3o5wMVwHLsKD4PeLX9mTwA+kg2BbUPRxFywDT3FT8YCdB/NgemHk+/vBdWPRbly4SC5opAM/rPw8r5IBOtM07suZSpqyM7qegHiWpcFrIv7cWA/aeC8dAZ6eshxDR/g3wHuWFUptF813Dpu4g0NtJyouqJspdGIOj9L3W/gjeNLTcWPzE2hzAFDvkKNp6Sf8rqC+dYdGw4YfXOtAR1eA6aZKBugsv0g8vEnpPzoOgVR3Pu0mYjr0oy5sH6JetXhLEh0X2Lu0Tjwh6VfrKRXKE+lbBNfCIxBzqCqfZPxmOAG2g8GI2eoSiOf4PhfD2E3500a8I24AU8xF4K6pkg103glt/Ycv79En4I7ooHwqqddVTVuXw+tgQqHoPed8UvFUpf67vUvYeHr1MaroWBMDSel3wBfhbpgJfkRNAk/TaDCjeMK1/Tl4cr3+ej0blVpxbq6H18SW4AK7IadWpS76a2UOo3vDWWAwq8STrU6/C/xjbMdBevIMxmPQRHwvfyb5soqbZRW4w0MGqMwoGvavBLNTN3E+syEW+H7qD3RTpt93fwXEAm9O3QwQC/wH6i7MUInv/CbwnX0fuQdai+lgm9ZW2SBHIEcgRyBHIEcgRyBHIEcgRyBHIEcgRyBHIEcgRyBHIEcgRyBHIEcgRyBHIEcgR+D/LwL/AoNxIkPBKY5ZAAAAAElFTkSuQmCC
+description: Analytic database management software
+configuration:
+- display: Host (Vertica Server URL)
+  name: url
+  defaultvalue: myhost.example.com
+  type: 0
+  required: true
+- display: Database
+  name: database
+  defaultvalue: mydb
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "5433"
+  type: 0
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+
+    import vertica_python
+    import datetime
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    DATABASE = demisto.params().get('database')
+    PORT = int(demisto.params().get('port', 5433))
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+
+    ''' HELPER FUNCTIONS '''
+
+    def check_if_datetime(v):
+        if isinstance(v, datetime.datetime):
+            return v.strftime("%Y-%m-%dT%H:%M:%S")
+        return v
+
+
+    def connect_db():
+        db_params = {
+            'host': SERVER,
+            'port': PORT,
+            'user': USERNAME,
+            'password': PASSWORD,
+            'database': DATABASE,
+            'connection_timeout': 5
+        }
+        try:
+            connection = vertica_python.connect(**db_params)
+        except vertica_python.errors.ConnectionError:
+            return_error('Could not connect to DB, please re-check DB params.')
+        return connection
+
+    CONNECTION = connect_db()
+    CURSOR = CONNECTION.cursor('dict')
+
+    ''' COMMANDS + QUERY FUNCTIONS '''
+
+    def test_module():
+        """
+        Performs basic query on default system tables
+        """
+        CURSOR.execute("SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT 2;")
+        rows = CURSOR.fetchall()
+        if CURSOR.rowcount == 0:
+            return_error('No results were returned from the DB.')
+
+
+    def query_command():
+        """
+        Execute a query against the DB
+        """
+        # Init main vars
+        contents = []
+        context = {}
+        context_entries = []
+        title = 'Vertica Query'
+        # Get arguments from user
+        query = demisto.args().get('query')
+        limit = int(demisto.args().get('limit', 50))
+        # Query and get raw response (list of tuples)
+        rows = query_request(query)
+        # Parse response into context & content entries
+        if rows:
+            if limit:
+                rows = rows[:limit]
+            title = 'Vertica Query Results:'
+
+            for i, row in enumerate(rows):
+                rows[i] = { underscoreToCamelCase(k): check_if_datetime(v) for k, v in row.items() }
+
+            contents = rows
+            context['Vertica.Query(val.Query && val.Query === obj.Query)'] = {
+                'Query': query,
+                'Rows': rows
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+            'EntryContext': context
+        })
+
+
+    def query_request(query):
+        try:
+            CURSOR.execute(query)
+        except vertica_python.errors.MissingRelation as err:
+            return_error('Error while executing query.')
+        rows = CURSOR.fetchall()
+        if CURSOR.rowcount in {0, -1}:
+            return False
+        else:
+            return rows
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'vertica-query':
+            query_command()
+    # Log exceptions
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        raise
+    finally:
+        CONNECTION.close()
+  type: python
+  commands:
+  - name: vertica-query
+    arguments:
+    - name: query
+      required: true
+      description: SQL query to perform on DB
+    - name: limit
+      description: Limit number of results to be returned from the query
+      defaultValue: "50"
+    outputs:
+    - contextPath: Vertica.Query.Query
+      description: Original query
+      type: string
+    - contextPath: Vertica.Query.Rows
+      description: Rows content
+      type: string
+    description: Query the database
+  dockerimage: devdemisto/vertica:1.0.0.149
+  runonce: false
+releaseNotes: "New integration with query ability on Vertica DB"
+tests:
+  - No test
