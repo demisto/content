@@ -5918,7 +5918,7 @@
                     "D2 - Endpoint data collection"
                 ], 
                 "tests": [
-                    "No tests - Deprecated playbook"
+                    "No tests - Need to add"
                 ]
             }
         }, 
@@ -5987,6 +5987,9 @@
                     "IPReputation", 
                     "Exists", 
                     "URLReputation"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -6509,7 +6512,7 @@
                     "mar-search-multiple": "McAfee Active Response"
                 }, 
                 "tests": [
-                    "No tests - Deprecated playbook"
+                    "No tests - Need to add"
                 ]
             }
         }, 
@@ -7393,7 +7396,7 @@
                     "wildfire-report": ""
                 }, 
                 "tests": [
-                    "No tests - The playbook was deprecated (used to be Wildfire Test)"
+                    "Wildfire Test"
                 ]
             }
         }
