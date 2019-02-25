@@ -5070,6 +5070,9 @@
                 "implementing_scripts": [
                     "ADGetUser", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tets"
                 ]
             }
         }, 
