@@ -6394,6 +6394,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests"
                 ]
             }
         }, 
