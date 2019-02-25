@@ -41,6 +41,14 @@ script:
     DATABASE = demisto.params().get('database')
     PORT = int(demisto.params().get('port', 5433))
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    DB_PARAMS = {
+        'host': SERVER,
+        'port': PORT,
+        'user': USERNAME,
+        'password': PASSWORD,
+        'database': DATABASE,
+        'connection_timeout': 5
+    }
 
     ''' HELPER FUNCTIONS '''
 
@@ -54,16 +62,8 @@ script:
 
 
     def connect_db():
-        db_params = {
-            'host': SERVER,
-            'port': PORT,
-            'user': USERNAME,
-            'password': PASSWORD,
-            'database': DATABASE,
-            'connection_timeout': 5
-        }
         try:
-            connection = vertica_python.connect(**db_params)
+            connection = vertica_python.connect(**DB_PARAMS)
         except vertica_python.errors.ConnectionError:
             return_error('Could not connect to DB, please re-check DB params.')
         return connection
