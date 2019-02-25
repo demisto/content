@@ -185,7 +185,7 @@ script:
 
     var soapActionURIGetNextPageAlarms               = 'http://www.logrhythm.com/webservices/AlarmService/GetNextPageAlarms';
     var soapActionURIGetFirstPageAlarmsByAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/GetFirstPageAlarmsByAlarmStatus';
-
+    var logRhythmAPI = 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
 
@@ -199,10 +199,10 @@ script:
     var url;
     // includes server URL that starts with http or https
     if (params.Host.startsWith('http')) {
-        url = fixUrl(params.Host) + 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
+        url = fixUrl(params.Host) + logRhythmAPI;
     }
     else {
-        url = 'https://' + fixUrl(params.Host) + 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
+        url = 'https://' + fixUrl(params.Host) + logRhythmAPI;
     }
     var myTimezone = new Date().getTimezoneOffset();
     var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
