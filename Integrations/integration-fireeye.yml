@@ -637,3 +637,5 @@ script:
     description: Results of the URL submission
   runonce: false
 releaseNotes: "Fixed client token parameter bug that it was not handled properly"
+tests:
+  - No test - no instance
