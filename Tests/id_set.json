@@ -5916,6 +5916,9 @@
                     "Sentinel One - Endpoint data collection", 
                     "MAR - Endpoint data collection", 
                     "D2 - Endpoint data collection"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
