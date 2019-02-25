@@ -168,7 +168,7 @@ script:
       description: Rows content
       type: string
     description: Query the database
-  dockerimage: devdemisto/vertica:1.0.0.149
+  dockerimage: demisto/vertica:1.0.0.150
   runonce: false
 releaseNotes: "New integration with query ability on Vertica DB"
 tests:
