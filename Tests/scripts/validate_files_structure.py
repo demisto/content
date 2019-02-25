@@ -34,13 +34,8 @@ from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
-                         WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
-
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r100']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
@@ -63,80 +58,6 @@ SCHEMAS_PATH = "Tests/schemas/"
 
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
-
-
-def checked_type(file_path):
-    for regex in CHECKED_TYPES_REGEXES:
-        if re.match(regex, file_path, re.IGNORECASE):
-            return True
-    return False
-
-
-def get_modified_files(files_string):
-    all_files = files_string.split('\n')
-    deleted_files = set([])
-    added_files_list = set([])
-    modified_files_list = set([])
-    for f in all_files:
-        file_data = f.split()
-        if not file_data:
-            continue
-
-        file_status = file_data[0]
-        file_path = file_data[1]
-
-        if file_path.endswith('.js') or file_path.endswith('.py'):
-            continue
-        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
-            modified_files_list.add(file_path)
-        elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-            added_files_list.add(file_path)
-        elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
-            deleted_files.add(file_path)
-        elif file_status.lower() == 'r100' and checked_type(file_path):
-            modified_files_list.add(file_data[2])
-        elif file_status.lower() not in KNOWN_FILE_STATUSES:
-            print_error(file_path + " file status is an unknown known one, "
-                                    "please check. File status was: " + file_status)
-
-    return modified_files_list, added_files_list, deleted_files
-
-
-def get_modified_and_added_files(branch_name, is_circle):
-    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
-    modified_files, added_files, _ = get_modified_files(all_changed_files_string)
-
-    if not is_circle:
-        files_string = run_git_command("git diff --name-status --no-merges HEAD")
-
-        non_committed_modified_files, non_committed_added_files, non_committed_deleted_files = \
-            get_modified_files(files_string)
-        all_changed_files_string = run_git_command("git diff --name-status origin/master")
-        modified_files_from_master, added_files_from_master, _ = get_modified_files(all_changed_files_string)
-
-        for mod_file in modified_files_from_master:
-            if mod_file in non_committed_modified_files:
-                modified_files.add(mod_file)
-
-        for add_file in added_files_from_master:
-            if add_file in non_committed_added_files:
-                added_files.add(add_file)
-
-        for deleted_file in non_committed_deleted_files:
-            modified_files = modified_files - {deleted_file}
-            added_files = added_files - {deleted_file}
-
-        for non_commited_mod_file in non_committed_modified_files:
-            added_files = added_files - {non_commited_mod_file}
-
-        new_added_files = set([])
-        for added_file in added_files:
-            if added_file in non_committed_added_files:
-                new_added_files.add(added_file)
-
-        added_files = new_added_files
-
-    return modified_files, added_files
 
 
 class StructureValidator(object):
