@@ -167,4 +167,4 @@ inputs: []
 outputs: []
 releaseNotes: "Deprecated playbook"
 tests:
-  - No tets
+  - No tests - Deprecated playbook
