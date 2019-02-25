@@ -6507,7 +6507,10 @@
                 ], 
                 "command_to_integration": {
                     "mar-search-multiple": "McAfee Active Response"
-                }
+                }, 
+                "tests": [
+                    "No tests - Deprecated playbook"
+                ]
             }
         }, 
         {
