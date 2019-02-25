@@ -1,5 +1,5 @@
 id: Incident Enrichment
-version: 1
+version: -1
 name: Incident Enrichment
 system: true
 fromversion: 2.5.0
@@ -138,3 +138,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"
+tests:
+  - No tests
