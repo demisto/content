@@ -68,8 +68,6 @@ script:
             return_error('Could not connect to DB, please re-check DB params.')
         return connection
 
-    CONNECTION = connect_db()
-    CURSOR = CONNECTION.cursor('dict')
 
     ''' COMMANDS + QUERY FUNCTIONS '''
 
@@ -77,9 +75,9 @@ script:
         """
         Performs basic query on default system tables
         """
-        CURSOR.execute("SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT 2;")
-        rows = CURSOR.fetchall()
-        if CURSOR.rowcount == 0:
+        cursor.execute("SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT 2;")
+        rows = cursor.fetchall()
+        if cursor.rowcount == 0:
             return_error('No results were returned from the DB.')
         demisto.results('ok')
 
@@ -92,11 +90,13 @@ script:
         contents = []
         context = {}
         title = 'Vertica Query'
+
         # Get arguments from user
         query = demisto.args().get('query')
         limit = int(demisto.args().get('limit', 50))
         # Query and get raw response (list of ordered dicts)
         rows = query_request(query)
+
         # Parse response into context & content entries
         if rows:
             if limit:
@@ -124,11 +124,11 @@ script:
 
     def query_request(query):
         try:
-            CURSOR.execute(query)
+            cursor.execute(query)
         except vertica_python.errors.MissingRelation:
             return_error('Error while executing query.')
-        rows = CURSOR.fetchall()
-        if CURSOR.rowcount in {0, -1}:
+        rows = cursor.fetchall()
+        if cursor.rowcount in {0, -1}:
             return False
         else:
             return rows
@@ -139,6 +139,8 @@ script:
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
+      connection = connect_db()
+      cursor = connection.cursor('dict')
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'vertica-query':
@@ -149,7 +151,7 @@ script:
         LOG.print_log()
         raise
     finally:
-        CONNECTION.close()
+        connection.close()
   type: python
   commands:
   - name: vertica-query
