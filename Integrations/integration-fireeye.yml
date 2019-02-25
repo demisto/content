@@ -18,8 +18,8 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: clientToken
-  name: Client token
+- display: Client token
+  name: clientToken
   defaultvalue: ""
   type: 4
   required: false
@@ -636,3 +636,4 @@ script:
       description: For malicious files, the vendor that made the decision
     description: Results of the URL submission
   runonce: false
+releaseNotes: "Fixed client token parameter bug that it was not handled properly"
