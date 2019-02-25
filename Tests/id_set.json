@@ -2167,6 +2167,9 @@
                 "name": "FindSimilarIncidentsByText", 
                 "script_executions": [
                     "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9731,6 +9734,9 @@
                     "lr-get-alarm-history-by-id", 
                     "lr-update-alarm-status", 
                     "lr-get-alarms"
+                ], 
+                "tests": [
+                    "LogRhythm-Test-Playbook"
                 ]
             }
         }, 
@@ -11851,7 +11857,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser", 
+                "name": "WhatsMyBrowser",
                 "commands": [
                     "ua-parse"
                 ], 
@@ -15041,8 +15047,12 @@
         {
             "RSA NetWitness Test": {
                 "name": "RSA NetWitness Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "command_to_integration": {
                     "netwitness-get-incident": "RSA NetWitness v11.1", 
+                    "netwitness-update-incident": "RSA NetWitness v11.1", 
                     "netwitness-get-incidents": "RSA NetWitness v11.1"
                 }
             }
@@ -16121,7 +16131,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test", 
+                "name": "WhatsMyBrowser-Test",
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
