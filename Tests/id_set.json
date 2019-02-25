@@ -5646,6 +5646,9 @@
                     "Print", 
                     "SandboxDetonateFile", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
