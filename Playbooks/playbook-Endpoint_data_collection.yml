@@ -2,8 +2,7 @@ id: Endpoint data collection
 version: -1
 name: Endpoint data collection
 fromversion: ""
-description: Deprecated - We recommend using Endpoint Data Collection - Generic playbook instead.
-  Generic playbook to collect data from endpoints for IR purposes. Will
+description: Generic playbook to collect data from endpoints for IR purposes. Will
   use whichever integrations are configured and available.
 starttaskid: "0"
 tasks:
@@ -242,6 +241,6 @@ inputs:
   required: false
   description: ""
 outputs: []
-releaseNotes: "Deprecated playbook"
+releaseNotes: "-"
 tests:
-  - No tests - Deprecated playbook
+  - No tests - Need to add
