@@ -44,7 +44,7 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def check_if_datetime(v):
+    def convert_datetime_to_string(v):
         """
         Parses datetime object into string
         """
@@ -81,6 +81,7 @@ script:
         rows = CURSOR.fetchall()
         if CURSOR.rowcount == 0:
             return_error('No results were returned from the DB.')
+        demisto.results('ok')
 
 
     def query_command():
@@ -103,7 +104,7 @@ script:
             title = 'Vertica Query Results:'
 
             for i, row in enumerate(rows):
-                rows[i] = { underscoreToCamelCase(k): check_if_datetime(v) for k, v in row.items() }
+                rows[i] = { underscoreToCamelCase(k): convert_datetime_to_string(v) for k, v in row.items() }
 
             contents = rows
             context['Vertica.Query(val.Query && val.Query === obj.Query)'] = {
@@ -140,7 +141,6 @@ script:
     try:
         if demisto.command() == 'test-module':
             test_module()
-            demisto.results('ok')
         elif demisto.command() == 'vertica-query':
             query_command()
     # Log exceptions
