@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -97,8 +96,8 @@ def create_incident(alert):
     :return: Demisto incident, e.g., CanaryToken triggered
     """
     incident = {
-        'name': alert.get('description').get('description'),
-        'occurred': timestamp_to_datestring(1000 * (int(alert.get('description').get('created')))),
+        'name': demisto.get(alert, 'description.description'),
+        'occurred': timestamp_to_datestring(1000 * (int(demisto.get(alert, 'description.created')))),
         'rawJSON': json.dumps(alert)
     }
     return incident
@@ -205,7 +204,7 @@ def get_token_command():
         'canarytoken': token
     }
     res = http_request('GET', SERVER + 'canarytoken/fetch', params=params)
-    context = res.get('token').get('canarytoken')
+    context = demisto.get(res, 'token.canarytoken')
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -216,14 +215,14 @@ def get_token_command():
             'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
     }
 
-    if res.get('token').get('doc'):
-        name = res.get('token').get('doc_name')
-        content = res.get('token').get('doc')
+    if demisto.get(res,'token.doc'):
+        name = demisto.get(res, 'token.doc_name')
+        content = demisto.get(res, 'token.doc')
         token_file = fileResult(name, content)
         demisto.results(token_file)
-    elif res.get('token').get('web_image'):
-        name = res.get('token').get('web_image_name')
-        content = res.get('token').get('web_image')
+    if demisto.get(res, 'token.web_image'):
+        name = demisto.get(res, 'token.web_image_name')
+        content = demisto.get(res, 'token.web_image')
         token_file = fileResult(name, content)
         demisto.results(token_file)
     else:
@@ -399,7 +398,7 @@ def fetch_incidents_command():
     incidents = []
     current_fetch = last_fetch
     for alert in alerts:
-        current_fetch = 1000 * (int(alert.get('description').get('created')))
+        current_fetch = 1000 * (int(demisto.get(alert, 'description.created')))
         current_fetch = timestamp_to_datestring(current_fetch, '%Y-%m-%d-%H:%M:%S')
         incident = create_incident(alert)
         incidents.append(incident)
