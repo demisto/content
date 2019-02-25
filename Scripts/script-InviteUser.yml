@@ -18,6 +18,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 deprecated: true
-releaseNotes: Deprecated, use the invite script instead
+releaseNotes: Deprecated, use the invite script instead. The invite script supports RBAC.
 tests:
   - No tests
