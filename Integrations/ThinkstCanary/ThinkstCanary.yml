@@ -16,7 +16,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Canary Server URL (e.g., https://1217c2fc.canary.tools)
+- display: Canary Server URL (e.g., https://***.canary.tools)
   name: server
   defaultvalue: ""
   type: 0
@@ -142,7 +142,7 @@ script:
     - name: alert_id
       required: true
       description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through
-      fetch incidents)' # disable-secrets-detection
+      fetch incidents)'
     - name: status
       required: true
       auto: PREDEFINED
