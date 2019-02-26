@@ -181,7 +181,7 @@ class StructureValidator(object):
             if not self.is_release_branch():
                 self.validate_file_release_notes(file_path)
 
-            if self.id_set_validator.is_file_valid_in_set(file_path):
+            if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
@@ -223,8 +223,7 @@ class StructureValidator(object):
             if self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
-            self.id_set_validator.check_if_there_is_id_duplicates(file_path)
-            if self.id_set_validator.is_invalid_id():
+            if self.id_set_validator.is_file_has_used_id(file_path):
                 self._is_valid = False
 
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
