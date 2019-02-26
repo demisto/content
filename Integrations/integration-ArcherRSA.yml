@@ -3692,7 +3692,7 @@ script:
       This command only works for value list fields (type 4).
   - name: archer-reset-cache
     arguments: []
-    description: Reset Archer's integration cache
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
 releaseNotes: "New command 'archer-reset-cache' to reset the integration cache"
