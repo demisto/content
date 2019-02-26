@@ -1,3 +1,4 @@
+import argparse
 import re
 import os
 import sys
@@ -74,7 +75,6 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
-
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
@@ -383,9 +383,14 @@ def re_create_id_set():
 
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('Integrations', '*')):
-        print("adding {0} to id_set".format(file))
-        integration_list.append(get_integration_data(file))
+    for file_path in glob.glob(os.path.join('Integrations', '*')):
+        if os.path.isfile(file_path):
+            print("adding {0} to id_set".format(file_path))
+            integration_list.append(get_integration_data(file_path))
+        else:  # In case we encountered a package
+            for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+                print("adding {0} to id_set".format(yml_file))
+                integration_list.append(get_integration_data(yml_file))
 
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('Playbooks', '*')):
@@ -393,9 +398,14 @@ def re_create_id_set():
         playbooks_list.append(get_playbook_data(file))
 
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('Scripts', '*')):
-        print("adding {0} to id_set".format(file))
-        scripts_list.append(get_script_data(file))
+    for file_path in glob.glob(os.path.join('Scripts', '*')):
+        if os.path.isfile(file_path):
+            print("adding {0} to id_set".format(file_path))
+            scripts_list.append(get_script_data(file_path))
+        else:  # In case we encountered a package
+            yml_path, code = get_script_package_data(file_path)
+            print("adding {0} to id_set".format(file_path))
+            scripts_list.append(get_script_data(yml_path, script_code=code))
 
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
     for file in glob.glob(os.path.join('TestPlaybooks', '*')):
@@ -405,15 +415,17 @@ def re_create_id_set():
         elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
             testplaybooks_list.append(get_playbook_data(file))
 
-    ids_dict = OrderedDict()
-    ids_dict['scripts'] = scripts_list
-    ids_dict['playbooks'] = playbooks_list
-    ids_dict['integrations'] = integration_list
-    ids_dict['TestPlaybooks'] = testplaybooks_list
+    new_ids_dict = OrderedDict()
+    # we sort each time the whole set in case someone manually changed something
+    # it shouldn't take too much time
+    new_ids_dict['scripts'] = sort(scripts_list)
+    new_ids_dict['playbooks'] = sort(playbooks_list)
+    new_ids_dict['integrations'] = sort(integration_list)
+    new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
 
     print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
-        json.dump(ids_dict, id_set_file, indent=4)
+        json.dump(new_ids_dict, id_set_file, indent=4)
 
 
 def sort(data):
@@ -427,7 +439,7 @@ def update_id_set():
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status --no-merges HEAD")
+    files_string = run_git_command("git diff --name-status HEAD")
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
@@ -533,4 +545,14 @@ def update_id_set():
 
 
 if __name__ == '__main__':
-    update_id_set()
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-r', '--reCreate', action='store_true', help='Is re-create id_set or update it')
+    options = parser.parse_args()
+
+    if options.reCreate:
+        print("Re creating the id_set.json")
+        re_create_id_set()
+
+    else:
+        print("Updating the id_set.json")
+        update_id_set()
