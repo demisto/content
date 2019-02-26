@@ -10770,7 +10770,8 @@
                     "archer-upload-file", 
                     "archer-add-to-detailed-analysis", 
                     "archer-get-user-id", 
-                    "archer-get-valuelist"
+                    "archer-get-valuelist", 
+                    "archer-reset-cache"
                 ], 
                 "tests": [
                     "Archer-Test-Playbook"
@@ -11847,7 +11848,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser",
+                "name": "WhatsMyBrowser", 
                 "commands": [
                     "ua-parse"
                 ], 
@@ -16113,7 +16114,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test",
+                "name": "WhatsMyBrowser-Test", 
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
