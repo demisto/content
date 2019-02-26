@@ -216,23 +216,6 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_access_token():
-    """
-    Make a call to the Demistobot application for a refreshed access token
-
-    returns:
-        The response from making a get-request to the Demistobot application
-    """
-    headers = {
-        'Authorization': TOKEN,
-        'Accept': 'application/json'
-    }
-    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
-    parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
-    response = http_request('GET', full_url=token_retrieval_url, headers=headers, params=parameters)
-    return response
-
-
 def update_access_token():
     """
     Check if we have a valid token and if not get one and update global HEADERS
@@ -242,7 +225,19 @@ def update_access_token():
         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
             HEADERS['Authorization'] = 'Bearer ' + ctx.get('token')
             return
-    response = get_access_token()
+    headers = {
+        'Authorization': TOKEN,
+        'Accept': 'application/json'
+    }
+    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
+    parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
+    r = requests.get(token_retrieval_url, headers=headers, params=parameters, verify=USE_SSL)
+    if r.status_code not in {200, 201}:
+        return_error('Error in authentication with the application. Please check the credentials.')
+    try:
+        response = r.json()
+    except ValueError:
+        return_error('The response from Demistbot was not a json serializable object.')
     demisto.setIntegrationContext({'token': response.get('token'), 'stored': epoch_seconds()})
     HEADERS['Authorization'] = 'Bearer ' + response.get('token')
 
@@ -387,6 +382,7 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS,
     returns:
         JSON Response Object
     """
+    update_access_token()
     try:
         url = full_url if full_url else None
         if not url:
@@ -421,10 +417,8 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS,
 
 
 def test_module():
-    # Implicitly will test TENANT_ID and TOKEN
-    _ = get_access_token()
-    # Implicitly will test SUBSCRIPTION_ID
-    _ = list_resource_groups()
+    # Implicitly will test TENANT_ID, TOKEN and SUBSCRIPTION_ID
+    list_resource_groups()
     demisto.results('ok')
 
 # <-------- Resource Groups --------> #
@@ -432,7 +426,6 @@ def test_module():
 
 def list_resource_groups():
     parameters = {'api-version': '2018-05-01'}
-    update_access_token()
     response = http_request('GET', params=parameters, codes={200})
     return response
 
@@ -477,7 +470,6 @@ def list_vms(resource_group):
     url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines'
     parameters = {'api-version': API_VERSION}
     # Call API
-    update_access_token()
     response = http_request('GET', url_endpoint, params=parameters, codes={200})
     return response
 
@@ -542,7 +534,6 @@ def get_vm(args):
     parameters = {'$expand': 'instanceView', 'api-version': API_VERSION}
 
     # Call API
-    update_access_token()
     response = http_request('GET', url_endpoint, params=parameters, codes={200})
 
     return response
@@ -619,7 +610,6 @@ def create_vm(args):
     payload = create_vm_parameters(args)
 
     # Call API
-    update_access_token()
     response = http_request('PUT', url_endpoint, params=parameters, j_son=payload)
 
     return response
@@ -715,7 +705,6 @@ def delete_vm(args):
     parameters = {'api-version': API_VERSION}
 
     # Call API to deallocate compute resources
-    update_access_token()
     _ = http_request('POST', url_endpoint, params=parameters, codes={200, 202})
 
     # Construct endpoint URI suffix (for deletion)
@@ -723,7 +712,6 @@ def delete_vm(args):
     parameters = {'api-version': API_VERSION}
 
     # Call API to delete
-    update_access_token()
     response = http_request('DELETE', url_endpoint, params=parameters, codes={200, 202, 204})
 
     return response
@@ -758,7 +746,6 @@ def start_vm(args):
     parameters = {'api-version': API_VERSION}
 
     # Call API
-    update_access_token()
     response = http_request('POST', url_endpoint, params=parameters, codes={202})
 
     return response
@@ -814,7 +801,6 @@ def poweroff_vm(args):
     parameters = {'api-version': API_VERSION}
 
     # Call API
-    update_access_token()
     response = http_request('POST', url_endpoint, params=parameters, codes={202})
 
     return response
