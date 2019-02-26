@@ -8421,6 +8421,9 @@
                 "commands": [
                     "cve-search", 
                     "cve-latest"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9483,6 +9486,9 @@
                 "commands": [
                     "ip", 
                     "ipinfo_field"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10155,6 +10161,9 @@
                     "url", 
                     "openphish-reload", 
                     "openphish-status"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10381,6 +10390,9 @@
                     "url", 
                     "phishtank-reload", 
                     "phishtank-status"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -11466,6 +11478,9 @@
                     "threat-crowd-ip", 
                     "threat-crowd-antivirus", 
                     "threat-crowd-file"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -11847,7 +11862,7 @@
         }, 
         {
             "WhatsMyBrowser": {
-                "name": "WhatsMyBrowser",
+                "name": "WhatsMyBrowser", 
                 "commands": [
                     "ua-parse"
                 ], 
@@ -16113,7 +16128,7 @@
         }, 
         {
             "WhatsMyBrowser-Test": {
-                "name": "WhatsMyBrowser-Test",
+                "name": "WhatsMyBrowser-Test", 
                 "implementing_scripts": [
                     "DeleteContext", 
                     "Set"
