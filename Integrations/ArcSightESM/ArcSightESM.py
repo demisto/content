@@ -724,8 +724,9 @@ def add_entries_command():
     if not res.ok:
         demisto.debug(res.text)
         return_error("Failed to add entries. Please make sure to enter Active List resource ID"
-                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                        resource_id, res.status_code, body, res.text))
+                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
+                                                                                                 res.status_code, body,
+                                                                                                 res.text))
 
     demisto.results("Success")
 
