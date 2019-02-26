@@ -22,7 +22,7 @@ class IDSetValidator(object):
         self._valid_id = True
         self.is_circle = is_circle
 
-        if not is_test_run:
+        if not is_test_run and is_circle:
             self.id_set = self.load_id_set()
 
             self.script_set = self.id_set[self.SCRIPTS_SECTION]
@@ -48,30 +48,6 @@ class IDSetValidator(object):
                     raise ex
 
             return id_set
-    #
-    # def check_if_the_id_is_valid_one(self, objects_set, compared_id, file_path, compared_obj_data=None):
-    #     if compared_obj_data is None:
-    #         from_version = get_from_version(file_path)
-    #
-    #     else:
-    #         value = compared_obj_data.values()[0]
-    #         from_version = value.get('fromversion', '0.0.0')
-    #
-    #     data_dict = get_json(file_path)
-    #     if data_dict.get('name') != compared_id:
-    #         print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
-    #                     " the file is {}".format(file_path))
-    #         self._valid_id = False
-    #
-    #     for obj in objects_set:
-    #         obj_id = obj.keys()[0]
-    #         obj_data = obj.values()[0]
-    #         if obj_id == compared_id:
-    #             if LooseVersion(from_version) <= LooseVersion(obj_data.get('toversion', '99.99.99')):
-    #                 print_error("The ID {0} already exists, please update the file {1} or update the "
-    #                             "id_set.json toversion field of this id to match the "
-    #                             "old occurrence of this id".format(compared_id, file_path))
-    #                 self._valid_id = False
 
     def is_valid_in_id_set(self, file_path, obj_data, obj_set):
         is_found = False
@@ -95,9 +71,8 @@ class IDSetValidator(object):
         if not is_found:
             print_error("You have failed to update id_set.json with the data of {} "
                         "please run `python Tests/scripts/update_id_set.py`".format(file_path))
-            return False
 
-        return True
+        return is_found
 
     def validate_playbook_in_set(self, file_path, playbook_set):
         playbook_data = get_playbook_data(file_path)

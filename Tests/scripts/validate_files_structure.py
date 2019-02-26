@@ -239,7 +239,7 @@ class StructureValidator(object):
                     self._is_valid = False
 
     def validate_no_secrets_found(self, branch_name):
-        """Check if any secrets are found in your changeset.
+        """Check if any secrets are found in your change set.
 
         Args:
             branch_name (string): The name of the branch you are working on.
