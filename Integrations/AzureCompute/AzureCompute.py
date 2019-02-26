@@ -216,6 +216,23 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
+def get_access_token():
+    """
+    Make a call to the Demistobot application for a refreshed access token
+
+    returns:
+        The response from making a get-request to the Demistobot application
+    """
+    headers = {
+        'Authorization': TOKEN,
+        'Accept': 'application/json'
+    }
+    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
+    parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
+    response = http_request('GET', full_url=token_retrieval_url, headers=headers, params=parameters)
+    return response
+
+
 def update_access_token():
     """
     Check if we have a valid token and if not get one and update global HEADERS
@@ -225,13 +242,7 @@ def update_access_token():
         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
             HEADERS['Authorization'] = 'Bearer ' + ctx.get('token')
             return
-    headers = {
-        'Authorization': TOKEN,
-        'Accept': 'application/json'
-    }
-    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
-    parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
-    response = http_request('GET', full_url=token_retrieval_url, headers=headers, params=parameters)
+    response = get_access_token()
     demisto.setIntegrationContext({'token': response.get('token'), 'stored': epoch_seconds()})
     HEADERS['Authorization'] = 'Bearer ' + response.get('token')
 
@@ -377,7 +388,9 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS,
         JSON Response Object
     """
     try:
-        url = full_url if full_url else BASE_URL + url_suffix
+        url = full_url if full_url else None
+        if not url:
+            url = BASE_URL + url_suffix if url_suffix else BASE_URL
         r = requests.request(
             method,
             url,
@@ -403,6 +416,16 @@ def http_request(method, url_suffix=None, data=None, headers=HEADERS,
 
 
 '''MAIN FUNCTIONS / API CALLS'''
+
+# <---------- Test Module ----------> #
+
+
+def test_module():
+    # Implicitly will test TENANT_ID and TOKEN
+    _ = get_access_token()
+    # Implicitly will test SUBSCRIPTION_ID
+    _ = list_resource_groups()
+    demisto.results('ok')
 
 # <-------- Resource Groups --------> #
 
@@ -854,8 +877,7 @@ commands = {
 
 try:
     if demisto.command() == 'test-module':
-        update_access_token()
-        demisto.results('ok')
+        test_module()
     elif demisto.command() in commands.keys():
         commands[demisto.command()]()
 
