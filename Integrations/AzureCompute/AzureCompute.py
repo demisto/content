@@ -431,10 +431,9 @@ def test_module():
 
 
 def list_resource_groups():
-    endpoint_url = 'https://management.azure.com/subscriptions/' + SUBSCRIPTION_ID + '/resourcegroups'
     parameters = {'api-version': '2018-05-01'}
     update_access_token()
-    response = http_request('GET', full_url=endpoint_url, params=parameters, codes={200})
+    response = http_request('GET', params=parameters, codes={200})
     return response
 
 
@@ -500,7 +499,7 @@ def list_vms_command():
 
     vms = []
     for vm_object in vm_objects_list:
-        vm_name = vm_object.get('name')
+        vm_name = vm_object.get('name').lower()
         location = vm_object.get('location')
         properties = vm_object.get('properties')
         provisioning_state = properties.get('provisioningState')
@@ -566,7 +565,7 @@ def get_vm_command():
     response = get_vm(args)
 
     # Retrieve relevant properties to return to context
-    vm_name = response.get('name')
+    vm_name = response.get('name').lower()
     properties = response.get('properties')
     os_disk = properties.get('storageProfile', {}).get('osDisk')
     datadisk = os_disk.get('diskSizeGB', 'NA')
@@ -674,7 +673,7 @@ def create_vm_command():
     response = create_vm(args)
 
     # Retrieve relevant properties to return to context
-    vm_name = response.get('name')
+    vm_name = response.get('name').lower()
     properties = response.get('properties')
     os_disk = properties.get('storageProfile', {}).get('osDisk')
     datadisk = os_disk.get('diskSizeGB', 'NA')
@@ -779,7 +778,7 @@ def start_vm_command():
         Virtual Machine Object
     """
     args = demisto.args()
-    vm_name = args.get('virtual_machine_name')
+    vm_name = args.get('virtual_machine_name').lower()
 
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
@@ -835,7 +834,7 @@ def poweroff_vm_command():
         Virtual Machine Object
     """
     args = demisto.args()
-    vm_name = args.get('virtual_machine_name')
+    vm_name = args.get('virtual_machine_name').lower()
 
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
