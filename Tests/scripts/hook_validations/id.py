@@ -3,7 +3,7 @@ import re
 import json
 from distutils.version import LooseVersion
 
-from Tests.test_utils import INTEGRATION_REGEX, print_error, get_from_version, get_json, TEST_PLAYBOOK_REGEX, \
+from Tests.test_utils import INTEGRATION_REGEX, print_error, TEST_PLAYBOOK_REGEX, \
     SCRIPT_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_YML_REGEX, PLAYBOOK_REGEX, SCRIPT_YML_REGEX, SCRIPT_PY_REGEX,\
     SCRIPT_JS_REGEX, get_script_or_integration_id, collect_ids
 from Tests.scripts.update_id_set import get_script_data, get_playbook_data, \
