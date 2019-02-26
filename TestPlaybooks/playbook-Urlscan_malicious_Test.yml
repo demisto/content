@@ -300,10 +300,10 @@ tasks:
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
-      script: urlscan.io_rate_limit|||url
+      script: urlscan.io|||url
       type: regular
       iscommand: true
-      brand: urlscan.io_rate_limit
+      brand: urlscan.io
     nexttasks:
       '#none#':
       - "15"
@@ -338,10 +338,10 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io_rate_limit|||url
+      script: urlscan.io|||url
       type: regular
       iscommand: true
-      brand: urlscan.io_rate_limit
+      brand: urlscan.io
     nexttasks:
       '#none#':
       - "16"
@@ -376,10 +376,10 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io_rate_limit|||url
+      script: urlscan.io|||url
       type: regular
       iscommand: true
-      brand: urlscan.io_rate_limit
+      brand: urlscan.io
     scriptarguments:
       limit: {}
       long: {}
