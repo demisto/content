@@ -298,7 +298,8 @@ def get_query_viewer_results_command():
             'ContentsFormat': formats['json'],
             'Contents': query_results,
             'HumanReadable': tableToMarkdown(name='Query Viewer Results: {}'.format(resource_id), t=query_results,
-                                             removeNull=True)
+                                             removeNull=True),
+            'EntryContext': {'ArcSightESM.QueryViewerResults': query_results}
         })
 
 
@@ -624,7 +625,19 @@ def delete_case_command():
     res = send_request(query_path, params=params, body=req_body)
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to delete case:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
+        return_error("Failed to delete case.\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
+
+    entry_context = {
+        'resourceid': case_id,
+        'deleted': 'True'
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Case {}  was deleted successfully'.format(case_id),
+        'HumanReadable': 'Case {} successfully deleted'.format(case_id),
+        'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
+    })
 
 
 @logger
@@ -771,10 +784,6 @@ try:
         demisto.results('ok')
 
     elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
-        # if demisto.args().get('lastRun'):
-        #     last_run = json.loads(demisto.args().get('lastRun'))
-        #     demisto.setLastRun(last_run)
-
         fetch()
 
     elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
