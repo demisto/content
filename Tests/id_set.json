@@ -16027,7 +16027,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "url": "urlscan.io_rate_limit", 
+                    "url": "urlscan.io", 
                     "urlscan-search": ""
                 }
             }
