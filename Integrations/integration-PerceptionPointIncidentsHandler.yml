@@ -44,7 +44,7 @@ configuration:
   required: false
 - display: No. of API loops
   name: api_loops
-  defaultvalue: ""
+  defaultvalue: "1"
   type: 0
   required: false
 script:
@@ -62,9 +62,11 @@ script:
     INCIDENTS_ENDPOINT = 'scans/incidents/'
     RELEASE_ENDPOINT = 'quarantine/release/{id_}'
     HEADER = {'Authorization': 'Token {}'.format(PP_TOKEN)}
-    API_MAX_LOOPS = demisto.params().get('api_loops', 1)
-    API_MAX_LOOPS = API_MAX_LOOPS if isinstance(API_MAX_LOOPS, int) else 1
-
+    USER_INPUT = demisto.params()
+    try:
+        API_MAX_LOOPS = int(demisto.params().get('api_loops'))
+    except:
+        API_MAX_LOOPS = 1
 
     ''' CONSTANTS '''
     RELEASE = 'release'
@@ -75,32 +77,24 @@ script:
     BLOCKED = 'BLK'
     MALICIOUS = 'MAL'
 
+    ARGUMENTS_LIST = [{'demisto_param': 'fetch_malicious',
+                       'req_pname': 'verbose_verdict',
+                       'req_pval': MALICIOUS},
+                      {'demisto_param': 'fetch_blocked',
+                       'req_pname': 'verbose_verdict',
+                       'req_pval': BLOCKED},
+                      {'demisto_param': 'fetch_spam',
+                       'req_pname': 'verbose_verdict',
+                       'req_pval': SPAM}]
+
     ''' HELPER FUNCTIONS '''
 
 
-    def get_cursor_from_url(url):
-        if url:
-            parsed = urlparse.urlparse(url)
-            next_cursor = urlparse.parse_qs(parsed.query).get('_cursor')
-            return int(next_cursor[0])
-        return -1
-
-
     def build_url_request_params(last_cursor=None):
-        ARGUMENTS_LIST = [{'demisto_param': 'fetch_malicious',
-                           'req_pname': 'verbose_verdict',
-                           'req_pval': MALICIOUS},
-                          {'demisto_param': 'fetch_blocked',
-                           'req_pname': 'verbose_verdict',
-                           'req_pval': BLOCKED},
-                          {'demisto_param': 'fetch_spam',
-                           'req_pname': 'verbose_verdict',
-                           'req_pval': SPAM}]
         params_dict = defaultdict(list)
-        arguments_input = demisto.params()
-        arguments_input.update(demisto.args())
+        USER_INPUT.update(demisto.args())
         for darg in ARGUMENTS_LIST:
-            darg_input = arguments_input.get(darg['demisto_param'])
+            darg_input = USER_INPUT.get(darg['demisto_param'])
             if darg_input:
                 params_dict[darg['req_pname']].append(darg.get('req_pval', darg_input))
         for reqname, reqval in params_dict.iteritems():
@@ -119,15 +113,15 @@ script:
     def collect_incidents(last_cursor=None):
         list_url = build_request_url(LIST)
         api_res = get_pp_api_result(url=list_url, last_cursor=last_cursor)
-        num_of_results = api_res['count']
+        num_of_results = api_res.get('count')
         incidents = []
         api_loops = 0
         while num_of_results and api_loops < API_MAX_LOOPS:
-            incidents += map(create_incident, api_res['results'])
-            if api_res['next']:
-                api_res = get_pp_api_result(url=api_res['next'])
-                num_of_results = api_res['count']
-                api_loops += 1
+            incidents += map(create_incident, api_res.get('results'))
+            if api_res.get('next'):
+                api_res = get_pp_api_result(url=api_res.get('next'))
+                num_of_results = api_res.get('count')
+            api_loops += 1
         return incidents
 
 
@@ -136,31 +130,31 @@ script:
 
 
     def get_pp_api_result(url, last_cursor=None):
-        res = requests.get(url=url,
-                           params=build_url_request_params(last_cursor),
-                           headers=HEADER)
-        res.raise_for_status()
         try:
+            res = requests.get(url=url,
+                               params=build_url_request_params(last_cursor),
+                               headers=HEADER)
+            res.raise_for_status()
             res_content = res.json()
-        except:
-            res_content = {}
-        return res_content
+            return res_content
+        except Exception as e:
+            return_error(e.message)
 
 
     def build_request_url(api_action):
-        return URL.format(endpoint=API_ACTIONS_DICT[api_action])
+        return URL.format(endpoint=API_ACTIONS_DICT.get(api_action))
 
 
     def command_fetch_incidents():
         try:
-            last_run_id = int(demisto.getLastRun().get('scan_id', -1))
+            last_run_id = int(demisto.getLastRun().get('scan_id', 0))
             incidents_list = collect_incidents(last_run_id)
             report_incidents(incidents_list)
             if incidents_list:
-                last_run_id = max(last_run_id, int(incidents_list[-1]['Scan Id']))
+                last_run_id = max(last_run_id, int(incidents_list[-1].get('Scan Id')))
                 demisto.setLastRun({'scan_id': int(last_run_id)})
         except:
-            demisto.error(
+            return_error(
                 'An error occurred while trying to fetch new incidents. Please contact us at support@perception-point.io')
 
 
@@ -181,26 +175,30 @@ script:
             entry.update({'Contents': err_msg,
                           'ContentsFormat': formats['text'],
                           'EntryContext': {'PP.Result': err_msg}})
-        return entry
+        demisto.results(entry)
 
 
-    def command_release_email():
-        demisto.params().clear()
-        entry = {
-            'Type': entryTypes['note'],
-            'ReadableContentsFormat': formats['markdown']
-        }
+    def release_email_and_get_message():
         try:
             scan_id_to_release = demisto.args().get('scan_id')
             release_url = build_request_url(RELEASE).format(id_=scan_id_to_release)
             _ = get_pp_api_result(url=release_url)
-            human_readable_response = 'Email with id {} was released Successfully!'.format(scan_id_to_release)
+            return 'Email with id {} was released Successfully!'.format(scan_id_to_release)
         except:
-            human_readable_response = 'An error occurred while trying to release email. Please contact us at support@perception-point.io'
+            return 'An error occurred while trying to release email. Please contact us at support@perception-point.io'
+
+
+    def command_release_email():
+        USER_INPUT.clear()
+        entry = {
+            'Type': entryTypes['note'],
+            'ReadableContentsFormat': formats['markdown']
+        }
+        human_readable_response = release_email_and_get_message()
         entry.update({'Contents': human_readable_response,
                       'ContentsFormat': formats['text'],
                       'EntryContext': {'PP.Result': human_readable_response}})
-        return entry
+        demisto.results(entry)
 
 
     ''' COMMAND CLASSIFIER'''
@@ -210,11 +208,11 @@ script:
             demisto.results('ok')
         sys.exit(0)
     if demisto.command() == 'fetch-incidents':
-        demisto.results(command_fetch_incidents())
+        command_fetch_incidents()
     if demisto.command() == 'list-incidents':
-        demisto.results(command_list_incidents())
+        command_list_incidents()
     if demisto.command() == 'release-email':
-        demisto.results(command_release_email())
+        command_release_email()
   type: python
   commands:
   - name: list-incidents
