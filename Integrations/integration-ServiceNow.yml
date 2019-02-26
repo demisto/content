@@ -3525,6 +3525,6 @@ script:
       are required for the sys_journal_field table.
   isfetch: true
   runonce: false
-releaseNotes: "Handle custom fields properly"
+releaseNotes: "Handle custom fields properly, better indication of errors when fetching incidents"
 tests:
   - No test - Hibernating instance
