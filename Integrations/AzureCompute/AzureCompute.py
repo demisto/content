@@ -774,7 +774,7 @@ def start_vm_command():
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': response,
+        'Contents': vm,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
@@ -830,7 +830,7 @@ def poweroff_vm_command():
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': response,
+        'Contents': vm,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
