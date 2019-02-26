@@ -18,9 +18,14 @@ jobs:
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
+              pip install pytest
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+      - run:
+          name: Infrastucture testing
+          command: |
+            pytest ./Tests/scripts/hook_validations/tests/ -v
       - run:
           name: Create ID Set
           command: |
