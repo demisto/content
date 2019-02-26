@@ -319,6 +319,13 @@ script:
     - name: id
       required: true
       description: Resource ID of the query viewer
+    - name: onlyColumns
+      description: If "true", will return only the columns of the query. If "false", will return the column headers and all query results.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
     outputs:
     - contextPath: ArcSight.QueryViewerResults
       type: Unknown
