@@ -32,9 +32,9 @@ script:
     import collections
     from urlparse import urlparse
     from requests.utils import quote
+    import time
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
-
 
 
 
@@ -51,9 +51,8 @@ script:
 
 
 
-
     '''HELPER FUNCTIONS'''
-    def http_request(method, url_suffix, json=None):
+    def http_request(method, url_suffix, json = None, wait = 0, retries = 0):
         if method is 'GET':
             headers = {}
         elif method is 'POST':
@@ -70,7 +69,15 @@ script:
             verify=INSECURE
         )
         if r.status_code is not 200:
+            if r.status_code == 429:
+                if retries <= 0:
+                    # Error in API call to URLScan.io [429] - Too Many Requests
+                    return_error('API rate limit reached. Use the retries and wait arguments whe submitting multile URls')
+                else:
+                    time.sleep(wait)
+                    return http_request(method, url_suffix, json, wait, retries - 1)
             return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
+
         return r.json()
 
 
@@ -164,7 +171,9 @@ script:
             submission_dict['public'] = 'on'
         submission_dict['url'] = demisto.args().get('url')
         sub_json = json.dumps(submission_dict)
-        r = http_request('POST', 'scan/', sub_json)
+        wait = int(demisto.args().get('wait', 5))
+        retries = int(demisto.args().get('retries', 0))
+        r = http_request('POST', 'scan/', sub_json, wait, retries)
         uuid = r['uuid']
         return uuid
 
@@ -648,7 +657,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
-    description: "Deprecated: replaced with url command"
+    description: 'Deprecated: replaced with url command'
   - name: url
     arguments:
     - name: url
@@ -667,6 +676,12 @@ script:
     - name: limit
       description: Limits the results in the war room
       defaultValue: "20"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "5"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: URL submitted
@@ -733,7 +748,6 @@ script:
       type: string
     description: Submit a url to scan
   runonce: false
-fromversion: 3.5.0
-releaseNotes: "Deprecated urlscan-submit - please use !url instead"
+releaseNotes: "Add rate limit arguments to !url command: wait, retries"
 tests:
   - urlscan_malicious_Test

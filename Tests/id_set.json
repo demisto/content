@@ -11698,6 +11698,19 @@
             }
         }, 
         {
+            "urlscan.io": {
+                "name": "urlscan.io", 
+                "commands": [
+                    "urlscan-search", 
+                    "urlscan-submit", 
+                    "url"
+                ], 
+                "tests": [
+                    "urlscan_malicious_Test"
+                ]
+            }
+        }, 
+        {
             "Vectra": {
                 "name": "Vectra", 
                 "commands": [
@@ -16014,6 +16027,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
+                    "url": "urlscan.io_rate_limit", 
                     "urlscan-search": ""
                 }
             }
