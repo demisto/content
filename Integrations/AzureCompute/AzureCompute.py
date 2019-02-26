@@ -694,7 +694,7 @@ def delete_vm(args):
 
     # Call API to deallocate compute resources
     update_access_token()
-    response = http_request('POST', url_endpoint, params=parameters, codes={200, 202})
+    _ = http_request('POST', url_endpoint, params=parameters, codes={200, 202})
 
     # Construct endpoint URI suffix (for deletion)
     url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name
@@ -761,7 +761,7 @@ def start_vm_command():
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
 
-    response = start_vm(args)
+    _ = start_vm(args)
 
     vm = {
         'Name': vm_name,
@@ -817,7 +817,7 @@ def poweroff_vm_command():
     # Raise an exception if the VM isn't in the proper provisioning state
     validate_provisioning_state(args)
 
-    response = poweroff_vm(args)
+    _ = poweroff_vm(args)
 
     vm = {
         'Name': vm_name,
