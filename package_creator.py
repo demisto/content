@@ -52,10 +52,11 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
+    yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
     with open(output_path, 'w') as f:
         f.write(yml_text)
-    return output_path, yml_path, script_path, image_path
+    return output_path, yml_path, script_path, image_path, desc_path
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
@@ -73,6 +74,27 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
             yml_text = 'image: ' + IMAGE_PREFIX + base64.b64encode(image_data) + '\n' + yml_text
 
     return yml_text, found_img_path
+
+
+def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
+
+    if desc_data:
+        yml_text = yml_text.replace("detaileddescription: '-'", "detaileddescription:" + desc_data)
+
+    return yml_text, found_desc_path
+
+
+def get_data(dir_name, package_path, extension):
+    data_path = glob.glob(package_path + extension)
+    data = None
+    found_data_path = None
+    if dir_name == 'Integrations' and data_path:
+        found_data_path = data_path[0]
+        with open(found_data_path, 'rb') as data_file:
+            data = data_file.read()
+
+    return data, found_data_path
 
 
 def get_code_file(package_path, script_type):
@@ -103,6 +125,9 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     lines.extend('    {}'.format(line) for line in script_code.split('\n'))
     script_code = '\n'.join(lines)
 
+    yml_text = yml_text.replace("script: '-'", "script: " + script_code)
+
+    '''
     if dir_name == 'Scripts':
         if yml_data.get('script'):
             yml_text = yml_text.replace(yml_data.get('script'), script_code)
@@ -114,6 +139,8 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
             yml_text = yml_text.replace(yml_data.get('script', {}).get('script'), script_code)
         else:
             yml_text = yml_text.replace("script: ''", "script: " + script_code)
+    '''
+
 
     return yml_text, script_path
 
