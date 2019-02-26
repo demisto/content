@@ -139,7 +139,10 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         )
 
         if not res.ok and not is_login:
-            params['authToken'] = login()
+            if params and not body:
+                params['authToken'] = login()
+            else:
+                body = body.replace(demisto.getIntegrationContext().get('auth_token'), login())
             return requests.request(
                 method,
                 full_url,
@@ -151,8 +154,8 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
             )
         return res
 
-    except Exception as e:
-        demisto.debug(e.message.message)
+    except Exception as ex:
+        demisto.debug(str(ex))
         return_error('Connection Error. Please check URL')
 
 
@@ -707,8 +710,8 @@ def add_entries_command():
     if not isinstance(entries, dict):
         try:
             entries = json.loads(entries)
-        except ValueError as e:
-            demisto.debug(e.message.message)
+        except ValueError as ex:
+            demisto.debug(str(ex))
             return_error('Entries must be in JSON format. Must be array of objects.')
         if not all([entry.keys() == entries[0].keys() for entry in entries[1:]]):
             return_error('All entries must have the same fields')
