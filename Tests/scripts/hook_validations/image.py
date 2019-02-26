@@ -19,7 +19,7 @@ class ImageValidator(object):
 
     def oversize_image(self):
         if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
-            if os.path.getsize(self.file_path) > self.IMAGE_MAX_SIZE:
+            if os.path.getsize(self.file_path) > self.IMAGE_MAX_SIZE:  # disable-secrets-detection
                 print_error("{} has too large logo, please update the logo to be under 10kB".format(self.file_path))
                 self._is_valid = False
 
@@ -27,7 +27,7 @@ class ImageValidator(object):
             data_dictionary = get_json(self.file_path)
             image = data_dictionary.get('image', '')
 
-            if ((len(image) - 22) / 4.0) * 3 > self.IMAGE_MAX_SIZE:
+            if ((len(image) - 22) / 4.0) * 3 > self.IMAGE_MAX_SIZE:  # disable-secrets-detection
                 print_error("{} has too large logo, please update the logo to be under 10kB".format(self.file_path))
                 self._is_valid = False
 
