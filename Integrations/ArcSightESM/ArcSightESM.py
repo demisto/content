@@ -696,7 +696,7 @@ def clear_entries_command():
     if not res.ok:
         demisto.debug(res.text)
         return_error(
-            "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+            "Failed to clear entries.\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
                 resource_id, res.status_code, body, res.text))
 
     demisto.results("Success")
@@ -723,9 +723,9 @@ def add_entries_command():
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error(
-            "Failed to clear entries with:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
-                resource_id, res.status_code, body, res.text))
+        return_error("Failed to add entries. Please make sure to enter Active List resource ID"
+                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
+                        resource_id, res.status_code, body, res.text))
 
     demisto.results("Success")
 
