@@ -1,24 +1,34 @@
+import os
 import re
 import json
 from distutils.version import LooseVersion
 
-from Tests.test_utils import *
+from Tests.test_utils import INTEGRATION_REGEX, print_error, get_from_version, get_json, TEST_PLAYBOOK_REGEX, \
+    SCRIPT_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_YML_REGEX, PLAYBOOK_REGEX, SCRIPT_YML_REGEX, SCRIPT_PY_REGEX,\
+    SCRIPT_JS_REGEX, get_script_or_integration_id, collect_ids
 from Tests.scripts.update_id_set import get_script_data, get_playbook_data, \
     get_integration_data, get_script_package_data
 
 
 class IDSetValidator(object):
+    SCRIPTS_SECTION = "scripts"
+    PLAYBOOK_SECTION = "playbooks"
+    INTEGRATION_SECTION = "integrations"
+    TEST_PLAYBOOK_SECTION = "TestPlaybooks"
+
     ID_SET_PATH = "./Tests/id_set.json"
 
-    def __init__(self, is_circle):
+    def __init__(self, is_circle, is_test_run=False):
         self._valid_id = True
         self.is_circle = is_circle
-        self.id_set = self.load_id_set()
 
-        self.script_set = self.id_set['scripts']
-        self.playbook_set = self.id_set['playbooks']
-        self.integration_set = self.id_set['integrations']
-        self.test_playbook_set = self.id_set['TestPlaybooks']
+        if not is_test_run:
+            self.id_set = self.load_id_set()
+
+            self.script_set = self.id_set[self.SCRIPTS_SECTION]
+            self.playbook_set = self.id_set[self.PLAYBOOK_SECTION]
+            self.integration_set = self.id_set[self.INTEGRATION_SECTION]
+            self.test_playbook_set = self.id_set[self.TEST_PLAYBOOK_SECTION]
 
     def is_invalid_id(self):
         return_value = not self._valid_id
@@ -38,30 +48,30 @@ class IDSetValidator(object):
                     raise ex
 
             return id_set
-
-    def check_if_the_id_is_valid_one(self, objects_set, compared_id, file_path, compared_obj_data=None):
-        if compared_obj_data is None:
-            from_version = get_from_version(file_path)
-
-        else:
-            value = compared_obj_data.values()[0]
-            from_version = value.get('fromversion', '0.0.0')
-
-        data_dict = get_json(file_path)
-        if data_dict.get('name') != compared_id:
-            print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
-                        " the file is {}".format(file_path))
-            self._valid_id = False
-
-        for obj in objects_set:
-            obj_id = obj.keys()[0]
-            obj_data = obj.values()[0]
-            if obj_id == compared_id:
-                if LooseVersion(from_version) <= LooseVersion(obj_data.get('toversion', '99.99.99')):
-                    print_error("The ID {0} already exists, please update the file {1} or update the "
-                                "id_set.json toversion field of this id to match the "
-                                "old occurrence of this id".format(compared_id, file_path))
-                    self._valid_id = False
+    #
+    # def check_if_the_id_is_valid_one(self, objects_set, compared_id, file_path, compared_obj_data=None):
+    #     if compared_obj_data is None:
+    #         from_version = get_from_version(file_path)
+    #
+    #     else:
+    #         value = compared_obj_data.values()[0]
+    #         from_version = value.get('fromversion', '0.0.0')
+    #
+    #     data_dict = get_json(file_path)
+    #     if data_dict.get('name') != compared_id:
+    #         print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
+    #                     " the file is {}".format(file_path))
+    #         self._valid_id = False
+    #
+    #     for obj in objects_set:
+    #         obj_id = obj.keys()[0]
+    #         obj_data = obj.values()[0]
+    #         if obj_id == compared_id:
+    #             if LooseVersion(from_version) <= LooseVersion(obj_data.get('toversion', '99.99.99')):
+    #                 print_error("The ID {0} already exists, please update the file {1} or update the "
+    #                             "id_set.json toversion field of this id to match the "
+    #                             "old occurrence of this id".format(compared_id, file_path))
+    #                 self._valid_id = False
 
     def is_valid_in_id_set(self, file_path, obj_data, obj_set):
         is_found = False
@@ -132,29 +142,74 @@ class IDSetValidator(object):
 
         return is_valid
 
-    def check_if_there_is_id_duplicates(self, file_path):
+    def is_id_duplicated(self, obj_id, obj_data, obj_type):
+        is_duplicated = False
+        dict_value = obj_data.values()[0]
+        obj_toversion = dict_value.get('toversion', '99.99.99')
+        obj_fromversion = dict_value.get('fromversion', '0.0.0')
+
+        for section, section_data in self.id_set.items():
+            for instance in section_data:
+                instance_id = instance.keys()[0]
+                instance_to_version = instance[instance_id].get('toversion', '99.99.99')
+                instance_from_version = instance[instance_id].get('fromversion', '0.0.0')
+                if obj_id == instance_id:
+                    if section != obj_type:
+                        is_duplicated = True
+                        break
+
+                    elif obj_fromversion == instance_from_version and obj_toversion == instance_to_version:
+                        if instance[instance_id] != obj_data[obj_id]:
+                            is_duplicated = True
+                            break
+
+                    elif LooseVersion(obj_fromversion) <= LooseVersion(instance_to_version):
+                        is_duplicated = True
+                        break
+
+        if is_duplicated:
+            print_error("The ID {0} already exists, please update the file or update the "
+                        "id_set.json toversion field of this id to match the "
+                        "old occurrence of this id".format(obj_id))
+
+        return is_duplicated
+
+    def is_file_has_used_id(self, file_path):
+        is_used = False
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                self.check_if_the_id_is_valid_one(self.test_playbook_set, collect_ids(file_path), file_path)
+                obj_type = self.TEST_PLAYBOOK_SECTION
+                obj_id = collect_ids(file_path)
+                obj_data = get_playbook_data(file_path)
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or \
                     re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
-                self.check_if_the_id_is_valid_one(self.script_set, get_script_or_integration_id(file_path), file_path)
+                obj_type = self.SCRIPTS_SECTION
+                obj_id = get_script_or_integration_id(file_path)
+                obj_data = get_playbook_data(file_path)
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
-                self.check_if_the_id_is_valid_one(self.integration_set,
-                                                  get_script_or_integration_id(file_path), file_path)
+                obj_type = self.INTEGRATION_SECTION
+                obj_id = get_script_or_integration_id(file_path)
+                obj_data = get_playbook_data(file_path)
 
             elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                self.check_if_the_id_is_valid_one(self.playbook_set, collect_ids(file_path), file_path)
+                obj_type = self.PLAYBOOK_SECTION
+                obj_id = collect_ids(file_path)
+                obj_data = get_playbook_data(file_path)
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
 
                 yml_path, code = get_script_package_data(os.path.dirname(file_path))
-                script_data = get_script_data(yml_path, script_code=code)
-                self.check_if_the_id_is_valid_one(self.script_set, get_script_or_integration_id(yml_path),
-                                                  yml_path, script_data)
+                obj_data = get_script_data(yml_path, script_code=code)
+
+                obj_type = self.SCRIPTS_SECTION
+                obj_id = get_script_or_integration_id(yml_path)
+
+            is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
+
+        return is_used
