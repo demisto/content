@@ -293,14 +293,12 @@ def get_query_viewer_results_command():
     })
     if only_columns == 'false':
         demisto.debug('printing Query Viewer results')
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': query_results,
-            'HumanReadable': tableToMarkdown(name='Query Viewer Results: {}'.format(resource_id), t=query_results,
-                                             removeNull=True),
-            'EntryContext': {'ArcSightESM.QueryViewerResults': query_results}
-        })
+
+        contents = query_results
+        human_readable = tableToMarkdown(name='Query Viewer Results: {}'.format(resource_id), t=contents,
+                                         removeNull=True)
+        outputs = {'ArcSightESM.QueryViewerResults': contents}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
@@ -314,20 +312,16 @@ def fetch():
     cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
     type_of_incident = 'case' if events_query_viewer_id else 'event'
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
-    last_create_time = last_run.get('caseLastEventTime' if type_of_incident == 'case' else 'lastEventTime', 0)
     already_fetched = last_run.get('already_fetched', [])
-    latest_created_time = last_create_time
 
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
         r_id = result.get('ID') or result.get('Event ID')
-        create_time = int(result.get('Start Time') or result.get('Create Time'))
-        if create_time > last_create_time and r_id not in already_fetched:
-            # check if case/event already was fetched before
-            latest_created_time = create_time if create_time > latest_created_time else latest_created_time
-            result['Create Time'] = parse_timestamp_to_datestring(create_time)
+        if r_id not in already_fetched:
+            create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
+            result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
             incident_name = result.get('Name') or 'New {} from arcsight at {}'.format(type_of_incident, datetime.now())
             incident = {
                 'name': incident_name,
@@ -335,6 +329,7 @@ def fetch():
                 'labels': [{'type': key, 'value': str(value)} for key, value in result.items()],
                 'rawJSON': json.dumps(result)
             }
+
             incidents.append(incident)
             if len(already_fetched) > 1000:
                 already_fetched.pop(0)
@@ -342,23 +337,18 @@ def fetch():
 
     last_run = {
         'already_fetched': already_fetched,
-        'caseLastEventTime' if type_of_incident == 'case' else 'lastEventTime': latest_created_time
     }
     demisto.setLastRun({'value': json.dumps(last_run)})
     beautifully_json(incidents)
 
     if demisto.command() == 'as-fetch-incidents':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': {
-                'last_run': last_run,
-                'last_run_updated': demisto.getLastRun(),
-                'incidents': incidents,
-                'last_create_time': latest_created_time,
-                'already_fetched': already_fetched}
-        })
-
+        contents = {
+            'last_run': last_run,
+            'last_run_updated': demisto.getLastRun(),
+            'incidents': incidents,
+            'already_fetched': already_fetched
+        }
+        return_outputs(readable_output='', outputs={}, raw_response=contents)
     else:
         demisto.incidents(incidents)
 
@@ -383,12 +373,12 @@ def get_case(resource_id, fetch_base_events=False):
     if 'cas.getResourceByIdResponse' in res_json and 'cas.return' in res_json.get('cas.getResourceByIdResponse'):
         case = res_json.get('cas.getResourceByIdResponse').get('cas.return')
 
-        if 'eventIDs' in case and case['eventIDs'] and isinstance(case['eventIDs'], int):
+        if case.get('eventIDs') and not isinstance(case['eventIDs'], list):
             # if eventIDs is single id then convert to list
             case['eventIDs'] = [case['eventIDs']]
 
-        if fetch_base_events:
-            case['events'] = get_security_events(case['eventIDs'])
+            if fetch_base_events:
+                case['events'] = get_security_events(case['eventIDs'])
 
         return case
 
@@ -398,9 +388,9 @@ def get_case(resource_id, fetch_base_events=False):
 @logger
 def get_case_command():
     resource_id = demisto.args().get('resourceId')
-    with_base_events = demisto.args().get('withBaseEvents')
+    with_base_events = demisto.args().get('withBaseEvents') == 'true'
 
-    raw_case = get_case(resource_id, fetch_base_events=with_base_events == 'true')
+    raw_case = get_case(resource_id, fetch_base_events=with_base_events)
     case = {
         'Name': raw_case.get('name'),
         'EventIDs': raw_case.get('eventIDs'),
@@ -412,14 +402,11 @@ def get_case_command():
     }
     if with_base_events:
         case['events'] = raw_case.get('events')
-    entry_context = beautifully_json(raw_case)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': entry_context,
-        'HumanReadable': tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True),
-        'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
-    })
+
+    contents = beautifully_json(raw_case)
+    human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
+    outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
@@ -435,14 +422,10 @@ def get_all_cases_command():
         demisto.debug(res.text)
         return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
 
-    all_cases = res.json().get('cas.findAllIdsResponse').get('cas.return')
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': all_cases,
-        'HumanReadable': tableToMarkdown(name='All cases', headers='caseID', t=all_cases, removeNull=True),
-        'EntryContext': {'ArcSightESM.AllCaseIDs': all_cases}
-    })
+    contents = res.json().get('cas.findAllIdsResponse').get('cas.return')
+    human_readable = tableToMarkdown(name='All cases', headers='caseID', t=contents, removeNull=True)
+    outputs = {'ArcSightESM.AllCaseIDs': contents}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
@@ -452,7 +435,7 @@ def get_security_events_command():
 
     ids = argToList(ids)
     raw_events = get_security_events(ids, last_date_range)
-
+    ids = [str(id_) for id_ in ids]
     if raw_events:
         events = []
         for raw_event in beautifully_json(raw_events):
@@ -467,14 +450,10 @@ def get_security_events_command():
             }
             events.append(event)
 
-        entry_context = beautifully_json(raw_events)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': entry_context,
-            'HumanReadable': tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True),
-            'EntryContext': {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': entry_context}
-        })
+        contents = beautifully_json(raw_events)
+        human_readable = tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True)
+        outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
     else:
         demisto.results('No events were found')
 
@@ -532,14 +511,10 @@ def update_case_command():
         'Severity': raw_updated_case.get('consequenceSeverity'),
         'CreatedTime': epochToTimestamp(raw_updated_case.get('createdTimestamp'))
     }
-    entry_context = beautifully_json(raw_updated_case)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': entry_context,
-        'HumanReadable': tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True),
-        'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
-    })
+    contents = beautifully_json(raw_updated_case)
+    human_readable = tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True)
+    outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
@@ -595,15 +570,11 @@ def get_case_event_ids_command():
         if not isinstance(event_ids, list):
             event_ids = [event_ids]
 
-        entry_context = beautifully_json(res_json)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
-                                             removeNull=True),
-            'EntryContext': {'ArcSightESM.CaseEvents': event_ids}
-        })
+        contents = beautifully_json(res_json)
+        human_readable = tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
+                                         removeNull=True)
+        outputs = {'ArcSightESM.CaseEvents': event_ids}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
     else:
         demisto.results('No result returned')
 
@@ -631,13 +602,10 @@ def delete_case_command():
         'resourceid': case_id,
         'deleted': 'True'
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': 'Case {}  was deleted successfully'.format(case_id),
-        'HumanReadable': 'Case {} successfully deleted'.format(case_id),
-        'EntryContext': {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
-    })
+    contents = 'Case {}  was deleted successfully'.format(case_id)
+    human_readable = 'Case {} successfully deleted'.format(case_id)
+    outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
@@ -663,12 +631,8 @@ def get_entries_command():
     if cols:
         hr_columns = tableToMarkdown(name='', headers=['Columns'], t=cols,
                                      removeNull=True) if cols else 'Active list has no columns'
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': cols,
-            'HumanReadable': hr_columns,
-        })
+        contents = cols
+        return_outputs(readable_output=hr_columns, outputs={}, raw_response=contents)
 
     if 'entryList' in raw_entries:
         entry_list = raw_entries['entryList'] if isinstance(raw_entries['entryList'], list) else [
@@ -686,15 +650,12 @@ def get_entries_command():
                 k, v = f.split(':')
                 filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
-        entry_context = beautifully_json(filtered)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
-                                             removeNull=True),
-            'EntryContext': {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): entry_context}
-        })
+        contents = beautifully_json(filtered)
+        outputs = {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents}
+        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
+                                         removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
     else:
         demisto.results('Active List has no entries')
 
@@ -764,15 +725,11 @@ def get_all_query_viewers_command():
     if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
         query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
 
-        entry_context = beautifully_json(query_viewers)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': entry_context,
-            'HumanReadable': tableToMarkdown(name='', t=query_viewers, headers='Query Viewers',
-                                             removeNull=True),
-            'EntryContext': {'ArcSightESM.AllQueryViewers': entry_context}
-        })
+        contents = beautifully_json(query_viewers)
+        outputs = {'ArcSightESM.AllQueryViewers': contents}
+        human_readable = tableToMarkdown(name='', t=query_viewers, headers='Query Viewers', removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
     else:
         demisto.results('No Query Viewers were found')
 
