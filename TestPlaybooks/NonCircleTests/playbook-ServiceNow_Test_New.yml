@@ -1703,6 +1703,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -2105,12 +2108,53 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "77":
+    id: "77"
+    taskid: 30935ba8-4656-4e8b-8f61-6c1c790c6d7c
+    type: regular
+    task:
+      id: 30935ba8-4656-4e8b-8f61-6c1c790c6d7c
+      version: -1
+      name: Test fetch
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name: {}
+      expect_data: {}
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: ServiceNow
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8755,
+        "height": 8925,
         "width": 810,
         "x": 50,
         "y": 50
