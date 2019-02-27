@@ -1,9 +1,7 @@
 id: ArcSight ESM Test
 version: -1
-name: ArcSight ESM Test
-fromversion: ""
-description: |-
-  Arcsight ESM Test.
+name: ArcSight ESM v2 Test
+description: Arcsight ESM Test.
 starttaskid: "0"
 tasks:
   "0":
