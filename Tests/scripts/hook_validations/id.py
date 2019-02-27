@@ -3,9 +3,9 @@ import re
 import json
 from distutils.version import LooseVersion
 
-from Tests.test_utils import INTEGRATION_REGEX, print_error, TEST_PLAYBOOK_REGEX, \
-    SCRIPT_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_YML_REGEX, PLAYBOOK_REGEX, SCRIPT_YML_REGEX, SCRIPT_PY_REGEX,\
-    SCRIPT_JS_REGEX, get_script_or_integration_id, collect_ids
+from Tests.test_utils import get_script_or_integration_id, collect_ids, print_error
+from Tests.scripts.constants import INTEGRATION_REGEX, TEST_PLAYBOOK_REGEX, SCRIPT_JS_REGEX, \
+    SCRIPT_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_YML_REGEX, PLAYBOOK_REGEX, SCRIPT_YML_REGEX, SCRIPT_PY_REGEX
 from Tests.scripts.update_id_set import get_script_data, get_playbook_data, \
     get_integration_data, get_script_package_data
 

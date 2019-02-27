@@ -158,7 +158,7 @@ def search_potential_secrets(secrets_file_paths):
             # REGEX scanning for IOCs and false positive groups
             regex_secrets, false_positives = regex_for_secrets(line)
             for regex_secret in regex_secrets:
-                if not any(ioc in regex_secret.lower() for ioc in ioc_white_list):
+                if not any(ioc.lower() in regex_secret.lower() for ioc in ioc_white_list):
                     secrets_found_with_regex.append(regex_secret)
             # added false positives into white list array before testing the strings in line
             secrets_white_list = secrets_white_list.union(false_positives)
@@ -170,7 +170,7 @@ def search_potential_secrets(secrets_file_paths):
             # calculate entropy for each string in the file
             for string_ in line.split():
                 # compare the lower case of the string against both generic whitelist & temp white list
-                if not any(white_list_string in string_.lower() for white_list_string in secrets_white_list):
+                if not any(white_list_string.lower() in string_.lower() for white_list_string in secrets_white_list):
                     entropy = calculate_shannon_entropy(string_)
                     if entropy >= ENTROPY_THRESHOLD:
                         high_entropy_strings.append(string_)

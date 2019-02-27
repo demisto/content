@@ -9,6 +9,8 @@ import glob
 import argparse
 from subprocess import Popen, PIPE
 
+from Tests.scripts.constants import *
+
 try:
     import yaml
 except ImportError:
@@ -19,31 +21,9 @@ except ImportError:
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-# file types regexes
-CONF_REGEX = "Tests/conf.json"
-SCRIPT_PY_REGEX = r"scripts.*\.py$"
-SCRIPT_JS_REGEX = r"scripts.*\.js$"
-SCRIPT_YML_REGEX = r"scripts.*\.yml$"
-SCRIPT_REGEX = r"scripts.*script-.*\.yml$"
-INTEGRATION_PY_REGEX = r"integrations.*\.py$"
-INTEGRATION_JS_REGEX = r"integrations.*\.js$"
-INTEGRATION_YML_REGEX = r"integrations.*\.yml$"
-PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml$"
-INTEGRATION_REGEX = r"integrations.*integration-.*\.yml$"
-TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml$"
-TEST_NOT_PLAYBOOK_REGEX = r"TestPlaybooks.(?!playbook).*-.*\.yml$"
-BETA_SCRIPT_REGEX = r"beta_integrations.*script-.*\.yml$"
-BETA_PLAYBOOK_REGEX = r"beta_integrations.*playbook-.*\.yml$"
-BETA_INTEGRATION_REGEX = r"beta_integrations.*integration-.*\.yml$"
-
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
                          BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
                          INTEGRATION_YML_REGEX]
-
-CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
-
-# File type regex
-SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",

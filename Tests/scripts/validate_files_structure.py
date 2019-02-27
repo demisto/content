@@ -25,6 +25,7 @@ import json
 import argparse
 
 from Tests.test_utils import *
+from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
 from Tests.scripts.hook_validations.secrets import get_secrets
 from Tests.scripts.hook_validations.image import ImageValidator
@@ -54,10 +55,6 @@ REGEXES_TO_SCHEMA_DIC = {
 }
 
 SCHEMAS_PATH = "Tests/schemas/"
-
-
-DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
-        LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
 
 class StructureValidator(object):
@@ -227,7 +224,7 @@ class StructureValidator(object):
                 self._is_valid = False
 
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                if not self.is_test_in_conf_json(file_path):
+                if not self.is_test_in_conf_json(collect_ids(file_path)):
                     self._is_valid = False
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
