@@ -1,5 +1,7 @@
 import glob
+
 from Tests.test_utils import *
+from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX
 
 
 class ImageValidator(object):

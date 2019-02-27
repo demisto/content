@@ -224,7 +224,7 @@ class StructureValidator(object):
                 self._is_valid = False
 
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                if not self.is_test_in_conf_json(collect_ids(file_path)):
+                if not self.conf_json_validator.is_test_in_conf_json(collect_ids(file_path)):
                     self._is_valid = False
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
