@@ -12,12 +12,6 @@ from Tests.scripts.constants import *
 from Tests.test_utils import get_json, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_git_command, LOG_COLORS, print_error, print_color
 
-try:
-    import yaml
-except ImportError:
-    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
-    sys.exit(1)
-
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'No test( - .*)?'
