@@ -1,33 +1,18 @@
-import argparse
 import re
 import os
 import sys
 import glob
 import json
 import yaml
+import argparse
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 
+from Tests.scripts.constants import *
 
-SCRIPT_YML_REGEX = r"scripts.*\.yml"
-SCRIPT_PY_REGEX = r"scripts.*\.py"
-SCRIPT_JS_REGEX = r"scripts.*\.js"
-SCRIPT_REGEX = r"scripts.*script-.*\.yml"
-INTEGRATION_YML_REGEX = r"integrations.*\.yml"
-PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
-INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
-TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
-TEST_SCRIPT_REGEX = r"TestPlaybooks.*script-.*\.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX]
-
-SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
-
-TYPE_TO_EXTENSION = {
-    'python': '.py',
-    'javascript': '.js'
-}
+CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
+                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX)
 
 
 class LOG_COLORS:
