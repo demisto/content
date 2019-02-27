@@ -201,7 +201,9 @@ class FilesValidator(object):
                         continue
 
                     print "Validating " + file_name
-                    self.validate_scheme(file_path)
+                    structure_validator = StructureValidator(file_path)
+                    if not structure_validator.is_valid_scheme():
+                        self._is_valid = False
 
     def is_valid_structure(self, branch_name):
         if not self.conf_json_validator.is_valid_conf_json():

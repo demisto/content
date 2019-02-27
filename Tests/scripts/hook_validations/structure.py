@@ -41,28 +41,31 @@ class StructureValidator(object):
 
     SCHEMAS_PATH = "Tests/schemas/"
 
-    def __init__(self, file_path, is_added_file):
+    def __init__(self, file_path, is_added_file=False):
         self._is_valid = True
         self.file_path = file_path
         self.is_added_file = is_added_file
 
     def is_file_valid(self):
-        self.validate_scheme()
-        self.validate_version()
+        self.is_valid_scheme()
+        self.is_valid_version()
 
         if not self.is_added_file:  # In case the file is modified
-            self.validate_id_not_changed()
-            self.validate_fromversion_on_modified()
+            self.is_id_not_modified()
+            self.is_valid_fromversion_on_modified()
 
             if not self.is_release_branch():  # In case of release branch we allow to remove release notes
                 self.validate_file_release_notes()
 
-    def validate_scheme(self, matching_regex=None):
+        return self._is_valid
+
+    def is_valid_scheme(self, matching_regex=None):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
             matching_regex (str): the regex we want to compare the file with.
         """
+        matching_regex = PLAYBOOK_REGEX
         if matching_regex is None:
             for regex in CHECKED_TYPES_REGEXES:
                 if re.match(regex, self.file_path, re.IGNORECASE):
@@ -84,6 +87,8 @@ class StructureValidator(object):
                                        " please make sure that its naming is correct."
                 self._is_valid = False
 
+        return self._is_valid
+
     @staticmethod
     def validate_reputations_file(json_dict):
         """Validate that the reputations file as version of -1."""
@@ -98,7 +103,7 @@ class StructureValidator(object):
 
         return is_valid
 
-    def validate_version(self):
+    def is_valid_version(self):
         """Validate that the version of self.file_path is -1."""
         file_extension = os.path.splitext(self.file_path)[1]
         version_number = -1
@@ -123,8 +128,12 @@ class StructureValidator(object):
                         "please update the file {}.".format(self.file_path))
             self._is_valid = False
 
-    def validate_fromversion_on_modified(self):
-        change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
+        return self._is_valid
+
+    def is_valid_fromversion_on_modified(self, change_string=None):
+        if not change_string:
+            change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
+
         is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
         is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
 
@@ -132,6 +141,8 @@ class StructureValidator(object):
             print_error("You've added fromversion to an existing file in the system, this is not allowed, please undo. "
                         "the file was {}.".format(self.file_path))
             self._is_valid = False
+
+        return self._is_valid
 
     @staticmethod
     def is_release_branch():
@@ -158,8 +169,12 @@ class StructureValidator(object):
                 print_error("File " + self.file_path + " is missing releaseNotes, please add.")
                 self._is_valid = False
 
-    def validate_id_not_changed(self):
-        change_string = run_git_command("git diff HEAD {}".format(self.file_path))
+    def is_id_not_modified(self, change_string=None):
+        if not change_string:
+            change_string = run_git_command("git diff HEAD {}".format(self.file_path))
+
         if re.search("[+-](  )?id: .*", change_string):
             print_error("You've changed the ID of the file {0} please undo.".format(self.file_path))
             self._is_valid = False
+
+        return self._is_valid
