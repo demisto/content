@@ -381,7 +381,10 @@ script:
         if custom_fields:
             for field in custom_fields:
                 # custom fields begin with "u_"
-                body['u_' + field] = custom_fields[field]
+                if field.startswith('u_'):
+                    body[field] = custom_fields[field]
+                else:
+                    body['u_' + field] = custom_fields[field]
 
         return body
 
@@ -544,7 +547,7 @@ script:
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number')
 
-        return send_request(path, 'get', params = query_params)
+        return send_request(path, 'get', params=query_params)
 
     def get_ticket_attachments(ticket_id):
         path = 'attachment'
@@ -552,7 +555,7 @@ script:
             'sysparm_query': 'table_sys_id=' + ticket_id
         }
 
-        return send_request(path, 'get', params = query_params)
+        return send_request(path, 'get', params=query_params)
 
 
     def get_ticket_attachment_entries(ticket_id):
@@ -1377,7 +1380,7 @@ script:
                 file_entries = get_ticket_attachment_entries(result['sys_id'])
                 for file_result in file_entries:
                     if file_result['Type'] == entryTypes['error']:
-                        return_error(file_result['Contents'])
+                        raise Exception('Error getting attachment: ' + str(file_result['Contents']))
                     file_names.append({
                         'path': file_result['FileID'],
                         'name': file_result['File']
@@ -1398,7 +1401,7 @@ script:
         demisto.setLastRun({'time': snow_time})
 
     LOG('Executing command ' + demisto.command())
-
+    raise_exception = False
     try:
         if demisto.command() == 'test-module':
             path = "table/incident?sysparm_limit=1"
@@ -1407,6 +1410,7 @@ script:
                 return_error('ServiceNow error: ' + str(res))
             demisto.results('ok')
         elif demisto.command() == 'fetch-incidents':
+            raise_exception = True
             fetch_incidents()
         elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
             demisto.results(get_ticket_command())
@@ -1453,7 +1457,10 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        return_error(e.message)
+        if not raise_exception:
+            return_error(str(e.message))
+        else:
+            raise
   type: python
   commands:
   - name: servicenow-get-ticket
@@ -1850,7 +1857,8 @@ script:
     - name: template
       description: Template name to use as a base to create new tickets.
     - name: custom_fields
-      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
     - name: change_type
       auto: PREDEFINED
       predefined:
@@ -2480,7 +2488,8 @@ script:
       required: true
       description: System ID of the ticket to update
     - name: custom_fields
-      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
     - name: change_type
       auto: PREDEFINED
       predefined:
@@ -3516,5 +3525,6 @@ script:
       are required for the sys_journal_field table.
   isfetch: true
   runonce: false
+releaseNotes: "Handle custom fields properly, better indication of errors when fetching incidents"
 tests:
   - No test - Hibernating instance
