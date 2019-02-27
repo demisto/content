@@ -65,7 +65,6 @@ class StructureValidator(object):
         Args:
             matching_regex (str): the regex we want to compare the file with.
         """
-        matching_regex = PLAYBOOK_REGEX
         if matching_regex is None:
             for regex in CHECKED_TYPES_REGEXES:
                 if re.match(regex, self.file_path, re.IGNORECASE):
