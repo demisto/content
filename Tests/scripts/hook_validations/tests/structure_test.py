@@ -1,4 +1,6 @@
+import os
 import pytest
+from shutil import copyfile
 
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.constants import PLAYBOOK_REGEX
@@ -82,8 +84,21 @@ def test_not_touched_id_validation():
         "Found the ID as changed although it is not"
 
 
-def test_file_examination():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-test.yml")
+def test_valid_file_examination():
+    copyfile("./Tests/setup/Playbooks.playbook-test.yml", "Playbooks/playbook-test.yml")
+    validator = StructureValidator(file_path="Playbooks/playbook-test.yml")
 
     assert validator.is_file_valid(), \
         "Found a problem in the scheme although there is no problem"
+
+    os.remove("Playbooks/playbook-test.yml")
+
+
+def test_invalid_file_examination():
+    copyfile("./Tests/setup/integration-test.yml", "Integrations/integration-test.yml")
+    validator = StructureValidator(file_path="Integrations/integration-test.yml")
+
+    assert validator.is_file_valid() is False, \
+        "Didn't find a problem in the file although it is not valid"
+
+    os.remove("Integrations/integration-test.yml")

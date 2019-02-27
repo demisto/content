@@ -52,7 +52,7 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M integrations.integration-test.yml"
+            return "M integration-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -92,7 +92,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Playbooks.playbook-test.yml\nA integrations.integration-test.yml"
+            return "M Playbooks.playbook-test.yml\nA integration-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
