@@ -7550,7 +7550,7 @@
         }, 
         {
             "ArcSight ESM": {
-                "name": "ArcSight ESM (deprecated)", 
+                "name": "ArcSight ESM", 
                 "commands": [
                     "as-get-all-cases", 
                     "as-get-case", 
