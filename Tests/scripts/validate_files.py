@@ -10,18 +10,6 @@ Note - if it is run for all the files in the repo it won't check releaseNotes, u
 for that task.
 """
 import sys
-try:
-    import yaml
-except ImportError:
-    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
-    sys.exit(1)
-try:
-    from pykwalify.core import Core
-except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
-    sys.exit(1)
-
-import json
 import argparse
 
 from Tests.test_utils import *
@@ -32,32 +20,11 @@ from Tests.scripts.hook_validations.image import ImageValidator
 from Tests.scripts.update_id_set import get_script_package_data
 from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
+from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 
-SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
-
-
-REGEXES_TO_SCHEMA_DIC = {
-    INTEGRATION_REGEX: "integration",
-    INTEGRATION_YML_REGEX: "integration",
-    PLAYBOOK_REGEX: "playbook",
-    TEST_PLAYBOOK_REGEX: "test-playbook",
-    SCRIPT_REGEX: "script",
-    SCRIPT_YML_REGEX: "script",
-    WIDGETS_REGEX: "widget",
-    DASHBOARD_REGEX: "dashboard",
-    CONNECTIONS_REGEX: "canvas-context-connections",
-    CLASSIFIER_REGEX: "classifier",
-    LAYOUT_REGEX: "layout",
-    INCIDENT_FIELDS_REGEX: "incidentfields",
-    INCIDENT_FIELD_REGEX: "incidentfield"
-}
-
-SCHEMAS_PATH = "Tests/schemas/"
-
-
-class StructureValidator(object):
+class FilesValidator(object):
 
     def __init__(self, is_circle=False):
         self._is_valid = True
@@ -66,7 +33,8 @@ class StructureValidator(object):
         self.conf_json_validator = ConfJsonValidator()
         self.id_set_validator = IDSetValidator(is_circle)
 
-    def get_modified_files(self, files_string):
+    @staticmethod
+    def get_modified_files(files_string):
         all_files = files_string.split('\n')
         deleted_files = set([])
         added_files_list = set([])
@@ -134,114 +102,13 @@ class StructureValidator(object):
     def is_invalid(self):
         return not self._is_valid
 
-    def validate_scheme(self, file_path, matching_regex=None):
-        if matching_regex is None:
-            for regex in CHECKED_TYPES_REGEXES:
-                if re.match(regex, file_path, re.IGNORECASE):
-                    matching_regex = regex
-                    break
-
-        if matching_regex not in SKIPPED_SCHEMAS or os.path.isfile(file_path):
-            if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
-                c = Core(source_file=file_path,
-                         schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
-                try:
-                    c.validate(raise_exception=True)
-                except Exception as err:
-                    print_error('Failed: %s failed' % (file_path,))
-                    print_error(err)
-                    self._is_valid = False
-            else:
-                print file_path + " doesn't match any of the known supported file prefix/suffix," \
-                                  " please make sure that its naming is correct."
-                self._is_valid = False
-
-    def validate_reputations(self, json_dict):
-        is_valid = True
-        reputations = json_dict.get('reputations')
-        for reputation in reputations:
-            internal_version = reputation.get('version')
-            if internal_version != -1:
-                object_id = reputation.get('id')
-                print_error("Reputation object with id {} must have version -1".format(object_id))
-                is_valid = False
-
-        return is_valid
-
-    def validate_version(self, file_path):
-        file_extension = os.path.splitext(file_path)[1]
-        version_number = -1
-        reputations_valid = True
-        if file_extension == '.yml':
-            yaml_dict = get_json(file_path)
-            version_number = yaml_dict.get('commonfields', {}).get('version')
-            if not version_number:  # some files like playbooks do not have commonfields key
-                version_number = yaml_dict.get('version')
-
-        elif file_extension == '.json':
-            if checked_type(file_path):
-                file_name = os.path.basename(file_path)
-                with open(file_path) as json_file:
-                    json_dict = json.load(json_file)
-                    if file_name == "reputations.json":
-                        reputations_valid = self.validate_reputations(json_dict)
-                    else:
-                        version_number = json_dict.get('version')
-
-        if version_number != -1 or not reputations_valid:
-            print_error("The version for our files should always be -1, please update the file {}.".format(file_path))
-            self._is_valid = False
-
-    def validate_id_not_changed(self, file_path):
-        change_string = run_git_command("git diff HEAD {}".format(file_path))
-        if re.search("[+-](  )?id: .*", change_string):
-            print_error("You've changed the ID of the file {0} please undo.".format(file_path))
-            self._is_valid = False
-
-    def validate_fromversion_on_modified(self, file_path):
-        change_string = run_git_command("git diff HEAD {0}".format(file_path))
-        is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
-        is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
-
-        if is_added_from_version or is_added_from_version_secondary:
-            print_error("You've added fromversion to an existing file in the system, this is not allowed, please undo. "
-                        "the file was {}.".format(file_path))
-            self._is_valid = False
-
-    def is_release_branch(self):
-        diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
-        if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
-            return True
-
-        return False
-
-    def validate_file_release_notes(self, file_path):
-        data_dictionary = None
-        if os.path.isfile(file_path):
-            with open(os.path.expanduser(file_path), "r") as f:
-                if file_path.endswith(".json"):
-                    data_dictionary = json.load(f)
-                elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
-                    try:
-                        data_dictionary = yaml.safe_load(f)
-                    except Exception as e:
-                        print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                        self._is_valid = False
-
-            if data_dictionary and data_dictionary.get('releaseNotes') is None:
-                print_error("File " + file_path + " is missing releaseNotes, please add.")
-                self._is_valid = False
-
     def validate_modified_files(self, modified_files):
         for file_path in modified_files:
             print "Validating {}".format(file_path)
-            self.validate_scheme(file_path)
-            self.validate_version(file_path)
-            self.validate_id_not_changed(file_path)
-            self.validate_fromversion_on_modified(file_path)
 
-            if not self.is_release_branch():
-                self.validate_file_release_notes(file_path)
+            structure_validator = StructureValidator(file_path, is_added_file=False)
+            if not structure_validator.is_file_valid():
+                self._is_valid = False
 
             if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
@@ -279,8 +146,10 @@ class StructureValidator(object):
     def validate_added_files(self, added_files):
         for file_path in added_files:
             print "Validating {}".format(file_path)
-            self.validate_scheme(file_path)
-            self.validate_version(file_path)
+
+            structure_validator = StructureValidator(file_path, is_added_file=True)
+            if not structure_validator.is_file_valid():
+                self._is_valid = False
 
             if self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
@@ -314,7 +183,7 @@ class StructureValidator(object):
     def validate_committed_files(self, branch_name):
         self.validate_no_secrets_found(branch_name)
 
-        modified_files, added_files = get_modified_and_added_files(branch_name, self.is_circle)
+        modified_files, added_files = self.get_modified_and_added_files(branch_name, self.is_circle)
 
         self.validate_modified_files(modified_files)
         self.validate_added_files(added_files)
@@ -370,8 +239,8 @@ def main():
         is_circle = False
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
-    structure_validator = StructureValidator(is_circle)
-    if not structure_validator.is_valid_structure(branch_name):
+    files_validator = FilesValidator(is_circle)
+    if not files_validator.is_valid_structure(branch_name):
         sys.exit(1)
 
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
