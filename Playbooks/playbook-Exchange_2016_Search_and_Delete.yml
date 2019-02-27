@@ -358,4 +358,6 @@ inputs:
   description: Compliance Search query
 outputs: []
 fromversion: '4.1.0'
+tests:
+  - No test
 

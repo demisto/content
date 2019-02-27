@@ -469,3 +469,5 @@ script:
     description: Check the status of the purge operation on the compliance search.
   dockerimage: demisto/py-ews:2.0
   runonce: false
+tests:
+  - No test
