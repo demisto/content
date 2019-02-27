@@ -6013,6 +6013,25 @@
             }
         }, 
         {
+            "Exchange 2016 Search and Delete": {
+                "name": "Exchange 2016 Search and Delete", 
+                "fromversion": "4.1.0", 
+                "implementing_playbooks": [
+                    "GenericPolling"
+                ], 
+                "command_to_integration": {
+                    "exchange2016-get-compliance-search-purge-status": "", 
+                    "exchange2016-get-compliance-search": "", 
+                    "exchange2016-purge-compliance-search-results": "", 
+                    "exchange2016-start-compliance-search": "", 
+                    "exchange2016-remove-compliance-search": ""
+                }, 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
             "extract_indicators_-_generic": {
                 "name": "Extract Indicators - Generic", 
                 "fromversion": "3.5.0", 
@@ -8816,6 +8835,21 @@
                 "tests": [
                     "pyEWS_Test", 
                     "EWS search-mailbox test"
+                ]
+            }
+        }, 
+        {
+            "Exchange 2016 Compliance Search": {
+                "name": "Exchange 2016 Compliance Search", 
+                "commands": [
+                    "exchange2016-start-compliance-search", 
+                    "exchange2016-get-compliance-search", 
+                    "exchange2016-remove-compliance-search", 
+                    "exchange2016-purge-compliance-search-results", 
+                    "exchange2016-get-compliance-search-purge-status"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
