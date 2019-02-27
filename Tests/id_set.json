@@ -5107,9 +5107,9 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "as-get-security-events": "ArcSight ESM", 
-                    "as-get-case": "ArcSight ESM", 
-                    "as-get-case-event-ids": "ArcSight ESM"
+                    "as-get-all-cases": "", 
+                    "as-get-security-events": "", 
+                    "as-get-case-event-ids": ""
                 }, 
                 "tests": [
                     "test Arcsight - Get events related to the Case"
@@ -12386,7 +12386,7 @@
             }
         }, 
         {
-            "ArcSight ESM Test": {
+            "ArcSight ESM v2 Test": {
                 "name": "ArcSight ESM v2 Test", 
                 "implementing_scripts": [
                     "DeleteContext"

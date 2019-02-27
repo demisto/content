@@ -40,10 +40,10 @@ tasks:
       version: -1
       name: Arcsight - Get Case info
       description: Get a specific case from ESM
-      script: ArcSight ESM|||as-get-case
+      script: '|||as-get-all-cases'
       type: regular
       iscommand: true
-      brand: ArcSight ESM
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -69,10 +69,10 @@ tasks:
       version: -1
       name: Arcsight - get Event ID below the Case
       description: Returns all case event IDs
-      script: ArcSight ESM|||as-get-case-event-ids
+      script: '|||as-get-case-event-ids'
       type: regular
       iscommand: true
-      brand: ArcSight ESM
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -97,10 +97,10 @@ tasks:
       id: b5fab90a-0f15-40ba-8233-43ed42be978c
       version: -1
       name: Get the Events below the Case
-      script: ArcSight ESM|||as-get-security-events
+      script: '|||as-get-security-events'
       type: regular
       iscommand: true
-      brand: ArcSight ESM
+      brand: ""
       description: ""
     nexttasks:
       '#none#':
@@ -247,10 +247,10 @@ tasks:
       id: 65602a3e-3b1f-4134-80f1-7f056a937775
       version: -1
       name: Get Base Events below the top-level event
-      script: ArcSight ESM|||as-get-security-events
+      script: '|||as-get-security-events'
       type: regular
       iscommand: true
-      brand: ArcSight ESM
+      brand: ""
       description: ""
     nexttasks:
       '#none#':
