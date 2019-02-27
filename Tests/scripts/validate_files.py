@@ -25,7 +25,16 @@ from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 
 class FilesValidator(object):
+    """FilesValidator is a class that's designed to validate all the changed files on your branch, and all files in case
+    you are on master, this class will be used on your local env as the validation hook(pre-commit), and on CircleCi
+    to make sure you did not bypass the hooks as a safety precaution.
 
+    Attributes:
+        _is_valid (bool): saves the status of the whole validation(instead of mingling it between all the functions).
+        is_circle (bool): whether we are running on circle or local env.
+        conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
+        id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
+    """
     def __init__(self, is_circle=False):
         self._is_valid = True
         self.is_circle = is_circle
@@ -35,6 +44,14 @@ class FilesValidator(object):
 
     @staticmethod
     def get_modified_files(files_string):
+        """Get lists of the modified files in your branch according to the files string.
+
+        Args:
+            files_string (string): String that was calculated by git using `git diff` command.
+
+        Returns:
+            (modified_files_list, added_files_list, deleted_files). Tuple of sets.
+        """
         all_files = files_string.split('\n')
         deleted_files = set([])
         added_files_list = set([])
@@ -64,6 +81,15 @@ class FilesValidator(object):
         return modified_files_list, added_files_list, deleted_files
 
     def get_modified_and_added_files(self, branch_name, is_circle):
+        """Get lists of the modified and added files in your branch according to the files string.
+
+        Args:
+            branch_name (string): The name of the branch we are working on.
+            is_circle (bool): Whether we are running on circle or local env.
+
+        Returns:
+            (modified_files, added_files). Tuple of sets.
+        """
         all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
         modified_files, added_files, _ = self.get_modified_files(all_changed_files_string)
 
@@ -99,10 +125,14 @@ class FilesValidator(object):
 
         return modified_files, added_files
 
-    def is_invalid(self):
-        return not self._is_valid
-
     def validate_modified_files(self, modified_files):
+        """Validate the modified files from your branch.
+
+        In case we encounter an invalid file we set the self._is_valid param to False.
+
+        Args:
+            modified_files (set): A set of the modified files in the current branch.
+        """
         for file_path in modified_files:
             print "Validating {}".format(file_path)
 
@@ -117,7 +147,7 @@ class FilesValidator(object):
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
                 image_validator = ImageValidator(file_path)
-                if image_validator.is_invalid_image():
+                if not image_validator.is_valid():
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
@@ -140,10 +170,17 @@ class FilesValidator(object):
 
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
-                if image_validator.is_invalid_image():
+                if not image_validator.is_valid():
                     self._is_valid = False
 
     def validate_added_files(self, added_files):
+        """Validate the added files from your branch.
+
+        In case we encounter an invalid file we set the self._is_valid param to False.
+
+        Args:
+            added_files (set): A set of the modified files in the current branch.
+        """
         for file_path in added_files:
             print "Validating {}".format(file_path)
 
@@ -166,7 +203,7 @@ class FilesValidator(object):
                     re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
 
                 image_validator = ImageValidator(file_path)
-                if image_validator.is_invalid_image():
+                if not image_validator.is_valid():
                     self._is_valid = False
 
     def validate_no_secrets_found(self, branch_name):
@@ -181,6 +218,11 @@ class FilesValidator(object):
             print_error(secrets_found_string)
 
     def validate_committed_files(self, branch_name):
+        """Validate that all the committed files in your branch are valid
+
+        Args:
+            branch_name (string): The name of the branch you are working on.
+        """
         self.validate_no_secrets_found(branch_name)
 
         modified_files, added_files = self.get_modified_and_added_files(branch_name, self.is_circle)
@@ -189,6 +231,7 @@ class FilesValidator(object):
         self.validate_added_files(added_files)
 
     def validate_all_files(self):
+        """Validate that all files in the repo are in the right format."""
         for regex in CHECKED_TYPES_REGEXES:
             splitted_regex = regex.split(".*")
             directory = splitted_regex[0]
@@ -206,6 +249,14 @@ class FilesValidator(object):
                         self._is_valid = False
 
     def is_valid_structure(self, branch_name):
+        """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
+
+        Args:
+            branch_name (string): The name of the branch we are working on.
+
+        Returns:
+            (bool). Whether the structure is valid or not.
+        """
         if not self.conf_json_validator.is_valid_conf_json():
             self._is_valid = False
 
