@@ -325,7 +325,7 @@ script:
       predefined:
       - "true"
       - "false"
-      defaultValue: "true"
+      defaultValue: "false"
     outputs:
     - contextPath: ArcSight.QueryViewerResults
       type: Unknown
