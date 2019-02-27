@@ -5,16 +5,26 @@ from Tests.test_utils import print_error, run_git_command
 
 
 class ScriptValidator(object):
+    """ScriptValidator is designed to validate the correctness of the file structure we enter to content repo. And
+        also try to catch possible Backward compatibility breaks due to the preformed changes.
+
+    Attributes:
+       _is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
+       file_path (str): the path to the file we are examining at the moment.
+       change_string (string): the change string for the examined script.
+       yaml_data (dict): the data of the script in dictionary format.
+    """
     def __init__(self, file_path, check_git=True):
         self._is_valid = True
-
         self.file_path = file_path
+
         if check_git:
             self.change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
             with open(file_path, 'r') as file_data:
                 self.yaml_data = yaml.safe_load(file_data)
 
     def is_backward_compatible(self):
+        """Check if the script is backward compatible."""
         self.is_arg_changed()
         self.is_context_path_changed()
         self.is_docker_image_changed()
@@ -23,6 +33,7 @@ class ScriptValidator(object):
         return self._is_valid
 
     def is_there_duplicates_args(self):
+        """Check if there are duplicated arguments."""
         args = self.yaml_data.get('args', [])
         existing_args = []
         for arg in args:
@@ -37,6 +48,7 @@ class ScriptValidator(object):
         return False
 
     def is_arg_changed(self):
+        """Check if the argument as been changed."""
         deleted_args = re.findall("-([ ]+)?- name: (.*)", self.change_string)
         added_args = re.findall("\+([ ]+)?- name: (.*)", self.change_string)
 
@@ -57,6 +69,7 @@ class ScriptValidator(object):
         return False
 
     def is_context_path_changed(self):
+        """Check if the context path as been changed."""
         deleted_args = re.findall("-([ ]+)?- contextPath: (.*)", self.change_string)
         added_args = re.findall("\+([ ]+)?- contextPath: (.*)", self.change_string)
 
@@ -76,6 +89,7 @@ class ScriptValidator(object):
         return False
 
     def is_docker_image_changed(self):
+        """Check if the docker image as been changed."""
         is_docker_added = re.search("\+([ ]+)?dockerimage: .*", self.change_string)
         is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", self.change_string)
         if is_docker_added or is_docker_deleted:
