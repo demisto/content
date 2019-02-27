@@ -10782,7 +10782,8 @@
                     "archer-upload-file", 
                     "archer-add-to-detailed-analysis", 
                     "archer-get-user-id", 
-                    "archer-get-valuelist"
+                    "archer-get-valuelist", 
+                    "archer-reset-cache"
                 ], 
                 "tests": [
                     "Archer-Test-Playbook"
