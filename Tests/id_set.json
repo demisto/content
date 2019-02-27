@@ -7588,7 +7588,7 @@
                     "as-fetch-incidents"
                 ], 
                 "tests": [
-                    "ArcSight ESM Test"
+                    "ArcSight ESM v2 Test"
                 ]
             }
         }, 
@@ -12387,7 +12387,7 @@
         }, 
         {
             "ArcSight ESM Test": {
-                "name": "ArcSight ESM Test", 
+                "name": "ArcSight ESM v2 Test", 
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 

@@ -340,5 +340,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - ArcSight ESM Test
+  - ArcSight ESM v2 Test
 releaseNotes: "Rewrote the integration in Python and fixed sever issues."
