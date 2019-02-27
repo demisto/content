@@ -89,7 +89,7 @@ script:
         # Init main vars
         contents = []
         context = {}
-        title = 'Vertica Query'
+        title = ''
         human_readable = 'No results found'
         # Get arguments from user
         query = demisto.args().get('query')
@@ -101,7 +101,6 @@ script:
         if rows:
             if limit:
                 rows = rows[:limit]
-            title = 'Vertica Query Results'
 
             for i, row in enumerate(rows):
                 rows[i] = { underscoreToCamelCase(k): convert_datetime_to_string(v) for k, v in row.items() }
@@ -111,7 +110,10 @@ script:
                 'Query': query,
                 'Row': rows
             }
+
+            title = 'Vertica Query Results'
             human_readable = tableToMarkdown(title, contents, removeNull=True)
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
