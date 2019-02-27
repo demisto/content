@@ -1,26 +1,11 @@
 import os
 import re
-import sys
 import argparse
 import requests
-from subprocess import Popen, PIPE
 
 from slackclient import SlackClient
 
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
+from Tests.test_utils import str2bool, run_git_command, LOG_COLORS, print_color
 
 
 def http_request(url, params_dict=None):
@@ -36,24 +21,6 @@ def http_request(url, params_dict=None):
 
     except Exception, e:
         raise e
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return p.stdout.read()
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def options_handler():

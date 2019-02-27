@@ -3,40 +3,16 @@ import os
 import sys
 import glob
 import json
-import yaml
 import argparse
-from subprocess import Popen, PIPE
 from collections import OrderedDict
 
 from Tests.scripts.constants import *
+from Tests.test_utils import get_json, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
+    LOG_COLORS, print_color, run_git_command
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX)
-
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    output, err = p.communicate()
-    if err and 'CRLF will be replaced by LF' not in err:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return output
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
@@ -80,65 +56,6 @@ def get_changed_files(files_string):
         modified_script_list = modified_script_list - {deleted_file}
 
     return added_files_list, modified_files_list, added_script_list, modified_script_list
-
-
-def get_json(file_path):
-    data_dictionary = None
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
-
-    if type(data_dictionary) is dict:
-        return data_dictionary
-    else:
-        return {}
-
-
-def collect_ids(file_path):
-    """Collect id mentioned in file_path"""
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('id', '-')
-
-
-def get_script_or_integration_id(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        commonfields = data_dictionary.get('commonfields', {})
-        return commonfields.get('id', '-')
-
-
-def get_from_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        from_version = data_dictionary.get('fromversion', '0.0.0')
-        if from_version == "":
-            return "0.0.0"
-
-        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
-            raise ValueError("{} fromversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
-
-        return from_version
-
-
-def get_to_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        to_version = data_dictionary.get('toversion', '99.99.99')
-        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
-            raise ValueError("{} toversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
-
-        return to_version
 
 
 def get_integration_commands(file_path):
