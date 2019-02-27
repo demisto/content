@@ -18,7 +18,7 @@ class StructureValidator(object):
     """Structure validator is designed to validate the correctness of the file structure we enter to content repo.
 
     Attributes:
-        _is_valid (bool): the attribure which saves the valid/in-valid status of the current file.
+        _is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
         file_path (str): the path to the file we are examining at the moment.
         is_added_file (bool): whether the file is modified or added.
     """
@@ -47,6 +47,11 @@ class StructureValidator(object):
         self.is_added_file = is_added_file
 
     def is_file_valid(self):
+        """Check if the file as a valid structure.
+
+        Returns:
+            bool. Whether the files' structure is valid or not.
+        """
         self.is_valid_scheme()
         self.is_valid_version()
 
@@ -64,6 +69,9 @@ class StructureValidator(object):
 
         Args:
             matching_regex (str): the regex we want to compare the file with.
+
+        Returns:
+            bool. Whether the scheme is valid on self.file_path.
         """
         if matching_regex is None:
             for regex in CHECKED_TYPES_REGEXES:
@@ -130,6 +138,14 @@ class StructureValidator(object):
         return self._is_valid
 
     def is_valid_fromversion_on_modified(self, change_string=None):
+        """Check that the fromversion property was not changed on existing Content files.
+
+        Args:
+            change_string (string): the string that indicates the changed done on the file(git diff)
+
+        Returns:
+            bool. Whether the files' fromversion as been modified or not.
+        """
         if not change_string:
             change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
 
@@ -145,6 +161,7 @@ class StructureValidator(object):
 
     @staticmethod
     def is_release_branch():
+        """Check if we are working on a release branch."""
         diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
         if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
@@ -152,6 +169,10 @@ class StructureValidator(object):
         return False
 
     def validate_file_release_notes(self):
+        """Validate that the file as proper release notes when modified.
+
+        This function updates the class attribute self._is_valid instead of passing it back and forth.
+        """
         data_dictionary = None
         if os.path.isfile(self.file_path):
             with open(os.path.expanduser(self.file_path), "r") as f:
@@ -169,6 +190,14 @@ class StructureValidator(object):
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):
+        """Check if the ID of the file as been changed.
+
+        Args:
+            change_string (string): the string that indicates the changed done on the file(git diff)
+
+        Returns:
+            bool. Whether the files' ID as been modified or not.
+        """
         if not change_string:
             change_string = run_git_command("git diff HEAD {}".format(self.file_path))
 

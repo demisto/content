@@ -4,6 +4,12 @@ from Tests.test_utils import *
 
 
 class ConfJsonValidator(object):
+    """ConfJsonValidator as been designed to make sure we are following the standards for the conf.json file.
+
+    Attributes:
+        _is_valid (bool): Whether the conf.json file current state is valid or not.
+        conf_data (dict): The data from the conf.json file in our repo.
+    """
     CONF_PATH = "./Tests/conf.json"
 
     def __init__(self):
@@ -43,6 +49,14 @@ class ConfJsonValidator(object):
         return self._is_valid
 
     def is_test_in_conf_json(self, file_id):
+        """Check if the file_id(We get this ID only if it is a test) is located in the tests section in conf.json file.
+
+        Args:
+            file_id (string): the ID of the test we are looking for in the conf.json file.
+
+        Returns:
+            bool. Whether the test as been located in the conf.json file or not.
+        """
         conf_tests = self.conf_data['tests']
         for test in conf_tests:
             playbook_id = test['playbookID']

@@ -11,6 +11,20 @@ from Tests.scripts.update_id_set import get_script_data, get_playbook_data, \
 
 
 class IDSetValidator(object):
+    """IDSetValidator was designed to make sure we create the id_set.json in the correct way so we can use it later on.
+
+    The id_set.json file is created using the update_id_set.py script. It contains all the data from the various
+    executables we have in Content repository - Playbooks/Scripts/Integration. The script extracts the command and
+    script names so we will later on will be able to use it in the test filtering we have in our build system.
+
+    Attributes:
+        is_circle (bool): whether we are running on circle or local env.
+        id_set (dict): Dictionary that hold all the data from the id_set.json file.
+        script_set (set): Set of all the data regarding scripts in our system.
+        playbook_set (set): Set of all the data regarding playbooks in our system.
+        integration_set (set): Set of all the data regarding integrations in our system.
+        test_playbook_set (set): Set of all the data regarding test playbooks in our system.
+    """
     SCRIPTS_SECTION = "scripts"
     PLAYBOOK_SECTION = "playbooks"
     INTEGRATION_SECTION = "integrations"
@@ -19,7 +33,6 @@ class IDSetValidator(object):
     ID_SET_PATH = "./Tests/id_set.json"
 
     def __init__(self, is_circle, is_test_run=False):
-        self._valid_id = True
         self.is_circle = is_circle
 
         if not is_test_run and is_circle:
@@ -29,11 +42,6 @@ class IDSetValidator(object):
             self.playbook_set = self.id_set[self.PLAYBOOK_SECTION]
             self.integration_set = self.id_set[self.INTEGRATION_SECTION]
             self.test_playbook_set = self.id_set[self.TEST_PLAYBOOK_SECTION]
-
-    def is_invalid_id(self):
-        return_value = not self._valid_id
-        self._valid_id = True
-        return return_value
 
     def load_id_set(self):
         with open(self.ID_SET_PATH, 'r') as id_set_file:
@@ -50,6 +58,16 @@ class IDSetValidator(object):
             return id_set
 
     def is_valid_in_id_set(self, file_path, obj_data, obj_set):
+        """Check if the file is represented correctly in the id_set
+
+        Args:
+            file_path (string): Path to the file.
+            obj_data (dict): Dictionary that holds the extracted details from the given file.
+            obj_set (set): The set in which the file should be located at.
+
+        Returns:
+            bool. Whether the file is represented correctly in the id_set or not.
+        """
         is_found = False
         file_id = obj_data.keys()[0]
 
@@ -74,37 +92,36 @@ class IDSetValidator(object):
 
         return is_found
 
-    def validate_playbook_in_set(self, file_path, playbook_set):
-        playbook_data = get_playbook_data(file_path)
-        return self.is_valid_in_id_set(file_path, playbook_data, playbook_set)
-
-    def validate_script_in_set(self, file_path, script_set, script_data=None):
-        if script_data is None:
-            script_data = get_script_data(file_path)
-
-        return self.is_valid_in_id_set(file_path, script_data, script_set)
-
-    def validate_integration_in_set(self, file_path, integration_set):
-        integration_data = get_integration_data(file_path)
-        return self.is_valid_in_id_set(file_path, integration_data, integration_set)
-
     def is_file_valid_in_set(self, file_path):
+        """Check if the file is represented correctly in the id_set
+
+        Args:
+            file_path (string): Path to the file.
+
+        Returns:
+            bool. Whether the file is represented correctly in the id_set or not.
+        """
         is_valid = True
         if self.is_circle:  # No need to check on local env because the id_set will contain this info after the commit
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                is_valid = self.validate_playbook_in_set(file_path, self.playbook_set)
+                playbook_data = get_playbook_data(file_path)
+                is_valid = self.is_valid_in_id_set(file_path, playbook_data, self.playbook_set)
 
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                is_valid = self.validate_playbook_in_set(file_path, self.test_playbook_set)
+                playbook_data = get_playbook_data(file_path)
+                is_valid = self.is_valid_in_id_set(file_path, playbook_data, self.test_playbook_set)
 
             elif re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                is_valid = self.validate_script_in_set(file_path, self.script_set)
+
+                script_data = get_script_data(file_path)
+                is_valid = self.is_valid_in_id_set(file_path, script_data, self.script_set)
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
-                is_valid = self.validate_integration_in_set(file_path, self.integration_set)
+                integration_data = get_integration_data(file_path)
+                is_valid = self.is_valid_in_id_set(file_path, integration_data, self.integration_set)
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
@@ -112,12 +129,21 @@ class IDSetValidator(object):
 
                 yml_path, code = get_script_package_data(os.path.dirname(file_path))
                 script_data = get_script_data(yml_path, script_code=code)
-
-                is_valid = self.validate_script_in_set(yml_path, self.script_set, script_data)
+                is_valid = self.is_valid_in_id_set(yml_path, script_data, self.script_set)
 
         return is_valid
 
     def is_id_duplicated(self, obj_id, obj_data, obj_type):
+        """Check if the given ID already exist in the system.
+
+        Args:
+            obj_id (string): The new ID we want to add.
+            obj_data (dict): Dictionary that holds the extracted details from the given file.
+            obj_type (string): the type of the new file.
+
+        Returns:
+            bool. Whether the ID already exist in the system or not.
+        """
         is_duplicated = False
         dict_value = obj_data.values()[0]
         obj_toversion = dict_value.get('toversion', '99.99.99')
@@ -150,6 +176,14 @@ class IDSetValidator(object):
         return is_duplicated
 
     def is_file_has_used_id(self, file_path):
+        """Check if the ID of the given file already exist in the system.
+
+        Args:
+            file_path (string): Path to the file.
+
+        Returns:
+            bool. Whether the ID of the given file already exist in the system or not.
+        """
         is_used = False
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
