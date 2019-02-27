@@ -1,8 +1,8 @@
 commonfields:
-  id: ArcSight ESM
+  id: ArcSight ESM v2
   version: -1
-name: ArcSight ESM
-display: ArcSight ESM
+name: ArcSight ESM v2
+display: ArcSight ESM v2
 category: Analytics & SIEM
 description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
 configuration:
