@@ -819,7 +819,7 @@
         },
         {
             "integrations": "ArcSight ESM v2",
-            "playbookID": "ArcSight ESM Test"
+            "playbookID": "ArcSight ESM v2 Test"
         },
         {
             "integrations": "ArcSight ESM v2",
