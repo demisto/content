@@ -1,0 +1,1235 @@
+commonfields:
+  id: ArcSight ESM
+  version: -1
+name: ArcSight ESM (deprecated)
+display: ArcSight ESM
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "8443"
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Fetch Events as incidents via Query Viewer ID. Mandatory fields for query
+    are Start Time and Event ID.
+  name: viewerId
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch Cases as incidents via Query Viewer ID. Mandatory fields for query
+    are Create Time and ID.
+  name: casesQueryViewerId
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
+
+    // Arcsight field names
+    var eventIdField = 'Event ID';
+    var caseIdField = 'ID';
+    var eventsTimeField = 'Start Time';
+    var casesTimeField = 'Create Time';
+
+    var pathDictionary = {
+        login: 'www/core-service/rest/LoginService/login',
+        logout: 'www/core-service/rest/LoginService/logout',
+        'as-get-matrix-data': 'www/manager-service/rest/QueryViewerService/getMatrixData',
+        'as-get-all-cases': 'www/manager-service/rest/CaseService/findAllIds',
+        'as-get-case': 'www/manager-service/rest/CaseService/getResourceById',
+        'as-get-all-query-viewers': 'www/manager-service/rest/QueryViewerService/findAllIds',
+        'as-get-case-event-ids': 'www/manager-service/rest/CaseService/getCaseEventIDs',
+        ActiveListService: 'www/manager-service/services/ActiveListService/'
+    };
+
+    function getToken() {
+        var res = JSON.parse(sendRequest(
+            pathDictionary.login, {
+                login: params.credentials.identifier,
+                password: params.credentials.password
+            },
+            true));
+
+        if (res && res['log.loginResponse'] && res['log.loginResponse']['log.return']) {
+            return res['log.loginResponse']['log.return'];
+        }
+
+        throw 'Failed to login. Check username/password. Original login response: ' + res;
+    }
+
+    function logout() {
+        sendRequest(pathDictionary.logout, {
+            authToken: args.authToken
+        });
+    }
+
+    function sendRequest(url, args, login) {
+        var newArgs = args || {};
+        newArgs.alt = 'json';
+
+        var fullUrl = server + url + encodeToURLQuery(newArgs);
+        var res = http(
+            fullUrl, {
+                Method: 'GET',
+                Headers: {
+                    'Content-Type': ['application/x-www-form-urlencoded'],
+                    'Accept': ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (!login) {
+                sendRequest(pathDictionary.logout, {
+                    authToken: args.authToken
+                });
+            }
+            throw 'Request to ArcSight ' + (login ? (server + url) : fullUrl) + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        return res.Body;
+    }
+
+    function sendAndParse(command, url, args) {
+        var json = parseSOAPResponse(sendRequest(url, args));
+        if (!json) {
+            return null;
+        }
+
+        var result = json;
+        return result;
+    }
+
+    function postRestRequest(queryPath, param, body) {
+        var stringBody = body;
+        if (body && typeof body !== 'string') {
+            stringBody = JSON.stringify(body)
+        }
+
+        var newArgs = param || {};
+        newArgs.alt = 'json';
+
+        // prepare the request url (make sure to encode the query parameter value)
+        var requestUrl = server + queryPath;
+        if (newArgs) {
+            requestUrl += encodeToURLQuery(newArgs);
+        }
+
+        var res = http(
+            requestUrl, {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    'Accept': ['application/json']
+                },
+                Body: stringBody
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Body: ' + stringBody + '\n' + 'Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res;
+    }
+
+    function sendSOAPRequest(queryPath, param, body) {
+        // prepare the request url (make sure to encode the query parameter value)
+        var requestUrl = server + queryPath;
+        if (param) {
+            requestUrl += encodeToURLQuery(param);
+        }
+
+        var res = http(
+            requestUrl, {
+                Method: 'POST',
+                Body: body
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    }
+
+    function parseSOAPResponse(resBody) {
+        var matches = resBody.match(/<ns\d{1,3}:return>(.|[\r\n])*<\/ns\d{1,3}:return>/);
+        if (!matches || !matches[0]) {
+            return null;
+        }
+
+        var match = matches[0].replace(/:return><ns/gi, ':return>##==##==#<ns').split('##==##==#');
+        if (match.length === 1) {
+            match = match[0];
+            var json = JSON.parse(x2j(match));
+            return json;
+        } else {
+            var arr = [];
+            for (var i = 0; i < match.length; i++) {
+                arr.push(JSON.parse(x2j(match[i])).return);
+            }
+
+            return arr;
+        }
+    }
+
+    function convertByMap(arrSrc, translationMap) {
+        var arrDest = [];
+
+        if (!arrSrc) {
+            throw 'arrSrc can\'t be undefined or null';
+        }
+
+        if (!Array.isArray(arrSrc)) {
+            arrSrc = [arrSrc];
+        }
+
+        if (!translationMap) {
+            throw 'translationMap must contain map';
+        }
+
+        /*
+        [
+            {
+                "name": "Anar",
+                "age": 19
+            }
+        ]
+
+        ==> { "NAME": "name" }
+        [
+            {
+                "NAME": "Anar"
+            }
+        ]
+
+        */
+        arrSrc.forEach(function(objSrc) {
+            var objDest = {};
+            Object.keys(translationMap).forEach(function(destKey) {
+                var srcKey = translationMap[destKey];
+                objDest[destKey] = dq(objSrc, srcKey);
+            });
+            arrDest.push(objDest);
+        });
+
+        return arrDest;
+    }
+
+    function getCasesIncidents(lastRun) {
+        var timeField = 'Create Time'; // Query must contain Start Time field
+        var newIncidents = [];
+
+        var response;
+        try {
+            response = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, false);
+        } catch (ex) {
+            throw 'Cases response to query is not in the correct format. Error: ' + ex;
+        }
+        if (!response) {
+            throw 'Cases response to query is empty';
+        }
+        var fieldNames = response.columnHeaders;
+        if (fieldNames.indexOf(timeField) === -1) {
+            throw 'Cases Query must contain ' + timeField + ' fields';
+        }
+        var data = response.data;
+
+        var lastEventTime = (lastRun && lastRun.caseLastEventTime) ? lastRun.caseLastEventTime : 0;
+        var maxEventTime = lastEventTime;
+        for (var i = 0; i < data.length; i++) {
+            var eventTimeInMillis = Number(data[i][timeField]);
+            if (lastEventTime < eventTimeInMillis) {
+                if (maxEventTime < eventTimeInMillis) {
+                    maxEventTime = eventTimeInMillis;
+                }
+                var keys = Object.keys(data[i]);
+                var labels = [];
+                for (var j = 0; j < keys.length; j++) {
+                    if (keys[j] !== 'Name') {
+                        labels.push({
+                            type: keys[j],
+                            value: String(data[i][keys[j]])
+                        });
+                    }
+                }
+                newIncidents.push({
+                    name: data[i].Name || ('New case from arcsight at ' + Date.now()),
+                    labels: labels,
+                    rawJSON: JSON.stringify(data[i])
+                });
+            }
+        }
+
+        lastRun.caseLastEventTime = maxEventTime;
+        return newIncidents;
+    }
+
+    function getEventsIncidents(lastRun) {
+        var timeField = 'Start Time'; // Query must contain Start Time field
+        var newIncidents = [];
+
+        var response;
+        try {
+            response = getQueryViewerResultsRequest(args.authToken, params.viewerId, false);
+        } catch (ex) {
+            throw 'Events response to query is not in the correct format. Error: ' + ex;
+        }
+        if (!response) {
+            throw 'Events response to query is empty';
+        }
+        var fieldNames = response.columnHeaders;
+        if (fieldNames.indexOf(timeField) === -1) {
+            throw 'Events Query must contain ' + timeField + ' fields';
+        }
+        var data = response.data;
+        var lastEventTime = lastRun && lastRun.lastEventTime ? lastRun.lastEventTime : 0;
+        var maxEventTime = lastEventTime;
+        for (var i = 0; i < data.length; i++) {
+            var eventTimeInMillis = Number(data[i][timeField]);
+            if (lastEventTime < eventTimeInMillis) {
+                if (maxEventTime < eventTimeInMillis) {
+                    maxEventTime = eventTimeInMillis;
+                }
+
+                var keys = Object.keys(data[i]);
+                var labels = [];
+                for (var j = 0; j < keys.length; j++) {
+                    if (keys[j] !== 'Name') {
+                        labels.push({
+                            type: keys[j],
+                            value: String(data[i][keys[j]])
+                        });
+                    }
+                }
+                newIncidents.push({
+                    name: data[i].Name || ('New event from arcsight at ' + Date.now()),
+                    labels: labels,
+                    rawJSON: JSON.stringify(data[i])
+                });
+            }
+        }
+
+        lastRun.lastEventTime = maxEventTime;
+        return newIncidents;
+    }
+
+    function convertRowsToStruct(fields, rows) {
+        var data = [];
+        for (var i = 0; i < rows.length; i++) {
+            var newData = {};
+            for (var j = 0; j < fields.length; j++) {
+                if (rows[i].value[j]['#text']) {
+                    newData[fields[j]] = rows[i].value[j]['#text'];
+                }
+            }
+            data.push(newData);
+        }
+        return data;
+    }
+
+    function getCase() {
+        var ccase = getCaseRequest(args.authToken, args.resourceId);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: ccase,
+            ReadableContensFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Case ' + args.resourceId, convertByMap(ccase, {
+                'Name': 'name',
+                'EventIDs': 'eventIDs',
+                'Action': 'action',
+                'Stage': 'stage',
+                'CaseID': 'resourceid',
+                'CreatedTime': 'createdTimestamp=Date(val)'
+            })),
+            EntryContext: {
+              'ArcSightESM.Cases(val.resourceid===obj.resourceid)': ccase
+            }
+        };
+    }
+
+    function getCaseRequest(authToken, resourceId) {
+        var reqArgs = {
+            authToken: authToken,
+            resourceId: resourceId
+        };
+
+        var res = sendRequest(pathDictionary['as-get-case'], reqArgs);
+        var json = JSON.parse(res);
+        if (json && json['cas.getResourceByIdResponse'] && json['cas.getResourceByIdResponse']['cas.return']) {
+            return json['cas.getResourceByIdResponse']['cas.return'];
+        }
+
+        return null;
+    }
+
+    function dlog(obj) {
+        try {
+            log(JSON.stringify(obj, null, 2));
+        } catch (err) {
+            log(obj);
+        }
+
+    }
+
+    function getMatrixData() {
+        args.onlyColumns = args.onlyColumns === 'true' ? true : false;
+        var results = getQueryViewerResultsRequest(args.authToken, args.id, args.onlyColumns);
+
+        var entries = [{
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: results.columnHeaders,
+            ReadableContensFormat: formats.markdown,
+            HumanReadable: arrayToMarkdownTable(results.columnHeaders, 'Column Headers') // will print only query viewer column headers
+        }];
+
+        if (!args.onlyColumns) {
+            entries.push({
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: results.data,
+                ReadableContensFormat: formats.markdown,
+                HumanReadable: tableToMarkdown('Query Viewer Results: ' + args.id, results.data) // will print all the results table
+            });
+        }
+
+        return entries;
+    }
+
+    function getQueryViewerResultsRequest(authToken, queryViewerId, includeOnlyHeaders) {
+        var reqArgs = {
+            authToken: authToken,
+            id: queryViewerId
+        };
+        var resBody = sendRequest(pathDictionary['as-get-matrix-data'], reqArgs);
+        var json;
+        try {
+            json = JSON.parse(resBody);
+        } catch(err) {
+            throw 'Failed to parse results for query viewer ' + queryViewerId + '.\nRaw response body: ' + resBody;
+        }
+
+
+        var returnObject;
+        if (json && json['qvs.getMatrixDataResponse'] && json['qvs.getMatrixDataResponse']['qvs.return']) {
+            // ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
+            returnObject = json['qvs.getMatrixDataResponse']['qvs.return'];
+        } else if (json && json['que.getMatrixDataResponse'] && json['que.getMatrixDataResponse']['que.return']) {
+            // ArcSight ESM version 6.1 rest API supports que.getMatrixDataResponse
+            returnObject = json['que.getMatrixDataResponse']['que.return'];
+        } else {
+            throw 'Failed to get results for query viewer ' + queryViewerId + '.\nRaw response body: ' + JSON.stringify(json);
+        }
+
+        var columnHeaders = dq(returnObject, 'columnHeaders');
+        if (columnHeaders && !Array.isArray(columnHeaders)) {
+            columnHeaders = [columnHeaders];
+        }
+        if (includeOnlyHeaders) {
+            return {
+                columnHeaders: columnHeaders
+            };
+        }
+
+        if (!returnObject.rows || !Array.isArray(returnObject.rows) || returnObject.rows.length === 0) {
+            // there are no results
+            return {
+                columnHeaders: columnHeaders,
+                data: []
+            };
+        }
+
+        if (!columnHeaders || !columnHeaders.length || columnHeaders.length === 0) {
+            // no columns exists
+            return {
+                columnHeaders: [],
+                data: []
+            };
+        }
+
+        // we should parse the raws by column headers and create result objects from them
+        var queryResults = [];
+        for (var i = 0; i < returnObject.rows.length; i++) {
+            var row = returnObject.rows[i].value;
+            var qResult = {};
+            for (var columnIdx = 0; columnIdx < columnHeaders.length; columnIdx++) {
+                column = columnHeaders[columnIdx];
+                qResult[column] = row[columnIdx]['$'];
+            }
+            queryResults.push(qResult);
+        }
+
+        return {
+            columnHeaders: columnHeaders,
+            data: queryResults
+        };
+    }
+
+    function getAllCases() {
+        var allCases = getAllCasesRequest(args.authToken);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: allCases,
+            ReadableContensFormat: formats.markdown,
+            HumanReadable: arrayToMarkdownTable(allCases, 'Case ID'),
+            EntryContext: {
+              'ArcSightESM.AllCaseIDs': allCases
+            }
+        };
+    }
+
+    function getAllCasesRequest(authToken) {
+        var reqArgs = {
+            authToken: authToken
+        };
+
+        var json = JSON.parse(sendRequest(pathDictionary['as-get-all-cases'], reqArgs));
+        if (json && json['cas.findAllIdsResponse'] && json['cas.findAllIdsResponse']['cas.return']) {
+            return json['cas.findAllIdsResponse']['cas.return'];
+        }
+
+        return null;
+    }
+
+    function getAllQueryViewers() {
+        var json = JSON.parse(sendRequest(pathDictionary['as-get-all-query-viewers'], args));
+        if (!json || !json['qvs.findAllIdsResponse'] || !json['qvs.findAllIdsResponse']['qvs.return']) {
+            return null;
+        }
+
+        var queryList = json['qvs.findAllIdsResponse']['qvs.return'];
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: queryList,
+            ReadableContensFormat: formats.markdown,
+            HumanReadable: arrayToMarkdownTable(queryList, 'Query Viewers'),
+            EntryContext: {
+                'ArcSightESM.AllQueryViewers': queryList
+            }
+        };
+    }
+
+    // convertCsvToEntryListObject converts entries which is array of entry objects into entryList object according to the SOAP request
+    // entryList object contains separately the columns and the entries
+    function convertCsvToEntryListObject(entries) {
+        var entryList = [];
+        var columns = [];
+        var column;
+
+        if (!entries || !Array.isArray(entries) || entries.length === 0) {
+            return {
+                columns: [],
+                entryList: []
+            };
+        }
+
+        // extract the columns
+        for (column in entries[0]) {
+            if (entries[0].hasOwnProperty(column)) {
+                columns.push(column);
+            }
+        }
+
+        // get the entries
+        for (var i = 0; i < entries.length; i++) {
+            entryRow = [];
+            for (var j = 0; j < columns.length; j++) {
+                column = columns[j];
+                var innerEntryValue = entries[i][column];
+                entryRow.push(innerEntryValue);
+            }
+            entryList.push(entryRow);
+        }
+
+
+        return {
+            columns: columns,
+            entryList: entryList
+        };
+    }
+
+    function convertFromEntryListToJSON(entryList) {
+        var columns = entryList.return.columns;
+        var entries = entryList.return.entryList;
+
+        if (!entries) {
+            return [];
+        }
+
+        // if there is only single column in columns then columns will be parsed as string instead of array
+        // the algorithm requires columns to be array
+        if (columns && !Array.isArray(columns)) {
+            columns = [columns];
+            for (var k = 0; k < entries.length; k++) {
+                entries[k].entry = [entries[k].entry];
+            }
+        }
+
+        var entriesArray = [];
+        for (var i = 0; i < entries.length; i++) {
+            var newEntry = {};
+            for (var columnIdx = 0; columnIdx < columns.length; columnIdx++) {
+                var column = columns[columnIdx];
+
+                var innerEntry = entries[i].entry[columnIdx];
+                newEntry[column] = innerEntry;
+            }
+
+            entriesArray.push(newEntry);
+        }
+
+        return entriesArray;
+    }
+
+
+    var addEntriesTemplate = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/" xmlns:xsd="http://activelist.model.v1.service.resource.manager.product.arcsight.com/xsd"><soapenv:Header /><soapenv:Body><act:addEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId><act:entryList>%entryList%</act:entryList></act:addEntries></soapenv:Body></soapenv:Envelope>';
+
+    function addEntries() {
+        var entries = args.entries;
+        if (typeof args.entries === 'string') {
+            try {
+                entries = JSON.parse(args.entries);
+            } catch (err) {
+                throw 'entries must be in JSON format. Must be array of objects.'
+            }
+        }
+        var entryList = convertCsvToEntryListObject(entries)
+        var stringBuilder = [];
+        entryList.columns.forEach(function(column) {
+            stringBuilder.push(replaceInTemplates('<columns>%column%</columns>', {
+                column: column
+            }));
+        });
+
+        entryList.entryList.forEach(function(entryRow) {
+            stringBuilder.push('<entryList>');
+            entryRow.forEach(function(entry) {
+                stringBuilder.push(replaceInTemplates('<entry>%entry%</entry>', {
+                    entry: entry
+                }));
+            })
+            stringBuilder.push('</entryList>');
+        });
+
+        var entryListXml = stringBuilder.join('');
+        var soapReq = replaceInTemplates(addEntriesTemplate, {
+            authToken: args.authToken,
+            resourceId: args.resourceId,
+            entryList: entryListXml
+        });
+        sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+        return 'Success';
+    }
+
+    var clearEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/"><soapenv:Header/><soapenv:Body><act:clearEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId></act:clearEntries></soapenv:Body></soapenv:Envelope>';
+
+    function clearEntries() {
+        var soapReq = replaceInTemplates(clearEntriesTemplate, {
+            authToken: args.authToken,
+            resourceId: args.resourceId
+        });
+        var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+        return 'Success';
+    }
+
+    var getEntriesTemplate = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/">\
+    <soapenv:Header/>\
+    <soapenv:Body>\
+    <act:getEntries>\
+    <act:authToken>%authToken%</act:authToken>\
+    <act:resourceId>%resourceId%</act:resourceId>\
+    </act:getEntries>\
+    </soapenv:Body>\
+    </soapenv:Envelope>';
+
+    function getEntries() {
+        var soapReq = replaceInTemplates(getEntriesTemplate, {
+            authToken: args.authToken,
+            resourceId: args.resourceId
+        });
+        var res = sendSOAPRequest('www/manager-service/services/ActiveListService/', null, soapReq);
+
+        var parsedResponse = parseSOAPResponse(res.Body);
+        var entryArray = convertFromEntryListToJSON(parsedResponse);
+
+        // get the column headers which exists in Active List
+        var columns = dq(parsedResponse, 'return.columns');
+        if (columns && !Array.isArray(columns)) {
+          columns = [columns];
+        }
+
+        if (args.entryFilter) {
+            var filteredEntries = [];
+            var conditions = args.entryFilter.split(':');
+            var conditionKey = conditions[0]; // moo
+            var conditionValue = conditions[1]; // moo1
+
+            for (var i = 0; i < entryArray.length; i++) {
+                var entry = entryArray[i];
+
+                if (entry[conditionKey] === conditionValue) {
+                    filteredEntries.push(entry);
+                }
+            }
+            entryArray = filteredEntries;
+        }
+
+        var entryContext = {};
+        entryContext['ArcSightESM.ActiveList.' + args.resourceId] = entryArray;
+        return [
+          {
+              Type: entryTypes.note,
+              ContentsFormat: formats.json,
+              Contents: {
+                  columns: columns
+              },
+              ReadableContentsFormat: formats.markdown,
+              HumanReadable: columns ? arrayToMarkdownTable(columns, 'Columns') : 'Active list has no columns'
+          },
+          {
+              Type: entryTypes.note,
+              ContentsFormat: formats.json,
+              Contents: {
+                  result: entryArray
+              },
+              ReadableContentsFormat: formats.markdown,
+              HumanReadable: (!entryArray || entryArray.length) ? tableToMarkdown('Active List Entries: ' + args.resourceId, entryArray) : 'Active List has no entries',
+              EntryContext: entryContext
+          }
+        ];
+    }
+
+
+    function getCaseEventIDs() {
+        var json = JSON.parse(sendRequest(pathDictionary['as-get-case-event-ids'], args));
+        if (!json || !json['cas.getCaseEventIDsResponse'] || !json['cas.getCaseEventIDsResponse']['cas.return']) {
+            return null;
+        }
+
+        var eventIds = json['cas.getCaseEventIDsResponse']['cas.return'];
+        if (!eventIds) {
+            // case has no events
+            return null;
+        }
+
+        if (!Array.isArray(eventIds)) {
+            eventIds = [eventIds];
+        }
+        var entryContext = {};
+        entryContext['ArcSightESM.CaseEvents'] = eventIds;
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: arrayToMarkdownTable(eventIds, 'Case ' + args.caseId + ' Event IDs'),
+            EntryContext: entryContext
+        };
+    }
+
+    function updateCase() {
+        var currentCase = getCaseRequest(args.authToken, args.caseId);
+        if (!currentCase) {
+            throw 'There is no such case: ' + args.caseId;
+        }
+
+        var updatedCase = currentCase;
+        updatedCase.stage = args.stage;
+        var soapReq = {
+            'cas.update': {
+                'cas.authToken': args.authToken,
+                'cas.resource': updatedCase
+            }
+        };
+        try {
+            var res = postRestRequest('www/manager-service/rest/CaseService/update', null, soapReq);
+        } catch (err) {
+            throw 'soapReq: ' + soapReq + '\n' + err;
+        }
+
+        // creating human readable table
+        var response = JSON.parse(res.Body)
+
+        if (!response || !response['cas.updateResponse'] || !response['cas.updateResponse']['cas.return']) {
+            return null;
+        }
+
+        var responseUpdatedCase = response['cas.updateResponse']['cas.return'];
+        var entryContext = {};
+        entryContext['ArcSightESM.Cases(val.resourceid===obj.resourceid)'] = responseUpdatedCase;
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: responseUpdatedCase,
+            ReadableContensFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Case ' + args.caseId, convertByMap(responseUpdatedCase, {
+                'Name': 'name',
+                'EventIDs': 'eventIDs',
+                'Action': 'action',
+                'Stage': 'stage',
+                'CaseID': 'resourceid',
+                'CreatedTime': 'createdTimestamp=Date(val)'
+            })),
+            EntryContext: entryContext
+        };
+    }
+
+    function deleteCase() {
+        deleteCaseRequest(args.authToken, args.caseId);
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.text,
+            Contents: 'Case ' + args.caseId + ' successfully deleted'
+        };
+    }
+    function deleteCaseRequest(authToken, caseId) {
+        var reqBody = {
+            'cas.deleteByUUID': {
+                'cas.authToken': authToken,
+                'cas.id': caseId
+            }
+        };
+        var res = postRestRequest('www/manager-service/rest/CaseService/deleteByUUID', null, reqBody);
+        return res;
+    }
+
+    var intToIpDT = ';function intToIP(int){\
+        var part1 = int & 255;\
+        var part2 = ((int >> 8) & 255);\
+        var part3 = ((int >> 16) & 255);\
+        var part4 = ((int >> 24) & 255);\
+        return part4 + "." + part3 + "." + part2 + "." + part1;\
+    };';
+
+    // table from JSON to human readable table
+    var eventTranslateMap = {
+        'Event ID': 'eventId',
+        'Time': 'endTime=new Date(Number(val)).toLocaleString()',
+        'Source Address': 'source.address=intToIP(val)' + intToIpDT,
+        'Destination Address': 'destination.address=intToIP(val)' + intToIpDT,
+        'Name': 'name',
+        'Source Port': 'source.port',
+        'Base Event IDs': 'baseEventIds'
+    };
+
+    function getSecurityEvents() {
+        var events = getSecurityEventsRequest(args.authToken, args.ids, args.startDate, args.endDate);
+        var hr = 'No events found';
+        if (events) {
+            hr = tableToMarkdown('Security Event: ' + args.ids, convertByMap(events, eventTranslateMap))
+        }
+
+        var entryContext = {};
+        entryContext['ArcSightESM.SecurityEvents(val.eventId===obj.eventId)'] = events;
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: { events: events },
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: hr,
+            EntryContext: entryContext
+        };
+    }
+
+    function getSecurityEventsRequest(authToken, ids, startDate, endDate) {
+        var startMillis = -1;
+        if (startDate) {
+            if (isNaN(Date.parse(startDate))) {
+                throw 'startDate must be of format yyyy-mm-ddTHH:MM:SS. Example: 2015-09-22T10:00:00';
+            }
+            startMillis = new Date(startDate).getTime();
+        }
+        var endMillis = -1;
+        if (endDate) {
+            if (isNaN(Date.parse(endDate))) {
+                throw 'endDate must be of format yyyy-mm-ddTHH:MM:SS. Example: 2015-09-22T10:00:00';
+            }
+            endMillis = new Date(endDate).getTime();
+        }
+
+        var arrIDs = [];
+        if (typeof ids === 'string') {
+          var split = ids.split(',');
+          for (var i = 0; i < split.length; i++) {
+              var id = split[i];
+              if (isNaN(id)) {
+                  throw 'id ' + id + ' must be numeric';
+              }
+              arrIDs.push(parseInt(id));
+          }
+        } else if (typeof ids === 'number') {
+          // ids passed as number
+          // so there only single id
+          arrIDs.push(ids);
+        }
+
+        var soapReq = {
+            'sev.getSecurityEvents': {
+                'sev.authToken': authToken,
+                'sev.ids': arrIDs,
+                'sev.startMillis': startMillis,
+                'sev.endMillis': endMillis
+            }
+        };
+        var res = postRestRequest('www/manager-service/rest/SecurityEventService/getSecurityEvents', null, soapReq);
+
+        // creating human readable table
+        var json = JSON.parse(res.Body);
+        if (!json || !json['sev.getSecurityEventsResponse'] || !json['sev.getSecurityEventsResponse']['sev.return']) {
+            return null;
+        }
+
+        var events = json['sev.getSecurityEventsResponse']['sev.return'];
+
+        if (!Array.isArray(events)) {
+            events = [events];
+        }
+
+        return events;
+    }
+
+
+    var dashboardDataTemplateWithEnv = '<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dashboardService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>\
+                                        <soapenv:Header/>\
+                                        <soapenv:Body>\
+                                          <ns2:getDashboardIfNewer>\
+                                            <ns2:authToken>%authToken%</ns2:authToken>\
+                                            <ns2:id>%monitorID%</ns2:id>\
+                                            <ns2:currentSignature>\
+                                                <ns5:id>%monitorID%</ns5:id>\
+                                                <ns5:modificationCount>%modificationCount%</ns5:modificationCount>\
+                                            </ns2:currentSignature>\
+                                          </ns2:getDashboardIfNewer>\
+                                        </soapenv:Body>\
+                                      </soapenv:Envelope>';
+
+    // currently this function is not works
+    function getDashboardData(authToken, modCount, monitorID) {
+        var soapReq = replaceInTemplates(dashboardDataTemplateWithEnv, {
+            authToken: authToken,
+            modificationCount: modCount,
+            monitorID: monitorID
+        });
+        //return soapReq;
+        var res = postRestRequest('www/manager-service/services/DashboardService/', null, soapReq);
+        return res.Body;
+    }
+
+
+    var monitorDataTemplateWithEnv = '<soapenv:Envelope xmlns:soapenv=\'http://schemas.xmlsoap.org/soap/envelope/\'  xmlns:ns2=\'http://ws.v1.service.resource.manager.product.arcsight.com/dataMonitorService/\'  xmlns:ns5=\'http://model.v1.service.resource.manager.product.arcsight.com/xsd\'>\
+                                      <soapenv:Header/>\
+                                      <soapenv:Body>\
+                                        <ns2:getDataMonitorIfNewer>\
+                                          <ns2:authToken>%authToken%</ns2:authToken>\
+                                          <ns2:id>%monitorID%</ns2:id>\
+                                          <ns2:currentSignature>\
+                                            <ns5:id>%monitorID%</ns5:id>\
+                                            <ns5:modificationCount>%modificationCount%</ns5:modificationCount>\
+                                          </ns2:currentSignature>\
+                                        </ns2:getDataMonitorIfNewer>\
+                                      </soapenv:Body>\
+                                    </soapenv:Envelope>';
+
+    function getDataMonitor(authToken, modCount, monitorID) {
+        var soapReq = replaceInTemplates(monitorDataTemplateWithEnv, {
+            authToken: authToken,
+            modificationCount: modCount,
+            monitorID: monitorID
+        });
+        var res = postRestRequest('www/manager-service/services/DataMonitorService/', null, soapReq);
+        return res.Body;
+    }
+
+    function test() {
+        var isFetch = params.isFetch;
+        if (isFetch && !params.viewerId && !params.casesQueryViewerId) {
+            throw 'If Fetch incidents is on, then Events Query Viewer ID or Case Query Viewer ID must be passed';
+        }
+
+        var results;
+        var columnHeaders
+        if (isFetch && params.viewerId) {
+            try {
+                results = getQueryViewerResultsRequest(args.authToken, params.viewerId, true);
+            } catch(ex) {
+                throw 'Make sure Events query viewer id is valid.\nOriginal Error: ' + ex;
+            }
+            columnHeaders = results.columnHeaders;
+            if (columnHeaders.indexOf(eventsTimeField) === -1) {
+                throw 'Event Query in ArcSight must select "' + eventsTimeField + '" field';
+            }
+            if (columnHeaders.indexOf(eventIdField) === -1) {
+                throw 'Event Query in ArcSight  must select "' + eventIdField + '" field';
+            }
+        }
+
+        if (isFetch && params.casesQueryViewerId) {
+            try {
+                results = getQueryViewerResultsRequest(args.authToken, params.casesQueryViewerId, true);
+            } catch(ex) {
+                throw 'Make sure Cases query viewer id is valid.\nOriginal Error: ' + ex;
+            }
+            columnHeaders = results.columnHeaders;
+            if (columnHeaders.indexOf(casesTimeField) === -1) {
+                throw 'Case Query in ArcSight must select "' + casesTimeField + '" field';
+            }
+            if (columnHeaders.indexOf(caseIdField) === -1) {
+                throw 'Case Query in ArcSight must select "' + caseIdField + '" field';
+            }
+        }
+    }
+
+    var result;
+    args.authToken = getToken();
+    switch (command) {
+        case 'test-module':
+            test();
+            result = 'ok';
+            break;
+        case 'fetch-incidents':
+            var lastRun = getLastRun();
+            lastRun = lastRun && lastRun.value ? JSON.parse(lastRun.value) : {};
+            var casesIncidents = [];
+            var eventsIncidents = [];
+            if (params.casesQueryViewerId) {
+                casesIncidents = getCasesIncidents(lastRun);
+            }
+            if (params.viewerId) {
+                eventsIncidents = getEventsIncidents(lastRun);
+            }
+
+            setLastRun({
+                value: JSON.stringify(lastRun)
+            });
+            result = JSON.stringify(casesIncidents.concat(eventsIncidents));
+            break;
+        case 'as-get-matrix-data':
+            result = getMatrixData();
+            break;
+        case 'as-get-all-cases':
+            result = getAllCases();
+            break;
+        case 'as-get-all-query-viewers':
+            result = getAllQueryViewers();
+            break;
+        case 'as-get-case':
+            result = getCase();
+            break;
+        case 'as-add-entries':
+            result = addEntries();
+            break;
+        case 'as-clear-entries':
+            result = clearEntries();
+            break;
+        case 'as-get-entries':
+            result = getEntries();
+            break;
+        case 'as-get-security-events':
+            result = getSecurityEvents();
+            break;
+        case 'as-get-case-event-ids':
+            result = getCaseEventIDs();
+            break;
+        case 'as-update-case':
+            result = updateCase();
+            break;
+        case 'as-case-delete':
+            result = deleteCase();
+            break;
+        default:
+            result = sendAndParse(command, pathDictionary[command], args);
+    }
+    try {
+        logout();
+    } catch (err) {
+        demisto.error('Failed to logout ArcSight ESM session. Error: ' + err);
+    }
+
+    return result;
+  type: javascript
+  commands:
+  - name: as-get-all-cases
+    arguments: []
+    outputs:
+    - contextPath: ArcSightESM.AllCaseIDs
+      description: All cases ids
+    description: commands.server.arcsight.getallcases.description
+  - name: as-get-case
+    arguments:
+    - name: resourceId
+      required: true
+      default: true
+      description: commands.server.arcsight.arguments.caseid.description
+    outputs:
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: The id of the case
+    - contextPath: ArcSightESM.Cases.name
+      description: Name of the case
+    - contextPath: ArcSightESM.Cases.eventIDs
+      description: Related base event ids
+    - contextPath: ArcSightESM.Cases.createdTimestamp
+      description: The time case created
+    description: commands.server.arcsight.getspecificcase.description
+  - name: as-get-matrix-data
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: commands.server.arcsight.arguments.queryid.description
+    - name: onlyColumns
+      description: If true will return only the columns of the query. If false will return the column headers and all query results.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    description: commands.server.arcsight.query.description
+  - name: as-add-entries
+    arguments:
+    - name: resourceId
+      required: true
+      description: resource id of the Active list
+    - name: entries
+      required: true
+      description: 'Entries in JSON format. JSON must be array of entries. Each entry
+        must contain the same columns like in the Active list. Example: [{ "UserName":
+        "john", "IP":"19.12.13.11"},{ "UserName": "bob", "IP":"22.22.22.22"}]'
+      isArray: true
+    description: Add new entries to Active List
+    execution: true
+  - name: as-clear-entries
+    arguments:
+    - name: resourceId
+      required: true
+      description: Resource id of specific Active List
+    description: Clean all entries in the Active List
+    execution: true
+  - name: as-get-entries
+    arguments:
+    - name: resourceId
+      description: Resource id of specific Active List
+      required: true
+    - name: entryFilter
+      description: 'Filters the entries. Example: entryFilter="moo:moo1"'
+    outputs:
+    - contextPath: ArcSightESM.ActiveList
+      description: Active List is a map of active list resource id => active list
+        entries
+    description: Get all entries from Active List
+  - name: as-get-security-events
+    arguments:
+    - name: startDate
+      description: 'Start time filter. Example: 2017-05-22T10:00:00'
+    - name: endDate
+      description: 'End time filter. Example: 2017-05-22T10:00:00'
+    - name: ids
+      description: 'ID or multiple ids separated by comma of security events. Event ID is ArcSight is always a number. Example: 13906590'
+      required: true
+    outputs:
+    - contextPath: ArcSightESM.SecurityEvents
+      description: List of security events
+    - contextPath: ArcSightESM.SecurityEvents.name
+      description: The name of the event
+    - contextPath: ArcSightESM.SecurityEvents.eventId
+      description: Event id
+    - contextPath: ArcSightESM.SecurityEvents.type
+      description: Type of the event
+    - contextPath: ArcSightESM.SecurityEvents.baseEventIds
+      description: Base event ids
+    - contextPath: ArcSightESM.SecurityEvents.startTime
+      description: Start time in milliseconds
+    description: Returns the security event details
+  - name: as-get-case-event-ids
+    arguments:
+    - name: caseId
+      description: 'Case ID. Example: 7e6LEbF8BABCfA-dlp1rl1A=='
+      required: true
+    outputs:
+    - contextPath: ArcSightESM.CaseEvents
+      description: Map of caseId => related event ids
+    - contextPath: ArcSightESM.CaseEvents.LatestResult
+      description: Event ids of the last execution of this command
+    description: Returns all case event IDs
+  - name: as-update-case
+    arguments:
+    - name: caseId
+      required: true
+      description: The ID of the case
+    - name: stage
+      auto: PREDEFINED
+      predefined:
+      - CLOSED
+      - QUEUED
+      - FINAL
+      - FOLLOW_UP
+      - INITIAL
+      description: The stage of case
+    outputs:
+    - contextPath: ArcSightESM.Cases
+      description: List of cases
+    description: Updates a case
+  - name: as-get-all-query-viewers
+    arguments: []
+    outputs:
+    - contextPath: ArcSightESM.AllQueryViewers
+      description: List of all query viewer ids
+    description: Returns all the query viewer ids
+  - name: as-case-delete
+    arguments:
+    - name: caseId
+      required: true
+      description: The resource id of the case
+    description: Deletes a case
+    execution: true
+  isfetch: true
+hidden: false
+tests:
+- No test
+releaseNotes: "-"
