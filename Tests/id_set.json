@@ -5119,9 +5119,9 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "as-get-security-events": "ArcSight ESM", 
-                    "as-get-case": "ArcSight ESM", 
-                    "as-get-case-event-ids": "ArcSight ESM"
+                    "as-get-all-cases": "", 
+                    "as-get-security-events": "", 
+                    "as-get-case-event-ids": ""
                 }, 
                 "tests": [
                     "test Arcsight - Get events related to the Case"
@@ -7407,6 +7407,16 @@
     ], 
     "integrations": [
         {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
             "AbuseIPDB": {
                 "name": "AbuseIPDB", 
                 "commands": [
@@ -7591,12 +7601,33 @@
                     "as-get-case-event-ids", 
                     "as-update-case", 
                     "as-get-all-query-viewers", 
+                    "as-case-delete"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
+            "ArcSight ESM v2": {
+                "name": "ArcSight ESM v2", 
+                "commands": [
+                    "as-get-all-cases", 
+                    "as-get-case", 
+                    "as-get-matrix-data", 
+                    "as-add-entries", 
+                    "as-clear-entries", 
+                    "as-get-entries", 
+                    "as-get-security-events", 
+                    "as-get-case-event-ids", 
+                    "as-update-case", 
+                    "as-get-all-query-viewers", 
                     "as-case-delete", 
                     "as-get-query-viewer-results", 
                     "as-fetch-incidents"
                 ], 
                 "tests": [
-                    "ArcSight ESM Test"
+                    "ArcSight ESM v2 Test"
                 ]
             }
         }, 
@@ -9580,6 +9611,23 @@
         {
             "jira": {
                 "name": "jira", 
+                "fromversion": "2.6.0", 
+                "commands": [
+                    "jira-issue-query", 
+                    "jira-get-issue", 
+                    "jira-create-issue", 
+                    "jira-issue-upload-file", 
+                    "jira-issue-add-comment", 
+                    "jira-issue-add-link", 
+                    "jira-edit-issue", 
+                    "jira-get-comments", 
+                    "jira-delete-issue"
+                ]
+            }
+        }, 
+        {
+            "jira": {
+                "name": "jira", 
                 "toversion": "2.5.0", 
                 "commands": [
                     "jira-issue-query", 
@@ -9588,6 +9636,14 @@
                     "jira-issue-upload-file", 
                     "jira-issue-add-comment", 
                     "jira-issue-add-link"
+                ]
+            }
+        }, 
+        {
+            "JIRA-python": {
+                "name": "JIRA-python", 
+                "commands": [
+                    "example-get-items"
                 ]
             }
         }, 
@@ -12391,8 +12447,8 @@
             }
         }, 
         {
-            "ArcSight ESM Test": {
-                "name": "ArcSight ESM Test", 
+            "ArcSight ESM v2 Test": {
+                "name": "ArcSight ESM v2 Test", 
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 
@@ -12400,9 +12456,10 @@
                     "as-get-case": "", 
                     "as-get-all-query-viewers": "", 
                     "as-clear-entries": "", 
-                    "as-get-all-cases": "", 
+                    "as-get-query-viewer-results": "", 
                     "as-get-entries": "", 
                     "as-add-entries": "", 
+                    "as-get-all-cases": "", 
                     "as-update-case": "", 
                     "as-get-case-event-ids": ""
                 }
