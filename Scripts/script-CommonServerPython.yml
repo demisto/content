@@ -1511,4 +1511,3 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "added function return_outputs() which replaces demisto.results() - more intuitive to use, add camel_case_to_underscore and snakify functions"
