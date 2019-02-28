@@ -437,6 +437,7 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
+        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
         {
             "integrations": [
                 "Mail Sender (New)",

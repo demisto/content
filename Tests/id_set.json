@@ -2003,7 +2003,8 @@
         }, 
         {
             "ExtractDomain": {
-                "name": "ExtractDomain"
+                "name": "ExtractDomain", 
+                "deprecated": true
             }
         }, 
         {
@@ -2019,12 +2020,14 @@
         }, 
         {
             "ExtractEmail": {
-                "name": "ExtractEmail"
+                "name": "ExtractEmail", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractHash": {
-                "name": "ExtractHash"
+                "name": "ExtractHash", 
+                "deprecated": true
             }
         }, 
         {
@@ -2078,12 +2081,14 @@
         }, 
         {
             "ExtractIP": {
-                "name": "ExtractIP"
+                "name": "ExtractIP", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractURL": {
-                "name": "ExtractURL"
+                "name": "ExtractURL", 
+                "deprecated": true
             }
         }, 
         {
@@ -5069,6 +5074,9 @@
                 "implementing_scripts": [
                     "ADGetUser", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -5642,6 +5650,9 @@
                     "Print", 
                     "SandboxDetonateFile", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -5909,6 +5920,9 @@
                     "Sentinel One - Endpoint data collection", 
                     "MAR - Endpoint data collection", 
                     "D2 - Endpoint data collection"
+                ], 
+                "tests": [
+                    "No tests - Need to add"
                 ]
             }
         }, 
@@ -5977,6 +5991,9 @@
                     "IPReputation", 
                     "Exists", 
                     "URLReputation"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -6022,6 +6039,9 @@
                     "ExtractURL", 
                     "ExtractEmail", 
                     "ExtractIP"
+                ], 
+                "tests": [
+                    "No tests - Deprecated"
                 ]
             }
         }, 
@@ -6393,6 +6413,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - Deprecated"
                 ]
             }
         }, 
@@ -6478,7 +6501,7 @@
                     "Search Endpoints By Hash - Generic"
                 ], 
                 "tests": [
-                    "No test - Deprecated playbook"
+                    "No test - Need to do"
                 ]
             }
         }, 
@@ -6491,7 +6514,10 @@
                 ], 
                 "command_to_integration": {
                     "mar-search-multiple": "McAfee Active Response"
-                }
+                }, 
+                "tests": [
+                    "No tests - Need to add"
+                ]
             }
         }, 
         {
@@ -6652,6 +6678,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -6878,6 +6907,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - deprecated"
                 ]
             }
         }, 
@@ -6909,6 +6941,9 @@
                     "Set", 
                     "Exists", 
                     "ParseEmailFiles"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
