@@ -7867,6 +7867,9 @@
                     "aws-lambda-list-aliases", 
                     "aws-lambda-invoke", 
                     "aws-lambda-get-account-settings"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
