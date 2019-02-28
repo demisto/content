@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 490,
           "y": 50
         }
       }
@@ -41,6 +41,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "11"
     scriptarguments:
       all:
         simple: "yes"
@@ -52,7 +53,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 490,
           "y": 195
         }
       }
@@ -86,7 +87,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 152.5,
           "y": 370
         }
       }
@@ -122,7 +123,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 152.5,
           "y": 545
         }
       }
@@ -156,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 152.5,
           "y": 720
         }
       }
@@ -209,7 +210,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 895
         }
       }
@@ -230,7 +231,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "8"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -243,7 +244,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1070
         }
       }
@@ -264,8 +265,149 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1260
+          "x": 500,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: ba0dd375-e4a6-40c9-8be6-894c2cec3016
+    type: regular
+    task:
+      id: ba0dd375-e4a6-40c9-8be6-894c2cec3016
+      version: -1
+      name: Get Alert report
+      script: '|||fidelis-get-alert-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_id:
+        simple: ${Fidelis.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: b457b097-9718-484d-8060-c62859b02eae
+    type: regular
+    task:
+      id: b457b097-9718-484d-8060-c62859b02eae
+      version: -1
+      name: Get Malware Data
+      script: '|||fidelis-get-malware-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        simple: ${Fidelis.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 999d4f0c-6600-4fb5-86ff-59277227cc76
+    type: regular
+    task:
+      id: 999d4f0c-6600-4fb5-86ff-59277227cc76
+      version: -1
+      name: Get Pcap Components
+      script: '|||fidelis-list-pcap-components'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 25ae062d-1aab-4822-8ba3-1cfa4bbf8c19
+    type: condition
+    task:
+      id: 25ae062d-1aab-4822-8ba3-1cfa4bbf8c19
+      version: -1
+      name: Check Pcap Components
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Fidelis.Component.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: a6670f4b-de1f-4f45-84f3-33683546828a
+    type: regular
+    task:
+      id: a6670f4b-de1f-4f45-84f3-33683546828a
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to get Pcap Component
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1595
         }
       }
     note: false
@@ -275,8 +417,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
-        "width": 810,
+        "height": 1640,
+        "width": 1270,
         "x": 50,
         "y": 50
       }
