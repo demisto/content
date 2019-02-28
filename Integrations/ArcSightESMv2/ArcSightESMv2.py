@@ -10,8 +10,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
-URL, PORT = demisto.params().get('server'), demisto.params().get('port')
-BASE_URL = URL.rstrip('/:') + ':' + PORT + '/'
+BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
     'Content-Type': 'application/json',
@@ -119,7 +118,7 @@ def login():
 
         return_error('Failed to login. Have not received token after login')
     except ValueError:
-        return_error('Failed to login. Please check URL and Credentials')
+        return_error('Failed to login. Please check integration parameters')
 
 
 @logger
@@ -156,7 +155,7 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
 
     except Exception as ex:
         demisto.debug(str(ex))
-        return_error('Connection Error. Please check URL')
+        return_error('Connection Error. Please check integration parameters')
 
 
 @logger
