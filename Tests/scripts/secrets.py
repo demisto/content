@@ -16,7 +16,7 @@ from validate_files_structure import run_git_command
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 3.8
+ENTROPY_THRESHOLD = 4.2
 
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json'}
 ACCEPTED_FILE_STATUSES = ['M', 'A']
