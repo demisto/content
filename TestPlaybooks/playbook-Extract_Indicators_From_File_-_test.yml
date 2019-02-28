@@ -44,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       body: {}
       filename: {}
@@ -136,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1065
+          "x": 300,
+          "y": 1060
         }
       }
     note: false
@@ -159,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 1565
+          "y": 1480
         }
       }
     note: false
@@ -189,33 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 620,
           "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
-    type: playbook
-    task:
-      id: 0e90c3d8-c63c-4222-8f9d-4121d997dc9f
-      version: -1
-      name: Extract Indicators From File - Generic
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 889
         }
       }
     note: false
@@ -262,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       body: {}
       filename: {}
@@ -304,7 +279,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       body: {}
       filename: {}
@@ -346,7 +321,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       body: {}
       filename: {}
@@ -407,12 +382,147 @@ tasks:
       }
     note: false
     timertriggers: []
+  "13":
+    id: "13"
+    taskid: be1c63ab-e412-432a-8379-3c343ea501f8
+    type: playbook
+    task:
+      id: be1c63ab-e412-432a-8379-3c343ea501f8
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "14"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 869
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 86e50667-958b-4156-8a5a-f2055b42080c
+    type: condition
+    task:
+      id: 86e50667-958b-4156-8a5a-f2055b42080c
+      version: -1
+      name: Did the PDF file return outputs?
+      description: |-
+        Checks if the PDF returned all of the expected outputs, except for title.
+        Checks for the following outputs:
+        - File.Text
+        - File.Producer
+        - File.xap
+        - File.Author
+        - File.dc
+        - File.xapmm
+        - File.ModDate
+        - File.CreationDate
+        - File.Pages
+
+        File.Title is not being checked because it doesn't exist in the test PDF provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Producer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: xap
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Author
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: dc
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: xapmm
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: ModDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Pages
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_4_yes": 0.65,
+      "3_4_yes": 0.65
+    },
     "paper": {
       "dimensions": {
-        "height": 1580,
+        "height": 1495,
         "width": 1820,
         "x": -660,
         "y": 50
