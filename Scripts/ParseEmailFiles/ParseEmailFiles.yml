@@ -81,3 +81,6 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: "
+eml contains eml - inner eml will be extracted
+eml parsed recursively"
