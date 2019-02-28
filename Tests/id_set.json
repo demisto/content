@@ -15992,6 +15992,17 @@
             }
         }, 
         {
+            "TestShowScheduledEntries": {
+                "name": "TestShowScheduledEntries", 
+                "implementing_scripts": [
+                    "ShowScheduledEntries", 
+                    "ScheduleCommand", 
+                    "DeleteContext", 
+                    "Sleep"
+                ]
+            }
+        }, 
+        {
             "TestSkyformation": {
                 "name": "TestSkyformation", 
                 "implementing_scripts": [
