@@ -61,10 +61,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 5b58ea5b-6dfe-441c-8553-dc267999d4e2
+    taskid: 90e77fe0-523d-47f6-89fc-09e60b3b6059
     type: regular
     task:
-      id: 5b58ea5b-6dfe-441c-8553-dc267999d4e2
+      id: 90e77fe0-523d-47f6-89fc-09e60b3b6059
       version: -1
       name: Get Alarms
       script: '|||fidelis-list-alerts'
@@ -81,7 +81,7 @@ tasks:
       start_time: {}
       threat_score: {}
       time_frame:
-        simple: Last 7 Days
+        simple: Last 30 Days
       type: {}
     separatecontext: false
     view: |-
@@ -190,10 +190,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 70bb0218-cd70-49f2-8558-3ff17edf3ad3
+    taskid: 38eebf8e-fe15-441f-82d2-bcdad0440184
     type: regular
     task:
-      id: 70bb0218-cd70-49f2-8558-3ff17edf3ad3
+      id: 38eebf8e-fe15-441f-82d2-bcdad0440184
       version: -1
       name: Get Specific Alert
       script: '|||fidelis-get-alert'
@@ -205,7 +205,11 @@ tasks:
       - "7"
     scriptarguments:
       alert_id:
-        simple: ${Fidelis.Alert.ID}
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -273,10 +277,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: ba0dd375-e4a6-40c9-8be6-894c2cec3016
+    taskid: 7c2e106a-ce05-4cf3-8fc6-f17d281e97ad
     type: regular
     task:
-      id: ba0dd375-e4a6-40c9-8be6-894c2cec3016
+      id: 7c2e106a-ce05-4cf3-8fc6-f17d281e97ad
       version: -1
       name: Get Alert report
       script: '|||fidelis-get-alert-report'
@@ -288,7 +292,11 @@ tasks:
       - "10"
     scriptarguments:
       alert_id:
-        simple: ${Fidelis.Alert.ID}
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -301,10 +309,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: b457b097-9718-484d-8060-c62859b02eae
+    taskid: 97dfac05-bc4d-4341-8cc6-181aade75bb8
     type: regular
     task:
-      id: b457b097-9718-484d-8060-c62859b02eae
+      id: 97dfac05-bc4d-4341-8cc6-181aade75bb8
       version: -1
       name: Get Malware Data
       script: '|||fidelis-get-malware-data'
@@ -316,7 +324,11 @@ tasks:
       - "8"
     scriptarguments:
       alert_id:
-        simple: ${Fidelis.Alert.ID}
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
