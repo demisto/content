@@ -216,7 +216,7 @@ def validate_schema(file_path, matching_regex=None):
     print_error(file_path + " doesn't match any of the known supported file prefix/suffix,"
                 " please make sure that its naming is correct.\nValid file name formats:\n{}"
                 .format("\n".join(CHECKED_TYPES_REGEXES)))
-    return False
+    return True
 
 
 def is_release_branch():
