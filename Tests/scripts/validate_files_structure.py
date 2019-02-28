@@ -72,17 +72,18 @@ REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
+                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
+                         TEST_PLAYBOOK_REGEX]
 
-SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
+SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd']
+KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r099']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
     INTEGRATION_YML_REGEX: "integration",
     PLAYBOOK_REGEX: "playbook",
-    TEST_PLAYBOOK_REGEX: "test-playbook",
+    TEST_PLAYBOOK_REGEX: "playbook",
     SCRIPT_REGEX: "script",
     SCRIPT_YML_REGEX: "script",
     WIDGETS_REGEX: "widget",
@@ -142,13 +143,19 @@ def get_modified_files(files_string):
             continue
 
         file_status = file_data[0]
-        file_path = file_data[1]
 
-        if file_path.endswith('.js') or file_path.endswith('.py'):
+        if file_status.lower().startswith("r"):
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
+        if file_path.endswith('.js') or file_path.endswith('.py') or file_path.endswith('.png'):
             continue
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+            added_files_list.add(file_path)
+        elif file_status.lower().startswith("r") and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
             deleted_files.add(file_path)
@@ -206,9 +213,10 @@ def validate_schema(file_path, matching_regex=None):
             print_error(err)
             return False
 
-    print file_path + " doesn't match any of the known supported file prefix/suffix," \
-                      " please make sure that its naming is correct."
-    return True
+    print_error(file_path + " doesn't match any of the known supported file prefix/suffix,"
+                " please make sure that its naming is correct.\nValid file name formats:\n{}"
+                .format("\n".join(CHECKED_TYPES_REGEXES)))
+    return False
 
 
 def is_release_branch():
@@ -248,6 +256,7 @@ def get_script_or_integration_id(file_path):
 
 def get_json(file_path):
     data_dictionary = None
+
     with open(os.path.expanduser(file_path), "r") as f:
         if file_path.endswith(".yaml") or file_path.endswith('.yml'):
             try:
@@ -498,12 +507,14 @@ def is_valid_in_id_set(file_path, obj_data, obj_set):
             is_found = True
             if checked_instance_data != obj_data[file_id]:
                 print_error("You have failed to update id_set.json with the data of {} "
-                            "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                            "please run `python Tests/scripts/update_id_set.py -r` it will recreate the id_set so "
+                            "it will take ~40 seconds".format(file_path))
                 return False
 
     if not is_found:
         print_error("You have failed to update id_set.json with the data of {} "
-                    "please run `python Tests/scripts/update_id_set.py`".format(file_path))
+                    "please run `python Tests/scripts/update_id_set.py -r` it will "
+                    "recreate the id_set so it will take ~40 seconds".format(file_path))
 
     return is_found
 
@@ -538,7 +549,7 @@ def validate_committed_files(branch_name, is_circle):
         except ValueError, ex:
             if "Expecting property name" in ex.message:
                 print_error("You probably merged from master and your id_set.json has conflicts. "
-                            "Run `python Tests/scripts/update_id_set.py`, it should reindex your id_set.json")
+                            "Run `python Tests/scripts/update_id_set.py -r`, it should reindex your id_set.json")
                 return
             else:
                 raise ex
@@ -568,7 +579,7 @@ def is_valid_id(objects_set, compared_id, file_path, compared_obj_data=None):
 
     data_dict = get_json(file_path)
     if data_dict.get('name') != compared_id:
-        print_error("The ID is not equal to the name, the convetion is for them to be identical, please fix that,"
+        print_error("The ID is not equal to the name, the convention is for them to be identical, please fix that,"
                     " the file is {}".format(file_path))
         return False
 
@@ -649,6 +660,7 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
     has_schema_problem = False
     for file_path in modified_files:
         print "Validating {}".format(file_path)
+
         if not validate_schema(file_path) or changed_id(file_path) or validate_version(file_path) or \
                 validate_fromversion_on_modified(file_path):
             has_schema_problem = True
