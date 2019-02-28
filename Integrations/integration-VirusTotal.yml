@@ -1154,4 +1154,3 @@ script:
   runonce: false
 tests:
   - virusTotal-test-playbook
-releaseNotes: "-"

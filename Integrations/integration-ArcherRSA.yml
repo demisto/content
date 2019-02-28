@@ -95,6 +95,7 @@ script:
       addToDetailedAnalysis: 'archer-add-to-detailed-analysis',
       getUserId: 'archer-get-user-id',
       getSubformId: 'archer-get-subform-id',
+      getValueList: 'archer-get-valuelist'
     };
 
     var urlDictionary = {};
@@ -952,11 +953,20 @@ script:
         return getAuthToken();
     }
 
-    function getValueListForField(command, dataArgs){
+    function getValueListJustForField(dataArgs) {
+        // used to get a list of values corresponding to a specific field id
+        var result = getValueListResult(commands.valueListForField, dataArgs);
+
+        result = JSON.parse(x2j(result));
+        results = {}
+        results['valueList'] = result
+        return results
+    }
+
+    function getValueListResult(command, dataArgs){
         // used to get a list of values corresponding to a specific field id
         var SOAPAction = 'http://archer-tech.com/webservices/GetValueListForField';
         var fieldID = dataArgs.fieldID;
-        var token = getAuthToken();
 
         var token;
         var response;
@@ -987,7 +997,11 @@ script:
                 setIntegrationContext(updatedCache);
             }
         }
-        var result = dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
+        return dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
+    }
+
+    function getValueListForField(command, dataArgs){
+        var result = getValueListResult(command, dataArgs);
         result = dq(JSON.parse(x2j(result)), 'SelectDef.SelectDefValues.SelectDefValue(true)={Name: val.Name, Id : val.Id}');
 
         if (typeof result === 'object' && result.constructor === Array)
@@ -3115,13 +3129,14 @@ script:
         for (var i=1; i<currentRecord.length; i++){
             currentFiles.push(parseInt(currentRecord[i]['ArcherFileId']));
         }
+        fieldsToValueObj = {};
+        fieldsToValueObj[associatedField] = currentFiles;
         var args = {
             "applicationId": applicationId,
             "contentId": contentId,
-            "fieldsToValue": {associatedField:currentFiles},
+            "fieldsToValue": fieldsToValueObj,
             "incidentId": incidentId
         }
-
         updateRecord(commands.updateRecord, args);
         return "File uploaded successfully";
     }
@@ -3293,6 +3308,10 @@ script:
         };
     }
 
+    function resetIntegrationCache(){
+        setIntegrationContext({});
+    }
+
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -3342,6 +3361,8 @@ script:
             return test();
         case commands.createRecord:
             return createRecord(command, args);
+        case commands.getValueList:
+            return getValueListJustForField(args);
         case commands.valueListForField:
             return getValueObjectForFieldId(args);
         case commands.updateRecord:
@@ -3378,6 +3399,8 @@ script:
             return addToDetailedAnalysis(args);
         case commands.getUserId:
             return getUserId(args);
+        case 'archer-reset-cache':
+            return resetIntegrationCache();
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -3660,5 +3683,18 @@ script:
     - contextPath: Archer.User.UserId
       description: The user id of the Archer user
     description: Get the user id of an Archer user
+  - name: archer-get-valuelist
+    arguments:
+    - name: fieldID
+      required: true
+      description: Field Id
+    description: Returns a list of values for a specified field, e.g., fieldID=16114.
+      This command only works for value list fields (type 4).
+  - name: archer-reset-cache
+    arguments: []
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
+releaseNotes: "New command 'archer-reset-cache' to reset the integration cache"
+tests:
+  - Archer-Test-Playbook
