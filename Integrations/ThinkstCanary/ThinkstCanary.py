@@ -293,7 +293,8 @@ def whitelist_ip_command():
         context = createContext(context, removeNull=True)
         contents = res
         human_readable = 'The IP address {}:{} was added to the Whitelist'.format(ip, port)
-        outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
+        outputs = {
+            'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
     elif result_status == 'failure':
