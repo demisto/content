@@ -206,4 +206,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - CanaryTools Test
+- CanaryTools Test
