@@ -826,11 +826,11 @@
             "playbookID": "ArcSight Logger test"
         },
         {
-            "integrations": "ArcSight ESM",
-            "playbookID": "ArcSight ESM Test"
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "ArcSight ESM v2 Test"
         },
         {
-            "integrations": "ArcSight ESM",
+            "integrations": "ArcSight ESM v2",
             "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
