@@ -416,6 +416,12 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "TestDedupIncidentsPlaybook"
+        },
+        {
+            "playbookID": "TestDedupIncidentsByName"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
@@ -437,6 +443,7 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
+        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -811,18 +818,19 @@
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
+            "playbookID": "McAfee-TIE Test",
+            "timeout": 700
         },
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
         },
         {
-            "integrations": "ArcSight ESM",
-            "playbookID": "ArcSight ESM Test"
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "ArcSight ESM v2 Test"
         },
         {
-            "integrations": "ArcSight ESM",
+            "integrations": "ArcSight ESM v2",
             "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
@@ -1081,6 +1089,9 @@
         {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+            "playbookID": "TestShowScheduledEntries"
         }
     ],
     "skipped_tests": {
@@ -1096,6 +1107,7 @@
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
+        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)"
     },
     "skipped_integrations": {
