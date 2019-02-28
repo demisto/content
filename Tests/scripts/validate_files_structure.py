@@ -51,9 +51,14 @@ CONNECTIONS_DIR = "Connections"
 
 # file types regexes
 IMAGE_REGEX = r".*\.png"
-SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
-SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
+SCRIPT_YML_REGEX = r"{}[\\/].*[\\/].*\.yml".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = r"{}[\\/].*[\\/].*\.py".format(SCRIPTS_DIR)
+SCRIPT_TEST_DATA_REGEX = r"{}[\\/].*[\\/]test_data[\\/].*".format(SCRIPTS_DIR)
+SCRIPT_TEST_PIP_REGEX = r"{}[\\/].*[\\/]Pipfile(.lock){{0,1}}".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
+INTEGRATION_PACKAGE_TEST_DATA_REGEX = r"{}[\\/].*[\\/]test_data[\\/].*".format(INTEGRATIONS_DIR)
+INTEGRATION_PACKAGE_TEST_PIP_REGEX = r"{}[\\/].*[\\/]Pipfile".format(INTEGRATIONS_DIR)
+INTEGRATION_PACKAGE_PMG_REGEX = r"{}[\\/].*[\\/].*\.png".format(INTEGRATIONS_DIR)
 INTEGRATION_PACKAGE_YML_REGEX = r"{}[\\/].*[\\/].*\.yml".format(INTEGRATIONS_DIR)
 INTEGRATION_PACKAGE_PYTHON_REGEX = r"{}[\\/].*[\\/].*\.py".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
@@ -74,11 +79,16 @@ REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_PACKAGE_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
-                         INTEGRATION_PACKAGE_PYTHON_REGEX]
+                         TEST_PLAYBOOK_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_PACKAGE_PYTHON_REGEX,
+                         INTEGRATION_PACKAGE_TEST_DATA_REGEX, INTEGRATION_PACKAGE_PMG_REGEX,
+                         INTEGRATION_PACKAGE_TEST_PIP_REGEX, SCRIPT_TEST_PIP_REGEX, SCRIPT_TEST_DATA_REGEX,
+                         SCRIPT_PY_REGEX]
 
-SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_PACKAGE_PYTHON_REGEX]
+SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX, TEST_SCRIPT_REGEX, SCRIPT_PY_REGEX,
+                   INTEGRATION_PACKAGE_PYTHON_REGEX, INTEGRATION_PACKAGE_TEST_DATA_REGEX, INTEGRATION_PACKAGE_PMG_REGEX,
+                   INTEGRATION_PACKAGE_TEST_PIP_REGEX, SCRIPT_TEST_PIP_REGEX, SCRIPT_TEST_DATA_REGEX]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r099']
+KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
@@ -146,6 +156,7 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if file_status.lower().startswith("r"):
+            file_status = "r"   # usually it will be R099 - but we can ignore the number
             file_path = file_data[2]
         else:
             file_path = file_data[1]
