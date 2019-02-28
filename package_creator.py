@@ -65,12 +65,18 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
         found_img_path = image_path[0]
         with open(found_img_path, 'rb') as image_file:
             image_data = image_file.read()
+            image_data = IMAGE_PREFIX + base64.b64encode(image_data)
 
         if yml_data.get('image'):
-            yml_text = yml_text.replace(yml_data['image'], IMAGE_PREFIX + base64.b64encode(image_data))
+            yml_text = yml_text.replace(yml_data['image'], image_data)
 
         else:
-            yml_text = 'image: ' + IMAGE_PREFIX + base64.b64encode(image_data) + '\n' + yml_text
+            yml_text = 'image: ' + image_data + '\n' + yml_text
+        
+        # verify that our yml is good (loads and returns the image)
+        mod_yml_data = yaml.safe_load(yml_text)
+        yml_image = mod_yml_data.get('image')
+        assert yml_image.strip() == image_data.strip()
 
     return yml_text, found_img_path
 
@@ -97,10 +103,10 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     with open(script_path, 'r') as script_file:
         script_code = script_file.read()
 
-    script_code = clean_python_code(script_code)
+    clean_code = clean_python_code(script_code)
 
     lines = ['|-']
-    lines.extend('    {}'.format(line) for line in script_code.split('\n'))
+    lines.extend('    {}'.format(line) for line in clean_code.split('\n'))
     script_code = '\n'.join(lines)
 
     if dir_name == 'Scripts':
@@ -114,6 +120,16 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
             yml_text = yml_text.replace(yml_data.get('script', {}).get('script'), script_code)
         else:
             yml_text = yml_text.replace("script: ''", "script: " + script_code)
+
+    else:
+        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(dir_name))
+    # verify that our yml is good (loads and returns the code)
+    mod_yml_data = yaml.safe_load(yml_text)
+    if dir_name == 'Scripts':
+        yml_script = mod_yml_data.get('script')
+    else:
+        yml_script = mod_yml_data.get('script', {}).get('script')
+    assert yml_script.strip() == clean_code.strip()
 
     return yml_text, script_path
 
