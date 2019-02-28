@@ -3411,9 +3411,6 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
-                ], 
-                "tests": [
-                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -15788,6 +15785,25 @@
                 "name": "TestCommonPython", 
                 "implementing_scripts": [
                     "TestPYCommonServer"
+                ]
+            }
+        }, 
+        {
+            "TestDedupIncidentsByName": {
+                "name": "TestDedupIncidentsByName", 
+                "implementing_playbooks": [
+                    "DeDup incidents"
+                ]
+            }
+        }, 
+        {
+            "TestDedupIncidentsPlaybook": {
+                "name": "TestDedupIncidentsPlaybook", 
+                "implementing_scripts": [
+                    "FindSimilarIncidents", 
+                    "CreateDuplicateIncident", 
+                    "DeleteContext", 
+                    "Sleep"
                 ]
             }
         }, 
