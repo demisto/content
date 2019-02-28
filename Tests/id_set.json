@@ -13491,8 +13491,11 @@
                     "PrintErrorEntry"
                 ], 
                 "command_to_integration": {
+                    "fidelis-list-pcap-components": "", 
                     "fidelis-list-alerts": "", 
-                    "fidelis-get-alert": ""
+                    "fidelis-get-malware-data": "", 
+                    "fidelis-get-alert": "", 
+                    "fidelis-get-alert-report": ""
                 }
             }
         }, 
