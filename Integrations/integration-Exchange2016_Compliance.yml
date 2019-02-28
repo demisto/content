@@ -5,7 +5,11 @@ name: Exchange 2016 Compliance Search
 display: Exchange 2016 Compliance Search
 category: Messaging
 image: data:image/png;base64,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
-description: Exchange 2016 Compliance Search o
+description: Exchange 2016 Compliance Search to search for and delete an email message
+  from all mailboxes in company organization.
+detaileddescription: |-
+  The Compliance Search feature in Exchange 2016 Server allows you to search all mailboxes in your organization. The integration must run **only on engine** that is installed on a target machine which is part of a domain.
+  The user need to be assigned permissions before running commands of the integration.
 configuration:
 - display: DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)
   name: credentials
@@ -286,7 +290,7 @@ script:
     def create_ps_file(ps_name, ps_content):
         temp_path = os.getenv('TEMP')
         if not temp_path:
-            return_error("TEMP enviroment variable is not defined. Please add TEMP variable to the enviroment varibes.")
+            return_error("Check that the integration is using single engine without docker. If so, add TEMP variable to the enviroment varibes.")
 
         ps_path = temp_path + '\\' + ps_name
         with open(ps_path, 'w+') as file:
@@ -467,7 +471,6 @@ script:
       default: true
       description: Name of the compliance search
     description: Check the status of the purge operation on the compliance search.
-  dockerimage: demisto/py-ews:2.0
   runonce: false
 tests:
   - No test
