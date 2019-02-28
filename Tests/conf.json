@@ -1089,6 +1089,9 @@
         {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+            "playbookID": "TestShowScheduledEntries"
         }
     ],
     "skipped_tests": {
