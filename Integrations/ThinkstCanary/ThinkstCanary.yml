@@ -11,11 +11,6 @@ detaileddescription: |-
   Generate your API Authentication Token from Canary Tools:
   https://help.canary.tools/knowledge_base/topics/forget-logging-in-what-apis-does-canary-support
 configuration:
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 - display: Canary Server URL (e.g., https://***.canary.tools)
   name: server
   defaultvalue: ""
@@ -31,20 +26,25 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
   type: 8
   required: false
-- display: Hours before first fetch to retrieve incidents
+- display: Hours before first fetch to retrieve incidents e.g., 12 hours, 7 days, 3 months, 1 year
   name: fetchDelta
-  defaultvalue: "24"
+  defaultvalue: "24 hours"
   type: 0
   required: false
-- display: Use system proxy settings
-  name: proxy
+- display: Incident type
+  name: incidentType
   defaultvalue: ""
-  type: 8
+  type: 13
   required: false
 script:
   script: ''
@@ -84,25 +84,25 @@ script:
   - name: canarytools-list-tokens
     arguments: []
     outputs:
-    - contextPath: CanaryTools.token.CanaryToken
+    - contextPath: CanaryTools.Token.CanaryToken
       description: Canary Token
       type: string
-    - contextPath: CanaryTools.token.CreatedTime
+    - contextPath: CanaryTools.Token.CreatedTime
       description: Token Created time
       type: date
     - contextPath: CanaryTools.token.Enabled
       description: Token status - Enabled (True / False)
       type: boolean
-    - contextPath: CanaryTools.token.Kind
+    - contextPath: CanaryTools.Token.Kind
       description: Token Kind
       type: string
-    - contextPath: CanaryTools.token.Triggered
+    - contextPath: CanaryTools.Token.Triggered
       description: Token triggered count
       type: number
-    - contextPath: CanaryTools.token.DocName
+    - contextPath: CanaryTools.Token.DocName
       description: Token document name (If the token is from type document)
       type: string
-    - contextPath: CanaryTools.token.TokenURL
+    - contextPath: CanaryTools.Token.TokenURL
       description: Token URL (How the token is presented)
       type: string
     description: Lists all Canary tokens.
@@ -169,7 +169,7 @@ script:
       required: true
       description: Canary Token, Can be retrieved through list-tokens command
     outputs:
-    - contextPath: CanaryTools.token.CanaryToken
+    - contextPath: CanaryTools.Token.CanaryToken
       description: Canary Token
       type: string
     - contextPath: File.Size

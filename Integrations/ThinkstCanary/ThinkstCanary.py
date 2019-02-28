@@ -18,9 +18,8 @@ if not demisto.params().get('proxy', False):
 ''' GLOBALS'''
 
 SERVER = demisto.params().get('server').rstrip('/') + '/api/v1/'
-AUTH_TOKEN = demisto.params().get('auth_token')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+FETCH_DELTA = demisto.params().get('fetchDelta', '24 hours').strip()
 RELEVANT_DEVICE_ENTRIES = {
     'description': 'Description',
     'id': 'ID',
@@ -42,7 +41,7 @@ RELEVANT_TOKEN_ENTRIES = {
     'url': 'TokenURL'
 }
 DEF_PARAMS = {
-    'auth_token': AUTH_TOKEN,
+    'auth_token': demisto.params().get('auth_token')
 }
 '''HELPER FUNCTIONS'''
 
@@ -53,6 +52,8 @@ def http_request(method, url, params=None):
     """
     if params is None:
         params = DEF_PARAMS
+    else:
+        params.update(DEF_PARAMS)
     res = requests.request(
         method=method,
         url=url,
@@ -80,7 +81,6 @@ def get_alerts(last_fetch=None):
 
     if last_fetch:
         params = {
-            'auth_token': AUTH_TOKEN,
             'newer_than': last_fetch
         }
         res = http_request('GET', SERVER + 'incidents/unacknowledged', params)
@@ -153,14 +153,10 @@ def list_canaries_command():
         'LastSeen',
         'LastUpdated'
     ]
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': res_json,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Canary Devices', new_devices, headers=headers),
-        'EntryContext': {'CanaryTools.Device(val.ID && val.ID === obj.ID)': context}
-    })
+    contents = res_json
+    human_readable = tableToMarkdown('Canary Devices', new_devices, headers=headers)
+    outputs = {'CanaryTools.Device(val.ID && val.ID === obj.ID)': context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 def list_tokens():
@@ -183,14 +179,11 @@ def list_tokens_command():
     res_json, new_tokens = list_tokens()
     headers = sorted(new_tokens[0].keys())
     context = createContext(new_tokens, removeNull=True)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': res_json,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers),
-        'EntryContext': {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
-    })
+
+    contents = res_json
+    human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers)
+    outputs = {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 def get_token_command():
@@ -200,20 +193,13 @@ def get_token_command():
     """
     token = demisto.args().get('token')
     params = {
-        'auth_token': AUTH_TOKEN,
         'canarytoken': token
     }
     res = http_request('GET', SERVER + 'canarytoken/fetch', params=params)
     context = demisto.get(res, 'token.canarytoken')
-    results = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': res,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'File Fetched Successfully',
-        'EntryContext': {
-            'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
-    }
+    contents = res
+    human_readable = 'File Fetched Successfully'
+    outputs = {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
 
     if demisto.get(res, 'token.doc'):
         name = demisto.get(res, 'token.doc_name')
@@ -226,8 +212,9 @@ def get_token_command():
         token_file = fileResult(name, content)
         demisto.results(token_file)
     else:
-        results['HumanReadable'] = tableToMarkdown('Canary Tools Tokens', res.get('token'))
-    demisto.results(results)
+        human_readable = tableToMarkdown('Canary Tools Tokens', res.get('token'))
+
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 def check_whitelist(ip, port):
@@ -236,7 +223,6 @@ def check_whitelist(ip, port):
     :return: json response
     """
     params = {
-        'auth_token': AUTH_TOKEN,
         'src_ip': ip,
         'dst_port': port
     }
@@ -260,28 +246,16 @@ def check_whitelist_command():
         'Port': str(port),
         'Whitelisted': str(res.get('is_ip_whitelisted'))
     }
+    contents = res
+    context = createContext(context, removeNull=True)
+    outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
+
     if res.get('is_ip_whitelisted'):
-        context = createContext(context, removeNull=True)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': res,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'The IP address {}:{} is Whitelisted'.format(ip, port),
-            'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
-        })
+        human_readable = 'The IP address {}:{} is Whitelisted'.format(ip, port)
     else:
-        context = createContext(context, removeNull=True)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': res,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'The IP address {}:{} is not Whitelisted'.format(ip, port),
-            'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
-        })
+        human_readable = 'The IP address {}:{} is not Whitelisted'.format(ip, port)
+
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 def whitelist_ip(ip, port):
@@ -290,7 +264,6 @@ def whitelist_ip(ip, port):
     :return: json response
     """
     params = {
-        'auth_token': AUTH_TOKEN,
         'src_ip': ip,
         'dst_port': port
     }
@@ -318,24 +291,14 @@ def whitelist_ip_command():
             'Whitelisted': 'True'
         }
         context = createContext(context, removeNull=True)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': res,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'The IP address ' + str(ip) + ':' + str(
-                port) + ' was added to the Whitelist',
-            'EntryContext': {
-                'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
-        })
+        contents = res
+        human_readable = 'The IP address {}:{} was added to the Whitelist'.format(ip, port)
+        outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
     elif result_status == 'failure':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': res,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': res.get('message')
-        })
+        return_outputs(readable_output=res.get('message'), outputs={}, raw_response=res)
+
     elif result_status == 'error':
         return_error(res.get('message'))
 
@@ -353,31 +316,23 @@ def alert_status_command():
     }
     context = createContext(context, removeNull=True)
     params = {
-        'auth_token': AUTH_TOKEN,
         'incident': alert
     }
     if status == 'Acknowledge':
         res = http_request('POST', SERVER + 'incident/acknowledge', params=params)
         if res.get('action') == 'acknowledged':
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': res,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': 'The Alert {} was '.format(alert) + res.get('action'),
-                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
-            })
+            contents = res
+            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
     elif status == 'Unacknowledge':
         res = http_request('POST', SERVER + 'incident/unacknowledge', params=params)
         if res.get('action') == 'unacknowledged':
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': res,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': 'The Alert {} was '.format(alert) + res.get('action'),
-                'EntryContext': {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
-            })
+            contents = res
+            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
         else:
             return_error('Unsupported command')
 
@@ -390,7 +345,7 @@ def fetch_incidents_command():
     last_fetch = demisto.getLastRun().get('time')
 
     if last_fetch is None:
-        last_fetch = parse_date_range('{} hours'.format(str(FETCH_DELTA)), '%Y-%m-%d-%H:%M:%S')[0]
+        last_fetch = parse_date_range(FETCH_DELTA, '%Y-%m-%d-%H:%M:%S')[0]
 
     # All alerts retrieved from get_alerts are newer than last_fetch and are in a chronological order
     alerts = get_alerts(last_fetch)
