@@ -3411,6 +3411,9 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -7862,10 +7865,8 @@
                     "aws-lambda-get-function", 
                     "aws-lambda-list-functions", 
                     "aws-lambda-list-aliases", 
-                    "aws-lambda-invoke"
-                ], 
-                "tests": [
-                    "No Tests"
+                    "aws-lambda-invoke", 
+                    "aws-lambda-get-account-settings"
                 ]
             }
         }, 
