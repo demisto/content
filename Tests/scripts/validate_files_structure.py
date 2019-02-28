@@ -54,7 +54,8 @@ IMAGE_REGEX = r".*\.png"
 SCRIPT_YML_REGEX = r"{}.*\.yml".format(SCRIPTS_DIR)
 SCRIPT_PY_REGEX = r"{}.*\.py".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js".format(SCRIPTS_DIR)
-INTEGRATION_YML_REGEX = r"{}.*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_PACKAGE_YML_REGEX = r"{}[\\/].*[\\/].*\.yml".format(INTEGRATIONS_DIR)
+INTEGRATION_PACKAGE_PYTHON_REGEX = r"{}[\\/].*[\\/].*\.py".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r"{}.*integration-.*\.yml".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml".format(PLAYBOOKS_DIR)
 TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml".format(TEST_PLAYBOOKS_DIR)
@@ -70,18 +71,18 @@ INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = r"{}.*reputations.*\.json".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json".format(REPORTS_DIR)
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_PACKAGE_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
                          LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
-                         TEST_PLAYBOOK_REGEX]
+                         INTEGRATION_PACKAGE_PYTHON_REGEX]
 
-SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX]
+SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX, TEST_SCRIPT_REGEX, INTEGRATION_PACKAGE_PYTHON_REGEX]
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r099']
 
 REGEXES_TO_SCHEMA_DIC = {
     INTEGRATION_REGEX: "integration",
-    INTEGRATION_YML_REGEX: "integration",
+    INTEGRATION_PACKAGE_YML_REGEX: "integration",
     PLAYBOOK_REGEX: "playbook",
     TEST_PLAYBOOK_REGEX: "playbook",
     SCRIPT_REGEX: "script",
@@ -619,7 +620,7 @@ def validate_added_files(added_files, integration_set, playbook_set, script_set,
                 has_schema_problem = True
 
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                re.match(INTEGRATION_PACKAGE_YML_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or not is_existing_image(file_path):
                 has_schema_problem = True
 
@@ -686,7 +687,7 @@ def validate_modified_files(integration_set, modified_files, playbook_set, scrip
                 has_schema_problem = True
 
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                re.match(INTEGRATION_PACKAGE_YML_REGEX, file_path, re.IGNORECASE):
             if oversize_image(file_path) or is_added_required_fields(file_path) or \
                     changed_command_name_or_arg(file_path) or changed_context(file_path) or \
                     (is_circle and not integration_valid_in_id_set(file_path, integration_set)) or \
