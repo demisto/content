@@ -678,3 +678,5 @@ script:
   dockerimage: demisto/boto3:1.9.55
   runonce: false
 releaseNotes: New integration
+tests:
+  - No test
