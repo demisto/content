@@ -1,5 +1,5 @@
 id: TestShowScheduledEntries
-version: 5
+version: -1
 name: TestShowScheduledEntries
 starttaskid: "0"
 tasks:
