@@ -36,7 +36,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Hours before first fetch to retrieve incidents e.g., 12 hours, 7 days, 3 months, 1 year
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetchDelta
   defaultvalue: "24 hours"
   type: 0
