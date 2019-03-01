@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import io
 import sys
 import glob
 import yaml
@@ -53,7 +54,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
 
-    with open(output_path, 'w') as f:
+    with io.open(output_path, mode='w', encoding='utf-8') as f:
         f.write(yml_text)
     return output_path, yml_path, script_path, image_path
 
@@ -100,14 +101,14 @@ def get_code_file(package_path, script_type):
 
 def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data):
     script_path = get_code_file(package_path, script_type)
-    with open(script_path, 'r') as script_file:
+    with io.open(script_path, mode='r', encoding='utf-8') as script_file:
         script_code = script_file.read()
 
     clean_code = clean_python_code(script_code)
 
     lines = ['|-']
-    lines.extend('    {}'.format(line) for line in clean_code.split('\n'))
-    script_code = '\n'.join(lines)
+    lines.extend(u'    {}'.format(line) for line in clean_code.split('\n'))
+    script_code = u'\n'.join(lines)
 
     if dir_name == 'Scripts':
         if yml_data.get('script'):
