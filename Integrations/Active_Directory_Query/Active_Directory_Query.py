@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL, ALL_ATTRIBUTES, Tls
+from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls
 from ldap3.core.exceptions import LDAPSocketOpenError
 from ldap3.extend import microsoft
 import ssl
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 ''' INSTANCE CONFIGURATION '''
@@ -21,7 +21,8 @@ PORT = demisto.params().get('port')
 ''' GLOBAL VARS '''
 
 # userAccountControl is a bitmask used to store a number of settings.
-# find more at https://support.microsoft.com/en-gb/help/305144/how-to-use-the-useraccountcontrol-flags-to-manipulate-user-account-pro
+# find more at:
+# https://support.microsoft.com/en-gb/help/305144/how-to-use-the-useraccountcontrol-flags-to-manipulate-user-account-pro
 
 COOMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
@@ -53,6 +54,7 @@ DEFAULT_COMPUTER_ATTRIBUTES = [
 
 ''' HELPER FUNCTIONS '''
 
+
 def initialize_server():
     """
     uses the instance configuration to initialize the LDAP server
@@ -78,6 +80,7 @@ def initialize_server():
         return Server(SERVER_IP, port=PORT)
     return Server(SERVER_IP)
 
+
 def account_entry(person_object, custome_attributes):
     # create an account entry from a person objects
     account = {
@@ -95,6 +98,7 @@ def account_entry(person_object, custome_attributes):
 
     return account
 
+
 def endpoint_entry(computer_object, custome_attributes):
     # create an endpoint entry from a computer object
     endpoint = {
@@ -109,6 +113,7 @@ def endpoint_entry(computer_object, custome_attributes):
 
     return endpoint
 
+
 def base_dn_verified():
     # serch AD with a simple query to test base DN is configured correctly
     try:
@@ -122,11 +127,13 @@ def base_dn_verified():
         return False
     return True
 
+
 ''' COMMANDS '''
 
 ''' SEARCH '''
 
-def search(search_filter, search_base,  attributes=None, size_limit=0, time_limit=0):
+
+def search(search_filter, search_base, attributes=None, size_limit=0, time_limit=0):
     """
     find entries in the DIT
 
@@ -137,16 +144,17 @@ def search(search_filter, search_base,  attributes=None, size_limit=0, time_limi
 
     """
     success = conn.search(
-        search_base = search_base,
-        search_filter = search_filter,
-        attributes = attributes,
-        size_limit = size_limit,
-        time_limit = time_limit
+        search_base=search_base,
+        search_filter=search_filter,
+        attributes=attributes,
+        size_limit=size_limit,
+        time_limit=time_limit
     )
 
     if not success:
         raise("Search failed")
     return conn.entries
+
 
 def search_with_paging(search_filter, search_base, attributes=None, page_size=100, size_limit=0, time_limit=0):
     """
@@ -172,10 +180,10 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         conn.search(
             search_base,
             search_filter,
-            search_scope = SUBTREE,
-            attributes = attributes,
-            paged_size = page_size,
-            paged_cookie = cookie
+            search_scope=SUBTREE,
+            attributes=attributes,
+            paged_size=page_size,
+            paged_cookie=cookie
         )
 
         total_entries += len(conn.entries)
@@ -223,6 +231,7 @@ def user_dn(sam_account_name, search_base):
     entry = json.loads(entries[0].entry_to_json())
     return entry['dn']
 
+
 def computer_dn(compuer_name, search_base):
     search_filter = '(&(objectClass=user)(objectCategory=computer)(name={}))'.format(compuer_name)
     entries = search(
@@ -234,6 +243,7 @@ def computer_dn(compuer_name, search_base):
     entry = json.loads(entries[0].entry_to_json())
     return entry['dn']
 
+
 def group_dn(group_name, search_base):
     search_filter = '(&(objectClass=group)(cn={}))'.format(group_name)
     entries = search(
@@ -244,6 +254,7 @@ def group_dn(group_name, search_base):
         raise Exception("Could not get full DN for group with name '{}'".format(group_name))
     entry = json.loads(entries[0].entry_to_json())
     return entry['dn']
+
 
 def free_search():
 
@@ -262,10 +273,10 @@ def free_search():
     entries = search_with_paging(
         search_filter,
         search_base,
-        attributes = attributes,
-        size_limit = size_limit,
-        time_limit = time_limit,
-        page_size = DEFAULT_PAGE_SIZE
+        attributes=attributes,
+        size_limit=size_limit,
+        time_limit=time_limit,
+        page_size=DEFAULT_PAGE_SIZE
     )
 
     demisto_entry = {
@@ -280,6 +291,7 @@ def free_search():
     }
     demisto.results(demisto_entry)
 
+
 def search_users():
     # this command is equivalant to script ADGetUser
     # will preform a custom search to find users by a specific (one) attribute specified by the user
@@ -290,7 +302,7 @@ def search_users():
     custome_attributes = []
 
     # zero is actually no limitation
-    limit = int(args.get('limit','0'))
+    limit = int(args.get('limit', '0'))
 
     # default query - list all users
     query = "(objectClass=User)(objectCategory=person)"
@@ -315,7 +327,8 @@ def search_users():
     if args.get('custom-field-type'):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
-        query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
+        query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
+            args['custom-field-type'], args['ustom-field-data'])
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
@@ -334,7 +347,7 @@ def search_users():
 
     if args.get('user-account-control-out', '') == 'true':
         # display a literal translation of the numeric account control flag
-        for i,user in enumerate(entries['flat']):
+        for i, user in enumerate(entries['flat']):
             flag_no = user.get('userAccountControl')[0]
             entries['flat'][i]['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(flag_no) or flag_no
 
@@ -351,6 +364,7 @@ def search_users():
         }
     }
     demisto.results(demisto_entry)
+
 
 def search_computers():
     # this command is equivalent to ADGetComputer script
@@ -375,7 +389,8 @@ def search_computers():
     if args.get('custom-field-type'):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
-        query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(args['custom-field-type'], args['ustom-field-data'])
+        query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
+            args['custom-field-type'], args['ustom-field-data'])
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
@@ -422,7 +437,8 @@ def search_group_members():
     attributes = set(custome_attributes + default_attributes)
 
     # neasted search
-    query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type, group_dn)
+    query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type,
+                                                                                                    group_dn)
 
     entries = search_with_paging(
         query,
@@ -431,7 +447,7 @@ def search_group_members():
         page_size=DEFAULT_PAGE_SIZE
     )
 
-    members = [ {'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
+    members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -449,16 +465,20 @@ def search_group_members():
 
     if member_type == 'person':
         demisto_entry['EntryContext']['ActiveDirectory.Users(obj.dn == val.dn)'] = entries['flat']
-        demisto_entry['EntryContext']['Account'] = [account_entry(entry, custome_attributes) for entry in entries['flat']]
+        demisto_entry['EntryContext']['Account'] = [account_entry(
+            entry, custome_attributes) for entry in entries['flat']]
     else:
         demisto_entry['EntryContext']['ActiveDirectory.Computers(obj.dn == val.dn)'] = entries['flat']
-        demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
+        demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(
+            entry, custome_attributes) for entry in entries['flat']]
 
     demisto.results(demisto_entry)
+
 
 ''' DATABASE OPERATIONS '''
 
 ''' CREATE OBJECT'''
+
 
 def create_user():
     args = demisto.args()
@@ -490,7 +510,9 @@ def create_user():
             custome_attributes = json.loads(custome_attributes)
         except Exception as e:
             demisto.info(str(e))
-            raise Exception("Failed to parse custom attributes argument. Please see an example of this argument in the argument description.")
+            raise Exception(
+                "Failed to parse custom attributes argument. Please see an example of this argument in the description."
+            )
         for attribute_name, attribute_value in custome_attributes.items():
             # can run default attribute stting
             attributes[attribute_name] = attribute_value
@@ -506,7 +528,7 @@ def create_user():
         raise Exception("Failed to reset user password")
 
     # enable user and expire password
-    modification =  {
+    modification = {
         # enable user
         'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)],
         # set to 0, to force password change on next login
@@ -521,6 +543,7 @@ def create_user():
     }
     demisto.results(demisto_entry)
 
+
 def create_contact():
     args = demisto.args()
 
@@ -534,7 +557,9 @@ def create_contact():
             attributes = json.loads(args['custom-attributes'])
         except Exception as e:
             demisto.info(str(e))
-            raise Exception('Failed to parse custom attributes argument. Please see an example of this argument in the argument description. ')
+            raise Exception(
+                'Failed to parse custom attributes argument. Please see an example of this argument in the argument.'
+            )
 
     # set common user attributes
     if args.get('diaply-name'):
@@ -564,13 +589,16 @@ def create_contact():
 
 ''' UPDATE OBJECT '''
 
+
 def modify_object(dn, modification):
     """
     modifys object in the DIT
     """
     success = conn.modify(dn, modification)
     if not success:
-        raise Exception("Failed to update object {} with the following modofication: {}".format(dn, json.dumps(modification)))
+        raise Exception("Failed to update object {} with the following modofication: {}".format(
+            dn, json.dumps(modification)))
+
 
 def update_user():
     args = demisto.args()
@@ -595,6 +623,7 @@ def update_user():
     }
     demisto.results(demisto_entry)
 
+
 def update_contact():
     args = demisto.args()
 
@@ -612,6 +641,7 @@ def update_contact():
     }
     demisto.results(demisto_entry)
 
+
 def modify_computer_ou():
     args = demisto.args()
 
@@ -628,6 +658,7 @@ def modify_computer_ou():
         'Contents': "Moved computer {} to {}".format(computer_name, args.get('full-superior-dn'))
     }
     demisto.results(demisto_entry)
+
 
 def expire_user_password():
     args = demisto.args()
@@ -652,6 +683,7 @@ def expire_user_password():
     }
     demisto.results(demisto_entry)
 
+
 def set_user_password():
     args = demisto.args()
 
@@ -673,6 +705,7 @@ def set_user_password():
     }
     demisto.results(demisto_entry)
 
+
 def enable_user():
     args = demisto.args()
 
@@ -682,7 +715,7 @@ def enable_user():
     dn = user_dn(sam_account_name, search_base)
 
     # modify user
-    modification =  {
+    modification = {
         'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
     }
     modify_object(dn, modification)
@@ -694,6 +727,7 @@ def enable_user():
     }
     demisto.results(demisto_entry)
 
+
 def disable_user():
     args = demisto.args()
 
@@ -703,7 +737,7 @@ def disable_user():
     dn = user_dn(sam_account_name, search_base)
 
     # modify user
-    modification =  {
+    modification = {
         'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
     }
     modify_object(dn, modification)
@@ -714,6 +748,7 @@ def disable_user():
         'Contents': "User {} was disabled".format(sam_account_name)
     }
     demisto.results(demisto_entry)
+
 
 def add_member_to_group():
 
@@ -752,6 +787,7 @@ def add_member_to_group():
     }
     demisto.results(demisto_entry)
 
+
 def remove_member_from_group():
 
     args = demisto.args()
@@ -789,6 +825,7 @@ def remove_member_from_group():
     }
     demisto.results(demisto_entry)
 
+
 def unlock_account():
     args = demisto.args()
 
@@ -808,7 +845,9 @@ def unlock_account():
     }
     demisto.results(demisto_entry)
 
+
 ''' DELETE OBJECT '''
+
 
 def delete_user():
     # can acually delete any object...
@@ -839,17 +878,18 @@ conn = None
 if NTLM_AUTH:
     # intialize connection to LDAP server with NTLM authentication
     # user example: domain\user
-    domain_user =  SERVER_IP + '\\' + USERNAME if '\\'  not in USERNAME else USERNAME
+    domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
     conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
 else:
     # here username should be the user dn
-    conn =  Connection(server, user=USERNAME, password=PASSWORD)
+    conn = Connection(server, user=USERNAME, password=PASSWORD)
 
 # bind operation is the “authenticate” operation.
 try:
     # open socket and bind to server
     if not conn.bind():
-        message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(json.dumps(conn.result))
+        message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
+            json.dumps(conn.result))
         demisto.info(message)
         return_error(message)
 except LDAPSocketOpenError as e:
@@ -861,7 +901,9 @@ except LDAPSocketOpenError as e:
 demisto.info('Established connection with AD LDAP server')
 
 if not base_dn_verified():
-    message = "Failed to verify the base DN configured for the instance.\nLast connection result: {}\nLast error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+    message = "Failed to verify the base DN configured for the instance.\n" \
+        "Last connection result: {}\n" \
+        "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
     demisto.info(message)
     return_error(message)
 
@@ -907,7 +949,7 @@ try:
         delete_user()
 
     if demisto.command() == 'ad-update-user':
-       update_user()
+        update_user()
 
     if demisto.command() == 'ad-modify-computer-ou':
         modify_computer_ou()
@@ -928,11 +970,11 @@ try:
         search_group_members()
 
 except Exception as e:
-    message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(str(e), json.dumps(conn.result), conn.last_error)
+    message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
+        str(e), json.dumps(conn.result), conn.last_error)
     demisto.info(message)
     return_error(message)
 finally:
     # disconnect and close the connection
     conn.unbind()
     sys.exit(0)
-
