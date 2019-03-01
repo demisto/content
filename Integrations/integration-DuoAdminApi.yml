@@ -8,8 +8,20 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAmCAYAAAD3AKSiAAAGsUl
 description: |-
   DUO for admins.
   Must have access to the admin api in order to use this
+detaileddescription: |+
+  DUO admin api provides programmatic access to the administrative functionality of Duo Security's two-factor authentication platform.
+
+  To set up an instance you will need:
+  API hostname: admin api hostname provided by duo (e.g. api-XXXXXXXX.duosecurity.com)
+  Integration key: your integration key provided by duo
+  Secret key: your secret key/password provided by duo
+
+  Notice that duo admin api requires different credentials from your regular duo account (i.e. another set of api hostname, integration key and secret key)
+
+  For more information please check out the documentation at [https://duo.com/docs/adminapi](https://duo.com/docs/adminapi) #disable-secrets-detection
+
 configuration:
-- display: Host
+- display: API Hostname
   name: hostname
   defaultvalue: ""
   type: 0
@@ -45,6 +57,9 @@ script:
     INTEGRATION_KEY = demisto.getParam('integration_key')
     SECRET_KEY = demisto.getParam('secret_key')
 
+    #The duo client returns a signature error upon bad secret
+    #Convert it to a more informative message using this
+    INVALID_SECRET_ERROR_STRING = 'Invalid signature in request credentials'
 
     admin_api = duo_client.Admin(
         ikey=INTEGRATION_KEY,
@@ -106,6 +121,23 @@ script:
 
     #Methods
 
+    #Duo client return 2 different known structures of error messages
+    def test_instance():
+        try:
+            res = admin_api.get_info_summary()
+            demisto.results('ok')
+        except Exception as e:
+            if(hasattr(e,'data')):
+                #error data for 40103 is not informative enough so we write our own
+                if(e.data['code'] == 40103):
+                    demisto.results('Invalid secret key in request credentials')
+                else:
+                    demisto.results(e.data['message'])
+            elif(hasattr(e,'strerror')):
+                demisto.results(e.strerror)
+            else:
+                demisto.results('Unknown error')
+
     def get_all_users():
         res = admin_api.get_users()
         entry = get_entry_for_object('Users',res,res,
@@ -164,29 +196,27 @@ script:
         demisto.results('Token with ID ' + token_id + ' deleted successfully')
 
     #Execution
-
-    if demisto.command() == 'test-module':
-        try:
-            res = admin_api.get_info_summary()
-            demisto.results('ok')
-        except:
-            demisto.results('not ok')
-    if demisto.command() == 'duoadmin-get-users':
-        get_all_users()
-    if demisto.command() == 'duoadmin-get-authentication-logs-by-user':
-        get_authentication_logs_by_user(demisto.getArg('username'),demisto.getArg('from'))
-    if demisto.command() == 'duoadmin-get-devices':
-        get_all_devices()
-    if demisto.command() == 'duoadmin-get-devices-by-user':
-        get_devices_by_user(demisto.getArg('username'))
-    if demisto.command() == 'duoadmin-associate-device-to-user':
-        associate_device_to_user(demisto.getArg('username'),demisto.getArg('device_id'))
-    if demisto.command() == 'duoadmin-dissociate-device-from-user':
-        dissociate_device_by_user(demisto.getArg('username'), demisto.getArg('device_id'))
-    if demisto.command() == 'duoadmin-get-u2f-tokens-by-user':
-        get_u2f_tokens_by_user(demisto.getArg('username'))
-    if demisto.command() == 'duoadmin-delete-u2f-token':
-        delete_u2f_token(demisto.getArg('token_id'))
+    try:
+        if demisto.command() == 'test-module':
+            test_instance()
+        if demisto.command() == 'duoadmin-get-users':
+            get_all_users()
+        if demisto.command() == 'duoadmin-get-authentication-logs-by-user':
+            get_authentication_logs_by_user(demisto.getArg('username'),demisto.getArg('from'))
+        if demisto.command() == 'duoadmin-get-devices':
+            get_all_devices()
+        if demisto.command() == 'duoadmin-get-devices-by-user':
+            get_devices_by_user(demisto.getArg('username'))
+        if demisto.command() == 'duoadmin-associate-device-to-user':
+            associate_device_to_user(demisto.getArg('username'),demisto.getArg('device_id'))
+        if demisto.command() == 'duoadmin-dissociate-device-from-user':
+            dissociate_device_by_user(demisto.getArg('username'), demisto.getArg('device_id'))
+        if demisto.command() == 'duoadmin-get-u2f-tokens-by-user':
+            get_u2f_tokens_by_user(demisto.getArg('username'))
+        if demisto.command() == 'duoadmin-delete-u2f-token':
+            delete_u2f_token(demisto.getArg('token_id'))
+    except Exception, e:
+        return_error(e.message)
     sys.exit(0)
   type: python
   commands:
