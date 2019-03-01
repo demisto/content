@@ -112,7 +112,8 @@ def login():
         res_json = res.json()
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
             auth_token = res_json.get('log.loginResponse').get('log.return')
-            if demisto.command() != 'test-module':
+            if demisto.command() not in ['test-module', 'fetch-incidents']:
+                # this is done to bypass setting integration context with commands outside of the cli
                 demisto.setIntegrationContext({'auth_token': auth_token})
             return auth_token
 
@@ -775,10 +776,6 @@ try:
     elif demisto.command() == 'as-get-all-query-viewers':
         get_all_query_viewers_command()
 
-    LOG.print_log()
-
 
 except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
+    return_error(str(e))
