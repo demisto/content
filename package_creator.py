@@ -73,7 +73,6 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
         else:
             yml_text = 'image: ' + image_data + '\n' + yml_text
-        
         # verify that our yml is good (loads and returns the image)
         mod_yml_data = yaml.safe_load(yml_text)
         yml_image = mod_yml_data.get('image')
