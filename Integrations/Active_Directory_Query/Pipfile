@@ -8,6 +8,7 @@ pylint = "*"
 pytest = "*"
 flake8 = "*"
 astroid = "*"
+pytest-mock = "*"
 
 [packages]
 ldap3 = "*"
