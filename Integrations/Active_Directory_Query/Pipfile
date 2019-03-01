@@ -7,9 +7,13 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 flake8 = "*"
+astroid = "*"
 
 [packages]
 ldap3 = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
