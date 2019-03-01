@@ -33,6 +33,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     Returns:
         output path, script path, image path
     """
+    print("Merging package: {}".format(package_path))
     output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir_name], os.path.basename(os.path.dirname(package_path)))
     if dest_path:
         output_path = os.path.join(dest_path, output_filename)
@@ -48,7 +49,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     elif dir_name == 'Integrations':
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
 
-    with open(yml_path, 'r') as yml_file:
+    with io.open(yml_path, mode='r', encoding='utf-8') as yml_file:
         yml_text = yml_file.read()
 
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
