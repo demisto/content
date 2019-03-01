@@ -7,16 +7,8 @@ import ssl
 from datetime import datetime
 
 
-''' INSTANCE CONFIGURATION '''
-SERVER_IP = demisto.params().get('server_ip')
-USERNAME = demisto.params().get('credentials')['identifier']
-PASSWORD = demisto.params().get('credentials')['password']
-DEFAULT_BASE_DN = demisto.params().get('base_dn')
-SECURE_CONNECTION = demisto.params().get('secure_connection')
-DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
-NTLM_AUTH = demisto.params().get('ntlm')
-UNSECURE = demisto.params().get('unsecure', 'false') == 'true'
-PORT = demisto.params().get('port')
+# global connection
+conn = None
 
 ''' GLOBAL VARS '''
 
@@ -55,30 +47,39 @@ DEFAULT_COMPUTER_ATTRIBUTES = [
 ''' HELPER FUNCTIONS '''
 
 
-def initialize_server():
+def initialize_server(host, port, secure_connection, unsecure):
     """
     uses the instance configuration to initialize the LDAP server
-    """
-    if SECURE_CONNECTION == "None" and not UNSECURE:
-        raise Exception("When using unsecure connection you must check 'Trust any certificate' option")
 
-    if SECURE_CONNECTION == "SSL":
+    :param host: host or ip
+    :type host: string
+    :param port: port or None
+    :type port: number
+    :param secure_connection: SSL or None
+    :type secure_connection: string
+    :param unsecure: trust any cert
+    :type unsecure: boolean
+    :return: ldap3 Server
+    :rtype: Server
+    """
+
+    if secure_connection == "SSL":
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
-        demisto.debug("initializing sever with ssl. port: {}". format(PORT or 'default(636)'))
-        if UNSECURE:
+        demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        if not unsecure:
             demisto.debug("will require server certificate.")
             tls = Tls(validate=ssl.CERT_REQUIRED)
-            if PORT:
-                return Server(SERVER_IP, port=PORT, use_ssl=True, tls=tls)
-            return Server(SERVER_IP, use_ssl=True, tls=tls)
-        if PORT:
-            return Server(SERVER_IP, port=PORT, use_ssl=True)
-        return Server(SERVER_IP, use_ssl=True)
-    demisto.debug("initializing server without secure connection. port: {}". format(PORT or 'default(389)'))
-    if PORT:
-        return Server(SERVER_IP, port=PORT)
-    return Server(SERVER_IP)
+            if port:
+                return Server(host, port=port, use_ssl=True, tls=tls)
+            return Server(host, use_ssl=True, tls=tls)
+        if port:
+            return Server(host, port=port, use_ssl=True)
+        return Server(host, use_ssl=True)
+    demisto.debug("initializing server without secure connection. port: {}". format(port or 'default(389)'))
+    if port:
+        return Server(host, port=port)
+    return Server(host)
 
 
 def account_entry(person_object, custome_attributes):
@@ -114,12 +115,12 @@ def endpoint_entry(computer_object, custome_attributes):
     return endpoint
 
 
-def base_dn_verified():
+def base_dn_verified(base_dn):
     # serch AD with a simple query to test base DN is configured correctly
     try:
         search(
             "(objectClass=user)",
-            DEFAULT_BASE_DN,
+            base_dn,
             size_limit=1
         )
     except Exception as e:
@@ -256,14 +257,14 @@ def group_dn(group_name, search_base):
     return entry['dn']
 
 
-def free_search():
+def free_search(default_base_dn, page_size):
 
     args = demisto.args()
 
     search_filter = args.get('filter')
     size_limit = int(args.get('size-limit', '0'))
     time_limit = int(args.get('time-limit', '0'))
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')
 
     # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
@@ -276,7 +277,7 @@ def free_search():
         attributes=attributes,
         size_limit=size_limit,
         time_limit=time_limit,
-        page_size=DEFAULT_PAGE_SIZE
+        page_size=page_size
     )
 
     demisto_entry = {
@@ -292,7 +293,7 @@ def free_search():
     demisto.results(demisto_entry)
 
 
-def search_users():
+def search_users(default_base_dn, page_size):
     # this command is equivalant to script ADGetUser
     # will preform a custom search to find users by a specific (one) attribute specified by the user
 
@@ -337,10 +338,10 @@ def search_users():
 
     entries = search_with_paging(
         query,
-        DEFAULT_BASE_DN,
+        default_base_dn,
         attributes=attributes,
         size_limit=limit,
-        page_size=DEFAULT_PAGE_SIZE
+        page_size=page_size
     )
 
     accounts = [account_entry(entry, custome_attributes) for entry in entries['flat']]
@@ -366,7 +367,7 @@ def search_users():
     demisto.results(demisto_entry)
 
 
-def search_computers():
+def search_computers(default_base_dn, page_size):
     # this command is equivalent to ADGetComputer script
 
     args = demisto.args()
@@ -399,9 +400,9 @@ def search_computers():
 
     entries = search_with_paging(
         query,
-        DEFAULT_BASE_DN,
+        default_base_dn,
         attributes=attributes,
-        page_size=DEFAULT_PAGE_SIZE
+        page_size=page_size
     )
 
     endpoints = [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
@@ -421,7 +422,7 @@ def search_computers():
     demisto.results(demisto_entry)
 
 
-def search_group_members():
+def search_group_members(default_base_dn, page_size):
     # this command is equivalent to ADGetGroupMembers script
 
     args = demisto.args()
@@ -442,9 +443,9 @@ def search_group_members():
 
     entries = search_with_paging(
         query,
-        DEFAULT_BASE_DN,
+        default_base_dn,
         attributes=attributes,
-        page_size=DEFAULT_PAGE_SIZE
+        page_size=page_size
     )
 
     members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
@@ -600,14 +601,14 @@ def modify_object(dn, modification):
             dn, json.dumps(modification)))
 
 
-def update_user():
+def update_user(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
     attribute_name = args.get('attribute-name')
     attribute_value = args.get('attribute-value')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     modification = {}
@@ -642,11 +643,11 @@ def update_contact():
     demisto.results(demisto_entry)
 
 
-def modify_computer_ou():
+def modify_computer_ou(default_base_dn):
     args = demisto.args()
 
     computer_name = args.get('computer-name')
-    dn = computer_dn(computer_name, args.get('base-dn') or DEFAULT_BASE_DN)
+    dn = computer_dn(computer_name, args.get('base-dn') or default_base_dn)
 
     success = conn.modify_dn(dn, "CN={}".format(computer_name), new_superior=args.get('full-superior-dn'))
     if not success:
@@ -660,12 +661,12 @@ def modify_computer_ou():
     demisto.results(demisto_entry)
 
 
-def expire_user_password():
+def expire_user_password(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     modification = {
@@ -684,13 +685,13 @@ def expire_user_password():
     demisto.results(demisto_entry)
 
 
-def set_user_password():
+def set_user_password(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
     password = args.get('password')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     # set user password
@@ -706,12 +707,12 @@ def set_user_password():
     demisto.results(demisto_entry)
 
 
-def enable_user():
+def enable_user(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     # modify user
@@ -728,12 +729,12 @@ def enable_user():
     demisto.results(demisto_entry)
 
 
-def disable_user():
+def disable_user(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     # modify user
@@ -750,11 +751,11 @@ def disable_user():
     demisto.results(demisto_entry)
 
 
-def add_member_to_group():
+def add_member_to_group(default_base_dn):
 
     args = demisto.args()
 
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
 
     # get the  dn of the member - either user or computer
     args_err = "Pleade provide either username or computer-name"
@@ -788,11 +789,11 @@ def add_member_to_group():
     demisto.results(demisto_entry)
 
 
-def remove_member_from_group():
+def remove_member_from_group(default_base_dn):
 
     args = demisto.args()
 
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
 
     # get the dn of the member - either user or computer
     args_err = "Pleade provide either username or computer-name"
@@ -826,12 +827,12 @@ def remove_member_from_group():
     demisto.results(demisto_entry)
 
 
-def unlock_account():
+def unlock_account(default_base_dn):
     args = demisto.args()
 
     # get user DN
     sam_account_name = args.get('username')
-    search_base = args.get('base-dn') or DEFAULT_BASE_DN
+    search_base = args.get('base-dn') or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     success = microsoft.unlockAccount.ad_unlock_account(conn, dn)
@@ -871,12 +872,23 @@ def delete_user():
 
 
 def main():
+    ''' INSTANCE CONFIGURATION '''
+    SERVER_IP = demisto.params().get('server_ip')
+    USERNAME = demisto.params().get('credentials')['identifier']
+    PASSWORD = demisto.params().get('credentials')['password']
+    DEFAULT_BASE_DN = demisto.params().get('base_dn')
+    SECURE_CONNECTION = demisto.params().get('secure_connection')
+    DEFAULT_PAGE_SIZE = int(demisto.params().get('page_size'))
+    NTLM_AUTH = demisto.params().get('ntlm')
+    UNSECURE = demisto.params().get('unsecure', False)
+    PORT = demisto.params().get('port')
+
     try:
-        server = initialize_server()
+        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
     except Exception as e:
         return_error(str(e))
-
-    conn = None
+        return
+    global conn
     if NTLM_AUTH:
         # intialize connection to LDAP server with NTLM authentication
         # user example: domain\user
@@ -894,20 +906,28 @@ def main():
                 json.dumps(conn.result))
             demisto.info(message)
             return_error(message)
+            return
     except LDAPSocketOpenError as e:
-        demisto.info(str(e))
-        message = "Failed to access LDAP server. Please validate the server url is configured correctly"
+        exc_msg = str(e)
+        demisto.info(exc_msg)
+        message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
+        if 'ssl wrapping error' in exc_msg:
+            message = "Failed to access LDAP server. SSL error."
+            if not UNSECURE:
+                message += ' Try using: "Trust any certificate" option.'
         demisto.info(message)
         return_error(message)
+        return
 
     demisto.info('Established connection with AD LDAP server')
 
-    if not base_dn_verified():
+    if not base_dn_verified(DEFAULT_BASE_DN):
         message = "Failed to verify the base DN configured for the instance.\n" \
             "Last connection result: {}\n" \
             "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
         demisto.info(message)
         return_error(message)
+        return
 
     demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
@@ -921,28 +941,28 @@ def main():
             demisto.results('ok')
 
         if demisto.command() == 'ad-search':
-            free_search()
+            free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
         if demisto.command() == 'ad-expire-password':
-            expire_user_password()
+            expire_user_password(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-set-new-password':
-            set_user_password()
+            set_user_password(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-unlock-account':
-            unlock_account()
+            unlock_account(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-disable-account':
-            disable_user()
+            disable_user(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-enable-account':
-            enable_user()
+            enable_user(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-remove-from-group':
-            remove_member_from_group()
+            remove_member_from_group(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-add-to-group':
-            add_member_to_group()
+            add_member_to_group(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-create-user':
             create_user()
@@ -951,10 +971,10 @@ def main():
             delete_user()
 
         if demisto.command() == 'ad-update-user':
-            update_user()
+            update_user(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-modify-computer-ou':
-            modify_computer_ou()
+            modify_computer_ou(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-create-contact':
             create_contact()
@@ -963,23 +983,25 @@ def main():
             update_contact()
 
         if demisto.command() == 'ad-get-user':
-            search_users()
+            search_users(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
         if demisto.command() == 'ad-get-computer':
-            search_computers()
+            search_computers(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
         if demisto.command() == 'ad-get-group-members':
-            search_group_members()
+            search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
     except Exception as e:
         message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
             str(e), json.dumps(conn.result), conn.last_error)
         demisto.info(message)
         return_error(message)
+        return
     finally:
         # disconnect and close the connection
         conn.unbind()
 
 
-if __name__ == "__builtin__":
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
