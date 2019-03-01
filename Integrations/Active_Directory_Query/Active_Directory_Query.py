@@ -978,7 +978,7 @@ def main():
         return_error(message)
     finally:
         # disconnect and close the connection
-        conn.unbind()        
+        conn.unbind()
 
 
 if __name__ == "__builtin__":
