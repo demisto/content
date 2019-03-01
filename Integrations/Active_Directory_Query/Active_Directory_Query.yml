@@ -4,7 +4,6 @@ commonfields:
 name: Active Directory Query v2
 display: Active Directory Query v2
 category: Data Enrichment & Threat Intelligence
-image: file:image.png 
 description: Active Direcory Query integration enables you to  access and manage Active
   Directory objects (users, contacts, and computers).
 detaileddescription: |+

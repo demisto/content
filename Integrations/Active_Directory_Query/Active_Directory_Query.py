@@ -869,112 +869,117 @@ def delete_user():
     verify base DN is configured correctly
 '''
 
-try:
-    server = initialize_server()
-except Exception as e:
-    return_error(str(e))
 
-conn = None
-if NTLM_AUTH:
-    # intialize connection to LDAP server with NTLM authentication
-    # user example: domain\user
-    domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-    conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
-else:
-    # here username should be the user dn
-    conn = Connection(server, user=USERNAME, password=PASSWORD)
+def main():
+    try:
+        server = initialize_server()
+    except Exception as e:
+        return_error(str(e))
 
-# bind operation is the “authenticate” operation.
-try:
-    # open socket and bind to server
-    if not conn.bind():
-        message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
-            json.dumps(conn.result))
+    conn = None
+    if NTLM_AUTH:
+        # intialize connection to LDAP server with NTLM authentication
+        # user example: domain\user
+        domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
+        conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
+    else:
+        # here username should be the user dn
+        conn = Connection(server, user=USERNAME, password=PASSWORD)
+
+    # bind operation is the “authenticate” operation.
+    try:
+        # open socket and bind to server
+        if not conn.bind():
+            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
+                json.dumps(conn.result))
+            demisto.info(message)
+            return_error(message)
+    except LDAPSocketOpenError as e:
+        demisto.info(str(e))
+        message = "Failed to access LDAP server. Please validate the server url is configured correctly"
         demisto.info(message)
         return_error(message)
-except LDAPSocketOpenError as e:
-    demisto.info(str(e))
-    message = "Failed to access LDAP server. Please validate the server url is configured correctly"
-    demisto.info(message)
-    return_error(message)
 
-demisto.info('Established connection with AD LDAP server')
+    demisto.info('Established connection with AD LDAP server')
 
-if not base_dn_verified():
-    message = "Failed to verify the base DN configured for the instance.\n" \
-        "Last connection result: {}\n" \
-        "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
-    demisto.info(message)
-    return_error(message)
+    if not base_dn_verified():
+        message = "Failed to verify the base DN configured for the instance.\n" \
+            "Last connection result: {}\n" \
+            "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+        demisto.info(message)
+        return_error(message)
 
-demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
+    demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
-''' COMMAND EXECUTION '''
+    ''' COMMAND EXECUTION '''
 
-try:
-    if demisto.command() == 'test-module':
-        if conn.user == '':
-            # Empty response means you have no authentication status on the server, so you are an anonymous user.
-            raise Exception("Failed to authenticate user")
-        demisto.results('ok')
+    try:
+        if demisto.command() == 'test-module':
+            if conn.user == '':
+                # Empty response means you have no authentication status on the server, so you are an anonymous user.
+                raise Exception("Failed to authenticate user")
+            demisto.results('ok')
 
-    if demisto.command() == 'ad-search':
-        free_search()
+        if demisto.command() == 'ad-search':
+            free_search()
 
-    if demisto.command() == 'ad-expire-password':
-        expire_user_password()
+        if demisto.command() == 'ad-expire-password':
+            expire_user_password()
 
-    if demisto.command() == 'ad-set-new-password':
-        set_user_password()
+        if demisto.command() == 'ad-set-new-password':
+            set_user_password()
 
-    if demisto.command() == 'ad-unlock-account':
-        unlock_account()
+        if demisto.command() == 'ad-unlock-account':
+            unlock_account()
 
-    if demisto.command() == 'ad-disable-account':
-        disable_user()
+        if demisto.command() == 'ad-disable-account':
+            disable_user()
 
-    if demisto.command() == 'ad-enable-account':
-        enable_user()
+        if demisto.command() == 'ad-enable-account':
+            enable_user()
 
-    if demisto.command() == 'ad-remove-from-group':
-        remove_member_from_group()
+        if demisto.command() == 'ad-remove-from-group':
+            remove_member_from_group()
 
-    if demisto.command() == 'ad-add-to-group':
-        add_member_to_group()
+        if demisto.command() == 'ad-add-to-group':
+            add_member_to_group()
 
-    if demisto.command() == 'ad-create-user':
-        create_user()
+        if demisto.command() == 'ad-create-user':
+            create_user()
 
-    if demisto.command() == 'ad-delete-user':
-        delete_user()
+        if demisto.command() == 'ad-delete-user':
+            delete_user()
 
-    if demisto.command() == 'ad-update-user':
-        update_user()
+        if demisto.command() == 'ad-update-user':
+            update_user()
 
-    if demisto.command() == 'ad-modify-computer-ou':
-        modify_computer_ou()
+        if demisto.command() == 'ad-modify-computer-ou':
+            modify_computer_ou()
 
-    if demisto.command() == 'ad-create-contact':
-        create_contact()
+        if demisto.command() == 'ad-create-contact':
+            create_contact()
 
-    if demisto.command() == 'ad-update-contact':
-        update_contact()
+        if demisto.command() == 'ad-update-contact':
+            update_contact()
 
-    if demisto.command() == 'ad-get-user':
-        search_users()
+        if demisto.command() == 'ad-get-user':
+            search_users()
 
-    if demisto.command() == 'ad-get-computer':
-        search_computers()
+        if demisto.command() == 'ad-get-computer':
+            search_computers()
 
-    if demisto.command() == 'ad-get-group-members':
-        search_group_members()
+        if demisto.command() == 'ad-get-group-members':
+            search_group_members()
 
-except Exception as e:
-    message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
-        str(e), json.dumps(conn.result), conn.last_error)
-    demisto.info(message)
-    return_error(message)
-finally:
-    # disconnect and close the connection
-    conn.unbind()
-    sys.exit(0)
+    except Exception as e:
+        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
+            str(e), json.dumps(conn.result), conn.last_error)
+        demisto.info(message)
+        return_error(message)
+    finally:
+        # disconnect and close the connection
+        conn.unbind()        
+
+
+if __name__ == "__builtin__":
+    main()
