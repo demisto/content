@@ -15594,14 +15594,6 @@
             }
         }, 
         {
-            "Test-Detonate URL - ThreatGrid": {
-                "name": "Test-Detonate URL - ThreatGrid", 
-                "implementing_playbooks": [
-                    "Detonate URL - ThreatGrid"
-                ]
-            }
-        }, 
-        {
             "test-domain-indicator": {
                 "name": "test-domain-indicator", 
                 "implementing_scripts": [
