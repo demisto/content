@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from email import message_from_string, message_from_file
+from email import message_from_string
 from email.header import decode_header
 from base64 import b64decode
 
@@ -9,6 +9,8 @@ import sys
 import email.utils
 from email.parser import HeaderParser
 import traceback
+from email.parser import Parser
+
 
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
@@ -3233,9 +3235,6 @@ def handle_msg(file_path):
 
     return email_data
 
-
-from collections import defaultdict
-from email.parser import Parser
 
 def parse_message(filename):
     with open(filename) as f:
