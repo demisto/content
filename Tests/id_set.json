@@ -5829,7 +5829,7 @@
                     "threat-grid-url-to-file": "Threat Grid"
                 }, 
                 "tests": [
-                    "Test-Detonate URL - ThreatGrid"
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
