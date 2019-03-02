@@ -106,7 +106,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 70,
           "y": 1595
         }
       }
@@ -137,7 +137,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 500,
           "y": 1420
         }
       }
@@ -224,7 +224,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 500,
           "y": 1245
         }
       }
@@ -262,79 +262,6 @@ tasks:
         "position": {
           "x": 162.5,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "17":
-    id: "17"
-    taskid: 2665035c-2428-430e-8552-7ed3ee3c893b
-    type: regular
-    task:
-      id: 2665035c-2428-430e-8552-7ed3ee3c893b
-      version: -1
-      name: ThreatGrid Upload File
-      description: Submits a sample to threat grid for analysis
-      script: '|||threat-grid-upload-sample'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      file-id:
-        complex:
-          root: inputs.File
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
-            - operator: match
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
-              ignorecase: true
-            - operator: match
-              left:
-                value:
-                  simple: inputs.File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
-              ignorecase: true
-          accessor: EntryID
-      filename:
-        complex:
-          root: inputs.FileName
-      playbook:
-        complex:
-          root: inputs.playbook
-      private:
-        complex:
-          root: inputs.Private
-      tags:
-        complex:
-          root: inputs.Tags
-      vm:
-        complex:
-          root: inputs.VM
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
         }
       }
     note: false
@@ -412,7 +339,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "17"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -434,6 +361,86 @@ tasks:
       }
     note: false
     timertriggers: []
+  "20":
+    id: "20"
+    taskid: 4fe8b8b6-097b-42e5-8d2a-7d7693101c90
+    type: regular
+    task:
+      id: 4fe8b8b6-097b-42e5-8d2a-7d7693101c90
+      version: -1
+      name: ThreatGrid Upload File
+      description: Submits a sample to threat grid for analysis
+      script: '|||threat-grid-upload-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file-id:
+        complex:
+          root: File
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: File.Size
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          - - operator: match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+          accessor: EntryID
+      filename:
+        complex:
+          root: inputs.FileName
+      playbook: {}
+      private:
+        complex:
+          root: inputs.Private
+      tags:
+        complex:
+          root: inputs.Tags
+      vm:
+        complex:
+          root: inputs.VM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {
@@ -442,7 +449,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 717.5,
+        "width": 830,
         "x": 50,
         "y": 50
       }
