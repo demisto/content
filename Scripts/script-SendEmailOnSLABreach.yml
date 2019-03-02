@@ -71,6 +71,5 @@ enabled: true
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: "A new script to send an email on SLA breach"
 tests:
   - No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.

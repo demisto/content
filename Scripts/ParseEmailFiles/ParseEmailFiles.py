@@ -7,6 +7,7 @@ from base64 import b64decode
 import sys
 import email.utils
 from email.parser import HeaderParser
+import traceback
 
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
@@ -3329,19 +3330,21 @@ def main():
 
         file_type = result[0]['FileMetadata']['info']
     except Exception, ex:
-        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex.message))
+        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
+                     str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
 
     try:
-        if 'Composite Document File V2 Document'.lower() in file_type.lower() \
-                or 'CDFV2 Microsoft Outlook Message'.lower() in file_type.lower():
+        file_type_lower = file_type.lower()
+        if 'composite document file v2 document' in file_type_lower \
+                or 'cdfv2 microsoft outlook message' in file_type_lower:
             handle_msg(file_path)
             return
 
-        elif 'rfc 822 mail' in file_type.lower():
+        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower:
             handle_eml(file_path)
             return
 
-        elif 'ASCII text' in file_type:
+        elif 'ascii text' in file_type_lower:
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
@@ -3365,7 +3368,7 @@ def main():
             return_error("Unknown file format: " + file_type)
 
     except Exception, ex:
-        return_error(ex.message)
+        return_error(str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex))
 
 
 if __name__ == "__builtin__":

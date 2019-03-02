@@ -17,7 +17,7 @@ script: |-
       context_modules = demisto.getModules()
       for module_name, module in context_modules.iteritems():
           if module.get("brand") == brand_name:
-              instance_name = module_name
+              instance_name = module_name.replace(' ', '_')
               break
   elif demisto.args().get("instance_name"):
       instance_name = demisto.args()["instance_name"]
@@ -87,4 +87,3 @@ runonce: false
 deprecated: true
 tests:
   - No test - cannot create a dummy integration inorder to test that
-releaseNotes: "Added support for integration with spaces in name"

@@ -74,16 +74,9 @@ script:
     """
 
     def set_proxies():
-
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return None
+        if not demisto.params()['proxy']:
+            for _ in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
+                del os.environ[_]
 
 
     """
@@ -433,13 +426,16 @@ script:
         """
         LOG('Requestig to update incident ' + incident_id)
 
-        body = "{{\"status\": \"{}\",\"asignee\": \"{}\"}}".format(status, assignee)
+        body = {
+                'assignee': assignee,
+                'status': status
+            }
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         response = http_request(
             'PATCH',
             url,
             headers = DEFAULT_HEADERS,
-            body = body
+            body = json.dumps(body)
         )
         return response
 
@@ -1080,7 +1076,7 @@ script:
       description: The timestamp of the alert created date.
     - contextPath: NetWitness.Alerts.source
       description: The source of this alert. For example, "Event Stream Analysis",
-        "Malware Analysis", etc.
+                     "Malware Analysis", etc.
     - contextPath: NetWitness.Alerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
     - contextPath: NetWitness.Alerts.type
@@ -1320,7 +1316,7 @@ script:
       description: The timestamp of the alert created date.
     - contextPath: NetWitness.Alerts.source
       description: The source of this alert. For example, "Event Stream Analysis",
-        "Malware Analysis", etc.
+                     "Malware Analysis", etc.
     - contextPath: NetWitness.Alerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
     - contextPath: NetWitness.Alerts.type
@@ -1363,5 +1359,6 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
+releaseNotes: "Fixed issue with netwitness-update-incident where it ignored the assignee argument"
 tests:
   - RSA NetWitness Test

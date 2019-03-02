@@ -81,7 +81,9 @@ script:
     PASSWORD = demisto.params().get('credentials').get('password')
     USE_SSL = not demisto.params().get('unsecure', False)
     CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_TIME_DEFAULT = '3 days'
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+    FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
     FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
 
     STATUS_MAP = {
@@ -982,7 +984,7 @@ script:
 
         if data:
             cybereason_outputs = []
-            file_outsputs = []
+            file_outputs = []
             endpoint_outputs = []
             files = data.get('resultIdToElementDataMap')
             for file in files.keys():
@@ -1037,7 +1039,7 @@ script:
                     'Company': company_name
                 })
 
-                file_outsputs.append({
+                file_outputs.append({
                     'Name': file_name,
                     'MD5': md5,
                     'SHA1': sha1,
@@ -1053,7 +1055,7 @@ script:
                     'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
                     'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
                 }
-                ec[outputPaths['file']] = file_outsputs
+                ec[outputPaths['file']] = file_outputs
 
                 demisto.results({
                     'ContentsFormat': formats['json'],

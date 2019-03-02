@@ -153,7 +153,14 @@ script:
     var raw;
     switch (command) {
         case 'test-module':
-            if (sendRequest(urlDict['sb-quota'], requestTemplate, contentTypeDict['sb-quota'], 'test', cookies, requestCookies)) {
+            command = 'sb-query'
+            if (sendRequest(
+                urlDict[command],
+                createRequest({md5: '36bd4be7042f6de7e332c05cef287d05'}),
+                contentTypeDict[command],
+                'test',
+                cookies,
+                requestCookies)) {
                 return 'ok';
             }
             return 'not-cool';
@@ -301,7 +308,7 @@ script:
             contents.response.te);
     } else if (command === 'sandblast-quota' || command === 'sb-quota') {
         ReadableContentsFormat = formats.markdown;
-        HumanReadable = tableToMarkdown('Sandblast Quota Status', Contents.response);
+        HumanReadable = tableToMarkdown('Sandblast Quota Status', contents.response);
     }
 
     return {
@@ -560,6 +567,6 @@ script:
       and quota status of the API Key that you use
 hidden: false
 fromversion: 3.5.0
-releaseNotes: Improvements to Context and DBot score
 tests:
   - Sandblast_malicious_test
+releaseNotes: "Fixed test button, so that it will fail if the user is out of quota"

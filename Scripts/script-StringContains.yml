@@ -49,6 +49,5 @@ outputs:
 - contextPath: no
   description: if string does not contain substring
 scripttarget: 0
-releaseNotes: "Deprecated"
 tests:
   - No test - deprecated, didn't have a test prior
