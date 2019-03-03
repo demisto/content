@@ -1059,6 +1059,11 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
