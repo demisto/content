@@ -5,7 +5,7 @@ import json
 import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, run_command, get_json, checked_type
+from Tests.test_utils import print_error, print_warning, run_command, get_json, checked_type
 
 try:
     from pykwalify.core import Core
@@ -41,10 +41,11 @@ class StructureValidator(object):
 
     SCHEMAS_PATH = "Tests/schemas/"
 
-    def __init__(self, file_path, is_added_file=False):
+    def __init__(self, file_path, is_added_file=False, is_renamed=False):
         self._is_valid = True
         self.file_path = file_path
         self.is_added_file = is_added_file
+        self.is_renamed = is_renamed
 
     def is_file_valid(self):
         """Check if the file as a valid structure.
@@ -173,6 +174,10 @@ class StructureValidator(object):
 
         This function updates the class attribute self._is_valid instead of passing it back and forth.
         """
+        if self.is_renamed:
+            print_warning("You might need RN please make sure to check that.")
+            return
+
         data_dictionary = None
         if os.path.isfile(self.file_path):
             with open(os.path.expanduser(self.file_path), "r") as f:
@@ -198,6 +203,10 @@ class StructureValidator(object):
         Returns:
             bool. Whether the file's ID has been modified or not.
         """
+        if self.is_renamed:
+            print_warning("ID might have changed, please make sure to change you have the correct one.")
+            return True
+
         if not change_string:
             change_string = run_command("git diff HEAD {}".format(self.file_path))
 

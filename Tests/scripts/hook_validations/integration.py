@@ -26,7 +26,8 @@ class IntegrationValidator(object):
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
-                self.old_integration = get_json(get(git_hub_path))
+                file_content = get(git_hub_path).content
+                self.old_integration = yaml.load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
@@ -58,7 +59,7 @@ class IntegrationValidator(object):
             dict. command name to a list of it's arguments.
         """
         command_to_args = {}
-        commands = integration_json.get('commands', [])
+        commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             command_to_args[command['name']] = {}
             for arg in command['arguments']:
@@ -126,10 +127,10 @@ class IntegrationValidator(object):
             dict. command name to a list of it's context paths.
         """
         command_to_context_list = {}
-        commands = integration_json.get('commands', [])
+        commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             context_list = []
-            for output in command['outputs']:
+            for output in command.get('outputs', []):
                 context_list.append(output['contextPath'])
 
             command_to_context_list[command['name']] = sorted(context_list)
@@ -146,7 +147,7 @@ class IntegrationValidator(object):
         old_command_to_context_paths = self._get_command_to_context_paths(self.old_integration)
 
         for old_command, old_context_paths in old_command_to_context_paths.items():
-            if old_command not in current_command_to_context_paths.keys() or \
+            if old_command in current_command_to_context_paths.keys() and \
                     not self._is_sub_set(current_command_to_context_paths[old_command],
                                          old_context_paths):
                 print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
@@ -189,7 +190,8 @@ class IntegrationValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the Docker image was changed or not."""
-        if self.old_integration.get('dockerimage', "") != self.current_integration.get('dockerimage', ""):
+        if self.old_integration.get('script', {}).get('dockerimage', "") != \
+                self.current_integration.get('script', {}).get('dockerimage', ""):
             print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                         " this is not allowed.".format(self.file_path))
             self._is_valid = False
