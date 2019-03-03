@@ -7,8 +7,6 @@ from subprocess import Popen, PIPE
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES
 
-CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
-
 
 class LOG_COLORS:
     NATIVE = '\033[m'
