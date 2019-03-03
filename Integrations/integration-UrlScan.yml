@@ -6,6 +6,7 @@ display: urlscan.io
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Urlscan.io reputation
+defaultEnabled: false
 detaileddescription: |-
   This integration checks domain information from the urlscan.io Database.
   This is a free service with an API key required. contact urlscan.io to obtain one.
@@ -32,9 +33,9 @@ script:
     import collections
     from urlparse import urlparse
     from requests.utils import quote
+    import time
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
-
 
 
 
@@ -51,9 +52,8 @@ script:
 
 
 
-
     '''HELPER FUNCTIONS'''
-    def http_request(method, url_suffix, json=None):
+    def http_request(method, url_suffix, json = None, wait = 0, retries = 0):
         if method is 'GET':
             headers = {}
         elif method is 'POST':
@@ -70,7 +70,15 @@ script:
             verify=INSECURE
         )
         if r.status_code is not 200:
+            if r.status_code == 429:
+                if retries <= 0:
+                    # Error in API call to URLScan.io [429] - Too Many Requests
+                    return_error('API rate limit reached. Use the retries and wait arguments whe submitting multile URls')
+                else:
+                    time.sleep(wait)
+                    return http_request(method, url_suffix, json, wait, retries - 1)
             return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
+
         return r.json()
 
 
@@ -164,7 +172,9 @@ script:
             submission_dict['public'] = 'on'
         submission_dict['url'] = demisto.args().get('url')
         sub_json = json.dumps(submission_dict)
-        r = http_request('POST', 'scan/', sub_json)
+        wait = int(demisto.args().get('wait', 5))
+        retries = int(demisto.args().get('retries', 0))
+        r = http_request('POST', 'scan/', sub_json, wait, retries)
         uuid = r['uuid']
         return uuid
 
@@ -207,7 +217,7 @@ script:
         if 'urls' in scan_lists:
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
-        human_readable['Effective URL'] = url_query
+        human_readable['Effective URL'] = response['page']['url'] # effective url of the submitted url
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
         if 'ips' in scan_lists:
@@ -565,6 +575,7 @@ script:
       type: string
     description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
+    deprecated: true
     arguments:
     - name: url
       required: true
@@ -647,7 +658,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
       type: string
-    description: Submit a url to scan
+    description: 'Deprecated: replaced with url command'
   - name: url
     arguments:
     - name: url
@@ -666,6 +677,12 @@ script:
     - name: limit
       description: Limits the results in the war room
       defaultValue: "20"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "5"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: URL submitted
@@ -732,7 +749,6 @@ script:
       type: string
     description: Submit a url to scan
   runonce: false
-fromversion: 3.5.0
-releaseNotes: "Fixed issue where insecure setting was ignored during polling"
+releaseNotes: "Add rate limit arguments to !url command: wait, retries"
 tests:
   - urlscan_malicious_Test
