@@ -3295,34 +3295,6 @@ def handle_eml(file_path, b64=False):
         text = ''
         attachment_names = []
 
-        # email_attachments = find_email_attachments(eml)
-        # for cdisp, part in email_attachments:
-        #     filename = ""
-        #     if cdisp.get('filename'):
-        #         filename = os.path.normpath(cdisp.get('filename'))
-        #         if os.path.isabs(filename):
-        #             filename = os.path.basename(filename)
-        #
-        #     if filename.endswith(".msg"):
-        #         # msg files handled later in while loop
-        #         continue
-        #
-        #     for attachment in part.get_payload():
-        #         # payload is array that contains the message itself
-        #         # but it will always will contain single message.Message object
-        #         # I use foreach loop for protected programming
-        #         if filename == "":
-        #             filename = dict(attachment._headers).get('Subject', "no_name_mail_attachment") + ".eml"
-        #
-        #         filename = convert_to_unicode(filename)
-        #         try:
-        #             demisto.results(fileResult(filename, attachment.as_string()))
-        #             demisto.setContext('AttachmentName', filename)
-        #             attachment_names.append(filename)
-        #         except:
-        #
-        #             pass
-
         attached_emails = []
         parts = [eml]
 
@@ -3423,10 +3395,6 @@ def main():
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id,
                      str(ex) + "\n\nTrace:\n" + traceback.format_exc(ex)))
 
-    # file_path = "/Users/anarazadaliyev/Downloads/EmlithMsgAttachment.eml"
-    # file_path = "/Users/anarazadaliyev/Downloads/demisto_untitled_attachment_(47).eml"
-    # file_path = "/Users/anarazadaliyev/Downloads/Fwd_ test - inner attachment eml.eml"
-    # file_type = "RFC 822 mail text, ASCII text, with very long lines, with CRLF line terminators"
     try:
         file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
