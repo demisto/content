@@ -2648,6 +2648,22 @@
             }
         }, 
         {
+            "InstancesHealth": {
+                "name": "InstancesHealth", 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
+            "InstancesHealthRatio": {
+                "name": "InstancesHealthRatio", 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
             "InviteUser": {
                 "name": "InviteUser", 
                 "deprecated": true, 

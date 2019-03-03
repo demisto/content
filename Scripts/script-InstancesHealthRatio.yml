@@ -1,0 +1,43 @@
+commonfields:
+  id: InstancesHealthRatio
+  version: -1
+name: InstancesHealthRatio
+script: |-
+  import json
+
+  INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule']
+  all_modules = demisto.getModules()
+  instances = {}
+  healty_instances = []
+  healty_instances_d = {}
+  non_healthy_instances = []
+  non_healty_instances_d = {}
+
+  for key in all_modules:
+      # add non internal modules, non default instances, active instances
+      if all_modules[key]['brand'] not in INTERNAL_MODULES_BRANDS and all_modules[key]['defaultIgnored'] != 'true' and all_modules[key]['state'] == 'active':
+          instances.update({key: all_modules[key]})
+
+
+  for key in instances:
+      cmd = key.replace(" ", "_") + '-test-module'
+      res =  demisto.executeCommand(cmd, {})
+      if res[0]['Type'] != entryTypes["error"]:
+          healty_instances.append({'Instance': key, 'Brand': instances[key]['brand'], 'Category': instances[key]['category'], 'Status': 'up', 'Information': res[0]['Contents']});
+
+      if res[0]['Type'] == entryTypes["error"]:
+          non_healthy_instances.append({'instance': key, 'Brand': instances[key]['brand'], 'Category': instances[key]['category'], 'Status': 'down', 'Information': res[0]['Contents']})
+
+  data = [{'name': "Healty", 'data': [len(healty_instances)], 'groups': [{'name': "Unclassified", 'data': [len(healty_instances)] }]}, {'name': "non-Healthy", 'data': [len(non_healthy_instances)], 'groups': [{'name': "Unclassified", 'data': [len(non_healthy_instances)] }]}]
+  demisto.results(json.dumps(data))
+type: python
+tags: []
+comment: Executes test for all integration instances available and returns an object,
+  to be used as a chart in a widget.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Executes test for all integration instances available and returns an object, to be used as a chart in a widget."
+tests:
+  - No test
