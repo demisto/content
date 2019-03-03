@@ -9055,6 +9055,9 @@
                     "fe-submit-url", 
                     "fe-submit-url-status", 
                     "fe-submit-url-result"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
