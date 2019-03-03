@@ -83,7 +83,7 @@ script:
     }
 
 
-    def http_request(method, suffix_url, headers=DEFAULT_HEADERS, body=None, params=None):
+    def http_request(method, suffix_url, headers=DEFAULT_HEADERS, body=None):
         """
         returns the http request
 
@@ -96,8 +96,7 @@ script:
             auth=(USERNAME, PASSWORD),
             headers=headers,
             verify=USE_SSL,
-            data=body,
-            params=params
+            data=body
         )
         # handle request failure
         if response.status_code not in {200}:
@@ -107,7 +106,7 @@ script:
         try:
             response = response.json()
         except:
-            return_error('Response is not JSON format')
+            return_error(response.content)
 
         return response
 
@@ -169,7 +168,7 @@ script:
                 'Processors': endpoint.get('num_cpus')
             })
 
-        context['CounterTack.Endpoint'] = createContext(endpoints, id='id', keyTransform=underscoreToCamelCase)
+        context['CounterTack.Endpoint(val.ID && val.ID === obj.ID)'] = createContext(endpoints, keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
 
         headers = ['OS', 'Name', 'Threat', 'Status', 'ID', 'IP']
@@ -238,7 +237,7 @@ script:
             'Processors': response.get('num_cpus')
         }
 
-        context['CounterTack.Endpoint'] = createContext(response, id='TenantID', keyTransform=underscoreToCamelCase)
+        context['CounterTack.Endpoint(val.ID && val.ID === obj.ID)'] = createContext(response, keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
 
         headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
@@ -292,7 +291,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(tags_context, id='endpoint_id', keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(tags_context, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -341,7 +340,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(response, id='endpoint_id', keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -394,7 +393,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(response, id='Endpoint_Id', keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -453,7 +452,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
         }
 
         data = {
@@ -508,7 +507,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(quarantine_context, id='endpoint_ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -563,7 +562,7 @@ script:
         }
 
         context = {
-            'CounterTack.File': createContext(response, id='ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.File(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         headers = ['ID', 'User Name', 'Request Time', 'Endpoint ID', 'Command Name', 'Command Arguments', 'Status']
         entry = {
@@ -659,7 +658,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint': createContext(response, id='ID', keyTransform=underscoreToCamelCase, removeNull=True)
+            'CounterTack.Endpoint(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase, removeNull=True)
         }
 
         entry = {
@@ -716,7 +715,7 @@ script:
                 'Path': file.get('path')
             })
 
-        context['CounterTack.File'] = createContext(files, id='ID', keyTransform=underscoreToCamelCase)
+        context['CounterTack.File(val.ID && val.ID === obj.ID)'] = createContext(files, keyTransform=underscoreToCamelCase)
         context[outputPaths['file']] = files_standards
 
         headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
@@ -768,7 +767,7 @@ script:
             })
 
         context = {
-            'CounterTack.File': createContext(files, id='ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.File(val.ID && val.ID === obj.ID)': createContext(files, keyTransform=underscoreToCamelCase)
         }
         headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
         entry = {
@@ -812,7 +811,7 @@ script:
             'status': response.get('status'),
         }
         context = {
-            'CounterTack.File': createContext(response, id='file_id', keyTransform=underscoreToCamelCase)
+            'CounterTack.File(val.path && val.path === obj.path)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         headers = ['endpoint_name', 'path', 'size', 'status', 'extraction_time']
         entry = {
@@ -856,7 +855,7 @@ script:
     """
 
 
-    def get_behaviors_request(params=''):
+    def get_behaviors_request():
         """
         This request retrieves information on a collection of behaviors.
         """
@@ -883,7 +882,7 @@ script:
             })
 
         context = {
-            'CounterTack.Behavior': createContext(behaviors, id='ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.ID && val.ID === obj.ID)': createContext(behaviors, keyTransform=underscoreToCamelCase)
         }
         headers = ['Name', 'ID', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'lastReported']
         entry = {
@@ -931,7 +930,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior': createContext(response, id='ID', keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         headers = ['Name', 'ID', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
         entry = {
@@ -982,7 +981,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -1027,7 +1026,7 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior': createContext(response, id='behaviour_id', keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -1087,7 +1086,7 @@ script:
                 })
 
             context = {
-                'CounterTack.Event': createContext(results_lst, id='Id', keyTransform=underscoreToCamelCase, removeNull=True)
+                'CounterTack.Event(val.Id && val.Id === obj.Id)': createContext(results_lst, keyTransform=underscoreToCamelCase, removeNull=True)
             }
             headers = ['ID', 'Event Type', 'Events Action', 'Events EndpointID', 'Events Impact', 'Collected time', 'Source process PID', 'Source process name']
             entry = {
@@ -1135,28 +1134,32 @@ script:
                 results_lst.append({k.replace('hashes.', ''): v for k, v in results[i].items()})
             hashes['results'] = results_lst
             for hash_type in hashes.get('results'):
+                file_hash_type =  hash_type.get('type', '').upper()
+                hash_id = hash_type.get('id')
                 data.append({
-                    'Id': hash_type.get('id'),
-                    'Type': hash_type.get('type'),
+                    file_hash_type: hash_id,
+                    'Type': file_hash_type,
                     'Impact': hash_type.get('impact'),
                     'VT report location': hash_type.get('vt_report_location'),
                     'AV Coverage': hash_type.get('av_coverage')
                 })
 
-                file_standards.append({
-                    'Type': hash_type.get('type')
-            })
+                if file_hash_type:
+                    file_standards.append({
+                        file_hash_type: hash_id
+                    })
 
-            context['CounterTack.Hash'] = createContext(results_lst, id='Id', keyTransform=underscoreToCamelCase)
+
+            context['CounterTack.Hash(val.hash_id && val.hash_id === obj.hash_id)'] = createContext(data)
             context[outputPaths['file']] = file_standards
-            headers = ['Id', 'Type', 'Impact', 'VT report location', 'AV Coverage']
+            #headers = ['Id', 'Type', 'Impact', 'VT report location', 'AV Coverage']
             entry = {
                 'Type': entryTypes['note'],
                 'Contents': results_lst,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown('Results of the hashes search:',
-                data, headers, removeNull=True),
+                data, removeNull=True),
                 'EntryContext': context
             }
             demisto.results(entry)
@@ -1604,7 +1607,7 @@ script:
           description: Name of behavior
           type: string
         - contextPath: CounterTack.Behavior.ImpactLevel
-          description: 'Impact level of the behavior'
+          description: 'Impact level of the behavior '
           type: string
         - contextPath: CounterTack.Behavior.LastActive
           description: The last time the behavior was active
@@ -1616,7 +1619,7 @@ script:
           description: First event ID
           type: string
         - contextPath: CounterTack.Behavior.Type
-          description: 'Type of behaviour'
+          description: 'Type of behavior'
           type: string
         - contextPath: CounterTack.Behavior.Id
           description: Behaviour ID
@@ -2173,8 +2176,14 @@ script:
         - contextPath: CounterTack.Hash.VtReportLocation
           description: Report location for Virus Total report.
           type: string
-        - contextPath: File.Type
-          description: Type of Hash (sha256, md5, or ssdeep).
+        - contextPath: File.MD5
+          description: The MD5 of the file
+          type: string
+        - contextPath: File.SHA256
+          description: The SHA256 of the file
+          type: string
+        - contextPath: File.SSDEEP
+          description: The SSDEEP of the file
           type: string
       description: Search for Hashes using CQL expression (Contextual Query Language)
         to represent queries.
