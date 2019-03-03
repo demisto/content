@@ -2003,7 +2003,8 @@
         }, 
         {
             "ExtractDomain": {
-                "name": "ExtractDomain"
+                "name": "ExtractDomain", 
+                "deprecated": true
             }
         }, 
         {
@@ -2019,12 +2020,14 @@
         }, 
         {
             "ExtractEmail": {
-                "name": "ExtractEmail"
+                "name": "ExtractEmail", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractHash": {
-                "name": "ExtractHash"
+                "name": "ExtractHash", 
+                "deprecated": true
             }
         }, 
         {
@@ -2078,12 +2081,14 @@
         }, 
         {
             "ExtractIP": {
-                "name": "ExtractIP"
+                "name": "ExtractIP", 
+                "deprecated": true
             }
         }, 
         {
             "ExtractURL": {
-                "name": "ExtractURL"
+                "name": "ExtractURL", 
+                "deprecated": true
             }
         }, 
         {
@@ -2151,6 +2156,9 @@
                 "script_executions": [
                     "getContext", 
                     "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -2159,6 +2167,9 @@
                 "name": "FindSimilarIncidentsByText", 
                 "script_executions": [
                     "getIncidents"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -2630,7 +2641,11 @@
         }, 
         {
             "InviteUser": {
-                "name": "InviteUser"
+                "name": "InviteUser", 
+                "deprecated": true, 
+                "tests": [
+                    "No tests"
+                ]
             }
         }, 
         {
@@ -3396,9 +3411,6 @@
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
-                ], 
-                "tests": [
-                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -5059,6 +5071,9 @@
                 "implementing_scripts": [
                     "ADGetUser", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -5104,9 +5119,9 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "as-get-security-events": "ArcSight ESM", 
-                    "as-get-case": "ArcSight ESM", 
-                    "as-get-case-event-ids": "ArcSight ESM"
+                    "as-get-all-cases": "", 
+                    "as-get-security-events": "", 
+                    "as-get-case-event-ids": ""
                 }, 
                 "tests": [
                     "test Arcsight - Get events related to the Case"
@@ -5338,6 +5353,9 @@
                 "implementing_scripts": [
                     "FindSimilarIncidents", 
                     "CloseInvestigationAsDuplicate"
+                ], 
+                "tests": [
+                    "test_similar_incidents"
                 ]
             }
         }, 
@@ -5629,6 +5647,9 @@
                     "Print", 
                     "SandboxDetonateFile", 
                     "Exists"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -5695,8 +5716,8 @@
                     "GenericPolling"
                 ], 
                 "command_to_integration": {
-                    "threat-grid-upload-sample": "", 
-                    "threat-grid-get-samples-state": ""
+                    "threat-grid-get-samples-state": "", 
+                    "threat-grid-upload-sample": ""
                 }, 
                 "tests": [
                     "Detonate File - Generic Test"
@@ -5816,7 +5837,7 @@
                     "threat-grid-url-to-file": "Threat Grid"
                 }, 
                 "tests": [
-                    "Test-Detonate URL - ThreatGrid"
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
@@ -5896,6 +5917,9 @@
                     "Sentinel One - Endpoint data collection", 
                     "MAR - Endpoint data collection", 
                     "D2 - Endpoint data collection"
+                ], 
+                "tests": [
+                    "No tests - Need to add"
                 ]
             }
         }, 
@@ -5914,7 +5938,7 @@
                 "command_to_integration": {
                     "cylance-protect-get-devices": "Cylance Protect", 
                     "cb-sensor-info": "carbonblack", 
-                    "so-agents-query": "sentinelOne"
+                    "so-agents-query": "SentinelOne"
                 }
             }
         }, 
@@ -5964,6 +5988,9 @@
                     "IPReputation", 
                     "Exists", 
                     "URLReputation"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -6009,6 +6036,9 @@
                     "ExtractURL", 
                     "ExtractEmail", 
                     "ExtractIP"
+                ], 
+                "tests": [
+                    "No tests - Deprecated"
                 ]
             }
         }, 
@@ -6097,7 +6127,10 @@
                 "command_to_integration": {
                     "vt-private-check-file-behaviour": "VirusTotal - Private API", 
                     "vt-private-get-file-report": "VirusTotal - Private API"
-                }
+                }, 
+                "tests": [
+                    "No test - need to add test"
+                ]
             }
         }, 
         {
@@ -6377,6 +6410,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - Deprecated"
                 ]
             }
         }, 
@@ -6462,7 +6498,7 @@
                     "Search Endpoints By Hash - Generic"
                 ], 
                 "tests": [
-                    "No test - Deprecated playbook"
+                    "No test - Need to do"
                 ]
             }
         }, 
@@ -6475,7 +6511,10 @@
                 ], 
                 "command_to_integration": {
                     "mar-search-multiple": "McAfee Active Response"
-                }
+                }, 
+                "tests": [
+                    "No tests - Need to add"
+                ]
             }
         }, 
         {
@@ -6636,6 +6675,9 @@
                 ], 
                 "implementing_playbooks": [
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -6705,7 +6747,10 @@
                     "epo-update-repository": "epo", 
                     "epo-get-latest-dat": "epo", 
                     "epo-get-current-dat": "epo"
-                }
+                }, 
+                "tests": [
+                    "Test Playbook McAfee ePO"
+                ]
             }
         }, 
         {
@@ -6725,7 +6770,7 @@
                     "servicenow-incident-create": "ServiceNow"
                 }, 
                 "tests": [
-                    "No test"
+                    "Test Playbook McAfee ePO"
                 ]
             }
         }, 
@@ -6859,6 +6904,9 @@
                     "Hunt for bad IOCs", 
                     "Account Enrichment", 
                     "Enrichment Playbook"
+                ], 
+                "tests": [
+                    "No tests - deprecated"
                 ]
             }
         }, 
@@ -6890,6 +6938,9 @@
                     "Set", 
                     "Exists", 
                     "ParseEmailFiles"
+                ], 
+                "tests": [
+                    "No tests - Deprecated playbook"
                 ]
             }
         }, 
@@ -7131,9 +7182,12 @@
                     "Exists"
                 ], 
                 "command_to_integration": {
-                    "so-agents-query": "sentinelOne", 
-                    "so-get-agent-processes": "sentinelOne"
-                }
+                    "so-agents-query": "SentinelOne", 
+                    "so-get-agent-processes": "SentinelOne"
+                }, 
+                "tests": [
+                    "No test"
+                ]
             }
         }, 
         {
@@ -7353,6 +7407,16 @@
     ], 
     "integrations": [
         {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
             "AbuseIPDB": {
                 "name": "AbuseIPDB", 
                 "commands": [
@@ -7537,12 +7601,33 @@
                     "as-get-case-event-ids", 
                     "as-update-case", 
                     "as-get-all-query-viewers", 
+                    "as-case-delete"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
+            "ArcSight ESM v2": {
+                "name": "ArcSight ESM v2", 
+                "commands": [
+                    "as-get-all-cases", 
+                    "as-get-case", 
+                    "as-get-matrix-data", 
+                    "as-add-entries", 
+                    "as-clear-entries", 
+                    "as-get-entries", 
+                    "as-get-security-events", 
+                    "as-get-case-event-ids", 
+                    "as-update-case", 
+                    "as-get-all-query-viewers", 
                     "as-case-delete", 
                     "as-get-query-viewer-results", 
                     "as-fetch-incidents"
                 ], 
                 "tests": [
-                    "ArcSight ESM Test"
+                    "ArcSight ESM v2 Test"
                 ]
             }
         }, 
@@ -8095,6 +8180,10 @@
                     "checkpoint-block-ip", 
                     "checkpoint", 
                     "checkpoint-delete-rule"
+                ], 
+                "tests": [
+                    "blockip_test_playbook", 
+                    "CheckpointFW-test"
                 ]
             }
         }, 
@@ -8395,6 +8484,9 @@
                 "commands": [
                     "cve-search", 
                     "cve-latest"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9457,6 +9549,9 @@
                 "commands": [
                     "ip", 
                     "ipinfo_field"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -9516,6 +9611,23 @@
         {
             "jira": {
                 "name": "jira", 
+                "fromversion": "2.6.0", 
+                "commands": [
+                    "jira-issue-query", 
+                    "jira-get-issue", 
+                    "jira-create-issue", 
+                    "jira-issue-upload-file", 
+                    "jira-issue-add-comment", 
+                    "jira-issue-add-link", 
+                    "jira-edit-issue", 
+                    "jira-get-comments", 
+                    "jira-delete-issue"
+                ]
+            }
+        }, 
+        {
+            "jira": {
+                "name": "jira", 
                 "toversion": "2.5.0", 
                 "commands": [
                     "jira-issue-query", 
@@ -9524,6 +9636,14 @@
                     "jira-issue-upload-file", 
                     "jira-issue-add-comment", 
                     "jira-issue-add-link"
+                ]
+            }
+        }, 
+        {
+            "JIRA-python": {
+                "name": "JIRA-python", 
+                "commands": [
+                    "example-get-items"
                 ]
             }
         }, 
@@ -9698,6 +9818,9 @@
                     "lr-get-alarm-history-by-id", 
                     "lr-update-alarm-status", 
                     "lr-get-alarms"
+                ], 
+                "tests": [
+                    "LogRhythm-Test-Playbook"
                 ]
             }
         }, 
@@ -9754,7 +9877,15 @@
                 "commands": [
                     "mar-search", 
                     "mar-collectors-list", 
-                    "mar-search-multiple"
+                    "mar-search-multiple", 
+                    "mar-search-services", 
+                    "mar-search-processes", 
+                    "mar-search-win-registry", 
+                    "mar-search-files", 
+                    "mar-search-usb-connected-storage-devices", 
+                    "mar-search-user-profiles", 
+                    "mar-search-scheduled-tasks", 
+                    "mar-search-host-info"
                 ]
             }
         }, 
@@ -10118,6 +10249,9 @@
                     "url", 
                     "openphish-reload", 
                     "openphish-status"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10344,6 +10478,9 @@
                     "url", 
                     "phishtank-reload", 
                     "phishtank-status"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -10733,7 +10870,8 @@
                     "archer-upload-file", 
                     "archer-add-to-detailed-analysis", 
                     "archer-get-user-id", 
-                    "archer-get-valuelist"
+                    "archer-get-valuelist", 
+                    "archer-reset-cache"
                 ], 
                 "tests": [
                     "Archer-Test-Playbook"
@@ -11421,6 +11559,22 @@
             }
         }, 
         {
+            "Thinkst Canary": {
+                "name": "Thinkst Canary", 
+                "commands": [
+                    "canarytools-list-canaries", 
+                    "canarytools-list-tokens", 
+                    "canarytools-check-whitelist", 
+                    "canarytools-whitelist-ip", 
+                    "canarytools-edit-alert-status", 
+                    "canarytools-get-token"
+                ], 
+                "tests": [
+                    "CanaryTools Test"
+                ]
+            }
+        }, 
+        {
             "Threat Crowd": {
                 "name": "Threat Crowd", 
                 "commands": [
@@ -11429,6 +11583,9 @@
                     "threat-crowd-ip", 
                     "threat-crowd-antivirus", 
                     "threat-crowd-file"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -11642,6 +11799,9 @@
                     "ip", 
                     "file", 
                     "urlscan-submit"
+                ], 
+                "tests": [
+                    "No tests"
                 ]
             }
         }, 
@@ -11649,6 +11809,19 @@
             "urlscan.io": {
                 "name": "urlscan.io", 
                 "fromversion": "3.5.0", 
+                "commands": [
+                    "urlscan-search", 
+                    "urlscan-submit", 
+                    "url"
+                ], 
+                "tests": [
+                    "urlscan_malicious_Test"
+                ]
+            }
+        }, 
+        {
+            "urlscan.io": {
+                "name": "urlscan.io", 
                 "commands": [
                     "urlscan-search", 
                     "urlscan-submit", 
@@ -11917,6 +12090,9 @@
                     "domain", 
                     "cve-search", 
                     "cve-latest"
+                ], 
+                "tests": [
+                    "XFE Test"
                 ]
             }
         }, 
@@ -12164,39 +12340,6 @@
             }
         }, 
         {
-            "7ab45104-22aa-4e1b-8062-cadcbb28d87f": {
-                "name": "Test - urlscan", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "urlscan.io", 
-                    "ip": "urlscan.io", 
-                    "urlscan-submit": "urlscan.io"
-                }
-            }
-        }, 
-        {
-            "8984405a-4274-470a-8a34-a437d8e2e1c5": {
-                "name": "Test - PhishMe", 
-                "implementing_scripts": [
-                    "CloseInvestigation", 
-                    "IsGreaterThan", 
-                    "DeleteContext", 
-                    "AreValuesEqual"
-                ], 
-                "command_to_integration": {
-                    "url": "Phishme Intelligence", 
-                    "phishme-search": "Phishme Intelligence", 
-                    "email": "Phishme Intelligence", 
-                    "file": "Phishme Intelligence", 
-                    "ip": "Phishme Intelligence"
-                }
-            }
-        }, 
-        {
             "97393cfc-2fc4-4dfe-8b6e-af64067fc436": {
                 "name": "AWS - S3 Test Playbook", 
                 "implementing_scripts": [
@@ -12336,8 +12479,8 @@
             }
         }, 
         {
-            "ArcSight ESM Test": {
-                "name": "ArcSight ESM Test", 
+            "ArcSight ESM v2 Test": {
+                "name": "ArcSight ESM v2 Test", 
                 "implementing_scripts": [
                     "DeleteContext"
                 ], 
@@ -12345,9 +12488,10 @@
                     "as-get-case": "", 
                     "as-get-all-query-viewers": "", 
                     "as-clear-entries": "", 
-                    "as-get-all-cases": "", 
+                    "as-get-query-viewer-results": "", 
                     "as-get-entries": "", 
                     "as-add-entries": "", 
+                    "as-get-all-cases": "", 
                     "as-update-case": "", 
                     "as-get-case-event-ids": ""
                 }
@@ -12514,6 +12658,25 @@
             }
         }, 
         {
+            "CanaryTools Test": {
+                "name": "CanaryTools Test", 
+                "implementing_scripts": [
+                    "FetchFromInstance", 
+                    "DeleteContext", 
+                    "isError", 
+                    "IsTrue"
+                ], 
+                "command_to_integration": {
+                    "canarytools-list-canaries": "Thinkst Canary", 
+                    "canarytools-edit-alert-status": "Thinkst Canary", 
+                    "canarytools-whitelist-ip": "Thinkst Canary", 
+                    "canarytools-list-tokens": "Thinkst Canary", 
+                    "canarytools-get-token": "Thinkst Canary", 
+                    "canarytools-check-whitelist": "Thinkst Canary"
+                }
+            }
+        }, 
+        {
             "CarbonBlackLiveResponseTest": {
                 "name": "Carbon Black Live Response Test", 
                 "implementing_scripts": [
@@ -12573,18 +12736,12 @@
             "CheckpointFW-test": {
                 "name": "CheckpointFW-test", 
                 "implementing_scripts": [
-                    "VerifyContextFields", 
-                    "CheckpointFWBackupStatus", 
-                    "DeleteContext", 
-                    "Sleep", 
-                    "CheckpointFWCreateBackup"
+                    "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "checkpoint-delete-rule": "Check Point", 
-                    "checkpoint-block-ip": "Check Point", 
-                    "checkpoint-set-rule": "Check Point", 
-                    "checkpoint-show-access-rule-base": "Check Point", 
-                    "checkpoint-show-hosts": "Check Point"
+                    "checkpoint-set-rule": "", 
+                    "checkpoint-show-access-rule-base": "", 
+                    "checkpoint-show-hosts": ""
                 }
             }
         }, 
@@ -13232,12 +13389,26 @@
             }
         }, 
         {
+            "Endpoint data collection test": {
+                "name": "Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
+                }
+            }
+        }, 
+        {
             "endpoint_enrichment_-_generic_test": {
                 "name": "Endpoint Enrichment - Generic Test", 
                 "fromversion": "3.5.0", 
                 "implementing_scripts": [
                     "DeleteContext", 
-                    "VerifyContext", 
                     "Set"
                 ], 
                 "implementing_playbooks": [
@@ -13428,8 +13599,11 @@
                     "PrintErrorEntry"
                 ], 
                 "command_to_integration": {
+                    "fidelis-list-pcap-components": "", 
                     "fidelis-list-alerts": "", 
-                    "fidelis-get-alert": ""
+                    "fidelis-get-malware-data": "", 
+                    "fidelis-get-alert": "", 
+                    "fidelis-get-alert-report": ""
                 }
             }
         }, 
@@ -14184,6 +14358,21 @@
                     "googleapps-gmail-get-mail": "google", 
                     "googleapps-gmail-search": "google", 
                     "send-mail": "Mail Sender (New)"
+                }
+            }
+        }, 
+        {
+            "MAR - Endpoint data collection test": {
+                "name": "MAR - Endpoint data collection test", 
+                "implementing_scripts": [
+                    "VerifyContext", 
+                    "DeleteContext"
+                ], 
+                "implementing_playbooks": [
+                    "MAR - Endpoint data collection"
+                ], 
+                "command_to_integration": {
+                    "mar-search-host-info": ""
                 }
             }
         }, 
@@ -15002,8 +15191,12 @@
         {
             "RSA NetWitness Test": {
                 "name": "RSA NetWitness Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "command_to_integration": {
                     "netwitness-get-incident": "RSA NetWitness v11.1", 
+                    "netwitness-update-incident": "RSA NetWitness v11.1", 
                     "netwitness-get-incidents": "RSA NetWitness v11.1"
                 }
             }
@@ -15173,15 +15366,36 @@
             }
         }, 
         {
-            "sep_-_test_endpoint_search": {
-                "name": "SEP - Test endpoint search", 
-                "fromversion": "3.5.0", 
+            "servicenow_test_new": {
+                "name": "ServiceNow Test New", 
                 "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "FileCreateAndUpload", 
+                    "FetchFromInstance", 
                     "VerifyContext", 
+                    "VerifyContextFields", 
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
-                    "sep-endpoints-info": "Symantec Endpoint Protection"
+                    "servicenow-get-table-name": "ServiceNow", 
+                    "servicenow-update-record": "ServiceNow", 
+                    "servicenow-delete-record": "ServiceNow", 
+                    "servicenow-get-ticket-notes": "ServiceNow", 
+                    "servicenow-query-tickets": "", 
+                    "servicenow-create-ticket": "ServiceNow", 
+                    "servicenow-add-comment": "ServiceNow", 
+                    "servicenow-upload-file": "ServiceNow", 
+                    "servicenow-get-record": "ServiceNow", 
+                    "servicenow-create-record": "ServiceNow", 
+                    "servicenow-add-link": "ServiceNow", 
+                    "servicenow-query-groups": "ServiceNow", 
+                    "servicenow-list-table-fields": "ServiceNow", 
+                    "servicenow-update-ticket": "", 
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-delete-ticket": "ServiceNow", 
+                    "servicenow-query-computers": "ServiceNow", 
+                    "servicenow-get-ticket": "ServiceNow", 
+                    "servicenow-query-users": "ServiceNow"
                 }
             }
         }, 
@@ -15575,14 +15789,6 @@
             }
         }, 
         {
-            "Test-Detonate URL - ThreatGrid": {
-                "name": "Test-Detonate URL - ThreatGrid", 
-                "implementing_playbooks": [
-                    "Detonate URL - ThreatGrid"
-                ]
-            }
-        }, 
-        {
             "test-domain-indicator": {
                 "name": "test-domain-indicator", 
                 "implementing_scripts": [
@@ -15720,6 +15926,25 @@
             }
         }, 
         {
+            "TestDedupIncidentsByName": {
+                "name": "TestDedupIncidentsByName", 
+                "implementing_playbooks": [
+                    "DeDup incidents"
+                ]
+            }
+        }, 
+        {
+            "TestDedupIncidentsPlaybook": {
+                "name": "TestDedupIncidentsPlaybook", 
+                "implementing_scripts": [
+                    "FindSimilarIncidents", 
+                    "CreateDuplicateIncident", 
+                    "DeleteContext", 
+                    "Sleep"
+                ]
+            }
+        }, 
+        {
             "TestExtractHTMLTables": {
                 "name": "TestExtractHTMLTables", 
                 "implementing_scripts": [
@@ -15822,12 +16047,36 @@
             }
         }, 
         {
+            "TestParseEmailFile-deprecated-script": {
+                "name": "TestParseEmailFile-deprecated-script", 
+                "implementing_scripts": [
+                    "http", 
+                    "ParseEmailFile", 
+                    "ParseEmailFiles", 
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
+                ]
+            }
+        }, 
+        {
             "TestSafeBreach": {
                 "name": "TestSafeBreach", 
                 "command_to_integration": {
                     "safebreach-get-simulation": "SafeBreach", 
                     "safebreach-rerun": "SafeBreach"
                 }
+            }
+        }, 
+        {
+            "TestShowScheduledEntries": {
+                "name": "TestShowScheduledEntries", 
+                "implementing_scripts": [
+                    "ShowScheduledEntries", 
+                    "ScheduleCommand", 
+                    "DeleteContext", 
+                    "Sleep"
+                ]
             }
         }, 
         {
@@ -15995,6 +16244,7 @@
                     "DeleteContext"
                 ], 
                 "command_to_integration": {
+                    "url": "urlscan.io", 
                     "urlscan-search": ""
                 }
             }

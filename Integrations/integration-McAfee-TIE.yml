@@ -420,4 +420,3 @@ script:
   runonce: false
 tests:
   - McAfee-TIE Test
-releaseNotes: "Dbot score for indicator with reputation of less than 30 is now set to bad"

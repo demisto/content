@@ -258,4 +258,3 @@ inputs:
     Default is set to all hashes
 tests:
   - No test
-releaseNotes: "-"

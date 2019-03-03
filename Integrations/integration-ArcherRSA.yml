@@ -3308,6 +3308,10 @@ script:
         };
     }
 
+    function resetIntegrationCache(){
+        setIntegrationContext({});
+    }
+
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -3395,6 +3399,8 @@ script:
             return addToDetailedAnalysis(args);
         case commands.getUserId:
             return getUserId(args);
+        case 'archer-reset-cache':
+            return resetIntegrationCache();
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -3682,10 +3688,13 @@ script:
     - name: fieldID
       required: true
       description: Field Id
-    description: Returns a list of values for a specified field, e.g., fieldID=16114. This
-      command only works for value list fields (type 4).
+    description: Returns a list of values for a specified field, e.g., fieldID=16114.
+      This command only works for value list fields (type 4).
+  - name: archer-reset-cache
+    arguments: []
+    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
-releaseNotes: "Added new command 'archer-get-valuelist' to get the value-list of a field"
+releaseNotes: "New command 'archer-reset-cache' to reset the integration cache"
 tests:
   - Archer-Test-Playbook
