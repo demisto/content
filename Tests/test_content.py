@@ -99,15 +99,18 @@ def configure_proxy_unsecure(integrations):
             elem['params'][param] = True
 
 
-def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   CircleCI, buildNumber, server_url, build_name, bypass_mock=False):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
     else:
         print 'Failed: %s failed' % (test_message,)
-        failed_playbooks.append(playbook_id)
+        playbook_id_with_mock = playbook_id
+        if bypass_mock:
+            playbook_id_with_mock = " (Mock Disabled)"
+        failed_playbooks.append(playbook_id_with_mock)
         # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
         # TODO: Enable before merge
     return succeed
@@ -118,8 +121,8 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True)
-    succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+    succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                             test_options, slack, CircleCI, buildNumber, server_url, build_name)
     proxy.stop()
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id)
@@ -162,8 +165,8 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
 
     if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
         print start_message + ' (Mock: Disabled)'
-        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                       test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
+                       slack, CircleCI, buildNumber, server_url, build_name, bypass_mock=True)
         print '------ Test %s end ------' % (test_message,)
 
         return
@@ -443,11 +446,11 @@ def main():
     proxy.print_empty_files()
 
     print "Pushing new/updated mock files to mock git repo."
-    ami.upload_mock_files(build_name, buildNumber)
+    ami.upload_mock_files(build_name, buildNumber)  # TODO: Remove before merge
 
     if build_name == 'master':
         print "Pushing new/updated mock files to mock git repo."
-        # ami.upload_mock_files(build_name, buildNumber)
+        # ami.upload_mock_files(build_name, buildNumber) # TODO: Enable before merge
 
     os.remove(FILTER_CONF)
 
