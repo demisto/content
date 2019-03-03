@@ -10,7 +10,7 @@ import argparse
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_json, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_git_command, LOG_COLORS, print_error, print_color
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
 
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
@@ -435,7 +435,7 @@ def update_test_set(tests_set, tests):
 def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -499,18 +499,18 @@ def create_test_file(is_nightly):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_git_command("git branch")
+        branches = run_command("git branch")
         branch_name_reg = re.search("\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
         tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)

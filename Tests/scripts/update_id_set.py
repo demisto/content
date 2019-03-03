@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_json, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_git_command
+    LOG_COLORS, print_color, run_command
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
@@ -201,7 +201,7 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_command("git diff HEAD {0}".format(file_path))
     is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
     is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
 
@@ -335,13 +335,13 @@ def sort(data):
 
 
 def update_id_set():
-    branches = run_git_command("git branch")
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status HEAD")
-    second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    files_string = run_command("git diff --name-status HEAD")
+    second_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
@@ -356,7 +356,7 @@ def update_id_set():
                     # if we got this error it means we have corrupted id_set.json
                     # usually it will happen if we merged from master and we had a conflict in id_set.json
                     # so we checkout the id_set.json to be exact as in master and then run update_id_set
-                    run_git_command("git checkout origin/master Tests/id_set.json")
+                    run_command("git checkout origin/master Tests/id_set.json")
                     with open('./Tests/id_set.json', 'r') as id_set_file_from_master:
                         ids_dict = json.load(id_set_file_from_master, object_pairs_hook=OrderedDict)
                 else:

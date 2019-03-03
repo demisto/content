@@ -7,7 +7,7 @@ import demisto
 from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
-from Tests.test_utils import str2bool, run_git_command, print_color, print_error, LOG_COLORS
+from Tests.test_utils import str2bool, run_command, print_color, print_error, LOG_COLORS
 
 
 def options_handler():
@@ -97,7 +97,7 @@ def get_attachments(secret_conf_path, server, user, password):
 
 
 def slack_notifier(slack_token, secret_conf_path, server, user, password):
-    branches = run_git_command("git branch")
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 

@@ -1,7 +1,7 @@
 import re
 import yaml
 
-from Tests.test_utils import print_error, run_git_command
+from Tests.test_utils import print_error, run_command
 
 
 class ScriptValidator(object):
@@ -19,7 +19,7 @@ class ScriptValidator(object):
         self.file_path = file_path
 
         if check_git:
-            self.change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
+            self.change_string = run_command("git diff HEAD {0}".format(self.file_path))
             with open(file_path, 'r') as file_data:
                 self.yaml_data = yaml.safe_load(file_data)
 
@@ -48,7 +48,7 @@ class ScriptValidator(object):
         return False
 
     def is_arg_changed(self):
-        """Check if the argument as been changed."""
+        """Check if the argument has been changed."""
         deleted_args = re.findall("-([ ]+)?- name: (.*)", self.change_string)
         added_args = re.findall("\+([ ]+)?- name: (.*)", self.change_string)
 

@@ -4,7 +4,7 @@ from Tests.test_utils import *
 
 
 class ConfJsonValidator(object):
-    """ConfJsonValidator as been designed to make sure we are following the standards for the conf.json file.
+    """ConfJsonValidator has been designed to make sure we are following the standards for the conf.json file.
 
     Attributes:
         _is_valid (bool): Whether the conf.json file current state is valid or not.
@@ -32,7 +32,7 @@ class ConfJsonValidator(object):
         return self._is_valid
 
     def is_valid_description_in_conf_dict(self, checked_dict):
-        """Validate that the checked_dict as description for all it's fields.
+        """Validate that the checked_dict has description for all it's fields.
 
         Args:
             checked_dict (dict): Dictionary from conf.json file.

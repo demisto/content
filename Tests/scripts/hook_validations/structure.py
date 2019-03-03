@@ -5,7 +5,7 @@ import json
 import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, run_git_command, get_json, checked_type
+from Tests.test_utils import print_error, run_command, get_json, checked_type
 
 try:
     from pykwalify.core import Core
@@ -23,7 +23,7 @@ class StructureValidator(object):
         is_added_file (bool): whether the file is modified or added.
     """
     SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
-    REGEXES_TO_SCHEMA_DIC = {
+    REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
         INTEGRATION_YML_REGEX: "integration",
         PLAYBOOK_REGEX: "playbook",
@@ -50,7 +50,7 @@ class StructureValidator(object):
         """Check if the file as a valid structure.
 
         Returns:
-            bool. Whether the files' structure is valid or not.
+            bool. Whether the file's structure is valid or not.
         """
         self.is_valid_scheme()
         self.is_valid_version()
@@ -80,9 +80,9 @@ class StructureValidator(object):
                     break
 
         if matching_regex not in self.SKIPPED_SCHEMAS or os.path.isfile(self.file_path):
-            if matching_regex is not None and self.REGEXES_TO_SCHEMA_DIC.get(matching_regex):
+            if matching_regex is not None and self.REGEXES_TO_SCHEMA_DICT.get(matching_regex):
                 c = Core(source_file=self.file_path,
-                         schema_files=[self.SCHEMAS_PATH + self.REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
+                         schema_files=[self.SCHEMAS_PATH + self.REGEXES_TO_SCHEMA_DICT.get(matching_regex) + '.yml'])
                 try:
                     c.validate(raise_exception=True)
                 except Exception as err:
@@ -90,8 +90,8 @@ class StructureValidator(object):
                     print_error(err)
                     self._is_valid = False
             else:
-                print self.file_path + " doesn't match any of the known supported file prefix/suffix," \
-                                       " please make sure that its naming is correct."
+                print(self.file_path + " doesn't match any of the known supported file prefix/suffix,"
+                                       " please make sure that its naming is correct.")
                 self._is_valid = False
 
         return self._is_valid
@@ -147,7 +147,7 @@ class StructureValidator(object):
             bool. Whether the files' fromversion as been modified or not.
         """
         if not change_string:
-            change_string = run_git_command("git diff HEAD {0}".format(self.file_path))
+            change_string = run_command("git diff HEAD {0}".format(self.file_path))
 
         is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
         is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
@@ -162,14 +162,14 @@ class StructureValidator(object):
     @staticmethod
     def is_release_branch():
         """Check if we are working on a release branch."""
-        diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
+        diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
         if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
 
         return False
 
     def validate_file_release_notes(self):
-        """Validate that the file as proper release notes when modified.
+        """Validate that the file has proper release notes when modified.
 
         This function updates the class attribute self._is_valid instead of passing it back and forth.
         """
@@ -190,16 +190,16 @@ class StructureValidator(object):
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):
-        """Check if the ID of the file as been changed.
+        """Check if the ID of the file has been changed.
 
         Args:
-            change_string (string): the string that indicates the changed done on the file(git diff)
+            change_string (string): the string that indicates the changes done on the file(git diff)
 
         Returns:
-            bool. Whether the files' ID as been modified or not.
+            bool. Whether the file's ID has been modified or not.
         """
         if not change_string:
-            change_string = run_git_command("git diff HEAD {}".format(self.file_path))
+            change_string = run_command("git diff HEAD {}".format(self.file_path))
 
         if re.search("[+-](  )?id: .*", change_string):
             print_error("You've changed the ID of the file {0} please undo.".format(self.file_path))
