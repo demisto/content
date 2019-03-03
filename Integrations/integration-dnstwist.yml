@@ -114,3 +114,4 @@ script:
     description: 'Check domain variations '
   dockerimage: demisto/dnstwist:1.0
   runonce: false
+releaseNotes: Added option to specify 'whois' argument for dnstwist-domain-variations command
