@@ -314,8 +314,12 @@
         {
             "ADGetComputer": {
                 "name": "ADGetComputer", 
+                "deprecated": true, 
                 "depends_on": [
                     "ad-search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -361,8 +365,12 @@
         {
             "ADGetGroupMembers": {
                 "name": "ADGetGroupMembers", 
+                "deprecated": true, 
                 "depends_on": [
                     "ad-search"
+                ], 
+                "tests": [
+                    "No test"
                 ]
             }
         }, 
@@ -7488,6 +7496,33 @@
             }
         }, 
         {
+            "Active Directory Query v2": {
+                "name": "Active Directory Query v2", 
+                "commands": [
+                    "ad-expire-password", 
+                    "ad-create-user", 
+                    "ad-search", 
+                    "ad-add-to-group", 
+                    "ad-remove-from-group", 
+                    "ad-update-user", 
+                    "ad-delete-user", 
+                    "ad-create-contact", 
+                    "ad-update-contact", 
+                    "ad-disable-account", 
+                    "ad-enable-account", 
+                    "ad-unlock-account", 
+                    "ad-set-new-password", 
+                    "ad-modify-computer-ou", 
+                    "ad-get-user", 
+                    "ad-get-computer", 
+                    "ad-get-group-members"
+                ], 
+                "tests": [
+                    "Active Directory Test"
+                ]
+            }
+        }, 
+        {
             "ActiveMQ": {
                 "name": "ActiveMQ", 
                 "commands": [
@@ -12511,6 +12546,25 @@
                 "implementing_playbooks": [
                     "Account Enrichment - Generic"
                 ]
+            }
+        }, 
+        {
+            "Active Directory Test": {
+                "name": "Active Directory Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "ad-update-contact": "", 
+                    "ad-remove-from-group": "", 
+                    "ad-add-to-group": "", 
+                    "ad-delete-user": "", 
+                    "ad-get-user": "", 
+                    "ad-disable-account": "", 
+                    "ad-enable-account": "", 
+                    "ad-get-group-members": "", 
+                    "ad-create-user": ""
+                }
             }
         }, 
         {
