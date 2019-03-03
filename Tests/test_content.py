@@ -158,7 +158,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
     # Mock recording - no mock file or playback failure.
     succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
