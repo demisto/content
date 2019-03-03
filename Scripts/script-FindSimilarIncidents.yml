@@ -132,9 +132,15 @@ script: |-
 
       return labels_map
 
+  QUERY_LIST_OF_SPECIAL_CHARS = "\\+-=&|><!(){}[]^\"~*?:/"
+  def escape_special_query_chars(value):
+      for c in QUERY_LIST_OF_SPECIAL_CHARS:
+          value = value.replace(c, "\\" + c)
+      return value
+
   def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hours_back, ignore_closed, max_number_of_results, extra_query, applied_condition):
       condition_string = ' %s ' % applied_condition.lower()
-      similar_keys_query = condition_string.join(map(lambda t: '%s:"%s"' % (t[0], t[1]), similar_incident_keys.items()))
+      similar_keys_query = condition_string.join(map(lambda t: '%s:"%s"' % (t[0], escape_special_query_chars(t[1])), similar_incident_keys.items()))
       incident_time = parse_datetime(incident_time)
       max_date = incident_time + timedelta(hours=hours_back)
       min_date = incident_time - timedelta(hours=hours_back)
@@ -425,3 +431,6 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
+tests:
+  - No test
+releaseNotes: "Fix - special characters escaping"
