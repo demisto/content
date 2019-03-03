@@ -8446,12 +8446,14 @@
                     "countertack-endpoint-quarantine", 
                     "countertack-disable-quarantine", 
                     "countertack-extract-file", 
-                    "counterTack-delete-file", 
+                    "countertack-delete-file", 
                     "countertack-get-all-files", 
                     "countertack-get-endpoint-files", 
                     "countertack-get-file-information", 
                     "countertack-download-file", 
-                    "countertack-delete-extracted-file"
+                    "countertack-search-events", 
+                    "countertack-kill-process", 
+                    "countertack-search-hashes"
                 ], 
                 "tests": [
                     "no tests"
