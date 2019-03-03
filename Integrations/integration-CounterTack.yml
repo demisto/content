@@ -586,7 +586,7 @@ script:
         return response.json()
 
 
-    def delete_endpoint_file():
+    def delete_file():
 
         """
         Deletes a file from the specified endpoint
@@ -1234,8 +1234,8 @@ script:
             disable_quarantine()
         elif command == 'countertack-extract-file':
             extract_file()
-        elif command == 'countertack-delete-endpoint-file':
-            delete_endpoint_file()
+        elif command == 'countertack-delete-file':
+            delete_file()
         elif command == 'countertack-get-all-files':
             get_all_files()
         elif command == 'countertack-get-endpoint-files':
