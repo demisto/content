@@ -9,7 +9,7 @@ description: LogRhythm security intelligence
 detaileddescription: SIEM, log management, network and endpoint monitoring and forensics,
   and security analytics.
 configuration:
-- display: Hostname or IP address
+- display: Hostname, IP address or Server URL
   name: Host
   defaultvalue: ""
   type: 0
@@ -185,7 +185,7 @@ script:
 
     var soapActionURIGetNextPageAlarms               = 'http://www.logrhythm.com/webservices/AlarmService/GetNextPageAlarms';
     var soapActionURIGetFirstPageAlarmsByAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/GetFirstPageAlarmsByAlarmStatus';
-
+    var logRhythmAPI = 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
 
@@ -196,8 +196,14 @@ script:
         }
         return res;
     };
-
-    var url = 'https://'+fixUrl(params.Host) + 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
+    var url;
+    // includes server URL that starts with http or https
+    if (params.Host.startsWith('http')) {
+        url = fixUrl(params.Host) + logRhythmAPI;
+    }
+    else {
+        url = 'https://' + fixUrl(params.Host) + logRhythmAPI;
+    }
     var myTimezone = new Date().getTimezoneOffset();
     var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
     if (params.timeZone === '0') {
@@ -721,3 +727,6 @@ script:
       alarm status or entity
   isfetch: true
   runonce: false
+releaseNotes: Possible to add server URL as integration parameter
+tests:
+- LogRhythm-Test-Playbook

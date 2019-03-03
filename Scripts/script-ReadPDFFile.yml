@@ -170,6 +170,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
-releaseNotes: "Fixed script outputs. Script should now output everything again while also extracting indicators."
 tests:
   - Extract Indicators From File - test

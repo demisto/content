@@ -34,6 +34,9 @@ script:
     import time
     import warnings
     from pymisp import ExpandedPyMISP, PyMISP, PyMISPError
+    import logging
+    logging.getLogger("pymisp").setLevel(logging.ERROR)
+
 
     def warn(*args, **kwargs):
         """
@@ -1735,6 +1738,6 @@ script:
     description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
+releaseNotes: Disregarded warnings from PyMISP
 tests:
 - MISP V2 Test
-releaseNotes: add_sighting command and test connection
