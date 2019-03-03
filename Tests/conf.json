@@ -31,6 +31,10 @@
             "playbookID": "Fidelis-Test"
         },
         {
+            "integrations": "Thinkst Canary",
+            "playbookID": "CanaryTools Test"
+        },
+        {
             "integrations": "ThreatMiner",
             "playbookID": "ThreatMiner-Test"
         },

@@ -11559,6 +11559,22 @@
             }
         }, 
         {
+            "Thinkst Canary": {
+                "name": "Thinkst Canary", 
+                "commands": [
+                    "canarytools-list-canaries", 
+                    "canarytools-list-tokens", 
+                    "canarytools-check-whitelist", 
+                    "canarytools-whitelist-ip", 
+                    "canarytools-edit-alert-status", 
+                    "canarytools-get-token"
+                ], 
+                "tests": [
+                    "CanaryTools Test"
+                ]
+            }
+        }, 
+        {
             "Threat Crowd": {
                 "name": "Threat Crowd", 
                 "commands": [
@@ -12636,6 +12652,25 @@
                 "implementing_playbooks": [
                     "Calculate Severity - Critical assets"
                 ]
+            }
+        }, 
+        {
+            "CanaryTools Test": {
+                "name": "CanaryTools Test", 
+                "implementing_scripts": [
+                    "FetchFromInstance", 
+                    "DeleteContext", 
+                    "isError", 
+                    "IsTrue"
+                ], 
+                "command_to_integration": {
+                    "canarytools-list-canaries": "Thinkst Canary", 
+                    "canarytools-edit-alert-status": "Thinkst Canary", 
+                    "canarytools-whitelist-ip": "Thinkst Canary", 
+                    "canarytools-list-tokens": "Thinkst Canary", 
+                    "canarytools-get-token": "Thinkst Canary", 
+                    "canarytools-check-whitelist": "Thinkst Canary"
+                }
             }
         }, 
         {
