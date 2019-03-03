@@ -19,7 +19,7 @@ class ScriptValidator(object):
         self.file_path = file_path
 
         if check_git:
-            self.change_string = run_command("git diff HEAD {0}".format(self.file_path))
+            self.change_string = run_command("git diff origin/master {0}".format(self.file_path))
             with open(file_path, 'r') as file_data:
                 self.yaml_data = yaml.safe_load(file_data)
 
