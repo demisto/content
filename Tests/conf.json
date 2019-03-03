@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseEmailFile-deprecated-script"
+        },
+        {
             "playbookID": "test_similar_incidents"
         },
         {
@@ -1054,6 +1057,11 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
         },
         {
             "integrations": "mysql",
