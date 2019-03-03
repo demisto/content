@@ -1,0 +1,10 @@
+{
+  "id": "instances-health-ratio",
+  "version": -1,
+  "name": "InstancesHealthRatio",
+  "dataType": "scripts",
+  "widgetType": "pie",
+  "query": "InstancesHealthRatio",
+  "description": "Showing a pie chart of all Integration Instances status",
+  "isPredefined": true
+}

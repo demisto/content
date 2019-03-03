@@ -1,0 +1,10 @@
+{
+  "id": "instances-health-table",
+  "version": -1,
+  "name": "InstancesHealthTable",
+  "dataType": "scripts",
+  "widgetType": "table",
+  "query": "InstancesHealth",
+  "description": "Showing a table of all Integration Instances and their status",
+  "isPredefined": true
+}

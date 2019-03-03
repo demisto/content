@@ -1,7 +1,0 @@
-{
-  "id": "InstancesHealthRatio",
-  "name": "InstancesHealthRatio",
-  "dataType": "scripts",
-  "widgetType": "pie",
-  "query": "InstancesHealthRatio"
-}

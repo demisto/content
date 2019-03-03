@@ -1,7 +1,0 @@
-{
-  "id": "InstancesHealthTable",
-  "name": "InstancesHealthTable",
-  "dataType": "scripts",
-  "widgetType": "table",
-  "query": "InstancesHealth"
-}
