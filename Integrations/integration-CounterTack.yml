@@ -149,7 +149,7 @@ script:
         endpoints = get_endpoints_request()
         for endpoint in endpoints:
             data.append({
-                'ID': endpoint.get('id'),
+                'Id': endpoint.get('id'),
                 'Name': endpoint.get('name'),
                 'OS': endpoint.get('product_name'),
                 'IP': endpoint.get('ips'),
@@ -157,7 +157,7 @@ script:
                 'Threat': endpoint.get('threat')
             })
             endpoint_standards.append({
-                'ID': endpoint.get('id'),
+                'Id': endpoint.get('id'),
                 'IPAddress': endpoint.get('ips'),
                 'Domain': endpoint.get('domain'),
                 'MACAddress': endpoint.get('mac'),
@@ -168,10 +168,10 @@ script:
                 'Processors': endpoint.get('num_cpus')
             })
 
-        context['CounterTack.Endpoint(val.ID && val.ID === obj.ID)'] = createContext(endpoints, keyTransform=underscoreToCamelCase)
+        context['CounterTack.Endpoint(val.Id && val.Id === obj.Id)'] = createContext(endpoints, keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
 
-        headers = ['OS', 'Name', 'Threat', 'Status', 'ID', 'IP']
+        headers = ['OS', 'Name', 'Threat', 'Status', 'Id', 'IP']
         entry = {
             'Type': entryTypes['note'],
             'Contents': endpoints,
@@ -226,7 +226,7 @@ script:
         }
 
         endpoint_standards = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'IPAddress': response.get('ips'),
             'Domain': response.get('domain'),
             'MACAddress': response.get('mac'),
@@ -237,7 +237,7 @@ script:
             'Processors': response.get('num_cpus')
         }
 
-        context['CounterTack.Endpoint(val.ID && val.ID === obj.ID)'] = createContext(response, keyTransform=underscoreToCamelCase)
+        context['CounterTack.Endpoint(val.Id && val.Id === obj.Id)'] = createContext(response, keyTransform=underscoreToCamelCase)
         context['Endpoint'] = endpoint_standards
 
         headers = ['OS', 'Domain', 'IP', 'Threat', 'MaxImpact', 'TenantID', 'IsQuarantined', 'Profile', 'Tags', 'Cluster_Hosts', 'Status']
@@ -286,12 +286,12 @@ script:
         }
 
         tags_context = {
-            'endpoint_id': endpoint_id,
+            'Id': endpoint_id,
             'tags': response
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(tags_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(tags_context, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -336,11 +336,11 @@ script:
 
         response = {
             'tags': response,
-            'endpoint_id': endpoint_id
+            'Id': endpoint_id
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -389,11 +389,11 @@ script:
 
         response = {
             'tags': response,
-            'Endpoint_Id': endpoint_id
+            'Id': endpoint_id
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_id && val.endpoint_id === obj.endpoint_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -447,16 +447,16 @@ script:
         response = endpoint_quarantine_request(endpoint_id, body)
         quarantine_response = get_endpoint_request(endpoint_id)
         quarantine_context = {
-            'endpoint_ID': endpoint_id,
+            'Id': endpoint_id,
             'is_quarantine': quarantine_response.get('is_quarantined')
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
         }
 
         data = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'user name': response.get('username'),
             'request time': response.get('request_time'),
             'endpoint ID': response.get('endpoint_ids'),
@@ -493,12 +493,12 @@ script:
         quarantine_response = get_endpoint_request(endpoint_id)
 
         quarantine_context = {
-            'endpoint_ID': endpoint_id,
+            'Id': endpoint_id,
             'is_quarantine': quarantine_response.get('is_quarantined')
         }
 
         data = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'user name': response.get('username'),
             'request time': response.get('request_time'),
             'endpoint ID': response.get('endpoint_ids'),
@@ -507,7 +507,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.endpoint_ID && val.endpoint_ID === obj.endpoint_ID)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(quarantine_context, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -552,7 +552,7 @@ script:
 
         response = file_extract_request(endpoint_id, body)
         data = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'User Name': response.get('username'),
             'Request Time': response.get('request_time'),
             'Endpoint ID': response.get('endpoint_ids'),
@@ -562,9 +562,9 @@ script:
         }
 
         context = {
-            'CounterTack.File(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.File(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
-        headers = ['ID', 'User Name', 'Request Time', 'Endpoint ID', 'Command Name', 'Command Arguments', 'Status']
+        headers = ['Id', 'User Name', 'Request Time', 'Endpoint ID', 'Command Name', 'Command Arguments', 'Status']
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -649,7 +649,7 @@ script:
         response = kill_process_request(endpoint_id, body)
 
         data = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'User Name': response.get('username'),
             'Request Time': response.get('request_time'),
             'Endpoint ID': response.get('endpoint_ids'),
@@ -658,7 +658,7 @@ script:
         }
 
         context = {
-            'CounterTack.Endpoint(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase, removeNull=True)
+            'CounterTack.Endpoint(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase, removeNull=True)
         }
 
         entry = {
@@ -699,7 +699,7 @@ script:
         files = file_request()
         for file in files:
             data.append({
-                'ID': file.get('id'),
+                'Id': file.get('id'),
                 'user': file.get('user'),
                 'endpoint_id': file.get('endpoint_id'),
                 'path': file.get('path'),
@@ -715,10 +715,10 @@ script:
                 'Path': file.get('path')
             })
 
-        context['CounterTack.File(val.ID && val.ID === obj.ID)'] = createContext(files, keyTransform=underscoreToCamelCase)
+        context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(files, keyTransform=underscoreToCamelCase)
         context[outputPaths['file']] = files_standards
 
-        headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
+        headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
         entry = {
             'Type': entryTypes['note'],
             'Contents': files,
@@ -758,7 +758,7 @@ script:
         files = endpoint_files_request(endpoint_id)
         for file in files:
             data.append({
-                'ID': file.get('id'),
+                'Id': file.get('id'),
                 'User': file.get('user'),
                 'EndpointId': file.get('endpoint_id'),
                 'Path': file.get('path'),
@@ -767,9 +767,9 @@ script:
             })
 
         context = {
-            'CounterTack.File(val.ID && val.ID === obj.ID)': createContext(files, keyTransform=underscoreToCamelCase)
+            'CounterTack.File(val.Id && val.Id === obj.Id)': createContext(files, keyTransform=underscoreToCamelCase)
         }
-        headers = ['Status', 'ID', 'path', 'endpoint_id', 'extraction_time', 'user']
+        headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
         entry = {
             'Type': entryTypes['note'],
             'Contents': data,
@@ -873,7 +873,7 @@ script:
         behaviors = get_behaviors_request()
         for behavior in behaviors:
             data.append({
-                'ID': behavior.get('id'),
+                'Id': behavior.get('id'),
                 'Name': behavior.get('name'),
                 'Type': behavior.get('type'),
                 'Impact_Level': behavior.get('impact_level'),
@@ -882,9 +882,9 @@ script:
             })
 
         context = {
-            'CounterTack.Behavior(val.ID && val.ID === obj.ID)': createContext(behaviors, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(behaviors, keyTransform=underscoreToCamelCase)
         }
-        headers = ['Name', 'ID', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'lastReported']
+        headers = ['Name', 'Id', 'Type', 'Max_impact', 'Impact_Level', 'Endpoint_ID', 'lastReported']
         entry = {
             'Type': entryTypes['note'],
             'Contents': behaviors,
@@ -919,7 +919,7 @@ script:
         response = get_behavior_request(behavior_id)
 
         data = {
-            'ID': response.get('id'),
+            'Id': response.get('id'),
             'Name': response.get('name'),
             'ImpactLevel': response.get('impact_level'),
             'LastActive': response.get('last_active'),
@@ -930,9 +930,9 @@ script:
         }
 
         context = {
-            'CounterTack.Behavior(val.ID && val.ID === obj.ID)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
-        headers = ['Name', 'ID', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
+        headers = ['Name', 'Id', 'Impact Level', 'MaxImpact', 'Event Count', 'Type', 'Endpoint ID', 'Last Active']
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -977,11 +977,11 @@ script:
 
         response = {
             'tags': behavior_tags.get('tags'),
-            'behaviour_id': behaviour_id
+            'Id': behaviour_id
         }
 
         context = {
-            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
 
         entry = {
@@ -1022,11 +1022,11 @@ script:
 
         response = {
             'tags': response.get('tags'),
-            'behaviour_id': behaviour_id
+            'Id': behaviour_id
         }
 
         context = {
-            'CounterTack.Behavior(val.behaviour_id && val.behaviour_id === obj.behaviour_id)': createContext(response, keyTransform=underscoreToCamelCase)
+            'CounterTack.Behavior(val.Id && val.Id === obj.Id)': createContext(response, keyTransform=underscoreToCamelCase)
         }
         entry = {
             'Type': entryTypes['note'],
@@ -1135,6 +1135,8 @@ script:
             hashes['results'] = results_lst
             for hash_type in hashes.get('results'):
                 file_hash_type =  hash_type.get('type', '').upper()
+                if file_hash_type == 'SSDEEP':
+                    file_hash_type =  'SSDeep'
                 hash_id = hash_type.get('id')
                 data.append({
                     file_hash_type: hash_id,
@@ -1607,7 +1609,7 @@ script:
           description: Name of behavior
           type: string
         - contextPath: CounterTack.Behavior.ImpactLevel
-          description: 'Impact level of the behavior '
+          description: 'Impact level of the behavior'
           type: string
         - contextPath: CounterTack.Behavior.LastActive
           description: The last time the behavior was active
@@ -1619,7 +1621,7 @@ script:
           description: First event ID
           type: string
         - contextPath: CounterTack.Behavior.Type
-          description: 'Type of behavior'
+          description: 'Type of behaviour'
           type: string
         - contextPath: CounterTack.Behavior.Id
           description: Behaviour ID
@@ -1670,7 +1672,7 @@ script:
           required: true
           description: The endpoint ID. Get the ID from the "get-endpoints" command
       outputs:
-        - contextPath: CounterTack.Endpoint.EndpointId
+        - contextPath: CounterTack.Endpoint.Id
           description: The ID of the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.Tags
@@ -1681,14 +1683,14 @@ script:
       arguments:
         - name: behaviour_id
           required: true
-          description: The behaviour ID
+          description: The behavior ID
         - name: tags
           required: true
           description: Tags to add to a behavior. To add more then one, separate the tags
             with a comma. (e.g test1,test2)
           isArray: true
       outputs:
-        - contextPath: CounterTack.Behavior.BehaviourId
+        - contextPath: CounterTack.Behavior.Id
           description: The ID of the behvior
           type: string
         - contextPath: CounterTack.Behavior.Tags
@@ -1699,14 +1701,14 @@ script:
       arguments:
         - name: behaviour_id
           required: true
-          description: The behaviour ID
+          description: The behavior ID
         - name: tags
           required: true
           description: Tags to delete from a behavior. To delete more then one, separate
             the tags with a comma. (e.g test1,test2)
           isArray: true
       outputs:
-        - contextPath: CounterTack.Behavior.BehaviourId
+        - contextPath: CounterTack.Behavior.Id
           description: The ID of the behavior
           type: string
         - contextPath: CounterTack.Behavior.Tags
@@ -1718,7 +1720,7 @@ script:
           required: true
           description: The Id of the endpoint
       outputs:
-        - contextPath: CounterTack.Endpoint.EndpointId
+        - contextPath: CounterTack.Endpoint.Id
           description: The ID of the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.IsQuarantine
@@ -1731,7 +1733,7 @@ script:
           required: true
           description: The ID of the endpoint
       outputs:
-        - contextPath: CounterTack.Endpoint.EndpointId
+        - contextPath: CounterTack.Endpoint.Id
           description: The ID of the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.IsQuarantine
@@ -1802,53 +1804,53 @@ script:
     - name: countertack-get-all-files
       arguments: []
       outputs:
-        - contextPath: CounterTack.Files.Size
+        - contextPath: CounterTack.File.Size
           description: The size of the extracted file (bytes).
           type: number
-        - contextPath: CounterTack.Files.EndpointId
+        - contextPath: CounterTack.File.EndpointId
           description: ID of the endpoint with the extracted file.
           type: string
-        - contextPath: CounterTack.Files.ExtractionTime
+        - contextPath: CounterTack.File.ExtractionTime
           description: The time of extraction of the file.
           type: date
-        - contextPath: CounterTack.Files.Path
+        - contextPath: CounterTack.File.Path
           description: Full file system path of the extracted file, including the filename,
             as seen on the endpoint
           type: string
-        - contextPath: CounterTack.Files.Sha256
+        - contextPath: CounterTack.File.Sha256
           description: The SHA256 digest of the file contents.
           type: string
-        - contextPath: CounterTack.Files.Tenant
+        - contextPath: CounterTack.File.Tenant
           description: Tenant ID for endpoint.
           type: string
-        - contextPath: CounterTack.Files.User
+        - contextPath: CounterTack.File.User
           description: Name of the user requesting the file.
           type: string
-        - contextPath: CounterTack.Files.Ssdeep
+        - contextPath: CounterTack.File.Ssdeep
           description: The SSDEEP digest of the file contents.
           type: string
-        - contextPath: CounterTack.Files.EndpointIp
+        - contextPath: CounterTack.File.EndpointIp
           description: IP address of the endpoint with the extracted file.
           type: string
-        - contextPath: CounterTack.Files.AvCoverage
+        - contextPath: CounterTack.File.AvCoverage
           description: Percentage of AV engines that determined the Hash is malicious.
           type: number
-        - contextPath: CounterTack.Files.Status
+        - contextPath: CounterTack.File.Status
           description: Contents status.
           type: string
-        - contextPath: CounterTack.Files.VtStatus
+        - contextPath: CounterTack.File.VtStatus
           description: VirusTot al report status.
           type: string
-        - contextPath: CounterTack.Files.EndpointName
+        - contextPath: CounterTack.File.EndpointName
           description: Name of the endpoint with the extracted file.
           type: string
-        - contextPath: CounterTack.Files.Id
-          description: Extracte d file ID.
+        - contextPath: CounterTack.File.Id
+          description: Extracted file ID.
           type: string
-        - contextPath: CounterTack.Files.Md5
+        - contextPath: CounterTack.File.Md5
           description: The MD5 digest of the file contents.
           type: string
-        - contextPath: CounterTack.Files.VtReportLocation
+        - contextPath: CounterTack.File.VtReportLocation
           description: VirusTot al report location path.
           type: string
         - contextPath: File.MD5
@@ -1875,7 +1877,7 @@ script:
           description: The ID of the endpoint. Get the ID from "get-endpoints" command
       outputs:
         - contextPath: CounterTack.File.Id
-          description: Extracte d file ID.
+          description: Extracted file ID.
           type: string
         - contextPath: CounterTack.File.Status
           description: Contents status.
@@ -2182,8 +2184,8 @@ script:
         - contextPath: File.SHA256
           description: The SHA256 of the file
           type: string
-        - contextPath: File.SSDEEP
-          description: The SSDEEP of the file
+        - contextPath: File.SSDeep
+          description: The SSDeep of the file
           type: string
       description: Search for Hashes using CQL expression (Contextual Query Language)
         to represent queries.
