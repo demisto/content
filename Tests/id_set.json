@@ -8446,7 +8446,7 @@
                     "countertack-endpoint-quarantine", 
                     "countertack-disable-quarantine", 
                     "countertack-extract-file", 
-                    "countertack-delete-endpoint-file", 
+                    "countertack-delete-file", 
                     "countertack-get-all-files", 
                     "countertack-get-endpoint-files", 
                     "countertack-get-file-information", 
