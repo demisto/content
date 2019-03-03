@@ -1,7 +1,7 @@
 id: Exchange 2016 Search and Delete
 version: -1
 name: Exchange 2016 Search and Delete
-description: Run a ComplianceSearch on Exchange 2016 and delete the results.
+description: Run a compliance search in Exchange Server 2016, and delete the results.
 starttaskid: "0"
 tasks:
   "0":
@@ -35,8 +35,8 @@ tasks:
     task:
       id: 7039555d-70e8-4c48-8629-9b8377054fe1
       version: -1
-      name: exchange2016-start-compliance-search
-      description: Start compliance search
+      name: Start compliance search
+      description: Initiates a compliance search.
       script: '|||exchange2016-start-compliance-search'
       type: regular
       iscommand: true
@@ -118,8 +118,8 @@ tasks:
     task:
       id: 5b175cb9-d3f6-4b54-8eac-7f64b17abc6e
       version: -1
-      name: exchange2016-get-compliance-search
-      description: Get compliance search status and results
+      name: Get compliance search
+      description: Gets the status and results of a compliance search.
       script: '|||exchange2016-get-compliance-search'
       type: regular
       iscommand: true
@@ -149,7 +149,7 @@ tasks:
     task:
       id: ba34205c-fc58-4017-8377-cffd6187b25a
       version: -1
-      name: Purge Compliance Search Results?
+      name: Purge compliance search results?
       description: Purge Compliance Search Results?
       type: condition
       iscommand: false
@@ -176,8 +176,8 @@ tasks:
     task:
       id: b05fb387-956b-4bd3-8250-ece9ec819df4
       version: -1
-      name: exchange2016-purge-compliance-search-results
-      description: Purges the results found by the compliance search
+      name: Purge compliance search results
+      description: Purges the results found during the compliance search.
       script: '|||exchange2016-purge-compliance-search-results'
       type: regular
       iscommand: true
@@ -281,8 +281,8 @@ tasks:
     task:
       id: d183b55d-38f2-4768-86f5-b4a935db4086
       version: -1
-      name: exchange2016-get-compliance-search-purge-status
-      description: Check the status of the purge operation on the compliance search.
+      name: Get compliance search purge status
+      description: Checks the status of the purge operation on the compliance search.
       script: '|||exchange2016-get-compliance-search-purge-status'
       type: regular
       iscommand: true
@@ -312,8 +312,8 @@ tasks:
     task:
       id: a17e54ba-09c7-4ec7-8350-3d64035b7eea
       version: -1
-      name: exchange2016-remove-compliance-search
-      description: Remove the compliance search
+      name: Remove compliance search
+      description: Removes the compliance search from the Exchange Server.
       script: '|||exchange2016-remove-compliance-search'
       type: regular
       iscommand: true
@@ -355,7 +355,7 @@ inputs:
 - key: Query
   value: {}
   required: true
-  description: Compliance Search query
+  description: Query for finding mail messages
 outputs: []
 fromversion: '4.1.0'
 tests:
