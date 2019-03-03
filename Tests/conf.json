@@ -1200,6 +1200,26 @@
         "HashiCorp Vault": "Test fails with mock - need to test without mock",
         "google": "'unsecure' parameter not working",
         "Check Point Sandblast": "Test fails with mock - need to test without mock",
-        "Anomali ThreatStream": "'proxy' parameter not working"
+        "Anomali ThreatStream": "'proxy' parameter not working",
+        "Active Directory Query v2": "Checking",
+        "MaxMind GeoIP2": "Checking",
+        "AlphaSOC Wisdom": "Checking",
+        "Phish.AI": "Checking",
+        "jira": "Checking",
+        "ArcSight ESM v2": "Checking",
+        "Cylance Protect": "Checking",
+        "ReversingLabs A1000": "Checking",
+        "ReversingLabs Titanium Cloud": "Checking",
+        "Cylance Protect v2": "Checking",
+        "SafeBreach": "Checking",
+        "Symantec Endpoint Protection V2": "Checking",
+        "McAfee ESM-v10": "Checking",
+        "Salesforce": "Checking",
+        "okta": "Checking",
+        "WildFire": "Checking",
+        "WhatsMyBrowser": "Checking",
+        "Check Point": "Checking",
+        "Awake Security": "Checking",
+        "CIRCL": "Checking"
     }
 }
