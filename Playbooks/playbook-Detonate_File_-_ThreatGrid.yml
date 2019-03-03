@@ -331,7 +331,7 @@ tasks:
       id: 701d7a32-0c81-4fd3-83c9-fbc7aa6efd30
       version: -1
       name: Is the file size bigger than 0?
-      description: CHeck that fail size is bigger than 0
+      description: Check that fail size is bigger than 0
       type: condition
       iscommand: false
       brand: ""
