@@ -5837,7 +5837,7 @@
                     "threat-grid-url-to-file": "Threat Grid"
                 }, 
                 "tests": [
-                    "Test-Detonate URL - ThreatGrid"
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
@@ -15713,14 +15713,6 @@
                 ], 
                 "tests": [
                     "No test"
-                ]
-            }
-        }, 
-        {
-            "Test-Detonate URL - ThreatGrid": {
-                "name": "Test-Detonate URL - ThreatGrid", 
-                "implementing_playbooks": [
-                    "Detonate URL - ThreatGrid"
                 ]
             }
         }, 
