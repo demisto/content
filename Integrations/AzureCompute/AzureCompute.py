@@ -10,7 +10,7 @@ from datetime import datetime
 
 PARAMS = demisto.params()
 USE_SSL = not demisto.params().get('unsecure')
-SUBSCRIPTION_ID = PARAMS.get('subscription_id')
+SUBSCRIPTION_ID = PARAMS.get('subscription_id')  # Will equal None
 TENANT_ID = PARAMS.get('tenant_id')
 TOKEN = PARAMS.get('token')
 HOST = PARAMS.get('host', 'https://management.azure.com')
@@ -221,7 +221,7 @@ def update_access_token():
     Check if we have a valid token and if not get one and update global HEADERS
     """
     ctx = demisto.getIntegrationContext()
-    if ctx.get('token') and ctx.get('stored'):
+    if ctx.get('subscription_id') and ctx.get('token') and ctx.get('stored'):
         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
             HEADERS['Authorization'] = 'Bearer ' + ctx.get('token')
             return
@@ -238,8 +238,13 @@ def update_access_token():
         response = r.json()
     except ValueError:
         return_error('The response from Demistbot was not a json serializable object.')
-    demisto.setIntegrationContext({'token': response.get('token'), 'stored': epoch_seconds()})
+    demisto.setIntegrationContext({
+        'token': response.get('token'),
+        'stored': epoch_seconds(),
+        'subscription_id': response.get('subscription_id')
+    })
     HEADERS['Authorization'] = 'Bearer ' + response.get('token')
+    SUBSCRIPTION_ID = response.get('subscription_id')
 
 
 def assign_image_attributes(image):
