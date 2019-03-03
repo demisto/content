@@ -15484,7 +15484,41 @@
                     "secure-works-get-tickets-updates": "Dell Secureworks"
                 }
             }
-        },
+        }, 
+        {
+            "servicenow_test_new": {
+                "name": "ServiceNow Test New", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "FileCreateAndUpload", 
+                    "FetchFromInstance", 
+                    "VerifyContext", 
+                    "VerifyContextFields", 
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "servicenow-get-table-name": "ServiceNow", 
+                    "servicenow-update-record": "ServiceNow", 
+                    "servicenow-delete-record": "ServiceNow", 
+                    "servicenow-get-ticket-notes": "ServiceNow", 
+                    "servicenow-query-tickets": "ServiceNow", 
+                    "servicenow-create-ticket": "ServiceNow", 
+                    "servicenow-add-comment": "ServiceNow", 
+                    "servicenow-upload-file": "ServiceNow", 
+                    "servicenow-get-record": "ServiceNow", 
+                    "servicenow-create-record": "ServiceNow", 
+                    "servicenow-add-link": "ServiceNow", 
+                    "servicenow-query-groups": "ServiceNow", 
+                    "servicenow-list-table-fields": "ServiceNow", 
+                    "servicenow-update-ticket": "", 
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-delete-ticket": "ServiceNow", 
+                    "servicenow-query-computers": "ServiceNow", 
+                    "servicenow-get-ticket": "ServiceNow", 
+                    "servicenow-query-users": "ServiceNow"
+                }
+            }
+        }, 
         {
             "ShodanTest": {
                 "name": "ShodanTest", 
