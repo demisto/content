@@ -1,7 +1,7 @@
 import glob
 
 from Tests.test_utils import *
-from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX
+from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX
 
 
 class ImageValidator(object):
@@ -14,14 +14,21 @@ class ImageValidator(object):
     IMAGE_MAX_SIZE = 10 * 1024  # 10kB
 
     def __init__(self, file_path):
-        self.file_path = file_path
         self._is_valid = True
+
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            self.file_path = file_path
+        else:
+            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.png'))[0]
 
     def is_valid(self):
         """Validate that the image exists and that it is in the permitted size limits."""
         self.oversize_image()
         if '.png' not in self.file_path:
             self.is_existing_image()
+
+        return self._is_valid
 
     def oversize_image(self):
         """Check if the image if over sized, bigger than IMAGE_MAX_SIZE"""
