@@ -9,10 +9,12 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
 for that task.
 """
+import os
+import re
 import sys
+import glob
 import argparse
 
-from Tests.test_utils import *
 from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
 from Tests.scripts.hook_validations.secrets import get_secrets
@@ -22,6 +24,7 @@ from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
+from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS
 
 
 class FilesValidator(object):
@@ -72,8 +75,8 @@ class FilesValidator(object):
                 added_files_list.add(file_path)
             elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
                 deleted_files.add(file_path)
-            elif file_status.lower() == 'r100' and checked_type(file_path):
-                modified_files_list.add(file_data[2])
+            elif file_status.lower().startswith('r') and checked_type(file_path):
+                modified_files_list.add((file_data[1], file_data[2]))
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
@@ -81,7 +84,7 @@ class FilesValidator(object):
         return modified_files_list, added_files_list, deleted_files
 
     def get_modified_and_added_files(self, branch_name, is_circle):
-        """Get lists of the modified and added files in your branch according to the files string.
+        """Get lists of the modified and added files in your branch according to the git diff output.
 
         Args:
             branch_name (string): The name of the branch we are working on.
@@ -90,15 +93,15 @@ class FilesValidator(object):
         Returns:
             (modified_files, added_files). Tuple of sets.
         """
-        all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+        all_changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
         modified_files, added_files, _ = self.get_modified_files(all_changed_files_string)
 
         if not is_circle:
-            files_string = run_git_command("git diff --name-status --no-merges HEAD")
+            files_string = run_command("git diff --name-status --no-merges HEAD")
 
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files = \
                 self.get_modified_files(files_string)
-            all_changed_files_string = run_git_command("git diff --name-status origin/master")
+            all_changed_files_string = run_command("git diff --name-status origin/master")
             modified_files_from_master, added_files_from_master, _ = self.get_modified_files(all_changed_files_string)
 
             for mod_file in modified_files_from_master:
@@ -109,12 +112,8 @@ class FilesValidator(object):
                 if add_file in non_committed_added_files:
                     added_files.add(add_file)
 
-            for deleted_file in non_committed_deleted_files:
-                modified_files = modified_files - {deleted_file}
-                added_files = added_files - {deleted_file}
-
-            for non_commited_mod_file in non_committed_modified_files:
-                added_files = added_files - {non_commited_mod_file}
+            modified_files = modified_files - set(non_committed_deleted_files)
+            added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
 
             new_added_files = set([])
             for added_file in added_files:
@@ -134,6 +133,10 @@ class FilesValidator(object):
             modified_files (set): A set of the modified files in the current branch.
         """
         for file_path in modified_files:
+            old_file_path = None
+            if isinstance(file_path, tuple):
+                old_file_path, file_path = file_path
+
             print "Validating {}".format(file_path)
 
             structure_validator = StructureValidator(file_path, is_added_file=False)
@@ -150,7 +153,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-                integration_validator = IntegrationValidator(file_path)
+                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_backward_compatible():
                     self._is_valid = False
 
@@ -212,10 +215,9 @@ class FilesValidator(object):
         Args:
             branch_name (string): The name of the branch you are working on.
         """
-        secrets_found, secrets_found_string = get_secrets(branch_name, self.is_circle)
-        if secrets_found_string:
+        secrets_found = get_secrets(branch_name, self.is_circle)
+        if secrets_found:
             self._is_valid = False
-            print_error(secrets_found_string)
 
     def validate_committed_files(self, branch_name):
         """Validate that all the committed files in your branch are valid
@@ -223,15 +225,14 @@ class FilesValidator(object):
         Args:
             branch_name (string): The name of the branch you are working on.
         """
-        self.validate_no_secrets_found(branch_name)
-
         modified_files, added_files = self.get_modified_and_added_files(branch_name, self.is_circle)
 
+        self.validate_no_secrets_found(branch_name)
         self.validate_modified_files(modified_files)
         self.validate_added_files(added_files)
 
     def validate_all_files(self):
-        """Validate that all files in the repo are in the right format."""
+        """Validate all files in the repo are in the right format."""
         for regex in CHECKED_TYPES_REGEXES:
             splitted_regex = regex.split(".*")
             directory = splitted_regex[0]
@@ -248,6 +249,14 @@ class FilesValidator(object):
                     if not structure_validator.is_valid_scheme():
                         self._is_valid = False
 
+                if root in PACKAGE_SUPPORTING_DIRECTORIES:
+                    for inner_dir in dirs:
+                        file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
+                        print "Validating " + file_path
+                        structure_validator = StructureValidator(file_path)
+                        if not structure_validator.is_valid_scheme():
+                            self._is_valid = False
+
     def is_valid_structure(self, branch_name):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
@@ -261,9 +270,6 @@ class FilesValidator(object):
             self._is_valid = False
 
         if branch_name != 'master':
-            import logging
-            logging.basicConfig(level=logging.CRITICAL)
-
             # validates only committed files
             self.validate_committed_files(branch_name)
         else:
@@ -274,22 +280,24 @@ class FilesValidator(object):
 
 
 def main():
-    """
+    """Execute FilesValidator checks on the modified changes in your branch, or all files in case of master.
+
     This script runs both in a local and a remote environment. In a local environment we don't have any
     logger assigned, and then pykwalify raises an error, since it is logging the validation results.
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
     """
-    branches = run_git_command("git branch")
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
-    parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
+    parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
-    if is_circle is None:
-        is_circle = False
+    if not is_circle:  # Take a look at the docstring for explanation
+        import logging
+        logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)

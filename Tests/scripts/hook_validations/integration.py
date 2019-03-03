@@ -17,17 +17,30 @@ class IntegrationValidator(object):
     """
     CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
-    def __init__(self, file_path, check_git=True):
+    def __init__(self, file_path, check_git=True, old_file_path=None):
         self._is_valid = True
 
         self.file_path = file_path
         if check_git:
             self.current_integration = get_json(file_path)
-            file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-            self.old_integration = yaml.load(get(file_path_from_master).content)
+            # The replace in the end is for Windows support
+            if old_file_path:
+                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                self.old_integration = get_json(get(git_hub_path))
+            else:
+                try:
+                    file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+                    self.old_integration = yaml.load(get(file_path_from_master).content)
+                except Exception:
+                    print_error("Could not find the old integration please make sure that you did not break "
+                                "backward compatibility")
+                    self.old_integration = None
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
+        if not self.old_integration:
+            return True
+
         self.is_changed_context_path()
         self.is_docker_image_changed()
         self.is_added_required_fields()

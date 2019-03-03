@@ -5,7 +5,7 @@ import requests
 
 from slackclient import SlackClient
 
-from Tests.test_utils import str2bool, run_git_command, LOG_COLORS, print_color
+from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color
 
 
 def http_request(url, params_dict=None):
@@ -106,8 +106,8 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, build_number, slack_token, circleci_token):
-    branches = run_git_command("git branch")
+def slack_notifier(build_url, slack_token):
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
@@ -130,7 +130,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.url, options.buildNumber, options.slack, options.circleci)
+        slack_notifier(options.url, options.slack)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
