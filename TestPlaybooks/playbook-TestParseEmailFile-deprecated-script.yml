@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: da85dd34-c60b-49f1-8464-0731764289b6
+    taskid: 903859f8-95b8-4702-8e7f-06940e7b8087
     type: start
     task:
-      id: da85dd34-c60b-49f1-8464-0731764289b6
+      id: 903859f8-95b8-4702-8e7f-06940e7b8087
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: e01e58a1-1bc0-424a-88a8-95ea1f48248c
+    taskid: 69dc8a79-43b0-4893-8fd3-dd7c365befd4
     type: regular
     task:
-      id: e01e58a1-1bc0-424a-88a8-95ea1f48248c
+      id: 69dc8a79-43b0-4893-8fd3-dd7c365befd4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,10 +58,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
+    taskid: d3723f5a-a6db-4658-8b07-a5aa9a4f7bc9
     type: regular
     task:
-      id: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
+      id: d3723f5a-a6db-4658-8b07-a5aa9a4f7bc9
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -100,10 +100,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: e868147a-1e57-4127-8ce4-9d5365589e63
+    taskid: 2aef4635-5c2d-42fd-8e6c-c53e79b3789d
     type: regular
     task:
-      id: e868147a-1e57-4127-8ce4-9d5365589e63
+      id: 2aef4635-5c2d-42fd-8e6c-c53e79b3789d
       version: -1
       name: ParseEmailFile
       description: Parse an email from an eml or msg file and populate all relevant
@@ -157,10 +157,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 6d02b238-52b1-4741-887b-45e934332a96
+    taskid: 56073346-f603-4fef-814f-9e0722b785bf
     type: regular
     task:
-      id: 6d02b238-52b1-4741-887b-45e934332a96
+      id: 56073346-f603-4fef-814f-9e0722b785bf
       version: -1
       name: VerifyContext - To
       description: |-
@@ -178,7 +178,7 @@ tasks:
         simple: shachar@demisto.com, yaakovi@demisto.com
       fields: {}
       path:
-        simple: ${Label/Email}
+        simple: Label/Email
     separatecontext: false
     view: |-
       {
@@ -191,10 +191,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 521bb3b0-1bd8-4983-8eb3-f8cc9a221c15
+    taskid: b358b937-e009-4f9f-8d11-e06b9b1c5ce0
     type: regular
     task:
-      id: 521bb3b0-1bd8-4983-8eb3-f8cc9a221c15
+      id: b358b937-e009-4f9f-8d11-e06b9b1c5ce0
       version: -1
       name: VerifyContext - Subject
       description: |-
@@ -212,7 +212,7 @@ tasks:
         simple: ParseEmail test email
       fields: {}
       path:
-        simple: ${Label/Email/subject}
+        simple: Label/Email/subject
     separatecontext: false
     view: |-
       {
@@ -225,10 +225,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 671be5b8-78b3-41b4-8f4f-320fc4636142
+    taskid: 67bca680-ba86-4f82-86e7-0e9cfdd2a463
     type: condition
     task:
-      id: 671be5b8-78b3-41b4-8f4f-320fc4636142
+      id: 67bca680-ba86-4f82-86e7-0e9cfdd2a463
       version: -1
       name: AreValuesEqual - verify pdf attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -270,10 +270,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
+    taskid: 4a76c3ff-9054-44c5-85ce-2455d2055ec8
     type: title
     task:
-      id: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
+      id: 4a76c3ff-9054-44c5-85ce-2455d2055ec8
       version: -1
       name: Validate Non-Unicode parsing
       type: title
@@ -295,10 +295,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: 5a0fee6f-c108-4de6-895e-ae4a92803d4d
+    taskid: dc24ae89-4d87-44c1-89b3-34453ab501c2
     type: condition
     task:
-      id: 5a0fee6f-c108-4de6-895e-ae4a92803d4d
+      id: dc24ae89-4d87-44c1-89b3-34453ab501c2
       version: -1
       name: AreValuesEqual - verify docx attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -340,10 +340,10 @@ tasks:
     timertriggers: []
   "14":
     id: "14"
-    taskid: 14faa1ca-91ff-457c-8727-daad60578630
+    taskid: e80ce90d-8d02-4894-845d-05994a3008c4
     type: regular
     task:
-      id: 14faa1ca-91ff-457c-8727-daad60578630
+      id: e80ce90d-8d02-4894-845d-05994a3008c4
       version: -1
       name: VerifyContext - From
       description: |-
@@ -361,7 +361,7 @@ tasks:
         simple: shachar@demisto.com
       fields: {}
       path:
-        simple: ${Label/Email/from}
+        simple: Label/Email/from
     separatecontext: false
     view: |-
       {
@@ -374,10 +374,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
+    taskid: dd0fb53b-faef-4710-8c8b-bbe5a7439c73
     type: regular
     task:
-      id: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
+      id: dd0fb53b-faef-4710-8c8b-bbe5a7439c73
       version: -1
       name: Non Unicode Subject
       scriptName: http
@@ -415,10 +415,10 @@ tasks:
     timertriggers: []
   "16":
     id: "16"
-    taskid: fb6eb6fa-8329-4df9-87b7-908cd44463aa
+    taskid: 56ce604e-d2a4-402b-889f-71b154acb37e
     type: regular
     task:
-      id: fb6eb6fa-8329-4df9-87b7-908cd44463aa
+      id: 56ce604e-d2a4-402b-889f-71b154acb37e
       version: -1
       name: Non Unicode Attachment Name
       scriptName: http
@@ -456,10 +456,10 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
+    taskid: dad3eb22-7ad1-4fb5-8239-268165b943ff
     type: regular
     task:
-      id: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
+      id: dad3eb22-7ad1-4fb5-8239-268165b943ff
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -506,10 +506,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 12777162-fb27-40d0-89ed-bb4eb19494a9
+    taskid: 68f6eb4b-98a8-49db-87c2-ec2d5e0cd7fc
     type: regular
     task:
-      id: 12777162-fb27-40d0-89ed-bb4eb19494a9
+      id: 68f6eb4b-98a8-49db-87c2-ec2d5e0cd7fc
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
