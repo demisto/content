@@ -4,10 +4,14 @@ from Tests.scripts.hook_validations.integration import IntegrationValidator
 def test_removed_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "dockerimage": "test"
+        "script": {
+            "dockerimage": "test"
+        }
     }
     validator.current_integration = {
-        "no": "dockerimage"
+        "script": {
+            "no": "dockerimage"
+        }
     }
 
     assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
@@ -17,10 +21,14 @@ def test_updated_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
 
     validator.old_integration = {
-        "dockerimage": "test"
+        "script": {
+            "dockerimage": "test"
+        }
     }
     validator.current_integration = {
-        "dockerimage": "test1"
+        "script": {
+            "dockerimage": "test1"
+        }
     }
 
     assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
@@ -40,7 +48,9 @@ def test_added_docker_image_on_existing_integration():
 
     validator.old_integration = {}
     validator.current_integration = {
-        "dockerimage": "test1"
+        "script": {
+            "dockerimage": "test1"
+        }
     }
 
     assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
@@ -194,28 +204,32 @@ def test_not_changed_context_in_integration():
 def test_changed_context_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "outputs": [
+                        {
+                            "contextPath": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "changed that"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "outputs": [
+                        {
+                            "contextPath": "changed that"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
     assert validator.is_changed_context_path(), "The script validator didn't find a backward compatability " \
@@ -298,29 +312,33 @@ def test_added_new_command_context_path_in_integration():
 def test_changed_required_arg_for_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test",
-                        "required": True
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test",
+                            "required": True
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
     assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
@@ -330,32 +348,36 @@ def test_changed_required_arg_for_command_in_integration():
 def test_added_required_arg_for_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test",
-                    },
-                    {
-                        "name": "test1",
-                        "required": True
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test",
+                        },
+                        {
+                            "name": "test1",
+                            "required": True
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
     assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
@@ -365,28 +387,32 @@ def test_added_required_arg_for_command_in_integration():
 def test_renamed_arg_in_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test1",
-                    }
-                ]
-            }
-        ]
+        "script": {
+            "commands": [
+                {
+                    "name": "test",
+                    "arguments": [
+                        {
+                            "name": "test1",
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
     assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
