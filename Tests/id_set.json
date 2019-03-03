@@ -12090,6 +12090,9 @@
                     "domain", 
                     "cve-search", 
                     "cve-latest"
+                ], 
+                "tests": [
+                    "XFE Test"
                 ]
             }
         }, 
