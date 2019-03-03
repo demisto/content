@@ -2,7 +2,7 @@ import os
 import yaml
 from requests import get
 
-from Tests.test_utils import print_error, get_json, CONTENT_GIT_HUB_LINK
+from Tests.test_utils import print_error, get_json
 
 
 class IntegrationValidator(object):
@@ -15,13 +15,16 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
+    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
+
     def __init__(self, file_path, check_git=True):
         self._is_valid = True
 
         self.file_path = file_path
         if check_git:
             self.current_integration = get_json(file_path)
-            self.old_integration = yaml.load(get(os.path.join(CONTENT_GIT_HUB_LINK, file_path)).content)
+            file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+            self.old_integration = yaml.load(get(file_path_from_master).content)
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
