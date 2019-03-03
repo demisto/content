@@ -5716,8 +5716,8 @@
                     "GenericPolling"
                 ], 
                 "command_to_integration": {
-                    "threat-grid-upload-sample": "", 
-                    "threat-grid-get-samples-state": ""
+                    "threat-grid-get-samples-state": "", 
+                    "threat-grid-upload-sample": ""
                 }, 
                 "tests": [
                     "Detonate File - Generic Test"
@@ -5837,7 +5837,7 @@
                     "threat-grid-url-to-file": "Threat Grid"
                 }, 
                 "tests": [
-                    "Test-Detonate URL - ThreatGrid"
+                    "Detonate URL - Generic Test"
                 ]
             }
         }, 
@@ -11559,6 +11559,22 @@
             }
         }, 
         {
+            "Thinkst Canary": {
+                "name": "Thinkst Canary", 
+                "commands": [
+                    "canarytools-list-canaries", 
+                    "canarytools-list-tokens", 
+                    "canarytools-check-whitelist", 
+                    "canarytools-whitelist-ip", 
+                    "canarytools-edit-alert-status", 
+                    "canarytools-get-token"
+                ], 
+                "tests": [
+                    "CanaryTools Test"
+                ]
+            }
+        }, 
+        {
             "Threat Crowd": {
                 "name": "Threat Crowd", 
                 "commands": [
@@ -12074,6 +12090,9 @@
                     "domain", 
                     "cve-search", 
                     "cve-latest"
+                ], 
+                "tests": [
+                    "XFE Test"
                 ]
             }
         }, 
@@ -12636,6 +12655,25 @@
                 "implementing_playbooks": [
                     "Calculate Severity - Critical assets"
                 ]
+            }
+        }, 
+        {
+            "CanaryTools Test": {
+                "name": "CanaryTools Test", 
+                "implementing_scripts": [
+                    "FetchFromInstance", 
+                    "DeleteContext", 
+                    "isError", 
+                    "IsTrue"
+                ], 
+                "command_to_integration": {
+                    "canarytools-list-canaries": "Thinkst Canary", 
+                    "canarytools-edit-alert-status": "Thinkst Canary", 
+                    "canarytools-whitelist-ip": "Thinkst Canary", 
+                    "canarytools-list-tokens": "Thinkst Canary", 
+                    "canarytools-get-token": "Thinkst Canary", 
+                    "canarytools-check-whitelist": "Thinkst Canary"
+                }
             }
         }, 
         {
@@ -15751,14 +15789,6 @@
             }
         }, 
         {
-            "Test-Detonate URL - ThreatGrid": {
-                "name": "Test-Detonate URL - ThreatGrid", 
-                "implementing_playbooks": [
-                    "Detonate URL - ThreatGrid"
-                ]
-            }
-        }, 
-        {
             "test-domain-indicator": {
                 "name": "test-domain-indicator", 
                 "implementing_scripts": [
@@ -16013,6 +16043,19 @@
                     "ParseCSV", 
                     "DeleteContext", 
                     "ExportToCSV"
+                ]
+            }
+        }, 
+        {
+            "TestParseEmailFile-deprecated-script": {
+                "name": "TestParseEmailFile-deprecated-script", 
+                "implementing_scripts": [
+                    "http", 
+                    "ParseEmailFile", 
+                    "ParseEmailFiles", 
+                    "VerifyContext", 
+                    "DeleteContext", 
+                    "AreValuesEqual"
                 ]
             }
         }, 
