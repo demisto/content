@@ -29,12 +29,12 @@ configuration:
 script:
   script: |-
     import sys, subprocess
+    import uuid
 
     USERNAME = demisto.params()['credentials']['identifier'].replace("'", "''")
     PASSWORD = demisto.params()['credentials']['password'].replace("'", "''")
     EXCHANGE_FQDN = demisto.params()['exchangeFQDN'].replace("'", "''")
     UNSECURE = demisto.params()['insecure']
-
 
     STARTCS = '''
     [CmdletBinding()]
@@ -252,6 +252,8 @@ script:
     } catch {
         $e = $_.Exception
         echo $e.Message
+    } finally {
+        Remove-PSSession $session
     }
     '''
 
@@ -269,13 +271,6 @@ script:
 
     def encode_and_submit_results(obj):
         demisto.results(str_to_unicode(obj))
-
-    def get_cs_error(stderr):
-        return {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents" : stderr
-        } if stderr else None
 
     def get_cs_status(search_name, status):
         return {
@@ -302,14 +297,14 @@ script:
             os.remove(ps_path)
 
     def start_compliance_search(query):
-        ps_path = create_ps_file('startcs.ps1', STARTCS)
-        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + query + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+        ps_path = create_ps_file('startcs_' + str(uuid.uuid4()).replace('-','') + '.ps1', STARTCS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + query.replace("'", "''") + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
         delete_ps_file(ps_path)
 
         if stderr:
-            return get_cs_error(stderr)
+            return_error(stderr)
         prefix = '"Action status: '
         pref_ind = stdout.find(prefix)
         sub_start = pref_ind + len(prefix)
@@ -325,14 +320,14 @@ script:
         }
 
     def get_compliance_search(search_name):
-        ps_path = create_ps_file('getcs.ps1', GETCS)
+        ps_path = create_ps_file('getcs_' + search_name + '.ps1', GETCS)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
         delete_ps_file(ps_path)
 
         if stderr:
-            return get_cs_error(stderr)
+            return_error(stderr)
         stdout = stdout.split('\n', 1)
         status = stdout[0].strip()
         results = [get_cs_status(search_name, status)]
@@ -352,43 +347,34 @@ script:
         return results
 
     def remove_compliance_search(search_name):
-        ps_path = create_ps_file('removecs.ps1', REMOVECS)
+        ps_path = create_ps_file('removecs_' + search_name + '.ps1', REMOVECS)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
         delete_ps_file(ps_path)
 
-        if stderr:
-            return get_cs_error(stderr)
-
-        return get_cs_error(stderr) if stderr else get_cs_status(search_name, 'Removed')
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Removed')
 
     def purge_compliance_search(search_name):
-        ps_path = create_ps_file('startpurge.ps1', STARTPURGE)
+        ps_path = create_ps_file('startpurge_' + search_name + '.ps1', STARTPURGE)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
         delete_ps_file(ps_path)
 
-        if stderr:
-            return get_cs_error(stderr)
-
-        return get_cs_error(stderr) if stderr else get_cs_status(search_name, 'Purging')
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Purging')
 
     def check_purge_compliance_search(search_name):
-        ps_path = create_ps_file('checkpurge.ps1', CHECKPURGE)
+        ps_path = create_ps_file('checkpurge_' + search_name + '.ps1', CHECKPURGE)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
         delete_ps_file(ps_path)
 
-        if stderr:
-            return get_cs_error(stderr)
-
-        return get_cs_error(stderr) if stderr else get_cs_status(search_name, 'Purged' if stdout.strip() == 'Completed' else 'Purging')
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Purged' if stdout.strip() == 'Completed' else 'Purging')
 
     def test_module():
-        ps_path = create_ps_file('testcon.ps1', TESTCON)
+        ps_path = create_ps_file('testcon_' + str(uuid.uuid4()).replace('-','') + '.ps1', TESTCON)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout = output.communicate()[0].strip()
@@ -397,7 +383,7 @@ script:
         if stdout == "successful connection":
             demisto.results('ok')
         else:
-            return_error(str(stdout))
+            return_error(stdout)
 
 
     args = prepare_args(demisto.args())
@@ -414,11 +400,11 @@ script:
             encode_and_submit_results(check_purge_compliance_search(**args))
         elif demisto.command() == 'test-module':
             test_module()
-
     except Exception, e:
         if isinstance(e, WindowsError):
             return_error("Could not open powershell on the target engine.")
-
+        else:
+            return_error(e)
   type: python
   commands:
   - name: exchange2016-start-compliance-search
