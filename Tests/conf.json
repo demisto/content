@@ -72,6 +72,10 @@
             "playbookID": "secureworks_test"
         },
         {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
