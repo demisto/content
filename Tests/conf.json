@@ -72,6 +72,10 @@
             "playbookID": "secureworks_test"
         },
         {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -1148,7 +1152,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)",
         "Kafka V2": "Can not connect to instance from remote"
     },
     "nigthly_integrations": [

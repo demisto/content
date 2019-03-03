@@ -9057,6 +9057,9 @@
                     "fe-submit-url", 
                     "fe-submit-url-status", 
                     "fe-submit-url-result"
+                ], 
+                "tests": [
+                    "No test - no instance"
                 ]
             }
         }, 
@@ -15437,7 +15440,7 @@
                     "servicenow-update-record": "ServiceNow", 
                     "servicenow-delete-record": "ServiceNow", 
                     "servicenow-get-ticket-notes": "ServiceNow", 
-                    "servicenow-query-tickets": "", 
+                    "servicenow-query-tickets": "ServiceNow", 
                     "servicenow-create-ticket": "ServiceNow", 
                     "servicenow-add-comment": "ServiceNow", 
                     "servicenow-upload-file": "ServiceNow", 
