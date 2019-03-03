@@ -12,7 +12,7 @@ except ImportError:
     pip.main(['install', 'PyPDF2'])
     import PyPDF2
 
-from Tests.test_utils import run_git_command
+from Tests.test_utils import run_command, print_error
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -56,7 +56,7 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 def get_secrets(branch_name, is_circle):
     secrets_found = {}
     secrets_found_string = ''
-    if not run_git_command('git rev-parse -q --verify MERGE_HEAD'):
+    if not run_command('git rev-parse -q --verify MERGE_HEAD'):
         secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
         secrets_found = search_potential_secrets(secrets_file_paths)
         if secrets_found:
@@ -72,7 +72,10 @@ def get_secrets(branch_name, is_circle):
             secrets_found_string += 'For more information about whitelisting please visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
 
-    return secrets_found, secrets_found_string
+    if secrets_found:
+        print_error(secrets_found_string)
+
+    return secrets_found
 
 
 def get_all_diff_text_files(branch_name, is_circle):
@@ -84,11 +87,11 @@ def get_all_diff_text_files(branch_name, is_circle):
     """
     if is_circle:
         branch_changed_files_string = \
-            run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+            run_command("git diff --name-status origin/master...{}".format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
 
     else:
-        local_changed_files_string = run_git_command("git diff --name-status --no-merges HEAD")
+        local_changed_files_string = run_command("git diff --name-status --no-merges HEAD")
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list

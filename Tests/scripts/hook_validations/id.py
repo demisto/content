@@ -47,13 +47,12 @@ class IDSetValidator(object):
         with open(self.ID_SET_PATH, 'r') as id_set_file:
             try:
                 id_set = json.load(id_set_file)
-            except ValueError, ex:
+            except ValueError as ex:
                 if "Expecting property name" in ex.message:
                     print_error("You probably merged from master and your id_set.json has conflicts. "
                                 "Run `python Tests/scripts/update_id_set.py -r`, it should reindex your id_set.json")
-                    raise ex
-                else:
-                    raise ex
+
+                raise
 
             return id_set
 
