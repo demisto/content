@@ -75,9 +75,9 @@ class AMIConnection:
 
     def __init__(self, public_ip):
         self.public_ip = public_ip
-        self.docker_ip = self.__get_docker_ip()
+        self.docker_ip = self._get_docker_ip()
 
-    def __get_docker_ip(self):
+    def _get_docker_ip(self):
         """Get the IP of the AMI on the docker bridge.
         Used to configure the docker host (AMI machine, in this case) as the proxy server.
 
