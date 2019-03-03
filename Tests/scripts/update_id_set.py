@@ -385,8 +385,9 @@ def re_create_id_set():
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
     for file_path in glob.glob(os.path.join('Integrations', '*')):
         if os.path.isfile(file_path):
-            print("adding {0} to id_set".format(file_path))
-            integration_list.append(get_integration_data(file_path))
+            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                print("adding {0} to id_set".format(file_path))
+                integration_list.append(get_integration_data(file_path))
         else:  # In case we encountered a package
             for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
                 print("adding {0} to id_set".format(yml_file))
