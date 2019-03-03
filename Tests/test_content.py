@@ -133,6 +133,8 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
 
 def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message):
+    rerecord = False
+
     configure_proxy_unsecure(integrations)
     if proxy.has_mock_file(playbook_id):
         print start_message + ' (Mock: Playback)'
@@ -150,12 +152,16 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
         else:
             print "Test failed with mock, recording new mock file."
+            rerecord = True
     else:
         print start_message + ' (Mock: Recording)'
 
     # Mock recording - no mock file or playback failure.
-    run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+    succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+
+    if rerecord and succeed:
+        proxy.rerecorded_tests.append(playbook_id)
     print '------ Test %s end ------' % (test_message,)
 
 
@@ -443,6 +449,7 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
+    proxy.print_rerecorded_tests()
     proxy.print_empty_files()
 
     print "Pushing new/updated mock files to mock git repo."
