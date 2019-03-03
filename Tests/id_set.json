@@ -1,6 +1,21 @@
 {
     "scripts": [
         {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
+            "-": {
+                "name": "-"
+            }
+        }, 
+        {
             "10cb3486-48f3-4d93-88af-b6be84ffd432": {
                 "name": "OktaGetGroups", 
                 "deprecated": true, 
@@ -50,6 +65,16 @@
             }
         }, 
         {
+            "3fa8077a-f65c-4ccf-ac5b-d47d220c0ddb": {
+                "name": "test36"
+            }
+        }, 
+        {
+            "45b14480-53a9-4b24-b222-c0fbd9247467": {
+                "name": "test-auto2"
+            }
+        }, 
+        {
             "46e2109c-b735-458e-884f-030229a20830": {
                 "name": "SetByIncidentId", 
                 "script_executions": [
@@ -58,6 +83,11 @@
                 "tests": [
                     "No test"
                 ]
+            }
+        }, 
+        {
+            "50caa9e4-211b-44ed-9537-2de03d47e814": {
+                "name": "test684"
             }
         }, 
         {
@@ -135,6 +165,16 @@
             }
         }, 
         {
+            "831620ae-e420-4e9b-a3c5-038ecc140a7d": {
+                "name": "test-auto"
+            }
+        }, 
+        {
+            "831620ae-e420-4e9b-a3c5-038ecc140a7d": {
+                "name": "test-auto"
+            }
+        }, 
+        {
             "840aa9a7-04b2-4505-8238-8fe85f010dde": {
                 "name": "OktaActivateUser", 
                 "deprecated": true, 
@@ -149,6 +189,11 @@
                 "script_executions": [
                     "setIncident"
                 ]
+            }
+        }, 
+        {
+            "926c26c7-7397-4100-a629-eb46686282af": {
+                "name": "test54"
             }
         }, 
         {
@@ -609,6 +654,11 @@
             }
         }, 
         {
+            "bb93acba-48f3-4528-a46b-809eef6d1ff6": {
+                "name": "test98"
+            }
+        }, 
+        {
             "bffdcf72-2061-4767-83d5-3ff2a9e8afe7": {
                 "name": "BlockIP", 
                 "tests": [
@@ -808,6 +858,11 @@
                 "depends_on": [
                     "cb-watchlist-get"
                 ]
+            }
+        }, 
+        {
+            "cc44769a-d4f4-4fec-b39a-c1311d800401": {
+                "name": "ksokafj"
             }
         }, 
         {
@@ -3408,9 +3463,20 @@
         {
             "ParseEmailFiles": {
                 "name": "ParseEmailFiles", 
+                "tests": [
+                    "ParseEmailFiles-test"
+                ]
+            }
+        }, 
+        {
+            "ParseEmailFiles": {
+                "name": "ParseEmailFiles", 
                 "script_executions": [
                     "getEntry", 
                     "getFilePath"
+                ], 
+                "tests": [
+                    "ParseEmailFiles-test"
                 ]
             }
         }, 
@@ -7407,16 +7473,6 @@
     ], 
     "integrations": [
         {
-            "-": {
-                "name": "-"
-            }
-        }, 
-        {
-            "-": {
-                "name": "-"
-            }
-        }, 
-        {
             "AbuseIPDB": {
                 "name": "AbuseIPDB", 
                 "commands": [
@@ -8775,6 +8831,22 @@
             }
         }, 
         {
+            "EclecticIQ Platform": {
+                "name": "EclecticIQ Platform", 
+                "commands": [
+                    "ip", 
+                    "url", 
+                    "file", 
+                    "eclecticiq-get-observable-related-entity", 
+                    "email", 
+                    "domain"
+                ], 
+                "tests": [
+                    "No test - instance issues"
+                ]
+            }
+        }, 
+        {
             "Endgame": {
                 "name": "Endgame", 
                 "commands": [
@@ -8968,6 +9040,26 @@
                 "commands": [
                     "dnsdb-rdata", 
                     "dnsdb-rrset"
+                ]
+            }
+        }, 
+        {
+            "Fidelis Elevate Network": {
+                "name": "Fidelis Elevate Network", 
+                "commands": [
+                    "fidelis-get-alert", 
+                    "fidelis-delete-alert", 
+                    "fidelis-get-malware-data", 
+                    "fidelis-get-alert-pcap", 
+                    "fidelis-get-alert-report", 
+                    "fidelis-sandbox-upload", 
+                    "fidelis-list-alerts", 
+                    "fidelis-upload-pcap", 
+                    "fidelis-list-pcap-components", 
+                    "fidelis-run-pcap"
+                ], 
+                "tests": [
+                    "Fidelis-Test"
                 ]
             }
         }, 
@@ -9611,23 +9703,6 @@
         {
             "jira": {
                 "name": "jira", 
-                "fromversion": "2.6.0", 
-                "commands": [
-                    "jira-issue-query", 
-                    "jira-get-issue", 
-                    "jira-create-issue", 
-                    "jira-issue-upload-file", 
-                    "jira-issue-add-comment", 
-                    "jira-issue-add-link", 
-                    "jira-edit-issue", 
-                    "jira-get-comments", 
-                    "jira-delete-issue"
-                ]
-            }
-        }, 
-        {
-            "jira": {
-                "name": "jira", 
                 "toversion": "2.5.0", 
                 "commands": [
                     "jira-issue-query", 
@@ -9636,14 +9711,6 @@
                     "jira-issue-upload-file", 
                     "jira-issue-add-comment", 
                     "jira-issue-add-link"
-                ]
-            }
-        }, 
-        {
-            "JIRA-python": {
-                "name": "JIRA-python", 
-                "commands": [
-                    "example-get-items"
                 ]
             }
         }, 
@@ -9665,6 +9732,20 @@
                 "tests": [
                     "JoeSecurityTestPlaybook", 
                     "JoeSecurityTestDetonation"
+                ]
+            }
+        }, 
+        {
+            "Kafka V2": {
+                "name": "Kafka V2", 
+                "commands": [
+                    "kafka-print-topics", 
+                    "kafka-publish-msg", 
+                    "kafka-consume-msg", 
+                    "kafka-fetch-partitions"
+                ], 
+                "tests": [
+                    "No Test - Can not connect to instance from remote"
                 ]
             }
         }, 
@@ -10313,6 +10394,25 @@
                 ], 
                 "tests": [
                     "No test"
+                ]
+            }
+        }, 
+        {
+            "PagerDuty v2": {
+                "name": "PagerDuty v2", 
+                "commands": [
+                    "PagerDuty-get-all-schedules", 
+                    "PagerDuty-get-users-on-call", 
+                    "PagerDuty-get-users-on-call-now", 
+                    "PagerDuty-incidents", 
+                    "PagerDuty-submit-event", 
+                    "PagerDuty-get-contact-methods", 
+                    "PagerDuty-get-users-notification", 
+                    "PagerDuty-resolve-event", 
+                    "PagerDuty-acknowledge-event"
+                ], 
+                "tests": [
+                    "PagerDuty Test"
                 ]
             }
         }, 
@@ -11559,6 +11659,40 @@
             }
         }, 
         {
+            "test": {
+                "name": "test", 
+                "commands": [
+                    "example-get-items", 
+                    "cza"
+                ]
+            }
+        }, 
+        {
+            "test": {
+                "name": "test", 
+                "commands": [
+                    "example-get-items", 
+                    "cza"
+                ]
+            }
+        }, 
+        {
+            "test-int": {
+                "name": "test-int", 
+                "commands": [
+                    "example-get-items"
+                ]
+            }
+        }, 
+        {
+            "test-int": {
+                "name": "test-int", 
+                "commands": [
+                    "example-get-items"
+                ]
+            }
+        }, 
+        {
             "Thinkst Canary": {
                 "name": "Thinkst Canary", 
                 "commands": [
@@ -11802,20 +11936,6 @@
                 ], 
                 "tests": [
                     "No tests"
-                ]
-            }
-        }, 
-        {
-            "urlscan.io": {
-                "name": "urlscan.io", 
-                "fromversion": "3.5.0", 
-                "commands": [
-                    "urlscan-search", 
-                    "urlscan-submit", 
-                    "url"
-                ], 
-                "tests": [
-                    "urlscan_malicious_Test"
                 ]
             }
         }, 
@@ -15364,7 +15484,41 @@
                     "secure-works-get-tickets-updates": "Dell Secureworks"
                 }
             }
-        },
+        }, 
+        {
+            "servicenow_test_new": {
+                "name": "ServiceNow Test New", 
+                "implementing_scripts": [
+                    "VerifyHumanReadableContains", 
+                    "FileCreateAndUpload", 
+                    "FetchFromInstance", 
+                    "VerifyContext", 
+                    "VerifyContextFields", 
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "servicenow-get-table-name": "ServiceNow", 
+                    "servicenow-update-record": "ServiceNow", 
+                    "servicenow-delete-record": "ServiceNow", 
+                    "servicenow-get-ticket-notes": "ServiceNow", 
+                    "servicenow-query-tickets": "ServiceNow", 
+                    "servicenow-create-ticket": "ServiceNow", 
+                    "servicenow-add-comment": "ServiceNow", 
+                    "servicenow-upload-file": "ServiceNow", 
+                    "servicenow-get-record": "ServiceNow", 
+                    "servicenow-create-record": "ServiceNow", 
+                    "servicenow-add-link": "ServiceNow", 
+                    "servicenow-query-groups": "ServiceNow", 
+                    "servicenow-list-table-fields": "ServiceNow", 
+                    "servicenow-update-ticket": "", 
+                    "servicenow-query-table": "ServiceNow", 
+                    "servicenow-delete-ticket": "ServiceNow", 
+                    "servicenow-query-computers": "ServiceNow", 
+                    "servicenow-get-ticket": "ServiceNow", 
+                    "servicenow-query-users": "ServiceNow"
+                }
+            }
+        }, 
         {
             "ShodanTest": {
                 "name": "ShodanTest", 
@@ -15751,6 +15905,14 @@
                 ], 
                 "tests": [
                     "No test"
+                ]
+            }
+        }, 
+        {
+            "Test-Detonate URL - ThreatGrid": {
+                "name": "Test-Detonate URL - ThreatGrid", 
+                "implementing_playbooks": [
+                    "Detonate URL - ThreatGrid"
                 ]
             }
         }, 
