@@ -2121,6 +2121,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
     scriptarguments:
       add_to_context: {}
       brand_name: {}
@@ -2149,12 +2152,76 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "78":
+    id: "78"
+    taskid: b80dbe4c-b25a-4ad3-8bea-d4a88eacdde5
+    type: regular
+    task:
+      id: b80dbe4c-b25a-4ad3-8bea-d4a88eacdde5
+      version: -1
+      name: Query with no results
+      description: Retrieve ticket info with a query
+      script: ServiceNow|||servicenow-query-tickets
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      query:
+        simple: short_description="NO WAY"
+      ticket_type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: 219cc690-9a88-4d15-8c94-a6432d21df6a
+    type: regular
+    task:
+      id: 219cc690-9a88-4d15-8c94-a6432d21df6a
+      version: -1
+      name: Get non existant ticket
+      description: Retrieve ticket information by specific ticket ID
+      script: ServiceNow|||servicenow-get-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    scriptarguments:
+      get_attachments: {}
+      id:
+        simple: nope
+      number: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8925,
+        "height": 9285,
         "width": 810,
         "x": 50,
         "y": 50
