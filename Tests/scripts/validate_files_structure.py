@@ -794,6 +794,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
+    parser.add_argument('-a', '--all', type=str2bool, help='Validate all files')
     options = parser.parse_args()
     is_circle = options.circle
     if is_circle is None:
@@ -801,15 +802,16 @@ def main():
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     validate_conf_json()
-    if branch_name != 'master':
+    if branch_name == 'master' or options.all:
+        # validates all of Content repo directories according to their schemas
+        validate_all_files()
+    else:
         import logging
         logging.basicConfig(level=logging.CRITICAL)
 
         # validates only committed files
         validate_committed_files(branch_name, is_circle)
-    else:
-        # validates all of Content repo directories according to their schemas
-        validate_all_files()
+
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)
 
