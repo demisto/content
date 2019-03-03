@@ -809,6 +809,8 @@ script:
         demisto parameter: (string) file_id
             The unique ID of the extracted file
         """
+        context = {}
+        files_standards = []
         file_id = demisto.args().get('file_id')
         response = file_information_request(file_id)
 
@@ -819,9 +821,17 @@ script:
             'extraction_time': response.get('extraction_time'),
             'status': response.get('status'),
         }
-        context = {
-            'CounterTack.File(val.path && val.path === obj.path)': createContext(response, keyTransform=underscoreToCamelCase)
-        }
+
+        files_standards.append({
+                'Size': response.get('size'),
+                'MD5': response.get('md5'),
+                'SHA256': response.get('sha256'),
+                'SSDeep': response.get('ssdeep'),
+                'Path': response.get('path')
+        })
+
+        context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(response, keyTransform=underscoreToCamelCase)
+        context[outputPaths['file']] = files_standards
         headers = ['endpoint_name', 'path', 'size', 'status', 'extraction_time']
         entry = {
             'Type': entryTypes['note'],
@@ -2003,6 +2013,22 @@ script:
         - contextPath: CounterTack.File.VtReportLocation
           description: VirusTot al report location path.
           type: string
+        - contextPath: File.MD5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: File.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
+          type: string
+        - contextPath: File.SHA256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: File.SSDeep
+          description: The SSDeep digest of the file contents.
+          type: string
+        - contextPath: File.Size
+          description: The size of the extracted file (bytes).
+          type: number
       description: Get the information of a specific file
     - name: countertack-download-file
       arguments:
