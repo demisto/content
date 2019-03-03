@@ -8,7 +8,7 @@ description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
 configuration:
 - display: Server full URL (e.g., https://192.168.0.1:8443)
   name: server
-  defaultvalue: "<your.server>:<port>"
+  defaultvalue: ""
   type: 0
   required: true
 - display: Credentials
