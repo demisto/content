@@ -740,7 +740,7 @@ script:
         suffix_url = 'endpoints/' + endpoint_id + '/files'
 
         response = http_request('GET', suffix_url)
-        return response.json()
+        return response
 
 
     def get_endpoint_files():
@@ -754,6 +754,8 @@ script:
 
         endpoint_id = demisto.args().get('endpoint_id')
         data = []
+        context = {}
+        files_standards = []
 
         files = endpoint_files_request(endpoint_id)
         for file in files:
@@ -765,10 +767,17 @@ script:
                 'ExtractionTime': file.get('extraction_time'),
                 'Status': file.get('status')
             })
+            files_standards.append({
+                'Size': file.get('size'),
+                'MD5': file.get('md5'),
+                'SHA256': file.get('sha256'),
+                'SSDeep': file.get('ssdeep'),
+                'Path': file.get('path')
+            })
 
-        context = {
-            'CounterTack.File(val.Id && val.Id === obj.Id)': createContext(files, keyTransform=underscoreToCamelCase)
-        }
+        context['CounterTack.File(val.Id && val.Id === obj.Id)'] = createContext(files, keyTransform=underscoreToCamelCase)
+        context[outputPaths['file']] = files_standards
+
         headers = ['Status', 'Id', 'path', 'endpoint_id', 'extraction_time', 'user']
         entry = {
             'Type': entryTypes['note'],
@@ -1922,6 +1931,22 @@ script:
         - contextPath: CounterTack.File.Md5
           description: The MD5 digest of the file contents.
           type: string
+        - contextPath: File.MD5
+          description: The MD5 digest of the file contents.
+          type: string
+        - contextPath: File.Path
+          description: Full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
+          type: string
+        - contextPath: File.SHA256
+          description: The SHA256 digest of the file contents.
+          type: string
+        - contextPath: File.SSDeep
+          description: The SSDee digest of the file contents.
+          type: string
+        - contextPath: File.Size
+          description: The size of the extracted file (bytes).
+          type: number
       description: Returns all extracted files from specified endpoint
     - name: countertack-get-file-information
       arguments:
