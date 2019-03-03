@@ -131,6 +131,7 @@ tasks:
           "y": 369
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c

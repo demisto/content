@@ -1,19 +1,14 @@
 commonfields:
-  id: ArcSight ESM
+  id: ArcSight ESM v2
   version: -1
-name: ArcSight ESM
-display: ArcSight ESM
+name: ArcSight ESM v2
+display: ArcSight ESM v2
 category: Analytics & SIEM
 description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
 configuration:
-- display: Server URL (e.g., https://192.168.0.1)
+- display: Server full URL (e.g., https://192.168.0.1:8443)
   name: server
   defaultvalue: ""
-  type: 0
-  required: true
-- display: Port
-  name: port
-  defaultvalue: "8443"
   type: 0
   required: true
 - display: Credentials
@@ -319,6 +314,13 @@ script:
     - name: id
       required: true
       description: Resource ID of the query viewer
+    - name: onlyColumns
+      description: If "true", will return only the columns of the query. If "false", will return the column headers and all query results.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
     outputs:
     - contextPath: ArcSight.QueryViewerResults
       type: Unknown
@@ -333,5 +335,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - ArcSight ESM Test
+  - ArcSight ESM v2 Test
 releaseNotes: "Rewrote the integration in Python and fixed sever issues."
