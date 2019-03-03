@@ -5716,8 +5716,8 @@
                     "GenericPolling"
                 ], 
                 "command_to_integration": {
-                    "threat-grid-upload-sample": "", 
-                    "threat-grid-get-samples-state": ""
+                    "threat-grid-get-samples-state": "", 
+                    "threat-grid-upload-sample": ""
                 }, 
                 "tests": [
                     "Detonate File - Generic Test"
