@@ -72,6 +72,10 @@
             "playbookID": "secureworks_test"
         },
         {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -1057,6 +1061,11 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
         },
         {
             "integrations": "mysql",
