@@ -8030,9 +8030,6 @@
                     "azure-vm-create-instance", 
                     "azure-list-resource-groups", 
                     "azure-vm-delete-instance"
-                ], 
-                "tests": [
-                    "No test"
                 ]
             }
         }, 
