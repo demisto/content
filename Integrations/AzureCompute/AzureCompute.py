@@ -10,14 +10,14 @@ from datetime import datetime
 
 PARAMS = demisto.params()
 USE_SSL = not demisto.params().get('unsecure')
-SUBSCRIPTION_ID = PARAMS.get('subscription_id')  # Will equal None
 TENANT_ID = PARAMS.get('tenant_id')
 TOKEN = PARAMS.get('token')
 HOST = PARAMS.get('host', 'https://management.azure.com')
 SERVER = HOST[:-1] if HOST.endswith('/') else HOST
-BASE_URL = SERVER + '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
 API_VERSION = '2018-06-01'
 HEADERS = {}
+SUBSCRIPTION_ID = None
+BASE_URL = None
 
 # Image options to be used in the create_vm_command
 IMAGES = {
@@ -216,12 +216,39 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
+def set_subscription_id():
+    """
+    Setting subscription ID to the context and returning it
+    """
+    headers = {
+         'Authorization': TOKEN,
+         'Accept': 'application/json'
+    }
+    token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
+    parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
+    r = requests.get(token_retrieval_url, headers=headers, params=parameters, verify=USE_SSL)
+    try:
+        response = r.json()
+        if r.status_code != requests.codes.ok:
+            return_error('Error: {}\nDescription:{}'.format(response.get('title'), response.get('detail')))
+        sub_id = response.get('subscription_id')
+        demisto.setIntegrationContext({
+            'token': response.get('token'),
+            'stored': epoch_seconds(),
+            'subscription_id': sub_id
+        })
+        return sub_id
+    except ValueError as e:
+        if e.message == "No JSON object could be decoded":
+            return_error(response.content)
+
+
 def update_access_token():
     """
     Check if we have a valid token and if not get one and update global HEADERS
     """
     ctx = demisto.getIntegrationContext()
-    if ctx.get('subscription_id') and ctx.get('token') and ctx.get('stored'):
+    if ctx.get('token') and ctx.get('stored'):
         if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
             HEADERS['Authorization'] = 'Bearer ' + ctx.get('token')
             return
@@ -244,7 +271,6 @@ def update_access_token():
         'subscription_id': response.get('subscription_id')
     })
     HEADERS['Authorization'] = 'Bearer ' + response.get('token')
-    SUBSCRIPTION_ID = response.get('subscription_id')
 
 
 def assign_image_attributes(image):
@@ -866,6 +892,10 @@ commands = {
 '''EXECUTION'''
 
 try:
+    # Initial setup
+    SUBSCRIPTION_ID = set_subscription_id()
+    BASE_URL = SERVER + '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
+
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() in commands.keys():
