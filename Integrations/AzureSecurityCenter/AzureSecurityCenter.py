@@ -388,18 +388,6 @@ def get_alerts(resource_group_name, asc_location, filter_query, select_query, ex
 
 
 def list_alerts(resource_group_name, asc_location, filter_query, select_query, expand_query):
-    """
-    :param resource_group_name:
-    :type resource_group_name: str
-    :param asc_location:
-    :type asc_location: str
-    :param filter_query:
-    :type filter_query: str
-    :param select_query
-    :type select_query: str
-    :param expand_query:
-    :type expand_query: str
-    """
     cmd_url = ''
     if resource_group_name:
         cmd_url += '/resourceGroups/{}/providers/Microsoft.Security'.format(resource_group_name)
@@ -422,9 +410,6 @@ def list_alerts(resource_group_name, asc_location, filter_query, select_query, e
 
 
 def update_alert_command(args):
-    """
-    Updating
-    """
     resource_group_name = args.get('resource_group_name')
     asc_location = args.get('asc_location')
     alert_id = args.get('alert_id')
@@ -539,11 +524,13 @@ def update_atp_command(args):
 
 
 def update_atp(resource_group_name, storage_account, setting_name, is_enabled):
-    cmd_url = '/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}/providers/Microsoft.Security/advancedThreatProtectionSettings/{}?api-version={}'.format(
-        resource_group_name, storage_account, setting_name, ATP_API_VERSION)
+    cmd_url = '/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}' \
+              '/providers/Microsoft.Security/advancedThreatProtectionSettings/{}?api-version={}'.format(
+                resource_group_name, storage_account, setting_name, ATP_API_VERSION)
     data = {
-        "id": "/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}/providers/Microsoft.Security/advancedThreatProtectionSettings/{}".format(
-            SUBSCRIPTION_ID, resource_group_name, storage_account, setting_name),
+        "id": "/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage"
+              "/storageAccounts/{}/providers/Microsoft.Security/advancedThreatProtectionSettings/{}".format(
+                SUBSCRIPTION_ID, resource_group_name, storage_account, setting_name),
         "name": setting_name,
         "type": "Microsoft.Security/advancedThreatProtectionSettings",
         "properties": {
@@ -588,8 +575,9 @@ def get_atp_command(args):
 
 
 def get_atp(resource_group_name, storage_account, setting_name):
-    cmd_url = '/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}/providers/Microsoft.Security/advancedThreatProtectionSettings/{}?api-version={}'.format(
-        resource_group_name, storage_account, setting_name, ATP_API_VERSION)
+    cmd_url = '/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts' \
+              '/{}/providers/Microsoft.Security/advancedThreatProtectionSettings/{}?api-version={}'.format(
+                resource_group_name, storage_account, setting_name, ATP_API_VERSION)
     response = http_request('GET', cmd_url)
     return response
 
@@ -1052,8 +1040,8 @@ def get_jit_command(args):
 
 
 def get_jit(policy_name, asc_location, resource_group_name):
-    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}?api-version={}'.format(
-        resource_group_name, asc_location, policy_name, JIT_API_VERSION)
+    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/' \
+              '{}?api-version={}'.format(resource_group_name, asc_location, policy_name, JIT_API_VERSION)
     response = http_request('GET', cmd_url)
     return response
 
@@ -1067,8 +1055,9 @@ def initiate_jit_command(args):
     source_address = args.get('source_address')
     duration = args.get('duration')
     response = initiate_jit(resource_group_name, asc_location, policy_name, vm_id, port, source_address, duration)
-    policy_id = "/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}".format(
-        SUBSCRIPTION_ID, resource_group_name, asc_location, policy_name)
+    policy_id = "/subscriptions/{}/resourceGroups/{}/providers/" \
+                "Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}".format(
+                 SUBSCRIPTION_ID, resource_group_name, asc_location, policy_name)
     virtual_machines = response.get('virtualMachines')
     if virtual_machines and len(virtual_machines) > 0:
         machine = virtual_machines[0]
@@ -1105,14 +1094,16 @@ def initiate_jit_command(args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.{}).Initiate(val.endTimeUtc === obj.EndTimeUtc)'.format(
+                'AzureSecurityCenter.JITPolicy(val.ID && val.ID ='
+                '== obj.{}).Initiate(val.endTimeUtc === obj.EndTimeUtc)'.format(
                     policy_id): outputs}
         })
 
 
 def initiate_jit(resource_group_name, asc_location, policy_name, vm_id, port, source_address, duration):
-    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}/initiate?api-version={}'.format(
-        resource_group_name, asc_location, policy_name, JIT_API_VERSION)
+    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/' \
+              'locations/{}/jitNetworkAccessPolicies/{}/initiate?api-version={}'.format(
+                resource_group_name, asc_location, policy_name, JIT_API_VERSION)
     # only supports init access for one vm and one port now
     data = {
         "virtualMachines": [{
@@ -1134,8 +1125,9 @@ def delete_jit_command(args):
     policy_name = args.get('policy_name')
     delete_jit(asc_location, resource_group_name, policy_name)
 
-    policy_id = "/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}".format(
-        SUBSCRIPTION_ID, resource_group_name, asc_location, policy_name)
+    policy_id = "/subscriptions/{}/resourceGroups/" \
+                "{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}".format(
+                 SUBSCRIPTION_ID, resource_group_name, asc_location, policy_name)
     outputs = {
         "ID": policy_id,
         "Action": 'deleted'
@@ -1151,8 +1143,9 @@ def delete_jit_command(args):
 
 
 def delete_jit(asc_location, resource_group_name, policy_name):
-    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}?api-version={}'.format(
-        resource_group_name, asc_location, policy_name, JIT_API_VERSION)
+    cmd_url = '/resourceGroups/{}/providers/Microsoft.Security/' \
+              'locations/{}/jitNetworkAccessPolicies/{}?api-version={}' \
+              ''.format(resource_group_name, asc_location, policy_name, JIT_API_VERSION)
     http_request('DELETE', cmd_url)
 
 
