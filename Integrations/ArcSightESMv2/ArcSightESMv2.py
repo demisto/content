@@ -432,10 +432,8 @@ def get_all_cases_command():
 def get_security_events_command():
     ids = demisto.args().get('ids')
     last_date_range = demisto.args().get('lastDateRange')
-
-    ids = argToList(ids)
+    ids = argToList(str(ids) if isinstance(ids, int) else ids)
     raw_events = get_security_events(ids, last_date_range)
-    ids = [str(id_) for id_ in ids]
     if raw_events:
         events = []
         for raw_event in beautifully_json(raw_events):
