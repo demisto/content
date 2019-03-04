@@ -1158,7 +1158,8 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Kafka V2": "Can not connect to instance from remote"
+        "Kafka V2": "Can not connect to instance from remote",
+        "Alexa Rank Indicator": "Missing logic (issues 15913, 15913)"
     },
     "nigthly_integrations": [
         "Lastline",
