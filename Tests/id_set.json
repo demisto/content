@@ -12556,6 +12556,7 @@
         {
             "CreatePhishingClassifierMLTest": {
                 "name": "Create Phishing Classifier ML Test", 
+                "fromversion": "4.1.0", 
                 "implementing_scripts": [
                     "DBotPredictPhishingLabel", 
                     "VerifyContext", 
