@@ -192,6 +192,10 @@ script:
       description: Display the type of security agent provisioning action to take
         (On or Off)
       type: string
+      auto: PREDEFINED
+      predefined:
+        - "on"
+        - "off"
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Setting resource ID
       type: string
