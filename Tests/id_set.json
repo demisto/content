@@ -8021,6 +8021,23 @@
             }
         }, 
         {
+            "Azure Compute": {
+                "name": "Azure Compute", 
+                "commands": [
+                    "azure-vm-list-instances", 
+                    "azure-vm-start-instance", 
+                    "azure-vm-poweroff-instance", 
+                    "azure-vm-get-instance-details", 
+                    "azure-vm-create-instance", 
+                    "azure-list-resource-groups", 
+                    "azure-vm-delete-instance"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
             "Azure Security Center": {
                 "name": "Azure Security Center", 
                 "commands": [
