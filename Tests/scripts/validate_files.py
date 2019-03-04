@@ -191,7 +191,7 @@ class FilesValidator(object):
             if not structure_validator.is_file_valid():
                 self._is_valid = False
 
-            if self.id_set_validator.is_file_valid_in_set(file_path):
+            if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
             if self.id_set_validator.is_file_has_used_id(file_path):
