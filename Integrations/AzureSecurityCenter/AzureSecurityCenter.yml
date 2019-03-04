@@ -25,7 +25,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration of Azure Security Center.
+description: Unified security management and advanced threat protection across hybrid
+  cloud workloads.
 detaileddescription: |-
   To grant access to Microsoft Security Center, an admin needs to approve Demisto using an admin consent flow. To start the admin consent flow, click [here](https://demistobot.demisto.com/azuresc-sub).
   After authorizing the Demisto app, you'll receive a tenant ID, which you should enter in the integration instance settings.
@@ -277,6 +278,8 @@ script:
   isfetch: false
   runonce: false
   script: |-
+    from CommonServerPython import *
+
     ''' IMPORTS '''
     import requests
     import ast
