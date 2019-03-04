@@ -1,0 +1,141 @@
+id: test Arcsight - Get events related to the Case
+version: -1
+name: test Arcsight - Get events related to the Case
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d0feb6ad-5470-4236-87e6-8321d979697a
+    type: start
+    task:
+      id: d0feb6ad-5470-4236-87e6-8321d979697a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: cdc0dbc5-a1c6-42ce-802a-aa8043d01a89
+    type: playbook
+    task:
+      id: cdc0dbc5-a1c6-42ce-802a-aa8043d01a89
+      version: -1
+      name: Arcsight - Get events related to the Case
+      playbookName: Arcsight - Get events related to the Case
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 87f17d16-b9c1-401d-8771-fb2ed60cf7bb
+    type: regular
+    task:
+      id: 87f17d16-b9c1-401d-8771-fb2ed60cf7bb
+      version: -1
+      name: set case ID
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      addLabels: {}
+      customFields: {}
+      deleteEmptyField: {}
+      details: {}
+      id: {}
+      labels:
+        simple: '[{"ID":"77ax-uGgBABCWb2puJdY8ZA=="}]'
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      roles: {}
+      severity: {}
+      sla: {}
+      slaField: {}
+      systems: {}
+      type: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: af20bc42-662e-40a8-89a4-641d50ceee26
+    type: regular
+    task:
+      id: af20bc42-662e-40a8-89a4-641d50ceee26
+      version: -1
+      name: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

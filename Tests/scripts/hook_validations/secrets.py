@@ -16,10 +16,10 @@ from Tests.test_utils import run_command, print_error
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 3.8
+ENTROPY_THRESHOLD = 4.2
 
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json'}
-ACCEPTED_FILE_STATUSES = ['M', 'A']
+ACCEPTED_FILE_STATUSES = ['M', 'A', "R099"]
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
@@ -111,7 +111,16 @@ def get_diff_text_files(files_string):
             continue
 
         file_status = file_data[0]
-        file_path = file_data[1]
+        if file_status.upper() == "R099":
+            # if filename renamed
+            # sometimes the R comes with numbers R099,
+            # the R status file usually will look like:
+            # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
+            # that is why we set index 2 to file_path - the second index is the updated file name
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
         # only modified/added file, text readable, exclude white_list file
         if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path):
             if not any(skipped_file in file_path for skipped_file in SKIPPED_FILES):
@@ -206,39 +215,45 @@ def retrieve_related_yml(file_path_temp):
     return matching_yml_file_contents
 
 
-def regex_for_secrets(file_contents):
+def regex_for_secrets(line):
     """Scans for IOCs with potentially low entropy score
-    :param file_contents: file to test as string representation (string)
+    :param line: line to test as string representation (string)
     :return  potential_secrets (list) IOCs found via regex, false_positives (list) Non secrets with high entropy
     """
     potential_secrets = []
     false_positives = []
 
     # Dates REGEX for false positive preventing since they have high entropy
-    dates = re.findall(DATES_REGEX, file_contents)
+    dates = re.findall(DATES_REGEX, line)
     if dates:
         false_positives += [date[0].lower() for date in dates]
     # UUID REGEX
-    uuids = re.findall(UUID_REGEX, file_contents)
+    uuids = re.findall(UUID_REGEX, line)
     if uuids:
         false_positives += uuids
-
+    # docker images version are detected as ips. so we ignore and whitelist them
+    # example: dockerimage: demisto/duoadmin:1.0.0.147
+    re_res = re.search(r'dockerimage:\s*\w*demisto/\w+:(\d+.\d+.\d+.\d+)', line)
+    if re_res:
+        docker_version = re_res.group(1)
+        false_positives.append(docker_version)
+        line = line.replace(docker_version, '')
     # URL REGEX
-    urls = re.findall(URLS_REGEX, file_contents)
+    urls = re.findall(URLS_REGEX, line)
     if urls:
         potential_secrets += urls
     # EMAIL REGEX
-    emails = re.findall(EMAIL_REGEX, file_contents)
+    emails = re.findall(EMAIL_REGEX, line)
     if emails:
         potential_secrets += emails
     # IPV6 REGEX
-    ipv6_list = re.findall(IPV6_REGEX, file_contents)
+    ipv6_list = re.findall(IPV6_REGEX, line)
     if ipv6_list:
         for ipv6 in ipv6_list:
             if ipv6 != '::' and len(ipv6) > 4:
                 potential_secrets.append(ipv6)
     # IPV4 REGEX
-    ipv4_list = re.findall(IPV4_REGEX, file_contents)
+    ipv4_list = re.findall(IPV4_REGEX, line)
     if ipv4_list:
         potential_secrets += ipv4_list
 

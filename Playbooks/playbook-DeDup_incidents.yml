@@ -13,8 +13,8 @@ tasks:
     task:
       id: 0c9fa614-e05a-4144-8e40-6b736392a16a
       version: -1
-      description: ""
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -100,10 +100,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: e503045a-de15-4177-8147-ec721599b47a
+    taskid: e1952276-e1b2-4748-8198-9bc500d5c504
     type: condition
     task:
-      id: e503045a-de15-4177-8147-ec721599b47a
+      id: e1952276-e1b2-4748-8198-9bc500d5c504
       version: -1
       name: Is duplicate incident found?
       description: Check if there is any duplicate incident found.
@@ -119,7 +119,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isTrue
           left:
             value:
               simple: isSimilarIncidentFound
@@ -131,6 +131,7 @@ tasks:
           "y": 369
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
@@ -138,8 +139,8 @@ tasks:
     task:
       id: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
       version: -1
-      description: ""
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -194,3 +195,6 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
+releaseNotes: "Fix 'Is Duplicate Found?' condition"
+tests:
+  - test_similar_incidents
