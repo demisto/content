@@ -1,6 +1,7 @@
 """Wait for server to be ready for tests"""
 import sys
 from time import sleep
+from requests import get
 from subprocess import Popen, PIPE
 
 HTTP_CODE = "{http_code}"
@@ -47,7 +48,8 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
-                    http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
+                    # http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
+                    http_code = get("https://{}".format(ami_instance_ip), verify=False).status_code
                     print "this is the bash command {}".format(http_code)
                     if http_code != "433" and http_code != "000":
                         print "{} is ready for use".format(ami_instance_name)
