@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fa144299-d57c-4bbc-8e32-ae5a386ab0bd
+    taskid: 5f6e967a-7828-4125-86d9-dde2f0ce23f6
     type: start
     task:
-      id: fa144299-d57c-4bbc-8e32-ae5a386ab0bd
+      id: 5f6e967a-7828-4125-86d9-dde2f0ce23f6
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -24,47 +24,285 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "1":
     id: "1"
-    taskid: c0c05089-2362-4458-8b0c-1e131f084589
+    taskid: b5da8696-33ca-4d17-8fce-6b8db9d41848
     type: regular
     task:
-      id: c0c05089-2362-4458-8b0c-1e131f084589
+      id: b5da8696-33ca-4d17-8fce-6b8db9d41848
       version: -1
-      name: lr-get-alarms
+      name: Get alarm by id
       description: Retrieve alarms in a given time period, optionally filtered by
         the alarm status or entity
-      script: LogRhythm|||lr-get-alarms
+      script: '|||lr-get-alarm-by-id'
       type: regular
       iscommand: true
-      brand: LogRhythm
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
-      all-users:
-        simple: "true"
-      count: {}
-      end-date:
-        simple: 2018-03-30
-      extend-context: {}
-      start-date:
-        simple: 2018-03-27
-      status:
-        simple: New
-      using:
-        simple: LogRhythm_instance_1
+      alarm-id:
+        simple: "100"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 380
         }
       }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 1f263fd6-2218-404f-82d9-f1ef932db74f
+    type: regular
+    task:
+      id: 1f263fd6-2218-404f-82d9-f1ef932db74f
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 20494b3a-dcbd-4ade-8fec-d08cde99609d
+    type: regular
+    task:
+      id: 20494b3a-dcbd-4ade-8fec-d08cde99609d
+      version: -1
+      name: Add alarm comment
+      script: '|||lr-add-alarm-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alarm-id:
+        simple: "100"
+      comments:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: d5742d70-391a-40de-8a66-a5893ec7cb80
+    type: regular
+    task:
+      id: d5742d70-391a-40de-8a66-a5893ec7cb80
+      version: -1
+      name: Get alarm events
+      script: '|||lr-get-alarm-events-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alarm-id:
+        simple: "100"
+      include-raw-log: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 2689b1f7-c65b-4fe0-8df3-e795fec79184
+    type: regular
+    task:
+      id: 2689b1f7-c65b-4fe0-8df3-e795fec79184
+      version: -1
+      name: Get alarm history
+      script: '|||lr-get-alarm-history-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alarm-id:
+        simple: "100"
+      include-comments:
+        simple: "true"
+      include-notifications:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 356608d3-a463-43ad-8953-fb64dd3259f0
+    type: regular
+    task:
+      id: 356608d3-a463-43ad-8953-fb64dd3259f0
+      version: -1
+      name: Get alarms
+      script: '|||lr-get-alarms'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all-users:
+        simple: "true"
+      count: {}
+      end-date:
+        simple: 2019-01-01
+      start-date:
+        simple: 2018-01-01
+      status:
+        simple: New
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 5161c983-2c21-4da7-8caa-bbef37e8dc01
+    type: regular
+    task:
+      id: 5161c983-2c21-4da7-8caa-bbef37e8dc01
+      version: -1
+      name: Update status - New
+      script: '|||lr-update-alarm-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alarm-id:
+        simple: "100"
+      comments: {}
+      status:
+        simple: New
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 98beae29-6284-45ca-89cc-807541ebe5d0
+    type: regular
+    task:
+      id: 98beae29-6284-45ca-89cc-807541ebe5d0
+      version: -1
+      name: Update status - Closed
+      script: '|||lr-update-alarm-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alarm-id:
+        simple: "100"
+      comments: {}
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 553d42ff-9308-4ae4-81a4-82af8ac89c96
+    type: title
+    task:
+      id: 553d42ff-9308-4ae4-81a4-82af8ac89c96
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 1685,
         "width": 380,
         "x": 450,
         "y": 50
@@ -73,3 +311,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "improve logRhythm test playbook"
