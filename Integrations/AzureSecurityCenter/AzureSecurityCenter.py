@@ -23,7 +23,7 @@ SUBSCRIPTION_ID = CONTEXT.get('subscription_id')
 SUBSCRIPTION_URL = '/subscriptions/{}'.format(SUBSCRIPTION_ID)
 TOKEN = demisto.params().get('token')
 TENANT_ID = demisto.params().get('tenant_id')
-BASE_URL = demisto.params().get('server_url') if demisto.params().get('server_url') else 'https://management.azure.com'
+BASE_URL = demisto.params().get('server_url')
 RESOURCE = 'https://management.azure.com/'
 AUTH_GRANT_TYPE = 'client_credentials'
 
@@ -60,7 +60,7 @@ def set_subscription_id():
     try:
         data = r.json()
         if r.status_code != requests.codes.ok:
-            return_error('Error: {}\nDescription:{}'.format(data.get('title'), data.get('detail')))
+            return_error('Error in API call to Azure Security Center [{}] - {}'.format(r.status_code, r.text))
         sub_id = data.get('subscription_id')
         demisto.setIntegrationContext({
             'token': data.get('token'),
@@ -69,8 +69,7 @@ def set_subscription_id():
         })
         return sub_id
     except ValueError, err:
-        if err.message == "No JSON object could be decoded":
-            return_error(r.content)
+        return_error('There was problem with your request: {}'.format(r.content))
 
 
 def epoch_seconds(d=None):
@@ -86,9 +85,11 @@ def get_token():
     """
     Check if we have a valid token and if not get one
     """
-    if CONTEXT.get('token') and CONTEXT.get('stored'):
-        if epoch_seconds() - CONTEXT.get('stored') < 60 * 60 - 30:
-            return CONTEXT.get('token')
+    token = CONTEXT.get('token')
+    stored = CONTEXT.get('stored')
+    if token and stored:
+        if epoch_seconds() - stored < 60 * 60 - 30:
+            return token
     headers = {
         'Authorization': TOKEN,
         'Accept': 'application/json'
@@ -104,7 +105,7 @@ def get_token():
     )
     data = r.json()
     if r.status_code != requests.codes.ok:
-        return_error('Error: {}\nDescription:{}'.format(data.get('title'), data.get('detail')))
+        return_error('Error in API call to Azure Security Center [{}] - {}'.format(r.status_code, r.text))
     demisto.setIntegrationContext({
         'token': data.get('token'),
         'stored': epoch_seconds(),
@@ -140,9 +141,11 @@ def http_request(method, url_suffix, body=None, params=None, additional_headers=
     )
     if r.status_code not in {200, 201, 202, 204}:
         return_error('Error in API call to Azure Security Center [{}] - {}'.format(r.status_code, r.text))
-    if not r.text:
-        return {}
-    return r.json()
+    try:
+        r = r.json()
+        return r
+    except ValueError, e:
+        return dict()
 
 
 # Format ports in JIT access policy rule to (portNum, protocol, allowedAddress, maxDuration)
@@ -242,15 +245,17 @@ def get_alert_command(args):
             removeNull=True
         )
 
+        ec = {
+                'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': basic_table_output
+        }
+
         basic_table_entry = {
             'Type': entryTypes['note'],
             'Contents': alert,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {
-                'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': basic_table_output
-            }
+            'EntryContext': ec
         }
         final_output.append(basic_table_entry)
 
@@ -270,37 +275,35 @@ def get_alert_command(args):
                         'Azure Security Center - Get Alert - Extended Property',
                         extended_properties,
                         removeNull=True
-                    ),
-                    'EntryContext': {}  # Unknown format of extended properties, cannot construct context data
+                    )
                 }
                 final_output.append(extended_table_entry)
 
         # Entities Table
-        if alert.get('properties') and alert.get('properties').get('entities'):
-            entities = alert.get('properties').get('entities')
-            if isinstance(entities, dict):
-                entities_table_output = list()
-                for entity in entities:
-                    entities_table_output.append({
-                        'Content': ast.literal_eval(str(entity)),
-                        'Type': entity['type']
-                    })
+            entities = properties.get('entities')
+            if entities:
+                if isinstance(entities, dict):
+                    entities_table_output = list()
+                    for entity in entities:
+                        entities_table_output.append({
+                            'Content': ast.literal_eval(str(entity)),
+                            'Type': entity['type']
+                        })
 
-                md = tableToMarkdown(
-                    'Azure Security Center - Get Alert - Entity',
-                    entities_table_output,
-                    removeNull=True
-                )
+                    md = tableToMarkdown(
+                        'Azure Security Center - Get Alert - Entity',
+                        entities_table_output,
+                        removeNull=True
+                    )
 
-                entities_table_entry = {
-                    'Type': entryTypes['note'],
-                    'Contents': alert.get('properties').get('entities'),
-                    'ContentsFormat': formats['json'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': md,
-                    'EntryContext': {}  # Unknown format of extended properties, cannot construct context data
-                }
-                final_output.append(entities_table_entry)
+                    entities_table_entry = {
+                        'Type': entryTypes['note'],
+                        'Contents': alert.get('properties').get('entities'),
+                        'ContentsFormat': formats['json'],
+                        'ReadableContentsFormat': formats['markdown'],
+                        'HumanReadable': md,
+                    }
+                    final_output.append(entities_table_entry)
     demisto.results(final_output)
 
 
@@ -352,15 +355,16 @@ def list_alerts_command(args):
         ],
         removeNull=True
     )
+    ec = {
+            'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': outputs
+    }
     entry = {
         'Type': entryTypes['note'],
         'Contents': alerts,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     }
     demisto.results(entry)
 
@@ -449,9 +453,12 @@ def list_locations_command():
     outputs = list()
     if locations:
         for location in locations:
+            if location.get('properties') and location.get('properties').get('homeRegionName'):
+                home_region_name = location.get('properties').get('homeRegionName')
+            else:
+                home_region_name = None
             outputs.append({
-                'HomeRegionName': location.get('properties').get('homeRegionName') if location.get(
-                    'properties') and location.get('properties').get('homeRegionName') else None,
+                'HomeRegionName': home_region_name,
                 'Name': location.get('name'),
                 'ID': location.get('id')
             })
@@ -461,18 +468,20 @@ def list_locations_command():
                 [
                     'HomeRegionName',
                     'Name',
-                    'ID'],
+                    'ID'
+                ],
                 removeNull=True
             )
+            ec = {
+                'AzureSecurityCenter.Location(val.ID && val.ID === obj.ID)': outputs
+            }
             entry = {
                 'Type': entryTypes['note'],
                 'Contents': locations,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
-                'EntryContext': {
-                    'AzureSecurityCenter.Location(val.ID && val.ID === obj.ID)': outputs
-                }
+                'EntryContext': ec
             }
             demisto.results(entry)
     else:
@@ -497,9 +506,9 @@ def update_atp_command(args):
     storage_account = args.get('storage_account')
     response = update_atp(resource_group_name, storage_account, setting_name, is_enabled)
     outputs = {
-        "ID": response["id"],
-        "Name": response["name"],
-        "IsEnabled": response["properties"]["is_enabled"]
+        "ID": response.get('id'),
+        "Name": response.get('name'),
+        "IsEnabled": response.get('properties').get('is_enabled')
     }
     md = tableToMarkdown(
         'Azure Security Center - Update Advanced Threat Detection Setting',
@@ -1128,17 +1137,20 @@ def delete_jit_command(args):
     policy_id = "/subscriptions/{}/resourceGroups/" \
                 "{}/providers/Microsoft.Security/locations/{}/jitNetworkAccessPolicies/{}".format(
                  SUBSCRIPTION_ID, resource_group_name, asc_location, policy_name)
+
     outputs = {
         "ID": policy_id,
         "Action": 'deleted'
+    }
+
+    ec = {
+            'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': outputs
     }
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': 'Policy - {} has been deleted sucessfully.'.format(policy_name),
         'ContentsFormat': formats['text'],
-        'EntryContext': {
-            'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     })
 
 
