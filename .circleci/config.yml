@@ -79,6 +79,19 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
+                USERNAME=$(cat $SECRET_CONF_PATH | jq '.username')
+                PASSWORD=$(cat $SECRET_CONF_PATH | jq '.userPassword')
+
+                # remove quotes from password
+                temp="${PASSWORD%\"}"
+                temp="${temp#\"}"
+                PASSWORD=$temp
+
+                # remove quotes from username
+                temp="${USERNAME%\"}"
+                temp="${temp#\"}"
+                USERNAME=$temp
+
                 python ./Tests/scripts/wait_until_server_ready.py
 
               else

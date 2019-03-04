@@ -1,8 +1,11 @@
 """Wait for server to be ready for tests"""
 import sys
+import argparse
 from time import sleep
-from requests import get
 from subprocess import Popen, PIPE
+
+import demisto
+
 
 HTTP_CODE = "{http_code}"
 HTTP_CODE_REQUEST = "curl --write-out %{} --silent --output /dev/null {}/user -k -m 15"
@@ -37,7 +40,20 @@ def run_bash_command(command):
     return output
 
 
+def options_handler():
+    parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
+    parser.add_argument('-u', '--user', help='The username for the login', required=True)
+    parser.add_argument('-p', '--password', help='The password for the login', required=True)
+
+    options = parser.parse_args()
+    return options
+
+
 def main():
+    options = options_handler()
+    username = options.user
+    password = options.password
+
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
@@ -49,9 +65,10 @@ def main():
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
                     # http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
-                    http_code = get("https://{}".format(ami_instance_ip), verify=False).status_code
-                    print "this is the bash command {}".format(http_code)
-                    if http_code != 433:
+                    # http_code = get("https://{}".format(ami_instance_ip), verify=False).status_code
+                    c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
+                    res = c.Login()
+                    if res.status_code == 200:
                         print "{} is ready for use".format(ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
                     else:
@@ -63,7 +80,6 @@ def main():
         else:
             break
 
-    sleep(10)
     if len(ready_ami_list) != len(instance_ips):
         print_error("The server is not ready :(")
         sys.exit(1)
