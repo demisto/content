@@ -35,6 +35,7 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
+
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
@@ -286,8 +287,9 @@ def re_create_id_set():
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
     for file_path in glob.glob(os.path.join('Integrations', '*')):
         if os.path.isfile(file_path):
-            print("adding {0} to id_set".format(file_path))
-            integration_list.append(get_integration_data(file_path))
+            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                print("adding {0} to id_set".format(file_path))
+                integration_list.append(get_integration_data(file_path))
         else:  # In case we encountered a package
             for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
                 print("adding {0} to id_set".format(yml_file))

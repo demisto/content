@@ -3,7 +3,8 @@ version: -1
 name: Enrichment Playbook
 system: true
 fromversion: 2.5.0
-description: Enrich data with reputation. Data is expected to be found in the standard
+description: Deprecated - We recommend using Entity Enrichment - Generic playbook instead.
+  Enrich data with reputation. Data is expected to be found in the standard
   locations like File, URL, IP.
 starttaskid: "0"
 tasks:
@@ -381,3 +382,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "Deprecated playbook"
+tests:
+  - No tests - Deprecated playbook
