@@ -221,8 +221,8 @@ def set_subscription_id():
     Setting subscription ID to the context and returning it
     """
     headers = {
-         'Authorization': TOKEN,
-         'Accept': 'application/json'
+        'Authorization': TOKEN,
+        'Accept': 'application/json'
     }
     token_retrieval_url = 'https://demistobot.demisto.com/azurecompute-token'  # disable-secrets-detection
     parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
