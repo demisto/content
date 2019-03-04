@@ -1165,12 +1165,12 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Alexa Rank Indicator": "Integration should never use proxy",
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
         "dnstwist": "Integration has no proxy checkbox",
         "PagerDuty v2": "Integration has no proxy checkbox",
         "CVE Search": "Integration has no proxy checkbox",
-        "Alexa Rank Indicator": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Gmail": "Integration has no proxy checkbox",
         "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
@@ -1215,7 +1215,7 @@
         "ArcSight ESM v2": "Checking",
         "Cylance Protect": "Checking",
         "ReversingLabs A1000": "Checking",
-        "ReversingLabs Titanium Cloud": "Checking",
+        "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Cylance Protect v2": "Checking",
         "SafeBreach": "Checking",
         "Symantec Endpoint Protection V2": "Checking",
@@ -1228,6 +1228,7 @@
         "Awake Security": "Checking",
         "CIRCL": "Checking",
         "Thinkst Canary": "Checking",
-        "Cymon": "Checking"
+        "Cymon": "Checking",
+        "SplunkPy": "Checking"
     }
 }
