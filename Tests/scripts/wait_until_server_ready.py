@@ -60,6 +60,7 @@ def main():
         else:
             break
 
+    sleep(10)
     if len(ready_ami_list) != len(instance_ips):
         print_error("The server is not ready :(")
         sys.exit(1)
