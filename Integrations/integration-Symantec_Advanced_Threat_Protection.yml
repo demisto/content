@@ -32,6 +32,8 @@ configuration:
 script:
   script: |
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
     var getAccessToken = function(clientID, secret) {
         var res = http(serverUrl + 'atpapi/oauth2/tokens', {
@@ -212,30 +214,37 @@ script:
     };
 
     var getFiles = function(hash) {
-        var p = {};
-        if (hash.length === 32) { // MD5 hash
-            p.hash_type = 'md5';
-        }
-        var res = doReq('GET', 'files/' + hash, p);
 
-        // If ATP has not seen the file hash before, then the API will return a blank response with HTTP 200 code.
-        if(res.body === '{}'){
-            throw 'ATP has not seen the file ' + hash + ' before';
-        }
+        if (MD5_REGEX.test(hash) || SHA256_REGEX.test(hash)){
+            var p = {};
+            if (hash.length === 32) { // MD5 hash
+                p.hash_type = 'md5';
+            }
+            var res = doReq('GET', 'files/' + hash, p);
 
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-            HumanReadable: tableToMarkdown('Symantec ATP Files', res.obj.file_list) + '\nTotal: ' + res.obj.total,
-            EntryContext: {'File(val.MD5 == obj.MD5 || val.SHA256 == obj.SHA256)': res.obj.file_list.map(function(f) {
-                var file = {MD5: f.md5, SHA256: f.sha2, Instances: f.file_instances, Type: f.mime_type, Size: f.size, SignatureCompany: f.signature_company_name,
-                    SignatureIssuer: f.signature_issuer, Age: f.file_age, Threat: f.threat_name, Cynic: f.cynic_verdict, TargetedAttack: f.targeted_attack,
-                    ReputationBand: f.reputation_band, PrevalenceBand: f.prevalence_band, Health: f.file_health};
-                if (f.file_health === 3) {
-                    file.properties_to_append = ['Malicious'];
-                    file.Malicious = {Vendor: 'Symantec', Description: 'File health: ' + f.file_health};
-                }
-                return file;
-            })}
-        };
+            // If ATP has not seen the file hash before, then the API will return a blank response with HTTP 200 code.
+            if(res.body === '{}'){
+                return 'ATP has not seen the file ' + hash + ' before';
+
+            }
+
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                HumanReadable: tableToMarkdown('Symantec ATP Files', res.obj.file_list) + '\nTotal: ' + res.obj.total,
+                EntryContext: {'File(val.MD5 == obj.MD5 || val.SHA256 == obj.SHA256)': res.obj.file_list.map(function(f) {
+                    var file = {MD5: f.md5, SHA256: f.sha2, Instances: f.file_instances, Type: f.mime_type, Size: f.size, SignatureCompany: f.signature_company_name,
+                        SignatureIssuer: f.signature_issuer, Age: f.file_age, Threat: f.threat_name, Cynic: f.cynic_verdict, TargetedAttack: f.targeted_attack,
+                        ReputationBand: f.reputation_band, PrevalenceBand: f.prevalence_band, Health: f.file_health};
+                    if (f.file_health === 3) {
+                        file.properties_to_append = ['Malicious'];
+                        file.Malicious = {Vendor: 'Symantec', Description: 'File health: ' + f.file_health};
+                    }
+                    return file;
+                })}
+            };
+
+        } else {
+            throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+        }
     };
 
     // The command input arg holds the command sent from the user.
