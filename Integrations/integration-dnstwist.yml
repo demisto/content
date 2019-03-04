@@ -12,14 +12,24 @@ script:
   script: |+
     import subprocess, json
 
+    TWIST_EXE = '/dnstwist/dnstwist.py'
+
+
     if demisto.command() == 'dnstwist-domain-variations':
 
         KEYS_TO_MD = ["whois-updated", "whois-created", "dns-a", "dns-mx", "dns-ns"]
         DOMAIN = demisto.args()['domain']
-        limit = demisto.args()['limit']
+        LIMIT = int(demisto.args()['limit'])
+        WHOIS = demisto.args().get('whois')
+        
 
-        def get_dnstwist_result(domain):
-            res = subprocess.check_output(['/dnstwist/dnstwist.py', '-j', '-w', domain])
+
+        def get_dnstwist_result(domain, include_whois):
+            args = [TWIST_EXE, '-j']
+            if include_whois:
+                args.append('-w')
+            args.append(domain)
+            res = subprocess.check_output(args)
             return json.loads(res)
 
         def get_domain_to_info_map(dns_twist_result):
@@ -39,12 +49,12 @@ script:
                     results.append(temp)
             return results
 
-        dnstwist_result = get_dnstwist_result(DOMAIN)
+        dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == 'yes')
         new_result = get_domain_to_info_map(dnstwist_result)
         md = tableToMarkdown('dnstwist for domain - '  + DOMAIN, new_result, headers=["domain-name","IP Address","dns-mx","dns-ns","whois-updated", "whois-created"])
 
         domainContext = new_result[0] # The requested domain for variations
-        domainsContextList = new_result[1:int(limit)] # The variations domains
+        domainsContextList = new_result[1:LIMIT+1] # The variations domains
 
         domains =[]
         for item in domainsContextList:
@@ -73,6 +83,7 @@ script:
 
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
+        subprocess.check_output([TWIST_EXE, '-h'], stderr=subprocess.STDOUT)
         demisto.results('ok')
         sys.exit(0)
 
@@ -86,8 +97,15 @@ script:
     - name: limit
       default: true
       description: Limits the results in the context. High value of context outputs
-        might slow your browser
+        might slow your browser. Markdown entry will contain all results.
       defaultValue: "30"
+    - name: whois
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Perform lookup for WHOIS creation/update time (slow)
+      defaultValue: "no"
     outputs:
     - contextPath: dnstwist.Domain.Domains.Name
       description: Domain variations
@@ -96,3 +114,4 @@ script:
     description: 'Check domain variations '
   dockerimage: demisto/dnstwist:1.0
   runonce: false
+releaseNotes: Added option to specify 'whois' argument for dnstwist-domain-variations command
