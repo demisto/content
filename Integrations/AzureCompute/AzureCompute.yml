@@ -8,12 +8,12 @@ configuration:
   name: host
   required: true
   type: 0
-- display: Tenant ID (as received from the admin consent - see detailed instructions
-    (?))
+- display: Tenant ID (received from the admin consent - see Detailed Instructions
+    (?) section)
   name: tenant_id
   required: true
   type: 4
-- display: Token (as received from the admin consent - see detailed instructions (?))
+- display: Token (received from the admin consent - see detailed instructions (?))
   name: token
   required: true
   type: 4
@@ -28,8 +28,8 @@ configuration:
   type: 8
 description: Create and Manage Azure Virtual Machines
 detaileddescription: |-
-  To allow access to Microsoft Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://demistobot.demisto.com/azurecompute-sub).
-  After entering your Microsoft Azure Subscription ID - which may be found in the Azure Web Portal - and authorising the Demisto app, you will get a tenant ID and authentication token, both of which should be inserted into their respective fields for the integration instance settings.
+  To grant access to Microsoft Azure Compute, an admin needs to approve Demisto using an admin consent flow. To start the admin consent flow, click [here](https://demistobot.demisto.com/azurecompute-sub).
+  After entering your Microsoft Azure Subscription ID, which you can find in the Azure Web Portal, and authorizing the Demisto app, you will get a tenant ID and authentication token. Enter both of these when you configure the integration instance.
 display: Azure Compute
 name: Azure Compute
 script:
@@ -38,58 +38,58 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Resource Group of the VMs. To see all the resource groups associated
-        with your subscription try executing the `azure-list-resource-groups` command.
-        If none are present then please visit the Azure Web Portal to create resource
+      description: The resource group of the virtual machines. To see all the resource groups associated
+        with your subscription, run the `azure-list-resource-groups` command.
+        If none are present, navigate to the Azure Web Portal to create resource
         groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
-    description: List the VM instances in the specified Resource Group
+    description: Lists the virtual machine instances in the given resource group.
     execution: false
     name: azure-vm-list-instances
     outputs:
     - contextPath: Azure.Compute.Name
-      description: Name of the virtual machine
+      description: The name of the virtual machine.
       type: string
     - contextPath: Azure.Compute.Location
-      description: Location of the Virtual Machine
+      description: The location of the virtual machine.
       type: string
     - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning State of the VM
+      description: The provisioning state of the virtual machine.
       type: string
     - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group where the VM resides in
+      description: The resource group in which the virtual machine resides.
       type: string
     - contextPath: Azure.Compute.ID
-      description: ID of the VM
+      description: The ID of the virtual machine.
       type: string
     - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
+      description: The size of the deployed virtual machine (in gigabytes).
       type: number
     - contextPath: Azure.Compute.OS
-      description: OS running in the VM
+      description: The OS running on the virtual machine.
       type: string
   - arguments:
     - default: false
       description: Resource Group to which the virtual machine belongs. To see all
-        the resource groups associated with your subscription try executing the `azure-list-resource-groups`
-        command. If none are present then please visit the Azure Web Portal to create
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create
         resource groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine to power-on. To see all the VMs with
-        their associated names for a specific resource group try executing the `azure-vm-list-instances`
+      description: Name of the virtual machine to power on. To see all virtual machines and
+        their associated names for a specific resource group, run the `azure-vm-list-instances`
         command.
       isArray: false
       name: virtual_machine_name
       required: true
       secret: false
-    description: Power-on a specified Virtual Machine
+    description: Powers on a given virtual machine.
     execution: true
     name: azure-vm-start-instance
     outputs:
@@ -104,100 +104,100 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Resource Group to which the virtual machine belongs. To see all
-        the resource groups associated with your subscription try executing the `azure-list-resource-groups`
-        command. If none are present then please visit the Azure Web Portal to create
+      description: The resource group to which the virtual machine belongs. To see all
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create
         resource groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine to power-off. To see all the VMs with
-        their associated names for a specific resource group try executing the `azure-vm-list-instances`
+      description: The name of the virtual machine to power off. To see all virtual machines with
+        their associated names for a specific resource group, run the `azure-vm-list-instances`
         command.
       isArray: false
       name: virtual_machine_name
       required: true
       secret: false
-    description: Power-off a specified Virtual Machine
+    description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
     outputs:
     - contextPath: Azure.Compute.Name
-      description: Name of the VM that was powered down
+      description: The name of the virtual machine that was powered off.
       type: string
     - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
+      description: The resource group in which the virtual machine resides.
       type: string
     - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
+      description: Whether the virtual machine instance is powered on or off.
       type: string
   - arguments:
     - default: false
-      description: Resource Group to which the virtual machine belongs. To see all
-        the resource groups associated with your subscription try executing the `azure-list-resource-groups`
-        command. If none are present then please visit the Azure Web Portal to create
+      description: The resource group to which the virtual machine belongs. To see all
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create
         resource groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine you wish to view the details of. To
-        see all the VMs with their associated names for a specific resource group
-        try executing the `azure-vm-list-instances` command.
+      description: The name of the virtual machine you want to view the details of. To
+        see all the virtual machines with their associated names for a specific resource group,
+        run the `azure-vm-list-instances` command.
       isArray: false
       name: virtual_machine_name
       required: true
       secret: false
-    description: Get the properties of a specified Virtual Machine
+    description: Gets the properties of a given virtual machine.
     execution: false
     name: azure-vm-get-instance-details
     outputs:
     - contextPath: Azure.Compute.Name
-      description: Name of the VM whose details were requested
+      description: The name of the virtual machine you want to get details of.
       type: string
     - contextPath: Azure.Compute.ID
-      description: 'ID of the VM '
+      description: The ID of the virtual machine.
       type: string
     - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
+      description: The size of the deployed virtual machine (in gigabytes).
       type: number
     - contextPath: Azure.Compute.OS
-      description: OS running in the specified VM
+      description: The OS running on the given virtual machine.
       type: string
     - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning state of the deployed VM
+      description: The provisioning state of the deployed virtual machine.
       type: string
     - contextPath: Azure.Compute.Location
-      description: Region in which the VM is hosted
+      description: The region in which the virtual machine is hosted.
       type: string
     - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
+      description: Whether the virtual machine instance is powered on or off.
       type: string
     - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group in which the VM belongs
+      description: The resource group to which the virtual machine belongs.
       type: string
   - arguments:
     - default: false
-      description: Resource group to which the new VM will belong. To see all the
-        resource groups associated with your subscription try executing the `azure-list-resource-groups`
-        command. If none are present then please visit the Azure Web Portal to create
+      description: The resource group to which the new virtual machine will belong. To see all the
+        resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create
         resource groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine to create
+      description: The name of the virtual machine to create.
       isArray: false
       name: virtual_machine_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Location to create the VM
+      description: The location in which to create the virtual machine.
       isArray: false
       name: virtual_machine_location
       predefined:
@@ -235,27 +235,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the Network Interface to link the VM with. A Network
-        Interface has to be created from within the Azure Portal. Note that the vm's
+      description: The name of the Network Interface to link the virtual machine with. A Network
+        Interface has to be created in the Azure Portal. Note that the virtual machine's
         location property must match that of the Network Interface you choose to link
         it to. To see a list of available Network Interfaces visit the Azure Web Portal,
-        navigate to the search bar at the top of the page, type in 'network interfaces'
-        and in the drop-down menu that appears as you type, click on the 'Network
+        navigate to the search bar at the top of the page, type "network interfaces",
+        and in the dynamic drop-down menu that appears, click the 'Network
         interfaces' option that appears under the 'Services' category. If none are
         present, you will need to create a new Network Interface which you can do
         by clicking the '+Add' button towards the top left of the page and following
-        the instructions. For more information regarding Network Interfaces please
-        visit https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface
+        the instructions. For more information regarding Network Interfaces, see the [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface).
       isArray: false
       name: nic_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The name of a VirtualMachineSize which determines the size of the
-        deployed vm. To see more information visit https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize
+      description: The name of a VirtualMachineSize, which determines the size of the
+        deployed virtual machine. For more information, see the [Azure documentation](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize).
       isArray: false
-      name: vm_size
+      name: virtual machine_size
       predefined:
       - Standard_D1_v2
       - Standard_D2_v2
@@ -274,7 +273,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Choose the base operating system image of the vm
+      description: The base operating system image of the virtual machine.
       isArray: false
       name: os_image
       predefined:
@@ -293,7 +292,7 @@ script:
       defaultValue: 2016-Datacenter
       description: SKU of the OS image to be used. To see a list of available SKUs,
         visit your Azure Web Portal, click the symbol that looks similar to a '>'
-        along the top bar of the page which should open a cloud shell. Make sure it
+        on the top bar of the page. This should open a cloud shell, make sure it
         is a bash shell. At the command prompt enter `az vm image list-skus` along
         with the appropriate arguments that it will prompt you with to display the
         list of VM image SKUs available in the Azure Marketplace.
@@ -305,7 +304,7 @@ script:
       defaultValue: MicrosoftWindowsServer
       description: Name of the publisher of the OS image. To see a list of available
         publishers, visit your Azure Web Portal, click the symbol that looks similar
-        to a '>' along the top bar of the page which should open a cloud shell. Make
+        to a '>' on the top bar of the page which should open a cloud shell, make
         sure it is a bash shell. At the command prompt enter `az vm image list-publishers`
         along with the appropriate arguments that it will prompt you with to display
         the list of VM image publishers available in the Azure Marketplace.
@@ -315,7 +314,7 @@ script:
       secret: false
     - default: false
       defaultValue: latest
-      description: Version of the image to use. The allowed formats are Major.Minor.Build
+      description: Version of the image to use. The supported formats are Major.Minor.Build
         or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest'
         to use the latest version of an image available at deploy time.
       isArray: false
@@ -326,8 +325,8 @@ script:
       defaultValue: WindowsServer
       description: Specifies the offer of the platform image or marketplace image
         used to create the virtual machine. To see a list of available offers, visit
-        your Azure Web Portal, click the symbol that looks similar to a '>' along
-        the top bar of the page which should open a cloud shell. Make sure it is a
+        your Azure Web Portal, click the symbol that looks similar to a '>' on
+        the top bar of the page which should open a cloud shell, make sure it is a
         bash shell. At the command prompt enter `az vm image list-offers` along with
         the appropriate arguments that it will prompt you with to display the list
         of VM image offers available in the Azure Marketplace.
@@ -337,78 +336,78 @@ script:
       secret: false
     - default: false
       defaultValue: DemistoUser
-      description: Admin Username to be used when creating the VM
+      description: The admin username to use when creating the virtual machine.
       isArray: false
       name: admin_username
       required: false
       secret: false
     - default: false
       defaultValue: Passw0rd@123
-      description: Admin Password to be used when creating the VM
+      description: The admin password to use when creating the virtual machine.
       isArray: false
       name: admin_password
       required: false
       secret: false
-    description: Create a virtual machine instance with the specified OS image
+    description: Creates a virtual machine instance with the specified OS image.
     execution: true
     name: azure-vm-create-instance
     outputs:
     - contextPath: Azure.Compute.Name
-      description: Name of the created VM instance
+      description: The name of the created virtual machine instance.
       type: string
     - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
+      description: The resource group in which the virtual machine resides.
       type: string
     - contextPath: Azure.Compute.ID
-      description: ID of the VM
+      description: The ID of the virtual machine.
       type: string
     - contextPath: Azure.Compute.Size
-      description: Size of the deployed VM in gigabytes
+      description: The size of the deployed virtual machine (in gigabytes).
       type: number
     - contextPath: Azure.Compute.OS
-      description: OS running in the specified VM
+      description: The OS running on the specified virtual machine.
       type: string
     - contextPath: Azure.Compute.ProvisioningState
-      description: Provisioning state of the deployed VM
+      description: The provisioning state of the deployed virtual machine.
       type: string
     - contextPath: Azure.Compute.Location
-      description: Region in which the VM is hosted
+      description: The region in which the virtual machine is hosted.
       type: string
-  - description: List all Resource Groups belonging to your Azure subscription
+  - description: Lists all resource groups that belong to your Azure subscription.
     execution: false
     name: azure-list-resource-groups
     outputs:
     - contextPath: Azure.ResourceGroup.Name
-      description: Name of the Resource Group
+      description: The name of the resource group.
       type: string
     - contextPath: Azure.ResourceGroup.ID
-      description: ID of the Resource Group
+      description: The ID of the resource group.
       type: string
     - contextPath: Azure.ResourceGroup.Location
-      description: Location of the Resource Group
+      description: The location of the resource group.
       type: string
     - contextPath: Azure.ResourceGroup.ProvisioningState
-      description: Provisioning State of the Resource Group
+      description: The provisioning state of the resource group.
       type: string
   - arguments:
     - default: false
-      description: Resource Group to which the virtual machine belongs. To see all
-        the resource groups associated with your subscription try executing the `azure-list-resource-groups`
-        command. If none are present then please visit the Azure Web Portal to create
+      description: The resource group to which the virtual machine belongs. To see all
+        the resource groups associated with your subscription, run the `azure-list-resource-groups`
+        command. If none are present, navigate to the Azure Web Portal to create
         resource groups.
       isArray: false
       name: resource_group
       required: true
       secret: false
     - default: false
-      description: Name of the virtual machine to delete. To see all the VMs with
-        their associated names for a specific resource group try executing the `azure-vm-list-instances`
+      description: The name of the virtual machine to delete. To see all the virtual machines with
+        their associated names for a specific resource group, run the `azure-vm-list-instances`
         command.
       isArray: false
       name: virtual_machine_name
       required: false
       secret: false
-    description: Delete a specified Virtual Machine
+    description: Deletes a specified virtual machine.
     execution: false
     name: azure-vm-delete-instance
   isfetch: false
