@@ -1304,382 +1304,381 @@ script:
       arguments: []
       outputs:
         - contextPath: CounterTack.Endpoint.IsQuarantined
-          description: Whether the endpoint is currently quarantined.
+          description: Is the endpoint currently quarantined
           type: boolean
         - contextPath: CounterTack.Endpoint.MaxImpact
-          description: Impact of the highest scoring behavior.
+          description: Impact of the highest scoring behavior
           type: number
         - contextPath: CounterTack.Endpoint.Memory
-          description: Endpoint RAM (megabytes).
+          description: The RAM of the endpoint (in megabytes).
           type: number
         - contextPath: CounterTack.Endpoint.DriverVersion
-          description: Endpoint Sensor version.
+          description: Endpoint sensor version
           type: string
         - contextPath: CounterTack.Endpoint.profile_versionCounterTack.Endpoint.ProfileVersion
-          description: Version of the current profile used for collection.
+          description: Version of the current profile used for collection
           type: string
         - contextPath: CounterTack.Endpoint.BehaviorCount
-          description: Number of behaviors detected.
+          description: Number of behaviors detected
           type: number
         - contextPath: CounterTack.Endpoint.CurrentProfile
-          description: Currently active analysis profile.
+          description: Currently active analysis profile
           type: string
         - contextPath: CounterTack.Endpoint.Domain
-          description: DNS suffix for the endpoint.
+          description: DNS suffix for the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.NumCpus
-          description: Number of CPUs.
+          description: Number of CPUs
           type: number
         - contextPath: CounterTack.Endpoint.Macs
-          description: MAC addresses associated with endpoint.
+          description: MAC addresses associated with the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.WinRdpPort
-          description: RDP port used by the endpoint.
+          description: RDP port used by the endpoint
           type: number
         - contextPath: CounterTack.Endpoint.Ip
-          description: IP address used to connect to analysis cluster.
+          description: IP address used to connect to the analysis cluster
           type: string
         - contextPath: CounterTack.Endpoint.ClusterHosts
-          description: List of hosts the endpoint tries to connect through in order.
+          description: The list of hosts that the endpoint tries to connect through (in order).
           type: string
         - contextPath: CounterTack.Endpoint.Vendor
-          description: OS vendor.
+          description: OS vendor
           type: string
         - contextPath: CounterTack.Endpoint.SensorMode
-          description: Specifies the sensor mode of the driver.
+          description: Specifies the sensor mode of the driver
           type: string
         - contextPath: CounterTack.Endpoint.Identifier
-          description: OS Identifier.
+          description: OS identifier
           type: string
         - contextPath: CounterTack.Endpoint.CurrentResponsePolicy
-          description: Currently active Response Policy.
-          type: string
-        - contextPath: CounterTack.Endpoint.Tenant
-          description: Tenant ID set at the time of KM installation.
-          type: string
-        - contextPath: CounterTack.Endpoint.Name
-          description: Product name of the endpoint OS.
-          type: string
-        - contextPath: CounterTack.Endpoint.ImpactLevel
-          description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL)
-          type: string
-        - contextPath: CounterTack.Endpoint.Ips
-          description: IP addresses associated with endpoint.
-          type: string
-        - contextPath: CounterTack.Endpoint.ClusterConnectionRoute
-          description: List of hosts the endpoint is currently connected through.
-          type: string
-        - contextPath: CounterTack.Endpoint.LastActive
-          description: Time of last event captured on the endpoint.
-          type: date
-        - contextPath: CounterTack.Endpoint.TimeStarted
-          description: Time kernel module collection last engaged.
-          type: date
-        - contextPath: CounterTack.Endpoint.Mac
-          description: The endpoint MAC address.
-          type: string
-        - contextPath: CounterTack.Endpoint.EventStartTime
-          description: The time that the event was captured.
-          type: date
-        - contextPath: CounterTack.Endpoint.CpuType
-          description: Bit length of the CPU architecture.
-          type: string
-        - contextPath: CounterTack.Endpoint.Status
-          description: Collection status of the endpoint. (ON, PAUSE, OFF, INIT)
-          type: string
-        - contextPath: CounterTack.Endpoint.OsType
-          description: OS type.
-          type: number
-        - contextPath: CounterTack.Endpoint.Version
-          description: OS version.
-          type: string
-        - contextPath: CounterTack.Endpoint.Tags
-          description: List of user assigned tags.
-          type: string
-        - contextPath: CounterTack.Endpoint.Threat
-          description: Threat level associated with endpoint.
-          type: string
-        - contextPath: CounterTack.Endpoint.Id
-          description: Endpoints ID.
-          type: string
-        - contextPath: CounterTack.Endpoint.ProductName
-          description: Product name of the endpoint OS.
-          type: string
-        - contextPath: Endpoint.Memory
-          description: Endpoint RAM (megabytes).
-          type: number
-        - contextPath: Endpoint.Processors
-          description: Number of CPUs.
-          type: number
-        - contextPath: Endpoint.Domain
-          description: DNS suffix for the endpoint.
-          type: string
-        - contextPath: Endpoint.OS
-          description: Product name of the endpoint OS.
-          type: string
-        - contextPath: Endpoint.MACAddress
-          description: The endpoint MAC address.
-          type: string
-        - contextPath: Endpoint.Model
-          description: Currently active analysis profile.
-          type: string
-        - contextPath: Endpoint.IPAddress
-          description: IP addresses associated with endpoint.
-          type: string
-        - contextPath: Endpoint.OSVersion
-          description: Endpoint Sensor version.
-          type: string
-        - contextPath: Endpoint.ID
-          description: Endpoints ID.
-          type: string
-      description: Get endpoints information
-    - name: countertack-get-behaviors
-      arguments: []
-      outputs:
-        - contextPath: CounterTack.Behavior.MaxImpact
-          description: Impact of the highest scoring event (0-100).
-          type: number
-        - contextPath: CounterTack.Behavior.EndpointId
-          description: Endpoint ID, based on the UUID of the Endpoint Sensor last installed.
-          type: string
-        - contextPath: CounterTack.Behavior.Tenant
-          description: The tenant of the behavior
-          type: string
-        - contextPath: CounterTack.Behavior.EventCount
-          description: Number of events detected.
-          type: number
-        - contextPath: CounterTack.Behavior.Name
-          description: Name of condition that triggered the behavior.
-          type: string
-        - contextPath: CounterTack.Behavior.ImpactLevel
-          description: Threat level for the behavior. (LOW, MEDIUM, HIGH, CRITICAL)
-          type: string
-        - contextPath: CounterTack.Behavior.LastActive
-          description: Time the behavior was last active.
-          type: date
-        - contextPath: CounterTack.Behavior.FirstEventId
-          description: First event ID
-          type: date
-        - contextPath: CounterTack.Behavior.TimeStamp
-          description: Start time for the behavior.
-          type: date
-        - contextPath: CounterTack.Behavior.Type
-          description: Type of behavior. (CLASSIFICATION, TRACE)
-          type: string
-        - contextPath: CounterTack.Behavior.Id
-          description: Behaviors ID.
-          type: string
-        - contextPath: CounterTack.Behavior.LastReported
-          description: Time the behavior was last seen
-          type: date
-      description: Get behaviors information
-    - name: countertack-get-endpoint
-      arguments:
-        - name: endpoint_id
-          required: true
-          description: The ID of the endpoint. Get the ID from the "get-endpoints" command
-      outputs:
-        - contextPath: CounterTack.Endpoint.MaxImpact
-          description: 'Impact of the highest scoring behavior.'
-          type: number
-        - contextPath: CounterTack.Endpoint.Memory
-          description: Endpoint RAM (megabytes)
-          type: number
-        - contextPath: CounterTack.Endpoint.DriverVersion
-          description: Endpoint Sensor version.
-          type: string
-        - contextPath: CounterTack.Endpoint.ProfileVersion
-          description: Version of the current profile used for collection.
-          type: string
-        - contextPath: CounterTack.Endpoint.BehaviorCount
-          description: Number of behaviors detected.
-          type: number
-        - contextPath: CounterTack.Endpoint.CurrentProfile
-          description: Currently active analysis profile.
-          type: string
-        - contextPath: CounterTack.Endpoint.Domain
-          description: DNS suffix for the endpoint.
-          type: string
-        - contextPath: CounterTack.Endpoint.NumCpus
-          description: Number of CPUs.
-          type: number
-        - contextPath: CounterTack.Endpoint.WinRdpPort
-          description: RDP port used by the endpoint.
-          type: number
-        - contextPath: CounterTack.Endpoint.Macs
-          description: MAC addresses associated with endpoint.
-          type: string
-        - contextPath: CounterTack.Endpoint.Ip
-          description: IP address used to connect to analysis cluster.
-          type: string
-        - contextPath: CounterTack.Endpoint.ClusterHosts
-          description: List of hosts the endpoint tries to connect through in order.
-          type: string
-        - contextPath: CounterTack.Endpoint.Vendor
-          description: OS vendor.
-          type: string
-        - contextPath: CounterTack.Endpoint.SensorMode
-          description: Specifies the sensor mode of the driver.
-          type: string
-        - contextPath: CounterTack.Endpoint.Identifier
-          description: 'OS Identifier.'
+          description: Currently active response policy
           type: string
         - contextPath: CounterTack.Endpoint.Tenant
           description: Tenant ID set at the time of KM installation
           type: string
         - contextPath: CounterTack.Endpoint.Name
-          description: Endpoint machine name.
+          description: Product name of the endpoint OS
           type: string
         - contextPath: CounterTack.Endpoint.ImpactLevel
-          description: Threat level of the endpoint.
+          description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL)
           type: string
         - contextPath: CounterTack.Endpoint.Ips
-          description: IP addresses associated with endpoint.
+          description: IP addresses associated with the endpoint
           type: string
         - contextPath: CounterTack.Endpoint.ClusterConnectionRoute
-          description: List of hosts the endpoint is currently connected through.
+          description: List of hosts the endpoint is currently connected through
           type: string
         - contextPath: CounterTack.Endpoint.LastActive
           description: Time of last event captured on the endpoint
           type: date
         - contextPath: CounterTack.Endpoint.TimeStarted
-          description: First time the endpoint started to work
+          description: Time kernel module collection last engaged
           type: date
         - contextPath: CounterTack.Endpoint.Mac
-          description: The endpoint MAC address.
+          description: The endpoint MAC address
+          type: string
+        - contextPath: CounterTack.Endpoint.EventStartTime
+          description: The time that the event was captured
+          type: date
+        - contextPath: CounterTack.Endpoint.CpuType
+          description: Bit length of the CPU architecture.
+          type: string
+        - contextPath: CounterTack.Endpoint.Status
+          description: Collection status of the endpoint (ON, PAUSE, OFF, INIT)
+          type: string
+        - contextPath: CounterTack.Endpoint.OsType
+          description: The OS type.
+          type: number
+        - contextPath: CounterTack.Endpoint.Version
+          description: OS version
+          type: string
+        - contextPath: CounterTack.Endpoint.Tags
+          description: List of user assigned tags
+          type: string
+        - contextPath: CounterTack.Endpoint.Threat
+          description: Threat level associated with the endpoint
+          type: string
+        - contextPath: CounterTack.Endpoint.Id
+          description: Endpoints ID
+          type: string
+        - contextPath: CounterTack.Endpoint.ProductName
+          description: Product name of the endpoint OS
+          type: string
+        - contextPath: Endpoint.Memory
+          description: Endpoint RAM (megabytes)
+          type: number
+        - contextPath: Endpoint.Processors
+          description: Number of CPUs
+          type: number
+        - contextPath: Endpoint.Domain
+          description: DNS suffix for the endpoint
+          type: string
+        - contextPath: Endpoint.OS
+          description: Product name of the endpoint OS
+          type: string
+        - contextPath: Endpoint.MACAddress
+          description: The MAC address of the endpoint.
+          type: string
+        - contextPath: Endpoint.Model
+          description: The analysis profile that is currently active.
+          type: string
+        - contextPath: Endpoint.IPAddress
+          description: The IP addresses that are associated with the endpoint.
+          type: string
+        - contextPath: Endpoint.OSVersion
+          description: The endpoint sensor version.
+          type: string
+        - contextPath: Endpoint.ID
+          description: The ID of the Endpoints.
+          type: string
+      description: Returns information for endpoints.
+    - name: countertack-get-behaviors
+      arguments: []
+      outputs:
+        - contextPath: CounterTack.Behavior.MaxImpact
+          description: The impact of the highest scoring event (0-100)
+          type: number
+        - contextPath: CounterTack.Behavior.EndpointId
+          description: The ID of the endpoint, based on the UUID of the last installed endpoint sensor
+          type: string
+        - contextPath: CounterTack.Behavior.Tenant
+          description: The tenant of the behavior.
+          type: string
+        - contextPath: CounterTack.Behavior.EventCount
+          description: The number of events detected.
+          type: number
+        - contextPath: CounterTack.Behavior.Name
+          description: The name of the condition that triggered the behavior.
+          type: string
+        - contextPath: CounterTack.Behavior.ImpactLevel
+          description: The threat level of the behavior (LOW, MEDIUM, HIGH, CRITICAL).
+          type: string
+        - contextPath: CounterTack.Behavior.LastActive
+          description: The time that the behavior was last active.
+          type: date
+        - contextPath: CounterTack.Behavior.FirstEventId
+          description: The ID of the first event.
+          type: date
+        - contextPath: CounterTack.Behavior.TimeStamp
+          description: The start time for the behavior.
+          type: date
+        - contextPath: CounterTack.Behavior.Type
+          description: The type of behavior (CLASSIFICATION, TRACE)
+          type: string
+        - contextPath: CounterTack.Behavior.Id
+          description: The ID of the behaviors.
+          type: string
+        - contextPath: CounterTack.Behavior.LastReported
+          description: The time that the behavior was last seen.
+          type: date
+      description: Returns information for all behaviors.
+    - name: countertack-get-endpoint
+      arguments:
+        - name: endpoint_id
+          required: true
+          description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
+      outputs:
+        - contextPath: CounterTack.Endpoint.MaxImpact
+          description: The impact of the highest scoring behavior.
+          type: number
+        - contextPath: CounterTack.Endpoint.Memory
+          description: The RAM of the endpoint (in megabytes)
+          type: number
+        - contextPath: CounterTack.Endpoint.DriverVersion
+          description: The sensor version of the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.ProfileVersion
+          description: The version of the current profile used for collection.
+          type: string
+        - contextPath: CounterTack.Endpoint.BehaviorCount
+          description: The number of behaviors that were detected.
+          type: number
+        - contextPath: CounterTack.Endpoint.CurrentProfile
+          description: The analysis profile that is currently active.
+          type: string
+        - contextPath: CounterTack.Endpoint.Domain
+          description: DNS suffix for the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.NumCpus
+          description: The number of CPUs for the endpoint.
+          type: number
+        - contextPath: CounterTack.Endpoint.WinRdpPort
+          description: The RDP port used by the endpoint.
+          type: number
+        - contextPath: CounterTack.Endpoint.Macs
+          description: The MAC addresses associated with the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Ip
+          description: The IP address used to connect to the analysis cluster.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterHosts
+          description: The list of hosts that the endpoint tries to connect through (in order).
+          type: string
+        - contextPath: CounterTack.Endpoint.Vendor
+          description: The OS vendor.
+          type: string
+        - contextPath: CounterTack.Endpoint.SensorMode
+          description: The sensor mode of the driver.
+          type: string
+        - contextPath: CounterTack.Endpoint.Identifier
+          description: The identifier of the OS.
+          type: string
+        - contextPath: CounterTack.Endpoint.Tenant
+          description: The tenant ID that was set at the time of KM installation.
+          type: string
+        - contextPath: CounterTack.Endpoint.Name
+          description: The machine name of the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.ImpactLevel
+          description: The threat level of the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.Ips
+          description: The IP addresses associated with the endpoint.
+          type: string
+        - contextPath: CounterTack.Endpoint.ClusterConnectionRoute
+          description: The list of hosts that the endpoint is currently connected through.
+          type: string
+        - contextPath: CounterTack.Endpoint.LastActive
+          description: The time of the last event that was captured on the endpoint.
+          type: date
+        - contextPath: CounterTack.Endpoint.TimeStarted
+          description: The first time that the endpoint started to work.
+          type: date
+        - contextPath: CounterTack.Endpoint.Mac
+          description: The MAC address of the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.EventStartTime
           description: The time that the event was captured.
           type: date
         - contextPath: CounterTack.Endpoint.CpuType
-          description: Bit length of the CPU architecture
+          description: The bit length of the CPU architecture.
           type: number
         - contextPath: CounterTack.Endpoint.Status
-          description: Collection status of the endpoint. (ON, PAUSE, OFF, INIT)
+          description: The collection status of the endpoint (ON, PAUSE, OFF, INIT).
           type: string
         - contextPath: CounterTack.Endpoint.OsType
-          description: OS type
+          description: The OS type.
           type: number
         - contextPath: CounterTack.Endpoint.Version
-          description: Version of the endpoint
+          description: The version of the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.Threat
-          description: Threat level associated with endpoint.
+          description: The threat level associated with the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.Id
-          description: The endpoint ID
+          description: The ID of the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.ProductName
-          description: Product name of the endpoint OS.
+          description: The product name of the endpoint OS.
           type: string
         - contextPath: CounterTack.Endpoint.Tags
-          description: List of user assigned tags.
+          description: The list of user assigned tags.
           type: string
         - contextPath: CounterTack.Endpoint.IsQuarantined
           description: Whether the endpoint is currently quarantined.
           type: boolean
         - contextPath: Endpoint.Memory
-          description: Endpoint RAM (megabytes)
+          description: The RAM of the endpoint (in megabytes).
           type: number
         - contextPath: Endpoint.Processors
-          description: Number of CPUs.
+          description: The number of CPUs.
           type: number
         - contextPath: Endpoint.Domain
-          description: DNS suffix for the endpoint.
+          description: The DNS suffix for the endpoint.
           type: string
         - contextPath: Endpoint.OS
-          description: Product name of the endpoint OS.
+          description: The product name of the endpoint OS.
           type: string
         - contextPath: Endpoint.MACAddress
-          description: The endpoint MAC address.
+          description: The MAC address of the endpoint.
           type: string
         - contextPath: Endpoint.Model
-          description: Currently active analysis profile.
+          description: The analysis profile that is currently active.
           type: string
         - contextPath: Endpoint.IPAddress
-          description: IP addresses associated with endpoint.
+          description: The IP addresses associated with the endpoint.
           type: string
         - contextPath: Endpoint.OSVersion
-          description: Endpoint Sensor version.
+          description: The version of the endpoint sensor.
           type: string
       description: Get information on specific endpoint
     - name: countertack-get-behavior
       arguments:
         - name: behavior_id
           required: true
-          description: Behaviour ID
+          description: The ID of the behavior.
       outputs:
         - contextPath: CounterTack.Behavior.MaxImpact
-          description: Max Impact of the behavior
+          description: The maximum impact of the behavior.
           type: number
         - contextPath: CounterTack.Behavior.EndpointId
-          description: The endpoint ID
+          description: The ID of the endpoint.
           type: string
         - contextPath: CounterTack.Behavior.Tenant
-          description: 'The tenant of the behavior'
+          description: The tenant of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.EventCount
-          description: Event count of the behavior
+          description: The event count of the behavior.
           type: number
         - contextPath: CounterTack.Behavior.ReportedOn
-          description: When the behavior first seen
+          description: The time that the behavior was first seen.
           type: date
         - contextPath: CounterTack.Behavior.Name
-          description: Name of behavior
+          description: The name of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.ImpactLevel
-          description: 'Impact level of the behavior'
+          description: The impact level of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.LastActive
-          description: The last time the behavior was active
+          description: The last time that the behavior was active.
           type: date
         - contextPath: CounterTack.Behavior.TimeStamp
-          description: Time stamp of the behavior
+          description: The time stamp of the behavior.
           type: date
         - contextPath: CounterTack.Behavior.FirstEventId
-          description: First event ID
+          description: The ID of the first event.
           type: string
         - contextPath: CounterTack.Behavior.Type
-          description: 'Type of behaviour'
+          description: The type of behavior.
           type: string
         - contextPath: CounterTack.Behavior.Id
-          description: Behaviour ID
+          description: The ID of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.LastReported
-          description: When the behaviour  last seen
+          description: The time that the behavior was last seen.
           type: date
-      description: Get information on specific behavior
+      description: Gets information of a given behavior.
     - name: countertack-get-endpoint-tags
       arguments:
         - name: endpoint_id
           required: true
-          description: The id of an endpoint
+          description: The ID of the endpoint to get tags for.
       outputs:
         - contextPath: CounterTack.Endpoint.Tags
-          description: List of user assigned tags.
+          description: The list of user assigned tags.
           type: string
         - contextPath: CounterTack.Endpoint.EndpointId
-          description: Endpoints ID.
+          description: The ID of the endpoints.
           type: string
-      description: Get the tags for a specific endpoint
+      description: Gets the tags of a given endpoint.
     - name: countertack-add-tags
       arguments:
         - name: endpoint_id
           required: true
-          description: The ID of the endpoint. Get the ID from the "get-endpoints" command
+          description: The ID of the endpoint. To get the "*endpoint_id*", run the `get-endpoints` command.
         - name: tags
           required: true
-          description: Tags to add to endpoint. To add more then one, separate the tags
-            with a comma. (e.g test1,test2)
+          description: A CSV list of tags you want to add to the endpoint, for example, "test1,test2".
           isArray: true
       outputs:
         - contextPath: CounterTack.Endpoint.EndpointId
-          description: The ID of the endpoint
+          description: The ID of the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.Tags
-          description: The tags that were added to the endpoint
+          description: The tags that were added to the endpoint.
           type: string
-      description: Add tags for specified endpoint
+      description: Adds tags to a given endpoint.
     - name: countertack-delete-tags
       arguments:
         - name: tags
@@ -1697,25 +1696,24 @@ script:
         - contextPath: CounterTack.Endpoint.Tags
           description: The tags of the specified endpoint
           type: string
-      description: Delete specific tags from a specified endpoint
+      description: Deletes the supplied tags from a given endpoint.
     - name: countertack-add-behavior-tags
       arguments:
         - name: behaviour_id
           required: true
-          description: The behavior ID
+          description: The ID of the behavior.
         - name: tags
           required: true
-          description: Tags to add to a behavior. To add more then one, separate the tags
-            with a comma. (e.g test1,test2)
+          description: A CSV list of tags to add to the behavior, for example, "test1,test2".
           isArray: true
       outputs:
         - contextPath: CounterTack.Behavior.Id
-          description: The ID of the behvior
+          description: The ID of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.Tags
-          description: The tags of the behavior
+          description: The tags of the behavior.
           type: string
-      description: Add tags to a specified behavior. Separate the tags with a comma
+      description: Adds tags to a given behavior.
     - name: countertack-delete-behavior-tags
       arguments:
         - name: behaviour_id
@@ -1728,67 +1726,67 @@ script:
           isArray: true
       outputs:
         - contextPath: CounterTack.Behavior.Id
-          description: The ID of the behavior
+          description: The ID of the behavior.
           type: string
         - contextPath: CounterTack.Behavior.Tags
-          description: The tags of the behavior
-      description: 'Delete specific tags from specified behavior'
+          description: The tags of the behavior.
+      description: Deletes the supplied tags from a given behavior.
     - name: countertack-endpoint-quarantine
       arguments:
         - name: endpoint_id
           required: true
-          description: The Id of the endpoint
+          description: The ID of the endpoint to quarantine.
       outputs:
         - contextPath: CounterTack.Endpoint.Id
-          description: The ID of the endpoint
+          description: The ID of the endpoint.
           type: string
         - contextPath: CounterTack.Endpoint.IsQuarantine
-          description: Whether the endpoint is currently quarantined.
+          description: Is the endpoint currently quarantined.
           type: boolean
-      description: Quarantine a specified endpoint
+      description: Quarantines a given endpoint.
     - name: countertack-disable-quarantine
       arguments:
         - name: endpoint_id
           required: true
-          description: The ID of the endpoint
+          description: The ID of the endpoint to remove from quarantine.
       outputs:
         - contextPath: CounterTack.Endpoint.Id
-          description: The ID of the endpoint
+          description: The ID of the endpoint that was removed from quarantine.
           type: string
         - contextPath: CounterTack.Endpoint.IsQuarantine
-          description: Whether the endpoint is currently quarantined.
+          description: Is the endpoint is currently quarantined.
           type: string
-      description: Disable quarantine from endpoint
+      description: Removes a given endpoint from quarantine.
     - name: countertack-extract-file
       arguments:
         - name: endpoint_id
           required: true
-          description: The ID of the endpoint
+          description: The ID of the endpoint to extract a file from.
         - name: file_path
           required: true
-          description: The path of the file. (e.g C:\\test1.txt)
+          description: The path of the file to extract, for example, "C:\\test1.txt".
           isArray: true
       outputs:
         - contextPath: CounterTack.File.CommandArg.contents
-          description: File contents
+          description: The contents of the extracted file.
           type: boolean
         - contextPath: CounterTack.File.CommandArg.extracted_ids
-          description: File extracted ids
+          description: The IDs of the extracted file.
           type: string
         - contextPath: CounterTack.File.CommandArg.md5
-          description: File MD5
+          description: The MD5 hash of the extracted file.
           type: boolean
         - contextPath: CounterTack.File.CommandArg.paths
-          description: The path of the extracted file
+          description: The path of the extracted file.
           type: string
         - contextPath: CounterTack.File.CommandArg.sha256
-          description: File SHA256
+          description: The SHA-256 has of teh extracted file.
           type: boolean
         - contextPath: CounterTack.File.CommandArg.ssdeep
-          description: File ssdeep
+          description: The ssdeep hash of the extracted file.
           type: boolean
         - contextPath: CounterTack.File.CommandArg
-          description: The command arguments
+          description: The command arguments.
         - contextPath: CounterTack.File.CommandName
           description: The name of the command that is sent.
           type: string
@@ -1799,144 +1797,144 @@ script:
           description: The type of resource or collection this command is being sent to.
           type: string
         - contextPath: CounterTack.File.Status
-          description: The status of the command, from (initial, pending, complete, error).
+          description: The status of the command (initial, pending, complete, error).
           type: string
         - contextPath: CounterTack.File.RequestTime
           description: The time at which the client requested the command.
           type: date
         - contextPath: CounterTack.File.Id
-          description: Commands ID.
+          description: The ID of the commands.
           type: string
         - contextPath: CounterTack.File.EndpointIds
           description: The ID of the source this command is being sent to.
           type: string
-      description: Extract file from specified endpoint
+      description: Extracts a file from given endpoint.
     - name: countertack-delete-file
       arguments:
         - name: endpoint_id
           required: true
-          description: 'The ID of the endpoint'
+          description: The ID of the endpoint to delete a file from.
         - name: file_path
           required: true
-          description: The path of  the file
-      description: Delete a file from the specified endpoint.
+          description: The path of  the file to delete.
+      description: Deletes a file from the given endpoint.
     - name: countertack-get-all-files
       arguments: []
       outputs:
         - contextPath: CounterTack.File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
         - contextPath: CounterTack.File.EndpointId
-          description: ID of the endpoint with the extracted file.
+          description: The ID of the endpoint that contains the extracted file.
           type: string
         - contextPath: CounterTack.File.ExtractionTime
-          description: The time of extraction of the file.
+          description: The time that the file was extracted.
           type: date
         - contextPath: CounterTack.File.Path
-          description: Full file system path of the extracted file, including the filename,
-            as seen on the endpoint
+          description: The full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
           type: string
         - contextPath: CounterTack.File.Sha256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: CounterTack.File.Tenant
-          description: Tenant ID for endpoint.
+          description: The tenant ID for the endpoint.
           type: string
         - contextPath: CounterTack.File.User
-          description: Name of the user requesting the file.
+          description: The name of the user requesting the file.
           type: string
         - contextPath: CounterTack.File.Ssdeep
-          description: The SSDEEP digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: CounterTack.File.EndpointIp
-          description: IP address of the endpoint with the extracted file.
+          description: The IP address of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.AvCoverage
-          description: Percentage of AV engines that determined the Hash is malicious.
+          description: The percentage of AV engines that determined that the hash is malicious.
           type: number
         - contextPath: CounterTack.File.Status
-          description: Contents status.
+          description: The status of the contents.
           type: string
         - contextPath: CounterTack.File.VtStatus
-          description: VirusTot al report status.
+          description: The Virus Total report status.
           type: string
         - contextPath: CounterTack.File.EndpointName
-          description: Name of the endpoint with the extracted file.
+          description: The name of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.Id
-          description: Extracted file ID.
+          description: The file ID of the extracted file.
           type: string
         - contextPath: CounterTack.File.Md5
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: CounterTack.File.VtReportLocation
-          description: VirusTot al report location path.
+          description: The VirusTotal report location path.
           type: string
         - contextPath: File.MD5
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: File.Path
-          description: Full file system path of the extracted file, including the filename,
-            as seen on the endpoint
+          description: The full file system path of the extracted file, including the filename,
+            as seen on the endpoint.
           type: string
         - contextPath: File.SHA256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: File.SSDeep
-          description: The SSDEEP digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
-      description: Get all extracted files for all endpoints
+      description: Gets all extracted files for all endpoints.
     - name: countertack-get-endpoint-files
       arguments:
         - name: endpoint_id
           required: true
-          description: The ID of the endpoint. Get the ID from "get-endpoints" command
+          description: The ID of the endpoint. To get the endpoint_id, run the `get-endpoints` command.
       outputs:
         - contextPath: CounterTack.File.Id
-          description: Extracted file ID.
+          description: The file ID of the extracted file.
           type: string
         - contextPath: CounterTack.File.Status
-          description: Contents status.
+          description: The status of the contents.
           type: string
         - contextPath: CounterTack.File.EndpointId
-          description: ID of the endpoint with the extracted file.
+          description: The ID of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.ExtractionTime
-          description: The time of extraction of the file.
+          description: The time that the file was extracted.
           type: date
         - contextPath: CounterTack.File.Tenant
-          description: Tenant ID for endpoint.
+          description: The tenant ID for the endpoint.
           type: string
         - contextPath: CounterTack.File.User
-          description: Name of the user requesting the file.
+          description: The name of the user requesting the file.
           type: string
         - contextPath: CounterTack.File.Path
-          description: Full file system path of the extracted file, including the filename,
+          description: The full file system path of the extracted file, including the filename,
             as seen on the endpoint.
           type: string
         - contextPath: CounterTack.File.Sha256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: CounterTack.File.Ssdeep
-          description: The SSDEEP digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: CounterTack.File.EndpointIp
-          description: IP address of the endpoint with the extracted file.
+          description: The IP address of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.VtStatus
-          description: VirusTotal report status.
+          description: The VirusTotal report status.
           type: string
         - contextPath: CounterTack.File.VtReportLocation
-          description: VirusTot al report location path.
+          description: The location path of the VirusTotal report.
           type: string
         - contextPath: CounterTack.File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
         - contextPath: CounterTack.File.EndpointName
-          description: Name of the endpoint with the extracted file.
+          description: The name of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.Md5
           description: The MD5 digest of the file contents.
@@ -1945,235 +1943,234 @@ script:
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: File.Path
-          description: Full file system path of the extracted file, including the filename,
+          description: The full file system path of the extracted file, including the filename,
             as seen on the endpoint.
           type: string
         - contextPath: File.SHA256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: File.SSDeep
-          description: The SSDee digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: File.Size
           description: The size of the extracted file (bytes).
           type: number
-      description: Returns all extracted files from specified endpoint
+      description: Returns all extracted files from a given endpoint.
     - name: countertack-get-file-information
       arguments:
         - name: file_id
           required: true
-          description: The ID of the requested file. Get the ID from "gat-all-files" command
+          description: The ID of the requested file. To get the "file_id"m run the `get-all-files` command.
       outputs:
         - contextPath: CounterTack.File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
         - contextPath: CounterTack.File.EndpointId
-          description: ID of the endpoint with the extracted file.
+          description: The ID of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.ExtractionTime
-          description: The time of extraction of the file.
+          description: The time that the file was extracted.
           type: date
         - contextPath: CounterTack.File.Path
           description: Full file system path of the extracted file, including the filename,
             as seen on the endpoint.
           type: string
         - contextPath: CounterTack.File.Sha256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: CounterTack.File.Tenant
-          description: Tenant ID for endpoint.
+          description: The tenant ID for the endpoint.
           type: string
         - contextPath: CounterTack.File.User
-          description: Name of the user requesting the file.
+          description: The name of the user requesting the file.
           type: string
         - contextPath: CounterTack.File.Ssdeep
-          description: The SSDEEP digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: CounterTack.File.EndpointIp
-          description: IP address of the endpoint with the extracted file.
+          description: The IP address of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.AvCoverage
-          description: Percentage of AV engines that determined the Hash is malicious.
+          description: The percentage of AV engines that determined that the hash is malicious.
           type: number
         - contextPath: CounterTack.File.Status
-          description: Contents status.
+          description: The status of the contents.
           type: string
         - contextPath: CounterTack.File.VtStatus
-          description: VirusTot al report status.
+          description: The status of the VirusTotal report.
           type: string
         - contextPath: CounterTack.File.EndpointName
-          description: Name of the endpoint with the extracted file.
+          description: The name of the endpoint with the extracted file.
           type: string
         - contextPath: CounterTack.File.Id
-          description: Extracte d file ID.
+          description: The ID of the extracted file.
           type: string
         - contextPath: CounterTack.File.Md5
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: CounterTack.File.VtReportLocation
-          description: VirusTot al report location path.
+          description: The location path of the VirusTotal report.
           type: string
         - contextPath: File.MD5
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: File.Path
-          description: Full file system path of the extracted file, including the filename,
+          description: The full file system path of the extracted file, including the filename,
             as seen on the endpoint.
           type: string
         - contextPath: File.SHA256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: File.SSDeep
-          description: The SSDeep digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
-      description: Get the information of a specific file
+      description: Gets the information of a given file.
     - name: countertack-download-file
       arguments:
         - name: file_id
           required: true
-          description: The ID of the extracted file. Get the ID from "get-all-files" command.
+          description: The ID of the extracted file. To get the "file_id", run the `get-all-files` command.
       outputs:
         - contextPath: File.Size
-          description: The size of the extracted file (bytes).
+          description: The size of the extracted file (in bytes).
           type: number
         - contextPath: File.SHA1
-          description: The SHA1 digest of the file contents.
+          description: The SHA-1 digest of the file contents.
           type: string
         - contextPath: File.SHA256
-          description: The SHA256 digest of the file contents.
+          description: The SHA-256 digest of the file contents.
           type: string
         - contextPath: File.Name
-          description: The file name
+          description: The name of the file.
           type: string
         - contextPath: File.SSDeep
-          description: The SSDEEP digest of the file contents.
+          description: The ssdeep digest of the file contents.
           type: string
         - contextPath: File.EntryID
-          description: EntryID of the file
+          description: The EntryID of the file.
           type: string
         - contextPath: File.Info
-          description: File information
+          description: The file information.
           type: string
         - contextPath: File.Type
-          description: File type
+          description: The file type.
           type: string
         - contextPath: File.MD5
           description: The MD5 digest of the file contents.
           type: string
         - contextPath: File.Extension
-          description: The extension of the file (zip)
+          description: The extension of the file (.zip).
           type: string
-      description: Download an extracted file in ZIP format. The password to unlock
-        the zip file is sentinel
+      description: Downloads an extracted file in ZIP format. The password to unlock
+        the ZIP file is `sentinel`.
     - name: countertack-search-events
       arguments:
         - name: expression
           required: true
-          description: The CQL expression to be used for the search (e.g events.event_type=basic)
+          description: The CQL expression to be used for the search, for example, "events.event_type=basic".
       outputs:
         - contextPath: CounterTack.Event.SourceProcessTimeStarted
-          description: Start time for the source process.
+          description: The start time for the source process.
           type: date
         - contextPath: CounterTack.Event.SourceThreadProcessPid
-          description: Process PID of the source thread.
+          description: The process PID of the source thread.
           type: number
         - contextPath: CounterTack.Event.IsTaintTransfer
-          description: event is a malignant transfer.
+          description: Is the event a malignant transfer.
           type: boolean
         - contextPath: CounterTack.Event.IsBasic
-          description: Event is a basic event.
+          description: Is the event a basic event.
           type: boolean
         - contextPath: CounterTack.Event.SourceThreadTimeFinished
-          description: Exit time of the source thread
+          description: The exit time of the source thread.
           type: date
         - contextPath: CounterTack.Event.SourceThreadTid
-          description: TID of the source thread.
+          description: The TID of the source thread.
           type: number
         - contextPath: CounterTack.Event.Tenant
-          description: Tenant of the event
+          description: The tenant of the event.
           type: string
         - contextPath: CounterTack.Event.SourceThreadProcessTimeStarted
-          description: Start time of the parent process for the source thread.
+          description: The start time of the parent process for the source thread.
           type: date
         - contextPath: CounterTack.Event.TargetType
-          description: System object type that was target of event. (PROCESS, THREAD,
-            REGISTRY, DRIVER, TCPIP,FILE, MUTEX, MEMORY_REGION)
+          description: The system object type that was target of the event (PROCESS, THREAD,
+            REGISTRY, DRIVER, TCPIP,FILE, MUTEX, MEMORY_REGION).
           type: string
         - contextPath: CounterTack.Event.ConditionNames
-          description: Names of the condition triggered by the event.
+          description: The names of the condition triggered by the event.
         - contextPath: CounterTack.Event.IsOrigin
-          description: Event is an origin for a trace.
+          description: Is the event an origin for a trace.
           type: boolean
         - contextPath: CounterTack.Event.endpoint_id
-          description: Endpoint ID, based on the UUID of the Endpoint Sensor last installed.
+          description: The endpoint ID, based on the UUID of the last installed endpoint sensor.
           type: string
         - contextPath: CounterTack.Event.TargetFilePath
-          description: Path to target file.
+          description: The path of the target file.
           type: string
         - contextPath: CounterTack.Events.SourceThreadProcessBackingFilePath
-          description: Backing file of the source thread.
+          description: The backing file of the source thread.
           type: string
         - contextPath: CounterTack.Event.EventType
-          description: Type of event
+          description: The type of event.
           type: string
         - contextPath: CounterTack.Event.IsKey
-          description: Event is a key event in a trace.
+          description: Is the event a key event in a trace.
           type: boolean
         - contextPath: CounterTack.Event.SourceType
-          description: System object that was source of the event.
+          description: The system object that was the source of the event.
           type: string
         - contextPath: CounterTack.Event.SourceThreadProcessName
-          description: Name of the parent process for the source thread.
+          description: The name of the parent process for the source thread.
           type: string
         - contextPath: CounterTack.Event.SourceThreadProcessUser
-          description: User associated with process of the thread.
+          description: The user associated with the process of the thread.
           type: string
         - contextPath: CounterTack.Event.TimeStamp
-          description: Time event was collected.
+          description: The time that the event was collected.
           type: date
         - contextPath: CounterTack.Event.Action
-          description: 'System interaction that characterizes the event.'
+          description: The system interaction that characterizes the event.
           type: string
         - contextPath: CounterTack.Event.IsTainted
-          description: Objects in event are tainted.
+          description: Are the objects in the event tainted.
           type: boolean
         - contextPath: CounterTack.Event.SourceThreadProcessParentPid
-          description: Parent PID of the source thread process.
+          description: The parent PID of the source thread process.
           type: number
         - contextPath: CounterTack.Event.SourceProcessPid
-          description: PID of the source process.
+          description: The PID of the source process.
           type: number
         - contextPath: CounterTack.Event.SourceThreadStartAddress
-          description: Start address of the thread.
+          description: The start address of the thread.
           type: number
         - contextPath: CounterTack.Event.SourceProcessSid
-          description: User SIDs associated with the process.
+          description: The user SIDs associated with the process.
           type: number
-        - contextPath: CounterTack.Even.Id
-          description: Events ID.
+        - contextPath: CounterTack.Event.Id
+          description: The ID of the event.
           type: string
         - contextPath: CounterTack.Event.ConditionIds
-          description: IDs of the condition triggered by the event.
+          description: The IDs of the condition triggered by the event.
         - contextPath: CounterTack.Event.SourceProcessName
-          description: Name of the process that was the source of the event.
+          description: The name of the process that was the source of the event.
           type: string
         - contextPath: CounterTack.Event.SourceProcessUser
-          description: User associated with the process
+          description: The user associated with the process
           type: string
-      description: 'Search for events with CQL expression'
+      description: Searches for events, using CQL expression.
     - name: countertack-kill-process
       arguments:
         - name: endpoint_id
           required: true
-          description: Endpoint ID. Get the ID from the "get-endpoints" command
+          description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
         - name: process_id
-          description: 'Process PID. Get the process ID from the "search-events" command'
+          description: The process PID. To get the "process_id", run the `search-events` command.
         - name: process_name
-          description: The name of the process. Get the process name from the "search-events"
-            command
+          description: The name of the process. To get the "process_name", run the `search-events` command.
       outputs:
         - contextPath: CounterTack.Endpoint.EndpointIds
           description: The ID of the source this command is being sent to.
@@ -2182,16 +2179,16 @@ script:
           description: The type of resource or collection this command is being sent to.
           type: string
         - contextPath: CounterTack.Endpoint.CommandArg.name
-          description: Name of the process that was terminated.
+          description: The name of the process that was terminated.
           type: string
         - contextPath: CounterTack.Endpoint.CommandArg.pid
-          description: PID of the process that was terminated.
+          description: The PID of the process that was terminated.
           type: number
         - contextPath: CounterTack.Endpoint.CommandArg
-          description: 'Command Arguments'
+          description: The command arguments.
           type: string
         - contextPath: CounterTack.Endpoint.Status
-          description: The status of the command, from (initial, pending, complete, error).
+          description: The status of the command (initial, pending, complete, error).
           type: string
         - contextPath: CounterTack.Endpoint.CommandName
           description: The name of the command that is sent.
@@ -2200,7 +2197,7 @@ script:
           description: The username of the user that requested the command.
           type: string
         - contextPath: CounterTack.Endpoint.Id
-          description: Commands ID.
+          description: The ID of the commands.
           type: string
         - contextPath: CounterTack.Endpoint.RequestTime
           description: The time at which the client requested the command.
@@ -2215,33 +2212,33 @@ script:
             md5)
       outputs:
         - contextPath: CounterTack.Hash.AvCoverage
-          description: Percentage of AV engines that determined that the Hash is malicious.
+          description: The percentage of AV engines that determined that the hash is malicious.
           type: number
         - contextPath: CounterTack.Hash.Id
-          description: Hashes ID.
+          description: The ID of the hashes.
           type: string
         - contextPath: CounterTack.Hash.Impact
-          description: Impact score for the event in the Hash (1-100).
+          description: The impact score for the event in the hash (1-100).
           type: number
         - contextPath: CounterTack.Hash.Type
-          description: Type of Hash (sha256, md5, or ssdeep).
+          description: The type of hash (sha256, md5, or ssdeep).
           type: string
         - contextPath: CounterTack.Hash.VtReportLocation
-          description: Report location for Virus Total report.
+          description: The report location for VirusTotal report.
           type: string
         - contextPath: File.MD5
           description: The MD5 of the file
           type: string
         - contextPath: File.SHA256
-          description: The SHA256 of the file
+          description: The SHA-256 of the file.
           type: string
         - contextPath: File.SSDeep
-          description: The SSDeep of the file
+          description: The ssdeep of the file.
           type: string
-      description: Search for Hashes using CQL expression (Contextual Query Language)
+      description: Searches for hashes using CQL expressions (Contextual Query Language)
         to represent queries.
   isfetch: true
   runonce: false
-releaseNotes: "Added new commands: Download file, delete file, kill process, search hashes+events, fetch incidents"
+releaseNotes: "updated outputs descriptions"
 tests:
   - no tests
