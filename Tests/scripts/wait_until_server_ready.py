@@ -48,6 +48,7 @@ def main():
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
                     http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
+                    print "this is the bash command {}".format(http_code)
                     if http_code != 433:
                         print "{} is ready for use".format(ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
