@@ -86,7 +86,7 @@ def test_not_touched_id_validation():
 
 def test_valid_file_examination():
     copyfile("./Tests/setup/Playbooks.playbook-test.yml", "Playbooks/playbook-test.yml")
-    validator = StructureValidator(file_path="Playbooks/playbook-test.yml")
+    validator = StructureValidator(file_path="Playbooks/playbook-test.yml", is_added_file=True)
 
     assert validator.is_file_valid(), \
         "Found a problem in the scheme although there is no problem"
