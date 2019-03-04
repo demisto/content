@@ -1108,6 +1108,10 @@
         },
         {
             "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "integrations": "Symantec Advanced Threat Protection",
+            "playbookID": "Symantec ATP Test"
         }
     ],
     "skipped_tests": {
