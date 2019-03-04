@@ -374,6 +374,7 @@ def main():
         for ami_instance_name, ami_instance_ip in instance_ips:
             if ami_instance_name == server_version:
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 server = SERVER_URL.format(ami_instance_ip)
                 execute_testing(server)
 
