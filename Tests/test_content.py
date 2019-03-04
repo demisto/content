@@ -109,7 +109,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         print 'Failed: %s failed' % (test_message,)
         playbook_id_with_mock = playbook_id
         if bypass_mock:
-            playbook_id_with_mock = " (Mock Disabled)"
+            playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
         # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
         # TODO: Enable before merge
