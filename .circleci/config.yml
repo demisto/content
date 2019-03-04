@@ -92,7 +92,7 @@ jobs:
                 temp="${temp#\"}"
                 USERNAME=$temp
 
-                python ./Tests/scripts/wait_until_server_ready.py
+                python ./Tests/scripts/wait_until_server_ready.py -u "$USERNAME" -p "$PASSWORD"
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
