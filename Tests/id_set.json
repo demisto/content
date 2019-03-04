@@ -14417,8 +14417,16 @@
         {
             "LogRhythm-Test-Playbook": {
                 "name": "LogRhythm-Test-Playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
                 "command_to_integration": {
-                    "lr-get-alarms": "LogRhythm"
+                    "lr-get-alarm-history-by-id": "", 
+                    "lr-get-alarms": "", 
+                    "lr-add-alarm-comments": "", 
+                    "lr-get-alarm-by-id": "", 
+                    "lr-update-alarm-status": "", 
+                    "lr-get-alarm-events-by-id": ""
                 }
             }
         }, 
