@@ -239,8 +239,10 @@ def set_subscription_id():
         })
         return sub_id
     except ValueError as e:
-        if e.message == "No JSON object could be decoded":
+        if e.message == 'No JSON object could be decoded':
             return_error(response.content)
+        else:
+            raise e
 
 
 def update_access_token():
@@ -260,11 +262,13 @@ def update_access_token():
     parameters = {'tenant': TENANT_ID, 'product': 'AzureCompute'}
     r = requests.get(token_retrieval_url, headers=headers, params=parameters, verify=USE_SSL)
     if r.status_code not in {200, 201}:
-        return_error('Error in authentication with the application. Please check the credentials.')
+        return_error('Error in authentication with the application. Try checking the credentials you entered.')
     try:
         response = r.json()
     except ValueError:
-        return_error('The response from Demistbot was not a json serializable object.')
+        err_msg = 'There was a problem in retrieving an updated access token.'
+        err_msg += ' The response from the Demistobot server did not contain the expected content.'
+        return_error(err_msg)
     demisto.setIntegrationContext({
         'token': response.get('token'),
         'stored': epoch_seconds(),
