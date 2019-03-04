@@ -15609,6 +15609,20 @@
             }
         }, 
         {
+            "Symantec ATP Test": {
+                "name": "Symantec ATP Test", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "satp-events": "", 
+                    "satp-appliances": "", 
+                    "satp-files": "", 
+                    "satp-incidents": ""
+                }
+            }
+        }, 
+        {
             "Symantec Messaging Gateway Test": {
                 "name": "Symantec Messaging Gateway Test", 
                 "implementing_scripts": [
