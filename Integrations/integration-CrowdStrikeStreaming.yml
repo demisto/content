@@ -1,6 +1,6 @@
-category: End Point
+category: Endpoint
 commonfields:
-  id: integration-CrowdStrikeStreaming
+  id: FalconQuery
   version: -1
 configuration:
 - display: Fetch incidents
@@ -11,7 +11,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: https://falconapi.crowdstrike.com
+- defaultvalue: https://api.crowdstrike.com
   display: Server URL (e.g. https://example.net)
   name: url
   required: true
@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 9
 - defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -34,221 +34,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-description: The Falcon Streaming API (formerly known as the Falcon Firehose API)
+description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
-display: CrowdStrike Falcon Streaming V2
-name: integration-CrowdStrikeStreaming
+display: CrowdStrike Query API
+name: FalconQuery
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: The type of the IoC to upload.
-      isArray: false
-      name: ioc_type
-      predefined:
-      - sha1
-      - sha256
-      - md5
-      - ipv4
-      - ipv6
-      - domain
-      required: true
-      secret: false
-    - default: false
-      description: The value of the IoC to upload.
-      isArray: false
-      name: ioc_value
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: detect
-      description: |-
-        The policy that should be enacted when the value is detected on a host.
-        * detect: Send a notification when the particular indicator has been detected on a host.
-        * none: Take no action when the particular indicator has been detected on a host. This is equivalent to turning the indicator off.
-      isArray: false
-      name: policy
-      predefined:
-      - detect
-      - none
-      required: false
-      secret: false
-    - default: false
-      description: This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types.
-      isArray: false
-      name: expiration_days
-      required: false
-      secret: false
-    - default: false
-      description: The source where this indicator originated (limit 200 characters).
-      isArray: false
-      name: source
-      required: false
-      secret: false
-    - default: false
-      description: Description for the indicator (limit 200 characters).
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    description: Uploads a new custom IoC to crowdstrike watch list.
-    execution: false
-    name: crowdstrike-create-ioc
-  - arguments:
-    - default: false
-      description: List of IoC types to retrieve, comma seperated (e.g. sha256,sha1,md5,domain,ipv4,ipv6).
-      isArray: true
-      name: ioc_types
-      required: false
-      secret: false
-    - default: false
-      description: List of IoC values to retrieve, comma seperated.
-      isArray: false
-      name: ioc_values
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: IoC policy to retrieve, comma seperated.
-      isArray: false
-      name: policy
-      predefined:
-      - detect
-      - none
-      required: false
-      secret: false
-    - default: false
-      description: List of the IoC sources to retrieve, comma seperated.
-      isArray: true
-      name: sources
-      required: false
-      secret: false
-    - default: false
-      description: An RFC3339 DateTime (e.g. 2019-01-02T150:00:00Z) that represents
-        the starting date range to search for IOCs by their expiration timestamp.
-      isArray: false
-      name: expiration_from
-      required: false
-      secret: false
-    - default: false
-      description: An RFC3339 DateTime (e.g. 2019-01-02T150:00:00Z) that represents
-        the ending date range to search for IOCs by their expiration timestamp.
-      isArray: false
-      name: expiration_to
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of records to return. The default is 50. The
-        minimum is 1 and the maximum is 500.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The ids of the IoCs to retrieve (combination of type and value
-        delimited by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
-      isArray: true
-      name: ids
-      required: false
-      secret: false
-    description: Retrieves a list of IoCs.
-    execution: false
-    name: crowdstrike-search-iocs
-    outputs:
-    - contextPath: CrowdStrike.IoC.ID
-      description: ID of the IoC (Type:Value).
-      type: String
-    - contextPath: CrowdStrike.IoC.Type
-      description: Type of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.Value
-      description: Value of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.Policy
-      description: Policy of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.Source
-      description: Source of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.ShareLevel
-      description: Share level of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.Expiration
-      description: Expiration timestamp of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.Description
-      description: Description of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.CreatedTime
-      description: Time of creation of the IoC.
-      type: Date
-    - contextPath: CrowdStrike.IoC.CreatedBy
-      description: Identity of the creator of the IoC.
-      type: String
-    - contextPath: CrowdStrike.IoC.ModifiedTime
-      description: Time of the last modification to the IoC.
-      type: Date
-    - contextPath: CrowdStrike.IoC.ModifiedBy
-      description: Identity of the user who last edited the IoC.
-      type: String
-  - arguments:
-    - default: false
-      description: The ids of the IoCs to delete (combination of type and value delimited
-        by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
-      isArray: true
-      name: ids
-      required: true
-      secret: false
-    description: Deletes a list of IoCs by IoC ID.
-    execution: false
-    name: crowdstrike-delete-iocs
-  - arguments:
-    - default: false
-      description: The ids of the IoCs to update (combination of type and value delimited
-        by a colon, e,g, 'domain:a-bad-domain.com'), comma seperated.
-      isArray: true
-      name: ids
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: |-
-        The policy that should be enacted when the value is detected on a host. See below for a list of policies.
-        * detect: Send a notification when the particular indicator has been detected on a host.
-        * none: Take no action when the particular indicator has been detected on a host. This is equivalent to turning the indicator off.
-      isArray: false
-      name: policy
-      predefined:
-      - detect
-      - none
-      required: false
-      secret: false
-    - default: false
-      description: This represents the days the indicator should be valid for. This
-        only applies to domain, ipv4, and ipv6 types.
-      isArray: false
-      name: expiration_days
-      required: false
-      secret: false
-    - default: false
-      description: The source where this indicator originated (limit 200 characters).
-      isArray: false
-      name: source
-      required: false
-      secret: false
-    - default: false
-      description: Description for the indicator (limit 200 characters).
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    description: Updates a list of IoCs by IoC ID.
-    execution: false
-    name: crowdstrike-update-iocs
   - arguments:
     - default: false
       description: Will limit retrieved devices to those who match the query.
@@ -300,7 +91,7 @@ script:
       name: site_name
       required: false
       secret: false
-    description: Searches for a device that matchest the query.
+    description: Searches for a device that matches the query.
     execution: false
     name: crowdstrike-search-device
     outputs:
@@ -336,7 +127,7 @@ script:
   script: |-
     ''' IMPORTS '''
 
-    #TODO: ADD CROWDSTRIKE-GET-BEHAVIOR command
+    # TODO: ADD CROWDSTRIKE-GET-BEHAVIOR command
 
     import json
     import requests
@@ -351,9 +142,10 @@ script:
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
     # Remove trailing slash to prevent wrong URL path to service
-    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
+    demisto.params()['url']
     # Should we use SSL
-    USE_SSL = not demisto.params().get('unsecure', False)
+    USE_SSL = not demisto.params().get('insecure', False)
     # How many time before the first fetch to retrieve incidents
     FETCH_TIME = demisto.params().get('fetch_time', '3 days')
     # Headers to be sent in requests
@@ -413,8 +205,7 @@ script:
         'mac_address': 'MacAddress',
         'first_seen': 'FirstSeen',
         'last_seen': 'LastSeen'
-    } #TODO: Add PolicyType via a function - key is policies
-
+    }  # TODO: Add PolicyType via a function - key is policies
 
     ''' SPLIT KEY DICTIONARY '''
 
@@ -442,9 +233,11 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, is_full_url_arg=False, safe=False):
+
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
         # A wrapper for requests lib to send our requests and handle requests and responses better
-        url = url_suffix if is_full_url_arg else SERVER + url_suffix
+        url = SERVER + url_suffix
+        demisto.info("\n\n#### SENT URL: {}").format(url)
         res = requests.request(
             method,
             url,
@@ -458,7 +251,6 @@ script:
             if safe:
                 return None
             return_error('Error in API call [%d] - %s' % (res.status_code, res.reason))
-        demisto.info("#### RESULT: {}".format(json.dumps(res.json(), indent=4, sort_keys=True)))
         return res.json()
 
 
@@ -480,8 +272,8 @@ script:
             'rawJSON': json.dumps(detection),
             'severity': severity_string_to_int(detection.get('max_severity_displayname'))
         }
-        demisto.info("\n\n #### Incident value: {}".format(json.dumps(incident, indent=4, sort_keys=True)))
         return incident
+
 
     def severity_string_to_int(severity):
         if severity in ('Critical', 'High'):
@@ -489,22 +281,6 @@ script:
         elif severity in ('Medium', 'Low'):
             return 2
         return 0
-
-    def behavior_to_incident(behavior, resource):
-        raw_labels = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-        raw_labels.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
-        for path, new_key in DETECTIONS_BASE_KEY_MAP.iteritems():
-            raw_labels[new_key] = demisto.get(resource, path)
-        labels = [{'Type': k, 'Value': v} for k, v in raw_labels.iteritems()]
-        # demisto.info("\n\n #### labels value: {}".format(json.dumps(labels, indent=4, sort_keys=True)))
-        incident = {
-            'name': 'Behavior id: ' + str(behavior.get('behavior_id')),
-            'occurred': behavior.get('timestamp'),
-            'rawJSON': json.dumps(behavior),
-            # 'severity': TODO: ADD
-        }
-        # demisto.info("\n\n #### Incident value: {}".format(json.dumps(incident, indent=4, sort_keys=True)))
-        return incident
 
 
     def get_trasnformed_dict(old_dict, transformation_dict):
@@ -549,6 +325,7 @@ script:
 
     ''' COMMAND SPECIFIC FUNCTIONS '''
 
+
     def get_token():
         body = {
             'client_id': USERNAME,
@@ -557,42 +334,37 @@ script:
         headers = {
             'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
         }
-        token_res = http_request('POST', 'https://api.crowdstrike.com/oauth2/token', data=body, headers=headers, is_full_url_arg=True, safe=True)
+        token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
         if not token_res:
-            return None
+            raise Exception('Authorization Error: User has no authorization to create a token.')
+
         return token_res.get('access_token')
 
 
-    def get_detections(last_behavior_time, token):
-        # The service endpoint to request from
-        endpoint_url = 'https://api.crowdstrike.com/detects/queries/detects/v1'
-        # Dictionary of params for the request
+    def get_detections(last_behavior_time):
+        endpoint_url = '/detects/queries/detects/v1'
         params = {
             'filter': "first_behavior:>'{0}'".format(last_behavior_time),
             'sort': 'first_behavior.asc'
         }
-        headers = {'Authorization': 'Bearer ' + token}
-        response = http_request('GET', endpoint_url, params, headers=headers, is_full_url_arg=True)
-        # TODO: Check if response contains errors
-        if response.get('errors'):
-            return_error(response.get('errors'))
+        headers = {'Authorization': 'Bearer ' + TOKEN}
+        response = http_request('GET', endpoint_url, params, headers=headers)
         return response
 
 
-    def get_detections_entities(detections_ids, token):
+    def get_detections_entities(detections_ids):
         ids_json = {'ids': detections_ids}
-        demisto.info("#### Data: {0}".format(json.dumps(ids_json)))
         if detections_ids:
             headers = {
-                'Authorization': 'Bearer ' + token,
+                'Authorization': 'Bearer ' + TOKEN,
                 'Content-Type': 'application/json'
             }
             response = http_request(
                 'POST',
-                'https://api.crowdstrike.com/detects/entities/summaries/GET/v1',
+                '/detects/entities/summaries/GET/v1',
                 data=json.dumps(ids_json),
-                headers=headers,
-                is_full_url_arg=True)
+                headers=headers
+            )
             return response
         return detections_ids
 
@@ -610,18 +382,16 @@ script:
         input_args['expiration_days'] = args.get('expiration_days')
         input_args['source'] = args.get('source')
         input_args['description'] = args.get('description')
-        payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
+        payload = {k: convert_to_str(v) for k, v in input_args.iteritems() if v}
         headers = {'Authorization': HEADERS['Authorization']}
         return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
-    # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
-    # TODO: Check how an error response looks like
 
 
     def search_iocs():
         args = demisto.args()
         ids = args.get('ids')
         if not ids:
-            search_args = { #TODO: Handle context array args
+            search_args = {
                 'types': convert_to_str(args.get('ioc_types', '')).split(','),
                 'values': convert_to_str(args.get('ioc_values', '')).split(','),
                 'policies': convert_to_str(args.get('policy', '')),
@@ -645,7 +415,7 @@ script:
         payload = {
             'ids': ids
         }
-        return http_request('GET','/indicators/entities/iocs/v1', params=payload)
+        return http_request('GET', '/indicators/entities/iocs/v1', params=payload)
 
 
     def enrich_ioc_dict_with_ids(ioc_dict):
@@ -670,10 +440,9 @@ script:
             'source': args.get('source'),
             'description': args.get('description')
         }
-        payload = {k: convert_to_str(v) for k,v in input_args.iteritems() if v}
+        payload = {k: convert_to_str(v) for k, v in input_args.iteritems() if v}
         headers = {'Authorization': HEADERS['Authorization']}
-        return http_request('PATCH','/indicators/entities/iocs/v1', params=payload, headers=headers)
-    # TODO: Check whether headers should be default or changed (with Content-Type: application/json response is 500)
+        return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
 
 
     def search_device():
@@ -701,24 +470,22 @@ script:
                 else:
                     # All args should be a list. this is a fallback
                     url_filter = "{0}+{1}:'{2}'".format(url_filter, k, arg)
-        raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
+        headers = {
+            'Authorization': 'Bearer ' + TOKEN,
+            'Content-Type': 'application/json'
+        }
+        raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter}, headers=headers)
         device_ids = raw_res.get('resources')
         if not device_ids:
             return None
-        return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids})
+        return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids}, headers=headers)
+
 
     ''' COMMANDS FUNCTIONS '''
-
-    def test_module():
-        """
-        Performs basic get request to get item samples
-        """
-        return http_request('GET', 'detects/queries/detects/v1')
 
 
     def fetch_incidents():
         last_run = demisto.getLastRun()
-        demisto.info("#### Last run: {0}".format(last_run))
         # Get the last fetch time, if exists
         last_fetch = last_run.get('first_behavior_time')
 
@@ -728,13 +495,8 @@ script:
         last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
 
         incidents = []
-        token = get_token()
-        if not token:
-            raise Exception('Authorization Error: User has no authorization to create a token.')
-        detections_ids = demisto.get(get_detections(last_fetch, token), 'resources')
-        raw_res = get_detections_entities(detections_ids, token)
-        demisto.info('\n#### Items: {}\n'.format(raw_res))
-        demisto.info('\n#### Resources: {}\n'.format(demisto.get(raw_res, 'resources')))
+        detections_ids = demisto.get(get_detections(last_fetch), 'resources')
+        raw_res = get_detections_entities(detections_ids)
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 incident = detection_to_incident(detection)
@@ -761,7 +523,8 @@ script:
         iocs = raw_res.get('resources')
         ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
         enrich_ioc_dict_with_ids(ec)
-        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec}, hr=tableToMarkdown('Indicators of Compromise', ec))
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+                                   hr=tableToMarkdown('Indicators of Compromise', ec))
 
 
     def delete_iocs_command():
@@ -782,7 +545,9 @@ script:
             return create_entry_object(hr='Could not find any devices.')
         devices = raw_res.get('resources')
         ec = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-        hr = tableToMarkdown('Devices', ec, headers=['ID','Hostname','OS','MacAddress','localIP','ExternalIP','FirstSeen','LastSeen'])
+        hr = tableToMarkdown('Devices', ec,
+                             headers=['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen',
+                                      'LastSeen'])
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=hr)
 
 
@@ -790,21 +555,13 @@ script:
 
     LOG('Command being called is %s' % (demisto.command()))
 
+    TOKEN = get_token()
+
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
+        # if not set properly will fail when trying to get_token, so if reached here then test passed
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
         demisto.incidents(fetch_incidents())
-    elif demisto.command() == 'crowdstrike-create-ioc':
-        demisto.results(create_ioc_command())
-    elif demisto.command() == 'crowdstrike-search-iocs':
-        demisto.results(search_iocs_command())
-    elif demisto.command() == 'crowdstrike-delete-iocs':
-        demisto.results(delete_iocs_command())
-    elif demisto.command() == 'crowdstrike-update-iocs':
-        demisto.results(update_iocs_command())
     elif demisto.command() == 'crowdstrike-search-device':
         demisto.results(search_device_command())
   type: python
