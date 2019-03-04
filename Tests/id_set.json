@@ -8021,6 +8021,21 @@
             }
         }, 
         {
+            "Azure Security Center": {
+                "name": "Azure Security Center", 
+                "commands": [
+                    "azure-sc-list-alert", 
+                    "azure-sc-update-atp", 
+                    "azure-sc-get-atp", 
+                    "azure-sc-update-aps", 
+                    "azure-sc-get-aps", 
+                    "azure-sc-list-aps", 
+                    "azure-sc-list-jit", 
+                    "azure-sc-list-storage"
+                ]
+            }
+        }, 
+        {
             "BigFix": {
                 "name": "BigFix", 
                 "commands": [
