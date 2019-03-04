@@ -70,22 +70,23 @@ script:
     '  </env:Body>' +
     '</env:Envelope>';
 
-    var tmplGetAlarmByID = '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
-    '  <env:Header>' +
-    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
-    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
-    '       <wsse:Username>{{.Username}}</wsse:Username>' +
-    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
-    '      </wsse:UsernameToken>' +
-    '    </wsse:Security>' +
-    '  </env:Header>' +
-    '  <env:Body>' +
-    '    <tns:GetAlarmByID>' +
-    '        <tns:alarmID>{{.AlarmID}}</tns:alarmID>' +
-    '    </tns:GetAlarmByID>' +
-    '  </env:Body>' +
-    '</env:Envelope>';
+    var tmplGetAlarmByID =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<SOAP-ENV:Envelope xmlns:ns0="http://www.logrhythm.com/webservices" xmlns:ns1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">' +
+    ' <SOAP-ENV:Header>' +
+    '  <wsse:Security mustUnderstand="true">' +
+    '   <wsse:UsernameToken>' +
+    '    <wsse:Username>{{.Username}}</wsse:Username>' +
+    '    <wsse:Password>{{.Password}}</wsse:Password>' +
+    '   </wsse:UsernameToken>' +
+    '  </wsse:Security>' +
+    ' </SOAP-ENV:Header>' +
+    ' <ns1:Body>' +
+    "  <ns0:GetAlarmByID xmlns:ns1='http://www.logrhythm.com/webservices'>" +
+    '    <ns1:alarmID>{{.AlarmID}}</ns1:alarmID>' +
+    '  </ns0:GetAlarmByID>' +
+    ' </ns1:Body>' +
+    '</SOAP-ENV:Envelope>'
 
     var tmplGetAlarmEventsByID = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
@@ -143,26 +144,27 @@ script:
     '  </env:Body>' +
     '</env:Envelope>';
 
-    var tmplGetFirstPageAlarmsByAlarmStatus = '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
-    '  <env:Header>' +
-    '    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">' +
-    '      <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UsernameToken-1">' +
-    '        <wsse:Username>{{.Username}}</wsse:Username>' +
-    '        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{.Password}}</wsse:Password>' +
-    '      </wsse:UsernameToken>' +
-    '    </wsse:Security>' +
-    '  </env:Header>' +
-    '  <env:Body>' +
-    '    <tns:GetFirstPageAlarmsByAlarmStatus>' +
-    '      <tns:startDate>{{.StartDate}}</tns:startDate>' +
-    '      <tns:endDate>{{.EndDate}}</tns:endDate>' +
-    '      <tns:status>{{.Status}}</tns:status>' +
-    '      <tns:allUsers>{{.AllUsers}}</tns:allUsers>' +
-    '      <tns:maximumResultsPerPage>{{.MaxResultsPerPage}}</tns:maximumResultsPerPage>' +
-    '    </tns:GetFirstPageAlarmsByAlarmStatus>' +
-    '  </env:Body>' +
-    '</env:Envelope>';
+    var tmplGetFirstPageAlarmsByAlarmStatus =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<SOAP-ENV:Envelope xmlns:ns0="http://www.logrhythm.com/webservices" xmlns:ns1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">' +
+    ' <SOAP-ENV:Header>' +
+    '  <wsse:Security mustUnderstand="true">' +
+    '   <wsse:UsernameToken>' +
+    '    <wsse:Username>{{.Username}}</wsse:Username>' +
+    '    <wsse:Password>{{.Password}}</wsse:Password>' +
+    '   </wsse:UsernameToken>' +
+    '  </wsse:Security>' +
+    ' </SOAP-ENV:Header>' +
+    ' <ns1:Body>' +
+    "    <ns1:GetFirstPageAlarmsByAlarmStatus xmlns:ns1='http://www.logrhythm.com/webservices'>" +
+    '      <ns1:startDate>{{.StartDate}}</ns1:startDate>' +
+    '      <ns1:endDate>{{.EndDate}}</ns1:endDate>' +
+    '      <ns1:status>{{.Status}}</ns1:status>' +
+    '      <ns1:allUsers>{{.AllUsers}}</ns1:allUsers>' +
+    '      <ns1:maximumResultsPerPage>{{.MaxResultsPerPage}}</ns1:maximumResultsPerPage>' +
+    '    </ns1:GetFirstPageAlarmsByAlarmStatus>' +
+    ' </ns1:Body>' +
+    '</SOAP-ENV:Envelope>'
 
     var tmplGetNextPageAlarms = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.logrhythm.com/webservices" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ins0="http://schemas.microsoft.com/2003/10/Serialization/Arrays">' +
@@ -196,14 +198,8 @@ script:
         }
         return res;
     };
-    var url;
-    // includes server URL that starts with http or https
-    if (params.Host.startsWith('http')) {
-        url = fixUrl(params.Host) + logRhythmAPI;
-    }
-    else {
-        url = 'https://' + fixUrl(params.Host) + logRhythmAPI;
-    }
+
+    var url = fixUrl(params.Host) + logRhythmAPI;
     var myTimezone = new Date().getTimezoneOffset();
     var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
     if (params.timeZone === '0') {
@@ -419,7 +415,13 @@ script:
         }
 
         var md = tableToMarkdown('LogRhythm added alarm comment ' + args.comment + ' for ID: ' + args['alarm-id'],  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext:{'Alarm' : mdRaw }
+        };
     }
 
     function getAlarmById(args){
@@ -439,7 +441,14 @@ script:
             delete mdRaw['-i'];
         }
         var md = tableToMarkdown('LogRhythm alarm for ID: ' + args['alarm-id'],  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext:{'Alarm' : mdRaw }
+        };
     }
 
     function getAlarmEventsById(args){
@@ -461,7 +470,13 @@ script:
         }
         var processedMd = processAlarmEventsMd(mdRaw);
         var md = tableToMarkdown('LogRhythm alarm events for ID: ' + args['alarm-id'],  processedMd);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext:{'AlarmEvent' : processedMd }
+        };
     }
 
     function getAlarmHistoryById(args){
@@ -495,7 +510,13 @@ script:
             var mdRaw = dq(jsResponse, 'Envelope.Body.GetAlarmHistoryByIDResponse.GetAlarmHistoryByIDResult.Comments.AlarmCommentDataModel')
             md += tableToMarkdown('LogRhythm alarm comments history for ID: ' + args['alarm-id'],  mdRaw);
         }
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext:{'AlarmHistory' : mdRaw }
+        };
     }
 
     function updateAlarmStatus(args){
@@ -517,7 +538,13 @@ script:
             delete mdRaw['-i'];
         }
         var md = tableToMarkdown('LogRhythm alarm status updated for alarm: *' + args['alarm-id']+'* status: *' + args.status +'*',  mdRaw);
-        return {Type: entryTypes.note, Contents: jsResponse, ContentsFormat: formats.json, HumanReadable: md};
+        return {
+            Type: entryTypes.note,
+            Contents: jsResponse,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext:{'Alarm' : mdRaw }
+        };
     }
 
     function getAlarms(dataArgs){
@@ -545,9 +572,19 @@ script:
         var alarms = getAlarmsData(allUsers, count, pageSize, startDate, endDate, dataArgs.status, dataObj);
         if (alarms.length) {
             var md = tableToMarkdown('',  alarms);
-            return {Type: entryTypes.note, Contents: alarms, ContentsFormat: formats.json, HumanReadable: md};
+            return {
+                Type: entryTypes.note,
+                Contents: alarms,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext:{'Alarms' : alarms }
+            };
         } else {
-            return {Type: entryTypes.note, Contents: "No results", ContentsFormat: formats.text};
+            return {
+                Type: entryTypes.note,
+                Contents: "No results",
+                ContentsFormat: formats.text
+            };
         }
     }
 
