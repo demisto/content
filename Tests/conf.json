@@ -1230,6 +1230,7 @@
         "CIRCL": "Checking",
         "Thinkst Canary": "Checking",
         "Cymon": "Checking",
-        "SplunkPy": "Checking"
+        "SplunkPy": "Checking",
+        "Symantec Advanced Threat Protection": "Checking"
     }
 }
