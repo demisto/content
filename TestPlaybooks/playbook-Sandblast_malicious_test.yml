@@ -282,3 +282,4 @@ inputs:
   required: false
   description: ""
 outputs: []
+releaseNotes: "-"
