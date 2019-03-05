@@ -824,4 +824,3 @@ inputs:
     separated.
 tests:
   - No tests - deprecated
-releaseNotes: Deprecated this playbook
