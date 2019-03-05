@@ -79,6 +79,9 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
     desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
 
+    if yml_data.get('detaileddescription'):
+        if yml_data['detaileddescription'] != '-':
+            raise ValueError("Please change the detailed description to a dash(-)")
     if desc_data:
         yml_text = yml_text.replace("detaileddescription: '-'", "detaileddescription:" + desc_data)
 
@@ -125,22 +128,17 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     lines.extend('    {}'.format(line) for line in script_code.split('\n'))
     script_code = '\n'.join(lines)
 
-    yml_text = yml_text.replace("script: '-'", "script: " + script_code)
-
-    '''
     if dir_name == 'Scripts':
         if yml_data.get('script'):
-            yml_text = yml_text.replace(yml_data.get('script'), script_code)
-        else:
-            yml_text = yml_text.replace("script: ''", "script: " + script_code)
+            if yml_data['script'] != '-':
+                raise ValueError("Please change the script to a dash(-)")
 
     elif dir_name == 'Integrations':
         if yml_data.get('script', {}).get('script'):
-            yml_text = yml_text.replace(yml_data.get('script', {}).get('script'), script_code)
-        else:
-            yml_text = yml_text.replace("script: ''", "script: " + script_code)
-    '''
+            if yml_data['script']['script'] != '-':
+                raise ValueError("Please change the script to a dash(-)")
 
+    yml_text = yml_text.replace("script: '-'", "script: " + script_code)
 
     return yml_text, script_path
 
