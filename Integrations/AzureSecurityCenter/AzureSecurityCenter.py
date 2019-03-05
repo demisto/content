@@ -68,7 +68,7 @@ def set_subscription_id():
             'subscription_id': sub_id
         })
         return sub_id
-    except ValueError, err:
+    except ValueError:
         return_error('There was problem with your request: {}'.format(r.content))
 
 
@@ -142,7 +142,7 @@ def http_request(method, url_suffix, body=None, params=None, add_subscription=Tr
     try:
         r = r.json()
         return r
-    except ValueError, e:
+    except ValueError:
         return dict()
 
 
@@ -250,9 +250,7 @@ def get_alert_command(args):
             removeNull=True
         )
 
-        ec = {
-                'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': basic_table_output
-        }
+        ec = {'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': basic_table_output}
 
         basic_table_entry = {
             'Type': entryTypes['note'],
