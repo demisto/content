@@ -147,6 +147,10 @@ class StructureValidator(object):
         Returns:
             bool. Whether the files' fromversion as been modified or not.
         """
+        if self.is_renamed:
+            print_warning("fromversion might have been modified, please make sure it hasn't changed.")
+            return True
+
         if not change_string:
             change_string = run_command("git diff HEAD {0}".format(self.file_path))
 
