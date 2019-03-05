@@ -204,7 +204,7 @@ class StructureValidator(object):
             bool. Whether the file's ID has been modified or not.
         """
         if self.is_renamed:
-            print_warning("ID might have changed, please make sure to change you have the correct one.")
+            print_warning("ID might have changed, please make sure to check you have the correct one.")
             return True
 
         if not change_string:
