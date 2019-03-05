@@ -62,8 +62,11 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         yml_text = yml_file.read()
 
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
-    yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
-    yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
+    image_path = None
+    desc_path = None
+    if dir_name == 'Integrations':
+        yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
+        yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
     with io.open(output_path, mode='w', encoding='utf-8') as f:
         f.write(yml_text)
