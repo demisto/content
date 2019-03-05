@@ -50,10 +50,10 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
-          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
-          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
-          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File((val.Type.toLowerCase().indexOf('composite document
+          file v2 document') >= 0 && val.Extension == 'msg') || val.Type.toLowerCase().indexOf('rfc
+          822 mail') >= 0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii')
+          >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -818,5 +818,6 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+releaseNotes: "Improved attached email detection"
 tests:
   - No test
