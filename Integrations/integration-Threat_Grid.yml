@@ -320,7 +320,7 @@ script:
         """
         Encodes sample file name
         """
-        return filename.encode('ascii', 'ignore').replace('"', '').replace('\\n', '')
+        return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
 
 
     def get_html_report_by_id():
@@ -2268,3 +2268,4 @@ script:
   runonce: false
 tests:
   - ThreatGridTest
+releaseNotes: "The command threat-grid-upload-sample now works properly with file names that contain new line characters."
