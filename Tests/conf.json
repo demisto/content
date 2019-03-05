@@ -1160,7 +1160,8 @@
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
         "Kafka V2": "Can not connect to instance from remote",
-        "Intezer": "Invalid API Key (issue 15937)"
+        "Intezer": "Invalid API Key (issue 15937)",
+        "Check Point Sandblast": "No access (issue 15948)"
     },
     "nigthly_integrations": [
         "Lastline",
