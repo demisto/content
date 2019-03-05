@@ -122,12 +122,56 @@ script:
     - contextPath: CrowdStrike.Device.PolicyType
       description: Policy types of the device.
       type: Unknown
+  - arguments:
+    - default: false
+      description: The id of the the behavior
+      isArray: false
+      name: behavior_id
+      required: true
+      secret: false
+    description: Searches and fetches the behavior that matches the query.
+    execution: false
+    name: crowdstrike-get-behavior
+    outputs:
+    - contextPath: CrowdStrike.Behavior.FileName
+      description: File name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.Scenario
+      description: Scenario name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.MD5
+      description: MD5 of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SHA256
+      description: SHA256 of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCType
+      description: Type of the indicator of compromise.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCValue
+      description: Value of the indicator of compromise.
+      type: String
+    - contextPath: CrowdStrike.Behavior.CommandLine
+      description: Command line executed in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.UserName
+      description: User name who's related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SensorID
+      description: Sensor ID related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ParentProcessID
+      description: ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ProcessID
+      description: Process ID the behavior.
+      type: String
   isfetch: true
   runonce: false
   script: |-
     ''' IMPORTS '''
 
-    # TODO: ADD CROWDSTRIKE-GET-BEHAVIOR command
+    # TODO: ADD crowdstrike-get-behavior command
 
     import json
     import requests
@@ -143,7 +187,7 @@ script:
     PASSWORD = demisto.params().get('credentials').get('password')
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']
+        demisto.params()['url']
     # Should we use SSL
     USE_SSL = not demisto.params().get('insecure', False)
     # How many time before the first fetch to retrieve incidents
@@ -173,9 +217,9 @@ script:
 
     DETECTIONS_BEHAVIORS_KEY_MAP = {
         'filename': 'FileName',
-        'scenario': 'ScanDetectName',
-        'md5': 'MD5String',
-        'sha256': 'SHA256String',
+        'scenario': 'Scenario',
+        'md5': 'MD5',
+        'sha256': 'SHA256',
         'ioc_type': 'IOCType',
         'ioc_value': 'IOCValue',
         'cmdline': 'CommandLine',
@@ -237,7 +281,7 @@ script:
     def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
         # A wrapper for requests lib to send our requests and handle requests and responses better
         url = SERVER + url_suffix
-        demisto.info("\n\n#### SENT URL: {}").format(url)
+        demisto.info("\n\n####SENDING URL: {}\n".format(url))
         res = requests.request(
             method,
             url,
@@ -247,6 +291,7 @@ script:
             headers=headers,
         )
         # Handle error responses gracefully
+        demisto.info('\n\n#### Request: {}\n'.format(str(data)))
         if res.status_code not in {200, 201}:
             if safe:
                 return None
@@ -336,17 +381,24 @@ script:
         }
         token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True)
         if not token_res:
-            raise Exception('Authorization Error: User has no authorization to create a token.')
+            err_msg = 'Authorization Error: User has no authorization to create a token.'
+            if demisto.command() != 'fetch-incidents':
+                return_error(err_msg)
+            raise Exception(err_msg)
 
         return token_res.get('access_token')
 
 
-    def get_detections(last_behavior_time):
+    def get_detections(last_behavior_time=None, behavior_id=None):
         endpoint_url = '/detects/queries/detects/v1'
         params = {
-            'filter': "first_behavior:>'{0}'".format(last_behavior_time),
             'sort': 'first_behavior.asc'
         }
+        if behavior_id:
+            params['filter'] = 'behaviors.behavior_id=\'{0}\''.format(behavior_id)
+        elif last_behavior_time:
+            params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
+
         headers = {'Authorization': 'Bearer ' + TOKEN}
         response = http_request('GET', endpoint_url, params, headers=headers)
         return response
@@ -481,6 +533,12 @@ script:
         return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids}, headers=headers)
 
 
+    def behavior_to_entry_context(behavior):
+        raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
+        raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+        return raw_entry
+
+
     ''' COMMANDS FUNCTIONS '''
 
 
@@ -495,7 +553,7 @@ script:
         last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
 
         incidents = []
-        detections_ids = demisto.get(get_detections(last_fetch), 'resources')
+        detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
         raw_res = get_detections_entities(detections_ids)
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
@@ -551,6 +609,19 @@ script:
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=hr)
 
 
+    def get_behavior_command():
+        behavior_id = demisto.args().get('behavior_id')
+        detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
+        raw_res = get_detections_entities(detections_ids)
+        ec = []
+        if "resources" in raw_res:
+            for resource in demisto.get(raw_res, "resources"):
+                for behavior in demisto.get(resource, 'behaviors'):
+                    ec.append(behavior_to_entry_context(behavior))
+        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), ec)
+        return create_entry_object(raw_res, ec, hr)
+
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
@@ -564,5 +635,7 @@ script:
         demisto.incidents(fetch_incidents())
     elif demisto.command() == 'crowdstrike-search-device':
         demisto.results(search_device_command())
+    elif demisto.command() == 'crowdstrike-get-behavior':
+        demisto.results(get_behavior_command())
   type: python
 image: data:image/png;base64,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
