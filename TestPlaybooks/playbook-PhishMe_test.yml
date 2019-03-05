@@ -101,7 +101,7 @@ tasks:
       brand: Phishme Intelligence
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       url:
         simple: heckwassleftran2.ru
@@ -110,40 +110,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 3ddc8cbb-f137-4823-8f60-123fab98247b
-    type: condition
-    task:
-      id: 3ddc8cbb-f137-4823-8f60-123fab98247b
-      version: -1
-      name: Check DBotScore
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    scriptarguments:
-      key: {}
-      left:
-        simple: ${DBotScore.Score}
-      right:
-        simple: "3"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
+          "y": 895
         }
       }
     note: false
@@ -177,35 +144,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "6":
-    id: "6"
-    taskid: 74481eef-1f2c-4e54-8eca-73bb883899e2
-    type: regular
-    task:
-      id: 74481eef-1f2c-4e54-8eca-73bb883899e2
-      version: -1
-      name: Clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
   "7":
     id: "7"
     taskid: 2f44fa29-6533-430c-847d-f5fcc9172159
@@ -230,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1070
         }
       }
     note: false
@@ -249,7 +187,7 @@ tasks:
       brand: Phishme Intelligence
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       destpath: {}
       entryid: {}
@@ -267,40 +205,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 62d442ba-00e7-42a2-8f71-445fc1333e76
-    type: condition
-    task:
-      id: 62d442ba-00e7-42a2-8f71-445fc1333e76
-      version: -1
-      name: Check DBotScore
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    scriptarguments:
-      key: {}
-      left:
-        simple: ${DBotScore.Score}
-      right:
-        simple: "3"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
+          "y": 1245
         }
       }
     note: false
@@ -329,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 1420
         }
       }
     note: false
@@ -348,7 +253,7 @@ tasks:
       brand: Phishme Intelligence
     nexttasks:
       '#none#':
-      - "12"
+      - "13"
     scriptarguments:
       destpath: {}
       email:
@@ -368,40 +273,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
-    type: condition
-    task:
-      id: e1388818-7a2c-4e9e-8fd7-526d8cbc2977
-      version: -1
-      name: Check DBotScore
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    scriptarguments:
-      key: {}
-      left:
-        simple: ${DBotScore.Score}
-      right:
-        simple: "3"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
+          "y": 1595
         }
       }
     note: false
@@ -430,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 1770
         }
       }
     note: false
@@ -472,7 +344,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 1945
         }
       }
     note: false
@@ -507,7 +379,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 2120
         }
       }
     note: false
@@ -528,160 +400,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-  "17":
-    id: "17"
-    taskid: 6a5e7da5-23c6-4647-895b-ded19085cdcd
-    type: regular
-    task:
-      id: 6a5e7da5-23c6-4647-895b-ded19085cdcd
-      version: -1
-      name: Clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: 7676a5d8-b6bd-461b-82da-c919fd7208d9
-    type: regular
-    task:
-      id: 7676a5d8-b6bd-461b-82da-c919fd7208d9
-      version: -1
-      name: Check url
-      script: Phishme Intelligence|||url
-      type: regular
-      iscommand: true
-      brand: Phishme Intelligence
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      url:
-        simple: heckwassleftran2.ru
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: a2d188fb-8477-4807-852f-d7cbb2e0da8e
-    type: condition
-    task:
-      id: a2d188fb-8477-4807-852f-d7cbb2e0da8e
-      version: -1
-      name: Check DBotScore
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    scriptarguments:
-      key: {}
-      left:
-        simple: ${DBotScore.Score}
-      right:
-        simple: "3"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
-    type: regular
-    task:
-      id: 9bdd9eef-f6f5-4c12-861d-381f00d137cc
-      version: -1
-      name: Check IP
-      script: Phishme Intelligence|||ip
-      type: regular
-      iscommand: true
-      brand: Phishme Intelligence
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-      long: {}
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "21":
-    id: "21"
-    taskid: 4f3d79db-10dc-428a-8c62-d7ff66e00813
-    type: condition
-    task:
-      id: 4f3d79db-10dc-428a-8c62-d7ff66e00813
-      version: -1
-      name: Check DBotScore
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    scriptarguments:
-      key: {}
-      left:
-        simple: ${DBotScore.Score}
-      right:
-        simple: "2"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
+          "y": 2295
         }
       }
     note: false
@@ -700,7 +419,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "3"
     scriptarguments:
       all:
         simple: "yes"
@@ -720,7 +439,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50

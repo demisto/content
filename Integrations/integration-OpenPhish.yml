@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAjCAYAAABfLc7mAAANCkl
 description: OpenPhish uses proprietary Artificial Intelligence algorithms to automatically
   identify zero-day phishing sites and provide comprehensive, actionable, real-time
   threat intelligence.
-defaultEnabled: true
+defaultEnabled: false
 configuration:
 - display: Use system proxy settings
   name: proxy
@@ -163,3 +163,6 @@ script:
     arguments: []
     description: Show OpenPhish database status
 hidden: false
+releaseNotes: Integration is no longer enabled by default
+tests:
+  - No test

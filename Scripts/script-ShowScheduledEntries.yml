@@ -19,7 +19,7 @@ script: |
 
   var scheduledEntries = [];
   entries.forEach(function (entry) {
-      if (entry.Metadata.Recurrent) {
+      if (entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
           md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
           scheduledEntries.push({
               id: entry.ID,
@@ -96,3 +96,4 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
+releaseNotes: Do not return tasks with completed schedules
