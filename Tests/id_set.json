@@ -7634,7 +7634,8 @@
                     "domain", 
                     "file", 
                     "threatstream-email-reputation", 
-                    "ip"
+                    "ip", 
+                    "threatstream-push-indicator"
                 ], 
                 "tests": [
                     "Anomali_ThreatStream_Test"
@@ -8016,6 +8017,38 @@
                 ], 
                 "tests": [
                     "Test_Sagemaker"
+                ]
+            }
+        }, 
+        {
+            "Azure Compute": {
+                "name": "Azure Compute", 
+                "commands": [
+                    "azure-vm-list-instances", 
+                    "azure-vm-start-instance", 
+                    "azure-vm-poweroff-instance", 
+                    "azure-vm-get-instance-details", 
+                    "azure-vm-create-instance", 
+                    "azure-list-resource-groups", 
+                    "azure-vm-delete-instance"
+                ], 
+                "tests": [
+                    "No test"
+                ]
+            }
+        }, 
+        {
+            "Azure Security Center": {
+                "name": "Azure Security Center", 
+                "commands": [
+                    "azure-sc-list-alert", 
+                    "azure-sc-update-atp", 
+                    "azure-sc-get-atp", 
+                    "azure-sc-update-aps", 
+                    "azure-sc-get-aps", 
+                    "azure-sc-list-aps", 
+                    "azure-sc-list-jit", 
+                    "azure-sc-list-storage"
                 ]
             }
         }, 
@@ -8803,6 +8836,24 @@
                     "whois", 
                     "whoisHistory", 
                     "domainProfile"
+                ]
+            }
+        }, 
+        {
+            "DUO Admin": {
+                "name": "DUO Admin", 
+                "commands": [
+                    "duoadmin-get-authentication-logs-by-user", 
+                    "duoadmin-dissociate-device-from-user", 
+                    "duoadmin-delete-u2f-token", 
+                    "duoadmin-get-users", 
+                    "duoadmin-get-devices-by-user", 
+                    "duoadmin-get-u2f-tokens-by-user", 
+                    "duoadmin-get-devices", 
+                    "duoadmin-associate-device-to-user"
+                ], 
+                "tests": [
+                    "DuoAdmin API test playbook"
                 ]
             }
         }, 
@@ -13429,6 +13480,24 @@
                 ], 
                 "command_to_integration": {
                     "duo-preauth": ""
+                }
+            }
+        }, 
+        {
+            "DuoAdmin API test playbook": {
+                "name": "DuoAdmin API test playbook", 
+                "implementing_scripts": [
+                    "DeleteContext"
+                ], 
+                "command_to_integration": {
+                    "duoadmin-dissociate-device-from-user": "", 
+                    "duoadmin-delete-u2f-token": "", 
+                    "duoadmin-get-devices": "", 
+                    "duoadmin-get-users": "", 
+                    "duoadmin-get-u2f-tokens-by-user": "", 
+                    "duoadmin-associate-device-to-user": "", 
+                    "duoadmin-get-devices-by-user": "", 
+                    "duoadmin-get-authentication-logs-by-user": ""
                 }
             }
         }, 
