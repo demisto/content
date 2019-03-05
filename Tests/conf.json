@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseEmailFile-deprecated-script"
+        },
+        {
             "playbookID": "test_similar_incidents"
         },
         {
@@ -29,6 +32,10 @@
         {
             "integrations": "Fidelis Elevate Network",
             "playbookID": "Fidelis-Test"
+        },
+        {
+            "integrations": "Thinkst Canary",
+            "playbookID": "CanaryTools Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -63,6 +70,10 @@
         {
             "integrations": "Dell Secureworks",
             "playbookID": "secureworks_test"
+        },
+        {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
         },
         {
             "playbookID": "Test CommonServer"
@@ -416,6 +427,12 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "TestDedupIncidentsPlaybook"
+        },
+        {
+            "playbookID": "TestDedupIncidentsByName"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
@@ -437,6 +454,7 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
+        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -811,18 +829,19 @@
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
+            "playbookID": "McAfee-TIE Test",
+            "timeout": 700
         },
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
         },
         {
-            "integrations": "ArcSight ESM",
-            "playbookID": "ArcSight ESM Test"
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "ArcSight ESM v2 Test"
         },
         {
-            "integrations": "ArcSight ESM",
+            "integrations": "ArcSight ESM v2",
             "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
@@ -1044,6 +1063,11 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -1083,8 +1107,17 @@
             "playbookID": "MAR - Endpoint data collection test"
         },
         {
+
             "integrations": "DUO Admin",
             "playbookID": "DuoAdmin API test playbook"
+        },
+        {
+            "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "integrations": "Symantec Advanced Threat Protection",
+            "playbookID": "Symantec ATP Test"
+
         }
     ],
     "skipped_tests": {
@@ -1100,14 +1133,16 @@
         "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
-        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)"
+        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
+        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
+        "SalesforceTestPlaybook": "User and password expired (issue 15901)",
+        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
-        "Cylance Protect": "Under development (issue 15244)",
         "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
@@ -1129,7 +1164,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Joe Security": "JoeSecurityTestPlaybook test fails (issue 15614)",
         "Kafka V2": "Can not connect to instance from remote"
     },
     "nigthly_integrations": [
