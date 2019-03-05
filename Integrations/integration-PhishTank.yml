@@ -181,6 +181,5 @@ script:
     arguments: []
     description: Show PhishTank database status
   runonce: false
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No test

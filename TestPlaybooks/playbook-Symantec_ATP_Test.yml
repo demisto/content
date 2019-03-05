@@ -356,4 +356,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "add Symantec ATP Test playbook"
