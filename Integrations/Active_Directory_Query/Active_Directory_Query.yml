@@ -6,10 +6,6 @@ display: Active Directory Query v2
 category: Data Enrichment & Threat Intelligence
 description: Active Direcory Query integration enables you to  access and manage Active
   Directory objects (users, contacts, and computers).
-detaileddescription: |+
-  Active Directory search uses paging. You set the page size by specifying the 'page size'
-  parameter in the instance settings.
-
 configuration:
 - display: Server IP address (e.g., 192.168.0.1)
   name: server_ip
@@ -55,7 +51,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: file:Active_Directory_Query.py
+  script: ''
   type: python
   commands:
   - name: ad-expire-password
@@ -376,5 +372,6 @@ script:
       specified group
   runonce: false
   dockerimage: demisto/ldap:1.0.0.75
+releaseNotes: "-"
 tests:
   - Active Directory Test
