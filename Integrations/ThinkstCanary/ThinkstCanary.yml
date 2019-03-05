@@ -7,9 +7,6 @@ category: Deception
 description: By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of
   unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible
   parties so that action can be taken before valubale systems in your network are compromised.
-detaileddescription: |-
-  Generate your API Authentication Token from Canary Tools:
-  https://help.canary.tools/knowledge_base/topics/forget-logging-in-what-apis-does-canary-support
 configuration:
 - display: Canary Server URL (e.g., https://***.canary.tools)
   name: server
@@ -205,5 +202,6 @@ script:
     description: Fetches a Canary Token file from the Canary Tools server.
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
 - CanaryTools Test
