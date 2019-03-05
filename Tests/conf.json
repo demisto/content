@@ -1107,11 +1107,17 @@
             "playbookID": "MAR - Endpoint data collection test"
         },
         {
+
+            "integrations": "DUO Admin",
+            "playbookID": "DuoAdmin API test playbook"
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
+
         }
     ],
     "skipped_tests": {
