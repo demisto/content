@@ -40,7 +40,12 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     else:
         output_path = os.path.join(dir_name, output_filename)
 
-    yml_path = glob.glob(package_path + '*.yml')[0]
+    yml_paths = glob.glob(package_path + '*.yml')
+    yml_path = yml_paths[0]
+    for path in yml_paths:
+        if 'unified' not in path:
+            yml_path = path
+            break
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
 
@@ -87,10 +92,10 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
     desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
 
     if yml_data.get('detaileddescription'):
-        if yml_data['detaileddescription'] != '-':
-            raise ValueError("Please change the detailed description to a dash(-)")
+        raise ValueError('Please move the detailed description from the yml to a description file (.md)'
+                         ' in the package: {}'.format(package_path))
     if desc_data:
-        yml_text = yml_text.replace("detaileddescription: '-'", "detaileddescription:" + desc_data)
+        yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
 
     return yml_text, found_desc_path
 
@@ -138,15 +143,17 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     if dir_name == 'Scripts':
         if yml_data.get('script'):
             if yml_data['script'] != '-':
-                raise ValueError("Please change the script to a dash(-)")
+                print(yml_data['script'])
+                raise ValueError("Please change the script to be blank or a dash(-) for package {}".format(package_path))
 
     elif dir_name == 'Integrations':
         if yml_data.get('script', {}).get('script'):
             if yml_data['script']['script'] != '-':
-                raise ValueError("Please change the script to a dash(-)")
+                raise ValueError("Please change the script to be blank or a dash(-) for package {}".format(package_path))
     else:
-        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(dir_name))
+        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(package_path))
 
+    yml_text = yml_text.replace("script: ''", "script: " + script_code)
     yml_text = yml_text.replace("script: '-'", "script: " + script_code)
 
     # verify that our yml is good (loads and returns the code)
@@ -155,6 +162,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
         yml_script = mod_yml_data.get('script')
     else:
         yml_script = mod_yml_data.get('script', {}).get('script')
+
     assert yml_script.strip() == clean_code.strip()
 
     return yml_text, script_path
