@@ -473,13 +473,16 @@ def update_alert_command(args):
         "ID": response.get("id"),
         "ActionTaken": alert_update_action_type
     }
+
+    ec = {
+            'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': outputs
+    }
+
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': 'Alert - {} has been set to {}.'.format(alert_id, alert_update_action_type),
         'ContentsFormat': formats['text'],
-        'EntryContext': {
-            'AzureSecurityCenter.Alert(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     })
 
 
@@ -784,15 +787,17 @@ def list_aps_command():
         removeNull=True
     )
 
+    ec = {
+            'AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)': outputs
+    }
+
     entry = {
         'Type': entryTypes['note'],
         'Contents': settings,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     }
     demisto.results(entry)
 
@@ -832,15 +837,17 @@ def get_aps_command(args):
         ],
         removeNull=True
     )
+    ec = {
+            'AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)': outputs
+    }
+
     entry = {
         'Type': entryTypes['note'],
         'Contents': setting,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     }
     demisto.results(entry)
 
@@ -902,15 +909,17 @@ def list_ipp_command(args):
             removeNull=True
         )
 
+        ec = {
+                'AzureSecurityCenter.InformationProtectionPolicy(val.ID && val.ID === obj.ID)': outputs
+        }
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': policies,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {
-                'AzureSecurityCenter.InformationProtectionPolicy(val.ID && val.ID === obj.ID)': outputs
-            }
+            'EntryContext': ec
         }
         demisto.results(entry)
     else:
@@ -1086,16 +1095,16 @@ def list_jit_command(args):
         ],
         removeNull=True
     )
-
+    ec = {
+        'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': outputs
+    }
     entry = {
         'Type': entryTypes['note'],
         'Contents': policies,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     }
     demisto.results(entry)
 
@@ -1156,15 +1165,18 @@ def get_jit_command(args):
         ],
         removeNull=True
     )
+
+    ec = {
+            'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': property_table_output
+    }
+
     property_table_entry = {
         'Type': entryTypes['note'],
         'Contents': policy,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.JITPolicy(val.ID && val.ID === obj.ID)': property_table_output
-        }
+        'EntryContext': ec
     }
 
     # Rules table
@@ -1192,7 +1204,6 @@ def get_jit_command(args):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {}
         }
 
         # Requests table
@@ -1226,7 +1237,6 @@ def get_jit_command(args):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {}
         }
         demisto.results([property_table_entry, rules_table_entry, requests_table_entry])
 
@@ -1413,15 +1423,17 @@ def list_sc_storage_command():
         ],
         removeNull=True
     )
+    ec = {
+            'AzureSecurityCenter.Storage(val.ID && val.ID === obj.ID)': outputs
+    }
+
     entry = {
         'Type': entryTypes['note'],
         'Contents': accounts,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
-        'EntryContext': {
-            'AzureSecurityCenter.Storage(val.ID && val.ID === obj.ID)': outputs
-        }
+        'EntryContext': ec
     }
     demisto.results(entry)
 
