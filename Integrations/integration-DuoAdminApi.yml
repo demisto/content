@@ -136,7 +136,7 @@ script:
             elif(hasattr(e,'strerror')):
                 demisto.results(e.strerror)
             else:
-                demisto.results('Unknown error')
+                demisto.results('Unknown error: ' + str(e))
 
     def get_all_users():
         res = admin_api.get_users()
