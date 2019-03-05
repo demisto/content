@@ -279,6 +279,5 @@ script:
       description: Scans from threat crowd
     description: Get file report
 hidden: false
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No test

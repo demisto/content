@@ -449,7 +449,7 @@ def get_security_events_command():
             events.append(event)
 
         contents = beautifully_json(raw_events)
-        human_readable = tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True)
+        human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
     else:

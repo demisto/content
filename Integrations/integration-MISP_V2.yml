@@ -1738,6 +1738,5 @@ script:
     description: Add sighting to an attribute
   dockerimage: demisto/pymisp:1.0.0.52
   runonce: false
-releaseNotes: Disregarded warnings from PyMISP
 tests:
 - MISP V2 Test
