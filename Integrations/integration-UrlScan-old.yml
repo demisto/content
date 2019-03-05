@@ -492,6 +492,5 @@ script:
       description: The actual score
     description: Submit an url to scan
 toversion: 3.1.0
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No tests
