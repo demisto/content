@@ -144,11 +144,11 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
         if yml_data.get('script', {}).get('script'):
             if yml_data['script']['script'] != '-':
                 raise ValueError("Please change the script to a dash(-)")
+    else:
+        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(dir_name))
 
     yml_text = yml_text.replace("script: '-'", "script: " + script_code)
 
-    else:
-        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(dir_name))
     # verify that our yml is good (loads and returns the code)
     mod_yml_data = yaml.safe_load(yml_text)
     if dir_name == 'Scripts':
