@@ -2431,7 +2431,6 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added option to recursive expansion to ews-expand-group command"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'

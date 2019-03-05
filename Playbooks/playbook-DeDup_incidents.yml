@@ -195,6 +195,5 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
-releaseNotes: "Fix 'Is Duplicate Found?' condition"
 tests:
   - test_similar_incidents
