@@ -43,6 +43,10 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_paths = glob.glob(package_path + '*.yml')
     yml_path = yml_paths[0]
     for path in yml_paths:
+        # The plugin creates a unified YML file for the package.
+        # In case this script runs locally and there is a unified YML file in the package we need to ignore it.
+        # Also,
+        # we don't take the unified file by default because there might be packages that were not created by the plugin.
         if 'unified' not in path:
             yml_path = path
             break
@@ -67,23 +71,18 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
-    image_path = glob.glob(package_path + '*png')
-    found_img_path = None
-    if dir_name == 'Integrations' and image_path:
-        found_img_path = image_path[0]
-        with open(found_img_path, 'rb') as image_file:
-            image_data = image_file.read()
-            image_data = IMAGE_PREFIX + base64.b64encode(image_data)
+    image_data, found_img_path = get_data(dir_name, package_path, "*png")
+    image_data = IMAGE_PREFIX + base64.b64encode(image_data)
 
-        if yml_data.get('image'):
-            yml_text = yml_text.replace(yml_data['image'], image_data)
+    if yml_data.get('image'):
+        yml_text = yml_text.replace(yml_data['image'], image_data)
 
-        else:
-            yml_text = 'image: ' + image_data + '\n' + yml_text
-        # verify that our yml is good (loads and returns the image)
-        mod_yml_data = yaml.safe_load(yml_text)
-        yml_image = mod_yml_data.get('image')
-        assert yml_image.strip() == image_data.strip()
+    else:
+        yml_text = 'image: ' + image_data + '\n' + yml_text
+    # verify that our yml is good (loads and returns the image)
+    mod_yml_data = yaml.safe_load(yml_text)
+    yml_image = mod_yml_data.get('image')
+    assert yml_image.strip() == image_data.strip()
 
     return yml_text, found_img_path
 
@@ -202,5 +201,5 @@ def get_package_path():
 
 if __name__ == "__main__":
     package_path, dir_name, dest_path = get_package_path()
-    output, yml, script, image = merge_script_package_to_yml(package_path, dir_name, dest_path)
+    output, yml, script, image, desc = merge_script_package_to_yml(package_path, dir_name, dest_path)
     print("Done creating: {}, from: {}, {}, {}".format(output, yml, script, image))
