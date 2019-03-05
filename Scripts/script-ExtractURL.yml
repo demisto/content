@@ -79,7 +79,8 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Extract URLs from the given text and place them both as output and in the
+comment: Deprecated - We recommend using extractIndicators command instead.
+  Extract URLs from the given text and place them both as output and in the
   context of a playbook. If given an object, will convert to JSON.
 enabled: true
 args:
@@ -93,3 +94,5 @@ outputs:
 - contextPath: URL.Data
   description: Extracted URLs
 scripttarget: 0
+deprecated: true
+releaseNotes: Deprecated this script

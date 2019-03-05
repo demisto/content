@@ -1,9 +1,7 @@
-id: ArcSight ESM Test
+id: ArcSight ESM v2 Test
 version: -1
-name: ArcSight ESM Test
-fromversion: ""
-description: |-
-  Arcsight ESM Test.
+name: ArcSight ESM v2 Test
+description: Arcsight ESM Test.
 starttaskid: "0"
 tasks:
   "0":
@@ -197,7 +195,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
       entryFilter:
         simple: name:do not delete
@@ -208,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1740
+          "y": 1915
         }
       }
     note: false
@@ -293,7 +291,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -332,7 +330,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "7"
     scriptarguments:
       entries:
         simple: '[{"name": "t3", "EventID": "9"},{"name": "t4", "EventID": "9"}]'
@@ -343,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1915
+          "y": 1740
         }
       }
     note: false
@@ -363,7 +361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -420,7 +418,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2440
+          "y": 2640
         }
       }
     note: false
@@ -450,12 +448,49 @@ tasks:
       }
     note: false
     timertriggers: []
+  "16":
+    id: "16"
+    taskid: a23d7f1d-d87f-4293-8aca-1afce3160e6d
+    type: regular
+    task:
+      id: a23d7f1d-d87f-4293-8aca-1afce3160e6d
+      version: -1
+      name: get query viewer results
+      script: '|||as-get-query-viewer-results'
+      description: ""
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        complex:
+          root: ArcSightESM
+          accessor: AllQueryViewers
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2445
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2455,
+        "height": 2655,
         "width": 380,
         "x": 50,
         "y": 50

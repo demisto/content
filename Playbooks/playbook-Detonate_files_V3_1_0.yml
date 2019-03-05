@@ -4,7 +4,8 @@ name: Detonate files
 system: true
 fromversion: 2.5.0
 toversion: 3.1.0
-description: Detonate files found under File context if they are PDFs or executables
+description: Deprecated - We recommend using Detonate File - Generic playbook instead.
+  Detonate files found under File context if they are PDFs or executables
 starttaskid: "0"
 tasks:
   "0":
@@ -116,3 +117,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "Deprecated playbook"
+tests:
+  - No tests - Deprecated playbook
