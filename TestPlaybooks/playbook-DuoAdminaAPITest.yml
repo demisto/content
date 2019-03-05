@@ -1,5 +1,5 @@
 id: DuoAdmin API test playbook
-version: 11
+version: -1
 name: DuoAdmin API test playbook
 starttaskid: "0"
 tasks:
