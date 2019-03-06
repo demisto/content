@@ -194,14 +194,14 @@ class IDSetValidator(object):
                     re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.SCRIPTS_SECTION
                 obj_id = get_script_or_integration_id(file_path)
-                obj_data = get_playbook_data(file_path)
+                obj_data = get_script_data(file_path)
 
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
                 obj_type = self.INTEGRATION_SECTION
                 obj_id = get_script_or_integration_id(file_path)
-                obj_data = get_playbook_data(file_path)
+                obj_data = get_integration_data(file_path)
 
             elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.PLAYBOOK_SECTION
