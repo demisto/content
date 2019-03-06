@@ -10,7 +10,6 @@ import email.utils
 from email.parser import HeaderParser
 import traceback
 import tempfile
-from email.parser import Parser
 
 
 # -*- coding: utf-8 -*-
@@ -2681,19 +2680,19 @@ class Message(object):
 
         cc = None
         if self.cc is not None:
-            cc = join([extract_address(cc) for cc in self.cc])
+            cc = join([extract_address(cc) for cc in self.cc])  # noqa: F812
 
         bcc = None
         if self.bcc is not None:
-            bcc = join([extract_address(bcc) for bcc in self.bcc])
+            bcc = join([extract_address(bcc) for bcc in self.bcc])  # noqa
 
         recipients = None
         if self.to is not None:
-            recipients = join([extract_address(recipient.EmailAddress) for recipient in self.recipients])
+            recipients = join([extract_address(recipient.EmailAddress) for recipient in self.recipients])  # noqa
 
         sender = None
         if self.sender is not None:
-            sender = join([extract_address(sender) for sender in self.sender])
+            sender = join([extract_address(sender) for sender in self.sender])  # noqa
 
         html = self.html
         if not html:
@@ -3318,7 +3317,8 @@ def handle_eml(file_path, b64=False, file_name=None):
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
-                            attachment_file_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment") + ".eml"
+                            attachment_file_name = part.get_payload()[0]\
+                                                       .get('Subject', "no_name_mail_attachment") + ".eml"
 
                         file_content = part.get_payload()[0].as_string()
                     else:
@@ -3346,7 +3346,9 @@ def handle_eml(file_path, b64=False, file_name=None):
                         os.remove(f.name)
 
                         # will output the inner email to the UI
-                        return_outputs(readable_output=data_to_md(inner_msg, attachment_file_name, file_name), outputs=None)
+                        return_outputs(
+                            readable_output=data_to_md(inner_msg, attachment_file_name, file_name),
+                            outputs=None)
 
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)

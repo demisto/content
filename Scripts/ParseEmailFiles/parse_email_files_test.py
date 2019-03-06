@@ -1,7 +1,6 @@
-from ParseEmailFiles import MsOxMessage, main, handle_eml
+from ParseEmailFiles import MsOxMessage, main
 from CommonServerPython import entryTypes
 import demistomock as demisto
-import tempfile
 
 
 def test_msg_html_with_attachments():
@@ -149,4 +148,3 @@ def test_eml_contains_msg(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'DONT OPEN - MALICIOS'
     assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email']['Attachments']
     assert results[0]['EntryContext']['Email']['AttachedEmails'][0]["Subject"] == 'Attacker email '
-
