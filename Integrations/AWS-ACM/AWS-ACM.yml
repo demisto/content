@@ -1,0 +1,667 @@
+commonfields:
+  id: AWS - ACM
+  version: -1
+name: AWS - ACM
+display: AWS - ACM
+category: IT Services
+image: data:image/png;base64,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
+description: Amazon Web Services Certificate Manager Service (acm)
+configuration:
+- display: Default Region
+  name: defaultRegion
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |-
+    import boto3
+    import datetime
+
+    AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
+
+
+    def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+                    rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn': roleArn,
+                'RoleSessionName': roleSessionName,
+            })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn': AWS_roleArn,
+                'RoleSessionName': AWS_roleSessionName,
+            })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds': int(roleSessionDuration)})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy': rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy': AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service, region_name=region)
+            else:
+                client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
+        return client
+
+
+    def parse_tag_field(tags_str):
+        tags = []
+        regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
+        for f in tags_str.split(';'):
+            match = regex.match(f)
+            if match is None:
+                demisto.log('could not parse field: %s' % (f,))
+                continue
+
+            tags.append({
+                'Key': match.group(1),
+                'Value': match.group(2)
+            })
+        return tags
+
+
+    def parse_subnet_mappings(subnets_str):
+        subnets = []
+        regex = re.compile(r'subnetid=([\w\d_:.-]+),allocationid=([ /\w\d@_,.\*-]+)', flags=re.I)
+        for f in subnets_str.split(';'):
+            match = regex.match(f)
+            if match is None:
+                demisto.log('could not parse field: %s' % (f,))
+                continue
+
+            subnets.append({
+                'SubnetId': match.group(1),
+                'AllocationId': match.group(2)
+            })
+        return subnets
+
+
+    class DatetimeEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, datetime.datetime):
+                return obj.strftime('%Y-%m-%dT%H:%M:%S')
+            elif isinstance(obj, datetime.date):
+                return obj.strftime('%Y-%m-%d')
+            elif isinstance(obj, datetime):
+                return obj.strftime('%Y-%m-%dT%H:%M:%S')
+            elif isinstance(obj, date):
+                return obj.strftime('%Y-%m-%d')
+            # Let the base class default method raise the TypeError
+            return json.JSONEncoder.default(self, obj)
+
+
+    def parse_resource_ids(resource_id):
+        id_list = resource_id.replace(" ", "")
+        resource_ids = id_list.split(",")
+        return resource_ids
+
+
+    def create_entry(title, data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+
+    def describe_certificate(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+
+        response = client.describe_certificate(CertificateArn=args.get('certificateArn'))
+        cert = response['Certificate']
+        data = ({
+            'CertificateArn': cert['CertificateArn'],
+            'DomainName': cert['DomainName'],
+            'Serial': cert['Serial'],
+            'Subject': cert['Subject'],
+            'Issuer': cert['Issuer'],
+            'Status': cert['Status'],
+            'KeyAlgorithm': cert['KeyAlgorithm'],
+            'SignatureAlgorithm': cert['SignatureAlgorithm'],
+            'Type': cert['Type'],
+            'Region': obj['_user_provided_options']['region_name'],
+        })
+
+        raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
+        if raw:
+            raw.update({'Region': obj['_user_provided_options']['region_name']})
+        ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': raw}
+        demisto.results(create_entry('AWS ACM Certificates', data, ec))
+
+
+    def list_certificates(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        kwargs = {}
+        data = []
+        includes = {}
+
+        if args.get('certificateStatuses') is not None:
+            kwargs.update({'CertificateStatuses': args.get('certificateStatuses')})
+        if args.get('extendedKeyUsage') is not None:
+            includes.update({'extendedKeyUsage': [args.get('extendedKeyUsage')]})
+        if args.get('keyUsage') is not None:
+            includes.update({'keyUsage': [args.get('keyUsage')]})
+        if args.get('keyTypes') is not None:
+            includes.update({'keyTypes': [args.get('keyTypes')]})
+        if includes:
+            kwargs.update({'Includes': includes})
+
+        response = client.list_certificates(**kwargs)
+        for cert in response['CertificateSummaryList']:
+            data.append({
+                'CertificateArn': cert['CertificateArn'],
+                'DomainName': cert['DomainName'],
+                'Region': obj['_user_provided_options']['region_name'],
+            })
+
+        ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': data}
+        demisto.results(create_entry('AWS ACM Certificates', data, ec))
+
+
+    def add_tags_to_certificate(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        kwargs = {
+            'CertificateArn': args.get('certificateArn'),
+            'Tags': parse_tag_field(args.get('tags'))
+        }
+        response = client.add_tags_to_certificate(**kwargs)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results("The Certificate was Tagged successfully")
+
+
+    def remove_tags_from_certificate(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        kwargs = {
+            'CertificateArn': args.get('certificateArn'),
+            'Tags': parse_tag_field(args.get('tags'))
+        }
+        response = client.remove_tags_from_certificate(**kwargs)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results("The Certificate Tags were removed successfully")
+
+
+    def list_tags_for_certificate(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        kwargs = {'CertificateArn': args.get('certificateArn')}
+        response = client.list_tags_for_certificate(**kwargs)
+
+        data = ({'CertificateArn': args.get('certificateArn')})
+        for tag in response['Tags']:
+            data.update({
+                tag['Key']: tag['Value']
+            })
+
+        ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn).Tags': data}
+        demisto.results(create_entry('AWS ACM Certificate Tags', data, ec))
+
+
+    def get_certificate(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        kwargs = {'CertificateArn': args.get('certificateArn')}
+        response = client.get_certificate(**kwargs)
+
+        data = ({
+            'CertificateArn': args.get('certificateArn'),
+            'Certificate': response['Certificate'],
+            'CertificateChain': response['CertificateChain']
+        })
+
+        ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': data}
+        demisto.results(create_entry('AWS ACM Certificate', data, ec))
+
+
+    def test_function():
+        client = aws_session()
+        response = client.list_certificates()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results('ok')
+
+
+    """EXECUTION BLOCK"""
+    try:
+        if demisto.command() == 'test-module':
+            test_function()
+        if demisto.command() == 'aws-acm-describe-certificate':
+            describe_certificate(demisto.args())
+        if demisto.command() == 'aws-acm-list-certificates':
+            list_certificates(demisto.args())
+        if demisto.command() == 'aws-acm-add-tags-to-certificate':
+            add_tags_to_certificate(demisto.args())
+        if demisto.command() == 'aws-acm-remove-tags-from-certificate':
+            remove_tags_from_certificate(demisto.args())
+        if demisto.command() == 'aws-acm-list-tags-for-certificate':
+            list_tags_for_certificate(demisto.args())
+        if demisto.command() == 'aws-acm-get-certificate':
+            get_certificate(demisto.args())
+    except Exception as e:
+            LOG(e)
+            LOG.print_log(False)
+            return_error(e.message)
+  type: python
+  commands:
+  - name: aws-acm-describe-certificate
+    arguments:
+    - name: certificateArn
+      required: true
+      description: The Amazon Resource Name (ARN) of the ACM certificate.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.ACM.Certificates.CertificateArn
+      description: he Amazon Resource Name (ARN) of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainName
+      description: The fully qualified domain name for the certificate, such as www.example.com
+        or example.com.
+      type: string
+    - contextPath: AWS.ACM.Certificates.SubjectAlternativeNames
+      description: One or more domain names (subject alternative names) included in
+        the certificate. This list contains the domain names that are bound to the
+        public key that is contained in the certificate. The subject alternative names
+        include the canonical domain name (CN) of the certificate and additional domain
+        names that can be used to connect to the website.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.DomainName
+      description: A fully qualified domain name (FQDN) in the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationEmails
+      description: A list of email addresses that ACM used to send domain validation
+        emails.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationDomain
+      description: The domain name that ACM used to send domain validation emails.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationStatu
+      description: The validation status of the domain name.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Name
+      description: The name of the DNS record to create in your domain. This is supplied
+        by ACM.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Type
+      description: The type of DNS record. Currently this can be CNAME.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ResourceRecord.Value
+      description: The value of the CNAME record to add to your DNS database. This
+        is supplied by ACM.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainValidationOptions.ValidationMethod
+      description: Specifies the domain validation method.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Serial
+      description: The serial number of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Subject
+      description: The name of the entity that is associated with the public key contained
+        in the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Issuer
+      description: The name of the certificate authority that issued and signed the
+        certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.CreatedAt
+      description: The time at which the certificate was requested. This value exists
+        only when the certificate type is AMAZON_ISSUED .
+      type: date
+    - contextPath: AWS.ACM.Certificates.IssuedAt
+      description: The time at which the certificate was issued. This value exists
+        only when the certificate type is AMAZON_ISSUED .
+      type: date
+    - contextPath: AWS.ACM.Certificates.ImportedAt
+      description: The date and time at which the certificate was imported. This value
+        exists only when the certificate type is IMPORTED.
+      type: date
+    - contextPath: AWS.ACM.Certificates.Status
+      description: The status of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RevokedAt
+      description: The time at which the certificate was revoked. This value exists
+        only when the certificate status is REVOKED.
+      type: date
+    - contextPath: AWS.ACM.Certificates.RevocationReason
+      description: The reason the certificate was revoked. This value exists only
+        when the certificate status is REVOKED.
+      type: string
+    - contextPath: AWS.ACM.Certificates.NotBefore
+      description: The time before which the certificate is not valid.
+      type: date
+    - contextPath: AWS.ACM.Certificates.NotAfter
+      description: The time after which the certificate is not valid.
+      type: date
+    - contextPath: AWS.ACM.Certificates.KeyAlgorithm
+      description: The algorithm that was used to generate the public-private key
+        pair.
+      type: string
+    - contextPath: AWS.ACM.Certificates.SignatureAlgorithm
+      description: The algorithm that was used to sign the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.InUseBy
+      description: A list of ARNs for the AWS resources that are using the certificate.
+        A certificate can be used by multiple AWS resources.
+      type: string
+    - contextPath: AWS.ACM.Certificates.FailureReason
+      description: The reason the certificate request failed.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Type
+      description: The source of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.RenewalStatus
+      description: The status of ACM's managed renewal of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.DomainName
+      description: A fully qualified domain name (FQDN) in the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationEmails
+      description: A list of email addresses that ACM used to send domain validation
+        emails.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationDomain
+      description: The domain name that ACM used to send domain validation emails.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationStatus
+      description: The validation status of the domain name.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Name
+      description: The name of the DNS record to create in your domain. This is supplied
+        by ACM.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Type
+      description: The type of DNS record.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ResourceRecord.Value
+      description: The value of the CNAME record to add to your DNS database. This
+        is supplied by ACM.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalSummary.DomainValidationOptions.ValidationMethod
+      description: Specifies the domain validation method.
+      type: string
+    - contextPath: AWS.ACM.Certificates.KeyUsages.Name
+      description: A list of Key Usage X.509 v3 extension objects. Each object is
+        a string value that identifies the purpose of the public key contained in
+        the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.ExtendedKeyUsages.Name
+      description: The name of an Extended Key Usage value.
+      type: string
+    - contextPath: AWS.ACM.Certificates.ExtendedKeyUsages.OID
+      description: An object identifier (OID) for the extension value. OIDs are strings
+        of numbers separated by periods.
+    - contextPath: AWS.ACM.Certificates.CertificateAuthorityArn
+      description: The Amazon Resource Name (ARN) of the ACM PCA private certificate
+        authority (CA) that issued the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.RenewalEligibility
+      description: Specifies whether the certificate is eligible for renewal.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Options.CertificateTransparencyLoggingPreference
+      description: You can opt out of certificate transparency logging by specifying
+        the DISABLED option. Opt in by specifying ENABLED.
+      type: string
+    description: Returns detailed metadata about the specified ACM certificate.
+  - name: aws-acm-list-certificates
+    arguments:
+    - name: certificateStatuses
+      auto: PREDEFINED
+      predefined:
+      - PENDING_VALIDATION
+      - ISSUED
+      - INACTIVE
+      - EXPIRED
+      - VALIDATION_TIMED_OUT
+      - REVOKED
+      - FAILED
+      description: Filter the certificate list by status value.
+    - name: extendedKeyUsage
+      auto: PREDEFINED
+      predefined:
+      - TLS_WEB_SERVER_AUTHENTICATION
+      - TLS_WEB_CLIENT_AUTHENTICATION
+      - CODE_SIGNING
+      - EMAIL_PROTECTION
+      - TIME_STAMPING
+      - OCSP_SIGNING
+      - IPSEC_END_SYSTEM
+      - IPSEC_TUNNEL
+      - IPSEC_USER
+      - ANY
+      - NONE
+      - CUSTOM
+      description: Specify one or more ExtendedKeyUsage extension values.
+    - name: keyUsage
+      auto: PREDEFINED
+      predefined:
+      - DIGITAL_SIGNATURE
+      - NON_REPUDIATION
+      - KEY_ENCIPHERMENT
+      - DATA_ENCIPHERMENT
+      - KEY_AGREEMENT
+      - CERTIFICATE_SIGNING
+      - CRL_SIGNING
+      - ENCIPHER_ONLY
+      - DECIPHER_ONLY
+      - ANY
+      - CUSTOM
+      description: Specify one or more KeyUsage extension values.
+    - name: keyTypes
+      auto: PREDEFINED
+      predefined:
+      - RSA_2048
+      - RSA_1024
+      - RSA_4096
+      - EC_prime256v1
+      - EC_secp384r1
+      - EC_secp521r1
+      description: Specify one or more algorithms that can be used to generate key
+        pairs.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.ACM.Certificates.CertificateArn
+      description: Amazon Resource Name (ARN) of the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.DomainName
+      description: Fully qualified domain name (FQDN), such as www.example.com or
+        example.com, for the certificate.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Region
+      description: The AWS region were the certificate is located.
+    description: Retrieves a list of certificate ARNs and domain names. You can request
+      that only certificates that match a specific status be listed. You can also
+      filter by specific attributes of the certificate.
+  - name: aws-acm-add-tags-to-certificate
+    arguments:
+    - name: certificateArn
+      required: true
+      description: String that contains the ARN of the ACM certificate to which the
+        tag is to be applied.
+    - name: tags
+      required: true
+      description: The key-value pair that defines the tag. The tag value is optional.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Adds one or more tags to an ACM certificate.
+    execution: true
+  - name: aws-acm-remove-tags-from-certificate
+    arguments:
+    - name: certificateArn
+      required: true
+      description: The ARN of the ACM Certificate with one or more tags that you want
+        to remove.
+    - name: tags
+      required: true
+      description: The key-value pair that defines the tag to remove.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Remove one or more tags from an ACM certificate.
+    execution: true
+  - name: aws-acm-list-tags-for-certificate
+    arguments:
+    - name: certificateArn
+      required: true
+      description: The ARN of the ACM certificate for which you want to list the tags.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.ACM.Certificates.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.ACM.Certificates.Tags.Value
+      description: The value of the tag.
+      type: string
+    description: Lists the tags that have been applied to the ACM certificate. Use
+      the certificate's Amazon Resource Name (ARN) to specify the certificate.
+  - name: aws-acm-get-certificate
+    arguments:
+    - name: certificateArn
+      required: true
+      description: The ARN of the certificate.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.ACM.Certificates.Certificate
+      description: String that contains the ACM certificate represented by the ARN
+        specified at input.
+      type: string
+    - contextPath: AWS.ACM.Certificates.CertificateChain
+      description: The certificate chain that contains the root certificate issued
+        by the certificate authority (CA).
+      type: string
+    description: Retrieves a certificate specified by an ARN and its certificate chain
+      . The chain is an ordered list of certificates that contains the end entity
+      certificate, intermediate certificates of subordinate CAs, and the root certificate
+      in that order. The certificate and certificate chain are base64 encoded. If
+      you want to decode the certificate to see the individual fields, you can use
+      OpenSSL.
+  dockerimage: demisto/boto3
+  runonce: false
