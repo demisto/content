@@ -38,10 +38,10 @@ tasks:
       name: scan a url
       description: Check if url is phishing and get details about the brand that is
         being phished
-      script: Phish.AI_dispute|||phish-ai-scan-url
+      script: '|||phish-ai-scan-url'
       type: regular
       iscommand: true
-      brand: Phish.AI_dispute
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
