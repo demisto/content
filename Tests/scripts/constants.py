@@ -14,6 +14,8 @@ CONNECTIONS_DIR = "Connections"
 BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 
 # file types regexes
+PIPFILE_REGEX = r".*\Pipfile"
+TEST_DATA_REGEX = r".*test_data.*"
 IMAGE_REGEX = r".*\.png"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"

@@ -22,6 +22,11 @@ script:
     import xml.etree.ElementTree as ET
     from collections import defaultdict
 
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
+
 
     """GLOBAL VARIABLES/CONSTANTS"""
     THRESHOLD = int(demisto.params().get('threshold'))
@@ -53,6 +58,7 @@ script:
             'Score': dbot_score,
             'Vendor': 'Alexa',
             'Domain': domain,
+            'Type': 'domain'
         }
         ec = {
             'Domain(val.Name && val.Name == obj.Name)': dom_ec,
@@ -126,5 +132,6 @@ script:
     description: Provides an Alexa ranking of the Domain in question.
   runonce: false
 fromversion: 3.5.0
+releaseNotes: '-'
 tests:
   - Alexa Test Playbook
