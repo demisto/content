@@ -81,7 +81,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -242,4 +241,5 @@ inputs:
   required: false
   description: ""
 outputs: []
-releaseNotes: "remove duplicate task in playbook"
+tests:
+  - No tests - Need to add
