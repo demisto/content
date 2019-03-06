@@ -665,3 +665,5 @@ script:
       OpenSSL.
   dockerimage: demisto/boto3
   runonce: false
+tests:
+  - No test
