@@ -1078,6 +1078,9 @@ script:
         asset_id = demisto.args().get('asset_id')
         parent_start = demisto.args().get('parent_start_time')
         parent_end = demisto.args().get('parent_end_time')
+        if parent_end==None:
+            parent_end = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
             temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
