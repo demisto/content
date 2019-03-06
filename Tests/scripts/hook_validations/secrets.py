@@ -12,7 +12,7 @@ except ImportError:
     pip.main(['install', 'PyPDF2'])
     import PyPDF2
 
-from validate_files_structure import run_git_command
+from Tests.test_utils import run_command, print_error
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -56,7 +56,7 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 def get_secrets(branch_name, is_circle):
     secrets_found = {}
     secrets_found_string = ''
-    if not run_git_command('git rev-parse -q --verify MERGE_HEAD'):
+    if not run_command('git rev-parse -q --verify MERGE_HEAD'):
         secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
         secrets_found = search_potential_secrets(secrets_file_paths)
         if secrets_found:
@@ -71,7 +71,11 @@ def get_secrets(branch_name, is_circle):
                                         ' remove the files asap and report it.\n'
             secrets_found_string += 'For more information about whitelisting please visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
-    return secrets_found, secrets_found_string
+
+    if secrets_found:
+        print_error(secrets_found_string)
+
+    return secrets_found
 
 
 def get_all_diff_text_files(branch_name, is_circle):
@@ -83,11 +87,11 @@ def get_all_diff_text_files(branch_name, is_circle):
     """
     if is_circle:
         branch_changed_files_string = \
-            run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+            run_command("git diff --name-status origin/master...{}".format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
 
     else:
-        local_changed_files_string = run_git_command("git diff --name-status --no-merges HEAD")
+        local_changed_files_string = run_command("git diff --name-status --no-merges HEAD")
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list
@@ -166,7 +170,7 @@ def search_potential_secrets(secrets_file_paths):
             # REGEX scanning for IOCs and false positive groups
             regex_secrets, false_positives = regex_for_secrets(line)
             for regex_secret in regex_secrets:
-                if not any(ioc in regex_secret.lower() for ioc in ioc_white_list):
+                if not any(ioc.lower() in regex_secret.lower() for ioc in ioc_white_list):
                     secrets_found_with_regex.append(regex_secret)
             # added false positives into white list array before testing the strings in line
             secrets_white_list = secrets_white_list.union(false_positives)
@@ -178,7 +182,7 @@ def search_potential_secrets(secrets_file_paths):
             # calculate entropy for each string in the file
             for string_ in line.split():
                 # compare the lower case of the string against both generic whitelist & temp white list
-                if not any(white_list_string in string_.lower() for white_list_string in secrets_white_list):
+                if not any(white_list_string.lower() in string_.lower() for white_list_string in secrets_white_list):
                     entropy = calculate_shannon_entropy(string_)
                     if entropy >= ENTROPY_THRESHOLD:
                         high_entropy_strings.append(string_)

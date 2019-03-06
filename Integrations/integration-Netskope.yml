@@ -385,4 +385,3 @@ script:
   runonce: false
 tests:
   - Netskope Test
-releaseNotes: "-"
