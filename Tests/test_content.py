@@ -48,10 +48,12 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, proxy):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
+    rerecorded_count = len(proxy.rerecorded_tests)
+    empty_mocks_count = len(proxy.empty_files)
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
@@ -71,6 +73,16 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
+
+    if rerecorded_count > 0:
+        print('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
+        for playbook_id in proxy.rerecorded_tests:
+            print('\t - ' + playbook_id)
+
+    if empty_mocks_count > 0:
+        print('\t Tests with failed playback and successful re-recording - ' + str(empty_mocks_count) + ':')
+        for playbook_id in proxy.empty_files:
+            print('\t - ' + playbook_id)
 
 
 def update_test_msg(integrations, test_message):
@@ -445,12 +457,9 @@ def main():
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
-    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, proxy)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
-
-    proxy.print_rerecorded_tests()
-    proxy.print_empty_files()
 
     print "Pushing new/updated mock files to mock git repo."
     ami.upload_mock_files(build_name, buildNumber)  # TODO: Remove before merge

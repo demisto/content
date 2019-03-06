@@ -236,13 +236,6 @@ class MITMProxy:
             self.ami.call(['mkdir', '--parents', dst_folder])
             self.ami.call(['mv', src_files, dst_folder])
 
-    def print_empty_files(self):
-        if self.empty_files:
-            print "Integrations with empty mock files:\n{}\n\n".format('\n'.join(self.empty_files))
-
-    def print_rerecorded_tests(self):
-        print "Tests with failed playback and successful re-recording:\n{}\n\n".format('\n'.join(self.rerecorded_tests))
-
     def start(self, playbook_id, path=None, record=False):
         """Start the proxy process and direct traffic through it.
 
