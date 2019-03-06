@@ -166,6 +166,9 @@ script:
     - contextPath: CrowdStrike.Behavior.ProcessID
       description: Process ID the behavior.
       type: String
+    - contextPath: CrowdStrike.Behavior.ID
+      description: ID of the behavior.
+      type: String
   isfetch: true
   runonce: false
   script: |-
@@ -223,7 +226,8 @@ script:
         'ioc_type': 'IOCType',
         'ioc_value': 'IOCValue',
         'cmdline': 'CommandLine',
-        'user_name': 'UserName'
+        'user_name': 'UserName',
+        'behavior_id': 'ID',
     }
 
     SEARCH_IOC_KEY_MAP = {
@@ -395,7 +399,7 @@ script:
             'sort': 'first_behavior.asc'
         }
         if behavior_id:
-            params['filter'] = 'behaviors.behavior_id=\'{0}\''.format(behavior_id)
+            params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
         elif last_behavior_time:
             params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
 
@@ -602,24 +606,25 @@ script:
         if not raw_res:
             return create_entry_object(hr='Could not find any devices.')
         devices = raw_res.get('resources')
-        ec = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-        hr = tableToMarkdown('Devices', ec,
-                             headers=['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen',
-                                      'LastSeen'])
-        return create_entry_object(contents=raw_res, ec={'CrowdStrike.Device(val.ID === obj.ID)': ec}, hr=hr)
+        entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
+        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
+        hr = tableToMarkdown('Devices', entries, headers=headers)
+        ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
+        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
     def get_behavior_command():
         behavior_id = demisto.args().get('behavior_id')
         detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
         raw_res = get_detections_entities(detections_ids)
-        ec = []
+        entries = []
         if "resources" in raw_res:
             for resource in demisto.get(raw_res, "resources"):
                 for behavior in demisto.get(resource, 'behaviors'):
-                    ec.append(behavior_to_entry_context(behavior))
-        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), ec)
-        return create_entry_object(raw_res, ec, hr)
+                    entries.append(behavior_to_entry_context(behavior))
+        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries)
+        ec = {'CrowdStrike.Behavior': entries}
+        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
