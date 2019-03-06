@@ -295,9 +295,8 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
-    if not is_circle:  # Take a look at the docstring for explanation
-        import logging
-        logging.basicConfig(level=logging.CRITICAL)
+    import logging
+    logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
