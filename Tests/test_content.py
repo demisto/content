@@ -66,12 +66,12 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
             print_error('\t - ' + playbook_id)
 
     if rerecorded_count > 0:
-        print('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
+        print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
         for playbook_id in proxy.rerecorded_tests:
-            print('\t - ' + playbook_id)
+            print_warning('\t - ' + playbook_id)
 
     if empty_mocks_count > 0:
-        print('\t Tests with failed playback and successful re-recording - ' + str(empty_mocks_count) + ':')
+        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
         for playbook_id in proxy.empty_files:
             print('\t - ' + playbook_id)
 
