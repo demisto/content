@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: FindSimilarIncidentsByText
 script: |-
-  HOURS_TIME_FRAME = int(demisto.args()['timeFrameHours'])
+  HOURS_TIME_FRAME = float(demisto.args()['timeFrameHours'])
   THRESHOLD = float(demisto.args()['threshold'])
   TEXT_FIELDS = set(map(lambda x: x.lower(), demisto.args()['textFields'].split(',')))
   IGNORE_CLOSED = demisto.args()['ignoreClosedIncidents'] == 'yes'
@@ -14,6 +14,7 @@ script: |-
   TIME_FIELD = demisto.args()['timeField']
 
   from sklearn.feature_extraction.text import TfidfVectorizer
+  from sklearn.metrics.pairwise import linear_kernel
   import dateutil.parser
 
   def parse_datetime(datetime_str):
@@ -21,10 +22,9 @@ script: |-
 
   def get_similar_texts(text, other_texts):
       vect = TfidfVectorizer(min_df=1, stop_words='english')
-      tfidf = vect.fit_transform(other_texts + [text])
-      results = (tfidf * tfidf.T).A
-      similarity_vector = results[-1]
-      return similarity_vector[:-1]
+      tfidf = vect.fit_transform([text] + other_texts)
+      similarity_vector = linear_kernel(tfidf[0:1], tfidf).flatten()
+      return similarity_vector[1:]
 
   def get_texts_from_incident(incident, text_fields):
       texts = []
@@ -193,3 +193,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
+tests:
+  - No test
