@@ -1107,11 +1107,17 @@
             "playbookID": "MAR - Endpoint data collection test"
         },
         {
+
+            "integrations": "DUO Admin",
+            "playbookID": "DuoAdmin API test playbook"
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
+
         }
     ],
     "skipped_tests": {
@@ -1130,7 +1136,8 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
-        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)"
+        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
@@ -1158,7 +1165,9 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "Freshdesk": "Trial account expired",
         "Tanium": "Instance is not stable (issue 15497)",
-        "Kafka V2": "Can not connect to instance from remote"
+        "Kafka V2": "Can not connect to instance from remote",
+        "Intezer": "Invalid API Key (issue 15937)",
+        "Check Point Sandblast": "No access (issue 15948)"
     },
     "nigthly_integrations": [
         "Lastline",
