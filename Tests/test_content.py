@@ -3,15 +3,15 @@ import sys
 import json
 import string
 import random
-import requests
 import argparse
+import requests
 
 import demisto
 from slackclient import SlackClient
 
 from test_integration import test_integration
 from mock_server import MITMProxy, AMIConnection
-from test_utils import print_color, print_error, print_warning, LOG_COLORS
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 
 
 RUN_ALL_TESTS = "Run all tests"
@@ -20,15 +20,6 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
                             "instance_name argument in conf.json. The options are:\n{}"
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def options_handler():
