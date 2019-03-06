@@ -39,26 +39,18 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, proxy):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
+                       unmocklable_integrations, proxy):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
     rerecorded_count = len(proxy.rerecorded_tests)
     empty_mocks_count = len(proxy.empty_files)
+    unmocklable_integrations_count = len(unmocklable_integrations.iterkeys())
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
-
-    if len(skipped_integration) > 0:
-        print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
-        for playbook_id in skipped_integration:
-            print_warning('\t - ' + playbook_id)
-
-    if skipped_count > 0:
-        print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
-        for playbook_id in skipped_tests:
-            print_warning('\t - ' + playbook_id)
 
     if failed_count > 0:
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
@@ -72,8 +64,26 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
 
     if empty_mocks_count > 0:
         print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
+        print '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+              '\t Investigate the playbook and the integrations.\n' \
+              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         for playbook_id in proxy.empty_files:
             print('\t - ' + playbook_id)
+
+    if len(skipped_integration) > 0:
+        print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
+        for playbook_id in skipped_integration:
+            print_warning('\t - ' + playbook_id)
+
+    if skipped_count > 0:
+        print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
+        for playbook_id in skipped_tests:
+            print_warning('\t - ' + playbook_id)
+
+    if unmocklable_integrations_count > 0:
+        print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
+        for playbook_id in unmocklable_integrations.iterkeys():
+            print_warning('\t - ' + playbook_id)
 
 
 def update_test_msg(integrations, test_message):
@@ -448,7 +458,8 @@ def main():
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
-    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, proxy)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
+                       proxy)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
