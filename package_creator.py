@@ -50,6 +50,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         if 'unified' not in path:
             yml_path = path
             break
+
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
 
