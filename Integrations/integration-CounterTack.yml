@@ -2239,6 +2239,5 @@ script:
         to represent queries.
   isfetch: true
   runonce: false
-releaseNotes: "updated outputs descriptions"
 tests:
   - no tests

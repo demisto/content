@@ -465,4 +465,3 @@ inputs: []
 outputs: []
 tests:
   - test Arcsight - Get events related to the Case
-releaseNotes:  "now supports AS ESM v2"
