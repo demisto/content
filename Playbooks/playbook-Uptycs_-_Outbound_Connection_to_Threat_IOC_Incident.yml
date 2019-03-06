@@ -1,5 +1,5 @@
 id: 137ad8f4-ee44-411f-8881-3f5fbe67ab73
-version: 16
+version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"

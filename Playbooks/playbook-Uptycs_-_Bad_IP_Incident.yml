@@ -1,5 +1,5 @@
 id: e540aa88-4d40-408f-80c0-6d94eaca6ec8
-version: 38
+version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
