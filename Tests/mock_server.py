@@ -121,7 +121,8 @@ class AMIConnection:
 
     def copy_file(self, src, dst=REMOTE_HOME, **kwargs):
         silence_output(check_call, ['scp', '-o', ' StrictHostKeyChecking=no', src,
-                    "{}@{}:{}".format(self.REMOTE_MACHINE_USER, self.public_ip, dst)], stdout='null', **kwargs)
+                                    "{}@{}:{}".format(self.REMOTE_MACHINE_USER, self.public_ip, dst)],
+                       stdout='null', **kwargs)
         return os.path.join(dst, os.path.basename(src))
 
     def run_script(self, script, *args):
