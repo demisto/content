@@ -13801,12 +13801,10 @@
                     "fireeye-hx-get-indicators": "FireEye HX", 
                     "fireeye-hx-create-indicator": "FireEye HX", 
                     "fireeye-hx-get-alert": "FireEye HX", 
-                    "fireeye-hx-delete-file-acquisition": "FireEye HX", 
                     "fireeye-hx-get-alerts": "FireEye HX", 
                     "fireeye-hx-get-host-information": "FireEye HX", 
                     "fireeye-hx-append-conditions": "", 
-                    "fireeye-hx-get-indicator": "FireEye HX", 
-                    "fireeye-hx-file-acquisition": "FireEye HX"
+                    "fireeye-hx-get-indicator": "FireEye HX"
                 }
             }
         }, 
