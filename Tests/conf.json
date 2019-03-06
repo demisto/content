@@ -887,9 +887,7 @@
         },
         {
             "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test",
-            "timeout": 500,
-            "nightly": true
+            "playbookID": "FireEye HX Test"
         },
         {
             "integrations": "Phish.AI",
