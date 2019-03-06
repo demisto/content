@@ -273,6 +273,7 @@ script:
         'Accept': 'application/json',
         'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
     }
+    TOKEN_LIFE_TIME = 28
     # Remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -448,6 +449,19 @@ script:
 
 
     def get_token():
+        now = datetime.now()
+        ctx = demisto.getIntegrationContext()
+        if ctx:
+            time_delta = now - datetime.fromtimestamp(ctx.get('time'))
+            passed_mins = time_delta.seconds / 60
+            auth_token = get_token_request() if passed_mins >= TOKEN_LIFE_TIME else ctx.get('auth_token')
+        else:
+            auth_token = get_token_request()
+        demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+        return auth_token
+
+
+    def get_token_request():
         body = {
             'client_id': USERNAME,
             'client_secret': PASSWORD
@@ -461,9 +475,7 @@ script:
             if demisto.command() != 'fetch-incidents':
                 return_error(err_msg)
             raise Exception(err_msg)
-
         return token_res.get('access_token')
-
 
     def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         endpoint_url = '/detects/queries/detects/v1'
