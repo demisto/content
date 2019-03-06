@@ -299,13 +299,14 @@ script:
 
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
-                // Mapping netflows to correct context values
-                nf[0]['srcIp'] = nf[0]['id.srcIp'];
-                nf[0]['dstIp'] = nf[0]['id.dstIp'];
-                nf[0]['srcPort']  = nf[0]['id.srcPort'];
-                nf[0]['dstPort'] = nf[0]['id.dstPort'];
-                nf[0]['layer4Proto'] = nf[0]['id.layer4Proto'];
-                event['Netflows'] = nf;
+                for(var i = 0; i < nf.length; i++) {
+                    nf[i]['srcIp'] = nf[i]['id.srcIp'];
+                    nf[i]['dstIp'] = nf[i]['id.dstIp'];
+                    nf[i]['srcPort']  = nf[i]['id.srcPort'];
+                    nf[i]['dstPort'] = nf[i]['id.dstPort'];
+                    nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                    event['Netflows'] = nf;
+                    }
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
 
@@ -396,6 +397,14 @@ script:
             var md = '### Protectwise PCAP for Event ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                    for(var i = 0; i < nf.length; i++) {
+                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
+                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
+                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
+                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
+                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                        event['Netflows'] = nf;
+                        }
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -419,6 +428,14 @@ script:
             var md = '### Protectwise PCAP for Observation ' + res.id + '\n - Estimated size: ' + res.estimatedSize + ' bytes';
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                    for(var i = 0; i < nf.length; i++) {
+                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
+                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
+                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
+                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
+                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                        event['Netflows'] = nf;
+                    }
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
