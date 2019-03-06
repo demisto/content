@@ -7,9 +7,6 @@ from subprocess import Popen, PIPE
 import demisto
 
 
-HTTP_CODE = "{http_code}"
-HTTP_CODE_REQUEST = "curl --write-out %{} --silent --output /dev/null {}/user -k -m 15"
-
 MAX_TRIES = 20
 SLEEP_TIME = 45
 
@@ -64,8 +61,6 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
-                    # http_code = run_bash_command(HTTP_CODE_REQUEST.format(HTTP_CODE, ami_instance_ip))
-                    # http_code = get("https://{}".format(ami_instance_ip), verify=False).status_code
                     c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
                     res = c.Login()
                     if res.status_code == 200:
