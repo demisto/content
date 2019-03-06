@@ -288,6 +288,6 @@ class MITMProxy:
                 log.write('\nSTDERR:\n')
                 log.write(self.process.stderr.read())
 
-            silence_output(self.ami.copy_file, local_log_filepath, remote_log_filepath, stdout='null')
+            self.ami.copy_file(local_log_filepath, remote_log_filepath)
 
         self.process = None
