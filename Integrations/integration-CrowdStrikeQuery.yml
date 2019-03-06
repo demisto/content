@@ -273,6 +273,7 @@ script:
         'Accept': 'application/json',
         'Authorization': 'Basic ' + base64.encodestring('%s:%s' % (USERNAME, PASSWORD)).replace('\n', '')
     }
+    # Note: True life time is actually 30 mins
     TOKEN_LIFE_TIME = 28
     # Remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
@@ -454,10 +455,11 @@ script:
         if ctx:
             time_delta = now - datetime.fromtimestamp(ctx.get('time'))
             passed_mins = time_delta.seconds / 60
+            demisto.info('\n\n##### PASSED MINS: {}\n\n'.format(passed_mins))
             auth_token = get_token_request() if passed_mins >= TOKEN_LIFE_TIME else ctx.get('auth_token')
         else:
             auth_token = get_token_request()
-        demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+            demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
         return auth_token
 
 
@@ -611,6 +613,7 @@ script:
                 else:
                     # All args should be a list. this is a fallback
                     url_filter = "{0}+{1}:'{2}'".format(url_filter, k, arg)
+        demisto.info('\n\nFILTER: {}\n\n'.format(url_filter))
         headers = {
             'Authorization': 'Bearer ' + TOKEN,
             'Content-Type': 'application/json'
@@ -640,9 +643,14 @@ script:
         if last_fetch is None:
             last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
         last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
+        fetch_query = demisto.params().get('fetch_query')
+        if fetch_query:
+            fetch_query = "first_behavior:>'{0}'+{1}".format(last_fetch, fetch_query)
+            detections_ids = demisto.get(get_detections(filter_arg=fetch_query), 'resources')
+        else:
+            detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
 
         incidents = []
-        detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
         raw_res = get_detections_entities(detections_ids)
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
@@ -723,7 +731,6 @@ script:
             detections_ids = get_detections(filter_arg=filter_arg).get('resources')
         raw_res = get_detections_entities(detections_ids)
         entries = []
-        hr = ''
         headers = ['ID', 'System', 'ProcessStartTime', 'CustomerID']
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
@@ -733,12 +740,9 @@ script:
                 behaviors = []
                 for behavior in demisto.get(detection, 'behaviors'):
                     behaviors.append(behavior_to_entry_context(behavior))
-                demisto.info(str(detection_entry))
                 detection_entry['Behavior'] = behaviors
                 entries.append(detection_entry)
-                demisto.info('###### got here, yay\n')
-                single_entry_hr = tableToMarkdown('Detection ID: {}'.format(detection_entry.get('ID')), detection_entry, headers=headers, removeNull=True)
-                hr = '{0}\n\n{1}'.format(hr, single_entry_hr) if hr else single_entry_hr
+        hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True)
         ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
         return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
@@ -748,6 +752,7 @@ script:
     LOG('Command being called is %s' % (demisto.command()))
 
     TOKEN = get_token()
+    demisto.info('\n\n###### TOKEN: {0}'.format(TOKEN))
 
     if demisto.command() == 'test-module':
         # if not set properly will fail when trying to get_token, so if reached here then test passed
