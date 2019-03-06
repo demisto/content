@@ -1174,6 +1174,9 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "EWS Mail Sender Test": "Inconsistent test (playback fails, record succeeds)",
+        "EWS Public Folders Test": "Inconsistent test (playback fails, record succeeds)",
+        "pyEWS_Test": "Inconsistent test (playback fails, record succeeds)",
         "Alexa Rank Indicator": "Integration should never use proxy",
         "Pwned": "Integration has no proxy checkbox",
         "Luminate": "Integration has no proxy checkbox",
