@@ -290,6 +290,6 @@ try:
     if demisto.command() == 'aws-acm-get-certificate':
         get_certificate(demisto.args())
 except Exception as e:
-        LOG(e)
-        LOG.print_log(False)
-        return_error(e.message)
+    LOG(e)
+    LOG.print_log(False)
+    return_error(e.message)
