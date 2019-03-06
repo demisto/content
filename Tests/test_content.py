@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import string
@@ -7,8 +8,9 @@ import requests
 
 import demisto
 from slackclient import SlackClient
+
 from test_integration import test_integration
-from test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 
 
 SERVER_URL = "https://{}"

@@ -3,10 +3,39 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseEmailFile-deprecated-script"
+        },
+        {
+            "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "CheckpointFW-test",
+            "integrations": "Check Point"
+        },
+        {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
+            "playbookID": "RandomStringGenerateTest"
+        },
+        {
+            "playbookID": "DocumentationTest",
+            "integrations": "ipinfo"
+        },
+        {
             "playbookID": "HighlightWords_Test"
+
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Fidelis Elevate Network",
+            "playbookID": "Fidelis-Test"
+        },
+        {
+            "integrations": "Thinkst Canary",
+            "playbookID": "CanaryTools Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -41,6 +70,10 @@
         {
             "integrations": "Dell Secureworks",
             "playbookID": "secureworks_test"
+        },
+        {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
         },
         {
             "playbookID": "Test CommonServer"
@@ -221,7 +254,6 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "instance_names": "intsights_standard_account",
             "nightly": true,
             "timeout": 500
         },
@@ -281,6 +313,10 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
         },
         {
 
@@ -391,6 +427,12 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "TestDedupIncidentsPlaybook"
+        },
+        {
+            "playbookID": "TestDedupIncidentsByName"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
@@ -412,6 +454,7 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
+        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -470,6 +513,10 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "EWS Public Folders Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -777,15 +824,25 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
+            "playbookID": "McAfee-MAR_Test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
+            "playbookID": "McAfee-TIE Test",
+            "timeout": 700
         },
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
+        },
+        {
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "ArcSight ESM v2 Test"
+        },
+        {
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
             "integrations": "XFE",
@@ -1006,6 +1063,11 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -1027,10 +1089,38 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "FilterByList - Test"
+        },
+        {
+            "integrations": "Kafka V2",
+            "playbookID": "Kafka Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+
+            "integrations": "DUO Admin",
+            "playbookID": "DuoAdmin API test playbook"
+        },
+        {
+            "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "integrations": "Symantec Advanced Threat Protection",
+            "playbookID": "Symantec ATP Test"
+
         }
     ],
     "skipped_tests": {
-        "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
@@ -1040,30 +1130,23 @@
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
-        "Tenable.io test": "Error 409 ISSUE OPENED",
-        "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
-        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
-        "DUO Test Playbook": "DUO integration is failing",
-        "MISP V2 Test": "MISP V2 Test misp-search value command fails (issue 15574)",
-        "CreatePhishingClassifierMLTest": "fails",
+        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
-        "cisco-ise-test-playbook": "fails",
-        "McAfee ePO": "test is failing on epo-update-repository command (issue 15572)"
+        "SalesforceTestPlaybook": "User and password expired (issue 15901)",
+        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
-        "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation",
+        "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Active Response": "DevOps investigation",
-        "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
@@ -1079,9 +1162,10 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)"
+        "Tanium": "Instance is not stable (issue 15497)",
+        "Kafka V2": "Can not connect to instance from remote",
+        "Check Point Sandblast": "No access (issue 15948)"
     },
     "nigthly_integrations": [
         "Lastline",

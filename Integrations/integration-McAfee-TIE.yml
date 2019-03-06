@@ -152,11 +152,14 @@ script:
     def trust_level_to_score(trust_level):
         if (trust_level >= 70):
             return 1
-        elif (trust_level >= 30):
+        elif (trust_level == 30):
             return 2
-        elif (trust_level >= 30):
+        elif (trust_level == 0 or trust_level == 50):
+            return 0
+        elif (trust_level < 30):
             return 3
         else:
+            # Shouldn't reach here, as the API doesn't support 31-69 values except for 50)
             return 0
 
     def get_thrust_level_and_score(reputations):
@@ -415,3 +418,5 @@ script:
       the specified file
   dockerimage: demisto/dxl
   runonce: false
+tests:
+  - McAfee-TIE Test

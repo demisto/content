@@ -1,9 +1,10 @@
 id: Incident Enrichment
-version: 1
+version: -1
 name: Incident Enrichment
 system: true
 fromversion: 2.5.0
-description: Enrich data with reputation from the incident. Data is extracted to the standard
+description: Deprecated- We recommend using Default playbook instead.
+  Enrich data with reputation from the incident. Data is extracted to the standard
   locations like File, URL, IP.
 starttaskid: "0"
 tasks:
@@ -138,3 +139,5 @@ view: |-
     }
   }
 inputs: []
+tests:
+  - No tests - Deprecated
