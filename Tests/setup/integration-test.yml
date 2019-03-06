@@ -1,6 +1,6 @@
 commonfields:
   id: PagerDuty v2
-  version: -1
+  version: 123
 name: PagerDuty v2
 display: PagerDuty v2
 category: Messaging
