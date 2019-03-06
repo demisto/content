@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Falcon Query
+  id: FalconQuery
   version: -1
 configuration:
 - display: Fetch incidents
@@ -37,7 +37,7 @@ configuration:
 description: The Falcon Query API (formerly known as the Falcon Firehose API)
 detaileddescription: 'To get an API key please contact the crowdstrike support: support@crowdstrike.com'
 display: CrowdStrike Query
-name: Falcon Query
+name: FalconQuery
 script:
   commands:
   - arguments:
