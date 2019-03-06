@@ -894,5 +894,5 @@ script:
   isfetch: true
 fromversion: 3.5.0
 releaseNotes: Fixed context output issue resulting in inaccessible items in context
-test:
+tests:
   - No test
