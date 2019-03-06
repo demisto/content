@@ -132,8 +132,9 @@ class AMIConnection:
             *args: arguments to be passed to the script.
         """
         remote_script_path = self.copy_file(os.path.join(self.LOCAL_SCRIPTS_DIR, script))
-        self.check_call(['chmod', '+x', remote_script_path])
-        self.check_call([remote_script_path] + list(args))
+
+        silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
+        silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
 
     def upload_mock_files(self, build_name, build_number):
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
@@ -157,6 +158,7 @@ class MITMProxy:
         last_playbook_id (string): ID of the currently running / most recently run playbook.
         record (bool): Proxy mode (playback/record).
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
+        rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
         debug (bool): enable debug prints - redirect.
     """
 
