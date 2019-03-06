@@ -22,7 +22,17 @@ class StructureValidator(object):
         file_path (str): the path to the file we are examining at the moment.
         is_added_file (bool): whether the file is modified or added.
     """
-    SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
+    SKIPPED_SCHEMAS = [
+        TEST_DATA_REGEX,
+        MISC_REGEX,
+        IMAGE_REGEX,
+        PIPFILE_REGEX,
+        REPORT_REGEX,
+        SCRIPT_PY_REGEX,
+        SCRIPT_JS_REGEX,
+        INTEGRATION_JS_REGEX,
+        INTEGRATION_PY_REGEX
+    ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
         INTEGRATION_YML_REGEX: "integration",
@@ -74,6 +84,11 @@ class StructureValidator(object):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
+        if matching_regex is None:
+            for regex in self.SKIPPED_SCHEMAS:
+                if re.match(regex, self.file_path, re.IGNORECASE):
+                    return True
+
         if matching_regex is None:
             for regex in CHECKED_TYPES_REGEXES:
                 if re.match(regex, self.file_path, re.IGNORECASE):

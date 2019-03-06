@@ -247,6 +247,7 @@ class FilesValidator(object):
                     print("Validating " + file_name)
                     structure_validator = StructureValidator(file_path)
                     if not structure_validator.is_valid_scheme():
+                        import ipdb;ipdb.set_trace()
                         self._is_valid = False
 
                 if root in PACKAGE_SUPPORTING_DIRECTORIES:
@@ -255,6 +256,8 @@ class FilesValidator(object):
                         print("Validating " + file_path)
                         structure_validator = StructureValidator(file_path)
                         if not structure_validator.is_valid_scheme():
+                            import ipdb;
+                            ipdb.set_trace()
                             self._is_valid = False
 
     def is_valid_structure(self, branch_name):
