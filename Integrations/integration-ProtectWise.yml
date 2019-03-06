@@ -299,6 +299,12 @@ script:
 
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
+                // Mapping netflows to correct context values
+                nf[0]['srcIp'] = nf[0]['id.srcIp'];
+                nf[0]['dstIp'] = nf[0]['id.dstIp'];
+                nf[0]['srcPort']  = nf[0]['id.srcPort'];
+                nf[0]['dstPort'] = nf[0]['id.dstPort'];
+                nf[0]['layer4Proto'] = nf[0]['id.layer4Proto'];
                 event['Netflows'] = nf;
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
@@ -870,3 +876,6 @@ script:
     description: Get API token, to use in integration configuration
   isfetch: true
 fromversion: 3.5.0
+releaseNotes: Fixed context output issue resulting in inaccessible items in context
+test:
+  - No test
