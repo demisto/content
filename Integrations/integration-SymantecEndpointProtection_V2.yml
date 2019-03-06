@@ -3,7 +3,7 @@ commonfields:
   id: Symantec Endpoint Protection V2
   version: -1
 configuration:
-- display: Server (e.g. https://1.2.3.4:8446)
+- display: Server (e.g., https://1.2.3.4:8446)
   name: server
   required: true
   type: 0
@@ -25,7 +25,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: 'Local time zone (for example: +02:30,-06:00)'
+- display: Local time zone (e.g., +02:30,-06:00)
   name: timeZone
   required: false
   type: 0
@@ -39,30 +39,29 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The columns to show.
+      description: The columns to display.
       isArray: false
       name: columns
       required: false
       secret: false
     - default: false
-      description: Filter by the host name of a computer. Wild card is supported as
-        '*'.
+      description: Filter by computer host name (for wild cards, use '*')
       isArray: false
       name: computerName
       required: false
       secret: false
     - default: false
-      description: Indicates when a computer last updated its status. The default
-        value of 0 gets all the results.
+      description: Indicates when a computer's status was last updated (default is
+        0, which returns all the results)
       isArray: false
       name: lastUpdate
       required: false
       secret: false
-    - default: false
-      description: Operating system to filter.
+    - auto: PREDEFINED
+      default: false
+      description: Operating system to filter by
       isArray: false
       name: os
-      auto: PREDEFINED
       predefined:
       - CentOs
       - Debian
@@ -92,64 +91,67 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of results to include on each page. The default is 20.
+      description: The number of results to include on each page (default is 20)
       isArray: false
       name: pageSize
       required: false
       secret: false
-    description: Get information about endpoints.
+    description: Returns information about endpoints.
     execution: false
     name: sep-endpoints-info
     outputs:
     - contextPath: SEPM.Endpoint.Hostname
-      description: The endpoint's hostname.
+      description: Endpoint's hostname
       type: string
     - contextPath: SEPM.Endpoint.Domain
-      description: The endpoint's domain.
+      description: Endpoint's domain
       type: string
     - contextPath: SEPM.Endpoint.IPAddresses
-      description: The endpoint's IP addresses.
+      description: Endpoint's IP addresses
       type: string
     - contextPath: SEPM.Endpoint.OS
-      description: The endpoint's OS information.
+      description: Endpoint's OS information
       type: string
     - contextPath: SEPM.Endpoint.Description
-      description: The endpoint's description.
+      description: Endpoint's description
       type: string
     - contextPath: SEPM.Endpoint.MACAddresses
-      description: The endpoint's MAC address.
+      description: Endpoint's MAC address
       type: string
     - contextPath: SEPM.Endpoint.BIOSVersion
-      description: The endpoint's BIOS version.
+      description: Endpoint's BIOS version
       type: string
     - contextPath: SEPM.Endpoint.DHCPServer
-      description: The endpoint's DHCP server address.
+      description: Endpoint's DHCP server address
       type: string
     - contextPath: SEPM.Endpoint.HardwareKey
       description: ' Hardware-Key of the client to be moved'
       type: String
+    - contextPath: SEPM.Endpoint.LastScanTime
+      description: Endpoint's last scan time
+      type: String
   - arguments:
     - default: false
-      description: The columns to show.
+      description: The columns to display
       isArray: false
       name: columns
       required: false
       secret: false
-    description: Get information about groups.
+    description: Returns information about groups.
     execution: false
     name: sep-groups-info
     outputs:
     - contextPath: SEPM.Groups
-      description: The list of groups.
+      description: The list of groups
       type: Unknown
     - contextPath: SEPM.Groups.created
-      description: Creation time in Epoch
+      description: Creation time (in Epoch)
       type: number
     - contextPath: SEPM.Groups.fullPathName
-      description: Name of the group
+      description: Group name
       type: string
     - contextPath: SEPM.Groups.id
-      description: ID of the group
+      description: Group ID
       type: string
     - contextPath: SEPM.Groups.numberOfPhysicalComputers
       description: Number of physical computers in the group
@@ -158,22 +160,21 @@ script:
       description: Number of registered users in the group
       type: number
     - contextPath: SEPM.Groups.policyDate
-      description: Policy date in Epoch
+      description: Policy date (in Epoch)
       type: number
     - contextPath: SEPM.Groups.policySerialNumber
       description: Policy serial number
       type: number
-  - arguments: []
-    description: Get the system information (version, AV definition).
+  - description: Returns information about the system (version, AV definition)
     execution: false
     name: sep-system-info
     outputs:
     - contextPath: SEPM.ServerAVDefVersion
-      description: The serverAV definition version.
+      description: The serverAV definition version
       type: string
   - arguments:
     - default: false
-      description: The command ID.
+      description: Command ID
       isArray: false
       name: commandId
       required: true
@@ -183,29 +184,27 @@ script:
     name: sep-command-status
     outputs:
     - contextPath: SEPM.LastCommand.CommandDetails
-      description: The details of the command.
+      description: Details of the command
       type: string
     - contextPath: SEPM.LastCommand.CommandId
-      description: The ID of the command.
+      description: Command ID
       type: string
-  - arguments: []
-    description: Retrieves the client content.
+  - description: Retrieves the client content.
     execution: false
     name: sep-client-content
     outputs:
     - contextPath: SEPM.ClientContentVersions
-      description: The versions of the clients.
+      description: The versions of the clients
       type: string
     - contextPath: SEPM.LastUpdated
-      description: The last-updated date.
+      description: The last-updated date
       type: string
-  - arguments: []
-    description: Retrieve a list of existing policies
+  - description: Retrieve a list of existing policies
     execution: false
     name: sep-list-policies
     outputs:
     - contextPath: SEPM.PoliciesList.PolicyName
-      description: Name of policy
+      description: Policy name
       type: string
     - contextPath: SEPM.PoliciesList.Type
       description: Policy type
@@ -213,11 +212,11 @@ script:
     - contextPath: SEPM.PoliciesList.ID
       description: Policy ID
       type: string
-    - contextPath: SEPM.PoliciesList.Discription
-      description: Policy discription
+    - contextPath: SEPM.PoliciesList.Description
+      description: Policy description
       type: string
     - contextPath: SEPM.PoliciesList.Enabled
-      description: True if enabled false otherwise
+      description: True if enabled
       type: boolean
     - contextPath: SEPM.PoliciesList.AssignedLocations.GroupID
       description: 'Group ID of the locations assigned with this policy '
@@ -234,13 +233,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Group ID of the endpoint '
+      description: Endpoint's group ID '
       isArray: false
       name: groupID
       required: true
       secret: false
     - default: false
-      description: Location ID of the endpoint
+      description: Endpoint's location ID
       isArray: false
       name: locationID
       required: true
@@ -257,41 +256,41 @@ script:
       name: policyID
       required: true
       secret: false
-    description: Assign existing policy to a designated location
+    description: Assigns an existing policy to a specified location.
     execution: false
     name: sep-assign-policy
   - arguments:
     - default: false
-      description: Group ID to list locations from
+      description: Group ID to list locations for
       isArray: false
       name: groupID
       required: true
       secret: false
-    description: Retrieve a list of location ID's for a given group
+    description: Retrieves a list of location IDs for a specified group.
     execution: false
     name: sep-list-locations
     outputs:
     - contextPath: SEPM.Locations.ID
-      description: The ID of the location
+      description: Location's ID
       type: Unknown
   - arguments:
     - default: false
-      description: IP or Hostname of the endpoint
+      description: Endpoint's IP or hostname
       isArray: false
       name: endpoint
       required: true
       secret: false
-    - default: false
-      description: Add or remove endpoint from quarantine.
+    - auto: PREDEFINED
+      default: false
+      description: Add or remove an endpoint from quarantine
       isArray: false
       name: actionType
-      auto: PREDEFINED
       predefined:
       - Add
       - Remove
       required: true
       secret: false
-    description: Quarantines the endpoint according to its policy.
+    description: Quarantines an endpoint according to its policy.
     execution: false
     name: sep-endpoint-quarantine
     outputs:
@@ -299,23 +298,23 @@ script:
       description: ID of the invoked command
       type: string
     - contextPath: SEPM.Quarantine.Action
-      description: The action type ('Add' or 'Remove')
+      description: Action type ('Add' or 'Remove')
       type: string
     - contextPath: SEPM.Quarantine.Endpoint
-      description: The endpoint identifier (IP or Host Name)
+      description: Endpoint identifier (IP or Host Name)
       type: string
   - arguments:
     - default: false
-      description: IP or Hostname of the endpoint
+      description: Endpoint's IP address or hostname
       isArray: false
       name: endpoint
       required: true
       secret: false
-    - default: false
-      description: Type of scan.
+    - auto: PREDEFINED
+      default: false
+      description: Scan type
       isArray: false
       name: scanType
-      auto: PREDEFINED
       predefined:
       - ScanNow_Quick
       - ScanNow_Full
@@ -330,19 +329,19 @@ script:
       description: ID of the invoked command
       type: string
     - contextPath: SEPM.Scan.Type
-      description: Type of the scan (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
+      description: Scan type (ScanNow_Quick, ScanNow_Full or ScanNow_Custom)
       type: string
     - contextPath: SEPM.Scan.Endpoint
-      description: The endpoint identifier (IP or Host Name)
+      description: Endpoint identifier (IP or Host Name)
       type: Unknown
   - arguments:
     - default: false
-      description: IP or Hostname of the endpoint
+      description: Endpoint's IP address or hostname
       isArray: false
       name: endpoint
       required: true
       secret: false
-    description: Updates the content of the given client.
+    description: Updates the content of a specified client.
     execution: false
     name: sep-update-endpoint-content
     outputs:
@@ -350,7 +349,7 @@ script:
       description: The endpoint that is being updated
       type: String
     - contextPath: SEPM.Update.CommandID
-      description: Command ID to check status
+      description: Command ID to check status of
       type: String
   - arguments:
     - default: false
@@ -365,7 +364,7 @@ script:
       name: hardwareKey
       required: true
       secret: false
-    description: Moves a client to a group
+    description: Moves a client to a group.
     execution: false
     name: sep-move-client-to-group
   isfetch: false
@@ -376,13 +375,11 @@ script:
     import re
 
     requests.packages.urllib3.disable_warnings()
-
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
-
     ENDPOINTS_INFO_DEFAULT_COLUMNS = [
         'computerName',
         'ipAddresses',
@@ -403,7 +400,6 @@ script:
         'agentTimestamp',
         'hardwareKey'
     ]
-
     GROUPS_INFO_DEFAULT_COLUMNS = [
         'fullPathName',
         'numberOfPhysicalComputers',
@@ -414,15 +410,12 @@ script:
         'created',
         'id'
     ]
-
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    LITERALS    @@@@@@@@@@@@@@@@@@@@@@@@@@
-
     EPOCH_MINUTE = 60 * 1000
     EPOCH_HOUR = 60 * EPOCH_MINUTE
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@    HELPER FUNCTIONS    @@@@@@@@@@@@@@@@@@@@@@@@@@
-
     def fix_url(base):
         return base if base.endswith('/') else (base + '/')
 
@@ -535,25 +528,21 @@ script:
     def get_command_status_details(token, command_id):
         xml = build_command_xml('<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(command_id))
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
-
         return res_json
 
 
     def build_command_response_output(title, command_id, message, response):
         cmd_status_details = response.get('cmdStatusDetail')
         cmd_status_details.pop('hardwareKey', None)
-
         md = tableToMarkdown(title, cmd_status_details) + '\n'
         md += '### Command ID: {0}\n'.format(command_id)
         md += '### ' + message;
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': {
                 'cmdStatusDetail': cmd_status_details,
                 'commandId': command_id
-
             },
             'HumanReadable': md,
             'EntryContext': {
@@ -565,14 +554,12 @@ script:
     def get_computer_id_by_ip(token, ip):
         xml = build_client_xml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip))
         res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
-
         return demisto.get(json.loads(res_json), 'Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId')
 
 
     def get_computer_id_by_hostname(token, hostname):
         xml = build_client_xml('<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames></cli:getComputersByHostName>'.format(hostname))
         res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
-
         return demisto.get(json.loads(res_json), 'Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId')
 
 
@@ -596,7 +583,6 @@ script:
         xml = build_command_xml('<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList></com:runClientCommandUpdateContent>'.format(computer_id))
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
         command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId')
-
         if not command_id:
             error_code = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode')
             error_message = demisto.get(res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
@@ -611,7 +597,6 @@ script:
         xml = build_command_xml('<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList><scanType>{1}</scanType></com:runClientCommandScan>'.format(computer_id, scan_type))
         res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
         command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId')
-
         if not command_id:
             error_code = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorCode')
             error_message = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorMessage')
@@ -726,7 +711,8 @@ script:
                 'MACAddresses': content.get('macAddresses'),
                 'BIOSVesrsion': content.get('biosVersion'),
                 'DHCPServer': content.get('dhcpServer'),
-                'HardwareKey': content.get('hardwareKey')
+                'HardwareKey': content.get('hardwareKey'),
+                'LastScanTime': epochToTimestamp(content.get('lastScanTime'))
             })
         return filtered_json_response, entry_context
 
@@ -750,7 +736,6 @@ script:
             for header in GROUPS_INFO_DEFAULT_COLUMNS:
                 group[header] = entry[header]
                 sepm_groups.append(group)
-
         return filtered_json_response, json_res, sepm_groups
 
 
@@ -758,7 +743,6 @@ script:
         command_status_json = get_command_status_details(token, command_id)
         cmd_status_detail = demisto.get(json.loads(command_status_json), 'Envelope.Body.getCommandStatusDetailsResponse.CommandStatusDetailResult.cmdStatusDetail')
         cmd_status_detail.pop('hardwareKey', None)
-
         state_id = cmd_status_detail.get('stateId')
         is_done = False
         if state_id == '2' or state_id == '3':
@@ -778,7 +762,6 @@ script:
         action_type = 'Quarantine' if action == 'Add' else 'Undo'
         computer_id = get_id_by_endpoint(token, endpoint)
         command_id = quarantine(token, computer_id, action_type)
-
         return command_id
 
 
@@ -811,12 +794,9 @@ script:
         return command_id
 
 
-
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
     def system_info_command(token):
         insecure = demisto.getParam('insecure')
         version_json = do_get(token, False, 'sepm/api/v1/version')
@@ -825,15 +805,12 @@ script:
             'version': version_json,
             'avdef': avdef_json
         }
-
         md = '## System Information\n'
         md += tableToMarkdown('Version', version_json)
         md += tableToMarkdown('AV Definitions', avdef_json)
-
         context = avdef_json.get('publishedBySymantec')
         if type(context) is dict:
             context = createContext(context, removeNull=True)
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -850,7 +827,6 @@ script:
         client_content_json, client_version, last_update_date = get_client_content(token, time_zone)
         md = '## Client Content, last updated on {0}\n'.format(last_update_date)
         md += tableToMarkdown('Client Content Versions', client_version)
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -859,7 +835,6 @@ script:
             'EntryContext': {
                 'SEPM.ClientContentVersions': client_version,
                 'SEPM.LastUpdated': last_update_date
-
             }
         })
 
@@ -870,13 +845,10 @@ script:
         os = demisto.getArg('os')
         page_size = demisto.getArg('pageSize')
         columns = demisto.getArg('columns')
-
         filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size, columns)
         columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
-
         md = create_endpints_filter_string(computer_name, last_update, os, page_size)
         md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -891,10 +863,8 @@ script:
 
     def groups_info_command(token):
         columns = demisto.getArg('columns')
-
         filtered_json_response, json_res, sepm_groups = get_groups_info(token, columns)
         columns_list = choose_columns(columns, GROUPS_INFO_DEFAULT_COLUMNS)
-
         md = tableToMarkdown('Groups Information', filtered_json_response, columns_list)
         demisto.results({
             'Type': entryTypes['note'],
@@ -911,12 +881,10 @@ script:
 
     def command_status(token):
         command_id = demisto.getArg('commandId')
-
         cmd_status_detail, message = get_command_status(token, command_id)
         md = '### Command ID: {0}\n'.format(command_id)
         md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
         md += '### ' + message;
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -966,7 +934,6 @@ script:
     def list_locations_command(token):
         group_id = demisto.getArg('groupID')
         url_resp, location_ids = get_location_list(token, group_id)
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -982,7 +949,6 @@ script:
     def endpoint_quarantine_command(token):
         endpoint = demisto.getArg('endpoint')
         action = demisto.getArg('actionType')
-
         command_id = endpoint_quarantine(token, endpoint, action)
         message = '### Initiated quarantine for endpoint {0}. Command ID: {1}.'.format(endpoint, command_id) if action == 'Add' else '### Removing endpoint: {0} from quarantine. Command ID: {1}.'.format(
             endpoint, command_id)
@@ -991,7 +957,6 @@ script:
             'Action': action,
             'Endpoint': endpoint
         }
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
@@ -1007,7 +972,6 @@ script:
     def scan_endpoint_command(token):
         endpoint = demisto.getArg('endpoint')
         scan_type = demisto.getArg('scanType')
-
         command_id = scan_endpoint(token, endpoint, scan_type)
         message = '### Initiated scan on endpoint: {0} with type: {1}. Command ID: {2}.'.format(endpoint, scan_type, command_id)
         context = {
@@ -1015,7 +979,6 @@ script:
             'Type': scan_type,
             'Endpoint': endpoint
         }
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
@@ -1030,14 +993,12 @@ script:
 
     def update_endpoint_content_command(token):
         endpoint = demisto.getArg('endpoint')
-
         command_id = update_endpoint_content(token, endpoint)
         message = '### Updating endpoint: {0}. Command ID: {1}.'.format(endpoint, command_id)
         context = {
             'CommandID': command_id,
             'Endpoint': endpoint
         }
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
@@ -1048,6 +1009,7 @@ script:
                 'SEPM.Update': context
             }
         })
+
 
     def move_client_to_group(token, group_id, hardware_key):
         body = [{
@@ -1066,7 +1028,6 @@ script:
     def move_client_to_group_command(token):
         group_id = demisto.getArg('groupID')
         hardware_key = demisto.getArg('hardwareKey')
-
         response, message = move_client_to_group(token, group_id, hardware_key)
         demisto.results(
             {
@@ -1114,16 +1075,9 @@ script:
             update_endpoint_content_command(token)
         if current_command == 'sep-move-client-to-group':
             move_client_to_group_command(token)
-
     except Exception, ex:
         demisto.results('Cannot perform the command: {}. Error: {}'.format(current_command, ex))
   type: python
 image: data:image/png;base64,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
-releaseNotes: Enhancments for the integration. New commands sep-list-policies - Retrieve
-  a list of existing policies, sep-assign-policie - Assign existing policy to a designated
-  location. sep-list-locations - Retrieve a list of location ID's for a given group.
-  sep-endpoint-quarantine - Quarantines the endpoint according to its policy. sep-scan-endpoint
-  - Scans an endpoint. sep-update-endpoint-content - Updates the content of the given
-  client.
 tests:
-- SymantecEndpointProtection_Test
+  - SymantecEndpointProtection_Test

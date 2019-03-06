@@ -426,13 +426,16 @@ script:
         """
         LOG('Requestig to update incident ' + incident_id)
 
-        body = "{{\"status\": \"{}\",\"asignee\": \"{}\"}}".format(status, assignee)
+        body = {
+                'assignee': assignee,
+                'status': status
+            }
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         response = http_request(
             'PATCH',
             url,
             headers = DEFAULT_HEADERS,
-            body = body
+            body = json.dumps(body)
         )
         return response
 
@@ -1073,7 +1076,7 @@ script:
       description: The timestamp of the alert created date.
     - contextPath: NetWitness.Alerts.source
       description: The source of this alert. For example, "Event Stream Analysis",
-        "Malware Analysis", etc.
+                     "Malware Analysis", etc.
     - contextPath: NetWitness.Alerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
     - contextPath: NetWitness.Alerts.type
@@ -1313,7 +1316,7 @@ script:
       description: The timestamp of the alert created date.
     - contextPath: NetWitness.Alerts.source
       description: The source of this alert. For example, "Event Stream Analysis",
-        "Malware Analysis", etc.
+                     "Malware Analysis", etc.
     - contextPath: NetWitness.Alerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
     - contextPath: NetWitness.Alerts.type
@@ -1358,4 +1361,3 @@ script:
   isfetch: true
 tests:
   - RSA NetWitness Test
-releaseNotes: "Fixed disabling proxy"
