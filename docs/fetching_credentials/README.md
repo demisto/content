@@ -19,7 +19,7 @@ It would look like something like this: ![image](https://user-images.githubuserc
 
 ### fetch-credentials Command
 
-When Demisto will try to fetch credentials from the integrations, it will call a command called `fetch-credentials`.
+When Demisto tries to fetch credentials from the integrations, it will call a command called `fetch-credentials`.
 This is where you should implement the credentials retrieving logic:
 ```python
 if demisto.command() == 'fetch-credentials':
@@ -37,7 +37,7 @@ In the `fetch_credentials` function, you should retrieve the credentials from th
 }
 ```
 
-So in the end you should have a credentials list that contains those objects.
+In the end you should have a credentials list that contains the above objects.
 
 When you're done creating the credentials objects, send them to the credentials store by using:
 `demisto.credentials(credentials)`.
