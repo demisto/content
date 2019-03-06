@@ -501,6 +501,5 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: "-"
 tests:
   - Wildfire Test
