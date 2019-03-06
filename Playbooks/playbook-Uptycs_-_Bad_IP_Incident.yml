@@ -1,0 +1,274 @@
+id: e540aa88-4d40-408f-80c0-6d94eaca6ec8
+version: 38
+name: Uptycs - Bad IP Incident
+description: Get information about processes which open connections to known Bad IP's
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+    type: start
+    task:
+      id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+    type: regular
+    task:
+      id: 97dcd290-c96b-4ece-8fa6-4672eeff90a2
+      version: -1
+      name: Get Bad IP alert
+      script: '|||uptycs-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+      - "3"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      asset_id: {}
+      code: {}
+      end_window: {}
+      host_name:
+        simple: '"kyle-mbp-work"'
+      host_name_is: {}
+      host_name_like: {}
+      hostname:
+        simple: kyle-mbp-work
+      id:
+        simple: ${inputs.alert_id}
+      limit: {}
+      start_window: {}
+      time_ago: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 62d84fd9-18d5-48b3-834f-aaa6b8501e06
+    type: regular
+    task:
+      id: 62d84fd9-18d5-48b3-834f-aaa6b8501e06
+      version: -1
+      name: Get process Info
+      script: '|||uptycs-get-process-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Alerts.upt_asset_id}
+      host_name_is: {}
+      pid:
+        simple: ${Uptycs.Alerts.pid}
+      time:
+        simple: ${Uptycs.Alerts.alert_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 01c181f8-1da4-4a44-8f10-c0543d37e3fd
+    type: regular
+    task:
+      id: 01c181f8-1da4-4a44-8f10-c0543d37e3fd
+      version: -1
+      name: Get child processes
+      script: '|||uptycs-get-process-child-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Parent.upt_asset_id}
+      host_name_is: {}
+      limit: {}
+      parent:
+        simple: ${Uptycs.Parent.pid}
+      parent_end_time:
+        simple: ${Uptycs.Parent.upt_remove_time}
+      parent_start_time:
+        simple: ${Uptycs.Parent.upt_add_time}
+      pid:
+        simple: ${Uptycs.Proc.parent}
+      time:
+        simple: ${Uptycs.Proc.upt_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: c0cc24ae-cc52-41b1-8cd3-89116a8dfc5c
+    type: regular
+    task:
+      id: c0cc24ae-cc52-41b1-8cd3-89116a8dfc5c
+      version: -1
+      name: Get information about the connection that was opened
+      script: '|||uptycs-get-process-open-sockets'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Alerts.upt_asset_id}
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      ip:
+        simple: ${Uptycs.Alerts.value}
+      start_window: {}
+      time:
+        simple: ${Uptycs.Alerts.alert_time}
+      time_ago: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 1a0eb56e-6dea-4081-862d-50c880103f29
+    type: regular
+    task:
+      id: 1a0eb56e-6dea-4081-862d-50c880103f29
+      version: -1
+      name: Get parent info
+      script: '|||uptycs-get-parent-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Proc.upt_asset_id}
+      child_add_time:
+        simple: ${Uptycs.Proc.upt_add_time}
+      host_name_is: {}
+      parent:
+        simple: ${Uptycs.Proc.parent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 76b57ec9-f617-444e-80ff-aa139a3b9fe0
+    type: regular
+    task:
+      id: 76b57ec9-f617-444e-80ff-aa139a3b9fe0
+      version: -1
+      name: Get threat indicator info
+      script: '|||uptycs-get-threat-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_id:
+        simple: ${Uptycs.Alerts.threat_indicator_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 9356e956-3af6-4b7f-8b68-f30cfb8fdb76
+    type: regular
+    task:
+      id: 9356e956-3af6-4b7f-8b68-f30cfb8fdb76
+      version: -1
+      name: Get threat source info
+      script: '|||uptycs-get-threat-source'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      threat_source_id:
+        simple: ${Uptycs.ThreatIndicator.threat_source_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    simple: ${incident.alertid}
+  required: true
+  description: Unique Uptycs ID for a particular alert
+outputs: []

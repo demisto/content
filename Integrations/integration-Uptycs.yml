@@ -1,0 +1,2562 @@
+commonfields:
+  id: Uptycs
+  version: -1
+name: Uptycs
+display: Uptycs
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: Fetch data from Uptycs DB
+configuration:
+- display: apifile key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: apifile secret
+  name: secret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: apifile domain
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: apifile customer_id
+  name: customer_id
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: ""
+  name: fetch_time
+  defaultvalue: 1 day
+  type: 0
+  required: false
+script:
+  script: |-
+    #!/usr/bin/python
+
+    ###############################################################################
+    # import required libraries package
+    ###############################################################################
+
+    import os
+    import sys
+    import getopt
+    import json
+    import jwt
+    from datetime import datetime, timedelta
+    import requests
+    import argparse
+    import urllib3
+    import daterangeparser
+    from pygments import highlight, lexers, formatters
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ###############################################################################
+    # supress traceback call. Use it only for troubleshoot/debug
+    ###############################################################################
+    sys.tracebacklimit = 0
+
+    ###############################################################################
+    # packages to handle IOerror
+    ###############################################################################
+
+    from signal import signal, SIGPIPE, SIG_DFL
+    signal(SIGPIPE, SIG_DFL)
+
+
+    if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    '''GLOBAL VARS'''
+
+    VERIFY_CERT = True if demisto.params().get('insecure') == False else False
+    KEY = demisto.params().get('key')
+    SECRET = demisto.params().get('secret')
+    DOMAIN = demisto.params().get('domain')
+    CUSTOMER_ID = demisto.params().get('customer_id')
+    FETCH_TIME = demisto.params().get('fetch_time')
+
+    '''HELPER FUNCTIONS'''
+
+    def generate_headers(data, key, secret):
+        header={}
+        utcnow=datetime.utcnow()
+        date=utcnow.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        auth_var = jwt.encode({'iss': key}, secret, algorithm='HS256').decode('utf-8')
+        authorization="Bearer %s" % (auth_var)
+        header['date']=date
+        header['Authorization']=authorization
+        return header
+
+    def restcall(method, api, post_data_file):
+
+        header=generate_headers('' , KEY , SECRET)
+
+        url=("https://%s.uptycs.io/public/api/customers/%s%s" %
+                (DOMAIN,CUSTOMER_ID,api))
+
+        if method == 'GET':
+            response = requests.get(url, headers=header, verify=VERIFY_CERT )
+
+        if method == 'POST':
+            post_data = post_data_file
+            response = requests.post(url, headers=header,
+                    json=post_data, verify=VERIFY_CERT )
+
+        if method == 'PUT':
+            post_data = post_data_file
+            response = requests.put(url, headers=header,
+                    json=post_data, verify=VERIFY_CERT )
+
+        if method != 'GET' and method != 'POST' and method != 'PUT':
+            return 0
+        else:
+            return response.json()
+
+    def severity_to_int(level_string):
+        level_int = 0
+        if(level_string == 'low'):
+            level_int = 1
+        if(level_string == 'medium'):
+            level_int = 2
+        if(level_string == 'high'):
+            level_int = 3
+
+        return level_int
+
+    def remove_context_entries(context, context_entries_to_keep):
+        for index in range(len(context)):
+            for key in context[index].keys():
+                if key not in context_entries_to_keep:
+                    context[index].pop(key, None)
+
+        return context
+
+    def apply_os_cut(query, os):
+            if "WHERE" not in query:
+                query = ("%s WHERE" % query)
+            else:
+                query = ("%s AND" % query)
+
+            op_systems = os.split("/")
+            for index in range(len(op_systems)):
+                query = ("%s os LIKE '%%%s%%'" % (query,op_systems[index]))
+                if index < len(op_systems) - 1:
+                    query = ("%s OR" % query)
+
+            return query
+
+    def apply_equals_cuts(query, cuts):
+        if all(value == None for value in cuts.values()):
+            return query
+        else:
+            if "WHERE" not in query:
+                query = ("%s WHERE" % query)
+            else:
+                query = ("%s AND" % query)
+
+            use_and=False
+            for key in cuts:
+                if cuts.get(key)!=None:
+                    if use_and:
+                        query = ("%s AND" % query)
+                    if "time" in key:
+                        query = ("%s %s=CAST('%s' AS TIMESTAMP)" % (query,key,cuts.get(key)))
+                    else:
+                        query = ("%s %s='%s'" % (query,key,cuts.get(key)))
+                    use_and=True
+            return query
+
+    def apply_like_cuts(query, cuts):
+        if all(value == None for value in cuts.values()):
+            return query
+        else:
+            if "WHERE" not in query:
+                query = ("%s WHERE" % query)
+            else:
+                query = ("%s AND" % query)
+            i=0
+            for key in cuts:
+                i=i+1
+                if cuts.get(key)!=None:
+                    query = ("%s %s LIKE '%%%s%%'" % (query,key,cuts.get(key)))
+                    if i<len(cuts):
+                        query = ("%s AND" % query)
+
+            return query
+
+    def apply_datetime_cuts(query, name, start, finish):
+        if(start==None and finish==None):
+            return query
+
+        if "WHERE" not in query:
+            query = ("%s WHERE" % query)
+        else:
+            query = ("%s AND" % query)
+
+        if(finish==None):
+            query = ("%s %s AFTER CAST('%s' AS TIMESTAMP)" % (query, name, start) )
+        if(start==None):
+            query = ("%s %s BEFORE CAST('%s' AS TIMESTAMP)" % (query, name, finish) )
+        if(start!=None and finish!=None):
+            query = ("%s %s BETWEEN CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP)" % (query, name, start, finish))
+
+        return query
+
+    def uptycs_parse_date_range(timeago, start_time, end_time):
+
+        if timeago==None:
+            timeago="1 day"
+
+        if(end_time!=None and start_time==None):
+            number = timeago.split(" ")[0]
+            unit = timeago.split(" ")[1]
+            if unit=='minutes' or unit=='minute':
+                temp_time_ago = datetime.strftime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000") - timedelta(minutes=number), "%Y-%m-%d %H:%M:%S.000")
+            if unit=='hours' or unit=='hour':
+                temp_time_ago = datetime.strftime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000") - timedelta(hours=number), "%Y-%m-%d %H:%M:%S.000")
+            if unit=='days' or unit=='day':
+                temp_time_ago = datetime.strftime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000") - timedelta(days=number), "%Y-%m-%d %H:%M:%S.000")
+            if unit=='months' or unit=='month':
+                temp_time_ago = datetime.strftime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000") - timedelta(days=number*30), "%Y-%m-%d %H:%M:%S.000")
+            if unit=='years' or unit=='year':
+                temp_time_ago = datetime.strftime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S.000") - timedelta(days=number*365), "%Y-%m-%d %H:%M:%S.000")
+        else:
+            temp_time_ago, now = parse_date_range(timeago, date_format="%Y-%m-%d %H:%M:%S.000")
+
+        end=(end_time if end_time!=None else now)
+        begin=(start_time if start_time!=None else temp_time_ago)
+
+        return begin, end
+
+    '''COMMAND FUNCTIONS'''
+
+    def uptycs_run_query():
+        '''return results of posted query'''
+        http_method = 'POST'
+        query = demisto.args().get('query')
+        if(demisto.args().get('query_type')=='global'):
+            api_call = '/query'
+            post_data = {
+                'query': query
+            }
+        else:
+            api_call = '/assets/query'
+            if(demisto.args().get('asset_id')!=None):
+                ID =  {
+                        "id" : {
+                            "equals": demisto.args().get('asset_id')
+                            }
+                        }
+            elif(demisto.args().get('host_name_is')!=None):
+                ID =  {
+                        "host_name" : {
+                            "equals": demisto.args().get('host_name_is')
+                            }
+                        }
+            elif(demisto.args().get('host_name_like')!=None):
+                ID =  {
+                        "host_name" : {
+                            "like": '%'+demisto.args().get('host_name_like')+'%'
+                            }
+                        }
+            else:
+                ID =  {
+                        "host_name" : {
+                            "like": '%%'
+                            }
+                        }
+
+            post_data = {
+                        "type": "realtime",
+                        "query": query,
+                        "filtering": {
+                            "filters": ID
+                                    }
+
+                        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_run_query_command():
+        query_results = uptycs_run_query()
+        human_readable = tableToMarkdown('Uptycs Query Result',
+            query_results.get('items'))
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.QueryResults': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_assets():
+        '''return list of assets enrolled in Uptycs'''
+        http_method = 'POST'
+        api_call = "/query"
+        query = 'SELECT * FROM upt_assets'
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                    "host_name":demisto.args().get('host_name_is'),
+                    "object_group_id":demisto.args().get('object_group_id')
+                    }
+        query = apply_equals_cuts(query, equal_cuts)
+        like_cuts = {
+                    "host_name":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        os = demisto.args().get('os')
+        if os:
+            query = apply_os_cut(query, os)
+
+        query = ("%s ORDER BY last_activity_at DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        queryType = 'global'
+        post_data = {
+                    "query":query,
+                    "queryType":queryType
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_assets_command():
+        query_results = uptycs_get_assets()
+        human_readable = tableToMarkdown('Uptycs Assets',
+            query_results.get('items'),
+            ['id','host_name','os','os_version', 'osquery_version','last_activity_at'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['id', 'location', 'latitude', 'longitude',
+            'os_flavor', 'os', 'last_enrolled_at', 'status', 'host_name',
+            'os_version', 'osquery_version', 'last_activity_at', 'upt_asset_id',
+            'created_at']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results.get('items'),
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Assets(val.id == obj.id)': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_alerts():
+        '''return list of alerts'''
+        http_method = 'POST'
+        api_call = "/query"
+        query = 'SELECT a.*, u.host_name FROM upt_alerts a JOIN upt_assets u ON a.upt_asset_id=u.id'
+        limit = demisto.args().get('limit')
+
+        alert_id = demisto.args().get('alert_id')
+        if alert_id!=None:
+            equal_cuts = {
+                        "a.id":alert_id
+                        }
+
+            query = apply_equals_cuts(query, equal_cuts)
+        else:
+            equal_cuts = {
+                        "upt_asset_id":demisto.args().get('asset_id'),
+                        "code":demisto.args().get('code'),
+                        "host_name":demisto.args().get('host_name_is'),
+                        "value":demisto.args().get('value')
+                        }
+            query = apply_equals_cuts(query, equal_cuts)
+            like_cuts = {
+                        "host_name":demisto.args().get('host_name_like')
+                        }
+            query = apply_like_cuts(query, like_cuts)
+
+            time_ago = demisto.args().get('time_ago')
+            start_window = demisto.args().get('start_window')
+            end_window = demisto.args().get('end_window')
+
+            if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+                begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+                query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+            query = ("%s ORDER BY a.alert_time DESC" % query)
+
+            if limit != -1 and limit != None:
+                query = ("%s LIMIT %s" % (query,limit))
+
+        queryType = 'global'
+        post_data = {
+                    "query":query,
+                    "queryType":queryType
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_alerts_command():
+        query_results = uptycs_get_alerts()
+        context = query_results.get('items')
+        context_entries_to_keep = ['id', 'host_name', 'grouping', 'assigned_to',
+            'alert_time', 'updated_at', 'metadata', 'asset', 'status', 'upt_asset_id',
+            'created_at', 'description', 'severity', 'value']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        for index in range(len(context)):
+            if bool(json.loads(context[index].get('metadata')).get('pid')):
+                context[index]['pid'] = json.loads(context[index].get('metadata')).get('pid')
+            else:
+                context[index]['pid'] = 'Not applicable or unknown'
+            if bool(json.loads(context[index].get('metadata')).get('indicatorId')):
+                context[index]['threat_indicator_id'] = json.loads(context[index].get('metadata')).get('indicatorId')
+                context[index]['threat_source_name'] = json.loads(context[index].get('metadata')).get('indicatorSummary').get('threatSourceName')
+            else:
+                context[index]['threat_indicator_id'] = 'No threat indicator for this alert'
+                context[index]['threat_source_name'] = 'No threat source for this alert'
+
+        human_readable = tableToMarkdown('Uptycs Alerts: ',
+            context,
+            ['upt_asset_id', 'host_name', 'grouping','alert_time', 'description', 'value', 'severity', 'threat_indicator_id', 'threat_source_name'])
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Alerts(val.id == obj.id)': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_events():
+        '''return list of events'''
+        http_method = 'POST'
+        api_call = "/query"
+        query = 'SELECT a.*, u.host_name FROM upt_events a JOIN upt_assets u ON a.upt_asset_id=u.id'
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                    "upt_asset_id":demisto.args().get('asset_id'),
+                    "code":demisto.args().get('code'),
+                    "host_name":demisto.args().get('host_name_is')
+                    }
+        query = apply_equals_cuts(query, equal_cuts)
+        like_cuts = {
+                    "host_name":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY a.event_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        queryType = 'global'
+        post_data = {
+                    "query":query,
+                    "queryType":queryType
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_events_command():
+        query_results = uptycs_get_events()
+        context = query_results.get('items')
+        context_entries_to_keep = ['host_name', 'grouping', 'assigned_to',
+            'event_time', 'updated_at', 'metadata', 'asset', 'status', 'id',
+            'created_at', 'description', 'severity', 'value']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        human_readable = tableToMarkdown('Uptycs Events',
+            query_results.get('items'),
+            ['host_name', 'grouping','event_time', 'description', 'value', 'severity'])
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Events(val.id == obj.id)': query_results.get('items')
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_alert_rules():
+        '''return list of alert rules'''
+        http_method = 'GET'
+        api_call = "/alertRules"
+        post_data = {}
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_alert_rules_command():
+        query_results = uptycs_get_alert_rules()
+        human_readable = tableToMarkdown('Uptycs Alert Rules',
+            query_results.get('items'),
+            ['name', 'description', 'grouping', 'enabled', 'updatedAt', 'code'])
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results.get('items'),
+                 'HumanReadable': human_readable,
+                }
+
+        return entry
+
+    def uptycs_get_event_rules():
+        '''return list of event rules'''
+        http_method = 'GET'
+        api_call = "/eventRules"
+        post_data = {}
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_event_rules_command():
+        query_results = uptycs_get_event_rules()
+        human_readable = tableToMarkdown('Uptycs Event Rules',
+            query_results.get('items'),
+            ['name', 'description', 'grouping', 'enabled', 'updatedAt', 'code'])
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results.get('items'),
+                 'HumanReadable': human_readable,
+                }
+
+        return entry
+
+    def uptycs_get_process_open_files():
+        '''return information for processes which opened a file'''
+        http_method = 'POST'
+        api_call = '/query'
+        query = "select * from process_open_files"
+        limit = demisto.args().get('limit')
+
+        time = demisto.args().get('time')
+        equal_cuts = {
+                "upt_asset_id":demisto.args().get('asset_id'),
+                "upt_hostname":demisto.args().get('host_name_is'),
+                "upt_time":time
+                }
+        query = apply_equals_cuts(query, equal_cuts)
+
+        like_cuts = {
+                    "upt_hostname":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_open_files_command():
+        query_results = uptycs_get_process_open_files()
+        human_readable = tableToMarkdown('PID for process which has opened a file',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'path', 'fd',
+                'upt_time'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['upt_hostname', 'pid', 'path', 'fd',
+                'upt_time']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Files': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_process_open_sockets():
+        '''return information for processes which opened a socket'''
+        http_method = 'POST'
+        api_call = '/query'
+        time = demisto.args().get('time')
+        query = "select * from process_open_sockets"
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                "remote_address":demisto.args().get('ip'),
+                "upt_asset_id":demisto.args().get('asset_id'),
+                "upt_hostname":demisto.args().get('host_name_is'),
+                "upt_time":time
+                }
+        query = apply_equals_cuts(query, equal_cuts)
+
+        like_cuts = {
+                    "upt_hostname":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_open_sockets_command():
+        query_results = uptycs_get_process_open_sockets()
+        human_readable = tableToMarkdown('PID for process with open connection',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'local_address', 'remote_address',
+                'upt_time', 'local_port', 'remote_port', 'socket'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Sockets': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_socket_events():
+        '''return information for processes which opened a socket'''
+        http_method = 'POST'
+        api_call = '/query'
+        time = demisto.args().get('time')
+        query = "select * from socket_events"
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                "remote_address":demisto.args().get('ip'),
+                "upt_asset_id":demisto.args().get('asset_id'),
+                "upt_hostname":demisto.args().get('host_name_is'),
+                "upt_time":time
+                }
+        query = apply_equals_cuts(query, equal_cuts)
+
+        like_cuts = {
+                    "upt_hostname":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_socket_events_command():
+        query_results = uptycs_get_socket_events()
+        human_readable = tableToMarkdown('Socket events',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'local_address', 'remote_address',
+                'upt_time', 'local_port', 'action'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.SocketEvents': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_processes():
+        '''return process which are running or have run on a registered Uptycs asset'''
+        http_method = 'POST'
+        api_call = '/query'
+        time = demisto.args().get('time')
+        query = "select * from processes"
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                "upt_asset_id":demisto.args().get('asset_id'),
+                "upt_hostname":demisto.args().get('host_name_is'),
+                "upt_time":time
+                }
+        query = apply_equals_cuts(query, equal_cuts)
+
+        like_cuts = {
+                    "upt_hostname":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None or end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_processes_command():
+        query_results = uptycs_get_processes()
+        human_readable = tableToMarkdown('Processes',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'name', 'path',
+                'upt_time', 'parent', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Process': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_process_events():
+        '''return process events which have executed on a registered Uptycs asset'''
+        http_method = 'POST'
+        api_call = '/query'
+        time = demisto.args().get('time')
+        query = "select * from process_events"
+        limit = demisto.args().get('limit')
+
+        equal_cuts = {
+                "upt_asset_id":demisto.args().get('asset_id'),
+                "upt_hostname":demisto.args().get('host_name_is'),
+                "upt_time":time
+                }
+        query = apply_equals_cuts(query, equal_cuts)
+
+        like_cuts = {
+                    "upt_hostname":demisto.args().get('host_name_like')
+                    }
+        query = apply_like_cuts(query, like_cuts)
+
+        time_ago = demisto.args().get('time_ago')
+        start_window = demisto.args().get('start_window')
+        end_window = demisto.args().get('end_window')
+
+        if time==None and (time_ago!=None or (start_window!=None and end_window!=None)):
+            begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+
+        if time==None:
+            query = apply_datetime_cuts(query, "upt_time", begin, end)
+
+        query = ("%s ORDER BY upt_time DESC" % query)
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_events_command():
+        query_results = uptycs_get_process_events()
+        human_readable = tableToMarkdown('Process events',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'path',
+                'upt_time', 'parent', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ProcessEvents': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_process_information():
+        '''return process information'''
+        http_method = 'POST'
+        api_call = '/query'
+
+        query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
+            remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
+            temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
+            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
+            % (demisto.args().get('pid'), demisto.args().get('time')))
+
+        equal_cuts = {
+            "upt_asset_id":demisto.args().get('asset_id'),
+            "upt_hostname":demisto.args().get('host_name_is')
+            }
+
+        query = apply_equals_cuts(query, equal_cuts)
+
+        query = ("%s ORDER BY upt_add_time DESC LIMIT 1" % query)
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_information_command():
+        query_results = uptycs_get_process_information()
+        human_readable = tableToMarkdown('Process information',
+            query_results.get('items'),
+            ['upt_hostname', 'parent', 'pid', 'name', 'path', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Proc': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_process_event_information():
+        '''return process event information'''
+        http_method = 'POST'
+        api_call = '/query'
+
+        query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
+            (demisto.args().get('pid'), demisto.args().get('time')))
+
+        equal_cuts = {
+            "upt_asset_id":demisto.args().get('asset_id'),
+            "upt_hostname":demisto.args().get('host_name_is')
+            }
+
+        query = apply_equals_cuts(query, equal_cuts)
+
+        query = ("%s ORDER BY upt_time DESC LIMIT 1" % query)
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_event_information_command():
+        query_results = uptycs_get_process_event_information()
+        human_readable = tableToMarkdown('Process event information',
+            query_results.get('items'),
+            ['upt_hostname', 'parent', 'pid', 'path', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ProcEvent': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_parent_information():
+        '''return parent process information'''
+        http_method = 'POST'
+        api_call = '/query'
+
+        query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
+            remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
+            temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr ON aa.upt_hash=rr.upt_hash), \
+            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            SELECT * FROM new_proc WHERE pid=%s AND CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time" \
+            % (demisto.args().get('parent'), demisto.args().get('child_add_time')))
+
+        equal_cuts = {
+            "upt_asset_id":demisto.args().get('asset_id'),
+            "upt_hostname":demisto.args().get('host_name_is')
+            }
+
+        query = apply_equals_cuts(query, equal_cuts)
+
+        query = ("%s ORDER BY upt_add_time DESC LIMIT 1" % query)
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_parent_information_command():
+        query_results = uptycs_get_parent_information()
+        human_readable = tableToMarkdown('Parent process information',
+            query_results.get('items'),
+            ['upt_hostname', 'parent', 'pid', 'name', 'path', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Parent': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_parent_event_information():
+        '''return process event information'''
+        http_method = 'POST'
+        api_call = '/query'
+
+        query=("SELECT * FROM process_events WHERE pid=%s AND upt_time<=CAST('%s' AS TIMESTAMP)" % \
+            (demisto.args().get('parent'), demisto.args().get('child_add_time')))
+
+        equal_cuts = {
+            "upt_asset_id":demisto.args().get('asset_id'),
+            "upt_hostname":demisto.args().get('host_name_is')
+            }
+
+        query = apply_equals_cuts(query, equal_cuts)
+
+        query = ("%s ORDER BY upt_time DESC LIMIT 1" % query)
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_parent_event_information_command():
+        query_results = uptycs_get_parent_event_information()
+        human_readable = tableToMarkdown('Parent process event information',
+            query_results.get('items'),
+            ['upt_hostname', 'parent', 'pid', 'path', 'cmdline'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ParentEvent': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_process_child_processes():
+        '''return child processes for a given parent process'''
+        http_method = 'POST'
+        api_call = '/query'
+        parent = demisto.args().get('parent')
+        limit = demisto.args().get('limit')
+        asset_id = demisto.args().get('asset_id')
+        parent_start = demisto.args().get('parent_start_time')
+        parent_end = demisto.args().get('parent_end_time')
+        query=("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
+            remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE upt_added=False), \
+            temp_proc AS (SELECT aa.upt_asset_id, aa.pid, aa.name, aa.path, aa.cmdline,\
+            aa.cwd, aa.parent, aa.pgroup, aa.upt_hostname, aa.upt_time as upt_add_time,\
+            rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN remove_times rr on aa.upt_hash=rr.upt_hash), \
+            new_proc AS (SELECT *, coalesce(temp_remove_time, current_timestamp) AS upt_remove_time FROM temp_proc) \
+            SELECT * FROM new_proc WHERE parent = %s AND upt_asset_id = '%s' AND \
+            upt_add_time BETWEEN CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY upt_add_time DESC" % \
+            (parent, asset_id, parent_start, parent_end))
+
+        if limit != -1 and limit != None:
+            query = ("%s LIMIT %s" % (query,limit))
+
+        query_type = 'global'
+        post_data = {
+            'query': query,
+            'queryType': query_type
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_process_child_processes_command():
+        query_results = uptycs_get_process_child_processes()
+        human_readable = tableToMarkdown('PIDs for child processes of a specified pid',
+            query_results.get('items'),
+            ['upt_hostname', 'pid', 'name', 'path', 'cmdline', 'upt_add_time'])
+        context = query_results.get('items')
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Children': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_set_alert_status():
+        '''set the status of an alert'''
+        http_method = 'PUT'
+        api_call = ('/alerts/%s' % demisto.args().get('alert_id'))
+
+        post_data = {
+            'status': demisto.args().get('status')
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_set_alert_status_command():
+        query_results = uptycs_set_alert_status()
+        human_readable = tableToMarkdown('Uptycs Alert Status',
+            query_results, ['id', 'code', 'status', 'createdAt', 'updatedAt'])
+        context = query_results
+        context['updatedBy'] = context.get('updatedByUser').get('name')
+        context['updatedByAdmin'] = context.get('updatedByUser').get('admin')
+        context['updatedByEmail'] = context.get('updatedByUser').get('email')
+        context_entries_to_keep = ['id', 'code', 'status', 'createdAt', 'updatedAt', 'updatedBy', 'updatedByAdmin', 'updatedByEmail']
+
+        for key in context.keys():
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.AlertStatus': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_set_asset_tag():
+        '''set a tag on an asset'''
+        http_method='GET'
+        api_call = ('/assets/%s' % demisto.args().get('asset_id'))
+        post_data={}
+        tags = restcall(http_method, api_call, post_data).get('tags')
+        tags.append(demisto.args().get('tag_key')+'='+demisto.args().get('tag_value'))
+
+        http_method = 'PUT'
+        post_data = {
+            'tags': tags
+        }
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_set_asset_tag_command():
+        query_results = uptycs_set_asset_tag()
+        human_readable = tableToMarkdown('Uptycs Asset Tag',
+            query_results, ['hostName', 'tags'])
+        context = query_results
+        context_entries_to_keep = ['hostName', 'tags']
+
+        for key in context.keys():
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.AssetTags': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_users():
+        '''return a list of uptycs users'''
+        http_method = 'GET'
+        api_call = '/users'
+        post_data = {}
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_users_command():
+        query_results = uptycs_get_users()
+        human_readable = tableToMarkdown('Uptycs Users',
+            query_results.get('items'), ['name', 'email', 'id', 'admin', 'active', 'createdAt', 'updatedAt'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['name', 'email', 'id', 'admin', 'active', 'createdAt', 'updatedAt']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.Users': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_user_information():
+        '''return information about a specfic Uptycs user'''
+        http_method = 'GET'
+        api_call = '/users/%s' % demisto.args().get('user_id')
+        post_data = {}
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_user_information_command():
+        query_results = uptycs_get_user_information()
+        human_readable = tableToMarkdown('Uptycs User Information',
+            query_results, ['name','email', 'id'])
+        context = query_results
+        context['userRoles'] = {
+                                context.get('userRoles')[0].get('role').get('name'):context.get('userRoles')[0].get('role'),
+                                }
+
+
+        context_entries_to_keep = ['name','email', 'id', 'userRoles', 'userObjectGroups']
+
+        for key in context.keys():
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.UserInfo': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_user_asset_groups():
+        '''return a list of users in a particular asset group'''
+        http_method = 'GET'
+        api_call = '/users'
+        post_data = {}
+
+        users = restcall(http_method, api_call, post_data).get('items')
+        user_ids = []
+        for index in range(len(users)):
+            user_ids.append(users[index].get('id'))
+
+        asset_group_id = demisto.args().get('asset_group_id')
+        users_in_group = {}
+        for user_id in user_ids:
+            http_method = 'GET'
+            api_call = '/users/%s' % user_id
+            post_data = {}
+            user_info = restcall(http_method, api_call, post_data)
+            obj_groups = user_info.get('userObjectGroups')
+            for obj_group in obj_groups:
+                if obj_group.get('objectGroupId') == asset_group_id:
+                    users_in_group[user_info.get('name')] = {
+                                                            'email':user_info.get('email'),
+                                                            'id':user_info.get('id')
+                                                             }
+
+        return users_in_group
+
+    def uptycs_get_user_asset_groups_command():
+        query_results = uptycs_get_user_asset_groups()
+        human_readable = tableToMarkdown('Uptycs User Asset Groups',
+            query_results)
+        context = query_results
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.UserGroups': context
+                    }
+                }
+
+        return entry
+
+
+    def uptycs_get_asset_groups():
+        '''return a list of asset groups'''
+        http_method = 'GET'
+        api_call = '/objectGroups'
+        post_data = {}
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_asset_groups_command():
+        query_results = uptycs_get_asset_groups()
+        human_readable = tableToMarkdown('Uptycs Users',
+            query_results.get('items'), ['id', 'name', 'description', 'objectType', 'custom', 'createdAt', 'updatedAt'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['id', 'name', 'description', 'objectType', 'custom', 'createdAt', 'updatedAt']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.AssetGroups': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_threat_indicators():
+        '''return a list of threat indcicators'''
+        http_method = 'GET'
+        api_call = '/threatIndicators'
+        post_data = {}
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        indicator = demisto.args().get('indicator')
+        if indicator!=None:
+            api_call = '%s?filters={"indicator":{"like":"%s"}}' % (api_call, indicator)
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_threat_indicators_command():
+        query_results = uptycs_get_threat_indicators()
+        human_readable = tableToMarkdown('Uptycs Threat Indicators',
+            query_results.get('items'), ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'isActive', 'threatId'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'isActive', 'threatId']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ThreatIndicators': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_threat_indicator():
+        '''return information about a particular threat indicator'''
+        http_method = 'GET'
+        api_call = '/threatIndicators/%s' % demisto.args().get('indicator_id')
+        post_data = {}
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_threat_indicator_command():
+        query_results = uptycs_get_threat_indicator()
+        human_readable = tableToMarkdown('Uptycs Threat Indicator',
+            query_results, ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'isActive', 'threatId'])
+        context = query_results
+        context['threat_source_id'] = context.get('threat').get('threatSourceId')
+        context['threat_vendor_id'] = context.get('threat').get('threatSource').get('threatVendorId')
+        context['threat_source_name'] = context.get('threat').get('threatSource').get('name')
+
+        context_entries_to_keep = ['id', 'indicator', 'description', 'indicatorType', 'createdAt', 'updatedAt' 'isActive', 'threatId', 'threat_source_id', 'threat_vendor_id', 'threat_source_name']
+
+        for key in context.keys():
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ThreatIndicator': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_threat_sources():
+        '''return a list of threat sources'''
+        http_method = 'GET'
+        api_call = '/threatSources'
+        limit = demisto.args().get('limit')
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        post_data = {}
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_threat_sources_command():
+        query_results = uptycs_get_threat_sources()
+        human_readable = tableToMarkdown('Uptycs Threat Sources',
+            query_results.get('items'), ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload'])
+        context = query_results.get('items')
+        context_entries_to_keep = ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload']
+
+        remove_context_entries(context, context_entries_to_keep)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ThreatSources': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_threat_source():
+        '''return information about a particular threat source'''
+        http_method = 'GET'
+        api_call = '/threatSources'
+
+        threat_source_id = demisto.args().get('threat_source_id')
+        if threat_source_id!=None:
+            api_call = '%s/%s' % (api_call, threat_source_id)
+
+        post_data = {}
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_threat_source_command():
+        query_results = uptycs_get_threat_source()
+        human_readable = tableToMarkdown('Uptycs Threat Sources',
+            query_results, ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload'])
+        context = query_results
+        context_entries_to_keep = ['name', 'description', 'url', 'enabled', 'custom', 'createdAt', 'lastDownload']
+
+        for key in context.keys():
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': query_results,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ThreatSources': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_get_threat_vendors():
+        '''return a list of threat vendors'''
+        http_method = 'GET'
+        api_call = '/threatVendors'
+        limit = demisto.args().get('limit')
+
+        threat_vendor_id = demisto.args().get('threat_vendor_id')
+        if threat_vendor_id!=None:
+            api_call = '%s/%s' % (api_call, threat_vendor_id)
+
+        if limit != -1 and limit != None:
+            api_call = ("%s?limit=%s" % (api_call,limit))
+
+        post_data = {}
+
+        return restcall(http_method, api_call, post_data)
+
+    def uptycs_get_threat_vendors_command():
+        query_results = uptycs_get_threat_vendors()
+        context = query_results.get('items')
+
+        for index in range(len(context)):
+            context[index].pop('links', None)
+
+        human_readable = tableToMarkdown('Uptycs Threat Vendors',
+            context)
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': context,
+                 'HumanReadable': human_readable,
+                 'EntryContext': {
+                    'Uptycs.ThreatVendors': context
+                    }
+                }
+
+        return entry
+
+    def uptycs_post_threat_source():
+        '''post a new threat source'''
+
+        url=("https://%s.uptycs.io/public/api/customers/%s/threatSources" %
+                (DOMAIN,CUSTOMER_ID))
+        header=generate_headers('' , KEY , SECRET)
+
+        filepath = demisto.getFilePath(demisto.args().get('entry_id'))#demisto.executeCommand('getFilePath', {'id': demisto.args().get('entry_id')})
+
+        post_data = {
+                    "name":demisto.args().get('name'),
+                    "filename": filepath.get('name'),
+                    "description":demisto.args().get('description')
+        }
+
+        files = {'file': open(filepath.get('path'), 'rb')}
+
+        response = requests.post(url, headers=header, data=post_data, files=files, verify=False )
+
+        return response
+
+    def uptycs_post_threat_source_command():
+        response = uptycs_post_threat_source()
+        human_readable = 'Uptycs Posted Threat Source'
+
+        entry = {'ContentsFormat': formats['json'],
+                 'Type': entryTypes['note'],
+                 'Contents': response.json(),
+                 'HumanReadable': human_readable,
+                }
+
+        return entry
+
+    def uptycs_test_module():
+        '''check whether Uptycs API responds correctly'''
+        http_method = 'GET'
+        api_call = '/assets?limit=1'
+        post_data = {}
+
+        query_results = restcall(http_method, api_call, post_data)
+
+        if query_results == 0:
+            return False
+        else:
+            return True
+
+    def uptycs_fetch_incidents():
+        '''fetch alerts from Uptycs'''
+
+        this_run = datetime.utcnow().strftime("%m/%d/%y %H:%M:%S")
+        if bool(demisto.getLastRun())==False:
+            last_run, _ = parse_date_range(FETCH_TIME)
+        else:
+            last_run = demisto.getLastRun()['time']
+
+        http_method = 'GET'
+        api_call = ('/alerts?filters={"alertTime":{"between":["%s","%s"]}}' \
+            % (last_run, this_run))
+        post_data = {}
+
+        query_results = restcall(http_method, api_call, post_data)
+
+        incidents = []
+        if len(query_results.get('items')) == 0:
+            return incidents
+
+        for index in range(len(query_results.get('items'))):
+            context = query_results.get('items')[index]
+            context['alertId'] = context.get('id')
+            context['hostName'] = context.get('asset').get('hostName')
+            if bool(context.get('metadata').get('indicatorId')):
+                context['indicatorId'] = context.get('metadata').get('indicatorId')
+                context['threatId'] = context.get('metadata').get('indicatorSummary').get('threatId')
+                context['threatSourceName'] = context.get('metadata').get('indicatorSummary').get('threatSourceName')
+                context['indicatorType'] = context.get('metadata').get('indicatorSummary').get('indicatorType')
+
+            context_entries_to_keep = ['id', 'hostName', 'grouping', 'assignedTo',
+            'alertTime', 'alertId', 'updatedAt', 'status', 'assetId', 'createdAt', 'description',
+            'severity', 'value', 'threatId', 'threatSourceName', 'indicatorType', 'indicatorId']
+
+            for key in context.keys():
+                if key not in context_entries_to_keep:
+                    context.pop(key, None)
+
+            alert_time = context.get('alertTime')
+            alert_time = alert_time.encode('utf-8')
+
+            incident = {"Name":"Uptycs Alert: "+context.get('description')+\
+                                " for asset: "+context.get('hostName'),
+                            "Occurred":alert_time,
+                            "Severity":severity_to_int(context.get('severity')),
+                            "Details":context.get('id'),
+                            "rawJSON":json.dumps(context)
+                           }
+            incidents.insert(0, incident)
+
+        demisto.setLastRun({'time':this_run})
+        return incidents
+
+    ###############################################################################
+    # main function
+    ###############################################################################
+    if demisto.command() == 'uptycs-run-query':
+        demisto.results(uptycs_run_query_command())
+
+    if demisto.command() == 'uptycs-get-assets':
+        demisto.results(uptycs_get_assets_command())
+
+    if demisto.command() == 'uptycs-get-alerts':
+        demisto.results(uptycs_get_alerts_command())
+
+    if demisto.command() == 'uptycs-get-events':
+        demisto.results(uptycs_get_events_command())
+
+    if demisto.command() == 'uptycs-get-alert-rules':
+        demisto.results(uptycs_get_alert_rules_command())
+
+    if demisto.command() == 'uptycs-get-event-rules':
+        demisto.results(uptycs_get_event_rules_command())
+
+    if demisto.command() == 'uptycs-get-process-open-files':
+        demisto.results(uptycs_get_process_open_files_command())
+
+    if demisto.command() == 'uptycs-get-socket-events':
+        demisto.results(uptycs_get_socket_events_command())
+
+    if demisto.command() == 'uptycs-get-process-open-sockets':
+        demisto.results(uptycs_get_process_open_sockets_command())
+
+    if demisto.command() == 'uptycs-get-processes':
+        demisto.results(uptycs_get_processes_command())
+
+    if demisto.command() == 'uptycs-get-process-information':
+        demisto.results(uptycs_get_process_information_command())
+
+    if demisto.command() == 'uptycs-get-parent-information':
+        demisto.results(uptycs_get_parent_information_command())
+
+    if demisto.command() == 'uptycs-get-process-child-processes':
+        demisto.results(uptycs_get_process_child_processes_command())
+
+    if demisto.command() == 'uptycs-get-process-events':
+        demisto.results(uptycs_get_process_events_command())
+
+    if demisto.command() == 'uptycs-get-process-event-information':
+        demisto.results(uptycs_get_process_event_information_command())
+
+    if demisto.command() == 'uptycs-get-parent-event-information':
+        demisto.results(uptycs_get_parent_event_information_command())
+
+    if demisto.command() == 'uptycs-set-alert-status':
+        demisto.results(uptycs_set_alert_status_command())
+
+    if demisto.command() == 'uptycs-set-asset-tag':
+        demisto.results(uptycs_set_asset_tag_command())
+
+    if demisto.command() == 'uptycs-get-users':
+        demisto.results(uptycs_get_users_command())
+
+    if demisto.command() == 'uptycs-get-user-information':
+        demisto.results(uptycs_get_user_information_command())
+
+    if demisto.command() == 'uptycs-get-user-asset-groups':
+        demisto.results(uptycs_get_user_asset_groups_command())
+
+    if demisto.command() == 'uptycs-get-asset-groups':
+        demisto.results(uptycs_get_asset_groups_command())
+
+    if demisto.command() == 'uptycs-get-threat-indicators':
+        demisto.results(uptycs_get_threat_indicators_command())
+
+    if demisto.command() == 'uptycs-get-threat-indicator':
+        demisto.results(uptycs_get_threat_indicator_command())
+
+    if demisto.command() == 'uptycs-get-threat-sources':
+        demisto.results(uptycs_get_threat_sources_command())
+
+    if demisto.command() == 'uptycs-get-threat-source':
+        demisto.results(uptycs_get_threat_source_command())
+
+    if demisto.command() == 'uptycs-get-threat-vendors':
+        demisto.results(uptycs_get_threat_vendors_command())
+
+    if demisto.command() == 'uptycs-post-threat-source':
+        demisto.results(uptycs_post_threat_source_command())
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        if uptycs_test_module():
+            demisto.results('ok')
+        else:
+            demisto.results('test failed')
+
+    if demisto.command() == 'fetch-incidents':
+        demisto.incidents(uptycs_fetch_incidents())
+  type: python
+  commands:
+  - name: uptycs-get-assets
+    arguments:
+    - name: asset_group_id
+      description: Only return assets which are a member of this asset group
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: os
+      auto: PREDEFINED
+      predefined:
+      - Ubuntu/Debian
+      - CentOS/RedHat/Fedora/Amazon Linux
+      - CoreOS Container Linux
+      - Mac OS X/Apple OS X/macOS
+      - Windows
+      description: Only return assets with this type of operating system.
+    outputs:
+    - contextPath: Uptycs.Assets.id
+      description: 'Uptycs asset id '
+      type: string
+    - contextPath: Uptycs.Assets.createdAt
+      description: Time asset was enrolled with Uptycs
+      type: date
+    - contextPath: Uptycs.Assets.hostName
+      description: Hostname in Uptycs DB
+      type: string
+    - contextPath: Uptycs.Assets.os
+      description: os installed on asset (Windows, Linux, Mac OS X)
+      type: string
+    - contextPath: Uptycs.Assets.osVersion
+      description: os version
+      type: string
+    - contextPath: Uptycs.Assets.lastActivityAt
+      description: Last activity
+      type: date
+    - contextPath: Uptycs.Assets.deletedAt
+      description: Time asset was unenrolled from Uptycs
+      type: date
+    - contextPath: Uptycs.Assets.osqueryVersion
+      description: Current version of osquery installed on the asset
+      type: string
+    description: return assets enrolled with Uptycs
+  - name: uptycs-run-query
+    arguments:
+    - name: query
+      required: true
+      description: 'This is the query that will be run.  Queries should be written
+        for a SQLite database. For example, "SELECT * FROM processes" returns the
+        entire table named "processes". '
+    - name: query_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - global
+      - realtime
+      description: The query can be run globally (returns results for entire history
+        stored in Uptycs DB) or real-time (returns results for queries run on endpoints
+        at the time of query execution)
+    - name: asset_id
+      description: '*realtime queries only*  This argument should be used when one
+        wants to run a realtime query on a particular asset.'
+    - name: host_name_is
+      description: '*realtime queries only*  Only return assets with this hostname'
+    - name: host_name_like
+      description: '*realtime queries only* . Only return assets with this string
+        in the hostname.'
+    outputs:
+    - contextPath: Uptycs.QueryResults
+      description: Results of executed query
+      type: unknown
+    description: enter a SQL query to run against your Uptycs database.  A list of
+      tables can be found at osquery.io/schema, or by using the query "select * from
+      information_schema.tables"
+  - name: uptycs-get-alerts
+    arguments:
+    - name: alert_id
+      description: Unique Uptycs alert id which will retrieve a specific alert.  Use
+        this argument without any other arguments.
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: code
+      auto: PREDEFINED
+      predefined:
+      - BAD_DOMAIN
+      - CRITICAL_FILE
+      - EXCESSIVE_LOGINS
+      - INBOUND_NETWORK_CONNECTIONS
+      - KERNULE_MODULE_MOD
+      - MANUAL_FILE_EDITS
+      - MANUAL_PACKAGE_INSTALL
+      - OPEN_SOCKET_BAD_IP
+      - OSX_ATTACK
+      - OSX_CRASHES
+      - OUTBOUND_NETWORK_CONNECTIONS
+      - PRIVILEGED_ACCOUNT_ACTIVITY
+      - PRIVILEGED_REMOTE_LOGIN
+      - PRIVILEGE_ESCALATION
+      - PROCESSES_WITHOUT_ONDISK_FILE
+      - PROCESSES_STARTED_TMP
+      - REMOTE_LOGIN
+      - SERVICE_RUNNING_AS_ROOT
+      - SERVICE_RUNNING_A_SHELL
+      - SOFTWARE_CHANGE
+      - SUSPICIOUS_FILE_PERMISSIONS_CHANGE
+      - SUSPICIOUS_FILE_TRANSFERS
+      - SUSPICIOUS_TOOLS_IN_USE
+      - SYSTEM_FILE_CHANGES
+      - USER_ADDED_TO_ASSET
+      description: Alert code to specify which types of alerts you would like to retrieve
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      defaultValue: 10 days
+    - name: value
+      description: Varies for different alerts.  For example, a Bad IP alert would
+        have the IP address as the value.  A program crash alert would have the name
+        of the program which crashed as the value.
+    outputs:
+    - contextPath: Uptycs.Alerts.description
+      description: Description of alert
+      type: string
+    - contextPath: Uptycs.Alerts.upt_asset_id
+      description: Uptycs asset ID
+      type: string
+    - contextPath: Uptycs.Alerts.code
+      description: Alert code in Uptycs DB
+      type: string
+    - contextPath: Uptycs.Alerts.severity
+      description: Severity
+      type: string
+    - contextPath: Uptycs.Alerts.alert_time
+      description: Time alert was created at
+      type: date
+    - contextPath: Uptycs.Alerts.value
+      description: Specific problem which caused an alert.  It may be an IP address,
+        a program that crashed, a file with a file hash known to be malware, etc.
+      type: string
+    - contextPath: Uptycs.Alerts.host_name
+      description: Hostname for the asset which fired the alert
+      type: string
+    - contextPath: Uptycs.Alerts.id
+      description: unique Uptycs id for a particular alert
+      type: string
+    - contextPath: Uptycs.Alerts.threat_indicator_id
+      description: unique Uptycs id that identifies the threat indicator which triggered
+        this alert
+      type: string
+    - contextPath: Uptycs.Alerts.threat_source_name
+      description: name of the source of the threat indicator that triggered this
+        alert
+      type: string
+    - contextPath: Uptycs.Alerts.pid
+      description: pid of the process which was responsible for firing the alert
+      type: number
+    description: return alerts from Uptycs DB
+  - name: uptycs-get-alert-rules
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    description: retrieve a list of alert rules
+  - name: uptycs-get-event-rules
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    description: retrieve a list of event rules
+  - name: uptycs-get-events
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: code
+      auto: PREDEFINED
+      predefined:
+      - BAD_DOMAIN
+      - CRITICAL_FILE
+      - EXCESSIVE_LOGINS
+      - INBOUND_NETWORK_CONNECTIONS
+      - KERNULE_MODULE_MOD
+      - LOCATION
+      - MANUAL_FILE_EDITS
+      - MANUAL_PACKAGE_INSTALL
+      - OPEN_SOCKET_BAD_IP
+      - OSX_ATTACK
+      - OSX_CRASHES
+      - OUTBOUND_NETWORK_CONNECTIONS
+      - PRIVILEGED_ACCOUNT_ACTIVITY
+      - PRIVILEGED_REMOTE_LOGIN
+      - PRIVILEGE_ESCALATION
+      - PROCESSES_WITHOUT_ONDISK_FILE
+      - PROCESSES_STARTED_TMP
+      - REMOTE_LOGIN
+      - SERVICE_RUNNING_AS_ROOT
+      - SERVICE_RUNNING_A_SHELL
+      - SOFTWARE_CHANGE
+      - SUSPICIOUS_FILE_PERMISSIONS_CHANGE
+      - SUSPICIOUS_FILE_TRANSFERS
+      - SUSPICIOUS_TOOLS_IN_USE
+      - SYSTEM_FILE_CHANGES
+      - USER_ADDED_TO_ASSET
+      description: Event code to specify which types of events you would like to retrieve
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      defaultValue: 1 days
+    outputs:
+    - contextPath: Uptycs.Events.description
+      description: Description of event
+      type: string
+    - contextPath: Uptycs.Events.assetId
+      description: Uptycs asset ID
+      type: string
+    - contextPath: Uptycs.Events.code
+      description: Event code in Uptycs DB
+      type: string
+    - contextPath: Uptycs.Events.createdAt
+      description: Time event was created at
+      type: date
+    description: return events from Uptycs DB
+  - name: uptycs-get-process-open-sockets
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: ip
+      description: IP address which process opened a socket to.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time
+      description: Exact time at which the socket was opened.
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+    outputs:
+    - contextPath: Uptycs.Sockets.pid
+      description: pid of process which opened a connection to a specified IP
+      type: number
+    - contextPath: Uptycs.Sockets.upt_hostname
+      description: hostname of the asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.Sockets.upt_time
+      description: time at which the connection was opened
+      type: date
+    - contextPath: Uptycs.Sockets.path
+      description: file path to the process being run
+      type: string
+    - contextPath: Uptycs.Sockets.local_address
+      description: local IP for specified connection
+      type: string
+    - contextPath: Uptycs.Sockets.remote_address
+      description: remote IP for specified connection
+      type: string
+    - contextPath: Uptycs.Sockets.local_port
+      description: local port for specified connection
+      type: number
+    - contextPath: Uptycs.Sockets.remote_port
+      description: remote port for specified connection
+      type: number
+    - contextPath: Uptycs.Sockets.upt_asset_id
+      description: asset id for asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.Sockets.parent
+      description: pid for the parent process which spawned the process which opened
+        the connection
+      type: number
+    description: find processes which opened a socket
+  - name: uptycs-get-process-information
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: host_name_is
+      description: Hostname for asset which spawned the specified process.
+    - name: pid
+      required: true
+      description: pid for the process.
+    - name: time
+      required: true
+      description: Time that the specified process was spawned.
+    outputs:
+    - contextPath: Uptycs.Proc.pid
+      description: pid for the process
+      type: number
+    - contextPath: Uptycs.Proc.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Proc.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Proc.parent
+      description: pid for the parent process
+      type: number
+    - contextPath: Uptycs.Proc.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Proc.upt_remove_time
+      description: time that the process was removed
+      type: date
+    description: get information for a particular process
+  - name: uptycs-get-process-child-processes
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset_id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: host_name_is
+      description: hostname for the asset which executed these processes.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: parent
+      required: true
+      description: The pid for which all child processes will be found
+    - name: parent_start_time
+      required: true
+      description: time at which the parent process was spawned
+    - name: parent_end_time
+      description: time at which the parent process was killed, if it exists.
+    outputs:
+    - contextPath: Uptycs.Children.pid
+      description: pid of a child process
+      type: number
+    - contextPath: Uptycs.Children.upt_asset_id
+      description: asset id for asset which this process was run on
+      type: string
+    - contextPath: Uptycs.Children.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Children.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Children.upt_remove_time
+      description: time that the process was removed
+      type: date
+    description: get all the child processes for a given parent process
+  - name: uptycs-get-processes
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time
+      description: Exact time at which the process was spawned.
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+    outputs:
+    - contextPath: Uptycs.Process.pid
+      description: pid for a particular process
+      type: number
+    - contextPath: Uptycs.Process.parent
+      description: pid for the parent of a particular process
+      type: number
+    - contextPath: Uptycs.Process.upt_asset_id
+      description: uptycs asset id for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.Process.upt_hostname
+      description: host name for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.Process.upt_time
+      description: time at which the process was spawned
+      type: date
+    description: find processes which are running or have run on a registered Uptycs
+      asset
+  - name: uptycs-get-process-open-files
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time
+      description: Exact time at which the process was spawned.
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+    outputs:
+    - contextPath: Uptycs.Files.pid
+      description: pid for the process which opened a file
+      type: number
+    - contextPath: Uptycs.Files.fd
+      description: process specific file descriptor number
+      type: number
+    - contextPath: Uptycs.Files.upt_asset_id
+      description: Uptycs asset id for the the asset on which the file was opened
+      type: string
+    - contextPath: Uptycs.Files.upt_hostname
+      description: Host name for the asset on which the file was opened
+      type: string
+    - contextPath: Uptycs.Files.upt_time
+      description: time at which the file was opened
+      type: date
+    description: find processes which have opened files
+  - name: uptycs-set-alert-status
+    arguments:
+    - name: alert_id
+      required: true
+      description: Uptycs alert id used to identify a particular alert
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - open
+      - assigned
+      - closed
+      - resolved
+      description: Status of the alert can be new, assigned, resolved, or closed
+    description: Set the status of an alert to new, assigned, resolved, or closed
+  - name: uptycs-set-asset-tag
+    arguments:
+    - name: asset_id
+      required: true
+      description: Uptycs asset id for the asset that the tag should be set on
+    - name: tag_key
+      required: true
+      description: Tag key that will be set on the asset
+    - name: tag_value
+      required: true
+      description: Tag value that will be set on the asset
+      defaultValue: ''''''
+    description: Sets a tag on a particular asset
+  - name: uptycs-get-user-information
+    arguments:
+    - name: user_id
+      required: true
+      description: Unique Uptycs id for the user
+    outputs:
+    - contextPath: Uptycs.UserInfo.id
+      description: unique Uptycs id for the user
+      type: string
+    - contextPath: Uptycs.UserInfo.name
+      description: Uptycs user's name
+      type: string
+    - contextPath: Uptycs.UserInfo.email
+      description: Uptycs user's email address
+      type: string
+    description: get info for an Uptycs user
+  - name: uptycs-get-threat-indicators
+    arguments:
+    - name: indicator
+      description: the specific indicator you wish to search for.  This can be an
+        IP address, a Bad Domain, etc. as well ass any indicators you have added.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    description: get Uptycs threat indicators
+  - name: uptycs-get-threat-sources
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    description: get Uptycs threat sources
+  - name: uptycs-get-threat-vendors
+    arguments:
+    - name: threat_vendor_id
+      description: unique Uptycs id which identifies the vendor of this specific threat
+        source
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    description: get Uptycs threat vendors
+  - name: uptycs-get-parent-information
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: child_add_time
+      required: true
+      description: Time that the specified process was spawned.
+    - name: host_name_is
+      description: Hostname for asset which spawned the specified process.
+    - name: parent
+      required: true
+      description: pid for the parent process.
+    outputs:
+    - contextPath: Uptycs.Parent.pid
+      description: pid of the process (this is the same number as the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.Parent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Parent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Parent.parent
+      description: pid for the parent process (this is the parent of the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.Parent.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Parent.upt_remove_time
+      description: time that the process was removed
+      type: date
+    description: get the parent process information for a particular child process
+  - name: uptycs-post-threat-source
+    arguments:
+    - name: description
+      required: true
+      description: A short description for the threat source
+      defaultValue: Custom threat source pushed from Demisto
+    - name: entry_id
+      required: true
+      description: entry_id for the file with threat information.  This file should
+        be uploaded to demisto in the Playground War Room using the paperclip icon
+        next to the CLI.
+    - name: filename
+      required: true
+      description: The name of the file being uploaded
+    - name: name
+      required: true
+      description: The name for the threat source
+    description: post a new threat source to your threat sources in Uptycs
+  - name: uptycs-get-users
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    outputs:
+    - contextPath: Uptycs.Users.id
+      description: unique Uptycs id for the user
+      type: string
+    - contextPath: Uptycs.Users.name
+      description: Uptycs user's name
+      type: string
+    - contextPath: Uptycs.Users.email
+      description: Uptycs user's email address
+      type: string
+    description: get a list of Uptycs users
+  - name: uptycs-get-asset-groups
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    outputs:
+    - contextPath: Uptycs.AssetGroups.id
+      description: unique Uptycs id for a particular object group
+      type: string
+    description: get Uptycs asset groups
+  - name: uptycs-get-user-asset-groups
+    arguments:
+    - name: asset_group_id
+      required: true
+      description: return a list of users with access to this asset group
+    description: get a list of users in a particular asset group
+  - name: uptycs-get-threat-indicator
+    arguments:
+    - name: indicator_id
+      required: true
+      description: unique Uptycs id which identifies a specific threat indicator
+    outputs:
+    - contextPath: Uptycs.ThreatIndicator.threat_source_id
+      description: unique Uptycs id which identifies the source of this specific threat
+        indicator
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.threat_vendor_id
+      description: unique Uptycs id which identifies the vendor of this specific threat
+        source
+      type: string
+    description: retrieve information about a specific threat indicator using a unique
+      threat indicator id
+  - name: uptycs-get-threat-source
+    arguments:
+    - name: threat_source_id
+      required: true
+      description: unique Uptycs id for the threat source you wish to retrive
+    description: retrieve information about a specific threat source
+  - name: uptycs-get-process-events
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: time
+      description: Exact time at which the process was spawned.
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+    outputs:
+    - contextPath: Uptycs.ProcessEvents.pid
+      description: pid for a particular process
+      type: number
+    - contextPath: Uptycs.ProcessEvents.parent
+      description: pid for the parent of a particular process
+      type: number
+    - contextPath: Uptycs.ProcessEvents.upt_asset_id
+      description: uptycs asset id for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.upt_hostname
+      description: host name for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.upt_time
+      description: time at which the process was spawned
+      type: date
+    description: find process events which are running or have run on a registered
+      Uptycs asset
+  - name: uptycs-get-process-event-information
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: host_name_is
+      description: Hostname for asset which spawned the specified process.
+    - name: pid
+      required: true
+      description: pid for the process.
+    - name: time
+      required: true
+      description: Time that the specified process was spawned.
+    outputs:
+    - contextPath: Uptycs.ProcEvent.pid
+      description: pid for the process
+      type: number
+    - contextPath: Uptycs.ProcEvent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ProcEvent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ProcEvent.parent
+      description: pid for the parent process
+      type: number
+    - contextPath: Uptycs.ProcEvent.upt_time
+      description: time that the process was spawned
+      type: date
+    description: get information for a particular process event
+  - name: uptycs-get-socket-events
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+    - name: host_name_is
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+    - name: host_name_like
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+    - name: ip
+      description: IP address which process opened a socket to.
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: start_window
+      description: Beginning of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: ' End of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".'
+    - name: time
+      description: Exact time at which the socket was opened.
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+    outputs:
+    - contextPath: Uptycs.SocketEvents.pid
+      description: pid of process which opened a connection to a specified IP
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_hostname
+      description: hostname of the asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.upt_time
+      description: time at which the connection was opened
+      type: date
+    - contextPath: Uptycs.SocketEvents.path
+      description: file path to the process being run
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_address
+      description: local IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.remote_address
+      description: remote IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_port
+      description: local port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.remote_port
+      description: remote port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_asset_id
+      description: asset id for asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.parent
+      description: pid for the parent process which spawned the process which opened
+        the connection
+      type: number
+    description: find processes which opened a socket
+  - name: uptycs-get-parent-event-information
+    arguments:
+    - name: asset_id
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+    - name: child_add_time
+      required: true
+      description: Time that the specified process was spawned.
+    - name: host_name_is
+      description: Hostname for asset which spawned the specified process.
+    - name: parent
+      required: true
+      description: pid for the parent process.
+    outputs:
+    - contextPath: Uptycs.ParentEvent.pid
+      description: pid of the process (this is the same number as the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.ParentEvent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ParentEvent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ParentEvent.parent
+      description: pid for the parent process (this is the parent of the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.ParentEvent.upt_time
+      description: time that the process was spawned
+      type: date
+    description: find information for parent process events which are running or have
+      run on a registered Uptycs assert
+  dockerimage: bkschmolluptycs/demisto_uptycs:latest
+  isfetch: true
+  runonce: true
