@@ -124,6 +124,5 @@ view: |-
     }
   }
 inputs: []
-releaseNotes: "Deprecated playbook"
 tests:
   - No tests - Deprecated playbook

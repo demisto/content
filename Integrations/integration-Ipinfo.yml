@@ -103,6 +103,5 @@ script:
       description: Name of the field to retrieve. Can be org, city, geo, etc.
     description: Retrieve value for a specific field from the IP address information
   runonce: false
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No test

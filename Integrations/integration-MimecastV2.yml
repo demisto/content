@@ -2478,6 +2478,5 @@ script:
     description: Download attachments from a specified message
   isfetch: true
   runonce: false
-releaseNotes: "Fixed potential bug in mimecast-list-managed-url"
 tests:
  - Mimecast test

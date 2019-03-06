@@ -199,7 +199,15 @@ script:
         return res;
     };
 
-    var url = fixUrl(params.Host) + logRhythmAPI;
+    var url;
+    // includes server URL that starts with http or https
+    if (params.Host.startsWith('http')) {
+        url = fixUrl(params.Host) + logRhythmAPI;
+    }
+    else {
+        url = 'https://' + fixUrl(params.Host) + logRhythmAPI;
+    }
+
     var myTimezone = new Date().getTimezoneOffset();
     var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
     if (params.timeZone === '0') {
@@ -764,6 +772,6 @@ script:
       alarm status or entity
   isfetch: true
   runonce: false
-releaseNotes: Possible to add server URL as integration parameter
 tests:
 - LogRhythm-Test-Playbook
+releaseNotes: "includes server URL that starts with http or https"
