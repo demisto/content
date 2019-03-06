@@ -432,10 +432,8 @@ def get_all_cases_command():
 def get_security_events_command():
     ids = demisto.args().get('ids')
     last_date_range = demisto.args().get('lastDateRange')
-
-    ids = argToList(ids)
+    ids = argToList(str(ids) if isinstance(ids, int) else ids)
     raw_events = get_security_events(ids, last_date_range)
-    ids = [str(id_) for id_ in ids]
     if raw_events:
         events = []
         for raw_event in beautifully_json(raw_events):
@@ -451,7 +449,7 @@ def get_security_events_command():
             events.append(event)
 
         contents = beautifully_json(raw_events)
-        human_readable = tableToMarkdown('Security Event: {}'.format(','.join(ids)), events, removeNull=True)
+        human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
     else:

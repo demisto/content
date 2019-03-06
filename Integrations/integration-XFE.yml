@@ -571,6 +571,5 @@ script:
     description: Return the latest vulnerabilities found
   runonce: false
 fromversion: 2.5.0
-releaseNotes: 401 error handling
 tests:
   - XFE Test
