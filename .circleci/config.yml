@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: devdemisto/content-build:1.0.0.159 # disable-secrets-detection
     environment:
-      CONTENT_VERSION: "19.2.3"
-      GIT_SHA1: "1e217e427fe9fa4816f4d5257a54d553eba65ee9" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.3.0"
+      GIT_SHA1: "6c42492a4b4c92e56e5e73412698c7284b555a84" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - run:
