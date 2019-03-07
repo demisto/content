@@ -1118,6 +1118,10 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "integrations": "ThreatGrid0,",
+            "playbookID": "Test-Detonate URL - ThreatGrid"
         }
     ],
     "skipped_tests": {
@@ -1136,7 +1140,8 @@
         "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
         "SalesforceTestPlaybook": "User and password expired (issue 15901)",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
-        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "Test-Detonate URL - ThreatGrid": "Test that should not run and was added permanently because hooks"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
