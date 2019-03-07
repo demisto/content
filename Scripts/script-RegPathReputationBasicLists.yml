@@ -124,7 +124,7 @@ script: |-
       'ContentsFormat': formats['json'],
       'Contents': score,
       'ReadableContentsFormat': formats['text'],
-      'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),,
+      'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),
       'EntryContext': {
           'RegistryKey(val.Path == obj.Path)': outputs
       }
