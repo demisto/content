@@ -6,6 +6,5 @@ cat >~/.gitconfig << EOF
        email = ec2-user@$HOSTNAME
 EOF
 cd content-test-data
-git add *
-git commit -m "Updated mock files from content branch '$1' build number - $2"
-git push --force
+git add * >/dev/null
+git commit -m "Updated mock files from content branch '$1' build number - $2" >/dev/null && git push --force >/dev/null
