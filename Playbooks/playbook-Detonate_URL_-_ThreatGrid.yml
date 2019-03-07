@@ -374,5 +374,4 @@ outputs:
 - contextPath: Sample.ID
   description: The sample ID
 tests:
-  - Test-Detonate URL - ThreatGrid
-releaseNotes: "-"
+  - Detonate URL - Generic Test

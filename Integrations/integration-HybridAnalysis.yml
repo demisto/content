@@ -1,7 +1,7 @@
 commonfields:
   id: Hybrid Analysis
   version: -1
-defaultEnabled: true
+defaultEnabled: false
 fromversion: 3.6.1
 name: Hybrid Analysis
 display: Hybrid Analysis
@@ -579,6 +579,5 @@ script:
           type: string
       description: Get the state of the file submission
   runonce: false
-releaseNotes: "Added command hybrid-analysis-get-report-status"
 tests:
 - "Detonate File - HybridAnalysis - Test"
