@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import glob
+import logging
 import argparse
 
 from Tests.scripts.constants import *
@@ -295,7 +296,7 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
-    import logging
+
     logging.basicConfig(level=logging.CRITICAL)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
