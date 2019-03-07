@@ -4,7 +4,7 @@ import yaml
 
 def readFile(filepath):
     with open(filepath, 'r') as f:
-        out = yaml.load(f)
+        out = yaml.safe_load(f)
         return out
     return []
 

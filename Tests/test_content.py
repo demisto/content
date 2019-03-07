@@ -8,8 +8,9 @@ import requests
 
 import demisto
 from slackclient import SlackClient
+
 from test_integration import test_integration
-from test_utils import print_color, print_error, print_warning, LOG_COLORS
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 
 
 RUN_ALL_TESTS = "Run all tests"
@@ -18,15 +19,6 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
                             "instance_name argument in conf.json the options are:\n{}"
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def options_handler():
@@ -268,7 +260,7 @@ def main():
 
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
-    if res.status_code is not 200:
+    if res.status_code != 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
@@ -289,7 +281,7 @@ def main():
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
-    if not tests or len(tests) is 0:
+    if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
 

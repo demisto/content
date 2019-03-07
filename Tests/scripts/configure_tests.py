@@ -5,65 +5,28 @@ import re
 import os
 import sys
 import json
+import glob
 import argparse
-from subprocess import Popen, PIPE
 
-try:
-    import yaml
-except ImportError:
-    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
-    sys.exit(1)
+from Tests.scripts.constants import *
+from Tests.test_utils import get_json, str2bool, get_from_version, get_to_version, \
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
 
 # Search Keyword for the changed file
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-# file types regexes
-CONF_REGEX = "Tests/conf.json"
-SCRIPT_REGEX = "scripts.*script-.*.yml"
-PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "integrations.*integration-.*.yml"
-TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
-BETA_SCRIPT_REGEX = "beta_integrations.*script-.*.yml"
-BETA_PLAYBOOK_REGEX = "beta_integrations.*playbook-.*.yml"
-BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
-
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX]
-
-
-# File type regex
-SCRIPT_TYPE_REGEX = ".*script-.*.yml"
+                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
+                         INTEGRATION_YML_REGEX]
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
              "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
              "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
 
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return p.stdout.read()
+# secrets white list file to be ignored in tests to prevent full tests running each time it is updated
+SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 
 def checked_type(file_path, regex_list):
@@ -73,15 +36,6 @@ def checked_type(file_path, regex_list):
             return True
 
     return False
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def get_modified_files(files_string):
@@ -101,6 +55,10 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path, CODE_FILES_REGEX):
+                dir_path = os.path.dirname(file_path)
+                file_path = glob.glob(dir_path + "/*.yml")[0]
+
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
@@ -109,18 +67,12 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
+            elif SECRETS_WHITE_LIST in file_path:
+                modified_files_list.append(file_path)
             elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
                 all_tests.append(file_path)
 
     return modified_files_list, modified_tests_list, all_tests, is_conf_json
-
-
-def collect_ids(file_path):
-    """Collect id mentioned in file_path"""
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('id', '-')
 
 
 def get_name(file_path):
@@ -130,56 +82,32 @@ def get_name(file_path):
         return data_dictionary.get('name', '-')
 
 
-def get_from_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
-
-
-def get_to_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
-
-
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
     data_dictionary = get_json(file_path)
-
+    # inject no tests to whitelist so adding values to white list will not force all tests
+    if SECRETS_WHITE_LIST in file_path:
+        data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
 
 
-def get_script_or_integration_id(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        commonfields = data_dictionary.get('commonfields', {})
-        return commonfields.get('id', ['-', ])
-
-
-def get_json(file_path):
-    data_dictionary = None
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
-
-    if type(data_dictionary) is dict:
-        return data_dictionary
-    else:
-        return {}
-
-
 def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
+    """Collect tests for the affected script_ids,playbook_ids,integration_ids.
+
+    :param script_ids: The ids of the affected scripts in your change set.
+    :param playbook_ids: The ids of the affected playbooks in your change set.
+    :param integration_ids: The ids of the affected integrations in your change set.
+    :param catched_scripts: The names of the scripts we already identified a test for.
+    :param catched_playbooks: The names of the scripts we already v a test for.
+    :param tests_set: The names of the tests we alredy identified.
+
+    :return: (test_ids, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
+    """
+    caught_missing_test = False
     catched_intergrations = set([])
 
-    test_names = get_test_names()
+    test_ids = get_test_ids()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -189,29 +117,43 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     integration_to_command = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
+        detected_usage = False
         test_playbook_id = test_playbook.keys()[0]
         test_playbook_data = test_playbook.values()[0]
+        test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
+                detected_usage = True
                 tests_set.add(test_playbook_id)
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
+                detected_usage = True
                 tests_set.add(test_playbook_id)
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
-            for command in test_playbook_data.get('implementing_commands', []):
+            command_to_integration = test_playbook_data.get('command_to_integration', {})
+            for command in test_playbook_data.get('command_to_integration', {}).keys():
                 for integration_id, integration_commands in integration_to_command.items():
                     if command in integration_commands:
-                        tests_set.add(test_playbook_id)
-                        catched_intergrations.add(integration_id)
+                        if not command_to_integration.get(command) or \
+                                command_to_integration.get(command) == integration_id:
+
+                            detected_usage = True
+                            tests_set.add(test_playbook_id)
+                            catched_intergrations.add(integration_id)
+
+        if detected_usage and test_playbook_id not in test_ids:
+            caught_missing_test = True
+            print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
+                        "pleae update the conf.json file accordingly".format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
 
-    return test_names, missing_ids
+    return test_ids, missing_ids, caught_missing_test
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -223,17 +165,17 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_names():
-    test_names = []
+def get_test_ids():
+    test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
         playbook_id = t['playbookID']
-        test_names.append(playbook_id)
+        test_ids.append(playbook_id)
 
-    return test_names
+    return test_ids
 
 
 def get_integration_commands(integration_ids, integration_set):
@@ -254,26 +196,28 @@ def find_tests_for_modified_files(modified_files):
 
     tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
                                                                         script_names, modified_files)
-    test_names, missing_ids = collect_tests(script_names, playbook_names, integration_ids,
-                                            catched_scripts, catched_playbooks, tests_set)
-    missing_ids = update_with_tests_sections(missing_ids, modified_files, test_names, tests_set)
+    test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
+                                                               catched_scripts, catched_playbooks, tests_set)
+    missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
         message = "You've failed to provide tests for:\n{0}".format(test_string)
         print_color(message, LOG_COLORS.RED)
+
+    if caught_missing_test or len(missing_ids) > 0:
         sys.exit(1)
 
     return tests_set
 
 
-def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
-    test_names.append(RUN_ALL_TESTS_FORMAT)
+def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
+    test_ids.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_names or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
+            if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)
@@ -285,7 +229,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_names, tests):
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist, please re-check your code".format(test)
+                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 
@@ -359,24 +303,43 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
                               playbook_names, script_names, updated_script_names, updated_playbook_names,
                               catched_scripts, catched_playbooks, tests_set):
+    """Enrich the list of affected scripts/playbooks by your change set.
+
+    :param integration_id: The name of the integration we changed.
+    :param given_version: the version of the integration we changed.
+    :param integration_commands: The commands of the changed integation
+    :param script_set: The set of existing scripts within Content repo.
+    :param playbook_set: The set of existing playbooks within Content repo.
+    :param playbook_names: The names of the playbooks affected by your changes.
+    :param script_names: The names of the scripts affected by your changes.
+    :param updated_script_names: The names of scripts we identify as affected to your change set.
+    :param updated_playbook_names: The names of playbooks we identify as affected to your change set.
+    :param catched_scripts: The names of scripts we found tests for.
+    :param catched_playbooks: The names of playbooks we found tests for.
+    :param tests_set: The names of the caught tests.
+    """
     for playbook in playbook_set:
         playbook_data = playbook.values()[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
-        implementing_commands = playbook_data.get('implementing_commands', [])
+        command_to_integration = playbook_data.get('command_to_integration', {})
+        implementing_commands = command_to_integration.keys()
         for integration_command in integration_commands:
             if integration_command in implementing_commands and playbook_toversion >= given_version[1]:
                 if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                    tests = playbook_data.get('tests', [])
-                    if tests:
-                        catched_playbooks.add(playbook_name)
-                        update_test_set(tests, tests_set)
+                    if not command_to_integration.get(integration_command) or \
+                            command_to_integration.get(integration_command) == integration_id:
 
-                    updated_playbook_names.add(playbook_name)
-                    new_versions = (playbook_fromversion, playbook_toversion)
-                    enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
-                                           updated_playbook_names, catched_playbooks, tests_set)
+                        tests = playbook_data.get('tests', [])
+                        if tests:
+                            catched_playbooks.add(playbook_name)
+                            update_test_set(tests, tests_set)
+
+                        updated_playbook_names.add(playbook_name)
+                        new_versions = (playbook_fromversion, playbook_toversion)
+                        enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
+                                               updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
         script_data = script.values()[0]
@@ -472,7 +435,7 @@ def update_test_set(tests_set, tests):
 def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -536,18 +499,18 @@ def create_test_file(is_nightly):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_git_command("git branch")
+        branches = run_command("git branch")
         branch_name_reg = re.search("\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
         tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)

@@ -1,12 +1,12 @@
 commonfields:
   id: RegPathReputationBasicLists
-  version: 1
+  version: -1
 name: RegPathReputationBasicLists
 script: |-
-  whitelist = [ r'HKEY_LOCAL_MACHINE\Software\wow6432node\Microsoft\Windows\CurrentVersion\Run\vmware-tray.exe' ]
-  blacklist = [ r'HKEY_CURRENT_USER\Software\Locky',
+  WHITELIST = [ r'HKEY_LOCAL_MACHINE\Software\wow6432node\Microsoft\Windows\CurrentVersion\Run\vmware-tray.exe' ]
+  BLACKLIST = [ r'HKEY_CURRENT_USER\Software\Locky',
   r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run\Locky' ]
-  suspicious = [ r"HKCU\Software\Microsoft\Internet Explorer\UrlSearchHooks",
+  SUSPICIOUS = [ r"HKCU\Software\Microsoft\Internet Explorer\UrlSearchHooks",
   r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run",
   r"HKLM\SOFTWARE\Classes\Htmlfile\Shell\Open\Command",
   r"HKLM\SOFTWARE\Classes\Htmlfile\Shell\Open\Command\(Default)",
@@ -100,29 +100,48 @@ script: |-
   r"HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run",
   r"HKCU\Software\Microsoft\Windows NT\CurrentVersion\Windows\load",
   r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler" ]
-  regPath = NormalizeRegistryPath( demisto.args()['input'] )
-  regPath = regPath.upper()
-  if regPath in (key.upper() for key in whitelist):
+
+  reg_path = demisto.args()['input'].upper()
+
+  if reg_path in (key.upper() for key in WHITELIST):
       score = 1
-  elif regPath in (key.upper() for key in blacklist):
+  elif reg_path in (key.upper() for key in BLACKLIST):
       score = 3
-  elif regPath in (key.upper() for key in suspicious):
+  elif reg_path in (key.upper() for key in SUSPICIOUS):
       score = 2
   else:
       score = 0
-  demisto.results(score)
+
+  normalized_reg_path = NormalizeRegistryPath(demisto.args()['input'])
+
+  outputs = {
+      'Path': normalized_reg_path,
+      'Score': score
+  }
+
+  demisto.results({
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['json'],
+      'Contents': outputs,
+      'ReadableContentsFormat': formats['text'],
+      'HumanReadable': "The Reg Path reputation is: " + str(score),
+      'EntryContext': {
+          'RegistryKey(val.Path == obj.Path)': outputs
+      }
+  })
 type: python
 tags:
 - registry
 - reputation
 comment: Check the given registry path against a small blacklist and whitelist. If
   the key matches neither, returns an answer of 2 meaning "Unknown".
-system: true
+enabled: true
 args:
 - name: input
   required: true
-  default: true
   description: Registry path to be checked
 scripttarget: 0
-dependson: {}
-timeout: 0s
+runonce: false
+runas: DBotWeakRole
+tests:
+- RegPathReputationBasicLists_test

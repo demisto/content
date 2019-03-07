@@ -1,6 +1,6 @@
 commonfields:
   id: 514ec833-c02c-49a3-8ac6-d982198f5fa0
-  version: 2
+  version: -1
 name: OktaUpdateUser
 script: |2
 
@@ -103,3 +103,5 @@ deprecated: true
 dependson:
   must:
   - okta-update-user
+tests:
+  - No test - deprecated script with no test prior

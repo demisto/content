@@ -1,0 +1,137 @@
+commonfields:
+  id: Alexa Rank Indicator
+  version: -1
+name: Alexa Rank Indicator
+display: Alexa Rank Indicator
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Alexa provides website ranking information that can be useful in determining
+  if the domain in question has a strong web presence.
+detaileddescription: To use this integration, simply call ```!domain```. !domain
+  accepts "domain" as a parameter to query. Threshold is the point where a domain will be considered unknown versus suspicious.
+configuration:
+- display: Sensitivity threshold for configuring which domains are suspicious versus
+    trusted.
+  name: threshold
+  defaultvalue: "2000000"
+  type: 0
+  required: true
+script:
+  script: |-
+    import urllib, sys, re
+    import xml.etree.ElementTree as ET
+    from collections import defaultdict
+
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
+
+
+    """GLOBAL VARIABLES/CONSTANTS"""
+    THRESHOLD = int(demisto.params().get('threshold'))
+
+
+    """COMMAND FUNCTIONS"""
+    def alexa_domain_command():
+        domain = demisto.args().get('domain')
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
+        root = ET.fromstring(xml)
+        dbot_ec = defaultdict()
+        dom_ec = defaultdict()
+        # Wrapping in Try Except since when no results are found, endpoint returns 404
+        try:
+            domain_res = root.find("SD").attrib['HOST']
+            rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
+            if int(rank) > THRESHOLD:
+                dbot_score = 2
+                dbot_score_text = 'suspicious'
+            else:
+                dbot_score = 0
+                dbot_score_text = 'unknown'
+        except:
+            rank = 'Unknown'
+            dbot_score = 2
+            dbot_score_text = 'suspicious'
+        dom_ec = {'Name': domain}
+        dbot_ec = {
+            'Score': dbot_score,
+            'Vendor': 'Alexa',
+            'Domain': domain,
+            'Type': 'domain'
+        }
+        ec = {
+            'Domain(val.Name && val.Name == obj.Name)': dom_ec,
+            'DBotScore': dbot_ec,
+            'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
+                'Name': domain,
+                'Rank': rank
+            }
+        }
+        hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
+                     ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
+        demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['markdown'],
+                    'Contents': xml2json(xml),
+                    'HumanReadable': hr_string,
+                    'EntryContext': ec
+        })
+
+
+    def test_module_command():
+        domain = 'google.com'
+        xml = urllib.urlopen('http://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain)).read()
+        root = ET.fromstring(xml)
+        domain_res = root.find("SD").attrib['HOST']
+        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']
+        if rank == '1':
+            test_result = 'ok'
+        else:
+            test_result = 'An error has occurred'
+        return test_result
+
+
+    """EXECUTION BLOCK"""
+    try:
+        if demisto.command() == 'test-module':
+            test_result = test_module_command()
+            demisto.results(test_result)
+        if demisto.command() == 'domain':
+            alexa_domain_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+  type: python
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: domain to search
+    outputs:
+    - contextPath: Domain.Name
+      description: The Domain being checked
+      type: string
+    - contextPath: DBotScore.Score
+      description: DBot score returned
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor reporting the score
+      type: string
+    - contextPath: DBotScore.Domain
+      description: Domain being reported
+      type: string
+    - contextPath: Alexa.Domain.Data
+      description: The Domain being checked
+      type: string
+    - contextPath: Alexa.Domain.Rank
+      description: Alexa rank as determined by Amazon
+      type: string
+    description: Provides an Alexa ranking of the Domain in question.
+  runonce: false
+fromversion: 3.5.0
+releaseNotes: '-'
+tests:
+  - Alexa Test Playbook
