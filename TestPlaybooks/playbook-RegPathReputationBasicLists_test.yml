@@ -38,7 +38,7 @@ tasks:
       name: RegPathReputationBasicLists
       description: Check the given registry path against a small blacklist and whitelist.
         If the key matches neither, returns an answer of 2 meaning "Unknown".
-      scriptName: RegPathReputationBasicLists_copy
+      scriptName: RegPathReputationBasicLists
       type: regular
       iscommand: false
       brand: ""
