@@ -81,6 +81,9 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-releaseNotes: Fix - support email files with type 'SMTP Mail'
+releaseNotes: "
+Fix - support email files with type 'SMTP Mail'
+eml contains eml - inner eml will be extracted
+eml parsed recursively"
 tests:
   - "ParseEmailFiles-test"
