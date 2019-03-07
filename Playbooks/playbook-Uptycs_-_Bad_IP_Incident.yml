@@ -1,4 +1,4 @@
-id: e540aa88-4d40-408f-80c0-6d94eaca6ec8
+id: Uptycs - Bad IP Incident
 version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
@@ -113,6 +113,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       asset_id:
         simple: ${Uptycs.Parent.upt_asset_id}
@@ -149,6 +152,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       asset_id:
         simple: ${Uptycs.Alerts.upt_asset_id}
@@ -241,6 +247,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       threat_source_id:
         simple: ${Uptycs.ThreatIndicator.threat_source_id}
@@ -253,12 +262,32 @@ tasks:
         }
       }
     note: false
+  "9":
+    id: "9"
+    taskid: e63fdf7e-85f3-4252-83cf-3768574d9b2d
+    type: title
+    task:
+      id: e63fdf7e-85f3-4252-83cf-3768574d9b2d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 970
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 985,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -271,4 +300,40 @@ inputs:
     simple: ${incident.alertid}
   required: true
   description: Unique Uptycs ID for a particular alert
-outputs: []
+outputs:
+- contextPath: Uptycs.Proc.pid
+  description: pid for the process
+  type: number
+- contextPath: Uptycs.Proc.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Proc.upt_remove_time
+  description: time that the process was removed
+  type: date
+- contextPath: Uptycs.Parent.pid
+  description: pid of the parent process
+  type: number
+- contextPath: Uptycs.Parent.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Parent.upt_remove_time
+  description: time that the process was removed
+  type: date
+- contextPath: Uptycs.Sockets.local_address
+  description: local IP for specified connection
+  type: string
+- contextPath: Uptycs.Sockets.local_port
+  description: local port for specified connection
+  type: number
+- contextPath: Uptycs.Sockets.remote_port
+  description: remote port for specified connection
+  type: number
+- contextPath: Uptycs.Children.pid
+  description: pid of a child process
+  type: number
+- contextPath: Uptycs.Children.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.upt_remove_time
+  description: time that the process was removed
+  type: date

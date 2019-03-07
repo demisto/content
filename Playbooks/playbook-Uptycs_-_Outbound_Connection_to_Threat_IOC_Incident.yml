@@ -1,4 +1,4 @@
-id: 137ad8f4-ee44-411f-8881-3f5fbe67ab73
+id: Uptycs - Outbound Connection to Threat IOC Incident
 version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
 description: Get information about processes which open connections to known Bad IP's
@@ -101,16 +101,19 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 24e8b615-0364-4681-8100-e7fd59be1b56
+    taskid: ec80844b-ed08-4e4a-899f-19d8941778a3
     type: regular
     task:
-      id: 24e8b615-0364-4681-8100-e7fd59be1b56
+      id: ec80844b-ed08-4e4a-899f-19d8941778a3
       version: -1
       name: Get child processes
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
       asset_id:
         simple: ${Uptycs.ParentEvent.upt_asset_id}
@@ -120,7 +123,7 @@ tasks:
         simple: ${Uptycs.ParentEvent.pid}
       parent_end_time: {}
       parent_start_time:
-        simple: ${Uptycs.ParentEvent.upt_add_time}
+        simple: ${Uptycs.ParentEvent.upt_time}
     separatecontext: false
     view: |-
       {
@@ -276,6 +279,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
       asset_id:
         simple: ${Uptycs.Parent.upt_asset_id}
@@ -296,12 +302,32 @@ tasks:
         }
       }
     note: false
+  "10":
+    id: "10"
+    taskid: ac1b91b2-31c3-4618-8bc2-a15474bde8ab
+    type: title
+    task:
+      id: ac1b91b2-31c3-4618-8bc2-a15474bde8ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1415
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1430,
         "width": 810,
         "x": 50,
         "y": 50
@@ -314,4 +340,25 @@ inputs:
     simple: ${incident.alertid}
   required: true
   description: Unique Uptycs ID for a particular alert
-outputs: []
+outputs:
+- contextPath: Uptycs.ProcEvent.pid
+  description: pid for the process
+  type: number
+- contextPath: Uptycs.ProcEvent.upt_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.ParentEvent.pid
+  description: pid of the process (this is the same number as the input argument 'parent')
+  type: number
+- contextPath: Uptycs.ParentEvent.upt_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.pid
+  description: pid of a child process
+  type: number
+- contextPath: Uptycs.Children.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.upt_remove_time
+  description: time that the process was removed
+  type: date
