@@ -46,7 +46,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
     skipped_count = len(skipped_tests)
     rerecorded_count = len(proxy.rerecorded_tests)
     empty_mocks_count = len(proxy.empty_files)
-    unmocklable_integrations_count = len(unmocklable_integrations.iterkeys())
+    unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
