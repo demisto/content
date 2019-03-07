@@ -640,7 +640,7 @@ script: |-
          :return: No data returned
          :rtype: ``None``
       """
-      if not data:
+      if data is None:
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
@@ -1511,3 +1511,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
+releaseNotes: "-"
