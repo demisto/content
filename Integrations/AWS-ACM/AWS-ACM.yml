@@ -155,7 +155,6 @@ script:
         }
 
 
-
     '''MAIN FUNCTIONS'''
     def describe_certificate(args):
         client = aws_session(
