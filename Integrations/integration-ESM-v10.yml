@@ -6,9 +6,9 @@ display: McAfee ESM-v10
 category: Analytics & SIEM
 image: data:image/png;base64,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
 description: Run queries and receive alarms from Intel Security ESM
-detaileddescription: Timezone parameter should be set according to the timezone
-  the McAfee ESM uses. For examples if the alarms in ESM are -0600 then the timezone
-  should be set to -6.
+detaileddescription: Timezone parameter should be set according to the timezone the
+  McAfee ESM uses. For examples if the alarms in ESM are -0600 then the timezone should
+  be set to -6.
 configuration:
 - display: Port
   name: port
@@ -62,7 +62,9 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: |2-
+
+    """ IMPORTS """
     import base64
     import json
     import re
@@ -78,35 +80,37 @@ script:
 
     # by default filters only "Closed" cases
     FILTERED_OUT_STATUSES = [2, ]
-    VERIFY = demisto.params()['insecure'] == False
+    VERIFY = demisto.params()['insecure'] is False
     requests.packages.urllib3.disable_warnings()
     VERSION = demisto.params()['version']
 
     ESM_URL = demisto.params()['ip'] + ":" + demisto.params()['port']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    TIMEZONE = float(demisto.params().get('timezone'))
     ESM_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+    TIMEZONE = float(demisto.params().get('timezone'))
 
     def throw_error(error_str):
         if SHOULD_STOP_ON_ERROR:
-            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : 'text', 'Contents' : error_str })
+            demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': error_str})
             sys.exit(0)
         else:
             demisto.error(error_str)
 
+
+    @logger
     def search_result_to_md(res):
         columns = res['columns']
         rows = res['rows']
 
         md = "### results:\n"
 
-        if(len(rows) == 0):
+        if len(rows) == 0:
             return md + "No matching search result were found"
 
         # headers
-        columnNames = list(map(lambda column: column['name'], columns))
-        md = md + ' | '.join(columnNames) + '\n'
+        column_names = list(map(lambda column: column['name'], columns))
+        md = md + ' | '.join(column_names) + '\n'
         md = md + ' | '.join(list(map(lambda column: "---", columns))) + '\n'
 
         # body
@@ -114,6 +118,7 @@ script:
             md = md + ' | '.join(r.replace('|', '\\|') for r in row['values']) + '\n'
 
         return md
+
 
     @logger
     def search_results_to_context(res):
@@ -124,15 +129,15 @@ script:
             values = row['values']
             i = 0
             for column in columns:
-                if (len(values[i]) != 0):
+                if len(values[i]) != 0:
                     column_string = column['name'].replace(".", "")
                     column_string = column_string.replace(")", "")
                     column_string = column_string.replace("(", "")
                     fixed_searches.append({
-                    column_string : values[i]
+                        column_string: values[i]
                     })
                 i += 1
-        context = {'SearchResults(val.ID && val.ID == obj.ID)' : fixed_searches}
+        context = {'SearchResults(val.ID && val.ID == obj.ID)': fixed_searches}
         return context
 
 
@@ -157,30 +162,26 @@ script:
             self.is_logged_in = False
             self._case_statuses = None
 
-
         def _build_login_urls(self):
             """ Concatenate URLs """
             self.url = 'https://{}/rs/esm/'.format(self.esmhost)
             self.int_url = 'https://{}/ess'.format(self.esmhost)
             self.login_url = '{}{}'.format(self.url, 'login')
 
-
         def _encode_login(self):
             self.b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
             self.b64_passwd = base64.b64encode(self.passwd.encode('utf-8')).decode()
 
-
         def _build_params(self):
-                self.params = {"username": self.b64_user,
-                               "password": self.b64_passwd,
-                               "locale": "en_US",
-                               "os" : "Win32"
-                               }
-                try:
-                    self.params_json = json.dumps(self.params)
-                except TypeError as e:
-                    throw_error("Invalid parameters: {}".format(self.params))
-
+            self.params = {"username": self.b64_user,
+                           "password": self.b64_passwd,
+                           "locale": "en_US",
+                           "os": "Win32"
+                           }
+            try:
+                self.params_json = json.dumps(self.params)
+            except TypeError as te_ex:
+                throw_error("Invalid parameters: {}".format(self.params))
 
         def login(self):
             try:
@@ -192,33 +193,36 @@ script:
                                                     verify=VERIFY)
                 self.cookie = self.login_response.headers.get('Set-Cookie')
                 try:
-                    self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)', self.cookie).group(1)
-                except TypeError as e:
+                    self.jwttoken = re.search('(^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)',
+                                              self.cookie).group(1)
+                except TypeError as te_ex:
                     throw_error("Failed login\nurl: {}\n response status: {}\nresponse: {}\n".format(self.login_url,
-                                    self.login_response.status_code, self.login_response.text))
+                                                                                                     self.login_response.status_code,
+                                                                                                     self.login_response.text))
                 self.xsrf_token = self.login_response.headers.get('Xsrf-Token')
-                self.session_headers = {'Cookie' : self.jwttoken,
-                                        'X-Xsrf-Token' : self.xsrf_token,
+                self.session_headers = {'Cookie': self.jwttoken,
+                                        'X-Xsrf-Token': self.xsrf_token,
                                         'Content-Type': 'application/json'}
                 self.is_logged_in = True
+                demisto.setIntegrationContext({
+                    'session_headers': self.session_headers
+                })
             except KeyError as e:
                 throw_error("Failed login\n error: {}".format(e))
-
 
         def logout(self):
             if self.is_logged_in:
                 try:
-                    headers = {'Cookie' : self.cookie}
-                    requests.post(self.url + 'userLogout',
-                        headers=self.session_headers,
-                        # headers=headers,
-                        data=json.dumps(''),
-                        verify=VERIFY
-                        )
+                    # headers = {'Cookie': self.cookie}
+                    res = requests.delete(self.url + 'userLogout',
+                                          headers=self.session_headers,
+                                          # headers=headers,
+                                          data=json.dumps(''),
+                                          verify=VERIFY
+                                          )
                     self.is_logged_in = False
                 except Exception as e:
-                    demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e), ))
-
+                    demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e),))
 
         @logger
         def cmdquery(self, cmd, query=None, no_answer=False, no_validation=False):
@@ -232,7 +236,9 @@ script:
             if not no_validation:
                 if no_answer:
                     if self.result.status_code != 200:
-                        throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
+                        throw_error(
+                            'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code,
+                                                                                                 self.result.text))
                 else:
                     try:
                         res = self.result.json()
@@ -240,17 +246,19 @@ script:
                             res = res['return']
                         return res
                     except:
-                        throw_error('Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code, self.result.text))
+                        throw_error(
+                            'Error - ESM replied with:\n - status code: {} \n - body: {}'.format(self.result.status_code,
+                                                                                                 self.result.text))
 
         @logger
         def execute_query(self, time_range, custom_start, custom_end, filters, fields, query_type):
-            if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
+            if time_range == 'CUSTOM' and (not custom_start or not custom_end):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
-            cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if VERSION=='10.2' else '', query_type, )
+            cmd = '%sqryExecuteDetail?reverse=false&type=%s' % ('v2/' if VERSION == '10.2' else '', query_type,)
 
-            if (time_range == 'CUSTOM'):
-               cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
+            if time_range == 'CUSTOM':
+                cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
 
             q = {
                 'config': {
@@ -259,7 +267,7 @@ script:
                 }
             }
             if fields is not None:
-                q['config']['fields'] = [{'name':v} for v in argToList(fields)]
+                q['config']['fields'] = [{'name': v} for v in argToList(fields)]
             query = json.dumps(q)
 
             res = self.cmdquery(cmd, query)
@@ -267,8 +275,8 @@ script:
 
         @logger
         def get_query_result(self, resultID):
-            cmd = '%sqryGetStatus' % ('v2/' if VERSION=='10.2' else '', )
-            query = json.dumps({ 'resultID': resultID })
+            cmd = '%sqryGetStatus' % ('v2/' if VERSION == '10.2' else '',)
+            query = json.dumps({'resultID': resultID})
 
             res = self.cmdquery(cmd, query)
             return res['complete']
@@ -295,24 +303,23 @@ script:
 
         @logger
         def fetch_results(self, resultID):
-            cmd = '%sqryGetResults?startPos=0&reverse=false&numRows=10000' % ('v2/' if VERSION=='10.2' else '', )
+            cmd = '%sqryGetResults?startPos=0&reverse=false&numRows=10000' % ('v2/' if VERSION == '10.2' else '',)
 
-            query = json.dumps({ 'resultID': resultID })
+            query = json.dumps({'resultID': resultID})
 
             res = self.cmdquery(cmd, query)
             return res
 
         @logger
         def search(self, time_range, custom_start, custom_end, filters, fields, query_type, max_wait):
-
             # execute command
-            resultID = self.execute_query(time_range, custom_start, custom_end, filters, fields, query_type)
+            result_id = self.execute_query(time_range, custom_start, custom_end, filters, fields, query_type)
 
             # wait for result to be ready
-            self.wait_for_results(resultID, max_wait)
+            self.wait_for_results(result_id, max_wait)
 
-            #fetch result
-            res = self.fetch_results(resultID)
+            # fetch result
+            res = self.fetch_results(result_id)
 
             table = search_result_to_md(res)
             context = search_results_to_context(res)
@@ -327,9 +334,8 @@ script:
             }
 
         @logger
-        def fetchAllFields(self):
-
-            res = self.cmdquery('%sqryGetFilterFields' % ('v2/' if VERSION=='10.2' else '', ))
+        def fetch_all_fields(self):
+            res = self.cmdquery('%sqryGetFilterFields' % ('v2/' if VERSION == '10.2' else '',))
 
             # convert to an appropriate table
             for x in res:
@@ -340,28 +346,25 @@ script:
                 'Type': entryTypes['note'],
                 'Contents': res,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tblToMd('Result:' ,res),
+                'HumanReadable': tblToMd('Result:', res),
             }
-
 
         # alarms commands
         @logger
         def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
-            if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
+            if time_range == 'CUSTOM' and (not custom_start or not custom_end):
                 throw_error('you must specify customStart and customEnd when timeRange is CUSTOM')
 
-
-
             cmd = 'alarmGetTriggeredAlarmsPaged?pageSize=500&pageNumber=1&triggeredTimeRange=' + time_range
-            if (time_range == 'CUSTOM'):
-               cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
+            if time_range == 'CUSTOM':
+                cmd = cmd + '&customStart=' + custom_start + '&customEnd=' + custom_end
 
             query = ''
-            if (assigned_user == 'ME'):
+            if assigned_user == 'ME':
                 user = self.get_user_obj(self.user)
-                query = json.dumps({ 'assignedUser' : user})
+                query = json.dumps({'assignedUser': user})
             elif assigned_user:
-                query = json.dumps({ 'assignedUser' : self.get_user_obj(assigned_user)})
+                query = json.dumps({'assignedUser': self.get_user_obj(assigned_user)})
 
             res = self.cmdquery(cmd, query)
 
@@ -371,81 +374,69 @@ script:
 
             return res
 
-
         @logger
-        def update_alarms_status(self, alarm_ids):
-            cmd = 'alarm%(action)sTriggeredAlarm' % (action, )
-            query = json.dumps({'triggeredIds' : [{'value' : int(i)} for i in alarm_ids]})
-
-
+        def update_alarms_status(self, action, alarm_ids):
+            pass
+            cmd = 'alarm%(action)sTriggeredAlarm' % {'action': action}
+            query = json.dumps({'triggeredIds': [{'value': int(i)} for i in alarm_ids]})
 
             # the command return an error for a list of alarm ids however is execute the update successfully.
             self.cmdquery(cmd, query, no_validation=True)
-            return 'Alarms has been %sd.' % (action, )
-
+            return 'Alarms has been %sd.' % (action,)
 
         @logger
         def acknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Acknowledge', alarm_ids)
 
-
         @logger
         def unacknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Unacknowledge', alarm_ids)
-
 
         @logger
         def delete_alarms(self, alarm_ids):
             return self.update_alarms_status('Delete', alarm_ids)
 
-
         @logger
         def get_alarm_event_details(self, event_id):
-            cmd = ('%sipsGetAlertData' % ('v2/' if VERSION == '10.2' else '', ))
-            query = json.dumps({'id' : event_id})
-
+            cmd = ('%sipsGetAlertData' % ('v2/' if VERSION == '10.2' else '',))
+            query = json.dumps({'id': event_id})
 
             res = self.cmdquery(cmd, query)
 
             return res
-
 
         @logger
         def list_alarm_events(self, alarm_id):
             cmd = 'notifyGetTriggeredNotificationDetail'
-            query = json.dumps({'id' : alarm_id})
-
+            query = json.dumps({'id': alarm_id})
 
             res = self.cmdquery(cmd, query)
 
             return res
 
-
         # case statuses commands
         @logger
         def add_case_status(self, name, should_show_in_case_pane):
-            '''add a new type of case status with given parameters'''
+            """add a new type of case status with given parameters"""
 
             status_details = {
-                'name' : name,
-                'default' : False,
-                'showInCasePane' : should_show_in_case_pane
+                'name': name,
+                'default': False,
+                'showInCasePane': should_show_in_case_pane
             }
 
             cmd = 'caseAddCaseStatus'
-            query = json.dumps({'status' : status_details})
+            query = json.dumps({'status': status_details})
             self.cmdquery(cmd, query)
-            return 'Added case status : %s' % (name, )
-
+            return 'Added case status : %s' % (name,)
 
         @logger
         def edit_case_status(self, original_name, new_name, show_in_case_pane):
-            '''edit a  case status with given id'''
-
+            """edit a  case status with given id"""
 
             status_id = self.case_status_name_to_id(original_name)
             status_details = {
-                'id' : status_id,
+                'id': status_id,
                 'name': new_name
             }
 
@@ -453,39 +444,36 @@ script:
                 status_details['showInCasePane'] = show_in_case_pane
 
             cmd = 'caseEditCaseStatus'
-            query = json.dumps({'status' : status_details})
+            query = json.dumps({'status': status_details})
             self.cmdquery(cmd, query, no_answer=True)
 
-            return 'Edit case status with ID: %d' % (status_id, )
-
+            return 'Edit case status with ID: %d' % (status_id,)
 
         @logger
         def delete_case_status(self, name):
-            '''delete a new type of case status with given name'''
+            """delete a new type of case status with given name"""
 
             status_id = self.case_status_name_to_id(name)
-            status_id = {'value' : status_id}
+            status_id = {'value': status_id}
 
             cmd = 'caseDeleteCaseStatus'
-            query = json.dumps({'statusId' : status_id})
+            query = json.dumps({'statusId': status_id})
             self.cmdquery(cmd, query, no_answer=True)
 
-            return 'Deleted case status with ID: %d' % (status_id['value'], )
-
+            return 'Deleted case status with ID: %d' % (status_id['value'],)
 
         @logger
         def get_case_statuses(self):
-            '''get all case statuses'''
+            """get all case statuses"""
 
             cmd = 'caseGetCaseStatusList'
             query = json.dumps({"authPW": {"value": self.passwd}})
 
             return self.cmdquery(cmd, query)
 
-
         @logger
         def case_status_id_to_name(self, status_id, use_cache=True):
-            '''convert case status id to name'''
+            """convert case status id to name"""
             if self._case_statuses is None:
                 self._case_statuses = demisto.getIntegrationContext().get('case_statuses', None)
 
@@ -497,34 +485,32 @@ script:
 
             matches = [status['name'] for status in self._case_statuses if status['id'] == status_id]
 
-            return matches[0] if matches else 'Unknown - %d' % (status_id, )
-
+            return matches[0] if matches else 'Unknown - %d' % (status_id,)
 
         @logger
         def case_status_name_to_id(self, status_name, use_cache=True):
-            '''convert case status name to id'''
-            if self._case_statuses is None or not use_cache or not any([s['name'].lower() == status_name.lower() for s in self._case_statuses]):
+            """convert case status name to id"""
+            if self._case_statuses is None or not use_cache or not any(
+                    [s['name'].lower() == status_name.lower() for s in self._case_statuses]):
                 self._case_statuses = self.get_case_statuses()
 
             matches = [status['id'] for status in self._case_statuses if status['name'].lower() == status_name.lower()]
 
-            return matches[0] if matches else 0 # 0 is not a valid value
-
+            return matches[0] if matches else 0  # 0 is not a valid value
 
         # user commands
         @logger
         def get_users(self):
-            '''get all user's names'''
+            """get all user's names"""
 
             cmd = 'userGetUserList'
             query = json.dumps({"authPW": {"value": self.passwd}})
 
             return self.cmdquery(cmd, query)
 
-
         @logger
         def get_user_obj(self, user_name):
-            '''get user object'''
+            """get user object"""
             if user_name.lower() == 'me':
                 user_name = self.user
 
@@ -535,10 +521,9 @@ script:
             # the login user must appear in the user list
             return matches[0] if matches else self_matches[0]
 
-
         @logger
         def user_name_to_id(self, user_name):
-            '''convert user name to id'''
+            """convert user name to id"""
             if user_name is None or user_name.lower() == 'me':
                 user_name = self.user
             res = self.get_users()
@@ -548,28 +533,25 @@ script:
             # the login user must appear in the user list
             return matches[0] if matches else self_matches[0]
 
-
         @logger
         def user_id_to_name(self, user_id):
-            '''convert user id to name'''
+            """convert user id to name"""
             res = self.get_users()
             matches = [user['username'] for user in res if user['id']['value'] == user_id]
 
             return matches[0] if matches else self.user
 
-
         # organization commands
         @logger
         def get_organizations(self):
-            '''get all organization names'''
+            """get all organization names"""
 
             cmd = 'caseGetOrganizationList'
             return self.cmdquery(cmd, '')
 
-
         @logger
         def organization_name_to_id(self, organization_name):
-            '''convert organization name to id'''
+            """convert organization name to id"""
             if organization_name is None:
                 organization_name = ''
             res = self.get_organizations()
@@ -577,21 +559,18 @@ script:
 
             return matches[0] if matches else 1
 
-
         @logger
         def organization_id_to_name(self, organization_id):
-            '''convert organization name to id'''
+            """convert organization name to id"""
             res = self.get_organizations()
             matches = [org['name'] for org in res if org['id'] == organization_id]
 
             return matches[0] if matches else 'None'
 
-
-
         # cases commands
         @logger
         def get_cases(self, since_date_range=None):
-            '''get all cases associated with current user'''
+            """get all cases associated with current user"""
             cmd = 'caseGetCaseList'
             res = self.cmdquery(cmd)
             cases = []
@@ -608,7 +587,7 @@ script:
 
         def get_case_detail(self, case_id):
             cmd = 'caseGetCaseDetail'
-            case_id = {'id' : {'value' : case_id}}
+            case_id = {'id': {'value': case_id}}
             query = json.dumps(case_id)
             res = self.cmdquery(cmd, query)
 
@@ -628,19 +607,18 @@ script:
 
             cmd = 'caseAddCase'
             case_details = {
-                'summary' : summary,
-                'assignedTo' : assignee,
-                'severity' : severity,
-                'orgId' : org_id,
-                'statusId' : {'value' : self.case_status_name_to_id(status)},
+                'summary': summary,
+                'assignedTo': assignee,
+                'severity': severity,
+                'orgId': org_id,
+                'statusId': {'value': self.case_status_name_to_id(status)},
             }
 
-            query = json.dumps({ 'caseDetail' : case_details})
+            query = json.dumps({'caseDetail': case_details})
             res = self.cmdquery(cmd, query)
             return res['value']
 
         def edit_case(self, case_id, summary, severity, status, assignee, organization):
-
 
             case = self.get_case_detail(case_id)
 
@@ -664,48 +642,54 @@ script:
                 case['orgId'] = self.organization_name_to_id(organization)
 
             cmd = 'caseEditCase'
-            query = json.dumps({'caseDetail' : case})
+            query = json.dumps({'caseDetail': case})
             self.cmdquery(cmd, query, True)
 
             return
 
         def get_case_event_list(self, event_ids):
 
-
-            event_ids = {'list' : event_ids}
+            event_ids = {'list': event_ids}
 
             cmd = 'caseGetCaseEventsDetail'
-            query = json.dumps({'eventIds' : event_ids})
+            query = json.dumps({'eventIds': event_ids})
             res = self.cmdquery(cmd, query)
 
             return res
 
 
+    @logger
     def alarms_to_entry(alarms):
         if not alarms:
-                return "No alarms were found"
+            return "No alarms were found"
 
-        context = { 'Alarm(val.ID && val.ID == obj.ID)': alarms }
+        context = {'Alarm(val.ID && val.ID == obj.ID)': alarms}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': alarms,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tblToMd('Result:' ,alarms),
+            'HumanReadable': tblToMd('Result:', alarms),
             'EntryContext': context
         }
 
+
+    @logger
     def alarms_to_incidents(alarms):
         incidents = []
         for alarm in alarms:
             incidents.append({
                 'name': alarm['summary'],
-                'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'], alarm['ID'], alarm['conditionType']),
+                'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'],
+                                                                                             alarm['ID'],
+                                                                                             alarm['conditionType']),
                 'severity': severity_to_level(alarm['severity']),
                 'rawJSON': json.dumps(alarm)
             })
         return incidents
 
+
+    @logger
     def cases_to_entry(esm, title, cases):
         if not cases:
             return 'No cases were found'
@@ -715,12 +699,13 @@ script:
         context_cases = []
 
         for case in cases:
-            fixed_case = {}
-            fixed_case['ID'] = case['id']['value']
-            fixed_case['Summary'] = case['summary']
-            fixed_case['Status'] = esm.case_status_id_to_name(case['statusId']['value'])
-            fixed_case['OpenTime'] = case['openTime']
-            fixed_case['Severity'] = case['severity']
+            fixed_case = {
+                'ID': case['id']['value'],
+                'Summary': case['summary'],
+                'Status': esm.case_status_id_to_name(case['statusId']['value']),
+                'OpenTime': case['openTime'],
+                'Severity': case['severity']
+            }
 
             if case.has_key('assignedTo'):
                 fixed_case['Assignee'] = esm.user_id_to_name(case['assignedTo'])
@@ -732,19 +717,19 @@ script:
 
             context_case = fixed_case.copy()
             if case.has_key('eventList'):
-                fixed_case['Event List'] = json.dumps(case['eventList']).replace('|', '\|')
+                fixed_case['Event List'] = json.dumps(case['eventList'])
                 context_case['EventList'] = case['eventList']
                 headers.append('Event List')
 
             if case.has_key('notes'):
-                fixed_case['Notes'] = json.dumps(case['notes']).replace('|', '\|')
+                fixed_case['Notes'] = json.dumps(case['notes'])
                 context_case['Notes'] = case['notes']
                 headers.append('Notes')
 
             fixed_cases.append(fixed_case)
             context_cases.append(context_case)
 
-        context = { 'Case(val.ID && val.ID == obj.ID)': context_cases }
+        context = {'Case(val.ID && val.ID == obj.ID)': context_cases}
 
         return {
             'ContentsFormat': formats['json'],
@@ -755,15 +740,17 @@ script:
             'EntryContext': context
         }
 
+
+    @logger
     def cases_to_incidents(esm, cases):
         incidents = []
         for case in cases:
             incident = {
-                'name' : case['summary'],
-                'details' : 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
-                'severity' : severity_to_level(case['severity']),
+                'name': case['summary'],
+                'details': 'Case %s with ID %s was triggerred' % (case['summary'], case['id']['value']),
+                'severity': severity_to_level(case['severity']),
                 # 'status' : esm.case_status_id_to_name(case['statusId']['value']),
-                'rawJSON' : json.dumps(case),
+                'rawJSON': json.dumps(case),
             }
             # if case.has_key('assignedTo'):
             #     incident['owner'] = esm.user_id_to_name(case['assignedTo'])
@@ -771,6 +758,8 @@ script:
 
         return incidents
 
+
+    @logger
     def case_statuses_to_entry(case_statuses):
         if not case_statuses:
             return 'No case statuses were found'
@@ -779,10 +768,10 @@ script:
         fixed_statuses = []
         for status in case_statuses:
             fixed_statuses.append({
-                'ID' : status['id'],
-                'Name' : status['name'],
-                'Is Default' : status['default'],
-                'Show In Case Pane' : status['showInCasePane']
+                'ID': status['id'],
+                'Name': status['name'],
+                'Is Default': status['default'],
+                'Show In Case Pane': status['showInCasePane']
             })
 
         return {
@@ -794,6 +783,7 @@ script:
             'EntryContext': {}
         }
 
+
     def organizations_to_entry(organizations):
         if not organizations:
             return 'No organizations were found'
@@ -802,11 +792,11 @@ script:
         fixed_organizations = []
         for organization in organizations:
             fixed_organizations.append({
-                'ID' : organization['id'],
-                'Name' : organization['name'],
+                'ID': organization['id'],
+                'Name': organization['name'],
             })
 
-        context = {'Organizations(val.ID && val.ID == obj.ID)' : fixed_organizations}
+        context = {'Organizations(val.ID && val.ID == obj.ID)': fixed_organizations}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -814,7 +804,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tblToMd('Organizations:', fixed_organizations, headers),
             'EntryContext': context
-       }
+        }
 
     def case_events_to_entry(events):
         if not events:
@@ -824,12 +814,12 @@ script:
         fixed_events = []
         for event in events:
             fixed_events.append({
-                'ID' : event['id']['value'],
-                'LastTime' : event['lastTime'],
-                'Message' : event['message'],
+                'ID': event['id']['value'],
+                'LastTime': event['lastTime'],
+                'Message': event['message'],
             })
 
-        context = {'CaseEvents(val.ID && val.ID == obj.ID)' : fixed_events}
+        context = {'CaseEvents(val.ID && val.ID == obj.ID)': fixed_events}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -837,7 +827,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tblToMd('Case Events:', fixed_events, headers),
             'EntryContext': context
-       }
+        }
 
 
     def alarm_events_to_entry(events):
@@ -849,35 +839,35 @@ script:
             # 2) the result of esm-get-alarm-event-details
             # therefore, first try to get the field of the first option and fallback to the second option.
             cases = [{
-                'ID' : case['id'],
-                'OpenTime' : case['openTime'],
-                'Severity' : case['severity'],
-                'Summary' : case['summary'],
-                'Status' : esm.case_status_id_to_name(case['statusId']['value'])
+                'ID': case['id'],
+                'OpenTime': case['openTime'],
+                'Severity': case['severity'],
+                'Summary': case['summary'],
+                'Status': esm.case_status_id_to_name(case['statusId']['value'])
             } for case in raw_event.get('cases', [])]
             event = {
-                'ID' : raw_event.get('eventId', '%s|%s' % (raw_event.get('ipsId', ''), raw_event.get('alertId', ''))),
-                'SubType' : raw_event.get('eventSubType', raw_event.get('subtype')),
-                'Severity' : raw_event['severity'],
-                'Cases' : cases,
-                'Message' : raw_event.get('ruleMessage', raw_event.get('ruleName')),
-                'NormalizedDescription' : raw_event.get('normDesc'),
-                'FirstTime' : raw_event.get('firstTime'),
-                'LastTime' : raw_event['lastTime'],
+                'ID': raw_event.get('eventId', '%s|%s' % (raw_event.get('ipsId', ''), raw_event.get('alertId', ''))),
+                'SubType': raw_event.get('eventSubType', raw_event.get('subtype')),
+                'Severity': raw_event['severity'],
+                'Cases': cases,
+                'Message': raw_event.get('ruleMessage', raw_event.get('ruleName')),
+                'NormalizedDescription': raw_event.get('normDesc'),
+                'FirstTime': raw_event.get('firstTime'),
+                'LastTime': raw_event['lastTime'],
 
-                'SrcMac' : raw_event.get('srcMac'),
-                'SrcIP' : raw_event.get('sourceIp', raw_event.get('srcIp')),
-                'SrcPort' : raw_event.get('srcPort'),
-                'DstMac' : raw_event.get('destMac'),
-                'DstIP' : raw_event['destIp'],
-                'DstPort' : raw_event.get('destPort'),
+                'SrcMac': raw_event.get('srcMac'),
+                'SrcIP': raw_event.get('sourceIp', raw_event.get('srcIp')),
+                'SrcPort': raw_event.get('srcPort'),
+                'DstMac': raw_event.get('destMac'),
+                'DstIP': raw_event['destIp'],
+                'DstPort': raw_event.get('destPort'),
 
                 # 'Raw' : raw_event, # temporary for vik
             }
 
             fixed_events.append(event)
 
-        context = {'EsmAlarmEvent(val.ID && val.ID == obj.ID)' : createContext(fixed_events, removeNull=True)}
+        context = {'EsmAlarmEvent(val.ID && val.ID == obj.ID)': createContext(fixed_events, removeNull=True)}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -885,9 +875,10 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tblToMd('Alarm Events:', fixed_events, headers=headers),
             'EntryContext': context
-       }
+        }
 
 
+    @logger
     def users_to_entry(users):
         # unreachable code - in order to send command, one must be logged in. therefore there is at least one user.
         if not users:
@@ -897,15 +888,15 @@ script:
         fixed_users = []
         for user in users:
             fixed_users.append({
-                'ID' : user['id']['value'],
-                'Name' : user['username'],
-                'Email' : user['email'],
-                'SMS' : user['sms'],
-                'IsMaster' : user['master'],
-                'IsAdmin' : user['admin'],
+                'ID': user['id']['value'],
+                'Name': user['username'],
+                'Email': user['email'],
+                'SMS': user['sms'],
+                'IsMaster': user['master'],
+                'IsAdmin': user['admin'],
             })
 
-        context = {'EsmUser(val.ID && val.ID == obj.ID)' : fixed_users}
+        context = {'EsmUser(val.ID && val.ID == obj.ID)': fixed_users}
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -913,21 +904,27 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tblToMd('Users:', fixed_users, headers),
             'EntryContext': context
-       }
+        }
+
+
+    @logger
+    def get_minutes_left():
+        res = esm.cmdquery(cmd='sysGetMinutesLeft')
+        esm.fetch_all_fields()
 
 
     try:
-
         esm = NitroESM(ESM_URL, USERNAME, PASSWORD)
         esm.login()
         final_result = 'No result set'
 
         if demisto.command() == 'fetch-incidents':
             last_run = demisto.getLastRun()
+            demisto.debug('\n\nlast run:\n{}\n'.format(last_run))
             # for backward compatibility uses
-            if last_run.has_key('value') and not last_run.has_key('alarms'):
+            if 'value' in last_run and 'alarms' not in last_run:
                 last_run['alarms'] = last_run['value']
-            configuration_last_case = int(demisto.params()['startingCaseID'])
+            configuration_last_case = int(demisto.params().get('startingCaseID', 0))
 
             start_alarms = last_run.get('alarms', (datetime.now() - timedelta(days=1) + timedelta(hours=TIMEZONE)).isoformat())
             last_case = last_run.get('cases', 0)
@@ -935,11 +932,13 @@ script:
             last_case = max(last_case, configuration_last_case)
 
             incidents = []
-            mode = demisto.params().get('fetchTypes', 'alarms').lower()  # alarms is default for backward compatability
+            mode = demisto.params().get('fetchTypes', 'alarms').lower()  # alarms is default for backward compatibility
 
             next_run = None
             if mode in ('alarms', 'both'):
                 end = (datetime.now() + timedelta(hours=TIMEZONE)).isoformat()
+
+                demisto.debug("alarms: start - {} , end - {}".format(start_alarms, end))
 
                 alarms = esm.fetch_alarms(
                     'CUSTOM',
@@ -947,13 +946,13 @@ script:
                     end,
                     ''
                 )
+                demisto.debug('alarms found:\n{}\n'.format(alarms))
 
                 incidents = []
                 for alarm in alarms:
                     triggered_date = alarm['triggeredDate']
                     if next_run is None or next_run < triggered_date:
                         next_run = triggered_date
-
                     incidents.append({
                         'name': alarm['summary'],
                         'details': 'Alarm {} , ID : {} , was triggered by condition type: {}'.format(alarm['alarmName'],
@@ -975,33 +974,32 @@ script:
                 # update last run info
                 last_run['cases'] = last_case
 
-                demisto.info('adding %d more cases, last id is: %d' % (len(cases), last_run['cases'],))
+                demisto.debug('adding %d more cases, last id is: %d' % (len(cases), last_run['cases'],))
                 if cases:
                     incidents.extend(cases_to_incidents(esm, cases))
 
-
             if next_run is not None:
-                next_run_datetime = datetime.strptime(next_run, '%Y/%m/%d %H:%M:%S')
+                next_run_datetime = datetime.strptime(next_run, ESM_DATE_FORMAT)
                 next_run = (next_run_datetime + timedelta(seconds=1)).isoformat()
             else:
                 next_run = start_alarms
 
             last_run['value'] = next_run
             last_run['alarms'] = next_run
-            demisto.setLastRun(last_run)
+
             demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
             sys.exit(0)
 
-
         elif demisto.command() == 'test-module':
-            if VERSION not in ['10.0', '10.1', '10.2']:
+            if VERSION not in ['10.0', '10.1', '10.2', '10.3']:
                 final_result = 'version must be one of 10.x, got %s' % (VERSION,)
             else:
-                esm.fetchAllFields()
+                esm.fetch_all_fields()
                 final_result = 'ok'
 
         elif demisto.command() == 'esm-fetch-fields':
-            res = esm.fetchAllFields()
+            res = esm.fetch_all_fields()
             final_result = res
 
         elif demisto.command() == 'esm-search':
@@ -1043,11 +1041,11 @@ script:
         elif demisto.command() == 'esm-edit-case':
             args = demisto.args()
             case_id = int(demisto.get(args, 'id'))
-            sevirity = demisto.get(args, 'severity')
+            severity = demisto.get(args, 'severity')
             esm.edit_case(
                 case_id,
                 demisto.get(args, 'summary'),
-                int(sevirity) if sevirity else None,
+                int(severity) if severity else None,
                 demisto.get(args, 'status'),
                 demisto.get(args, 'assignee'),
                 demisto.get(args, 'organization'),
@@ -1132,13 +1130,13 @@ script:
             args = demisto.args()
             res = esm.list_alarm_events(demisto.get(args, 'alarmId'))
             final_result = alarm_events_to_entry(res['events'])
+        demisto.results(final_result)
 
     except Exception as ex:
-        LOG(ex.message)
-        return_error(ex.message)
+        demisto.error('#### error in McAfee ESM v10: ' + str(ex))
+        return_error(str(ex))
     finally:
         esm.logout()
-        demisto.results(final_result)
   type: python
   commands:
   - name: esm-fetch-fields
