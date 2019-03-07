@@ -93,11 +93,9 @@ args:
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
   defaultValue: polling
 - name: additionalPollingCommandArgNames
-  required: true
   description: Commas separated arguments of the polling command
   isArray: true
 - name: additionalPollingCommandArgValues
-  required: true
   description: Commas separated arguments values of the polling command
   isArray: true
 scripttarget: 0

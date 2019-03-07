@@ -33,10 +33,8 @@ args:
   description: Name of the argument of the polling command
   defaultValue: ids
 - name: additionalPollingCommandArgNames
-  required: true
   description: Commas separated arguments of the polling command
 - name: additionalPollingCommandArgValues
-  required: true
   description: Commas separated arguments values of the polling command
 scripttarget: 0
 runonce: false
