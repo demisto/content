@@ -305,8 +305,8 @@ script:
                     nf[i]['srcPort']  = nf[i]['id.srcPort'];
                     nf[i]['dstPort'] = nf[i]['id.dstPort'];
                     nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
-                    event['Netflows'] = nf;
                     }
+                event['Netflows'] = nf;
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
 
@@ -403,8 +403,8 @@ script:
                         nf[i]['srcPort']  = nf[i]['id.srcPort'];
                         nf[i]['dstPort'] = nf[i]['id.dstPort'];
                         nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
-                        event['Netflows'] = nf;
                         }
+                event['Netflows'] = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -434,8 +434,8 @@ script:
                         nf[i]['srcPort']  = nf[i]['id.srcPort'];
                         nf[i]['dstPort'] = nf[i]['id.dstPort'];
                         nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
-                        event['Netflows'] = nf;
                     }
+                event['Netflows'] = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
