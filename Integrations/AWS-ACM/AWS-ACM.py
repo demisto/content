@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import boto3
 import datetime
-
 
 '''GLOBAL VARIABLES'''
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
@@ -129,6 +129,8 @@ def create_entry(title, data, ec):
 
 
 '''MAIN FUNCTIONS'''
+
+
 def describe_certificate(args):
     client = aws_session(
         region=args.get('region'),
