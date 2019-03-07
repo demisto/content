@@ -315,6 +315,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "ProtectWise",
+            "playbookID": "Protectwise-Test"
+        },
+        {
             "integrations": "WhatsMyBrowser",
             "playbookID": "WhatsMyBrowser-Test"
         },
