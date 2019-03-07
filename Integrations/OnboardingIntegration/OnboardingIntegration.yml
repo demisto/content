@@ -209,11 +209,12 @@ script:
   isfetch: true
   runonce: false
   script: "'''IMPORTS'''\nfrom faker import Faker\nfrom faker.providers import internet,\
-    \ misc, lorem\nfrom datetime import datetime\nimport json\nimport random\nfrom\
-    \ email.mime.multipart import MIMEMultipart\nfrom email.mime.text import MIMEText\n\
-    \n'''SETUP'''\nfake = Faker()\nfake.add_provider(internet)\nfake.add_provider(misc)\n\
-    fake.add_provider(lorem)\n\n'''GLOBAL VARS'''\nPARAMS = demisto.params()\nINCIDENT_TYPE\
-    \ = PARAMS.get('incident_type', 'PhishingDemo')\nINCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute',\
+    \ misc, lorem, user_agent\nfrom datetime import datetime\nimport json\nimport\
+    \ random\nfrom email.mime.multipart import MIMEMultipart\nfrom email.mime.text\
+    \ import MIMEText\n\n'''SETUP'''\nfake = Faker()\nfake.add_provider(internet)\n\
+    fake.add_provider(misc)\nfake.add_provider(lorem)\nfake.add_provider(user_agent)\n\
+    \n'''GLOBAL VARS'''\nPARAMS = demisto.params()\nINCIDENT_TYPE = PARAMS.get('incident_type',\
+    \ 'PhishingDemo')\nINCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute',\
     \ '5'))\nMAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))\n\
     INDICATORS_PER_INCIDENT = 5\nINDICATORS_TO_INCLUDE = ['ipv4_private', 'url', 'domain_name',\
     \ 'sha1', 'sha256', 'md5']\n# About the drop some mean regex right now disable-secrets-detection-start\n\
@@ -755,45 +756,41 @@ script:
     \ '\\n'\n\n    emails = [fake.email() for _ in range(INDICATORS_PER_INCIDENT)]\n\
     \    details += ' '.join(emails)\n    return details\n\n\ndef inject_content_into_template(plaintext):\n\
     \    # Choose random email html template\n    choice = random.randint(0, 2)\n\
-    \    chosen_template = ''.join(EMAIL_TEMPLATES[choice])\n    # chosen_template[1]\
-    \ = chosen_template[1].format(plaintext)\n    # join_string = ' ' * 24\n    #\
-    \ template = join_string.join([EMAIL_TEMPLATES[0][0], EMAIL_TEMPLATES[0][1]])\n\
-    \    # template = ''.join([template, EMAIL_TEMPLATES[0][2]])\n    # html_from_template\
-    \ = ''.join(chosen_template)\n    html = chosen_template.format(plaintext)\n \
-    \   return html\n\n\ndef create_email():\n    \"\"\"\n    Create message object\
+    \    chosen_template = ''.join(EMAIL_TEMPLATES[choice])\n    html = chosen_template.format(plaintext)\n\
+    \    return html\n\n\ndef create_email():\n    \"\"\"\n    Create message object\
     \ using template and random data\n    \"\"\"\n    sender = fake.email()\n    recipient\
-    \ = fake.email()\n    msg = MIMEMultipart('alternative')\n    msg['Subject'] =\
-    \ fake.sentence()\n    msg['From'] = sender\n    msg['To'] = recipient\n\n   \
-    \ plaintext = create_content()\n    # choice = random.randint(0, 2)\n    # template\
-    \ = EMAIL_TEMPLATES[choice]\n    # EMAIL_TEMPLATES[0][1] = EMAIL_TEMPLATES[0][1].format(plaintext)\n\
-    \    # join_string = ' ' * 24\n    # template = join_string.join([EMAIL_TEMPLATES[0][0],\
-    \ EMAIL_TEMPLATES[0][1]])\n    # template = ''.join([template, EMAIL_TEMPLATES[0][2]])\n\
-    \    # html = template.format(plaintext)\n    html = inject_content_into_template(plaintext)\n\
-    \    part1 = MIMEText(plaintext, 'plain')\n    part2 = MIMEText(html, 'html')\n\
-    \    msg.attach(part1)\n    msg.attach(part2)\n    email_object = {}\n    for\
-    \ key, val in msg.items():\n        email_object[key] = val\n    email_object['Text']\
-    \ = plaintext\n    email_object['Body'] = html\n    return msg, email_object\n\
-    \n\n'''MAIN FUNCTIONS'''\n\n\ndef fetch_incidents():\n    try:\n        update_parameters()\n\
-    \        last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated',\
-    \ 0)\n\n        if last_run > 0 and last_run > MAX_NUM_OF_INCIDENTS:\n       \
-    \     return\n\n        incidents = []\n        num_of_incidents_left_to_create\
-    \ = MAX_NUM_OF_INCIDENTS - last_run\n\n        if num_of_incidents_left_to_create\
-    \ > INCIDENTS_PER_MINUTE:\n            num_of_incident_to_create = INCIDENTS_PER_MINUTE\n\
-    \        else:\n            num_of_incident_to_create = num_of_incidents_left_to_create\n\
-    \n        for _ in range(num_of_incident_to_create):\n            email, email_object\
+    \ = fake.email()\n    cc = [fake.email() for _ in range(random.randint(0, 2))]\n\
+    \    bcc = [fake.email() for _ in range(random.randint(0, 2))]\n\n    msg = MIMEMultipart('alternative')\n\
+    \    msg['Subject'] = fake.sentence()\n    msg['From'] = sender\n    msg['Reply-To']\
+    \ = sender\n    msg['To'] = recipient\n    msg['Message-ID'] = fake.uuid4()\n\
+    \    msg['CC'] = ', '.join(cc) if cc else ''\n    msg['BCC'] = ', '.join(bcc)\
+    \ if bcc else ''\n    msg['User-Agent'] = fake.user_agent()\n    msg['Date'] =\
+    \ datetime.now().strftime(\"%Y-%m-%dT%H:%M:%SZ\")\n\n    plaintext = create_content()\n\
+    \    html = inject_content_into_template(plaintext)\n    part1 = MIMEText(plaintext,\
+    \ 'plain')\n    part2 = MIMEText(html, 'html')\n    msg.attach(part1)\n    msg.attach(part2)\n\
+    \    email_object = {}\n    for key, val in msg.items():\n        email_object[key]\
+    \ = val\n    email_object['Text'] = plaintext\n    email_object['Body'] = html\n\
+    \    return msg, email_object\n\n\n'''MAIN FUNCTIONS'''\n\n\ndef fetch_incidents():\n\
+    \    try:\n        update_parameters()\n        last_run = 0 if not demisto.getLastRun()\
+    \ else demisto.getLastRun().get('numOfIncidentsCreated', 0)\n\n        if last_run\
+    \ > 0 and last_run > MAX_NUM_OF_INCIDENTS:\n            return\n\n        incidents\
+    \ = []\n        num_of_incidents_left_to_create = MAX_NUM_OF_INCIDENTS - last_run\n\
+    \n        if num_of_incidents_left_to_create > INCIDENTS_PER_MINUTE:\n       \
+    \     num_of_incident_to_create = INCIDENTS_PER_MINUTE\n        else:\n      \
+    \      num_of_incident_to_create = num_of_incidents_left_to_create\n\n       \
+    \ for _ in range(num_of_incident_to_create):\n            email, email_object\
     \ = create_email()\n            incidents.append({\n                'name': email_object.get('Subject'),\n\
-    \                'details': email.as_string(),\n                'occurred': datetime.now().strftime(\"\
-    %Y-%m-%dT%H:%M:%SZ\"),\n                'type': INCIDENT_TYPE,\n             \
-    \   'rawJSON': json.dumps(email_object)\n            })\n\n        demisto.incidents(incidents)\n\
-    \        # demisto.info(\"****************************\")\n        # demisto.info(last_run)\n\
-    \        # demisto.info(num_of_incidents_left_to_create)\n        # demisto.info(num_of_incident_to_create)\n\
-    \        demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incident_to_create})\n\
-    \        return\n    except Exception:\n        raise\n\n\ndef create_incident_command():\n\
-    \    try:\n        incidents = []\n\n        email, email_object = create_email()\n\
-    \n        incidents.append({\n            'name': email_object.get('Subject'),\n\
-    \            'details': email.as_string(),\n            'occurred': datetime.now().strftime(\"\
-    %Y-%m-%dT%H:%M:%SZ\"),\n            'type': INCIDENT_TYPE,\n            'rawJSON':\
-    \ json.dumps(email_object)\n        })\n        demisto.incidents(incidents)\n\
+    \                'details': email.as_string(),\n                'occurred': email_object.get('Date'),\n\
+    \                'type': INCIDENT_TYPE,\n                'rawJSON': json.dumps(email_object)\n\
+    \            })\n\n        demisto.incidents(incidents)\n        # demisto.info(\"\
+    ****************************\")\n        # demisto.info(last_run)\n        # demisto.info(num_of_incidents_left_to_create)\n\
+    \        # demisto.info(num_of_incident_to_create)\n        demisto.setLastRun({'numOfIncidentsCreated':\
+    \ last_run + num_of_incident_to_create})\n        return\n    except Exception:\n\
+    \        raise\n\n\ndef create_incident_command():\n    try:\n        incidents\
+    \ = []\n\n        email, email_object = create_email()\n\n        incidents.append({\n\
+    \            'name': email_object.get('Subject'),\n            'details': email.as_string(),\n\
+    \            'occurred': email_object.get('Date'),\n            'type': INCIDENT_TYPE,\n\
+    \            'rawJSON': json.dumps(email_object)\n        })\n        demisto.incidents(incidents)\n\
     \    except Exception:\n        raise\n\n\ndef demo_ip_command():\n    ip = demisto.args().get('ip')\n\
     \    dbotscore = generate_dbot_score(ip)\n\n    dbotscore_output = {\n       \
     \ 'Indicator': ip,\n        'Type': 'IP',\n        'Vendor': 'OnboardingDemo',\n\

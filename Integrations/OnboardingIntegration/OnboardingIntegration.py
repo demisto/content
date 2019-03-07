@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 '''IMPORTS'''
 from faker import Faker
-from faker.providers import internet, misc, lorem
+from faker.providers import internet, misc, lorem, user_agent
 from datetime import datetime
 import json
 import random
@@ -15,6 +15,7 @@ fake = Faker()
 fake.add_provider(internet)
 fake.add_provider(misc)
 fake.add_provider(lorem)
+fake.add_provider(user_agent)
 
 '''GLOBAL VARS'''
 PARAMS = demisto.params()
@@ -493,11 +494,6 @@ def inject_content_into_template(plaintext):
     # Choose random email html template
     choice = random.randint(0, 2)
     chosen_template = ''.join(EMAIL_TEMPLATES[choice])
-    # chosen_template[1] = chosen_template[1].format(plaintext)
-    # join_string = ' ' * 24
-    # template = join_string.join([EMAIL_TEMPLATES[0][0], EMAIL_TEMPLATES[0][1]])
-    # template = ''.join([template, EMAIL_TEMPLATES[0][2]])
-    # html_from_template = ''.join(chosen_template)
     html = chosen_template.format(plaintext)
     return html
 
@@ -508,19 +504,21 @@ def create_email():
     """
     sender = fake.email()
     recipient = fake.email()
+    cc = [fake.email() for _ in range(random.randint(0, 2))]
+    bcc = [fake.email() for _ in range(random.randint(0, 2))]
+
     msg = MIMEMultipart('alternative')
     msg['Subject'] = fake.sentence()
     msg['From'] = sender
+    msg['Reply-To'] = sender
     msg['To'] = recipient
+    msg['Message-ID'] = fake.uuid4()
+    msg['CC'] = ', '.join(cc) if cc else ''
+    msg['BCC'] = ', '.join(bcc) if bcc else ''
+    msg['User-Agent'] = fake.user_agent()
+    msg['Date'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     plaintext = create_content()
-    # choice = random.randint(0, 2)
-    # template = EMAIL_TEMPLATES[choice]
-    # EMAIL_TEMPLATES[0][1] = EMAIL_TEMPLATES[0][1].format(plaintext)
-    # join_string = ' ' * 24
-    # template = join_string.join([EMAIL_TEMPLATES[0][0], EMAIL_TEMPLATES[0][1]])
-    # template = ''.join([template, EMAIL_TEMPLATES[0][2]])
-    # html = template.format(plaintext)
     html = inject_content_into_template(plaintext)
     part1 = MIMEText(plaintext, 'plain')
     part2 = MIMEText(html, 'html')
@@ -558,7 +556,7 @@ def fetch_incidents():
             incidents.append({
                 'name': email_object.get('Subject'),
                 'details': email.as_string(),
-                'occurred': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                'occurred': email_object.get('Date'),
                 'type': INCIDENT_TYPE,
                 'rawJSON': json.dumps(email_object)
             })
@@ -583,7 +581,7 @@ def create_incident_command():
         incidents.append({
             'name': email_object.get('Subject'),
             'details': email.as_string(),
-            'occurred': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            'occurred': email_object.get('Date'),
             'type': INCIDENT_TYPE,
             'rawJSON': json.dumps(email_object)
         })
