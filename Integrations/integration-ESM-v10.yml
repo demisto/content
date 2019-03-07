@@ -62,7 +62,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |2-
+  script: |-
 
     """ IMPORTS """
     import base64
