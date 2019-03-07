@@ -182,3 +182,5 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: "added option to pass comma separated arguments and values additionally to pollingCommandArgName"
+tests:
+- No test

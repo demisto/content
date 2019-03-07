@@ -243,3 +243,5 @@ inputs:
   description: Commas separated  arguments values of the polling command
 outputs: []
 releaseNotes: "playbook can accept additional comma separated arguments and their values beside PollingCommandArgName"
+tests:
+- No test
