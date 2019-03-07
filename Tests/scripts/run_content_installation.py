@@ -61,6 +61,8 @@ def main():
     with open('./Tests/instance_ips.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ips))
 
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
