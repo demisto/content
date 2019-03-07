@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 '''IMPORTS'''
 from faker import Faker
 from faker.providers import internet, misc, lorem
@@ -432,6 +431,7 @@ TEMPLATE_3 = ['''<html xmlns="http://www.w3.org/1999/xhtml">
 # Drops the mic disable-secrets-detection-end
 EMAIL_TEMPLATES = [TEMPLATE_1, TEMPLATE_2, TEMPLATE_3]
 
+
 '''HELPER FUNCTIONS'''
 
 
@@ -633,19 +633,159 @@ def demo_ip_command():
 
 def demo_url_command():
     url = demisto.args().get('url')
-    return generate_dbot_score(url)
+    dbotscore = generate_dbot_score(url)
+
+    dbotscore_output = {
+        'Indicator': url,
+        'Type': 'URL',
+        'Vendor': 'OnboardingDemo',
+        'Score': dbotscore
+    }
+
+    standard_url_output = {
+        'Data': url
+    }
+
+    if dbotscore == 3:
+        standard_url_output['Malicious'] = {
+            'Vendor': 'OnboardingDemo',
+            'Description': 'Indicator was found to be malicious.'
+        }
+
+    context = {
+        'DBotScore': dbotscore_output,
+        outputPaths['url']: standard_url_output
+    }
+
+    title = 'OnboardingDemo URL Reputation - {}'.format(url)
+    human_readable = tableToMarkdown(title, dbotscore_output)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
 def demo_domain_command():
-    pass
+    domain = demisto.args().get('domain')
+    dbotscore = generate_dbot_score(domain)
+
+    dbotscore_output = {
+        'Indicator': domain,
+        'Type': 'domain',
+        'Vendor': 'OnboardingDemo',
+        'Score': dbotscore
+    }
+
+    standard_domain_output = {
+        'Name': domain
+    }
+
+    if dbotscore == 3:
+        standard_domain_output['Malicious'] = {
+            'Vendor': 'OnboardingDemo',
+            'Description': 'Indicator was found to be malicious.'
+        }
+
+    context = {
+        'DBotScore': dbotscore_output,
+        outputPaths['domain']: standard_domain_output
+    }
+
+    title = 'OnboardingDemo Domain Reputation - {}'.format(domain)
+    human_readable = tableToMarkdown(title, dbotscore_output)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
 def demo_file_command():
-    pass
+    file = demisto.args().get('file')
+    hash_type = get_hash_type(file).upper()
+    dbotscore = generate_dbot_score(file)
+
+    dbotscore_output = {
+        'Indicator': file,
+        'Type': 'file',
+        'Vendor': 'OnboardingDemo',
+        'Score': dbotscore
+    }
+
+    standard_file_output = {
+        hash_type: file
+    }
+
+    if dbotscore == 3:
+        standard_file_output['Malicious'] = {
+            'Vendor': 'OnboardingDemo',
+            'Description': 'Indicator was found to be malicious.'
+        }
+
+    context = {
+        'DBotScore': dbotscore_output,
+        outputPaths['file']: standard_file_output
+    }
+
+    title = 'OnboardingDemo File Reputation - {}'.format(file)
+    human_readable = tableToMarkdown(title, dbotscore_output)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
 def demo_email_command():
-    pass
+    email = demisto.args().get('email')
+    dbotscore = generate_dbot_score(email)
+
+    dbotscore_output = {
+        'Indicator': email,
+        'Type': 'email',
+        'Vendor': 'OnboardingDemo',
+        'Score': dbotscore
+    }
+
+    standard_email_output = {
+        'Address': email
+    }
+
+    if dbotscore == 3:
+        standard_email_output['Malicious'] = {
+            'Vendor': 'OnboardingDemo',
+            'Description': 'Indicator was found to be malicious.'
+        }
+
+    context = {
+        'DBotScore': dbotscore_output,
+        outputPaths['email']: standard_email_output
+    }
+
+    title = 'OnboardingDemo Email Reputation - {}'.format(email)
+    human_readable = tableToMarkdown(title, dbotscore_output)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': context
+    })
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
