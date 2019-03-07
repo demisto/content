@@ -33,7 +33,7 @@ def silence_output(cmd_method, *args, **kwargs):
         **kwargs: additional parameters for cmd_method
 
     Returns:
-        output of cmd_method
+        string. output of cmd_method
     """
     with open(os.devnull, 'w') as fnull:
         for k in ('stdout', 'stderr'):
@@ -82,7 +82,7 @@ class AMIConnection:
         Used to configure the docker host (AMI machine, in this case) as the proxy server.
 
         Returns:
-            string: The IP of the AMI on the docker bridge.
+            string. The IP of the AMI on the docker bridge.
         """
         out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
