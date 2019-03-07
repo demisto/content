@@ -82,8 +82,8 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
 
     if unmocklable_integrations_count > 0:
         print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
-        for playbook_id in unmocklable_integrations.iterkeys():
-            print_warning('\t - ' + playbook_id)
+        for playbook_id, reason in unmocklable_integrations.iteritems():
+            print_warning('\t - ' + playbook_id + ' - ' + reason)
 
 
 def update_test_msg(integrations, test_message):
