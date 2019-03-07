@@ -59,4 +59,4 @@ dependson:
 timeout: 3.6µs
 releaseNotes: No Change
 tests:
-- No test
+- Protectwise-Test
