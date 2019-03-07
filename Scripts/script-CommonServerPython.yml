@@ -1429,7 +1429,7 @@ script: |-
         :type to_timestamp: ``bool``
         :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
 
-        :type timezone: ``int``
+        :type timezone: ``int`` or ``float``
         :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
 
         :return: The parsed date range.
@@ -1517,3 +1517,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
+releaseNotes: "-"
