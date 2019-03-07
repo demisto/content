@@ -143,5 +143,6 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+releaseNotes: Fix score output
 tests:
 - RegPathReputationBasicLists_test
