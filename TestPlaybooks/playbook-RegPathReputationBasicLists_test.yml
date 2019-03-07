@@ -1,5 +1,5 @@
 id: RegPathReputationBasicLists_test
-version: 14
+version: 17
 name: RegPathReputationBasicLists_test
 description: Test the script - RegPathReputationBasicLists
 starttaskid: "0"
@@ -30,14 +30,15 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: dd8927c6-ce9d-48b0-8b5f-f0426f015f17
+    taskid: 8f267e88-5bdd-4f72-8aa5-1dfeeb25d3dc
     type: regular
     task:
-      id: dd8927c6-ce9d-48b0-8b5f-f0426f015f17
+      id: 8f267e88-5bdd-4f72-8aa5-1dfeeb25d3dc
       version: -1
       name: RegPathReputationBasicLists
-      description: Check the given registry path against a small blacklist and whitelist.
-        If the key matches neither, returns an answer of 2 meaning "Unknown".
+      description: Check the given registry path against a small blacklist (score
+        3), whitelist (score 1), and suspicious list (score 2). If the key matches
+        neither, returns an answer of 0.
       scriptName: RegPathReputationBasicLists
       type: regular
       iscommand: false
@@ -62,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: a4868524-4ed3-4e5e-8509-4b4559635f67
+    taskid: 1293a5c5-dc94-41cd-8792-bcfd200a37a2
     type: condition
     task:
-      id: a4868524-4ed3-4e5e-8509-4b4559635f67
+      id: 1293a5c5-dc94-41cd-8792-bcfd200a37a2
       version: -1
       name: Verify Context Output
       description: "Takes the comments of a given entry ID and stores them in the
@@ -92,6 +93,7 @@ tasks:
           right:
             value:
               simple: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
