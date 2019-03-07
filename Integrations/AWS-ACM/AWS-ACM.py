@@ -5,6 +5,8 @@ from CommonServerUserPython import *
 import boto3
 import datetime
 
+
+'''GLOBAL VARIABLES'''
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
 AWS_roleArn = demisto.params()['roleArn']
 AWS_roleSessionName = demisto.params()['roleSessionName']
@@ -126,6 +128,7 @@ def create_entry(title, data, ec):
     }
 
 
+'''MAIN FUNCTIONS'''
 def describe_certificate(args):
     client = aws_session(
         region=args.get('region'),
@@ -273,7 +276,7 @@ def test_function():
         demisto.results('ok')
 
 
-"""EXECUTION BLOCK"""
+'''EXECUTION BLOCK'''
 try:
     if demisto.command() == 'test-module':
         test_function()
