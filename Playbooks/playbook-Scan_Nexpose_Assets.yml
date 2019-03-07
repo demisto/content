@@ -332,6 +332,6 @@ outputs:
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
 fromversion: 4.0.0
-releaseNotes: ''
+releaseNotes: '-'
 tests:
 - No test
