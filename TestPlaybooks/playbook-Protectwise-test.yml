@@ -99,6 +99,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ProtectWise
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       id:
         simple: 00000169574fddb5e5db6c398fdbd0ca7c9e28660000
@@ -115,12 +118,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 444a1357-f2b1-4ed3-8218-030d4ecf235c
+    type: regular
+    task:
+      id: 444a1357-f2b1-4ed3-8218-030d4ecf235c
+      version: -1
+      name: PWEventPcapDownload
+      description: Download PCAPs related to the requested events. Supports rate throttling.
+      scriptName: PWEventPcapDownload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      burstsize: {}
+      eventId:
+        simple: 0005837ced16a5887d79cc93ca24f5548b3accdf4df4b48e2437d175
+      filename: {}
+      waitms: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: f7ff2312-04fb-4324-86fb-fef4325139dd
+    type: regular
+    task:
+      id: f7ff2312-04fb-4324-86fb-fef4325139dd
+      version: -1
+      name: PWObservationPcapDownload
+      description: Download PCAPs related to the specified observations. Supports
+        rate throttling.
+      scriptName: PWObservationPcapDownload
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      burstsize: {}
+      filename: {}
+      id:
+        simple: 00000169574fddb5e5db6c398fdbd0ca7c9e28660000
+      sensorId:
+        simple: "3110"
+      waitms: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
+        "height": 995,
         "width": 380,
         "x": 450,
         "y": 50
