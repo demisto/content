@@ -122,9 +122,9 @@ script: |-
   demisto.results({
       'Type': entryTypes['note'],
       'ContentsFormat': formats['json'],
-      'Contents': outputs,
+      'Contents': score,
       'ReadableContentsFormat': formats['text'],
-      'HumanReadable': "The Reg Path reputation is: " + str(score),
+      'HumanReadable': "The Registry Path reputation for: {} is: {}".format(reg_path, score),,
       'EntryContext': {
           'RegistryKey(val.Path == obj.Path)': outputs
       }
@@ -133,8 +133,8 @@ type: python
 tags:
 - registry
 - reputation
-comment: Check the given registry path against a small blacklist and whitelist. If
-  the key matches neither, returns an answer of 2 meaning "Unknown".
+comment: Check the given registry path against a small blacklist (score 3), whitelist (score 1), 
+  and suspicious list (score 2). If the key matches neither, returns an answer of 0.
 enabled: true
 args:
 - name: input

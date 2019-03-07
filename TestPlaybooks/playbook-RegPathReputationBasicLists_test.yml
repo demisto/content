@@ -1,68 +1,209 @@
 id: RegPathReputationBasicLists_test
-version: -1
+version: 14
 name: RegPathReputationBasicLists_test
 description: Test the script - RegPathReputationBasicLists
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ac5e3c1c-cf1b-47f4-8692-39ea5bb1c64b
+    taskid: e14bd4ba-8857-476d-82cc-bfc6292b685b
     type: start
     task:
-      id: ac5e3c1c-cf1b-47f4-8692-39ea5bb1c64b
+      id: e14bd4ba-8857-476d-82cc-bfc6292b685b
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: fcf89708-1c0b-4bd2-83a7-1011fc01ae95
+    taskid: dd8927c6-ce9d-48b0-8b5f-f0426f015f17
     type: regular
     task:
-      id: fcf89708-1c0b-4bd2-83a7-1011fc01ae95
+      id: dd8927c6-ce9d-48b0-8b5f-f0426f015f17
       version: -1
       name: RegPathReputationBasicLists
       description: Check the given registry path against a small blacklist and whitelist.
         If the key matches neither, returns an answer of 2 meaning "Unknown".
-      scriptName: RegPathReputationBasicLists
+      scriptName: RegPathReputationBasicLists_copy
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       input:
         simple: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a4868524-4ed3-4e5e-8509-4b4559635f67
+    type: condition
+    task:
+      id: a4868524-4ed3-4e5e-8509-4b4559635f67
+      version: -1
+      name: Verify Context Output
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RegistryKey.Path
+            iscontext: true
+          right:
+            value:
+              simple: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RegistryKey.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c6fe777c-5762-48e1-8b2f-d05270e64695
+    type: regular
+    task:
+      id: c6fe777c-5762-48e1-8b2f-d05270e64695
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 539c595a-5fae-41d9-8ac3-6c28a512c331
+    type: regular
+    task:
+      id: 539c595a-5fae-41d9-8ac3-6c28a512c331
+      version: -1
+      name: Untitled Task
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed Validation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a23f34cd-6045-4012-80f0-38e2e50864a9
+    type: regular
+    task:
+      id: a23f34cd-6045-4012-80f0-38e2e50864a9
+      version: -1
+      name: Verify Contents Output is a number as used by the Server
+      description: Script to test RegPathReputationBasicList and see the proper Contents
+        output is returned
+      scriptName: TestRegPathReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
+        "height": 815,
+        "width": 820,
+        "x": -180,
         "y": 50
       }
     }
