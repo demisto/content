@@ -9,7 +9,14 @@ script: |-
       ids = [ids]
   for i, val in enumerate(ids):
       ids[i] = str(ids[i])
-  demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), {demisto.getArg('pollingCommandArgName'): ','.join(argToList(ids))}))
+
+  args_names = map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(','))
+  args_values = map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(','))
+
+  args = dict(zip(args_names, args_values))
+  args[demisto.getArg('pollingCommandArgName')] = ','.join(argToList(ids))
+  demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
+
 type: python
 tags: []
 comment: Runs a specified polling command one time. This is useful for initiating a local playbook context before running a polling scheduled task.
@@ -25,5 +32,12 @@ args:
   required: true
   description: Name of the argument of the polling command
   defaultValue: ids
+- name: additionalPollingCommandArgNames
+  required: true
+  description: Commas separated arguments of the polling command
+- name: additionalPollingCommandArgValues
+  required: true
+  description: Commas separated arguments values of the polling command
 scripttarget: 0
 runonce: false
+releaseNotes: "added option to pass comma separated arguments and values additionally to pollingCommandArgName"

@@ -30,6 +30,8 @@ script: |-
   playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
   interval = int(demisto.get(args, 'interval'))
   timeout = int(demisto.get(args, 'timeout'))
+  args_names = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(',')))
+  args_values = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(',')))
 
   if interval <= 0 or timeout <= 0 :
       demisto.results({
@@ -46,8 +48,9 @@ script: |-
       demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and that all ids have finished running.")
 
   res = demisto.executeCommand("ScheduleCommand", {
-      'command': '!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"' % (
-                    pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag),
+      'command': '''!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"
+                  additionalPollingCommandArgNames="%s" additionalPollingCommandArgValues="%s"''' \
+                  % (pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag, args_names, args_values),
       'cron': '*/{} * * * *'.format(interval),
       'times': 1
   })
@@ -89,5 +92,15 @@ args:
   required: true
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
   defaultValue: polling
+- name: additionalPollingCommandArgNames
+  required: true
+  description: Commas separated arguments of the polling command
+  isArray: true
+- name: additionalPollingCommandArgValues
+  required: true
+  description: Commas separated arguments values of the polling command
+  isArray: true
 scripttarget: 0
 runonce: false
+releaseNotes: "added option to pass comma separated arguments and values additionally to pollingCommandArgName"
+

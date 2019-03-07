@@ -55,14 +55,15 @@ script: |-
       return executeCommand("taskComplete", params);
   }
 
-  function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag) {
+  function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues) {
       var idsStr = ids.replace(/"/g, '\\"');
       var playbookIdStr = '';
       if (playbookId !== undefined) {
           playbookIdStr = ' playbookId="' + playbookId + '"';
       }
       var cmd = '!GenericPollingScheduledTask pollingCommand="' + pollingCommand + '" pollingCommandArgName="' + pollingCommandArgName + '"' + playbookIdStr;
-      cmd += ' ids="' + idsStr + '" pendingIds="' + pendingIds + '" interval="' + interval + '" timeout="' + (parseInt(timeout) - parseInt(interval)) + '" tag="' + tag + '"';
+      cmd += ' ids="' + idsStr + '" pendingIds="' + pendingIds.replace(/"/g,'\\"') + '" interval="' + interval + '" timeout="' + (parseInt(timeout) - parseInt(interval)) + '" tag="' + tag + '"';
+      cmd += ' additionalPollingCommandArgNames="' + additionalArgNames + '" additionalPollingCommandArgValues="' + additionalArgValues + '"';
       return executeCommand("ScheduleCommand", {
           'command': cmd,
           'cron': '*/' + interval + ' * * * *',
@@ -104,6 +105,12 @@ script: |-
 
       // Run the polling command for each id
       var pollingCommandArgs = {};
+      var names = argToList(args.additionalPollingCommandArgNames);
+      var values = argToList(args.additionalPollingCommandArgValues);
+
+      for (var index = 0; index < names.length; index++)
+          pollingCommandArgs[names[index]] = values[index];
+
       pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
       var res = executeCommand(args.pollingCommand, pollingCommandArgs);
 
@@ -120,7 +127,7 @@ script: |-
       }
 
       // Schedule the next iteration
-      var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag);
+      var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues);
       if (isError(scheduleTaskRes[0])) {
           res.push(scheduleTaskRes);
       }
@@ -164,5 +171,14 @@ args:
   required: true
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
   defaultValue: polling
+- name: additionalPollingCommandArgNames
+  required: true
+  description: Commas separated arguments of the polling command
+  isArray: true
+- name: additionalPollingCommandArgValues
+  required: true
+  description: Commas separated arguments values of the polling command
+  isArray: true
 scripttarget: 0
 runonce: false
+releaseNotes: "added option to pass comma separated arguments and values additionally to pollingCommandArgName"

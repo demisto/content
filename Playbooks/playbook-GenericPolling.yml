@@ -52,6 +52,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
       dt:
         simple: ${inputs.dt}
       ids:
@@ -121,6 +125,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
       ids:
         simple: ${inputs.Ids}
       pollingCommand:
@@ -225,4 +233,13 @@ inputs:
   value: {}
   required: true
   description: DT filter for polling IDs
+- key: AdditionalPollingCommandArgNames
+  value: {}
+  required: false
+  description: Commas separated arguments of the polling command
+- key: AdditionalPollingCommandArgValues
+  value: {}
+  required: false
+  description: Commas separated  arguments values of the polling command
 outputs: []
+releaseNotes: "playbook can accept additional comma separated arguments and their values beside PollingCommandArgName"
