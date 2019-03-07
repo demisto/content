@@ -893,6 +893,6 @@ script:
     description: Get API token, to use in integration configuration
   isfetch: true
 fromversion: 3.5.0
-releaseNotes: Fixed context output issue resulting in inaccessible items in context
+releaseNotes: Fixed context output issue causing inaccessible items in context
 tests:
   - Protectwise-Test
