@@ -391,6 +391,7 @@ script: |-
       appendContext('empty_list_key', [])
       appendContext('zero_key', 0)
       appendContext('none_key', None)
+      demisto.results("placeholder so the run would finish")
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
