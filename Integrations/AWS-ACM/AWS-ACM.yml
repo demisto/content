@@ -32,7 +32,6 @@ script:
     import boto3
     import datetime
 
-
     '''GLOBAL VARIABLES'''
     AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
     AWS_roleArn = demisto.params()['roleArn']
@@ -156,6 +155,8 @@ script:
 
 
     '''MAIN FUNCTIONS'''
+
+
     def describe_certificate(args):
         client = aws_session(
             region=args.get('region'),
