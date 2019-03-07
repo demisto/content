@@ -124,8 +124,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         if bypass_mock:
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
-        # notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
-        # TODO: Enable before merge
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
     return succeed
 
 
@@ -463,12 +462,9 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    print "Pushing new/updated mock files to mock git repo."
-    ami.upload_mock_files(build_name, buildNumber)  # TODO: Remove before merge
-
     if build_name == 'master':
         print "Pushing new/updated mock files to mock git repo."
-        # ami.upload_mock_files(build_name, buildNumber) # TODO: Enable before merge
+        ami.upload_mock_files(build_name, buildNumber)
 
     os.remove(FILTER_CONF)
 
