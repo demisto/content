@@ -5,7 +5,6 @@ if [ -f ./Tests/is_build_failed.txt ]; then
     echo "Run Tests has failed, not Destroying instance"
     rm -rf ./Tests/is_build_failed.txt
 else
-./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
    if [ -z "$2"];
      then
        INSTANCE_ID=$1
