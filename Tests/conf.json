@@ -1244,6 +1244,7 @@
         "Thinkst Canary": "Checking",
         "Cymon": "Checking",
         "SplunkPy": "Checking",
-        "Symantec Advanced Threat Protection": "Checking"
+        "Symantec Advanced Threat Protection": "Checking",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
     }
 }
