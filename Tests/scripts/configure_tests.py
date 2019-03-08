@@ -71,7 +71,7 @@ def get_modified_files(files_string):
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
             elif file_status.lower() == 'm' and ('id_set.json' not in file_path or SECRETS_WHITE_LIST not in file_path):
-                if re.match("/Tests/.*.py", file_path) or re.match("/Tests/.*.sh", file_path) or \
+                if re.match("Tests/.*.py", file_path) or re.match("Tests/.*.sh", file_path) or \
                         file_path == ".hooks/pre-commit":
                     infra_tests = True
                 else:
