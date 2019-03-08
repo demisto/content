@@ -40,7 +40,7 @@ def options_handler():
 
 
 def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
-                       unmocklable_integrations, proxy):
+                       unmocklable_integrations, proxy, is_nightly):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
@@ -57,12 +57,12 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
 
-    if rerecorded_count > 0:
+    if rerecorded_count > 0 and not is_nightly:
         print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
         for playbook_id in proxy.rerecorded_tests:
             print_warning('\t - ' + playbook_id)
 
-    if empty_mocks_count > 0:
+    if empty_mocks_count > 0 and not is_nightly:
         print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
         print '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
               '\t Investigate the playbook and the integrations.\n' \
@@ -80,7 +80,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         for playbook_id in skipped_tests:
             print_warning('\t - ' + playbook_id)
 
-    if unmocklable_integrations_count > 0:
+    if unmocklable_integrations_count > 0 and not is_nightly:
         print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
         for playbook_id, reason in unmocklable_integrations.iteritems():
             print_warning('\t - ' + playbook_id + ' - ' + reason)
@@ -113,7 +113,7 @@ def configure_proxy_unsecure(integrations):
 
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
-                   CircleCI, buildNumber, server_url, build_name, bypass_mock=False):
+                   CircleCI, buildNumber, server_url, build_name, bypass_mock=False, is_nightly=False):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
@@ -121,7 +121,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
     else:
         print 'Failed: %s failed' % (test_message,)
         playbook_id_with_mock = playbook_id
-        if bypass_mock:
+        if bypass_mock and not is_nightly:
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
         notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
@@ -178,13 +178,15 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, is_nightly):
     start_message = '------ Test %s start ------' % (test_message,)
 
-    if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
-        print start_message + ' (Mock: Disabled)'
+    if is_nightly or not integrations or has_unmockable_integration(integrations, unmockable_integrations):
+        if not is_nightly:
+            start_message += ' (Mock: Disabled)'
+        print start_message
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
-                       slack, CircleCI, buildNumber, server_url, build_name, bypass_mock=True)
+                       slack, CircleCI, buildNumber, server_url, build_name, bypass_mock=True, is_nightly=is_nightly)
         print '------ Test %s end ------' % (test_message,)
 
         return
@@ -455,14 +457,14 @@ def main():
 
         run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber, server, build_name)
+                 buildNumber, server, build_name, is_nightly)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy)
+                       proxy, is_nightly)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
-    if build_name == 'master':
+    if not is_nightly and build_name == 'master':
         print "Pushing new/updated mock files to mock git repo."
         ami.upload_mock_files(build_name, buildNumber)
 
