@@ -59,7 +59,8 @@ def test_is_valid_conf_json_sanity_check():
 
     validator.conf_data = {
         "skipped_tests": WITH_DESCRIPTION,
-        "skipped_integrations": WITH_DESCRIPTION
+        "skipped_integrations": WITH_DESCRIPTION,
+        "unmockable_integrations": WITH_DESCRIPTION,
     }
 
     assert validator.is_valid_conf_json(), \
@@ -71,7 +72,8 @@ def test_is_valid_conf_json_negative_sanity_check():
 
     validator.conf_data = {
         "skipped_tests": WITH_DESCRIPTION,
-        "skipped_integrations": MISSING_DESCRIPTION
+        "skipped_integrations": MISSING_DESCRIPTION,
+        "unmockable_integrations": MISSING_DESCRIPTION
     }
 
     assert validator.is_valid_conf_json() is False, \
