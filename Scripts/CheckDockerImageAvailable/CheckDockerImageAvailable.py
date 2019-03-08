@@ -1,6 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
 import requests
+import urllib3
+
+urllib3.disable_warnings()
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "
@@ -12,15 +15,16 @@ ACCEPT_HEADER = {
 TIMEOUT = 10
 
 
-def docker_auth(image_name):
+def docker_auth(image_name, verify_ssl=True):
     """
     Authenticate to the docker service. Return an authentication token if authentication is required.
     """
-    res = requests.get("https://registry-1.docker.io/v2/", headers=ACCEPT_HEADER, timeout=TIMEOUT)
+    res = requests.get("https://registry-1.docker.io/v2/", headers=ACCEPT_HEADER,
+                       timeout=TIMEOUT, verify=verify_ssl)
     if res.status_code == 401:  # need to authenticate
         res = requests.get(
             "https://auth.docker.io/token?scope=repository:{}:pull&service=registry.docker.io".format(image_name),
-            headers=ACCEPT_HEADER, timeout=TIMEOUT)
+            headers=ACCEPT_HEADER, timeout=TIMEOUT, verify=verify_ssl)
         res.raise_for_status()
         res_json = res.json()
         return res_json.get('token')
@@ -42,16 +46,21 @@ def main():
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+    verify_ssl = demisto.args().get('trust_any_certificate') != 'yes'
     try:
-        image_name, tag = docker_full_name.split(':')
+        split = docker_full_name.split(':')
+        image_name = split[0]
+        tag = 'latest'
+        if len(split) > 1:
+            tag = split[1]
         if tag is None:
             tag = 'latest'
-        auth_token = docker_auth(image_name)
+        auth_token = docker_auth(image_name, verify_ssl)
         headers = ACCEPT_HEADER.copy()
         if auth_token:
             headers['Authorization'] = "Bearer {}".format(auth_token)
-        res = requests.get("https://registry-1.docker.io/v2/{}/manifests/{}".format(image_name, tag), 
-                           headers=headers, timeout=TIMEOUT)
+        res = requests.get("https://registry-1.docker.io/v2/{}/manifests/{}".format(image_name, tag),
+                           headers=headers, timeout=TIMEOUT, verify=verify_ssl)
         res.raise_for_status()
         layers = res.json().get('layers')
         if not layers:
@@ -59,10 +68,12 @@ def main():
         layer_min = docker_min_layer(layers)
         headers['Range'] = "bytes=0-99"
         res = requests.get("https://registry-1.docker.io/v2/{}/blobs/{}".format(image_name, layer_min['digest']),
-                           headers=headers, timeout=TIMEOUT)
+                           headers=headers, timeout=TIMEOUT, verify=verify_ssl)
         res.raise_for_status()
         expected_len = min([100, layer_min['size']])
-        if len(res.content) < expected_len:
+        cont_len = len(res.content)
+        demisto.info("Docker image check [{}] downloaded layer content of len: {}".format(docker_full_name, cont_len))
+        if cont_len < expected_len:
             raise ValueError('Content returned is shorter than expected length: {}. Content: {}'.format(expected_len,
                              res.content))
         demisto.results('ok')

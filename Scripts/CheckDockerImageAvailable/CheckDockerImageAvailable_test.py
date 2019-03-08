@@ -41,7 +41,7 @@ def test_min_layer():
 
 
 def test_valid_docker_image(mocker):
-    image_name = 'demisto/python:2.7.15.155'
+    image_name = 'demisto/python:2.7.15.155'  # disable-secrets-detection
     mocker.patch.object(demisto, 'args', return_value={'input': image_name})
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
