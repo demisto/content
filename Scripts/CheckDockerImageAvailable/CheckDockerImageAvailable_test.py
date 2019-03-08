@@ -1,4 +1,4 @@
-from CheckDockerImageAvailable import docker_auth, main, docker_min_layer
+from CheckDockerImageAvailable import docker_auth, main, docker_min_layer, parse_www_auth
 import demistomock as demisto
 import json
 
@@ -8,6 +8,17 @@ RETURN_ERROR_TARGET = 'CheckDockerImageAvailable.return_error'
 def test_auth():
     token = docker_auth('demisto/python')
     assert token is not None
+
+
+def test_parse_www_auth():
+    res = parse_www_auth('Bearer realm="https://auth.docker.io/token",service="registry.docker.io"')
+    assert len(res) == 2
+    assert res[0] == 'https://auth.docker.io/token'
+    assert res[1] == 'registry.docker.io'
+    res = parse_www_auth('Bearer realm="https://gcr.io/v2/token",service="gcr.io"')
+    assert len(res) == 2
+    assert res[0] == 'https://gcr.io/v2/token'
+    assert res[1] == 'gcr.io'
 
 
 def test_min_layer():
@@ -41,14 +52,23 @@ def test_min_layer():
 
 
 def test_valid_docker_image(mocker):
-    image_name = 'demisto/python:2.7.15.155'  # disable-secrets-detection
-    mocker.patch.object(demisto, 'args', return_value={'input': image_name})
+    demisto_image = 'demisto/python:2.7.15.155'  # disable-secrets-detection
+    args = {'input': demisto_image}
+    mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
-    assert demisto.args()['input'] == image_name
+    assert demisto.args()['input'] == demisto_image
     main()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'ok'
+    demisto.results.reset_mock()
+    gcr_image = 'gcr.io/google-containers/alpine-with-bash:1.0'  # disable-secrets-detection
+    args['input'] = gcr_image
+    assert demisto.args()['input'] == gcr_image
+    main()
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'ok'

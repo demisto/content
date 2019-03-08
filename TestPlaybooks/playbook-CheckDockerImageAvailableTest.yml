@@ -43,6 +43,8 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "3"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -63,12 +65,12 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 5b10923a-f545-44f7-86ea-ebcbf72ae0dc
+    taskid: ae3ab3d9-afad-4fdf-8e5a-8657fea0d49f
     type: regular
     task:
-      id: 5b10923a-f545-44f7-86ea-ebcbf72ae0dc
+      id: ae3ab3d9-afad-4fdf-8e5a-8657fea0d49f
       version: -1
-      name: Check docker valid image
+      name: Check docker valid image (docker hub)
       description: Check if a docker image is available for performing docker pull.
         Script simulates the docker pull flow but doesn't actually pull the image.
         Returns an entry with 'ok' if all is good otherwise will return an error.
@@ -78,12 +80,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     scriptarguments:
       extend-context:
         simple: CheckDockerValid=.
       input:
-        simple: demisto/python:2.7.15.155  # disable-secrets-detection
+        simple: demisto/python:2.7.15.155 # disable-secrets-detection
       trust_any_certificate:
         simple: "yes"
       use_system_proxy: {}
@@ -120,7 +122,7 @@ tasks:
       extend-context:
         simple: CheckDockerBad=.
       input:
-        simple: demisto/notgoodimage:2.7.15.155 # disable-secrets-detection
+        simple: demisto/notgoodimage:1.0
       trust_any_certificate:
         simple: "yes"
       use_system_proxy: {}
@@ -129,8 +131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 540
+          "x": 20,
+          "y": 360
         }
       }
     note: false
@@ -138,10 +140,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: c28e7878-e928-4b6c-8143-7008cab343c4
+    taskid: 974f59d4-258f-4f7c-85c3-03f2586a18be
     type: condition
     task:
-      id: c28e7878-e928-4b6c-8143-7008cab343c4
+      id: 974f59d4-258f-4f7c-85c3-03f2586a18be
       version: -1
       name: Verify outputs
       type: condition
@@ -169,6 +171,15 @@ tasks:
           left:
             value:
               simple: CheckDockerBad
+            iscontext: true
+          right:
+            value:
+              simple: ok
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CheckGcrValid
             iscontext: true
           right:
             value:
@@ -237,14 +248,51 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "8":
+    id: "8"
+    taskid: f4073b55-4e19-47cf-8722-8d5d596a1182
+    type: regular
+    task:
+      id: f4073b55-4e19-47cf-8722-8d5d596a1182
+      version: -1
+      name: Check docker valid image (gcr.io)
+      description: Check if a docker image is available for performing docker pull.
+        Script simulates the docker pull flow but doesn't actually pull the image.
+        Returns an entry with 'ok' if all is good otherwise will return an error.
+      scriptName: CheckDockerImageAvailable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: CheckGcrValid=.
+      input:
+        simple: gcr.io/google-containers/busybox:1.27
+      trust_any_certificate:
+        simple: "yes"
+      use_system_proxy: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1075,
-        "width": 820,
-        "x": 320,
+        "width": 1260,
+        "x": 20,
         "y": 50
       }
     }
