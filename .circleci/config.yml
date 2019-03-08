@@ -156,7 +156,7 @@ jobs:
           when: always
       - run:
           name: Destroy Instances
-          command: ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
+          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
           when: always
       - store_artifacts:
           path: artifacts
