@@ -1,7 +1,7 @@
 """Run content installation on the AMI instances"""
 from time import sleep
 
-from Tests.test_utils import  run_command
+from Tests.test_utils import run_command
 
 
 def main():

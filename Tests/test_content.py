@@ -470,8 +470,6 @@ def execute_testing(server):
         print "Pushing new/updated mock files to mock git repo."
         ami.upload_mock_files(build_name, buildNumber)
 
-    os.remove(FILTER_CONF)
-
     if len(failed_playbooks):
         with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
             is_build_failed_file.write('Build failed')
