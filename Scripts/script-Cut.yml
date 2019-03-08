@@ -50,4 +50,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
   - TransformersTestPlaybook
-releaseNotes: "Removed log function in order to prevent bug in context."
+releaseNotes: ""
