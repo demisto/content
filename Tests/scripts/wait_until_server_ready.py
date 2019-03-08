@@ -1,5 +1,6 @@
 """Wait for server to be ready for tests"""
 import sys
+import json
 import argparse
 from time import sleep
 from subprocess import Popen, PIPE
@@ -37,26 +38,27 @@ def run_bash_command(command):
     return output
 
 
-def options_handler():
+def get_username_password():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
-    parser.add_argument('-u', '--user', help='The username for the login', required=True)
-    parser.add_argument('-p', '--password', help='The password for the login', required=True)
+    parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
 
     options = parser.parse_args()
-    return options
+    conf_path = options.confPath
+
+    with open(conf_path, 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    return conf['username'], conf['userPassword']
 
 
 def main():
-    options = options_handler()
-    username = options.user
-    password = options.password
+    username, password = get_username_password()
 
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    print instance_ips
     for _ in range(MAX_TRIES * SLEEP_TIME):
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
