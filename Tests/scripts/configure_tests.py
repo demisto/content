@@ -71,7 +71,8 @@ def get_modified_files(files_string):
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
             elif file_status.lower() == 'm' and ('id_set.json' not in file_path or SECRETS_WHITE_LIST not in file_path):
-                if re.match("/Tests/.*.py", file_path) or re.match("/Tests/.*.sh", file_path):
+                if re.match("/Tests/.*.py", file_path) or re.match("/Tests/.*.sh", file_path) or \
+                        file_path == ".hooks/pre-commit":
                     infra_tests = True
                 else:
                     all_tests.append(file_path)
@@ -167,15 +168,16 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids():
+def get_test_ids(check_nightly_status=False):
     test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
-        playbook_id = t['playbookID']
-        test_ids.append(playbook_id)
+        if not check_nightly_status or not t.get('nightly', False):
+            playbook_id = t['playbookID']
+            test_ids.append(playbook_id)
 
     return test_ids
 
@@ -492,7 +494,7 @@ def get_test_list(files_string, branch_name):
         tests.add("Run all tests")
 
     if infra_tests:  # Choosing 3 random tests for infrastructure testing
-        test_ids = get_test_ids()
+        test_ids = get_test_ids(check_nightly_status=True)
         for _ in range(3):
             tests.add(test_ids[random.randint(0, len(test_ids))])
 
