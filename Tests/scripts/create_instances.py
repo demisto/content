@@ -1,6 +1,6 @@
-import sys
 import argparse
-from subprocess import Popen, PIPE
+
+from Tests.test_utils import str2bool, run_command
 
 
 SERVER_GA = "Demisto-Circle-CI-Content-GA*"
@@ -17,41 +17,6 @@ AMI_NAME_TO_READABLE = {
     SERVER_TWO_BEFORE_GA: "Demisto two before GA"}
 
 
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-    YELLOW = '\033[0;33m'
-
-
-# print srt in the given color
-def print_color(string, color):
-    print(color + string + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-
-def run_bash_command(command, is_shell=False):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, shell=is_shell)
-    output, err = p.communicate()
-    if err:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-
-    return output
-
-
 def is_nightly_build():
     parser = argparse.ArgumentParser(description='Utility creating an instance for Content build')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly build')
@@ -61,7 +26,7 @@ def is_nightly_build():
 
 def create_instance(ami_name):
     print "Creating instance from the AMI image for {}".format(AMI_NAME_TO_READABLE[ami_name])
-    run_bash_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
+    run_command("./Tests/scripts/create_instance.sh instance.json {}".format(ami_name))  # noqa
     with open('./Tests/instance_ids.txt', 'r') as instance_file:
         instance_id = instance_file.read()
 
@@ -70,12 +35,12 @@ def create_instance(ami_name):
 
 def main():
     instance_ids = []
-    if is_nightly_build():
-        instance_ids.append(create_instance(SERVER_GA))
+    if not is_nightly_build():
+        instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[SERVER_GA], create_instance(SERVER_GA)))
 
     else:
         for ami_name in AMI_LIST:
-            if ami_name == SERVER_TWO_BEFORE_GA:
+            if ami_name == SERVER_TWO_BEFORE_GA:  # Skipping this version until new Server version will be released.
                 continue
             instance_ids.append("{}:{}".format(AMI_NAME_TO_READABLE[ami_name], create_instance(ami_name)))
 

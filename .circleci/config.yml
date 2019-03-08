@@ -26,6 +26,7 @@ jobs:
           name: Infrastucture testing
           command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v
+            pytest ./Tests/scripts/infrastructure_tests/ -v
       - run:
           name: Create ID Set
           command: |
