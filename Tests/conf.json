@@ -1122,6 +1122,9 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "CheckDockerImageAvailableTest"
         }
     ],
     "skipped_tests": {
