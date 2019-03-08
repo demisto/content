@@ -1,5 +1,5 @@
 #!/bin/bash
-
+flake8
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
 echo "Validating files..."
 PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py

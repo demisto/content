@@ -27,7 +27,7 @@ def main():
     sleep(90)
 
     for ami_instance_name, ami_instance_id in ami_instances:
-        run_command("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]))
+        run_command("./Tests/scripts/copy_content_data.sh {}".format(id_to_ip[ami_instance_id]), is_silenced=False)
         # copy_content_data.sh also starts the server
         instance_ips.append("{}:{}".format(ami_instance_name, id_to_ip[ami_instance_id]))
 
