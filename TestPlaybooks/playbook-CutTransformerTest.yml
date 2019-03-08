@@ -50,7 +50,7 @@ tasks:
               complex:
                 root: CutTest
                 transformers:
-                - operator: fc8149c9-d264-4fb7-8ef4-52688a5ace95
+                - operator: Cut
                   args:
                     delimiter:
                       value:
