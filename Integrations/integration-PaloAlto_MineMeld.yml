@@ -71,6 +71,10 @@ script:
     BLACKLISTS = argToList(demisto.params().get('blacklist'))
 
     if not USE_PROXY:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
         os.environ['NO_PROXY'] = SERVER_URL
     if not isinstance(WHITELISTS, (list)) or not isinstance(BLACKLISTS, (list)):
         return_error('Either blacklist or whitelist params were misconfigured - expecting comma seperated list, ex: miner_a,miner_b,miner_c')
@@ -1117,5 +1121,6 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
+releaseNotes: "-"
 tests:
   - minemeld_test

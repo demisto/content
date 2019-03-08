@@ -29,7 +29,7 @@ configuration:
 - display: Use proxy settings
   name: proxy
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 script:
   script: |
@@ -41,6 +41,7 @@ script:
     '''INTEGRATION PARAMS'''
     API_TOKEN = demisto.params().get('apitoken')
     URL_BASE = demisto.params().get('url')
+    USE_PROXY = demisto.params().get('proxy', False)
 
     '''CONSTANTS'''
     READ_BINARY_MODE = 'rb'
@@ -56,6 +57,15 @@ script:
     BITDAM_COMMAND_PREFIX = 'bitdam'
     DBOTSCORE_CLEAN = 1
     DBOTSCORE_MALICIOUS = 3
+
+
+    '''HANDLE PROXY'''
+    if not USE_PROXY:
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
 
     '''HELPER FUNCTIONS'''
 
@@ -281,5 +291,6 @@ script:
       type: string
     description: Get verdict for a scanned file
   runonce: false
+releaseNotes: "-"
 tests:
   - Detonate File - BitDam Test
