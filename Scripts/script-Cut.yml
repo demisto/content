@@ -50,4 +50,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
   - TransformersTestPlaybook
-releaseNotes: ""
+releaseNotes: "-"
