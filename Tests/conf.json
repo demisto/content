@@ -1243,6 +1243,14 @@
         "Thinkst Canary": "Checking",
         "Cymon": "Checking",
         "SplunkPy": "Checking",
-        "Symantec Advanced Threat Protection": "Checking"
+        "Symantec Advanced Threat Protection": "Checking",
+        "ProtectWise": "Nightly - Checking",
+        "Tenable.io": "Nightly - Checking",
+        "google-vault": "Nightly - Checking",
+        "Intezer": "Nightly - Checking",
+        "Archer": "Nightly - Checking",
+        "McAfee NSM": "Nightly - Checking",
+        "Forcepoint": "Nightly - Checking",
+        "RedCanary": "Nightly - Checking"
     }
 }
