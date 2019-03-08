@@ -34,7 +34,7 @@ def main():
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    for _ in range(MAX_TRIES * SLEEP_TIME):
+    for i in range(MAX_TRIES * SLEEP_TIME):
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
@@ -43,8 +43,8 @@ def main():
                     if res.status_code == 200:
                         print "{} is ready for use".format(ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
-                    else:
-                        print "{} is not ready yet - wait another 45 seconds".format(ami_instance_name)
+                    elif i % 30 == 0:  # printing the message every 30 seconds
+                        print "{} is not ready yet - waiting for it to start".format(ami_instance_name)
 
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
