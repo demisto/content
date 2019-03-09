@@ -1,4 +1,4 @@
-###Test plan for changes done in the commit hook:
+### Test plan for changes done in the commit hook:
 Phase 1:
 
 1. Create a new branch
