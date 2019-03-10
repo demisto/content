@@ -2,8 +2,8 @@
 Phase 1:
 
 1. Create a new branch
-2. Merge the changes done in the branch with the changes in the commit hook to the new branch
-3. Modify a Playbook, script, integration
+2. Modify a Playbook, script, integration
+3. Merge the changes done in the branch with the changes in the commit hook to the new branch
 4. Check that the hook runs successfully(Also on Circle)
 
 Phase 2 (On same branch):
