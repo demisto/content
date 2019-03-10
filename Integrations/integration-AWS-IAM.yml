@@ -2431,6 +2431,5 @@ script:
     execution: true
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Added New commands: aws-iam-create-policy, aws-iam-delete-policy, aws-iam-create-policy-version, aws-iam-delete-policy-version, aws-iam-list-policy-versions, aws-iam-get-policy-version, aws-iam-set-default-policy-version, aws-iam-create-account-alias, aws-iam-delete-account-alias"
 tests:
   - No Tests

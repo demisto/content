@@ -199,14 +199,14 @@ tasks:
       - "20"
     scriptarguments:
       first-seen-from: {}
-      first-seen-to:
-        simple: "1537426800000"
+      first-seen-to: {}
       last-seen-from: {}
       last-seen-to: {}
       limit: {}
       severity: {}
       source-ID: {}
-      type: {}
+      type:
+        simple: Domains
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -458,6 +458,47 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 9ee08e2b-cf55-4d7e-89e5-f0e1a274e8f9
+    type: regular
+    task:
+      id: 9ee08e2b-cf55-4d7e-89e5-f0e1a274e8f9
+      version: -1
+      name: intsights-get-alerts time-delta
+      script: '|||intsights-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert-type: {}
+      assigned: {}
+      found-date-from: {}
+      found-date-to: {}
+      is-closed: {}
+      is-flagged: {}
+      network-type: {}
+      severity: {}
+      source-date-from: {}
+      source-date-to: {}
+      source-type: {}
+      time-delta:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},

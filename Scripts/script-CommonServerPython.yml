@@ -58,6 +58,7 @@ script: |-
 
       return url + suffix
 
+
   def positiveUrl(entry):
       """
          Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
@@ -336,17 +337,56 @@ script: |-
       return {'ContentsFormat': formats['text'], 'Type': entryTypes['error'], 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-  def isError(entry):
+  def get_error(execute_command_result):
       """
-         Check if the given entry is an error entry
+          execute_command_result must contain error entry - check the result first with is_error function
+          if there is no error entry in the result then it will raise an Exception
 
-         :type entry: ``dict``
-         :param entry: Demisto entry (required)
+          :type execute_command_result: ``dict`` or  ``list``
+          :param execute_command_result: result of demisto.executeCommand()
 
-         :return: True if the entry is an error entry, false otherwise
-         :rtype: ``bool``
+          :return: Error message extracted from the demisto.executeCommand() result
+          :rtype: ``string``
       """
-      return type(entry) == dict and entry['Type'] == entryTypes['error']
+
+      if not is_error(execute_command_result):
+          raise ValueError("execute_command_result has no error entry. before using get_error use is_error")
+
+      if isinstance(execute_command_result, dict):
+          return execute_command_result['Contents']
+
+      error_messages = []
+      for entry in execute_command_result:
+          is_error_entry = type(entry) == dict and entry['Type'] == entryTypes['error']
+          if is_error_entry:
+              error_messages.append(entry['Contents'])
+
+      return '\n'.join(error_messages)
+
+
+  def is_error(execute_command_result):
+      """
+          Check if the given execute_command_result has an error entry
+
+          :type execute_command_result: ``dict`` or ``list``
+          :param execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
+
+          :return: True if the execute_command_result has an error entry, false otherwise
+          :rtype: ``bool``
+      """
+      if execute_command_result is None:
+          return False
+
+      if isinstance(execute_command_result, list):
+          if len(execute_command_result) > 0:
+              for entry in execute_command_result:
+                  if type(entry) == dict and entry['Type'] == entryTypes['error']:
+                      return True
+
+      return type(execute_command_result) == dict and execute_command_result['Type'] == entryTypes['error']
+
+
+  isError = is_error
 
 
   def FormatADTimestamp(ts):
@@ -396,6 +436,7 @@ script: |-
       for k in dSub:
           if strRegistryPath[:len(k)] == k:
               return dSub[k] + strRegistryPath[len(k):]
+
       return strRegistryPath
 
 
@@ -435,14 +476,19 @@ script: |-
       def __init__(self, ):
           self.messages = []
 
+
       def __call__(self, message):
           self.messages.append('%s' % (message, ))
 
+
       def print_log(self, verbose=False):
-          text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          if verbose:
-            demisto.log(text)
-          demisto.info(text)
+          if self.messages:
+              text = 'Full Integration Log:\n' + '\n'.join(self.messages)
+              if verbose:
+                  demisto.log(text)
+              demisto.info(text)
+              self.messages = []
+
 
   """
   a logger for python integrations:
@@ -554,12 +600,15 @@ script: |-
       return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-  def argToList(arg):
+  def argToList(arg, separator=','):
       """
          Converts a string representation of args to a python list
 
          :type arg: ``str`` or ``list``
          :param arg: Args to be converted (required)
+
+         :type separator: ``str``
+         :param separator: A string separator to separate the strings, the default is a comma.
 
          :return: A python list of args
          :rtype: ``list``
@@ -571,8 +620,9 @@ script: |-
       if isinstance(arg, STRING_TYPES):
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
-          return [s.strip() for s in arg.split(',')]
+          return [s.strip() for s in arg.split(separator)]
       return arg
+
 
   def appendContext(key, data, dedup=False):
       """
@@ -606,6 +656,7 @@ script: |-
           demisto.setContext(key, newVal)
       else:
           demisto.setContext(key, data)
+
 
   def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
       """
@@ -697,20 +748,8 @@ script: |-
 
       return mdResult
 
+
   tblToMd = tableToMarkdown
-
-  def underscoreToCamelCase(s):
-      """
-         Convert an underscore separated string to camel case
-
-         :type s: ``str``
-         :param s: The string to convert (e.g. hello_world) (required)
-
-         :return: The converted string (e.g. HelloWorld)
-         :rtype: ``str``
-      """
-      components = s.split('_')
-      return ''.join(x.title() for x in components)
 
 
   def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
@@ -748,6 +787,7 @@ script: |-
 
       if id is not None:
           res.setdefault('ID', id)
+
       return res
 
 
@@ -794,6 +834,7 @@ script: |-
                   data = [data]
               data = [{k: formatCell(row[k]) for k in row} for row in data]
               mdResult += tblToMd(section, data)
+
       return mdResult
 
 
@@ -838,6 +879,7 @@ script: |-
     for x in s:
         hash = (( hash << 5) + hash) + ord(x)
     return hash & 0xFFFFFFFF
+
 
   def file_result_existing_file(filename, saveFilename=None):
       """
@@ -936,6 +978,7 @@ script: |-
       else:
           return item
 
+
   def isCommandAvailable(cmd):
       """
          Check the list of available modules to see whether a command is currently available to be run.
@@ -957,10 +1000,12 @@ script: |-
   def epochToTimestamp(epoch):
       return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
+
   def formatTimeColumns(data, timeColumnNames):
       for row in data:
           for k in timeColumnNames:
               row[k] = epochToTimestamp(row[k])
+
 
   def strip_tag(tag):
       strip_ns_tag = tag
@@ -1114,6 +1159,7 @@ script: |-
       elem = internal_to_elem(json_data, factory)
       return ET.tostring(elem, encoding='unicode')
 
+
   def get_hash_type(hash_file):
       """
          Checks the type of the given hash. Returns 'md5', 'sha1', 'sha256' or 'Unknown'.
@@ -1133,6 +1179,7 @@ script: |-
           return 'sha256'
       else:
           return 'Unknown'
+
 
   def is_ip_valid(s):
       """
@@ -1155,22 +1202,63 @@ script: |-
               return False
       return True
 
-  def return_error(message):
-      """
-         Returns error entry with given message and exits the script
 
-         :type message: ``str``
-         :param message: The message to return in the entry (required)
-
-         :return: Error entry object
-         :rtype: ``dict``
+  def return_outputs(readable_output, outputs, raw_response=None):
       """
+      This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
+
+      :type readable_output: ``str``
+      :param readable_output: markdown string that will be presented in the warroom, should be human readable - (HumanReadable)
+
+      :type outputs: ``dict``
+      :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
+
+      :type raw_response: ``dict``
+      :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
+      raw response from the 3rd party service (originally Contents)
+
+      :return: None
+      :rtype: ``None``
+      """
+      return_entry = {
+          "Type": entryTypes["note"],
+          "HumanReadable": readable_output,
+          "ContentsFormat": formats["json"],
+          "Contents": raw_response,
+          "EntryContext": outputs
+      }
+
+      if outputs and raw_response is None:
+          # if raw_response was not provided but outputs were provided then set Contents as outputs
+          return_entry["Contents"] = outputs
+
+      demisto.results(return_entry)
+
+
+  def return_error(message, error=''):
+      """
+          Returns error entry with given message and exits the script
+
+          :type message: ``str``
+          :param message: The message to return in the entry (required)
+
+          :type error: ``str``
+          :param error: The raw error message to log (optional)
+
+          :return: Error entry object
+          :rtype: ``dict``
+      """
+      LOG(message)
+      if error:
+          LOG(error)
+      LOG.print_log()
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
-          'Contents': message
+          'Contents': str(message)
       })
       sys.exit(0)
+
 
   def camelize(src, delim=' '):
       """
@@ -1194,6 +1282,7 @@ script: |-
       src = {camelize_str(k, delim): v for k,v in src.iteritems()}
       return src
 
+
   # Constants for common merge paths
   outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
@@ -1202,7 +1291,7 @@ script: |-
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
     'email': 'Account.Email(val.Address && val.Address == obj.Address)',
-    'dbotscore': 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+    'dbotscore': 'DBotScore'
   }
 
   ############################### REGEX FORMATTING ###############################
@@ -1218,7 +1307,79 @@ script: |-
   sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
   sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
+  pascalRegex = re.compile('([A-Z]?[a-z]+)')
+
   ############################### REGEX FORMATTING end ###############################
+
+
+  def underscoreToCamelCase(s):
+      """
+         Convert an underscore separated string to camel case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. hello_world) (required)
+
+         :return: The converted string (e.g. HelloWorld)
+         :rtype: ``str``
+      """
+      if not isinstance(s, STRING_TYPES):
+          return s
+
+      components = s.split('_')
+      return ''.join(x.title() for x in components)
+
+
+  def camel_case_to_underscore(s):
+      """
+         Converts a camelCase string to snake_case
+
+         :type s: ``str``
+         :param s: The string to convert (e.g. helloWorld) (required)
+
+         :return: The converted string (e.g. hello_world)
+         :rtype: ``str``
+      """
+      s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+      return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+  def snakify(src):
+      """
+          Convert all keys of a dictionary to snake_case (underscored separated)
+
+          :type src: ``dict``
+          :param src: The dictionary to convert the keys for. (required)
+
+          :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+          :rtype: ``dict``
+      """
+      return {camel_case_to_underscore(k): v for k, v in src.items()}
+
+
+  def pascalToSpace(s):
+      """
+         Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score", "thisIsIPAddressName" -> "This Is IP Address Name").
+         Could be used as headerTransform
+
+         :type s: ``str``
+         :param s: The string to be converted (required)
+
+         :return: The converted string
+         :rtype: ``str``
+      """
+
+      if not isinstance(s, STRING_TYPES):
+          return s
+
+      tokens = pascalRegex.findall(s)
+      for t in tokens:
+          # double space to handle capital words like IP/URL/DNS that not included in the regex
+          s = s.replace(t, ' {} '.format(t.title()))
+
+      # split and join: to remove double spacing caused by previous workaround
+      s = ' '.join(s.split())
+      return s
+
 
   def string_to_table_header(string):
       """
@@ -1236,6 +1397,7 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
+
   def string_to_context_key(string):
       """
        Checks if string, removes underscores, capitalize every word.
@@ -1252,7 +1414,8 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
-  def parse_date_range(date_range, date_format = None, to_timestamp = False):
+
+  def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0):
       """
         Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
         Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
@@ -1266,6 +1429,9 @@ script: |-
         :type to_timestamp: ``bool``
         :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
 
+        :type timezone: ``int``
+        :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
+
         :return: The parsed date range.
         :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
       """
@@ -1277,8 +1443,11 @@ script: |-
       if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
           return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
-      end_time = datetime.now()
-      start_time = datetime.now()
+      if not isinstance(timezone, (int, float)):
+          return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
+
+      end_time = datetime.now() + timedelta(hours=timezone)
+      start_time = datetime.now() + timedelta(hours=timezone)
       unit = range_split[1]
       if 'minute' in unit:
           start_time = end_time - timedelta(minutes=number)
@@ -1299,6 +1468,7 @@ script: |-
 
       return start_time, end_time
 
+
   def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       """
         Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
@@ -1314,6 +1484,7 @@ script: |-
         :rtype: ``str``
       """
       return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+
 
   def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       """
@@ -1333,7 +1504,7 @@ script: |-
           return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
 
       # otherwise datetime.datetime
-      return int(time.mktime(date_str_or_dt.timetuple()*1000))
+      return int(time.mktime(date_str_or_dt.timetuple())*1000)
 
 type: python
 tags:
@@ -1344,6 +1515,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
 tests:
   - TestPYCommonServer
-releaseNotes: "-"

@@ -714,6 +714,5 @@ script:
       type: string
     description: Getting file info of provided ID
   runonce: false
-releaseNotes: add box_files_get and box_files_get_info commands
 tests:
   - No test

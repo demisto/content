@@ -45,7 +45,6 @@ dependson:
   must:
   - cb-binary
 timeout: 0s
-releaseNotes: "fix script returning no results"
 tests:
   - No test
 

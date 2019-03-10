@@ -1016,4 +1016,3 @@ script:
   runonce: false
 tests:
   - Zscaler Test
-releaseNotes: "Added URL validation to the command zscaler-blacklist-url as done in Zscaler GUI"

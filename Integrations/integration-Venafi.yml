@@ -296,4 +296,3 @@ script:
     description: Use a certificate guid to extract more details from the cert store.
 tests:
 - No test - no instance
-releaseNotes: "Improved integration implementation"

@@ -712,6 +712,7 @@ script:
         contents = []
         context = {}
         managed_urls_context = []
+        full_url_response = ''
         url =  demisto.args().get('url')
         if url:
             url = url.encode('utf-8')
@@ -719,9 +720,12 @@ script:
         managed_urls = list_managed_url_request()
         for managed_url in managed_urls:
             query_string = ''
+            scheme = ''
             if managed_url.get('queryString'):
                 query_string = '?' + managed_url.get('queryString')
-            full_url_response = managed_url.get('scheme') + '://' + managed_url.get('domain') + managed_url.get('path') + query_string
+            if managed_url.get('scheme'):
+                scheme = managed_url.get('scheme') + '://'
+            full_url_response = scheme + managed_url.get('domain', '') + managed_url.get('path', '') + query_string
             if (url and url in full_url_response) or not url:
                 contents.append({
                     'URL': full_url_response,
@@ -2476,4 +2480,3 @@ script:
   runonce: false
 tests:
  - Mimecast test
-releaseNotes: "Added get mail contents + metadata and download attachments. Do not use with Mimecast Authentication integration."

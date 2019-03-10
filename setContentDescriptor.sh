@@ -5,7 +5,7 @@ git diff  --diff-filter=D $2 &> delete-changelog.txt
 
 if grep -q "fatal: bad object" changelog.txt || grep -q "fatal: bad object" delete-changelog.txt; then
     # if someone has deleted the branch of the compared git hash - git diff will fail silently
-    echo "diff operation failed. make sure the compared branch is exists"
+    echo "diff operation failed. Make sure the compared branch  exists"
     exit 1
 fi
 

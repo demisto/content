@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3e125f96-9572-4238-82bb-8156f7d704d8
+    taskid: 9b57aaa5-bb78-4fa2-8c40-c97ce9da2684
     type: start
     task:
-      id: 3e125f96-9572-4238-82bb-8156f7d704d8
+      id: 9b57aaa5-bb78-4fa2-8c40-c97ce9da2684
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
-    taskid: 6398bbcc-ac42-4468-8693-489d0e6a037f
+    taskid: 172cc512-63f7-42e3-8d23-658efa8d2bc7
     type: regular
     task:
-      id: 6398bbcc-ac42-4468-8693-489d0e6a037f
+      id: 172cc512-63f7-42e3-8d23-658efa8d2bc7
       version: -1
       name: Test DQ
       scriptName: TestPYCommonServer
@@ -52,12 +53,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
-    taskid: adbd4194-10e5-4f0d-8331-01b250983002
+    taskid: 9a94c620-683d-421a-8aa6-0d5de833decd
     type: regular
     task:
-      id: adbd4194-10e5-4f0d-8331-01b250983002
+      id: 9a94c620-683d-421a-8aa6-0d5de833decd
       version: -1
       name: Test MarkDown
       description: Tests for common functions createEntry and TableToMarkDown
@@ -80,12 +82,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
-    taskid: 286eab76-1d7f-4653-8b62-9e92051f900f
+    taskid: 2da04224-507e-4edb-8486-5c7d3c32b158
     type: regular
     task:
-      id: 286eab76-1d7f-4653-8b62-9e92051f900f
+      id: 2da04224-507e-4edb-8486-5c7d3c32b158
       version: -1
       name: Test XML JSON relations
       description: 'Tests for common functions xml2json and json2xml '
@@ -108,12 +111,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
-    taskid: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+    taskid: 1c17f092-65da-48d9-870d-d2709268c115
     type: regular
     task:
-      id: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+      id: 1c17f092-65da-48d9-870d-d2709268c115
       version: -1
       name: Test tableToMarkdown
       description: Tests underscoreToCamelCase and tableToMarkDown with and without
@@ -122,6 +126,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       extend-context: {}
       test_type:
@@ -135,12 +142,13 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
-    taskid: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+    taskid: fcc3c83c-5a71-4d30-8655-bb476d6e3eb3
     type: regular
     task:
-      id: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+      id: fcc3c83c-5a71-4d30-8655-bb476d6e3eb3
       version: -1
       name: Test hash function
       scriptName: TestPYCommonServer
@@ -162,12 +170,181 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 6f33cc99-a72a-4f04-8078-effeb7bbf009
+    type: regular
+    task:
+      id: 6f33cc99-a72a-4f04-8078-effeb7bbf009
+      version: -1
+      name: Test date_to_timestamp
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      test_type:
+        simple: DATE_TO_TIMESTAMP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 4b98b0e2-5d77-4823-8800-4e9637221dfe
+    type: regular
+    task:
+      id: 4b98b0e2-5d77-4823-8800-4e9637221dfe
+      version: -1
+      name: Test camelize
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      test_type:
+        simple: CAMELIZE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: fb7a678a-e221-4b18-83f3-16e5faaf780a
+    type: regular
+    task:
+      id: fb7a678a-e221-4b18-83f3-16e5faaf780a
+      version: -1
+      name: Test PascalToSpace
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      test_type:
+        simple: PASCAL_TO_SPACE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 35b9f3e6-83ca-4334-82c1-ec435eddf6d3
+    type: regular
+    task:
+      id: 35b9f3e6-83ca-4334-82c1-ec435eddf6d3
+      version: -1
+      name: Test return_outputs
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      test_type:
+        simple: RETURN_OUTPUTS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1605
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 99d95aea-3ce1-4039-8f3f-cefb53ec4e43
+    type: condition
+    task:
+      id: 99d95aea-3ce1-4039-8f3f-cefb53ec4e43
+      version: -1
+      name: check if context contain foo
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foo
+            iscontext: true
+          right:
+            value:
+              simple: foo1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: d17de763-6768-420d-8909-ed9c0bd8f14c
+    type: title
+    task:
+      id: d17de763-6768-420d-8909-ed9c0bd8f14c
+      version: -1
+      name: Test Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 2015,
         "width": 380,
         "x": 50,
         "y": 50

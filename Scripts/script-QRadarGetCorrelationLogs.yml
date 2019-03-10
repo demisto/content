@@ -146,4 +146,3 @@ dependson:
   - qradar-searches
 tests:
 - No test
-releaseNotes: "QRadarGetCorrelationsLogs start_time field can now be either epoch time or date string"

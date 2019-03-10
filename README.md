@@ -27,11 +27,35 @@ The services and products you use can be online Cloud-based or on-premises setup
 ## Integrations
 Integrations written in Javascript or Python enable the Demisto Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
 
+### Creating an Integration
+Let's look at Demisto and get started on your first integration.
+
+[Follow the steps here to learn about the Demisto IDE](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD)
+
+### Code Conventions
+The Demisto Code Conventions will help you understand how we format our Integrations and some of the tips and tricks we have developed over the years.
+
+[Learn about the Demisto Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD)
+ 
+### Context and Outputs
+The Demisto platform relies heavily on collecting data from various endpoints (integrations) and creating a "Context" for them. This allows customers to be able to use the data to perform various tasks they may need to accomplish.
+
+[Click here to learn about Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD)
+
+### Context Standards
+When we are working with data that is generic across all platforms, we format them according to our context standards. This helps integrations work interchangeably inside other playbooks.
+
+[Learn about our Context Standards here](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD)
+
+### Docker
+In some cases, it will be necessary to create a docker image to enable your integration to run. When this happens, we must create a new docker image using the steps outlined here:
+
+[Create a Docker Image](https://github.com/demisto/content/blob/master/docs/docker/README.MD)
 ## Reports
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
 ## Contributing Content
-For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
+For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/docs/contributing/README.MD).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
 
@@ -41,3 +65,22 @@ Copy the pre-commit hook from .hooks to .git/hooks. Run the following command fr
 ```sh
 cp .hooks/* .git/hooks
 ```
+
+# Documentation Directory
+
+| Link | Description |
+| --- | ---|
+| [Tutorial Video](https://github.com/demisto/content/blob/master/docs/tutorial-video/README.md) | A step-by-step introduction to creating an integration |
+| [Getting Started](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD) | A brief explanation of the Demisto IDE |
+| [Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD) | Our Code Conventions |
+| [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) | Brief overview of Context and Outputs |
+| [Context Conventions](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD) | Conventions for the Demisto Standard Context |
+| [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
+| [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
+| [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
+| [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
+| [Docker](https://github.com/demisto/content/blob/master/docs/docker/README.MD) | How to use Docker |
+| [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
+| [Fetching Credentials](https://github.com/demisto/content/blob/master/docs/fetching_credentials/README.md) | How to Fetch Credentials |
+| [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
+| [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |

@@ -36,7 +36,10 @@ args:
   description: Destination xpath to move the rule. For further information, see the
     Panorama XML API Documentation.
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - panorama
 timeout: 0s
+tests:
+- palo_alto_firewall_test_pb

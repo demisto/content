@@ -140,7 +140,7 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      FileUrl:
+      FileURL:
         simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
       Comments:
         simple: Detonation Testing
@@ -179,10 +179,6 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      URL:
-        complex:
-          root: URL
-          accessor: Data
       Comments:
         simple: Detonation Testing
       InternetAccess:
@@ -195,6 +191,8 @@ tasks:
         simple: w7
       Timeout:
         simple: "15"
+      URL:
+        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
     separatecontext: true
     loop:
       iscommand: false

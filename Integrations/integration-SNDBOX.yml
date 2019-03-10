@@ -186,7 +186,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, table, removeNull=True),
             'EntryContext': {'SNDBOX.Analysis(val.ID && val.ID == obj.ID)' : createContext(context, removeNull=True),
-                'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' :
+                'DBotScore' :
                     createContext(dbot_scores, removeNull=True),
             }
         }
@@ -588,6 +588,5 @@ script:
         Download the sample file of an analysis. for security reasons, the
         extension will be "dontrun"
   runonce: false
-releaseNotes: '-'
 tests:
   - SNDBOX_Test

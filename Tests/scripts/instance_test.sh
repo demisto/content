@@ -17,11 +17,11 @@ temp="${USERNAME%\"}"
 temp="${temp#\"}"
 USERNAME=$temp
 
-[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
 
-python ./Tests/instance_notifier.py -n $IS_NIGHTLY -s "$SLACK_TOKEN" -e "$SECRET_CONF_PATH" -u "$USERNAME" -p "$PASSWORD" -c "$SERVER_URL"
+[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+
+python ./Tests/instance_notifier.py -n $IS_NIGHTLY -s "$SLACK_TOKEN" -e "$SECRET_CONF_PATH" -u "$USERNAME" -p "$PASSWORD" -c "$SERVER_URL" -b "$CIRCLE_BUILD_URL"
 
 echo "Finished slack notifier execution"

@@ -297,7 +297,7 @@ script:
         args['api_key'] = API_KEY
         fileData = demisto.getFilePath(demisto.getArg('file-id'))
         with open(fileData['path'], 'rb') as f:
-            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (demisto.getArg('filename'), f)}, data=args)
+            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (encode_sample_file_name(demisto.getArg('filename')), f)}, data=args)
             if r.status_code != requests.codes.ok:
                 if r.status_code == 503:
                     return_error('Sample upload failed. File was already uploaded.')
@@ -316,6 +316,13 @@ script:
             return sample.get('ID')
 
 
+    def encode_sample_file_name(filename):
+        """
+        Encodes sample file name
+        """
+        return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
+
+
     def get_html_report_by_id():
         """
         Download the html report for a sample given the id
@@ -328,8 +335,8 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
                 'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n' + 'Your sample run HTML report download request has been completed successfully for ' + sample_id,
-                'Contents': ec,
-                'ContentsFormat': formats['json']
+                'Contents': r.content,
+                'ContentsFormat': formats['html']
             },
             fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
         ])
@@ -366,7 +373,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
                 'HumanReadable': '### ThreatGrid Sample Run Processes File -\n' + 'Your sample run processes file download request has been completed successfully for ' + sample_id,
-                'Contents': ec,
+                'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
             fileResult(sample_id + '-processes.json', r.content)
@@ -472,7 +479,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
                 'HumanReadable': '### ThreatGrid Sample Run Video File -\n' + 'Your sample run video file download request has been completed successfully for ' + sample_id,
-                'Contents': ec,
+                'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
             fileResult(sample_id + '.webm', r.content)
@@ -619,7 +626,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
                 'HumanReadable': hr,
-                'Contents': ec,
+                'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
             fileResult(sample_id + '-analysis.json', r.content, file_type=entryTypes['entryInfoFile'])
@@ -1024,7 +1031,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': {},
                 'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-                'Contents': {},
+                'Contents': r.content,
                 'ContentsFormat': formats['json']
             },
             fileResult(url, r.content)
