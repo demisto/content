@@ -308,7 +308,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "TransformersTestPlaybook"
+            "playbookID": "CutTransformerTest"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -923,6 +923,7 @@
             "nightly": true
         },
         {
+            "integrations": "Whois",
             "playbookID": "whois_test"
         },
         {
@@ -1252,6 +1253,7 @@
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "RedCanary": "Nightly - Checking",
-        "McAfee Active Response": "Nightly - Checking"
+        "McAfee Active Response": "Nightly - Checking",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
     }
 }
