@@ -1,0 +1,40 @@
+commonfields:
+  id: OnboardingCleanup
+  version: -1
+name: OnboardingCleanup
+script: |
+  try:
+      # Constant and mandatory arguments
+      get_incidents_cmd_args = {'query': 'type:PhishingDemo and -status:Closed'}
+      res_get_incidents = demisto.executeCommand('getIncidents', get_incidents_cmd_args)
+
+      data = res_get_incidents[0].get('Contents', {}).get('data')
+      res = []
+      if data:
+          for item in data:
+              incident_id = item.get('id')
+              close_investigation_cmd_args = {
+                  'id': incident_id,
+                  'closeNotes': 'Closing all incidents of type PhishingDemo. (Cleanup)'
+              }
+              res.append('incident id: {}\nincident name: {}'.format(incident_id, item.get('name')))
+              demisto.executeCommand('closeInvestigation', close_investigation_cmd_args)
+      print('total incidents closed: {}'.format(len(res)))
+      print('\n'.join(res))
+
+      delete_indicators_cmd_args = {'query': 'incident.sourceBrand:OnboardingIntegration', 'doNotWhitelist': 'true'}
+      demisto.executeCommand('deleteIndicators', {'query': delete_indicators_cmd_args})
+  except Exception as e:
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': 'A problem occurred while trying to execute this script. Exception info:\n' + str(e)
+      })
+type: python
+tags: []
+comment: Cleanup the incidents and indicators created by OnboardingIntegration
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3
+runas: DBotWeakRole
