@@ -8,8 +8,8 @@ from sdk.blueliv_api import BluelivAPI
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('token')
-URL = demisto.params()['url'][:-1]
-SERVER = URL if URL.endswith('/') else URL
+URL = demisto.params()['url']
+SERVER = URL if URL.endswith('/') else URL[:-1]
 
 ''' HELPER FUNCTIONS '''
 
