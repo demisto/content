@@ -187,11 +187,11 @@ script:
         alert_time = data.get('alert_time', datetime.datetime.now().isoformat())
 
         return {
-                'type': 'Luminate',
-                'name':  rule_name,
-                'occurred': alert_time.split(".")[0]+"Z",
-                'severity' : severity_to_level(rule_severity),
-                'rawJSON': json.dumps(data),
+            'type': 'Luminate',
+            'name':  rule_name,
+            'occurred': alert_time.split(".")[0]+"Z",
+            'severity': severity_to_level(rule_severity),
+            'rawJSON': json.dumps(data),
         }
 
     def severity_to_level(severity):
