@@ -39,9 +39,8 @@ script:
       of hacktivism tweets are coming from.'
     execution: false
     name: blueliv-get-hacktivism-feed
-  dockerimage: devdemisto/blueliv:1.0.0.164
+  dockerimage: demisto/blueliv:1.0.0.165
   isfetch: false
   runonce: false
   script: ''
   type: python
-dockerimage: devdemisto/blueliv:1.0.0.164
