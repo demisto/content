@@ -308,7 +308,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "TransformersTestPlaybook"
+            "playbookID": "CutTransformerTest"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -1123,6 +1123,9 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "CheckDockerImageAvailableTest"
         }
     ],
     "skipped_tests": {
