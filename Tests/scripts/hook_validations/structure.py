@@ -149,7 +149,7 @@ class StructureValidator(object):
         if version_number != -1 or not reputations_valid:
             print_error("The version for our files should always be -1, "
                         "please update the file {}.".format(self.file_path))
-            self._is_valid = False
+            # self._is_valid = False
 
         return self._is_valid
 
