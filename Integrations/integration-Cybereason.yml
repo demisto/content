@@ -684,7 +684,6 @@ script:
                 owner_machine = element_values.get('ownerMachine', {})
                 machine_list = owner_machine.get('elementValues', [])
                 wanted_machine = False
-                print(machine_list)
                 for machine in machine_list:
                     current_machine_name = machine.get('name', '').lower()
                     if current_machine_name in machine_name_list:
