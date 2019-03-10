@@ -619,15 +619,20 @@ script:
         def parse_element(element):
             return {
                 MAILBOX: element.find("{%s}EmailAddress" % TNS).text if element.find("{%s}EmailAddress" % TNS) is not None else None,
-                'displayName': element.find("{%s}Name" % TNS).text if element.find("{%s}Name" % TNS) is not None else None
+                'displayName': element.find("{%s}Name" % TNS).text if element.find("{%s}Name" % TNS) is not None else None,
+                'mailboxType': element.find("{%s}MailboxType" % TNS).text if element.find("{%s}MailboxType" % TNS) is not None else None
             }
 
-        def call(self, email_address):
+        def call(self, email_address, recursive_expansion=False):
             if self.protocol.version.build < EXCHANGE_2010:
                 raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
             try:
-                elements = self._get_elements(payload=self.get_payload(email_address))
-                return map(lambda x: self.parse_element(x), elements)
+                if recursive_expansion == 'True':
+                    group_members = {}
+                    self.expand_group_recursive(email_address, group_members)
+                    return group_members.values()
+                else:
+                    return self.expand_group(email_address)
             except ErrorNameResolutionNoResults:
                 demisto.results("No results were found.")
                 sys.exit()
@@ -639,9 +644,25 @@ script:
             element.append(mailbox_element)
             return element
 
+        def expand_group(self, email_address):
+            elements = self._get_elements(payload=self.get_payload(email_address))
+            return map(lambda x: self.parse_element(x), elements)
 
-    def get_expanded_group(protocol, email_address):
-        group_members = ExpandGroup(protocol=protocol).call(email_address)
+        def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):
+            if email_address in non_dl_emails or email_address in dl_emails:
+                return None
+            dl_emails.add(email_address)
+
+            for member in self.expand_group(email_address):
+                if member['mailboxType'] == 'PublicDL' or member['mailboxType'] == 'PrivateDL':
+                    self.expand_group_recursive(member['mailbox'], non_dl_emails, dl_emails)
+                else:
+                    if member['mailbox'] not in non_dl_emails:
+                        non_dl_emails[member['mailbox']] = member
+
+
+    def get_expanded_group(protocol, email_address, recursive_expansion=False):
+        group_members = ExpandGroup(protocol=protocol).call(email_address, recursive_expansion)
         group_details = {
             "name": email_address,
             "members": group_members
@@ -2397,11 +2418,19 @@ script:
     - name: email-address
       required: true
       description: Email address of the group to expand
-    description: Expands a distribution list to display all members
+    - name: recursive-expansion
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Recursive expansion. By default is set to false.
+      defaultValue: "False"
+    description: Expands a distribution list to display all members. By default expands
+      only first layer of the distribution list. If recursive-expansion is True, the
+      command expands nested distribution lists and returns all the members.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added option to search by message-id in ews-search-mailbox"
 tests:
   - pyEWS_Test
   - 'EWS search-mailbox test'

@@ -98,7 +98,7 @@ script:
                 elif os.path.isdir(capath):
                     self.capath = capath
                 else:
-                    raise RuntimeError('CA path should be a file or a directory')
+                    return_error('CA path should be a file or a directory: {}'.format(capath))
 
 
         def _call_api(self, uri, data=None, headers=None, method=None):
@@ -151,7 +151,7 @@ script:
             for node in minemeld_status:
                 if node['name'] == miner:
                     if not node['class'] in SUPPORTED_MINER_CLASSES:
-                        raise RuntimeError('Unhandled Miner class {}'.format(node['class']))
+                        return_error('Unsupported miner class of type: {}'.format(node['class']))
                     self.data_file_type = 'localdb' if node['class'] == LOCALDB_CLASS else 'yaml'
                     return True
 

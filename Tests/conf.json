@@ -3,10 +3,39 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseEmailFile-deprecated-script"
+        },
+        {
+            "playbookID": "test_similar_incidents"
+        },
+        {
+            "playbookID": "CheckpointFW-test",
+            "integrations": "Check Point"
+        },
+        {
+            "playbookID": "RegPathReputationBasicLists_test"
+        },
+        {
+            "playbookID": "RandomStringGenerateTest"
+        },
+        {
+            "playbookID": "DocumentationTest",
+            "integrations": "ipinfo"
+        },
+        {
             "playbookID": "HighlightWords_Test"
+
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Fidelis Elevate Network",
+            "playbookID": "Fidelis-Test"
+        },
+        {
+            "integrations": "Thinkst Canary",
+            "playbookID": "CanaryTools Test"
         },
         {
             "integrations": "ThreatMiner",
@@ -22,7 +51,7 @@
             "playbookID": "Alexa Test Playbook"
         },
         {
-            "playbookID": "TestUnEscapeUrl"
+            "playbookID": "UnEscapeURLs-Test"
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
@@ -41,6 +70,10 @@
         {
             "integrations": "Dell Secureworks",
             "playbookID": "secureworks_test"
+        },
+        {
+            "integrations": "ServiceNow",
+            "playbookID": "servicenow_test_new"
         },
         {
             "playbookID": "Test CommonServer"
@@ -221,7 +254,6 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "instance_names": "intsights_standard_account",
             "nightly": true,
             "timeout": 500
         },
@@ -276,11 +308,19 @@
             "timeout": 500
         },
         {
-            "playbookID": "TransformersTestPlaybook"
+            "playbookID": "CutTransformerTest"
         },
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "ProtectWise",
+            "playbookID": "Protectwise-Test"
+        },
+        {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
         },
         {
 
@@ -391,9 +431,19 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "TestDedupIncidentsPlaybook"
+        },
+        {
+            "playbookID": "TestDedupIncidentsByName"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD Upload File"
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -408,6 +458,7 @@
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
+        {"playbookID": "3010a07c-0a85-480c-87db-cf3f09fcbd7c"},
         {
             "integrations": [
                 "Mail Sender (New)",
@@ -468,12 +519,16 @@
             "playbookID": "EWSv2_empty_attachment_test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWS Public Folders Test"
+        },
+        {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
         {
-            "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
+            "integrations": "Symantec Endpoint Protection V2",
+            "playbookID": "SymantecEndpointProtection_Test"
         },
         {
             "integrations": "carbonblackprotection",
@@ -773,15 +828,25 @@
         },
         {
             "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test"
+            "playbookID": "McAfee-MAR_Test",
+            "timeout": 700
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test"
+            "playbookID": "McAfee-TIE Test",
+            "timeout": 700
         },
         {
             "integrations": "ArcSight Logger",
             "playbookID": "ArcSight Logger test"
+        },
+        {
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "ArcSight ESM v2 Test"
+        },
+        {
+            "integrations": "ArcSight ESM v2",
+            "playbookID": "test Arcsight - Get events related to the Case"
         },
         {
             "integrations": "XFE",
@@ -858,6 +923,7 @@
             "nightly": true
         },
         {
+            "integrations": "Whois",
             "playbookID": "whois_test"
         },
         {
@@ -896,7 +962,7 @@
         {
           "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest",
-          "timeout": 600
+          "timeout": 700
         },
         {
             "integrations" : "VxStream",
@@ -1002,6 +1068,11 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2"
+
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -1023,43 +1094,67 @@
         },
         {
             "playbookID": "Autoextract - Test"
+        },
+        {
+            "playbookID": "FilterByList - Test"
+        },
+        {
+            "integrations": "Kafka V2",
+            "playbookID": "Kafka Test"
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "Endpoint data collection test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee Active Response",
+            "playbookID": "MAR - Endpoint data collection test"
+        },
+        {
+
+            "integrations": "DUO Admin",
+            "playbookID": "DuoAdmin API test playbook"
+        },
+        {
+            "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "integrations": "Symantec Advanced Threat Protection",
+            "playbookID": "Symantec ATP Test"
+
+        },
+        {
+            "playbookID": "CheckDockerImageAvailableTest"
         }
     ],
     "skipped_tests": {
-        "blockip_test_playbook": "No Check Point FW license",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix",
         "tenable-sc-scan-test": "Scan takes too long",
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps",
         "tenable-sc-test": "Unstable instance = flaky test",
         "XFE Test": "License expired",
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
-        "Tenable.io test": "Error 409 ISSUE OPENED",
-        "Tenable.io Scan Test": "Error 409 ISSUE OPENED",
-        "FireEye HX Test": "Problem with file acquisition - need to contact FireEye ",
         "RedLockTest": "RedLock has API issues - opened an issue (15493)",
         "GsuiteTest": "error was fixed only on server master and not on ",
-        "DUO Test Playbook": "DUO integration is failing",
-        "MISP V2 Test": "fails",
-        "CreatePhishingClassifierMLTest": "fails",
-        "GmailTest": "fails",
-        "cisco-ise-test-playbook": "fails"
+        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
+        "GmailTest": "Gmail test is failing on gmail-list-users command (issue 15571)",
+        "SalesforceTestPlaybook": "User and password expired (issue 15901)",
+        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
+        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)"
     },
     "skipped_integrations": {
         "Jask": "Cannot access instance token not valid (issue 12900)",
         "FortiGate": "License expired, in the process of getting new one (issue 14723)",
         "Skyformation": "Server installed by skyformation is down, waiting on reply (issue 14311)",
         "icebrg": "Requires BD (issue 14312)",
-        "Cylance Protect": "Under development (issue 15244)",
-        "VMware": "DevOps investigation",
+        "VMware": "We don't have a license for VMWare, and probably not going to get it",
         "Farsight DNSDB": "No instance (issue 15512)",
         "Symantec MSS": "No instance (issue 15513)",
         "Remedy AR": "DevOps investigation (issue 15514)",
-        "McAfee Active Response": "DevOps investigation",
-        "McAfee Threat Intelligence Exchange": "DevOps investigation",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
@@ -1075,12 +1170,84 @@
         "Netskope": "instance is down",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "WildFire": "Quota is temporarily over due to circle ci issues",
         "Freshdesk": "Trial account expired",
-        "Tanium": "Instance is not stable (issue 15497)"
+        "Tanium": "Instance is not stable (issue 15497)",
+        "Kafka V2": "Can not connect to instance from remote",
+        "Check Point Sandblast": "No access (issue 15948)"
     },
     "nigthly_integrations": [
         "Lastline",
         "TruSTAR"
-    ]
+    ],
+    "unmockable_integrations": {
+        "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
+        "EWS v2": "Inconsistent test (playback fails, record succeeds)",
+        "Alexa Rank Indicator": "Integration should never use proxy",
+        "Pwned": "Integration has no proxy checkbox",
+        "Luminate": "Integration has no proxy checkbox",
+        "dnstwist": "Integration has no proxy checkbox",
+        "PagerDuty v2": "Integration has no proxy checkbox",
+        "CVE Search": "Integration has no proxy checkbox",
+        "Shodan": "Integration has no proxy checkbox",
+        "Gmail": "Integration has no proxy checkbox",
+        "OpenPhish": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "ThreatExchange": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "wildfire": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "FalconHost": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "VirusTotal": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "carbonblack-v2": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544",
+        "PhishTank": "Pending merge of branch proxy-unsecure-checks",
+        "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
+        "epo": "Pending merge of branch proxy-unsecure-checks",
+        "FalconIntel": "Pending merge of branch proxy-unsecure-checks",
+        "ipinfo": "Pending merge of branch proxy-unsecure-checks",
+        "RSA NetWitness Packets": "Pending merge of branch proxy-unsecure-checks",
+        "SNDBOX": "Pending merge of branch proxy-unsecure-checks",
+        "BitDam": "Pending merge of branch proxy-unsecure-checks",
+        "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
+        "BigFix": "Pending merge of branch proxy-unsecure-checks",
+        "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
+        "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
+        "Rapid7 Nexpose": "Pending merge of branch proxy-unsecure-checks",
+        "urlscan.io": "Pending merge of branch proxy-unsecure-checks",
+        "Threat Grid": "Pending merge of branch proxy-unsecure-checks",
+        "OTRS": "Pending merge of branch proxy-unsecure-checks",
+        "Palo Alto Minemeld": "Pending merge of branch proxy-unsecure-checks",
+        "McAfee Advanced Threat Defense": "Pending merge of branch proxy-unsecure-checks",
+        "Preempt": "Insecure has a non empty default value, will require fixing and merging",
+        "QRadar": "Insecure and proxy have a non empty default value, will require fixing and merging",
+        "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
+        "Cuckoo Sandbox": "Proxy has a non empty default value, will require fixing and merging",
+        "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
+        "HashiCorp Vault": "Test fails with mock - need to test without mock",
+        "google": "'unsecure' parameter not working",
+        "Check Point Sandblast": "Test fails with mock - need to test without mock",
+        "Anomali ThreatStream": "'proxy' parameter not working",
+        "Active Directory Query v2": "Checking",
+        "MaxMind GeoIP2": "Checking",
+        "AlphaSOC Wisdom": "Checking",
+        "Phish.AI": "Checking",
+        "jira": "Checking",
+        "ArcSight ESM v2": "Checking",
+        "Cylance Protect": "Checking",
+        "ReversingLabs A1000": "Checking",
+        "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
+        "Cylance Protect v2": "Checking",
+        "SafeBreach": "Checking",
+        "Symantec Endpoint Protection V2": "Checking",
+        "McAfee ESM-v10": "Checking",
+        "Salesforce": "Checking",
+        "okta": "Checking",
+        "WildFire": "Checking",
+        "WhatsMyBrowser": "Checking",
+        "Check Point": "Checking",
+        "Awake Security": "Checking",
+        "CIRCL": "Checking",
+        "Thinkst Canary": "Checking",
+        "Cymon": "Checking",
+        "SplunkPy": "Checking",
+        "Symantec Advanced Threat Protection": "Checking",
+        "Whois": "Integration socks proxy on tcp connection not http/s"
+    }
 }

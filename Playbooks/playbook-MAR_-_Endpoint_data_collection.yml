@@ -787,3 +787,5 @@ inputs:
 - key: Hostname
   value: ${Endpoint.Hostname}
   description: Hostname to run on
+tests:
+  - No tests - Need to add
