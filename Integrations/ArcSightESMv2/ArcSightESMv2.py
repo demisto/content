@@ -52,16 +52,17 @@ def decode_ip(address_by_bytes):
         return "{}.{}.{}.{}".format((address_by_bytes >> 24) & 255, (address_by_bytes >> 16) & 255,
                                     (address_by_bytes >> 8) & 255, address_by_bytes & 255)
 
-    # if it's not an int, it should be Base64 encoded string
-    decoded_string = base64.b64decode(address_by_bytes).encode('hex')
     try:
+        # if it's not an int, it should be Base64 encoded string
+        decoded_string = base64.b64decode(address_by_bytes).encode('hex')
         if len(address_by_bytes) >= 20:
             # split the IPv6 address into 8 chunks of 4
             decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]
             return "{}:{}:{}:{}:{}:{}:{}:{}".format(*decoded_string)
         elif len(address_by_bytes) >= 6:
-            return "{}.{}.{}.{}".format((address_by_bytes >> 24) & 255, (address_by_bytes >> 16) & 255,
-                                        (address_by_bytes >> 8) & 255, address_by_bytes & 255)
+            decoded_string = int(decoded_string, 16)
+            return "{}.{}.{}.{}".format((decoded_string >> 24) & 255, (decoded_string >> 16) & 255,
+                                        (decoded_string >> 8) & 255, decoded_string & 255)
         else:
             return address_by_bytes
 
@@ -462,7 +463,8 @@ def get_security_events_command():
     raw_events = get_security_events(ids, last_date_range)
     if raw_events:
         events = []
-        for raw_event in beautifully_json(raw_events):
+        contents = beautifully_json(raw_events)
+        for raw_event in contents:
             event = {
                 'Event ID': raw_event.get('eventId'),
                 'Time': timestamp_to_datestring(raw_event.get('endTime'), '%Y-%m-%d, %H:%M:%S'),
@@ -474,7 +476,6 @@ def get_security_events_command():
             }
             events.append(event)
 
-        contents = beautifully_json(raw_events)
         human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
