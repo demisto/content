@@ -11,6 +11,12 @@ TOKEN = demisto.params().get('token')
 URL = demisto.params()['url']
 SERVER = URL if URL.endswith('/') else URL[:-1]
 
+if not demisto.params().get('proxy', False):
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
+
 ''' HELPER FUNCTIONS '''
 
 
