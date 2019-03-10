@@ -23,5 +23,6 @@
     ]
   },
   "size": 5,
-  "description": ""
+  "description": "",
+  "releaseNotes": "query and name fix"
 }

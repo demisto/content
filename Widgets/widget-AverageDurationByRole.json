@@ -23,5 +23,6 @@
   	"groupBy" : ["roles"],
   	"keys" : ["avg|openDuration / (3600*24)"]
   },
-  "description": ""
+  "description": "",
+  "releaseNotes": "query and name fix"
 }

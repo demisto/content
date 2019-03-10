@@ -38,7 +38,7 @@ class ImageValidator(object):
                 self._is_valid = False
 
         else:
-            data_dictionary = get_json(self.file_path)
+            data_dictionary = get_yaml(self.file_path)
             image = data_dictionary.get('image', '')
 
             if ((len(image) - 22) / 4.0) * 3 > self.IMAGE_MAX_SIZE:  # disable-secrets-detection
@@ -49,7 +49,7 @@ class ImageValidator(object):
         """Check if the integration as an image."""
         is_image_in_yml = False
         is_image_in_package = False
-        if get_json(self.file_path).get('image'):
+        if get_yaml(self.file_path).get('image'):
             is_image_in_yml = True
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):

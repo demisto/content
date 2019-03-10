@@ -5,7 +5,7 @@ import json
 import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, print_warning, run_command, get_json, checked_type
+from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type
 
 try:
     from pykwalify.core import Core
@@ -132,7 +132,7 @@ class StructureValidator(object):
         version_number = -1
         reputations_valid = True
         if file_extension == '.yml':
-            yaml_dict = get_json(self.file_path)
+            yaml_dict = get_yaml(self.file_path)
             version_number = yaml_dict.get('commonfields', {}).get('version')
             if not version_number:  # some files like playbooks do not have commonfields key
                 version_number = yaml_dict.get('version')

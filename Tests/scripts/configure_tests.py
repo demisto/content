@@ -9,7 +9,7 @@ import glob
 import argparse
 
 from Tests.scripts.constants import *
-from Tests.test_utils import get_json, str2bool, get_from_version, get_to_version, \
+from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color
 
 # Search Keyword for the changed file
@@ -76,7 +76,7 @@ def get_modified_files(files_string):
 
 
 def get_name(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         return data_dictionary.get('name', '-')
@@ -84,7 +84,7 @@ def get_name(file_path):
 
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
     if SECRETS_WHITE_LIST in file_path:
         data_dictionary = {'tests': ["No test - whitelist"]}

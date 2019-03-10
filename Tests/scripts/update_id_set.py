@@ -6,7 +6,7 @@ import argparse
 from collections import OrderedDict
 
 from Tests.scripts.constants import *
-from Tests.test_utils import get_json, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
+from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
     LOG_COLORS, print_color, run_command
 
 
@@ -60,7 +60,7 @@ def get_changed_files(files_string):
 
 def get_integration_commands(file_path):
     cmd_list = []
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     commands = data_dictionary.get('script', {}).get('commands', [])
     for command in commands:
         cmd_list.append(command.get('name'))
@@ -101,7 +101,7 @@ def get_commmands_from_playbook(data_dict):
 
 def get_integration_data(file_path):
     integration_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
 
@@ -126,7 +126,7 @@ def get_integration_data(file_path):
 
 def get_playbook_data(file_path):
     playbook_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
 
@@ -156,7 +156,7 @@ def get_playbook_data(file_path):
 
 def get_script_data(file_path, script_code=None):
     script_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     if script_code is None:
         script_code = data_dictionary.get('script', '')
@@ -269,7 +269,7 @@ def get_script_package_data(package_path):
     if package_path[-1] != os.sep:
         package_path = os.path.join(package_path, '')
     yml_path = glob.glob(package_path + '*.yml')[0]
-    code_type = get_json(yml_path).get('type')
+    code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
         code = code_file.read()

@@ -22,5 +22,6 @@
       "occurred"
     ]
   },
-  "description": ""
+  "description": "",
+  "releaseNotes": "query and name fix"
 }
