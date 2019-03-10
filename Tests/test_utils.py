@@ -28,7 +28,7 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command):
+def run_command(command, is_silenced=True):
     """Run a bash command in the shell.
 
     Args:
@@ -37,7 +37,11 @@ def run_command(command):
     Returns:
         string. The output of the command you are trying to execute.
     """
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    if is_silenced:
+        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    else:
+        p = Popen(command.split())
+
     output, err = p.communicate()
     if err:
         print_error("Failed to run command " + command)

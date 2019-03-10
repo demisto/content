@@ -1,26 +1,26 @@
-id: TransformersTestPlaybook
+id: CutTransformerTest
 version: -1
-name: TransformersTestPlaybook
+name: CutTransformerTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 090a733d-4dfd-4d4f-8b08-72b04c744dcb
+    taskid: ea5bda23-7e66-4ebe-89e9-ab9ac3daf99b
     type: start
     task:
-      id: 090a733d-4dfd-4d4f-8b08-72b04c744dcb
+      id: ea5bda23-7e66-4ebe-89e9-ab9ac3daf99b
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 450,
           "y": 50
         }
       }
@@ -28,42 +28,18 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: f52b5d1c-a44f-4b22-8e29-8a2cf093fe3c
-    type: title
-    task:
-      id: f52b5d1c-a44f-4b22-8e29-8a2cf093fe3c
-      version: -1
-      name: Cut
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: c2afe56b-c080-4ffb-841e-30cfa0c93840
+    taskid: b4b6b31f-2cd4-4caf-8aa2-ea26868b200f
     type: condition
     task:
-      id: c2afe56b-c080-4ffb-841e-30cfa0c93840
+      id: b4b6b31f-2cd4-4caf-8aa2-ea26868b200f
       version: -1
-      name: Cut
+      name: Test Cut Result
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -72,7 +48,7 @@ tasks:
           left:
             value:
               complex:
-                root: cut_transformer_context
+                root: CutTest
                 transformers:
                 - operator: Cut
                   args:
@@ -81,78 +57,26 @@ tasks:
                         simple: '-'
                     fields:
                       value:
-                        simple: 1,5
+                        simple: 1,2
             iscontext: true
           right:
             value:
-              simple: A-D
+              simple: A-B
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 450,
+          "y": 610
         }
       }
     note: false
     timertriggers: []
-  "3":
-    id: "3"
-    taskid: f8108be7-5b3e-45bf-870d-ed81e7c5b773
-    type: title
-    task:
-      id: f8108be7-5b3e-45bf-870d-ed81e7c5b773
-      version: -1
-      name: Test Success!
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 2406ea96-d193-4412-8210-70e23fffe298
+  "2":
+    id: "2"
+    taskid: b6b23074-d47f-43ec-85df-d8628fc0d7a5
     type: regular
     task:
-      id: 2406ea96-d193-4412-8210-70e23fffe298
-      version: -1
-      name: Set cut_transformer_context
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      append: {}
-      key:
-        simple: cut_transformer_context
-      value:
-        simple: A-B-C-E-D
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 1b24bf96-381c-4ea7-863f-e43d9127539f
-    type: regular
-    task:
-      id: 1b24bf96-381c-4ea7-863f-e43d9127539f
+      id: b6b23074-d47f-43ec-85df-d8628fc0d7a5
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -161,7 +85,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
     scriptarguments:
       all:
         simple: "yes"
@@ -173,8 +97,60 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ee67f522-cd20-473e-825a-d15e393242f2
+    type: regular
+    task:
+      id: ee67f522-cd20-473e-825a-d15e393242f2
+      version: -1
+      name: Set String To Context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CutTest
+      value:
+        simple: A-B-C-D-E
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 5dca4c3a-fc4e-4f92-8d4a-cae0f91789e4
+    type: title
+    task:
+      id: 5dca4c3a-fc4e-4f92-8d4a-cae0f91789e4
+      version: -1
+      name: Cut Transformer Worked Successfuly
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 890
         }
       }
     note: false
@@ -184,9 +160,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 380,
-        "x": 50,
+        "height": 905,
+        "width": 590,
+        "x": 240,
         "y": 50
       }
     }
