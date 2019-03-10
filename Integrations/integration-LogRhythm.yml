@@ -190,6 +190,7 @@ script:
     var logRhythmAPI = 'LogRhythm.API/Services/AlarmServiceBasicAuth.svc';
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
+    var alarmsFieldsToRemove=["DateInserted","DateUpdated","EntityID","EventCount","EventDateFirst","EventDateLast","LastUpdatedID","LastUpdatedName","RBPAvg","RBPMax"];
 
     var fixUrl = function(base) {
         res = base;
@@ -292,6 +293,13 @@ script:
             hasMorePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.HasMoreResults';
             nextPagePath = 'Envelope.Body.GetNextPageAlarmsResponse.GetNextPageAlarmsResult.NextPageID';
         }
+
+        alarms.forEach(function(element) {
+            alarmsFieldsToRemove.forEach(function(field){
+                delete element[field];
+            });
+        });
+
         return alarms.length > count ? alarms.slice(0,count) : alarms;
     };
 
@@ -448,6 +456,11 @@ script:
         if (mdRaw['-i']) {
             delete mdRaw['-i'];
         }
+
+        alarmsFieldsToRemove.forEach(function(field){
+            delete mdRaw[field];
+        });
+
         var md = tableToMarkdown('LogRhythm alarm for ID: ' + args['alarm-id'],  mdRaw);
 
         return {
@@ -461,6 +474,9 @@ script:
 
     function getAlarmEventsById(args){
         // corresponds to lr-get-alarm-events-by-id command. Get the alarm's events by a specific alarm id
+
+
+        var fieldsToRemove = ["Bytes","ClassificationID","ClassificationTypeName","CommonEventID","Direction","DirectionName","EntityID","ImpactedEntityID","ImpactedHostID","ImpactedLocation","ImpactedLocationID","ImpactedNATPort","ImpactedNetwork","ImpactedNetworkID","ImpactedPort","ImpactedZone","LogDate","LogSourceHost","LogSourceHostID","LogSourceID","LogSourceType","LogSourceTypeName","Login","MPERuleID","MPERuleName","MessageID","NormalDateMax","OriginEntityID","ImpactedEntityName","OriginHostID","OriginLocation","OriginLocationID","OriginNATPort","OriginName","OriginNetwork","OriginNetworkID","OriginPort","OriginZone","OriginZoneName","Priority","ProcessID","ProtocolID","SequenceNumber","ServiceID","ServiceName","Count"];
 
         var dataObj = {
             Username: params.Credentials.identifier,
@@ -477,6 +493,13 @@ script:
             delete mdRaw['-i'];
         }
         var processedMd = processAlarmEventsMd(mdRaw);
+
+
+        fieldsToRemove.forEach(function(field){
+            delete processedMd[field];
+        });
+
+
         var md = tableToMarkdown('LogRhythm alarm events for ID: ' + args['alarm-id'],  processedMd);
         return {
             Type: entryTypes.note,
@@ -585,7 +608,7 @@ script:
                 Contents: alarms,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
-                EntryContext:{'Alarms' : alarms }
+                EntryContext:{'Alarm' : alarms }
             };
         } else {
             return {
