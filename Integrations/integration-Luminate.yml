@@ -183,14 +183,14 @@ script:
         if not data:
             raise Exception("no data")
 
-        tenant, rule_name, rule_sevirity = data.get('rule_name').split("##")[:3]
+        tenant, rule_name, rule_severity = data.get('rule_name').split("##")[:3]
         alert_time = data.get('alert_time', datetime.datetime.now().isoformat())
 
         return {
                 'type': 'Luminate',
                 'name':  rule_name,
                 'occurred': alert_time.split(".")[0]+"Z",
-                'severity' : severity_to_level(rule_sevirity),
+                'severity' : severity_to_level(rule_severity),
                 'rawJSON': json.dumps(data),
         }
 
@@ -361,5 +361,6 @@ script:
   isfetch: true
   runonce: false
 fromversion: 0.0.0
+releaseNotes: add severity to fetched incidents.
 tests:
   - Luminate-TestPlaybook
