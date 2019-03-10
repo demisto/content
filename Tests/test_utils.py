@@ -61,6 +61,7 @@ def get_yaml(file_path):
     else:
         return {}
 
+
 def get_json(file_path):
     data_dictionary = None
     with open(os.path.expanduser(file_path), "r") as f:
@@ -75,7 +76,6 @@ def get_json(file_path):
         return data_dictionary
     else:
         return {}
-
 
 
 def get_script_or_integration_id(file_path):
