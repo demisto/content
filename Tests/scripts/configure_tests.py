@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import glob
+import random
 import argparse
 
 from Tests.scripts.constants import *
@@ -41,6 +42,8 @@ def checked_type(file_path, regex_list):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
+    infra_tests = False
+
     all_tests = []
     modified_files_list = []
     modified_tests_list = []
@@ -67,12 +70,14 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
-            elif SECRETS_WHITE_LIST in file_path:
-                modified_files_list.append(file_path)
-            elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
-                all_tests.append(file_path)
+            elif file_status.lower() == 'm' and ('id_set.json' not in file_path or SECRETS_WHITE_LIST not in file_path):
+                if re.match("Tests/.*.py", file_path) or re.match("Tests/.*.sh", file_path) or \
+                        file_path == ".hooks/pre-commit":
+                    infra_tests = True
+                else:
+                    all_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json, infra_tests
 
 
 def get_name(file_path):
@@ -86,8 +91,6 @@ def get_tests(file_path):
     """Collect tests mentioned in file_path"""
     data_dictionary = get_json(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
-    if SECRETS_WHITE_LIST in file_path:
-        data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
 
@@ -165,15 +168,16 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids():
+def get_test_ids(check_nightly_status=False):
     test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
-        playbook_id = t['playbookID']
-        test_ids.append(playbook_id)
+        if not check_nightly_status or not t.get('nightly', False):
+            playbook_id = t['playbookID']
+            test_ids.append(playbook_id)
 
     return test_ids
 
@@ -470,8 +474,10 @@ def get_test_from_conf(branch_name):
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name):
+def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
+    modified_files, modified_tests_list, all_tests, is_conf_json, infra_tests = get_modified_files(files_string)
+
     tests = set([])
     if modified_files:
         tests = find_tests_for_modified_files(modified_files)
@@ -486,6 +492,11 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, 
 
     if all_tests:
         tests.add("Run all tests")
+
+    if infra_tests:  # Choosing 3 random tests for infrastructure testing
+        test_ids = get_test_ids(check_nightly_status=True)
+        for _ in range(3):
+            tests.add(test_ids[random.randint(0, len(test_ids))])
 
     if not tests and (modified_files or modified_tests_list or all_tests):
         print_color("There are no tests that check the changes you've done, please make sure you write one",
@@ -512,8 +523,7 @@ def create_test_file(is_nightly):
             last_commit, second_last_commit = commit_string.split()
             files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)
+        tests = get_test_list(files_string, branch_name)
 
         tests_string = '\n'.join(tests)
         if tests_string:
