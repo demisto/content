@@ -39,6 +39,7 @@ class FilesValidator(object):
         conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
+
     def __init__(self, is_circle=False):
         self._is_valid = True
         self.is_circle = is_circle
