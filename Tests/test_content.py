@@ -8,25 +8,18 @@ import requests
 
 import demisto
 from slackclient import SlackClient
+
 from test_integration import test_integration
-from test_utils import print_color, print_error, print_warning, LOG_COLORS
+from mock_server import MITMProxy, AMIConnection
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool
 
 
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run\n, There are {} instances of {}, please select of them by using the " \
-                            "instance_name argument in conf.json the options are:\n{}"
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+                            "instance_name argument in conf.json. The options are:\n{}"
 
 
 def options_handler():
@@ -46,14 +39,36 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
+                       unmocklable_integrations, proxy):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
+    rerecorded_count = len(proxy.rerecorded_tests)
+    empty_mocks_count = len(proxy.empty_files)
+    unmocklable_integrations_count = len(unmocklable_integrations)
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
+
+    if failed_count > 0:
+        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
+        for playbook_id in failed_playbooks:
+            print_error('\t - ' + playbook_id)
+
+    if rerecorded_count > 0:
+        print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
+        for playbook_id in proxy.rerecorded_tests:
+            print_warning('\t - ' + playbook_id)
+
+    if empty_mocks_count > 0:
+        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
+        print '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+              '\t Investigate the playbook and the integrations.\n' \
+              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
+        for playbook_id in proxy.empty_files:
+            print('\t - ' + playbook_id)
 
     if len(skipped_integration) > 0:
         print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
@@ -65,10 +80,10 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         for playbook_id in skipped_tests:
             print_warning('\t - ' + playbook_id)
 
-    if failed_count > 0:
-        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
-        for playbook_id in failed_playbooks:
-            print_error('\t - ' + playbook_id)
+    if unmocklable_integrations_count > 0:
+        print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
+        for playbook_id, reason in unmocklable_integrations.iteritems():
+            print_warning('\t - ' + playbook_id + ' - ' + reason)
 
 
 def update_test_msg(integrations, test_message):
@@ -81,21 +96,101 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
-    print '------ Test %s start ------' % (test_message,)
-    # run test
+def has_unmockable_integration(integrations, unmockable_integrations):
+    return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.iterkeys()))
+
+
+# Configure integrations to work with mock
+def configure_proxy_unsecure(integrations):
+    """Set proxy and unscure integration parameters to true.
+
+    Args:
+        integrations: list of integrations to configure.
+    """
+    for elem in integrations:
+        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+            elem['params'][param] = True
+
+
+def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+                   CircleCI, buildNumber, server_url, build_name, bypass_mock=False):
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
-    # use results
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
         succeed_playbooks.append(playbook_id)
     else:
         print 'Failed: %s failed' % (test_message,)
-        failed_playbooks.append(playbook_id)
+        playbook_id_with_mock = playbook_id
+        if bypass_mock:
+            playbook_id_with_mock += " (Mock Disabled)"
+        failed_playbooks.append(playbook_id_with_mock)
         notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
+    return succeed
 
+
+# run the test using a real instance, record traffic.
+def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                   test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    proxy.set_tmp_folder()
+    proxy.start(playbook_id, record=True)
+    succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                             test_options, slack, CircleCI, buildNumber, server_url, build_name)
+    proxy.stop()
+    if succeed:
+        proxy.move_mock_file_to_repo(playbook_id)
+
+    proxy.set_repo_folder()
+    return succeed
+
+
+def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message):
+    rerecord = False
+
+    configure_proxy_unsecure(integrations)
+    if proxy.has_mock_file(playbook_id):
+        print start_message + ' (Mock: Playback)'
+        proxy.start(playbook_id)
+        # run test
+        succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+        # use results
+        proxy.stop()
+        if succeed:
+            print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
+            print '------ Test %s end ------' % (test_message,)
+
+            return
+
+        else:
+            print "Test failed with mock, recording new mock file."
+            rerecord = True
+    else:
+        print start_message + ' (Mock: Recording)'
+
+    # Mock recording - no mock file or playback failure.
+    succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name)
+
+    if rerecord and succeed:
+        proxy.rerecorded_tests.append(playbook_id)
     print '------ Test %s end ------' % (test_message,)
+
+
+def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
+    start_message = '------ Test %s start ------' % (test_message,)
+
+    if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
+        print start_message + ' (Mock: Disabled)'
+        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
+                       slack, CircleCI, buildNumber, server_url, build_name, bypass_mock=True)
+        print '------ Test %s end ------' % (test_message,)
+
+        return
+
+    mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name, start_message)
 
 
 def http_request(url, params_dict=None):
@@ -282,6 +377,7 @@ def main():
     skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
+    unmockable_integrations = conf['unmockable_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
@@ -292,6 +388,13 @@ def main():
     if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
+
+    with open('public_ip', 'rb') as f:
+        public_ip = f.read().strip()
+
+    ami = AMIConnection(public_ip)
+    ami.clone_mock_data()
+    proxy = MITMProxy(c, public_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -350,13 +453,19 @@ def main():
 
         test_message = update_test_msg(integrations, test_message)
 
-        run_test(c, failed_playbooks, integrations, playbook_id,
+        run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
                  buildNumber, server, build_name)
 
-    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
+                       proxy)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
+
+    if build_name == 'master':
+        print "Pushing new/updated mock files to mock git repo."
+        ami.upload_mock_files(build_name, buildNumber)
+
     os.remove(FILTER_CONF)
 
     if len(failed_playbooks):
