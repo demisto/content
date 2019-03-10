@@ -375,4 +375,3 @@ outputs:
   description: The sample ID
 tests:
   - Detonate URL - Generic Test
-releaseNotes: "-"

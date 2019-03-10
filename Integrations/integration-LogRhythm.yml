@@ -727,6 +727,5 @@ script:
       alarm status or entity
   isfetch: true
   runonce: false
-releaseNotes: Possible to add server URL as integration parameter
 tests:
 - LogRhythm-Test-Playbook
