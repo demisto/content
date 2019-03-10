@@ -1,0 +1,23 @@
+commonfields:
+  id: TestRegPathReputation
+  version: -1
+name: TestRegPathReputation
+script: |-
+  # Test script to check RegPathReputationBasicLists
+  import json
+  res = demisto.executeCommand("RegPathReputationBasicLists", {'input': r"HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot"})
+  contents = res[0].get('Contents')
+  if not contents:
+      raise Exception('Content response not found: {}'.format(res[0]))
+  score = int(contents)
+  if score != 2:
+      raise Exception('Score not equal 2: {} for response: {}'.format(score, res[0]))
+  demisto.results("finished verifying result: " + json.dumps(res, indent=2))
+type: python
+tags: []
+comment: Script to test RegPathReputationBasicList and see the proper Contents output
+  is returned
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

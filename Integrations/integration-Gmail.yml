@@ -1818,7 +1818,6 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: 'Fixed gmail-add-filter from argument not working properly'
 tests:
   - Gmail Convert Html Test
   - GmailTest
