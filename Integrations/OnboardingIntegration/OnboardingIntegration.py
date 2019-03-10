@@ -24,6 +24,7 @@ INCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute', '5'))
 MAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))
 INDICATORS_PER_INCIDENT = 5
 INDICATORS_TO_INCLUDE = ['ipv4_private', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
+EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
 # About the drop some mean regex right now disable-secrets-detection-start
 TEMPLATE_1 = [
     '''<!doctype html>
@@ -477,11 +478,18 @@ def generate_dbot_score(indicator):
 def create_content():
     """
     Generate fake content to populate the email with
+
+    Generates textual contents that are randomly generated and defined to include 5 random IPs, 5 random URLs,
+    5 random sha1 hashes, 5 random sha256 hashes, 5 random md5 hashes, 5 random email addresses, 5 random domains
+    and 100 random words.
+
+    returns:
+        The randomly generated data as a string
     """
     details = fake.text(600)
     details += '\n'
     for _ in range(INDICATORS_PER_INCIDENT):
-        ipv4, url, domain = fake.ipv4_private(), fake.url(), fake.domain_name()
+        ipv4, url, domain = fake.ipv4_public(), fake.url(), fake.domain_name()
         sha1, sha256, md5 = fake.sha1(), fake.sha256(), fake.md5()
         details += ipv4 + ' ' + url + ' ' + domain + ' ' + sha1 + ' ' + sha256 + ' ' + md5 + '\n'
 
@@ -491,6 +499,16 @@ def create_content():
 
 
 def inject_content_into_template(plaintext):
+    """
+    Choose an email html template at random and populate the main textual component with randomly generated
+    content passed in the 'plaintext' parameter
+
+    parameter: (string) plaintext
+        The randomly generated content to be used in the email html
+
+    returns:
+        The html template populated with the randomly generated content
+    """
     # Choose random email html template
     choice = random.randint(0, 2)
     chosen_template = ''.join(EMAIL_TEMPLATES[choice])
@@ -501,12 +519,18 @@ def inject_content_into_template(plaintext):
 def create_email():
     """
     Create message object using template and random data
+
+    returns:
+        email.Message object and the email as a standard dictionary
     """
     sender = fake.email()
     recipient = fake.email()
     cc = [fake.email() for _ in range(random.randint(0, 2))]
     bcc = [fake.email() for _ in range(random.randint(0, 2))]
-
+    the_time = datetime.now()
+    received = 'from ' + fake.hostname() + ' (' + fake.ipv4_public() + ')\r\n' + 'by ' + fake.domain_word() + '.'
+    received += fake.free_email_domain() + ' with ' + EMAIL_PROTOCOLS[random.randint(0, len(EMAIL_PROTOCOLS) - 1)]
+    received += '; ' + the_time.strftime('%c')
     msg = MIMEMultipart('alternative')
     msg['Subject'] = fake.sentence()
     msg['From'] = sender
@@ -516,7 +540,8 @@ def create_email():
     msg['CC'] = ', '.join(cc) if cc else ''
     msg['BCC'] = ', '.join(bcc) if bcc else ''
     msg['User-Agent'] = fake.user_agent()
-    msg['Date'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    msg['Date'] = the_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    msg['Received'] = received
 
     plaintext = create_content()
     html = inject_content_into_template(plaintext)
