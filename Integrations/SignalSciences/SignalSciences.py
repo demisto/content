@@ -2,10 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-import os
 import json
 import requests
-import datetime
 
 ''' GLOBAL VARS '''
 USE_SSL = True
@@ -96,22 +94,27 @@ valid_alert_tags_dict = {
 }
 
 ''' HELPER FUNCTIONS '''
-#Signal Sciences API returns only a "message" field when it failed to complete the request
+
+
+# Signal Sciences API returns only a "message" field when it failed to complete the request
 def are_results_empty(res):
     if 'message' in res:
         return True
     return False
+
 
 def is_error_status(status):
     if str(status)[0] == "5" or str(status)[0] == "4":
         return True
     return False
 
+
 def return_error_message(results_json):
     error_message = results_json.get("message", None)
     if error_message is None:
         return_error("Error: An error occured")
     return_error("Error: {0}".format(error_message))
+
 
 def http_request(method, url, params_dict=None, data=None):
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
@@ -134,10 +137,10 @@ def http_request(method, url, params_dict=None, data=None):
         if is_error_status(res.status_code):
             return_error_message(res.json())
 
-        #references to delete from whitelist/blacklist only
+        # references to delete from whitelist/blacklist only
         if 'whitelist/' in url or 'blacklist/' in url:
             return None
-        if (res.status_code == 204):
+        if res.status_code == 204:
             return None
         res_json = res.json()
         if are_results_empty(res_json):
@@ -152,14 +155,17 @@ def http_request(method, url, params_dict=None, data=None):
 def is_legal_list_type(list_type):
     return list_type.lower() in list_type_dict
 
+
 def is_legal_ip_list(list_of_ips):
     for ip_addr in list_of_ips:
         if not is_ip_valid(ip_addr):
             return False
     return True
 
+
 def is_valid_alert_tag(alert_tag):
     return alert_tag in valid_alert_tags_dict
+
 
 def represents_int(string_var):
     if '.' in string_var:
@@ -176,7 +182,8 @@ def is_legal_interval_for_alert(interval):
         return False
     return True
 
-#the validity of the tagName argument is currently unchecked, until further information is provided
+
+# the validity of the tagName argument is currently unchecked, until further information is provided
 def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action):
     if not represents_int(threshold):
         return_error("Error: {0} is not a valid threshold value. Threshold must be an integer".format(threshold))
@@ -188,6 +195,7 @@ def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enab
         return_error("Error: Illegal value for 'enabled' argument - value must be 'True' or 'False'")
     if not (action == 'info' or action == 'flagged'):
         return_error("Error: Illegal value for 'action' argument - value must be 'info' or 'flagged'")
+
 
 def list_entry_context_from_response(response_data):
     entry_context = {
@@ -202,7 +210,8 @@ def list_entry_context_from_response(response_data):
     }
     return entry_context
 
-#where do skip notifications come from
+
+# where do skip notifications come from
 def alert_entry_context_from_response(response_data):
     entry_context = {
         'ID': response_data.get('id', ''),
@@ -219,9 +228,11 @@ def alert_entry_context_from_response(response_data):
     }
     return entry_context
 
+
 def check_ip_is_valid(ip):
     if not is_ip_valid(ip):
         return_error("Error: IP argument is invalid. Please enter a valid IP address")
+
 
 def format_update_list_entries(entries_list, method):
     entries = {
@@ -237,6 +248,8 @@ def format_update_list_entries(entries_list, method):
 
 
 '''COMMANDS'''
+
+
 def test_module():
     try:
         url = SERVER_URL + 'corps'
@@ -246,7 +259,8 @@ def test_module():
 
     demisto.results('ok')
 
-#list entries that don't match the type will return a 404, and will be handled at the http_request method
+
+# list entries that don't match the type will return a 404, and will be handled at the http_request method
 def create_corp_list(list_name, list_type, entries_list, description = None):
     if not is_legal_list_type(list_type):
         return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, Country or Wildcard".format(list_type))
@@ -279,6 +293,7 @@ def create_corp_list_command():
             'SigSciences.CorpLists(val.ID==obj.ID)': entry_context,
         }
     })
+
 
 def get_corp_list(list_id):
     url = SERVER_URL + ACCESS_CORP_LIST_SUFFIX.format(CORPNAME, list_id)
@@ -323,7 +338,7 @@ def delete_corp_list_command():
     })
 
 
-#what about IPv6? currently not handling and will return error
+# currently not handling IPv6 and will return error
 def update_corp_list(list_id, method, entries_list, description=None):
     if not (method == "Add" or method == "Remove"):
         return_error("Error: Method given is illegal. Method must be 'Add' or 'Remove'")
@@ -339,7 +354,6 @@ def update_corp_list(list_id, method, entries_list, description=None):
         data_for_request['description'] = description
     response_data = http_request('PATCH', url, data=data_for_request)
     return response_data
-
 
 
 def update_corp_list_command():
@@ -363,6 +377,7 @@ def get_all_corp_lists():
     url = SERVER_URL + CREATE_CORP_LIST_SUFFIX.format(CORPNAME)
     response_data = http_request('GET', url)
     return response_data
+
 
 def get_all_corp_lists_command():
     request_response_data = get_all_corp_lists()
@@ -444,7 +459,7 @@ def get_site_list_command():
     })
 
 
-#should be names "remove_site_list"? that's what the interface says
+# should be names "remove_site_list"? that's what the interface says
 def delete_site_list(siteName, list_id):
     url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
     list_data = http_request('DELETE', url)
@@ -525,9 +540,7 @@ def get_all_site_lists_command():
     })
 
 
-
-
-#should be called "add alert" like the UI? or "create alert" like the API?
+# should be called "add alert" like the UI? or "create alert" like the API?
 def add_alert(siteName, long_name, tag_name, interval, threshold, enabled, action):
     validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action)
     url = SERVER_URL + SITE_CREATE_ALERT_SUFFIX.format(CORPNAME, siteName)
@@ -545,6 +558,7 @@ def add_alert(siteName, long_name, tag_name, interval, threshold, enabled, actio
         data_for_request['enabled'] = False
     response_data = http_request('POST', url, data=data_for_request)
     return response_data
+
 
 def add_alert_command():
     args = demisto.args()
@@ -647,17 +661,16 @@ def get_all_alerts(siteName):
     response_data = http_request('GET', url)
     return response_data
 
+
 def get_all_alerts_command():
     args = demisto.args()
     request_response_data = get_all_alerts(args['siteName'])
     alerts_list = request_response_data.get('data', [])
-
     alerts_contexts = []
     for alert_data in alerts_list:
         cur_alert_context = alert_entry_context_from_response(alert_data)
         alerts_contexts.append(cur_alert_context)
     sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': request_response_data,
@@ -669,11 +682,11 @@ def get_all_alerts_command():
         }
     })
 
+
 def get_whitelist(siteName):
     url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
     site_whitelist = http_request('GET', url)
     return site_whitelist
-
 
 
 def get_whitelist_command():
@@ -681,22 +694,17 @@ def get_whitelist_command():
     args = demisto.args()
     site_whitelist = get_whitelist(args['siteName'])
     data = site_whitelist.get('data', [])
-
     outputs = []
     for item in data:
         output = {}
-
         output['ID'] = item.get('id', '')
         output['Source'] = item.get('source', '')
         output['ExpiryDate'] = item.get('expires', '')
         output['Note'] = item.get('note', '')
         output['CreatedDate'] = item.get('created', '')
         output['CreatedBy'] = item.get('createdBy', '')
-
         outputs.append(output)
-
     sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': site_whitelist,
@@ -707,8 +715,6 @@ def get_whitelist_command():
             'SigSciences.Whitelist(val.ID==obj.ID)': outputs,
         }
     })
-
-
 
 
 def get_blacklist(siteName):
@@ -722,11 +728,9 @@ def get_blacklist_command():
     args = demisto.args()
     site_blacklist = get_blacklist(args['siteName'])
     data = site_blacklist.get('data', [])
-
     outputs = []
     for item in data:
         output = {}
-
         output['ID'] = item.get('id', '')
         output['Source'] = item.get('source', '')
         output['ExpiryDate'] = item.get('expires', '')
@@ -735,9 +739,7 @@ def get_blacklist_command():
         output['CreatedBy'] = item.get('createdBy', '')
 
         outputs.append(output)
-
     sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': site_blacklist,
@@ -759,17 +761,14 @@ def add_ip_to_whitelist(siteName, ip, note, expires=None):
            }
     if expires is not None:
         data['expires'] = expires
-
     res = http_request('PUT', url, data=data)
     return res
 
 
 def add_ip_to_whitelist_command():
     """Add an ip to the whitelist"""
-
     args = demisto.args()
     res = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-
     output = {}
     human_readable = {}
     output['ID'] = res.get('id', '')
@@ -778,13 +777,10 @@ def add_ip_to_whitelist_command():
     output['CreatedBy'] = res.get('createdBy', '')
     output['CreatedDate'] = res.get('created', '')
     output['ExpiryDate'] = res.get('expires', '')
-
     human_readable['Note'] = output['Note']
     human_readable['Source'] = output['Source']
     human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
-
     sidedata = "The IP has been successfully added to whitelist."
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': res,
@@ -815,7 +811,6 @@ def add_ip_to_blacklist_command():
     """Add an ip to the blacklist"""
     args = demisto.args()
     res = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-
     output = {}
     human_readable = {}
     output['ID'] = res.get('id', '')
@@ -824,13 +819,10 @@ def add_ip_to_blacklist_command():
     output['CreatedBy'] = res.get('createdBy', '')
     output['CreatedDate'] = res.get('created', '')
     output['ExpiryDate'] = res.get('expires', '')
-
     human_readable['Note'] = output['Note']
     human_readable['Source'] = output['Source']
     human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
-
     sidedata = "The IP has been successfully added to blacklist."
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': res,
@@ -961,9 +953,6 @@ try:
         blacklist_remove_ip_command()
     elif demisto.command() == 'sigsci-get-sites':
         get_sites_command()
-
-
-
     elif demisto.command() == 'sigsci-create-corp-list':
         create_corp_list_command()
     elif demisto.command() == 'sigsci-get-corp-list':
@@ -974,9 +963,6 @@ try:
         update_corp_list_command()
     elif demisto.command() == 'sigsci-get-all-corp-lists':
         get_all_corp_lists_command()
-
-
-
     elif demisto.command() == 'sigsci-create-site-list':
         create_site_list_command()
     elif demisto.command() == 'sigsci-get-site-list':
@@ -997,7 +983,6 @@ try:
         update_alert_command()
     elif demisto.command() == 'sigsci-get-all-alerts':
         get_all_alerts_command()
-
 
 
 except Exception, e:
