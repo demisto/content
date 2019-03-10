@@ -1,10 +1,10 @@
 {
-  "id": "all-incidents-by-role",
+  "id": "incidents-by-role",
   "version": -1,
   "name": "Incidents by Role",
   "dataType": "incidents",
   "widgetType": "bar",
-  "query": "",
+  "query": "-category:job",
   "size": 10,
   "isPredefined": true,
   "dateRange": {
