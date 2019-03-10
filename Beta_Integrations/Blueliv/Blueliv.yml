@@ -12,6 +12,10 @@ configuration:
   name: token
   required: true
   type: 4
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 description: Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.
 display: Blueliv
 name: Blueliv
