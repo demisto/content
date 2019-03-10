@@ -17,7 +17,7 @@ SERVER = URL if URL.endswith('/') else URL
 def verify_response_code(response):
 
     if response.status_code != 200:
-        return_error(response.error_msg)
+        raise ValueError(response.error_msg)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -90,5 +90,5 @@ try:
     command_func = COMMANDS.get(demisto.command())
     if command_func is not None:
         command_func()
-except Exception:
-    raise
+except Exception as e:
+    return_error(str(e))
